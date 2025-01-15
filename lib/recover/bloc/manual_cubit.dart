@@ -2,20 +2,15 @@ import 'dart:convert';
 
 import 'package:bb_mobile/_model/backup.dart';
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
-import 'package:bb_mobile/_pkg/gdrive.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/recover/bloc/manual_state.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:googleapis/drive/v3.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull_dart/recoverbull_dart.dart';
 
@@ -32,7 +27,7 @@ class ManualCubit extends Cubit<ManualState> {
   }) : super(const ManualState());
 
   FilePick? filePicker;
-  final List<WalletBloc> wallets;
+  final List<Wallet> wallets;
   final WalletSensitiveStorageRepository walletSensitiveStorage;
   final WalletsStorageRepository walletsStorageRepository;
   final WalletSensitiveCreate walletSensitiveCreate;
@@ -137,29 +132,28 @@ class ManualCubit extends Cubit<ManualState> {
         } else {
           //find the mnemonic & passphrase associated with the fingerprint.
 
-          for (final walletBloc in wallets) {
-            if (walletBloc.state.wallet!.mnemonicFingerprint ==
-                backup.mnemonicFingerPrint) {
-              final seedStorageString =
-                  walletBloc.state.wallet!.getRelatedSeedStorageString();
+          for (final wallet in wallets) {
+            if (wallet.mnemonicFingerprint == backup.mnemonicFingerPrint) {
+              final seedStorageString = wallet.getRelatedSeedStorageString();
               final (seed, error) = await walletSensitiveStorage.readSeed(
                 fingerprintIndex: seedStorageString,
               );
               if (error != null) {
-                emit(state.copyWith(
-                    error: 'Error reading seed: ${error.message}'));
+                emit(
+                  state.copyWith(
+                    error: 'Error reading seed: ${error.message}',
+                  ),
+                );
                 return false;
               }
               if (seed == null) {
                 emit(state.copyWith(error: 'Seed data is missing.'));
                 return false;
               }
-              final passphrase = walletBloc.state.wallet!.hasPassphrase()
+              final passphrase = wallet.hasPassphrase()
                   ? seed.passphrases
                       .firstWhere(
-                        (e) =>
-                            e.sourceFingerprint ==
-                            walletBloc.state.wallet!.sourceFingerprint,
+                        (e) => e.sourceFingerprint == wallet.sourceFingerprint,
                       )
                       .passphrase
                   : '';

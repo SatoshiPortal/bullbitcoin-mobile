@@ -99,7 +99,7 @@ dependencies:
       url: https://github.com/ethicnology/rust-bip85.git
       path: bindings/dart-bip85
       ref: master
-  web_socket_channel: ^2.4.5
+  web_socket_channel: ^3.0.1
   flutter_speed_dial: ^7.0.0
   googleapis: ^13.2.0
   google_sign_in: ^6.2.2

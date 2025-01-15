@@ -119,9 +119,10 @@ class BackupBullButton extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'RecoverBull',
       onPressed: () {
-        final network = context.read<NetworkCubit>().state.getBBNetwork();
-        final wallets =
-            context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
+        final network = context.read<NetworkRepository>().getBBNetwork;
+        final wallets = context
+            .read<AppWalletsRepository>()
+            .walletNotMainFromNetwork(network);
         context.push('/recoverbull', extra: wallets);
       },
     );

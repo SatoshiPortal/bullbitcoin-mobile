@@ -1,3 +1,8 @@
+import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
+import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/backup/bloc/cloud_cubit.dart';
+import 'package:bb_mobile/backup/bloc/cloud_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -5,18 +10,9 @@ import 'package:go_router/go_router.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:intl/intl.dart';
 
-import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/_ui/components/button.dart';
-import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/backup/bloc/cloud_cubit.dart';
-import 'package:bb_mobile/backup/bloc/cloud_state.dart';
-
 class CloudPage extends StatefulWidget {
   final Function(String, String)? onBackupSelected;
-  const CloudPage({
-    Key? key,
-    this.onBackupSelected,
-  });
+  const CloudPage({this.onBackupSelected});
 
   @override
   State<CloudPage> createState() => _CloudPageState();
@@ -166,13 +162,14 @@ class BackupTile extends StatelessWidget {
 
     final formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
     return ListTile(
-        onTap: () => onFileSelected(file),
-        title: BBText.body(
-          backupId ?? 'Unnamed File',
-          isBold: true,
-        ),
-        subtitle: BBText.bodySmall(
-          formattedDate,
-        ));
+      onTap: () => onFileSelected(file),
+      title: BBText.body(
+        backupId ?? 'Unnamed File',
+        isBold: true,
+      ),
+      subtitle: BBText.bodySmall(
+        formattedDate,
+      ),
+    );
   }
 }

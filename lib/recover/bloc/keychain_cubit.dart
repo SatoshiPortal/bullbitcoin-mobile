@@ -13,7 +13,7 @@ class KeychainCubit extends Cubit<KeychainState> {
   void clearError() => emit(state.copyWith(error: ''));
   void updateSecret(String value) => emit(state.copyWith(secret: value));
 
-  void clickRecoverKey() async {
+  Future<void> clickRecoverKey() async {
     if (state.backupId.isEmpty) {
       emit(state.copyWith(error: 'backup id is missing'));
       return;
@@ -27,7 +27,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     _recoverBackupKey(state.secret, state.backupId);
   }
 
-  void _recoverBackupKey(String secret, String backupId) async {
+  Future<void> _recoverBackupKey(String secret, String backupId) async {
     try {
       if (keychainapi.isEmpty) {
         emit(state.copyWith(error: 'keychain api is not set'));

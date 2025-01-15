@@ -83,7 +83,7 @@ packages:
     description:
       path: "bindings/dart-bip85"
       ref: master
-      resolved-ref: "2321b17f3e1c74f15bdb95638bb8c65bbbe2a2af"
+      resolved-ref: e1bea65d63c8b9a97d1fd77034ca11304c08ae96
       url: "https://github.com/ethicnology/rust-bip85.git"
     source: git
     version: "1.0.2"
@@ -1327,6 +1327,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
+  recoverbull_dart:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "828a84ff723849d2f58eb607fcf1171348d0de6b"
+      url: "https://github.com/StaxoLotl/recoverbull-dart.git"
+    source: git
+    version: "0.0.1"
   rxdart:
     dependency: "direct main"
     description:
@@ -1335,15 +1344,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.28.0"
-  recoverbull_dart:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: d3b856d0cafea2b96c784eb229466a8b057c07f6
-      url: "https://github.com/StaxoLotl/recoverbull-dart.git"
-    source: git
-    version: "0.0.1"
   share_plus:
     dependency: "direct main"
     description:

@@ -1,5 +1,6 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/controls.dart';
@@ -9,7 +10,6 @@ import 'package:bb_mobile/backup/bloc/backup_state.dart';
 import 'package:bb_mobile/backup/bloc/cloud_cubit.dart';
 import 'package:bb_mobile/backup/bloc/cloud_state.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -18,7 +18,7 @@ import 'package:go_router/go_router.dart';
 class ManualBackupPage extends StatefulWidget {
   const ManualBackupPage({super.key, required this.wallets});
 
-  final List<WalletBloc> wallets;
+  final List<Wallet> wallets;
 
   @override
   _TheBackupPageState createState() => _TheBackupPageState();
@@ -81,7 +81,7 @@ class _TheBackupPageState extends State<ManualBackupPage> {
                                   .toggleAllMnemonicAndPassphrase();
                             },
                           ),
-                          Gap(8),
+                          const Gap(8),
                           BackupToggleItem(
                             title: 'Descriptors',
                             value:
@@ -90,7 +90,7 @@ class _TheBackupPageState extends State<ManualBackupPage> {
                               context.read<BackupCubit>().toggleDescriptors();
                             },
                           ),
-                          Gap(8),
+                          const Gap(8),
                           BackupToggleItem(
                             title: 'Labels',
                             value: state.confirmedBackups['labels'] ?? false,
@@ -98,15 +98,15 @@ class _TheBackupPageState extends State<ManualBackupPage> {
                               context.read<BackupCubit>().toggleLabels();
                             },
                           ),
-                          Gap(8),
+                          const Gap(8),
                           if (state.backupKey.isEmpty)
                             Center(child: _GenerateBackupButton()),
-                          Gap(20),
+                          const Gap(20),
                           if (state.backupKey.isNotEmpty)
                             Column(
                               children: [
                                 const BBText.bodyBold("Generated Backup Key"),
-                                Gap(10),
+                                const Gap(10),
                                 SelectableText(
                                   state.backupKey,
                                   textAlign: TextAlign.center,
@@ -114,7 +114,7 @@ class _TheBackupPageState extends State<ManualBackupPage> {
                                     fontWeight: FontWeight.normal,
                                   ),
                                 ),
-                                Gap(20),
+                                const Gap(20),
                                 if (state.backupId.isNotEmpty)
                                   BBButton.big(
                                     onPressed: () => context.push(

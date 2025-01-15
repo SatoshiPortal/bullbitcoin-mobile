@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/_model/backup.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/crypto.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/labels.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/backup/bloc/backup_state.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:bip85/bip85.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +22,7 @@ class BackupCubit extends Cubit<BackupState> {
   }) : super(const BackupState());
 
   final FileStorage fileStorage;
-  final List<WalletBloc> wallets;
+  final List<Wallet> wallets;
   final WalletSensitiveStorageRepository walletSensitiveStorage;
 
   Future<void> loadBackupData() async {
@@ -30,19 +30,15 @@ class BackupCubit extends Cubit<BackupState> {
     final backups = <Backup>[];
     final confirmedBackups = state.confirmedBackups;
 
-    for (final walletBloc in wallets) {
-      final wallet = walletBloc.state.wallet;
-      if (wallet == null) {
-        emit(state.copyWith(error: 'Wallet data is missing.'));
-        return;
-      }
+    for (final wallet in wallets) {
       var backup = Backup(
-          name: wallet.name ?? '',
-          network: wallet.network.name.toLowerCase(),
-          layer: wallet.baseWalletType.name.toLowerCase(),
-          script: wallet.scriptType.name.toLowerCase(),
-          type: wallet.type.name.toLowerCase(),
-          mnemonicFingerPrint: wallet.mnemonicFingerprint);
+        name: wallet.name ?? '',
+        network: wallet.network.name.toLowerCase(),
+        layer: wallet.baseWalletType.name.toLowerCase(),
+        script: wallet.scriptType.name.toLowerCase(),
+        type: wallet.type.name.toLowerCase(),
+        mnemonicFingerPrint: wallet.mnemonicFingerprint,
+      );
 
       final seedStorageString = wallet.getRelatedSeedStorageString();
 
@@ -172,7 +168,9 @@ class BackupCubit extends Cubit<BackupState> {
       final file = File(backupDir.path + filename);
 
       final (f, errSave) = await fileStorage.saveToFile(
-          file, HEX.encode(utf8.encode(encrypted)));
+        file,
+        HEX.encode(utf8.encode(encrypted)),
+      );
       if (errSave != null) {
         emit(state.copyWith(error: 'Failed to save backup file.'));
         return;
@@ -196,7 +194,9 @@ class BackupCubit extends Cubit<BackupState> {
 }
 
 Future<String> _createBackupKey(
-    List<String>? mnemonicWords, bdk.Network network) async {
+  List<String>? mnemonicWords,
+  bdk.Network network,
+) async {
   late final bdk.Mnemonic bdkMnemonic;
 
   if (mnemonicWords != null && mnemonicWords.isNotEmpty) {

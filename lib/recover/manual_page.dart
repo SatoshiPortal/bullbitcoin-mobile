@@ -1,20 +1,18 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/sensitive_storage.dart';
-import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
+import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/backup/bloc/cloud_cubit.dart';
-import 'package:bb_mobile/backup/cloud_page.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/recover/bloc/manual_cubit.dart';
 import 'package:bb_mobile/recover/bloc/manual_state.dart';
-import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +22,7 @@ import 'package:go_router/go_router.dart';
 class ManualRecoverPage extends StatelessWidget {
   const ManualRecoverPage({super.key, required this.wallets});
 
-  final List<WalletBloc> wallets;
+  final List<Wallet> wallets;
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +66,6 @@ class ManualRecoverPage extends StatelessWidget {
                   backgroundColor: Colors.green,
                 ),
               );
-              await locator<HomeCubit>().getWalletsFromStorage();
               context.go('/home');
             }
           },
