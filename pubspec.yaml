@@ -78,11 +78,11 @@ dependencies:
   boltz:
     git:
       url: https://github.com/SatoshiPortal/boltz-dart.git
-      ref: main
+      ref: develop # TODO: set back to main before PR on main branch
   lwk:
     git:
       url: https://github.com/SatoshiPortal/lwk-dart.git
-      ref: main
+      ref: develop # TODO: set back to main before PR on main branch
   oktoast: ^3.4.0
   lottie: ^3.1.0
   share_plus: ^9.0.0
@@ -97,7 +97,7 @@ dependencies:
       url: https://github.com/ethicnology/rust-bip85.git
       path: bindings/dart-bip85
       ref: master
-  web_socket_channel: ^2.4.5
+  web_socket_channel: ^3.0.1
   flutter_speed_dial: ^7.0.0
   googleapis: ^13.2.0
   google_sign_in: ^6.2.2

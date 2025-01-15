@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/backup/backup_page.dart';
@@ -16,8 +17,8 @@ import 'package:bb_mobile/import/hardware_page.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
-import 'package:bb_mobile/recover/manual_page.dart';
 import 'package:bb_mobile/recover/keychain_page.dart';
+import 'package:bb_mobile/recover/manual_page.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/application_settings_page.dart';
@@ -202,14 +203,14 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/backupbull',
           builder: (context, state) {
-            final wallets = state.extra! as List<WalletBloc>;
+            final wallets = state.extra! as List<Wallet>;
             return ManualBackupPage(wallets: wallets);
           },
         ),
         GoRoute(
           path: '/recoverbull',
           builder: (context, state) {
-            final wallets = state.extra! as List<WalletBloc>;
+            final wallets = state.extra! as List<Wallet>;
             return ManualRecoverPage(wallets: wallets);
           },
         ),

@@ -1,11 +1,11 @@
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/launcher.dart';
+import 'package:bb_mobile/_repository/app_wallets_repository.dart';
+import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';
@@ -171,9 +171,10 @@ class BackupBullButton extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'BackupBull',
       onPressed: () {
-        final network = context.read<NetworkCubit>().state.getBBNetwork();
-        final wallets =
-            context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
+        final network = context.read<NetworkRepository>().getBBNetwork;
+        final wallets = context
+            .read<AppWalletsRepository>()
+            .walletNotMainFromNetwork(network);
         context.push('/backupbull', extra: wallets);
       },
     );
@@ -188,9 +189,10 @@ class RecoverBullButton extends StatelessWidget {
     return BBButton.textWithStatusAndRightArrow(
       label: 'RecoverBull',
       onPressed: () {
-        final network = context.read<NetworkCubit>().state.getBBNetwork();
-        final wallets =
-            context.read<HomeCubit>().state.walletBlocsFromNetwork(network);
+        final network = context.read<NetworkRepository>().getBBNetwork;
+        final wallets = context
+            .read<AppWalletsRepository>()
+            .walletNotMainFromNetwork(network);
         context.push('/recoverbull', extra: wallets);
       },
     );

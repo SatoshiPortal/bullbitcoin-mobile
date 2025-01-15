@@ -42,10 +42,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
+      sha256: "6199c74e3db4fbfbd04f66d739e72fe11c8a8957d5f219f1f4482dbde6420b5a"
       url: "https://pub.dev"
     source: hosted
-    version: "3.6.1"
+    version: "4.0.2"
   args:
     dependency: transitive
     description:
@@ -83,7 +83,7 @@ packages:
     description:
       path: "bindings/dart-bip85"
       ref: master
-      resolved-ref: "2321b17f3e1c74f15bdb95638bb8c65bbbe2a2af"
+      resolved-ref: e1bea65d63c8b9a97d1fd77034ca11304c08ae96
       url: "https://github.com/ethicnology/rust-bip85.git"
     source: git
     version: "1.0.2"
@@ -123,8 +123,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "6added1980989a1fae1826fcbe55ce35e3da2f92"
+      ref: develop
+      resolved-ref: d1b77e2b1f261b4eec1fe10ec6ecd2eaa4a5435f
       url: "https://github.com/SatoshiPortal/boltz-dart.git"
     source: git
     version: "0.1.7"
@@ -869,10 +869,10 @@ packages:
     dependency: transitive
     description:
       name: image
-      sha256: f31d52537dc417fdcde36088fdf11d191026fd5e4fae742491ebd40e5a8bea7d
+      sha256: "8346ad4b5173924b5ddddab782fc7d8a6300178c8b1dc427775405a01701c4a6"
       url: "https://pub.dev"
     source: hosted
-    version: "4.3.0"
+    version: "4.5.2"
   integration_test:
     dependency: "direct dev"
     description: flutter
@@ -986,16 +986,16 @@ packages:
     dependency: "direct main"
     description:
       name: lottie
-      sha256: "377d87b8dcef640c04717e93afb86a510f0e1117a399ab94dc4b3f39c85eaa87"
+      sha256: c5fa04a80a620066c15cf19cc44773e19e9b38e989ff23ea32e5903ef1015950
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.0"
+    version: "3.3.1"
   lwk:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "7c60552bbc57fde46bae97361c1ca300a94ad2ae"
+      ref: develop
+      resolved-ref: "946e7a91bd1c415e433cadfcaee6f90598f75dc8"
       url: "https://github.com/SatoshiPortal/lwk-dart.git"
     source: git
     version: "0.1.5"
@@ -1272,6 +1272,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.1"
+  posix:
+    dependency: transitive
+    description:
+      name: posix
+      sha256: a0117dc2167805aa9125b82eee515cc891819bac2f538c83646d355b16f58b9a
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.1"
   process:
     dependency: transitive
     description:
@@ -1320,6 +1328,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
+  recoverbull_dart:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "828a84ff723849d2f58eb607fcf1171348d0de6b"
+      url: "https://github.com/StaxoLotl/recoverbull-dart.git"
+    source: git
+    version: "0.0.1"
   rxdart:
     dependency: "direct main"
     description:
@@ -1328,15 +1345,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.28.0"
-  recoverbull_dart:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: d3b856d0cafea2b96c784eb229466a8b057c07f6
-      url: "https://github.com/StaxoLotl/recoverbull-dart.git"
-    source: git
-    version: "0.0.1"
   share_plus:
     dependency: "direct main"
     description:
@@ -1678,14 +1686,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.1"
+  web_socket:
+    dependency: transitive
+    description:
+      name: web_socket
+      sha256: "3c12d96c0c9a4eec095246debcea7b86c0324f22df69893d538fcc6f1b8cce83"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.6"
   web_socket_channel:
     dependency: "direct main"
     description:
       name: web_socket_channel
-      sha256: "58c6666b342a38816b2e7e50ed0f1e261959630becd4c879c4f26bfa14aa5a42"
+      sha256: "9f187088ed104edd8662ca07af4b124465893caf063ba29758f97af57e61da8f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.5"
+    version: "3.0.1"
   webdriver:
     dependency: transitive
     description:

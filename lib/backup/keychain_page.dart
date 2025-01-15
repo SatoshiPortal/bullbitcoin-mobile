@@ -1,8 +1,6 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/backup/bloc/keychain_cubit.dart';
 import 'package:bb_mobile/backup/bloc/keychain_state.dart';
-import 'package:bb_mobile/home/bloc/home_cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -50,7 +48,6 @@ class KeychainBackupPage extends StatelessWidget {
                   backgroundColor: Colors.green,
                 ),
               );
-              locator<HomeCubit>().getWalletsFromStorage();
               context.go('/home');
             }
           },
@@ -66,7 +63,7 @@ class KeychainBackupPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         SelectableText('Backup Key: $backupKey'),
-                        Gap(8),
+                        const Gap(8),
                         SelectableText('Backup ID: $backupId'),
                       ],
                     ),
