@@ -1,135 +1,142 @@
 import 'dart:convert';
 import 'dart:io' as io;
-
-import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/gdrive.dart';
 import 'package:bb_mobile/backup/bloc/cloud_state.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:googleapis/drive/v3.dart';
 import 'package:hex/hex.dart';
-import 'package:recoverbull_dart/recoverbull_dart.dart';
 
-//TODO; Move this google drive cubit and share it with recover and backup cubit
 class CloudCubit extends Cubit<CloudState> {
   CloudCubit() : super(const CloudState());
 
   void clearToast() => emit(state.copyWith(toast: '', loading: false));
 
   void clearError() => emit(state.copyWith(error: '', loading: false));
-  //move to a google drive repository
+
   Future<void> driveConnect() async {
     try {
       emit(state.copyWith(loading: true));
-      final googleSignInAccount = await GoogleDriveApi.google.signIn();
-      final googleDriveStorage = await GoogleDriveStorage.connect(
-        googleSignInAccount,
-        defaultBackupPath,
-      );
-      if (googleSignInAccount != null) {
+      final (googleDriveApi, err) = await GoogleDriveApi.connect();
+
+      if (googleDriveApi != null) {
         emit(
           state.copyWith(
-            googleDriveStorage: googleDriveStorage,
+            googleDriveApi: googleDriveApi,
             loading: false,
           ),
         );
-      } else {
+      } else if (err != null) {
         emit(
           state.copyWith(
-            error: "Google drive user has not authenticated",
+            error: err.message,
             loading: false,
           ),
         );
-        return;
       }
     } catch (e) {
-      debugPrint("GoogleDriveStorage.connect Error: $e");
       emit(
         state.copyWith(
-          error: "GoogleDriveStorage.connect Error: $e",
+          error: "GoogleDrive Error: $e",
           loading: false,
         ),
       );
-      return;
     }
   }
 
   Future<void> uploadBackup(String backupPath, String backupName) async {
-    if (state.googleDriveStorage == null) await driveConnect();
+    if (state.googleDriveApi == null) await driveConnect();
     final backup = io.File(backupPath);
 
     final content = await backup.readAsString();
 
     final decoded = HEX.decode(content);
-    final isCreated =
-        await state.googleDriveStorage?.writeMetaData(decoded, backupName);
+    final (isCreated, err) =
+        await state.googleDriveApi?.saveBackup(decoded, backupName) ??
+            (false, 'Google Drive API is not available.');
     if (isCreated == false) {
       emit(
         state.copyWith(
-          error: "Failed to backup file to google drive.",
+          error: "Failed to backup file to Google Drive: $err",
           loading: false,
         ),
       );
-      return;
     } else {
       emit(
         state.copyWith(
-          toast: "Google drive backup successful",
+          toast: "Google Drive backup successful",
           loading: false,
         ),
       );
-      return;
     }
   }
 
   Future<void> readAllBackups() async {
     try {
-      if (state.googleDriveStorage == null) driveConnect();
       emit(state.copyWith(loading: true));
-      final availableBackups =
-          await state.googleDriveStorage?.readAllMetaDataFiles();
-      if (availableBackups != null) {
+      final api = state.googleDriveApi;
+      if (api == null) {
+        await driveConnect();
+      }
+
+      if (api == null) {
         emit(
           state.copyWith(
             loading: false,
-            toast: "Found ${availableBackups.length} backups files",
-            availableBackups: availableBackups,
+            error: "Google Drive API is not available.",
           ),
+        );
+        return;
+      }
+
+      final (availableBackups, err) = await api.listAllBackupFiles();
+      if (err != null) {
+        emit(
+          state.copyWith(
+            loading: false,
+            error: "Failed to list backup files: ${err.message}",
+          ),
+        );
+        return;
+      }
+
+      if (availableBackups.isNotEmpty) {
+        emit(
+          state.copyWith(loading: false, availableBackups: availableBackups),
         );
       } else {
-        emit(
-          state.copyWith(
-            loading: false,
-            error: "No backup files found",
-          ),
-        );
+        emit(state.copyWith(loading: false, error: "No backup files found"));
       }
     } catch (e) {
       emit(
-        state.copyWith(
-          loading: false,
-          error: "Failed to read all backups: $e",
-        ),
+        state.copyWith(loading: false, error: "Failed to read all backups: $e"),
       );
     }
   }
 
   Future<void> readCloudBackup(File file) async {
     try {
-      if (state.googleDriveStorage == null) driveConnect();
-      emit(
-        state.copyWith(
-          loading: true,
-        ),
-      );
-      final metaData =
-          await state.googleDriveStorage!.readMetaDataContent(file);
-      final decodeEncryptedFile = utf8.decode(metaData);
-      final id = jsonDecode(decodeEncryptedFile)['backupId']?.toString() ?? '';
-      if (decodeEncryptedFile.isEmpty || id.isEmpty) {
-        emit(state.copyWith(error: 'Invalid backup data'));
+      if (state.googleDriveApi == null) await driveConnect();
+      emit(state.copyWith(loading: true));
+
+      final (metaData, err) =
+          await state.googleDriveApi!.loadBackupContent(file);
+      if (err != null) {
+        emit(
+          state.copyWith(
+            loading: false,
+            error: "Failed to read backup: ${err.message}",
+          ),
+        );
         return;
       }
+
+      final decodeEncryptedFile = utf8.decode(metaData!);
+      final id = jsonDecode(decodeEncryptedFile)['backupId']?.toString() ?? '';
+      if (decodeEncryptedFile.isEmpty || id.isEmpty) {
+        emit(state.copyWith(loading: false, error: 'Invalid backup data'));
+        return;
+      }
+
       emit(
         state.copyWith(
           loading: false,
