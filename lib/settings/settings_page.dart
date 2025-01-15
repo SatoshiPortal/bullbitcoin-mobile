@@ -172,9 +172,8 @@ class BackupBullButton extends StatelessWidget {
       label: 'BackupBull',
       onPressed: () {
         final network = context.read<NetworkRepository>().getBBNetwork;
-        final wallets = context
-            .read<AppWalletsRepository>()
-            .walletNotMainFromNetwork(network);
+        final wallets =
+            context.read<AppWalletsRepository>().walletsFromNetwork(network);
         context.push('/backupbull', extra: wallets);
       },
     );
