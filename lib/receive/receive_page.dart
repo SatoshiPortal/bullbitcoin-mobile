@@ -1247,25 +1247,6 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           BBText.body(receiveAddressLabel),
-          if (isPayjoin == false && paymentNetwork == PaymentNetwork.bitcoin)
-            Card(
-              color: Colors.yellow[100],
-              margin: const EdgeInsets.all(10),
-              child: const ListTile(
-                leading: Icon(Icons.warning, color: Colors.orange),
-                title: Text(
-                  'Payjoin',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                subtitle: Text(
-                  'To receive with Payjoin, your wallet must already hold Bitcoin',
-                  style: TextStyle(color: Colors.black87),
-                ),
-              ),
-            ),
           Row(
             children: [
               Expanded(
