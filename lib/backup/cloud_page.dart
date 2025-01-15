@@ -73,7 +73,7 @@ class _CloudPageState extends State<CloudPage> {
                         },
                       ),
                       const Gap(10),
-                      if (state.googleDriveStorage != null)
+                      if (state.googleDriveApi != null)
                         BBButton.big(
                           onPressed: cubit.disconnect,
                           label: "LOGOUT",
