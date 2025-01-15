@@ -3,13 +3,10 @@ import 'dart:io';
 
 import 'package:bb_mobile/_model/backup.dart';
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:bb_mobile/_pkg/crypto.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/wallet/labels.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/backup/bloc/backup_state.dart';
-import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:bip85/bip85.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull_dart/recoverbull_dart.dart';
@@ -73,7 +70,6 @@ class BackupCubit extends Cubit<BackupState> {
         backup = backup.copyWith(descriptors: descriptors);
       }
 
-      // why backup the labels since in restore we are not using them _recoverBackup()
       if (confirmedBackups["labels"] == true) {
         final walletLabels = WalletLabels();
         final labels = await walletLabels.txsToBip329(
@@ -138,25 +134,19 @@ class BackupCubit extends Cubit<BackupState> {
       emit(state.copyWith(error: 'No backup data available.'));
       return;
     }
-    // TODO; Implement a proper backup key generation logic in case the user has not provided a mnemonic
-    final firstMnemonic = backups.first.mnemonic;
+    final firstMnemonic = backups.first.mnemonic.join(' ');
 
     try {
-      final backupKey = await _createBackupKey(
-        firstMnemonic,
-        // TODO; Implement a proper network selection logic
-        bdk.Network.bitcoin,
-      );
-      final backupId = HEX.encode(Crypto.generateRandomBytes(32));
-
       final plaintext = json.encode(backups.map((i) => i.toJson()).toList());
-      final encrypted =
-          await BackupService.createBackup(backupId, plaintext, backupKey);
-      final now = DateTime.now();
-      //TODO; Find a better filename format.
-      final formattedDate = now.millisecondsSinceEpoch;
+      const String derivationPath = "m/1608'/0'";
+      final (backupKey, encrypted) = await BackupService.createBackupWithBIP85(
+        plaintext: plaintext,
+        mnemonic: firstMnemonic,
+        derivationPath: derivationPath,
+      );
+      final backupId = jsonDecode(encrypted)["backupId"] as String;
+      final formattedDate = jsonDecode(encrypted)["createdAt"];
       final filename = '${formattedDate}_$backupId.json';
-
       final (appDir, errDir) = await fileStorage.getAppDirectory();
       if (errDir != null) {
         emit(state.copyWith(error: 'Failed to get application directory.'));
@@ -191,42 +181,4 @@ class BackupCubit extends Cubit<BackupState> {
   }
 
   void clearError() => emit(state.copyWith(error: ''));
-}
-
-Future<String> _createBackupKey(
-  List<String>? mnemonicWords,
-  bdk.Network network,
-) async {
-  late final bdk.Mnemonic bdkMnemonic;
-
-  if (mnemonicWords != null && mnemonicWords.isNotEmpty) {
-    // Mnemonic is present: Use it
-    final mnemonicString = mnemonicWords.join(' ');
-    bdkMnemonic = await bdk.Mnemonic.fromString(mnemonicString);
-  } else {
-    // Mnemonic is absent: Generate a new random one
-    bdkMnemonic = await bdk.Mnemonic.create(bdk.WordCount.words12);
-  }
-  final descriptorSecretKey = await bdk.DescriptorSecretKey.create(
-    network: network,
-    mnemonic: bdkMnemonic,
-    //TODO: Implement actual password logic
-    password: '', // Passphrase (if any)
-  );
-
-  final extendedPrivateKey = descriptorSecretKey.asString().substring(0, 111);
-  const String derivationPath = "m/1608'/0'";
-  final derivedKeyBytes =
-      _deriveBip85(xprv: extendedPrivateKey, path: derivationPath);
-  final backupKeyHex = HEX.encode(derivedKeyBytes.sublist(0, 32));
-  return backupKeyHex;
-}
-
-List<int> _deriveBip85({required String xprv, required String path}) {
-  //TODO: Implement actual derivation logic
-  // This is a dummy implementation for demonstration purposes.
-  // Replace this with your actual derivation logic.
-  print("Deriving with xprv: $xprv and path: $path");
-  final derived = derive(xprv: xprv, path: path);
-  return derived.sublist(0, 64); // Dummy 64-byte result
 }
