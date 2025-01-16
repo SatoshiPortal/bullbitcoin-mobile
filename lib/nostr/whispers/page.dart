@@ -5,6 +5,7 @@ import 'package:bb_mobile/nostr/whispers/cubit.dart';
 import 'package:bb_mobile/nostr/whispers/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nostr_sdk/nostr_sdk.dart';
 
@@ -66,6 +67,13 @@ class WhispersPage extends StatelessWidget {
                         .push('/nostr-private-message', extra: (nostr, author)),
                   );
                 },
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () => context.push(
+                  '/nostr-private-message',
+                  extra: (nostr, null),
+                ),
+                child: const Icon(Icons.add),
               ),
             );
           },

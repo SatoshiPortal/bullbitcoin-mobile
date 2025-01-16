@@ -22,17 +22,6 @@ class ActionsButtons extends StatelessWidget {
             label: 'Whispers',
             onTap: () => context.push('/nostr-whispers', extra: nostr),
           ),
-          SpeedDialChild(
-            child: const Icon(Icons.private_connectivity),
-            label: 'PM',
-            onTap: () => context.push(
-              '/nostr-private-message',
-              extra: (
-                nostr,
-                null,
-              ),
-            ),
-          ),
         ],
       ),
     );
