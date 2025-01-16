@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'fiat_currency_model.freezed.dart';
+
 @freezed
 class FiatCurrencyModel with _$FiatCurrencyModel {
   const factory FiatCurrencyModel({

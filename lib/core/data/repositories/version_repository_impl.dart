@@ -1,9 +1,5 @@
-import 'package:bb_mobile/core/datasources/impl/secure_storage_data_source.dart';
-
-abstract class VersionRepository {
-  Future<String?> getVersion();
-  Future<void> saveVersion(String version);
-}
+import 'package:bb_mobile/core/data/datasources/impl/secure_storage_data_source.dart';
+import 'package:bb_mobile/core/domain/repositories/version_repository.dart';
 
 class VersionRepositoryImpl implements VersionRepository {
   final SecureStorageDataSource _secureStorage;

@@ -1,9 +1,5 @@
-import 'package:bb_mobile/core/datasources/impl/secure_storage_data_source.dart';
-
-abstract class HiveEncryptionKeyRepository {
-  Future<String?> getEncryptionKey();
-  Future<void> saveEncryptionKey(String key);
-}
+import 'package:bb_mobile/core/data/datasources/impl/secure_storage_data_source.dart';
+import 'package:bb_mobile/core/domain/repositories/hive_encryption_key_repository.dart';
 
 class HiveEncryptionKeyRepositoryImpl implements HiveEncryptionKeyRepository {
   final SecureStorageDataSource _secureStorage;

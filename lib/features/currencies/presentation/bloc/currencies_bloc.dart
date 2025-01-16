@@ -8,6 +8,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'currencies_event.dart';
 part 'currencies_state.dart';
+part 'currencies_bloc.freezed.dart';
 
 class CurrenciesBloc extends Bloc<CurrenciesEvent, CurrenciesState> {
   CurrenciesBloc({
@@ -18,7 +19,7 @@ class CurrenciesBloc extends Bloc<CurrenciesEvent, CurrenciesState> {
   })  : _currenciesRepository = fiatCurrenciesRepository,
         _settingsRepository = settingsRepository,
         _currency = currency,
-        super(const CurrenciesInitial()) {
+        super(const CurrenciesState.initial()) {
     on<CurrenciesFetched>(_onFetched);
     on<CurrenciesBitcoinPriceCurrencyChanged>(_onCurrencyChanged);
   }
@@ -36,15 +37,15 @@ class CurrenciesBloc extends Bloc<CurrenciesEvent, CurrenciesState> {
     try {
       final currency =
           _currency ?? await _settingsRepository.getDefaultCurrency();
-      final price = await _currenciesRepository.getBitcoinPrice(currencyCode);
-      emit(CurrenciesSuccess(
+      final price = await _currenciesRepository.getBitcoinPrice(currency);
+      emit(CurrenciesState.success(
         availableCurrencies:
             await _currenciesRepository.getAvailableCurrencies(),
         bitcoinPriceCurrencyCode: currency,
         bitcoinPrice: price,
       ));
     } catch (e) {
-      emit(const CurrenciesLoadFailure());
+      emit(CurrenciesState.failure(e));
     }
   }
 
@@ -52,7 +53,7 @@ class CurrenciesBloc extends Bloc<CurrenciesEvent, CurrenciesState> {
     CurrenciesBitcoinPriceCurrencyChanged event,
     Emitter<CurrenciesState> emit,
   ) async {
-    debugPrint('Currency changed to ${event.currency}');
+    debugPrint('Currency changed to ${event.currencyCode}');
 
     try {
       final currency = event.currencyCode;
@@ -60,15 +61,13 @@ class CurrenciesBloc extends Bloc<CurrenciesEvent, CurrenciesState> {
       final price = await _currenciesRepository.getBitcoinPrice(currency);
       // Save the new currency as the default currency
       await _settingsRepository.setDefaultCurrency(currency);
-      // If correctly saved, emit the new exchange rate
-      emit(
-        state.copyWith(
-          bitcoinPriceCurrencyCode: currency,
-          bitcoinPrice: price,
-        ),
-      );
+      // TODO: Uncomment so that If correctly saved, the new exchange rate is emitted
+      /*emit(state.copyWith(
+        bitcoinPriceCurrencyCode: currency,
+        bitcoinPrice: price,
+      ));*/
     } catch (e) {
-      emit(const CurrenciesFailure(e));
+      emit(CurrenciesState.failure(e));
     }
   }
 }

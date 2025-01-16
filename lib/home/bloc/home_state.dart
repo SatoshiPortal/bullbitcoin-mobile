@@ -29,7 +29,7 @@ class HomeState with _$HomeState {
   // List<Wallet> walletsFromNetwork(BBNetwork network) =>
   //     wallets?.where((wallet) => wallet.network == network).toList().reversed.toList() ?? [];
 
-  bool hasMainWallets() => wallets?.any((_) => _.mainWallet) ?? false;
+  bool hasMainWallets() => wallets.any((_) => _.mainWallet) ?? false;
 
   List<Wallet> walletsFromNetwork(BBNetwork network) {
     final blocs = wallets

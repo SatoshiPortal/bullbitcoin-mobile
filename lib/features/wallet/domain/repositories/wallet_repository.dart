@@ -1,1 +1,3 @@
-abstract class WalletRepository {}
+abstract class WalletRepository {
+  String get walletId;
+}
