@@ -48,6 +48,8 @@ class _Screen extends StatelessWidget {
                 const BitcoinSettingsButton(),
                 const Gap(8),
                 const ApplicationSettingsButton(),
+                const Gap(8),
+                const NostrSettingsButton(),
 
                 const Gap(24),
                 const Center(
@@ -180,6 +182,20 @@ class BitcoinSettingsButton extends StatelessWidget {
       label: 'Bitcoin settings',
       onPressed: () {
         context.push('/bitcoin-settings');
+      },
+    );
+  }
+}
+
+class NostrSettingsButton extends StatelessWidget {
+  const NostrSettingsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'Nostr',
+      onPressed: () {
+        context.push('/nostr-settings');
       },
     );
   }

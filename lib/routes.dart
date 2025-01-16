@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
+import 'package:bb_mobile/_pkg/nostr/nostr.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/create/page.dart';
@@ -11,6 +12,10 @@ import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/import/hardware_page.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/nostr/private_message/page.dart';
+import 'package:bb_mobile/nostr/settings/settings_page.dart';
+import 'package:bb_mobile/nostr/social/social_page.dart';
+import 'package:bb_mobile/nostr/whispers/page.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 // import 'package:bb_mobile/seeds/seeds_page.dart';
@@ -364,6 +369,33 @@ GoRouter setupRouter() => GoRouter(
           path: '/swap-history',
           builder: (context, state) {
             return const SwapHistoryPage();
+          },
+        ),
+        GoRoute(
+          path: '/nostr-settings',
+          builder: (context, state) {
+            return const NostrSettingsPage();
+          },
+        ),
+        GoRoute(
+          path: '/nostr-social',
+          builder: (context, state) {
+            final nostr = state.extra! as Nostr;
+            return SocialPage(nostr: nostr);
+          },
+        ),
+        GoRoute(
+          path: '/nostr-whispers',
+          builder: (context, state) {
+            final nostr = state.extra! as Nostr;
+            return WhispersPage(nostr: nostr);
+          },
+        ),
+        GoRoute(
+          path: '/nostr-private-message',
+          builder: (context, state) {
+            final (nostr, contact) = state.extra! as (Nostr, String?);
+            return PrivateMessagePage(nostr: nostr, contact: contact);
           },
         ),
       ],
