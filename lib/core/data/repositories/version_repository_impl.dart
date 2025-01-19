@@ -1,20 +1,20 @@
-import 'package:bb_mobile/core/data/datasources/impl/secure_storage_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/key_value_storage_data_source.dart';
 import 'package:bb_mobile/core/domain/repositories/version_repository.dart';
 
 class VersionRepositoryImpl implements VersionRepository {
-  final SecureStorageDataSource _secureStorage;
+  final KeyValueStorageDataSource<String> _storage;
 
   static const _key = 'version';
 
-  VersionRepositoryImpl(this._secureStorage);
+  VersionRepositoryImpl(this._storage);
 
   @override
   Future<String?> getVersion() async {
-    return await _secureStorage.getValue(_key);
+    return await _storage.getValue(_key);
   }
 
   @override
   Future<void> saveVersion(String version) async {
-    await _secureStorage.saveValue(key: _key, value: version);
+    await _storage.saveValue(key: _key, value: version);
   }
 }

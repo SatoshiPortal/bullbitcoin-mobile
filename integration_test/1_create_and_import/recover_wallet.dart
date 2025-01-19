@@ -1,4 +1,4 @@
-import 'package:bb_mobile/main.dart' as app;
+import 'package:bb_mobile/main_old.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test/__flows/utils.dart';
@@ -12,6 +12,7 @@ void main() {
       app.main(fromTest: true);
     });
 
-    testWidgets('Recover testnet wallet with 12 word mnemonic', recoverWalletSteps);
+    testWidgets(
+        'Recover testnet wallet with 12 word mnemonic', recoverWalletSteps);
   });
 }

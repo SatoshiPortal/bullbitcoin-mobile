@@ -1,4 +1,4 @@
-import 'package:bb_mobile/main.dart' as app;
+import 'package:bb_mobile/main_old.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test/__flows/utils.dart';
@@ -12,7 +12,8 @@ void main() {
       app.main(fromTest: true);
     });
 
-    testWidgets('Create invoice and check qr and address is updated', (tester) async {
+    testWidgets('Create invoice and check qr and address is updated',
+        (tester) async {
       await receiveRequestPayment(tester);
     });
   });

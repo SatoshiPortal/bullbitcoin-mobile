@@ -12,6 +12,6 @@ class FetchAllWalletsMetadataUseCase {
   Future<List<WalletMetadata>> execute() async {
     final models = <WalletMetadataModel>[];
     // TODO: await _walletMetadataRepository.getAllWallets();
-    return models.map((model) => model.toDomain()).toList();
+    return models.map((model) => model.toEntity()).toList();
   }
 }

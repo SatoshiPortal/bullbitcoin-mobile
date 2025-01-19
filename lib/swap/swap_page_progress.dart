@@ -8,7 +8,7 @@ import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
-import 'package:boltz_dart/boltz_dart.dart' as boltz;
+import 'package:boltz/boltz.dart' as boltz;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

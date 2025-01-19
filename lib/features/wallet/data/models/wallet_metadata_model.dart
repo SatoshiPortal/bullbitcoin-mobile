@@ -1,29 +1,34 @@
 import 'package:bb_mobile/features/wallet/domain/entities/wallet_metadata.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class WalletMetadataModel {
-  final String id;
-  final String type;
-  final String name;
+part 'wallet_metadata_model.freezed.dart';
 
-  WalletMetadataModel({
-    required this.id,
-    required this.type,
-    required this.name,
-  });
+@freezed
+class WalletMetadataModel with _$WalletMetadataModel {
+  factory WalletMetadataModel({
+    required String id,
+    required String type,
+    required String name,
+  }) = _WalletMetadataModel;
+  const WalletMetadataModel._();
 
-  WalletMetadata toDomain() {
+  factory WalletMetadataModel.fromJson(Map<String, Object?> json) =>
+      _$WalletMetadataModelFromJson(json);
+
+  factory WalletMetadataModel.fromEntity(WalletMetadata entity) {
+    return WalletMetadataModel(
+      id: entity.id,
+      type: entity.type == WalletType.bdk ? 'bdk' : 'lwk',
+      name: entity.name,
+    );
+  }
+
+  WalletMetadata toEntity() {
     return WalletMetadata(
       id: id,
       type: type == 'bdk' ? WalletType.bdk : WalletType.lwk,
       name: name,
-    );
-  }
-
-  factory WalletMetadataModel.fromJson(Map<String, dynamic> json) {
-    return WalletMetadataModel(
-      id: json['id'] as String,
-      type: json['type'] as String,
-      name: json['name'] as String,
     );
   }
 }

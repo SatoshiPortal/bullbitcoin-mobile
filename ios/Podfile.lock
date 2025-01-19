@@ -1,7 +1,7 @@
 PODS:
   - bdk_flutter (0.31.2):
     - Flutter
-  - boltz_dart (0.1.6)
+  - boltz (0.1.6)
   - DKImagePickerController/Core (4.3.9):
     - DKImagePickerController/ImageDataManager
     - DKImagePickerController/Resource
@@ -51,7 +51,7 @@ PODS:
     - Flutter
   - integration_test (0.0.1):
     - Flutter
-  - lwk_dart (0.1.5)
+  - lwk (0.1.5)
   - "no_screenshot (0.0.1+4)":
     - Flutter
     - ScreenProtectorKit (~> 1.3.1)
@@ -62,9 +62,9 @@ PODS:
   - permission_handler_apple (9.3.0):
     - Flutter
   - ScreenProtectorKit (1.3.1)
-  - SDWebImage (5.19.7):
-    - SDWebImage/Core (= 5.19.7)
-  - SDWebImage/Core (5.19.7)
+  - SDWebImage (5.20.0):
+    - SDWebImage/Core (= 5.20.0)
+  - SDWebImage/Core (5.20.0)
   - share_plus (0.0.1):
     - Flutter
   - SwiftyGif (5.4.5)
@@ -73,7 +73,7 @@ PODS:
 
 DEPENDENCIES:
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
-  - boltz_dart (from `.symlinks/plugins/boltz_dart/ios`)
+  - boltz (from `.symlinks/plugins/boltz/ios`)
   - document_file_save_plus (from `.symlinks/plugins/document_file_save_plus/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
@@ -83,7 +83,7 @@ DEPENDENCIES:
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
-  - lwk_dart (from `.symlinks/plugins/lwk_dart/ios`)
+  - lwk (from `.symlinks/plugins/lwk/ios`)
   - no_screenshot (from `.symlinks/plugins/no_screenshot/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - payjoin_flutter (from `.symlinks/plugins/payjoin_flutter/ios`)
@@ -102,8 +102,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   bdk_flutter:
     :path: ".symlinks/plugins/bdk_flutter/ios"
-  boltz_dart:
-    :path: ".symlinks/plugins/boltz_dart/ios"
+  boltz:
+    :path: ".symlinks/plugins/boltz/ios"
   document_file_save_plus:
     :path: ".symlinks/plugins/document_file_save_plus/ios"
   file_picker:
@@ -122,8 +122,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
-  lwk_dart:
-    :path: ".symlinks/plugins/lwk_dart/ios"
+  lwk:
+    :path: ".symlinks/plugins/lwk/ios"
   no_screenshot:
     :path: ".symlinks/plugins/no_screenshot/ios"
   path_provider_foundation:
@@ -139,7 +139,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   bdk_flutter: fb57a7400a7f3f181c5977bcdc2a5ef347ae4e7f
-  boltz_dart: 7ebb80d3776711efacb5823a3d9a9bb1221bac95
+  boltz: 6388ec2412f3753b63a9e65c97f87ea26f43bddc
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   document_file_save_plus: 913d440d8b611ae19add4522ed578e3ed1483a2f
@@ -151,17 +151,17 @@ SPEC CHECKSUMS:
   flutter_native_splash: e8a1e01082d97a8099d973f919f57904c925008a
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
-  lwk_dart: 898084320a2ce8ea206010c0dc3e3eead1b2c881
+  lwk: 22e06bc5664247d6b2dac91cfe209b63b70dd580
   no_screenshot: 67d110f12466f4913b488803d4e498d03ef2889e
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   payjoin_flutter: 6397d7b698cdad6453be4949ab6aca1863f6c5e5
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
-  SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
+  SDWebImage: 73c6079366fea25fa4bb9640d5fb58f0893facd8
   share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 
-PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
+PODFILE CHECKSUM: 7be2f5f74864d463a8ad433546ed1de7e0f29aef
 
 COCOAPODS: 1.15.2

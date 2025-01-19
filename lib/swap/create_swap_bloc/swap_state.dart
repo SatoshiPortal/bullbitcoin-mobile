@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_model/swap.dart';
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz/boltz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap_state.freezed.dart';

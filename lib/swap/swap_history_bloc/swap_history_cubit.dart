@@ -6,7 +6,7 @@ import 'package:bb_mobile/_repositories/network_repository.dart';
 import 'package:bb_mobile/swap/swap_history_bloc/swap_history_state.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
-import 'package:boltz_dart/boltz_dart.dart' as boltz;
+import 'package:boltz/boltz.dart' as boltz;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SwapHistoryCubit extends Cubit<SwapHistoryState> {

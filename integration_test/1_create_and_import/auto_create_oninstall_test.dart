@@ -1,4 +1,4 @@
-import 'package:bb_mobile/main.dart' as app;
+import 'package:bb_mobile/main_old.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test/__flows/switchToTestnet.dart';
@@ -13,7 +13,8 @@ void main() {
       app.main(fromTest: true);
     });
 
-    testWidgets('Check mainnet exists and no testnet wallet cards exist', (tester) async {
+    testWidgets('Check mainnet exists and no testnet wallet cards exist',
+        (tester) async {
       final homepage = THomePage(tester: tester);
       await Future.delayed(const Duration(seconds: 3));
 

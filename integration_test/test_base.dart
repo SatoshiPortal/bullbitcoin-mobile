@@ -1,9 +1,9 @@
 // import 'dart:async';
 
-// import 'package:boltz_dart/boltz_dart.dart';
+// import 'package:boltz/boltz.dart';
 // import 'package:flutter/material.dart';
 // import 'package:flutter_test/flutter_test.dart';
-// import 'package:lwk_dart/lwk_dart.dart';
+// import 'package:lwk/lwk.dart';
 // import 'package:path_provider/path_provider.dart';
 
 // const lNetwork = LiquidNetwork.Testnet;

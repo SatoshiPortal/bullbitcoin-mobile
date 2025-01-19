@@ -1,4 +1,4 @@
-import 'package:bb_mobile/main.dart' as app;
+import 'package:bb_mobile/main_old.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test/__flows/utils.dart';

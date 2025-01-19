@@ -102,14 +102,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.1.7"
-  boltz_dart:
+  boltz:
     dependency: "direct main"
     description:
-      path: "."
-      ref: trunk
-      resolved-ref: c55f68ae02bb01b9d42c85dbec9abb2879ed2de1
-      url: "https://github.com/SatoshiPortal/boltz-dart.git"
-    source: git
+      name: boltz
+      sha256: b507d251b91e1263c15fabb9ede2a7a5b6a74eb28c9a9873bb40d6e23055ec9f
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.7"
   boolean_selector:
     dependency: transitive
@@ -736,6 +735,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.3"
+  hive_flutter:
+    dependency: "direct main"
+    description:
+      name: hive_flutter
+      sha256: dca1da446b1d808a51689fb5d0c6c9510c0a2ba01e22805d492c73b68e33eecc
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   html:
     dependency: transitive
     description:
@@ -885,14 +892,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.0"
-  lwk_dart:
+  lwk:
     dependency: "direct main"
     description:
-      path: "."
-      ref: trunk
-      resolved-ref: "192bf6810b169fe1cfcf336f45a015b433cca6c9"
-      url: "https://github.com/SatoshiPortal/lwk-dart.git"
-    source: git
+      name: lwk
+      sha256: "9b1bdd022b8c4e2599bf7ae4a10b81c7470d43e0390b3a031829a4fbd14386ba"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.5"
   macros:
     dependency: transitive

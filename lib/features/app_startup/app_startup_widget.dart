@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/locator/di_initializer.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,7 +26,7 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
       child: BlocBuilder<AppStartupBloc, AppStartupState>(
         builder: (context, state) {
           if (state is AppStartupInitial) {
-            // TODO: return a splash screen
+            // TODO: return a splash or loading screen
           } else if (state is AppStartupLoadingInProgress) {
             // TODO: return a loading screen
           } else if (state is AppStartupSuccess) {

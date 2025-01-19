@@ -14,7 +14,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz/boltz.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

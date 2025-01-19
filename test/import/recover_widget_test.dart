@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_pkg/wallet/testable_wallets.dart';
-import 'package:bb_mobile/main.dart' as app;
+import 'package:bb_mobile/main_old.dart' as app;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
@@ -16,7 +16,8 @@ void main() {
   });
 
   group('Import - Recover tests', () {
-    testWidgets('Recover testnet wallet with 12 word mnemonic', recoverWalletSteps);
+    testWidgets(
+        'Recover testnet wallet with 12 word mnemonic', recoverWalletSteps);
   });
 }
 
