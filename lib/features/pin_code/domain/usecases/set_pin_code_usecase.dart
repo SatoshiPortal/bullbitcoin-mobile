@@ -7,14 +7,7 @@ class SetPinCodeUsecase {
     required PinCodeRepository pinCodeRepository,
   }) : _pinCodeRepository = pinCodeRepository;
 
-  Future<void> execute(String newPinCode, {String? oldPinCode}) async {
-    if (oldPinCode != null) {
-      await _pinCodeRepository.updatePinCode(
-        oldPinCode: oldPinCode,
-        newPinCode: newPinCode,
-      );
-    } else {
-      await _pinCodeRepository.createPinCode(newPinCode);
-    }
+  Future<void> execute(String pinCode) async {
+    await _pinCodeRepository.setPinCode(pinCode);
   }
 }

@@ -16,3 +16,7 @@ class PinCodeUnlockPinChanged extends PinCodeUnlockEvent {
 class PinCodeUnlockSubmitted extends PinCodeUnlockEvent {
   const PinCodeUnlockSubmitted();
 }
+
+class PinCodeUnlockCountdownTick extends PinCodeUnlockEvent {
+  const PinCodeUnlockCountdownTick();
+}

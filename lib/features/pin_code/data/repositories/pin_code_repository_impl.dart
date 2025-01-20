@@ -5,7 +5,7 @@ class PinCodeRepositoryImpl implements PinCodeRepository {
   final KeyValueStorageDataSource<String> _storage;
 
   static const _key = 'pinCodeKey';
-  static const _unlockTimeoutKey = 'unlockTimeoutKey';
+  static const _failedUnlockAttemptsKey = 'failedUnlockAttemptsKey';
 
   PinCodeRepositoryImpl(this._storage);
 
@@ -17,7 +17,7 @@ class PinCodeRepositoryImpl implements PinCodeRepository {
   }
 
   @override
-  Future<void> createPinCode(String pinCode) async {
+  Future<void> setPinCode(String pinCode) async {
     final isPinCodeAlreadySet = await isPinCodeSet();
 
     if (isPinCodeAlreadySet) {
@@ -30,7 +30,7 @@ class PinCodeRepositoryImpl implements PinCodeRepository {
   }
 
   @override
-  Future<bool> checkPinCode(String pinCode) async {
+  Future<bool> verifyPinCode(String pinCode) async {
     final pin = await _storage.getValue(_key);
 
     if (pin == null) {
@@ -43,32 +43,16 @@ class PinCodeRepositoryImpl implements PinCodeRepository {
   }
 
   @override
-  Future<void> updatePinCode({
-    required String oldPinCode,
-    required String newPinCode,
-  }) async {
-    final isPinCodeCorrect = await checkPinCode(oldPinCode);
-
-    if (!isPinCodeCorrect) {
-      throw InvalidPinCodeException(
-        message: 'Pin code is incorrect. Cannot update it.',
-      );
-    }
-
-    await _storage.saveValue(key: _key, value: newPinCode);
-  }
-
-  @override
-  Future<void> setUnlockTimeout(int timeoutSeconds) async {
+  Future<void> setFailedUnlockAttempts(int attempts) async {
     await _storage.saveValue(
-      key: _unlockTimeoutKey,
-      value: timeoutSeconds.toString(),
+      key: _failedUnlockAttemptsKey,
+      value: attempts.toString(),
     );
   }
 
   @override
-  Future<int> getUnlockTimeout() async {
-    final timeout = await _storage.getValue(_unlockTimeoutKey);
+  Future<int> getFailedUnlockAttempts() async {
+    final timeout = await _storage.getValue(_failedUnlockAttemptsKey);
 
     return int.tryParse(timeout ?? '0') ?? 0;
   }

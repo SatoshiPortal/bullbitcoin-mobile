@@ -4,11 +4,31 @@
 import 'package:flutter/material.dart';
 
 class PinCodeInputScreen extends StatelessWidget {
+  final String pinCode;
+  final void Function() onSubmit;
+  final void Function() onBackspace;
+  final void Function(String key) onKey;
+  final int? failedAttempts;
+  final int? timeoutSeconds;
+  final void Function()? backHandler;
+
+  const PinCodeInputScreen({
+    super.key,
+    this.pinCode = '',
+    required this.onSubmit,
+    required this.onBackspace,
+    required this.onKey,
+    this.failedAttempts,
+    this.timeoutSeconds,
+    this.backHandler,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    // Todo: add backhandler if passed in
+    return Scaffold(
       body: Center(
-        child: Text('Pin Code Input Screen'),
+        child: Text('Pin Code Input Screen: $pinCode'),
       ),
     );
   }

@@ -11,19 +11,16 @@ sealed class PinCodeSettingState with _$PinCodeSettingState {
     @Default('') String pinCode,
     @Default('') String pinCodeConfirmation,
     Object? error,
-  }) = _PinCodeState;
+  }) = _PinCodeSettingState;
   const PinCodeSettingState._();
 
-  bool get isValidPinCode =>
-      newPinCode.length >= minPinCodeLength &&
-      newPinCode.length <= maxPinCodeLength;
-
-  bool get canSubmit => pinCode == pinCodeConfirmation;
-
-  bool get canBackspacepinCode => pinCode.isNotEmpty;
-  bool get canBackspacepinCodeConfirmation => pinCodeConfirmation.isNotEmpty;
-
   bool get canAddToPinCode => pinCode.length < maxPinCodeLength;
+  bool get canBackspacepinCode => pinCode.isNotEmpty;
+  bool get isValidPinCode =>
+      pinCode.length >= minPinCodeLength && pinCode.length <= maxPinCodeLength;
+
   bool get canAddToPinCodeConfirmation =>
       pinCodeConfirmation.length < maxPinCodeLength;
+  bool get canBackspacepinCodeConfirmation => pinCodeConfirmation.isNotEmpty;
+  bool get canSubmit => pinCode == pinCodeConfirmation;
 }

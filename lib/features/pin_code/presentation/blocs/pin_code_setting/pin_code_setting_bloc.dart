@@ -1,6 +1,5 @@
 import 'package:bb_mobile/features/pin_code/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
-import 'package:bb_mobile/features/pin_code/domain/usecases/verify_pin_code_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -31,24 +30,24 @@ class PinCodeSettingBloc
 
   final SetPinCodeUsecase _setPinCodeUsecase;
 
-  Future<void> _onPinCodeSettingNewPinCodeChanged(
-    PinCodeSettingNewPinCodeChanged event,
+  Future<void> _onPinCodeSettingPinCodeChanged(
+    PinCodeSettingPinCodeChanged event,
     Emitter<PinCodeSettingState> emit,
   ) async {
     emit(
       state.copyWith(
-        newPinCode: event.newPinCode,
+        pinCode: event.pinCode,
       ),
     );
   }
 
-  Future<void> _onPinCodeSettingNewPinCodeConfirmationChanged(
-    PinCodeSettingNewPinCodeConfirmationChanged event,
+  Future<void> _onPinCodeSettingPinCodeConfirmationChanged(
+    PinCodeSettingPinCodeConfirmationChanged event,
     Emitter<PinCodeSettingState> emit,
   ) async {
     emit(
       state.copyWith(
-        newPinCodeConfirmation: event.newPinCodeConfirmation,
+        pinCodeConfirmation: event.pinCodeConfirmation,
       ),
     );
   }
@@ -59,14 +58,7 @@ class PinCodeSettingBloc
   ) async {
     emit(state.copyWith(status: PinCodeSettingStatus.loading));
     try {
-      if (state.status == PinCodeSettingStatus.changeInProgress) {
-        await _setPinCodeUsecase.execute(
-          state.newPinCode,
-          oldPinCode: state.oldPinCode,
-        );
-      } else {
-        await _setPinCodeUsecase.execute(state.newPinCode);
-      }
+      await _setPinCodeUsecase.execute(state.pinCodeConfirmation);
 
       emit(state.copyWith(status: PinCodeSettingStatus.success));
     } catch (e) {

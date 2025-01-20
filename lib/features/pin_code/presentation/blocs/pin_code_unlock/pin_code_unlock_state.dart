@@ -1,41 +1,28 @@
-part of 'pin_code_setting_bloc.dart';
+part of 'pin_code_unlock_bloc.dart';
 
-enum PinCodeSettingStatus {
+enum PinCodeUnlockStatus {
   initial,
-  starting,
   inputInProgress,
   verificationInProgress,
-  timeout,
   success,
   failure
 }
 
 @freezed
-sealed class PinCodeSettingState with _$PinCodeSettingState {
-  const factory PinCodeSettingState({
-    @Default(PinCodeSettingStatus.initial) PinCodeSettingStatus status,
+sealed class PinCodeUnlockState with _$PinCodeUnlockState {
+  const factory PinCodeUnlockState({
+    @Default(PinCodeUnlockStatus.initial) PinCodeUnlockStatus status,
     @Default(4) int minPinCodeLength,
     @Default(8) int maxPinCodeLength,
     @Default('') String pinCode,
-    @Default(0) int nrOfAttempts,
+    @Default(0) int failedAttempts,
     @Default(0) int timeoutSeconds,
     Object? error,
-  }) = _PinCodeState;
-  const PinCodeSettingState._();
+  }) = _PinCodeUnlockState;
+  const PinCodeUnlockState._();
 
-  bool get isValidNewPinCode =>
-      newPinCode.length >= minPinCodeLength &&
-      newPinCode.length <= maxPinCodeLength;
-
-  bool get canSubmit => newPinCode == newPinCodeConfirmation;
-
-  bool get canBackspaceOldPinCode => oldPinCode.isNotEmpty;
-  bool get canBackspaceNewPinCode => newPinCode.isNotEmpty;
-  bool get canBackspaceNewPinCodeConfirmation =>
-      newPinCodeConfirmation.isNotEmpty;
-
-  bool get canAddToOldPinCode => oldPinCode.length < maxPinCodeLength;
-  bool get canAddToNewPinCode => newPinCode.length < maxPinCodeLength;
-  bool get canAddToNewPinCodeConfirmation =>
-      newPinCodeConfirmation.length < maxPinCodeLength;
+  bool get canAddNumber => pinCode.length < maxPinCodeLength;
+  bool get canBackspace => pinCode.isNotEmpty;
+  bool get canSubmit =>
+      pinCode.length >= minPinCodeLength && pinCode.length <= maxPinCodeLength;
 }
