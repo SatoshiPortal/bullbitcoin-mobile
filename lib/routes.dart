@@ -6,8 +6,6 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/backup/backup_page.dart';
-import 'package:bb_mobile/backup/bloc/cloud_cubit.dart';
-import 'package:bb_mobile/backup/cloud_page.dart';
 import 'package:bb_mobile/backup/keychain_page.dart';
 import 'package:bb_mobile/create/page.dart';
 import 'package:bb_mobile/home/home_page.dart';
@@ -17,6 +15,8 @@ import 'package:bb_mobile/import/hardware_page.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
+import 'package:bb_mobile/recover/bloc/cloud_cubit.dart';
+import 'package:bb_mobile/recover/cloud_page.dart';
 import 'package:bb_mobile/recover/keychain_page.dart';
 import 'package:bb_mobile/recover/manual_page.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
@@ -226,9 +226,9 @@ GoRouter setupRouter() => GoRouter(
           builder: (context, state) {
             final data = state.extra! as Map<String, dynamic>;
             final cloudCubit = data['cubit'] as CloudCubit;
-            Function(String, String)? onBackupSelected;
+            Function(String)? onBackupSelected;
             if (data['callback'] != null) {
-              onBackupSelected = data['callback']! as Function(String, String)?;
+              onBackupSelected = data['callback']! as Function(String)?;
             }
 
             return BlocProvider.value(
