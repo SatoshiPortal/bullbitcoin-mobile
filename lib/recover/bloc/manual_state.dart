@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_pkg/gdrive.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:googleapis/drive/v3.dart';
 
@@ -9,7 +8,6 @@ class ManualState with _$ManualState {
   const factory ManualState({
     @Default('') String error,
     @Default(false) bool loading,
-    GoogleDriveApi? googleDriveApi,
     @Default([]) List<File> availableBackups,
     @Default(false) bool recovered,
     @Default('') String backupKey,
