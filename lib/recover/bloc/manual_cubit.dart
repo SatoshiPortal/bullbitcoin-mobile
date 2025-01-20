@@ -59,10 +59,10 @@ class ManualCubit extends Cubit<ManualState> {
       emit(state.copyWith(error: 'Invalid backup'));
       return;
     }
-    setSelectedBack(id, decodeEncryptedFile);
+    setSelectedBackup(id, decodeEncryptedFile);
   }
 
-  void setSelectedBack(String id, String encrypted) =>
+  void setSelectedBackup(String id, String encrypted) =>
       emit(state.copyWith(backupId: id, encrypted: encrypted));
 
   Future<void> clickRecover() async {
