@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/backup/bloc/keychain_cubit.dart';
 import 'package:bb_mobile/backup/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
@@ -33,22 +34,15 @@ class KeychainBackupPage extends StatelessWidget {
         body: BlocListener<KeychainCubit, KeychainState>(
           listener: (context, state) {
             if (state.error.isNotEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.error),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(context.showToast(state.error));
               context.read<KeychainCubit>().clearError();
             }
             if (state.completed) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Keychain completed'),
-                  backgroundColor: Colors.green,
-                ),
+                context.showToast('Backup key saved to keychain successfully'),
               );
-              context.go('/home');
+              context.pop();
             }
           },
           child: BlocBuilder<KeychainCubit, KeychainState>(
