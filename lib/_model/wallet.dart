@@ -61,6 +61,7 @@ class Wallet with _$Wallet {
     @Default('') String externalPublicDescriptor,
     @Default('') String internalPublicDescriptor,
     // public
+    @Default({}) Map<String, BIP85Derivation> bip85Derivations,
     @Default('') String mnemonicFingerprint,
     @Default('') String sourceFingerprint,
     required BBNetwork network,
@@ -200,6 +201,19 @@ class Wallet with _$Wallet {
         )
         .toString();
     return exDescDerivedKey;
+  }
+
+//TODO:  This is a basic implementation - adjust the logic based on your needs
+  String generateNextBIP85Path() {
+    int highestIndex = -1;
+    for (final path in bip85Derivations.keys) {
+      if (path.startsWith("m/1608'/")) {
+        final index =
+            int.tryParse(path.split("'")[1].replaceAll("'", "")) ?? -1;
+        if (index > highestIndex) highestIndex = index;
+      }
+    }
+    return "m/1608'/${highestIndex + 1}'";
   }
 
   // storage key
@@ -544,6 +558,19 @@ class Wallet with _$Wallet {
   int balanceSats() => balance ?? 0;
 
   String balanceStr() => ((balance ?? 0) / 100000000).toStringAsFixed(8);
+}
+
+enum BIP85DerivationStatus { active, deprecated }
+
+@freezed
+class BIP85Derivation with _$BIP85Derivation {
+  const factory BIP85Derivation({
+    required String label,
+    @Default(BIP85DerivationStatus.active) BIP85DerivationStatus status,
+  }) = _BIP85Derivation;
+
+  factory BIP85Derivation.fromJson(Map<String, dynamic> json) =>
+      _$BIP85DerivationFromJson(json);
 }
 
 @freezed
