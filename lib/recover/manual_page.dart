@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_pkg/backup/google_drive.dart';
 import 'package:bb_mobile/_pkg/consts/keys.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
@@ -9,8 +10,9 @@ import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
-import 'package:bb_mobile/backup/bloc/cloud_cubit.dart';
+import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/recover/bloc/cloud_cubit.dart';
 import 'package:bb_mobile/recover/bloc/manual_cubit.dart';
 import 'package:bb_mobile/recover/bloc/manual_state.dart';
 import 'package:flutter/cupertino.dart';
@@ -52,19 +54,13 @@ class ManualRecoverPage extends StatelessWidget {
           listener: (context, state) async {
             if (state.error.isNotEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.error),
-                  backgroundColor: Colors.red,
-                ),
+                context.showToast(state.error),
               );
               context.read<ManualCubit>().clearError();
             }
             if (state.recovered) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Recovery completed'),
-                  backgroundColor: Colors.green,
-                ),
+                context.showToast('Recovery completed'),
               );
               context.go('/home');
             }
@@ -104,19 +100,49 @@ class ManualRecoverPage extends StatelessWidget {
                             onPressed: () => cubit.selectFileFromFs(),
                           ),
                           const Gap(20),
-                          BBButton.big(
-                            label: 'Select file from Cloud',
-                            center: true,
-                            onPressed: () => {
-                              context.push(
-                                '/cloud-backup',
-                                extra: {
-                                  'cubit': CloudCubit(),
-                                  'callback': (String id, String encrypted) =>
-                                      cubit.setSelectedBack(id, encrypted),
-                                },
-                              ),
-                            },
+                          BlocProvider(
+                            create: (context) => CloudCubit(
+                              manager: locator<GoogleDriveBackupManager>(),
+                            ),
+                            child: BlocConsumer<CloudCubit, CloudState>(
+                              listener: (context, state) {
+                                if (state.error.isNotEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    context.showToast(state.error),
+                                  );
+                                  context.read<ManualCubit>().clearError();
+                                }
+                                if (state.toast.isNotEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    context.showToast(state.toast),
+                                  );
+                                  cubit.setSelectedBackup(
+                                    state.selectedBackup.$1,
+                                    state.selectedBackup.$2,
+                                  );
+                                }
+                              },
+                              builder: (context, state) {
+                                return BBButton.big(
+                                  loading: state.loading,
+                                  label: 'Select file from Cloud',
+                                  center: true,
+                                  onPressed: () => {
+                                    context.push(
+                                      '/cloud-backup',
+                                      extra: {
+                                        'callback': (String fileName) {
+                                          context
+                                              .read<CloudCubit>()
+                                              .loadEncrypted(fileName);
+                                        },
+                                        'cubit': context.read<CloudCubit>(),
+                                      },
+                                    ),
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ],
                       ),
