@@ -24,6 +24,33 @@ class WalletUpdate {
     }
   }
 
+  Wallet updateBIP85Paths(
+    Wallet wallet,
+    String bip85Path,
+    String label,
+  ) {
+    final updatedDerivations =
+        Map<String, BIP85Derivation>.from(wallet.bip85Derivations);
+
+    // Mark any existing active derivation as deprecated
+    final activeBIP85Derivation = updatedDerivations.entries
+        .where((e) => e.value.status == BIP85DerivationStatus.active)
+        .firstOrNull;
+
+    if (activeBIP85Derivation != null) {
+      updatedDerivations[activeBIP85Derivation.key] = BIP85Derivation(
+        label: activeBIP85Derivation.value.label,
+        status: BIP85DerivationStatus.deprecated,
+      );
+    }
+    updatedDerivations[bip85Path] = BIP85Derivation(
+      label: label,
+    );
+    return wallet.copyWith(
+      bip85Derivations: updatedDerivations,
+    );
+  }
+
   Future<(Wallet?, Err?)> updateAddressLabels(
     Wallet wallet,
     List<Address> addresses,
