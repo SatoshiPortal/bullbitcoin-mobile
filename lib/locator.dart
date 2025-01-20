@@ -1,3 +1,5 @@
+import 'package:bb_mobile/_pkg/backup/google_drive.dart';
+import 'package:bb_mobile/_pkg/backup/local.dart';
 import 'package:bb_mobile/_pkg/barcode.dart';
 import 'package:bb_mobile/_pkg/boltz/swap.dart';
 import 'package:bb_mobile/_pkg/bull_bitcoin_api.dart';
@@ -132,6 +134,9 @@ Future _setupAppServices() async {
   );
 
   locator.registerSingleton<FileStorage>(FileStorage());
+  locator.registerSingleton<FileSystemBackupManager>(FileSystemBackupManager());
+  locator
+      .registerSingleton<GoogleDriveBackupManager>(GoogleDriveBackupManager());
 }
 
 Future _setupWalletServices() async {
