@@ -9,7 +9,6 @@ class KeychainCubit extends Cubit<KeychainState> {
   void clearError() => state.copyWith(error: '');
 
   void updateSecret(String value) => emit(state.copyWith(secret: value));
-
   void confirmSecret(String value) =>
       emit(state.copyWith(secretConfirmed: state.secret == value));
 
@@ -19,11 +18,15 @@ class KeychainCubit extends Cubit<KeychainState> {
       return;
     }
 
-    if (keychainapi.isEmpty) {
-      emit(state.copyWith(error: 'keychain api is not set'));
-      return;
-    }
+    ///TODO: check if the backup is already saved
+    ///TODO: if it is, then show a toast
+
+    // if (keychainapi.isEmpty) {
+    //   emit(state.copyWith(error: 'keychain api is not set'));
+    //   return;
+    // }
     await _storeBackupKey(backupId, backupKey);
+    emit(state.copyWith(completed: true));
   }
 
   Future<void> _storeBackupKey(String backupId, String backupKey) async {
@@ -31,8 +34,7 @@ class KeychainCubit extends Cubit<KeychainState> {
       await KeyManagementService(keychainapi: keychainapi)
           .storeBackupKey(backupId, backupKey, state.secret);
     } catch (e) {
-      print(e);
-      emit(state.copyWith(error: 'Server Inaccessible'));
+      emit(state.copyWith(error: 'Failed to store backup key on server'));
     }
   }
 }
