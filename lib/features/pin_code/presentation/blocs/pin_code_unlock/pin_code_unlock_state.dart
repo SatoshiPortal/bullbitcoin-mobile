@@ -24,5 +24,7 @@ sealed class PinCodeUnlockState with _$PinCodeUnlockState {
   bool get canAddNumber => pinCode.length < maxPinCodeLength;
   bool get canBackspace => pinCode.isNotEmpty;
   bool get canSubmit =>
-      pinCode.length >= minPinCodeLength && pinCode.length <= maxPinCodeLength;
+      pinCode.length >= minPinCodeLength &&
+      pinCode.length <= maxPinCodeLength &&
+      status == PinCodeUnlockStatus.inputInProgress;
 }

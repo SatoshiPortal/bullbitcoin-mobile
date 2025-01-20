@@ -36,20 +36,28 @@ class PinCodeUnlockScreen extends StatelessWidget {
         child: BlocBuilder<PinCodeUnlockBloc, PinCodeUnlockState>(
           builder: (context, state) => PinCodeInputScreen(
             pinCode: state.pinCode,
-            onKey: (String key) => context.read<PinCodeUnlockBloc>().add(
-                  PinCodeUnlockPinChanged(state.pinCode + key),
+            title: "Unlock",
+            subtitle: "Enter your pin code to unlock",
+            onKey: (int key) => context.read<PinCodeUnlockBloc>().add(
+                  PinCodeUnlockPinChanged('${state.pinCode}$key'),
                 ),
+            disableKeys: !state.canAddNumber,
             onBackspace: () => context.read<PinCodeUnlockBloc>().add(
                   PinCodeUnlockPinChanged(
                     state.pinCode.substring(
                       0,
-                      state.pinCode.length - 1 ?? 0,
+                      state.pinCode.length - 1 < 0
+                          ? 0
+                          : state.pinCode.length - 1,
                     ),
                   ),
                 ),
+            disableBackspace: !state.canBackspace,
+            submitButtonLabel: "Unlock",
             onSubmit: () => context.read<PinCodeUnlockBloc>().add(
                   const PinCodeUnlockSubmitted(),
                 ),
+            disableSubmit: !state.canSubmit,
             timeoutSeconds: state.timeoutSeconds,
             failedAttempts: state.failedAttempts,
           ),

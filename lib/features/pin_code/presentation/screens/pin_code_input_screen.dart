@@ -1,13 +1,21 @@
 // Make sure the text, confirm handler and success state listener handler can
 //  be passed in so the screen can be used in different flows and pages.
 
+import 'package:bb_mobile/features/pin_code/presentation/widgets/pin_code_display.dart';
+import 'package:bb_mobile/features/pin_code/presentation/widgets/shuffled_numbers_keyboard.dart';
 import 'package:flutter/material.dart';
 
 class PinCodeInputScreen extends StatelessWidget {
   final String pinCode;
-  final void Function() onSubmit;
+  final String title;
+  final String subtitle;
+  final String submitButtonLabel;
   final void Function() onBackspace;
-  final void Function(String key) onKey;
+  final bool? disableBackspace;
+  final void Function(int key) onKey;
+  final bool? disableKeys;
+  final void Function() onSubmit;
+  final bool? disableSubmit;
   final int? failedAttempts;
   final int? timeoutSeconds;
   final void Function()? backHandler;
@@ -15,9 +23,15 @@ class PinCodeInputScreen extends StatelessWidget {
   const PinCodeInputScreen({
     super.key,
     this.pinCode = '',
-    required this.onSubmit,
+    required this.title,
+    required this.subtitle,
+    required this.submitButtonLabel,
     required this.onBackspace,
+    this.disableBackspace,
     required this.onKey,
+    this.disableKeys,
+    required this.onSubmit,
+    this.disableSubmit,
     this.failedAttempts,
     this.timeoutSeconds,
     this.backHandler,
@@ -25,10 +39,43 @@ class PinCodeInputScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Todo: add backhandler if passed in
+    final theme = Theme.of(context);
+
     return Scaffold(
-      body: Center(
-        child: Text('Pin Code Input Screen: $pinCode'),
+      appBar: AppBar(
+        title: Text(title),
+        automaticallyImplyLeading: false,
+        leading: backHandler != null
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: backHandler,
+              )
+            : null,
+      ),
+      body: Column(
+        children: [
+          const SizedBox(height: 20),
+          Text(
+            subtitle,
+            style: theme.textTheme.bodySmall,
+          ),
+          const SizedBox(height: 20),
+          PinCodeDisplay(
+            pinCode: pinCode,
+          ),
+          const SizedBox(height: 20),
+          ShuffledNumbersKeyboard(
+            onNumberSelected: onKey,
+            onBackspacePressed: onBackspace,
+            disableBackspace: disableBackspace,
+            disableKeys: disableKeys,
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: disableSubmit ?? true ? null : onSubmit,
+            child: Text(submitButtonLabel),
+          ),
+        ],
       ),
     );
   }

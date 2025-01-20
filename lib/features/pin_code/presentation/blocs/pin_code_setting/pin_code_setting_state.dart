@@ -14,13 +14,14 @@ sealed class PinCodeSettingState with _$PinCodeSettingState {
   }) = _PinCodeSettingState;
   const PinCodeSettingState._();
 
-  bool get canAddToPinCode => pinCode.length < maxPinCodeLength;
-  bool get canBackspacepinCode => pinCode.isNotEmpty;
+  bool get canAddPinCodeNumber => pinCode.length < maxPinCodeLength;
+  bool get canBackspacePinCode => pinCode.isNotEmpty;
   bool get isValidPinCode =>
       pinCode.length >= minPinCodeLength && pinCode.length <= maxPinCodeLength;
 
-  bool get canAddToPinCodeConfirmation =>
+  bool get canAddPinCodeConfirmationNumber =>
       pinCodeConfirmation.length < maxPinCodeLength;
-  bool get canBackspacepinCodeConfirmation => pinCodeConfirmation.isNotEmpty;
-  bool get canSubmit => pinCode == pinCodeConfirmation;
+  bool get canBackspacePinCodeConfirmation => pinCodeConfirmation.isNotEmpty;
+  bool get canSubmit =>
+      pinCode == pinCodeConfirmation && status == PinCodeSettingStatus.initial;
 }

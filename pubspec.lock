@@ -34,10 +34,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
+      sha256: "6199c74e3db4fbfbd04f66d739e72fe11c8a8957d5f219f1f4482dbde6420b5a"
       url: "https://pub.dev"
     source: hosted
-    version: "3.6.1"
+    version: "4.0.2"
   args:
     dependency: transitive
     description:
@@ -105,11 +105,12 @@ packages:
   boltz:
     dependency: "direct main"
     description:
-      name: boltz
-      sha256: b507d251b91e1263c15fabb9ede2a7a5b6a74eb28c9a9873bb40d6e23055ec9f
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.7"
+      path: "."
+      ref: develop
+      resolved-ref: c97a3fc27dad3ca9b6e72a21c2b41b6d534e8d52
+      url: "https://github.com/SatoshiPortal/boltz-dart.git"
+    source: git
+    version: "0.1.8"
   boolean_selector:
     dependency: transitive
     description:
@@ -779,10 +780,10 @@ packages:
     dependency: transitive
     description:
       name: image
-      sha256: f31d52537dc417fdcde36088fdf11d191026fd5e4fae742491ebd40e5a8bea7d
+      sha256: "8346ad4b5173924b5ddddab782fc7d8a6300178c8b1dc427775405a01701c4a6"
       url: "https://pub.dev"
     source: hosted
-    version: "4.3.0"
+    version: "4.5.2"
   integration_test:
     dependency: "direct dev"
     description: flutter
@@ -888,18 +889,19 @@ packages:
     dependency: "direct main"
     description:
       name: lottie
-      sha256: "377d87b8dcef640c04717e93afb86a510f0e1117a399ab94dc4b3f39c85eaa87"
+      sha256: c5fa04a80a620066c15cf19cc44773e19e9b38e989ff23ea32e5903ef1015950
       url: "https://pub.dev"
     source: hosted
-    version: "3.3.0"
+    version: "3.3.1"
   lwk:
     dependency: "direct main"
     description:
-      name: lwk
-      sha256: "9b1bdd022b8c4e2599bf7ae4a10b81c7470d43e0390b3a031829a4fbd14386ba"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.5"
+      path: "."
+      ref: develop
+      resolved-ref: ee25fb1c66d3a82fd4a13841ac7fc21cb8b49bdc
+      url: "https://github.com/SatoshiPortal/lwk-dart.git"
+    source: git
+    version: "0.1.6"
   macros:
     dependency: transitive
     description:
@@ -1173,6 +1175,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.1"
+  posix:
+    dependency: transitive
+    description:
+      name: posix
+      sha256: a0117dc2167805aa9125b82eee515cc891819bac2f538c83646d355b16f58b9a
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.1"
   process:
     dependency: transitive
     description:
@@ -1578,14 +1588,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.1"
+  web_socket:
+    dependency: transitive
+    description:
+      name: web_socket
+      sha256: "3c12d96c0c9a4eec095246debcea7b86c0324f22df69893d538fcc6f1b8cce83"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.6"
   web_socket_channel:
     dependency: transitive
     description:
       name: web_socket_channel
-      sha256: "58c6666b342a38816b2e7e50ed0f1e261959630becd4c879c4f26bfa14aa5a42"
+      sha256: "9f187088ed104edd8662ca07af4b124465893caf063ba29758f97af57e61da8f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.5"
+    version: "3.0.1"
   webdriver:
     dependency: transitive
     description:
