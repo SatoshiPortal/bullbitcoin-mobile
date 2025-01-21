@@ -20,67 +20,74 @@ class PinCodeSettingFlow extends StatelessWidget {
           switch (status) {
             case PinCodeSettingStatus.initial:
               return PageViewWithBloc(
-                pages: [
-                  PinCodeUnlockScreen(
-                    onSuccess: () => context.read<PageViewBloc>().add(
+                pageBuilders: [
+                  (context, bloc) => PinCodeUnlockScreen(
+                        onSuccess: () => bloc.add(
                           const PageViewNextPagePressed(),
                         ),
-                  ),
-                  PinCodeInputScreen(
-                    pinCode: state.pinCode,
-                    title: 'Set Pin Code',
-                    subtitle: 'Enter a new pin code',
-                    onKey: (int key) => context.read<PinCodeSettingBloc>().add(
-                          PinCodeSettingPinCodeChanged('${state.pinCode}$key'),
-                        ),
-                    disableKeys: !state.canAddPinCodeNumber,
-                    onBackspace: () => context.read<PinCodeSettingBloc>().add(
-                          PinCodeSettingPinCodeChanged(
-                            state.pinCode.substring(
-                              0,
-                              state.pinCode.length - 1 < 0
-                                  ? 0
-                                  : state.pinCode.length - 1,
-                            ),
-                          ),
-                        ),
-                    disableBackspace: !state.canBackspacePinCode,
-                    submitButtonLabel: 'Next',
-                    onSubmit: () => context.read<PageViewBloc>().add(
+                      ),
+                  (context, bloc) => PinCodeInputScreen(
+                        pinCode: state.pinCode,
+                        title: 'Set Pin Code',
+                        subtitle: 'Enter a new pin code',
+                        onKey: (int key) =>
+                            context.read<PinCodeSettingBloc>().add(
+                                  PinCodeSettingPinCodeChanged(
+                                      '${state.pinCode}$key'),
+                                ),
+                        disableKeys: !state.canAddPinCodeNumber,
+                        onBackspace: () =>
+                            context.read<PinCodeSettingBloc>().add(
+                                  PinCodeSettingPinCodeChanged(
+                                    state.pinCode.substring(
+                                      0,
+                                      state.pinCode.length - 1 < 0
+                                          ? 0
+                                          : state.pinCode.length - 1,
+                                    ),
+                                  ),
+                                ),
+                        disableBackspace: !state.canBackspacePinCode,
+                        submitButtonLabel: 'Next',
+                        onSubmit: () => bloc.add(
                           const PageViewNextPagePressed(),
                         ),
-                    disableSubmit: !state.isValidPinCode,
-                  ), // Input new pin
-                  PinCodeInputScreen(
-                    pinCode: state.pinCodeConfirmation,
-                    title: 'Confirm Pin Code',
-                    subtitle: 'Re-enter the new pin code',
-                    backHandler: () => context.read<PageViewBloc>().add(
+                        disableSubmit: !state.isValidPinCode,
+                      ), // Input new pin
+                  (context, bloc) => PinCodeInputScreen(
+                        pinCode: state.pinCodeConfirmation,
+                        title: 'Confirm Pin Code',
+                        subtitle: 'Re-enter the new pin code',
+                        backHandler: () => bloc.add(
                           const PageViewPreviousPagePressed(),
                         ),
-                    onKey: (int key) => context.read<PinCodeSettingBloc>().add(
-                          PinCodeSettingPinCodeConfirmationChanged(
-                            '${state.pinCodeConfirmation}$key',
-                          ),
-                        ),
-                    disableKeys: !state.canAddPinCodeConfirmationNumber,
-                    onBackspace: () => context.read<PinCodeSettingBloc>().add(
-                          PinCodeSettingPinCodeConfirmationChanged(
-                            state.pinCodeConfirmation.substring(
-                              0,
-                              state.pinCodeConfirmation.length - 1 < 0
-                                  ? 0
-                                  : state.pinCodeConfirmation.length - 1,
+                        onKey: (int key) =>
+                            context.read<PinCodeSettingBloc>().add(
+                                  PinCodeSettingPinCodeConfirmationChanged(
+                                    '${state.pinCodeConfirmation}$key',
+                                  ),
+                                ),
+                        disableKeys: !state.canAddPinCodeConfirmationNumber,
+                        onBackspace: () => context
+                            .read<PinCodeSettingBloc>()
+                            .add(
+                              PinCodeSettingPinCodeConfirmationChanged(
+                                state.pinCodeConfirmation.substring(
+                                  0,
+                                  state.pinCodeConfirmation.length - 1 < 0
+                                      ? 0
+                                      : state.pinCodeConfirmation.length - 1,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                    disableBackspace: !state.canBackspacePinCodeConfirmation,
-                    submitButtonLabel: 'Confirm',
-                    onSubmit: () => context.read<PinCodeSettingBloc>().add(
-                          const PinCodeSettingSubmitted(),
-                        ),
-                    disableSubmit: !state.canSubmit,
-                  ), // Confirm new pin
+                        disableBackspace:
+                            !state.canBackspacePinCodeConfirmation,
+                        submitButtonLabel: 'Confirm',
+                        onSubmit: () => context.read<PinCodeSettingBloc>().add(
+                              const PinCodeSettingSubmitted(),
+                            ),
+                        disableSubmit: !state.canSubmit,
+                      ), // Confirm new pin
                 ],
               );
             case PinCodeSettingStatus.loading:

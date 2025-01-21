@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PageViewWithBloc extends StatefulWidget {
-  final List<Widget> pages;
+  final List<Widget Function(BuildContext, PageViewBloc)> pageBuilders;
   final ScrollPhysics? physics;
 
-  const PageViewWithBloc({super.key, required this.pages, this.physics});
+  const PageViewWithBloc({super.key, required this.pageBuilders, this.physics});
 
   @override
   State<PageViewWithBloc> createState() => _PageViewWithBlocState();
@@ -30,7 +30,7 @@ class _PageViewWithBlocState extends State<PageViewWithBloc> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => PageViewBloc(totalPages: widget.pages.length),
+      create: (_) => PageViewBloc(totalPages: widget.pageBuilders.length),
       child: BlocBuilder<PageViewBloc, PageViewState>(
         builder: (context, state) {
           // Sync the PageController with the BLoC state
@@ -45,7 +45,12 @@ class _PageViewWithBlocState extends State<PageViewWithBloc> {
           return PageView(
             controller: _pageController,
             physics: widget.physics,
-            children: widget.pages,
+            children: widget.pageBuilders
+                .map(
+                  (pageBuilder) =>
+                      pageBuilder(context, context.read<PageViewBloc>()),
+                )
+                .toList(),
             onPageChanged: (index) {
               // Update BLoC when the user navigates through the PageView
               context.read<PageViewBloc>().add(PageViewPageChanged(index));
