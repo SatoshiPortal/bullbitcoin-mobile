@@ -21,8 +21,7 @@ class ManualState with _$ManualState {
     @Default('') String backupPath,
     @Default('') String backupName,
     @Default('') String backupKey,
-    // //  To avoid multiple backups being created when the user clicks the button multiple times
-    // @Default(false) bool isBackupSaved,
+    @Default(null) DateTime? lastBackupAttempt,
     @Default('') String error,
   }) = _ManualState;
 }
