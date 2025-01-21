@@ -23,12 +23,14 @@ class PinCodeUnlockBloc extends Bloc<PinCodeUnlockEvent, PinCodeUnlockState> {
         _attemptUnlockWithPinCodeUseCase = attemptUnlockWithPinCodeUseCase,
         super(
           PinCodeUnlockState(
+            keyboardNumbers: List.generate(10, (i) => i)..shuffle(),
             minPinCodeLength: minPinCodeLength,
             maxPinCodeLength: maxPinCodeLength,
           ),
         ) {
     on<PinCodeUnlockStarted>(_onPinCodeUnlockStarted);
-    on<PinCodeUnlockPinChanged>(_onPinCodeUnlockPinChanged);
+    on<PinCodeUnlockNumberAdded>(_onPinCodeUnlockNumberAdded);
+    on<PinCodeUnlockNumberRemoved>(_onPinCodeUnlockNumberRemoved);
     on<PinCodeUnlockSubmitted>(_onPinCodeUnlockSubmitted);
     on<PinCodeUnlockCountdownTick>(_onPinCodeUnlockCountdownTick);
   }
@@ -68,13 +70,30 @@ class PinCodeUnlockBloc extends Bloc<PinCodeUnlockEvent, PinCodeUnlockState> {
     }
   }
 
-  Future<void> _onPinCodeUnlockPinChanged(
-    PinCodeUnlockPinChanged event,
+  Future<void> _onPinCodeUnlockNumberAdded(
+    PinCodeUnlockNumberAdded event,
     Emitter<PinCodeUnlockState> emit,
   ) async {
+    if (state.pinCode.length >= state.maxPinCodeLength) {
+      return;
+    }
+
+    emit(
+      state.copyWith(pinCode: '${state.pinCode}${event.number}'),
+    );
+  }
+
+  Future<void> _onPinCodeUnlockNumberRemoved(
+    PinCodeUnlockNumberRemoved event,
+    Emitter<PinCodeUnlockState> emit,
+  ) async {
+    if (state.pinCode.isEmpty) {
+      return;
+    }
+
     emit(
       state.copyWith(
-        pinCode: event.pinCode,
+        pinCode: state.pinCode.substring(0, state.pinCode.length - 1),
       ),
     );
   }

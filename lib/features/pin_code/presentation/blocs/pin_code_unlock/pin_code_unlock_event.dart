@@ -8,9 +8,13 @@ class PinCodeUnlockStarted extends PinCodeUnlockEvent {
   const PinCodeUnlockStarted();
 }
 
-class PinCodeUnlockPinChanged extends PinCodeUnlockEvent {
-  const PinCodeUnlockPinChanged(this.pinCode);
-  final String pinCode;
+class PinCodeUnlockNumberAdded extends PinCodeUnlockEvent {
+  const PinCodeUnlockNumberAdded(this.number);
+  final int number;
+}
+
+class PinCodeUnlockNumberRemoved extends PinCodeUnlockEvent {
+  const PinCodeUnlockNumberRemoved();
 }
 
 class PinCodeUnlockSubmitted extends PinCodeUnlockEvent {

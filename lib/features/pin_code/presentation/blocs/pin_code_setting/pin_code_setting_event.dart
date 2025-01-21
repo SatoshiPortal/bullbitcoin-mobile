@@ -4,26 +4,39 @@ sealed class PinCodeSettingEvent {
   const PinCodeSettingEvent();
 }
 
-class PinCodeSettingUnlocked extends PinCodeSettingEvent {
-  const PinCodeSettingUnlocked();
+class PinCodeSettingStarted extends PinCodeSettingEvent {
+  const PinCodeSettingStarted();
 }
 
-class PinCodeSettingPinCodeChanged extends PinCodeSettingEvent {
-  final String pinCode;
+class PinCodeSettingPinCodeNumberAdded extends PinCodeSettingEvent {
+  final int number;
 
-  const PinCodeSettingPinCodeChanged(
-    this.pinCode,
+  const PinCodeSettingPinCodeNumberAdded(
+    this.number,
   );
 }
 
-class PinCodeSettingPinCodeConfirmationChanged extends PinCodeSettingEvent {
-  final String pinCodeConfirmation;
+class PinCodeSettingPinCodeNumberRemoved extends PinCodeSettingEvent {
+  const PinCodeSettingPinCodeNumberRemoved();
+}
 
-  const PinCodeSettingPinCodeConfirmationChanged(
-    this.pinCodeConfirmation,
+class PinCodeSettingPinCodeChosen extends PinCodeSettingEvent {
+  const PinCodeSettingPinCodeChosen();
+}
+
+class PinCodeSettingPinCodeConfirmationNumberAdded extends PinCodeSettingEvent {
+  final int number;
+
+  const PinCodeSettingPinCodeConfirmationNumberAdded(
+    this.number,
   );
 }
 
-class PinCodeSettingSubmitted extends PinCodeSettingEvent {
-  const PinCodeSettingSubmitted();
+class PinCodeSettingPinCodeConfirmationNumberRemoved
+    extends PinCodeSettingEvent {
+  const PinCodeSettingPinCodeConfirmationNumberRemoved();
+}
+
+class PinCodeSettingPinCodeConfirmed extends PinCodeSettingEvent {
+  const PinCodeSettingPinCodeConfirmed();
 }

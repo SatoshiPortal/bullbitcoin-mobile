@@ -1,27 +1,24 @@
 part of 'pin_code_setting_bloc.dart';
 
-enum PinCodeSettingStatus { initial, inProgress, loading, success, failure }
+enum PinCodeSettingStatus { unlock, choose, confirm, success, failure }
 
 @freezed
 sealed class PinCodeSettingState with _$PinCodeSettingState {
   const factory PinCodeSettingState({
-    @Default(PinCodeSettingStatus.initial) PinCodeSettingStatus status,
+    @Default(PinCodeSettingStatus.unlock) PinCodeSettingStatus status,
     @Default(4) int minPinCodeLength,
     @Default(8) int maxPinCodeLength,
+    required List<int> choosePinKeyboardNumbers,
+    required List<int> confirmPinKeyboardNumbers,
     @Default('') String pinCode,
     @Default('') String pinCodeConfirmation,
+    @Default(false) bool isConfirming,
     Object? error,
   }) = _PinCodeSettingState;
   const PinCodeSettingState._();
 
-  bool get canAddPinCodeNumber => pinCode.length < maxPinCodeLength;
-  bool get canBackspacePinCode => pinCode.isNotEmpty;
   bool get isValidPinCode =>
       pinCode.length >= minPinCodeLength && pinCode.length <= maxPinCodeLength;
 
-  bool get canAddPinCodeConfirmationNumber =>
-      pinCodeConfirmation.length < maxPinCodeLength;
-  bool get canBackspacePinCodeConfirmation => pinCodeConfirmation.isNotEmpty;
-  bool get canSubmit =>
-      pinCode == pinCodeConfirmation && status == PinCodeSettingStatus.initial;
+  bool get canConfirm => pinCode == pinCodeConfirmation && !isConfirming;
 }

@@ -16,56 +16,117 @@ class PinCodeSettingBloc
   })  : _setPinCodeUsecase = setPinCodeUsecase,
         super(
           PinCodeSettingState(
+            choosePinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
+            confirmPinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
             minPinCodeLength: minPinCodeLength,
             maxPinCodeLength: maxPinCodeLength,
           ),
         ) {
-    on<PinCodeSettingUnlocked>(_onPinCodeSettingUnlocked);
-    on<PinCodeSettingPinCodeChanged>(_onPinCodeSettingPinCodeChanged);
-    on<PinCodeSettingPinCodeConfirmationChanged>(
-      _onPinCodeSettingPinCodeConfirmationChanged,
+    on<PinCodeSettingStarted>(_onPinCodeSettingStarted);
+    on<PinCodeSettingPinCodeNumberAdded>(_onPinCodeSettingPinCodeNumberAdded);
+    on<PinCodeSettingPinCodeNumberRemoved>(
+        _onPinCodeSettingPinCodeNumberRemoved);
+    on<PinCodeSettingPinCodeConfirmationNumberAdded>(
+      _onPinCodeSettingPinCodeConfirmationNumberAdded,
     );
-    on<PinCodeSettingSubmitted>(_onPinCodeSettingSubmitted);
+    on<PinCodeSettingPinCodeConfirmationNumberRemoved>(
+      _onPinCodeSettingPinCodeConfirmationNumberRemoved,
+    );
+    on<PinCodeSettingPinCodeChosen>(_onPinCodeSettingPinCodeChosen);
+    on<PinCodeSettingPinCodeConfirmed>(_onPinCodeSettingConfirmed);
   }
 
   final SetPinCodeUsecase _setPinCodeUsecase;
 
-  Future<void> _onPinCodeSettingUnlocked(
-    PinCodeSettingUnlocked event,
+  Future<void> _onPinCodeSettingStarted(
+    PinCodeSettingStarted event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    emit(state.copyWith(status: PinCodeSettingStatus.inProgress));
+    emit(state.copyWith(status: PinCodeSettingStatus.choose));
   }
 
-  Future<void> _onPinCodeSettingPinCodeChanged(
-    PinCodeSettingPinCodeChanged event,
+  Future<void> _onPinCodeSettingPinCodeNumberAdded(
+    PinCodeSettingPinCodeNumberAdded event,
     Emitter<PinCodeSettingState> emit,
   ) async {
+    if (state.pinCode.length >= state.maxPinCodeLength) {
+      return;
+    }
+
     emit(
       state.copyWith(
-        pinCode: event.pinCode,
+        pinCode: state.pinCode + event.number.toString(),
       ),
     );
   }
 
-  Future<void> _onPinCodeSettingPinCodeConfirmationChanged(
-    PinCodeSettingPinCodeConfirmationChanged event,
+  Future<void> _onPinCodeSettingPinCodeNumberRemoved(
+    PinCodeSettingPinCodeNumberRemoved event,
     Emitter<PinCodeSettingState> emit,
   ) async {
+    if (state.pinCode.isEmpty) {
+      return;
+    }
+
     emit(
       state.copyWith(
-        pinCodeConfirmation: event.pinCodeConfirmation,
+        pinCode: state.pinCode.substring(0, state.pinCode.length - 1),
       ),
     );
   }
 
-  Future<void> _onPinCodeSettingSubmitted(
-    PinCodeSettingSubmitted event,
+  Future<void> _onPinCodeSettingPinCodeChosen(
+    PinCodeSettingPinCodeChosen event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    emit(state.copyWith(status: PinCodeSettingStatus.loading));
+    emit(
+      state.copyWith(
+        status: PinCodeSettingStatus.confirm,
+      ),
+    );
+  }
+
+  Future<void> _onPinCodeSettingPinCodeConfirmationNumberAdded(
+    PinCodeSettingPinCodeConfirmationNumberAdded event,
+    Emitter<PinCodeSettingState> emit,
+  ) async {
+    if (state.pinCodeConfirmation.length >= state.maxPinCodeLength) {
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        pinCodeConfirmation:
+            state.pinCodeConfirmation + event.number.toString(),
+      ),
+    );
+  }
+
+  Future<void> _onPinCodeSettingPinCodeConfirmationNumberRemoved(
+    PinCodeSettingPinCodeConfirmationNumberRemoved event,
+    Emitter<PinCodeSettingState> emit,
+  ) async {
+    if (state.pinCodeConfirmation.isEmpty) {
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        pinCodeConfirmation: state.pinCodeConfirmation.substring(
+          0,
+          state.pinCodeConfirmation.length - 1,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onPinCodeSettingConfirmed(
+    PinCodeSettingPinCodeConfirmed event,
+    Emitter<PinCodeSettingState> emit,
+  ) async {
+    emit(state.copyWith(isConfirming: true));
     try {
-      await _setPinCodeUsecase.execute(state.pinCodeConfirmation);
+      await _setPinCodeUsecase.execute(state.pinCode);
 
       emit(state.copyWith(status: PinCodeSettingStatus.success));
     } catch (e) {
