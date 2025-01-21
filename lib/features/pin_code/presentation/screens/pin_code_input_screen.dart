@@ -43,42 +43,51 @@ class PinCodeInputScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        automaticallyImplyLeading: false,
-        leading: backHandler != null
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                onPressed: backHandler,
-              )
-            : null,
-      ),
-      body: Column(
-        children: [
-          const SizedBox(height: 20),
-          Text(
-            subtitle,
-            style: theme.textTheme.bodySmall,
-          ),
-          const SizedBox(height: 20),
-          PinCodeDisplay(
-            pinCode: pinCode,
-          ),
-          const SizedBox(height: 20),
-          NumericKeyboard(
-            numbers: keyboardNumbers,
-            onNumberSelected: onKey,
-            onBackspacePressed: onBackspace,
-            disableBackspace: disableBackspace,
-            disableKeys: disableKeys,
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: disableSubmit ?? true ? null : onSubmit,
-            child: Text(submitButtonLabel),
-          ),
-        ],
+    return PopScope(
+      canPop: backHandler != null,
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) {
+          return;
+        }
+        backHandler?.call();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(title),
+          automaticallyImplyLeading: false,
+          leading: backHandler != null
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: backHandler,
+                )
+              : null,
+        ),
+        body: Column(
+          children: [
+            const SizedBox(height: 20),
+            Text(
+              subtitle,
+              style: theme.textTheme.bodySmall,
+            ),
+            const SizedBox(height: 20),
+            PinCodeDisplay(
+              pinCode: pinCode,
+            ),
+            const SizedBox(height: 20),
+            NumericKeyboard(
+              numbers: keyboardNumbers,
+              onNumberSelected: onKey,
+              onBackspacePressed: onBackspace,
+              disableBackspace: disableBackspace,
+              disableKeys: disableKeys,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: disableSubmit ?? true ? null : onSubmit,
+              child: Text(submitButtonLabel),
+            ),
+          ],
+        ),
       ),
     );
   }
