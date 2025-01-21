@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/pin_code/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,13 +16,11 @@ class PinCodeSettingBloc
   })  : _setPinCodeUsecase = setPinCodeUsecase,
         super(
           PinCodeSettingState(
-            pinCodeKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
-            pinCodeConfirmationKeyboardNumbers: List.generate(10, (i) => i)
-              ..shuffle(),
             minPinCodeLength: minPinCodeLength,
             maxPinCodeLength: maxPinCodeLength,
           ),
         ) {
+    on<PinCodeSettingUnlocked>(_onPinCodeSettingUnlocked);
     on<PinCodeSettingPinCodeChanged>(_onPinCodeSettingPinCodeChanged);
     on<PinCodeSettingPinCodeConfirmationChanged>(
       _onPinCodeSettingPinCodeConfirmationChanged,
@@ -32,6 +29,13 @@ class PinCodeSettingBloc
   }
 
   final SetPinCodeUsecase _setPinCodeUsecase;
+
+  Future<void> _onPinCodeSettingUnlocked(
+    PinCodeSettingUnlocked event,
+    Emitter<PinCodeSettingState> emit,
+  ) async {
+    emit(state.copyWith(status: PinCodeSettingStatus.inProgress));
+  }
 
   Future<void> _onPinCodeSettingPinCodeChanged(
     PinCodeSettingPinCodeChanged event,

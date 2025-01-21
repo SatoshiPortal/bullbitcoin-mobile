@@ -15,6 +15,7 @@ class PinCodeDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 16),
       child: Row(
@@ -29,7 +30,9 @@ class PinCodeDisplay extends StatelessWidget {
               );
             } else {
               return CircleAvatar(
-                backgroundColor: theme.primaryColor.withOpacity(0.3),
+                backgroundColor: theme.primaryColor.withValues(
+                  alpha: 0.3,
+                ),
                 radius: pinNumberRadius,
               );
             }

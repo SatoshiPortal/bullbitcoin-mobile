@@ -1,13 +1,11 @@
 part of 'pin_code_setting_bloc.dart';
 
-enum PinCodeSettingStatus { initial, loading, success, failure }
+enum PinCodeSettingStatus { initial, inProgress, loading, success, failure }
 
 @freezed
 sealed class PinCodeSettingState with _$PinCodeSettingState {
   const factory PinCodeSettingState({
     @Default(PinCodeSettingStatus.initial) PinCodeSettingStatus status,
-    required List<int> pinCodeKeyboardNumbers,
-    required List<int> pinCodeConfirmationKeyboardNumbers,
     @Default(4) int minPinCodeLength,
     @Default(8) int maxPinCodeLength,
     @Default('') String pinCode,

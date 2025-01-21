@@ -1,8 +1,5 @@
-// Make sure the text, confirm handler and success state listener handler can
-//  be passed in so the screen can be used in different flows and pages.
-
-import 'package:bb_mobile/features/pin_code/presentation/widgets/numeric_keyboard.dart';
 import 'package:bb_mobile/features/pin_code/presentation/widgets/pin_code_display.dart';
+import 'package:bb_mobile/features/pin_code/presentation/widgets/shuffled_numbers_keyboard.dart';
 import 'package:flutter/material.dart';
 
 class PinCodeInputScreen extends StatelessWidget {
@@ -10,13 +7,9 @@ class PinCodeInputScreen extends StatelessWidget {
   final String title;
   final String subtitle;
   final String submitButtonLabel;
-  final void Function() onBackspace;
-  final bool? disableBackspace;
-  final List<int> keyboardNumbers;
-  final void Function(int key) onKey;
-  final bool? disableKeys;
-  final void Function() onSubmit;
-  final bool? disableSubmit;
+  final void Function()? onBackspace;
+  final void Function(int key)? onKey;
+  final void Function()? onSubmit;
   final int? failedAttempts;
   final int? timeoutSeconds;
   final void Function()? backHandler;
@@ -27,13 +20,9 @@ class PinCodeInputScreen extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.submitButtonLabel,
-    required this.onBackspace,
-    this.disableBackspace,
-    required this.keyboardNumbers,
-    required this.onKey,
-    this.disableKeys,
-    required this.onSubmit,
-    this.disableSubmit,
+    this.onBackspace,
+    this.onKey,
+    this.onSubmit,
     this.failedAttempts,
     this.timeoutSeconds,
     this.backHandler,
@@ -74,16 +63,13 @@ class PinCodeInputScreen extends StatelessWidget {
               pinCode: pinCode,
             ),
             const SizedBox(height: 20),
-            NumericKeyboard(
-              numbers: keyboardNumbers,
+            ShuffledNumbersKeyboard(
               onNumberSelected: onKey,
               onBackspacePressed: onBackspace,
-              disableBackspace: disableBackspace,
-              disableKeys: disableKeys,
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: disableSubmit ?? true ? null : onSubmit,
+              onPressed: onSubmit,
               child: Text(submitButtonLabel),
             ),
           ],

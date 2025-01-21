@@ -12,6 +12,47 @@ class PinCodeUnlockScreen extends StatelessWidget {
 
   final void Function() onSuccess;
 
+  // Function to handle key press
+  void _handleOnKey(
+    BuildContext context,
+    String pinCode,
+    int key,
+    bool canAddNumber,
+  ) {
+    if (canAddNumber) {
+      context.read<PinCodeUnlockBloc>().add(
+            PinCodeUnlockPinChanged('$pinCode$key'),
+          );
+    }
+  }
+
+  // Function to handle backspace press
+  void _handleOnBackspace(
+    BuildContext context,
+    String pinCode,
+    bool canBackspace,
+  ) {
+    if (canBackspace) {
+      context.read<PinCodeUnlockBloc>().add(
+            PinCodeUnlockPinChanged(
+              pinCode.substring(
+                0,
+                pinCode.length - 1 < 0 ? 0 : pinCode.length - 1,
+              ),
+            ),
+          );
+    }
+  }
+
+  // Function to handle submit
+  void _handleOnSubmit(BuildContext context, bool canSubmit) {
+    if (canSubmit) {
+      context.read<PinCodeUnlockBloc>().add(
+            const PinCodeUnlockSubmitted(),
+          );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -38,30 +79,25 @@ class PinCodeUnlockScreen extends StatelessWidget {
         },
         child: BlocBuilder<PinCodeUnlockBloc, PinCodeUnlockState>(
           builder: (context, state) => PinCodeInputScreen(
-            keyboardNumbers: state.keyboardNumbers,
             pinCode: state.pinCode,
             title: "Unlock",
             subtitle: "Enter your pin code to unlock",
-            onKey: (int key) => context.read<PinCodeUnlockBloc>().add(
-                  PinCodeUnlockPinChanged('${state.pinCode}$key'),
-                ),
-            disableKeys: !state.canAddNumber,
-            onBackspace: () => context.read<PinCodeUnlockBloc>().add(
-                  PinCodeUnlockPinChanged(
-                    state.pinCode.substring(
-                      0,
-                      state.pinCode.length - 1 < 0
-                          ? 0
-                          : state.pinCode.length - 1,
-                    ),
-                  ),
-                ),
-            disableBackspace: !state.canBackspace,
+            onKey: (int key) => _handleOnKey(
+              context,
+              state.pinCode,
+              key,
+              state.canAddNumber,
+            ),
+            onBackspace: () => _handleOnBackspace(
+              context,
+              state.pinCode,
+              state.canBackspace,
+            ),
             submitButtonLabel: "Unlock",
-            onSubmit: () => context.read<PinCodeUnlockBloc>().add(
-                  const PinCodeUnlockSubmitted(),
-                ),
-            disableSubmit: !state.canSubmit,
+            onSubmit: () => _handleOnSubmit(
+              context,
+              state.canSubmit,
+            ),
             timeoutSeconds: state.timeoutSeconds,
             failedAttempts: state.failedAttempts,
           ),

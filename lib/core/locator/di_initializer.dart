@@ -26,8 +26,8 @@ Future<void> initializeDI() async {
   await _registerCoreDependencies();
   setupAppStartupDependencies();
   setupFiatCurrenciesDependencies();
-  setupPinCodeDependencies();
   setupWalletDependencies();
+  setupPinCodeDependencies();
 }
 
 // Core dependencies like Hive, file storage, secure storage
