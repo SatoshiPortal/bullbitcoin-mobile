@@ -280,9 +280,11 @@ class WalletService {
             );
           }
         case UpdateWalletTypes.bip85Paths:
-          storageWallet = storageWallet!.copyWith(
-            bip85Derivations: wallet.bip85Derivations,
-          );
+          if (wallet.bip85Derivations != storageWallet!.bip85Derivations) {
+            storageWallet = storageWallet.copyWith(
+              bip85Derivations: wallet.bip85Derivations,
+            );
+          }
       }
 
       final err = await _walletsStorageRepository.updateWallet(
