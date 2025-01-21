@@ -12,7 +12,7 @@ class ShuffledNumbersKeyboard extends StatelessWidget {
     required this.onBackspacePressed,
     this.disableBackspace,
     this.disableKeys,
-  }) : items = List<int>.generate(10, (i) => i)..shuffle() {
+  }) : items = List<dynamic>.generate(10, (i) => i)..shuffle() {
     items.add('backspace'); // Add backspace as the last element
   }
 

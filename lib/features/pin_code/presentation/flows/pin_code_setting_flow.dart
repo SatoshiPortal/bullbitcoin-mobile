@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/presentation/widgets/page_view/bloc/page_view_blo
 import 'package:bb_mobile/core/presentation/widgets/page_view/page_view_with_bloc.dart';
 import 'package:bb_mobile/features/pin_code/presentation/blocs/pin_code_setting/pin_code_setting_bloc.dart';
 import 'package:bb_mobile/features/pin_code/presentation/screens/pin_code_input_screen.dart';
+import 'package:bb_mobile/features/pin_code/presentation/screens/pin_code_unlock_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,6 +21,11 @@ class PinCodeSettingFlow extends StatelessWidget {
             case PinCodeSettingStatus.initial:
               return PageViewWithBloc(
                 pages: [
+                  PinCodeUnlockScreen(
+                    onSuccess: () => context.read<PageViewBloc>().add(
+                          const PageViewNextPagePressed(),
+                        ),
+                  ),
                   PinCodeInputScreen(
                     pinCode: state.pinCode,
                     title: 'Set Pin Code',

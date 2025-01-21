@@ -33,14 +33,14 @@ Future<void> initializeDI() async {
 // Core dependencies like Hive, file storage, secure storage
 Future<void> _registerCoreDependencies() async {
   // Data sources
-  locator.registerLazySingleton<KeyValueStorageDataSource>(
+  locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
     () => SecureKeyValueStorageDataSourceImpl(
       const FlutterSecureStorage(),
     ),
     instanceName: secureStorageInstanceName,
   );
   final settingsBox = await Hive.openBox<String>(hiveSettingsBoxName);
-  locator.registerLazySingleton<KeyValueStorageDataSource>(
+  locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
     () => HiveKeyValueStorageDataSourceImpl<String>(settingsBox),
     instanceName: settingsStorageInstanceName,
   );
