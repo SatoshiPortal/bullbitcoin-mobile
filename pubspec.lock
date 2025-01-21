@@ -86,14 +86,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
-  bip39:
+  bip39_mnemonic:
     dependency: transitive
     description:
-      name: bip39
-      sha256: de1ee27ebe7d96b84bb3a04a4132a0a3007dcdd5ad27dd14aa87a29d97c45edc
+      name: bip39_mnemonic
+      sha256: "3ae6ed74b97a0b820e71d01b75ac4bc5b036a8bb427d5ee5827427d2872eefb0"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.6"
+    version: "3.0.7"
   bip85:
     dependency: "direct main"
     description:
@@ -1341,7 +1341,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: c49577fdf1c21c6fcded217dfc76c34e3b5520f2
+      resolved-ref: "498509da2a2376b1534ee49f1ca65b3d14809e59"
       url: "https://github.com/StaxoLotl/recoverbull-dart.git"
     source: git
     version: "0.0.1"
@@ -1566,6 +1566,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.2"
+  unorm_dart:
+    dependency: transitive
+    description:
+      name: unorm_dart
+      sha256: "23d8bf65605401a6a32cff99435fed66ef3dab3ddcad3454059165df46496a3b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   url_launcher:
     dependency: "direct main"
     description:
