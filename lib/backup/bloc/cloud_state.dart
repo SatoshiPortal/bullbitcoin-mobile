@@ -7,6 +7,7 @@ class CloudState with _$CloudState {
   const factory CloudState({
     @Default(false) bool loading,
     @Default('') String backupFolderId,
+    @Default(null) DateTime? lastBackupAttempt,
     @Default('') String toast,
     @Default('') String error,
   }) = _CloudState;
