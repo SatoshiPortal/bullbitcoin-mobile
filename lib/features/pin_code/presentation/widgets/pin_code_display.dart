@@ -15,23 +15,26 @@ class PinCodeDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(
-        maxPinCodeLength,
-        (index) {
-          if (index < pinCode.length) {
-            return CircleAvatar(
-              backgroundColor: theme.primaryColor,
-              radius: pinNumberRadius,
-            );
-          } else {
-            return CircleAvatar(
-              backgroundColor: theme.primaryColor.withOpacity(0.3),
-              radius: pinNumberRadius,
-            );
-          }
-        },
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: List.generate(
+          maxPinCodeLength,
+          (index) {
+            if (index < pinCode.length) {
+              return CircleAvatar(
+                backgroundColor: theme.primaryColor,
+                radius: pinNumberRadius,
+              );
+            } else {
+              return CircleAvatar(
+                backgroundColor: theme.primaryColor.withOpacity(0.3),
+                radius: pinNumberRadius,
+              );
+            }
+          },
+        ),
       ),
     );
   }
