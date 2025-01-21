@@ -491,6 +491,36 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     }
   }
 
+  Future<void> addNewBIP85BackupKey(String label) async {
+    try {
+      emit(state.copyWith(savingFile: true, errSavingFile: ''));
+      final wallet = _wallet;
+      final newBIP85Path = wallet.generateNextBIP85Path();
+
+      //TODO; find a way to get the label from the wallet
+      final updatedWallet = WalletUpdate().updateBIP85Paths(
+        wallet,
+        newBIP85Path,
+        "${label}_bip85Path_${wallet.bip85Derivations.entries.length + 1}",
+      );
+
+      await _appWalletsRepository
+          .getWalletServiceById(updatedWallet.id)
+          ?.updateWallet(
+        updatedWallet,
+        updateTypes: [
+          UpdateWalletTypes.bip85Paths,
+        ],
+      );
+
+      emit(state.copyWith(savingFile: false, savedFile: true));
+      await Future.delayed(2.seconds);
+      emit(state.copyWith(savedFile: false));
+    } catch (e) {
+      emit(state.copyWith(errImporting: e.toString(), importing: false));
+    }
+  }
+
   Future clearSensitive() async {
     clearnMnemonic();
     emit(
