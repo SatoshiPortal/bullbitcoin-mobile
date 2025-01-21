@@ -130,14 +130,7 @@ class ManualRecoverPage extends StatelessWidget {
                                   onPressed: () => {
                                     context.push(
                                       '/cloud-backup',
-                                      extra: {
-                                        'callback': (String fileName) {
-                                          context
-                                              .read<CloudCubit>()
-                                              .loadEncrypted(fileName);
-                                        },
-                                        'cubit': context.read<CloudCubit>(),
-                                      },
+                                      extra: context.read<CloudCubit>(),
                                     ),
                                   },
                                 );

@@ -10,8 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class CloudPage extends StatefulWidget {
-  final Function(String)? onBackupSelected;
-  const CloudPage({this.onBackupSelected});
+  const CloudPage({super.key});
   @override
   State<CloudPage> createState() => _CloudPageState();
 }
@@ -68,7 +67,7 @@ class _CloudPageState extends State<CloudPage> {
                 return BackupTile(
                   fileName: entry.key,
                   onFileSelected: (fileName) {
-                    widget.onBackupSelected!(fileName);
+                    context.read<CloudCubit>().loadEncrypted(fileName);
                     context.pop();
                   },
                 );
