@@ -517,7 +517,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
       await Future.delayed(2.seconds);
       emit(state.copyWith(savedFile: false));
     } catch (e) {
-      emit(state.copyWith(errImporting: e.toString(), importing: false));
+      emit(state.copyWith(errSavingFile: e.toString(), savingFile: false));
     }
   }
 
