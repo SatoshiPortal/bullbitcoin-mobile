@@ -560,7 +560,7 @@ class Wallet with _$Wallet {
   String balanceStr() => ((balance ?? 0) / 100000000).toStringAsFixed(8);
 }
 
-enum BIP85DerivationStatus { active, deprecated }
+enum BIP85DerivationStatus { active, revoked }
 
 @freezed
 class BIP85Derivation with _$BIP85Derivation {
