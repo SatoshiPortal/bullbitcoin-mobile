@@ -125,6 +125,7 @@ class CloudCubit extends Cubit<CloudState> {
     emit(
       state.copyWith(
         toast: "Successfully loaded backup",
+        loading: false,
         selectedBackup: (
           loadEncryptedBackup?['backupId'] ?? '',
           jsonEncode(loadEncryptedBackup)
