@@ -18,14 +18,6 @@ class PinCodeRepositoryImpl implements PinCodeRepository {
 
   @override
   Future<void> setPinCode(String pinCode) async {
-    final isPinCodeAlreadySet = await isPinCodeSet();
-
-    if (isPinCodeAlreadySet) {
-      throw PinCodeAlreadySetException(
-        message: 'Pin code is already set. Use update method to change it.',
-      );
-    }
-
     await _storage.saveValue(key: _key, value: pinCode);
   }
 
@@ -56,12 +48,6 @@ class PinCodeRepositoryImpl implements PinCodeRepository {
 
     return int.tryParse(timeout ?? '0') ?? 0;
   }
-}
-
-class PinCodeAlreadySetException implements Exception {
-  final String message;
-
-  PinCodeAlreadySetException({required this.message});
 }
 
 class PinCodeNotSetException implements Exception {

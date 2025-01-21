@@ -1,6 +1,9 @@
 import 'package:bb_mobile/core/router/route_error_screen.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/pin_code/presentation/flows/pin_code_setting_flow.dart';
+import 'package:bb_mobile/features/pin_code/presentation/screens/pin_code_unlock_screen.dart';
+import 'package:bb_mobile/features/settings/presentation/screens/settings_screen.dart';
+import 'package:bb_mobile/features/settings/router/settings_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,6 +13,7 @@ final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 enum AppRoute {
   landing('/landing'),
   home('/home'),
+  unlock('/unlock'),
   settings('/settings'),
   receive('/receive'),
   send('/send');
@@ -47,10 +51,18 @@ class AppRouter {
         builder: (context, state) => const Text('Home'),
       ),
       GoRoute(
+        name: AppRoute.unlock.name,
+        path: AppRoute.unlock.path,
+        builder: (context, state) => PinCodeUnlockScreen(
+          onSuccess: GoRouter.of(context).pop,
+        ),
+      ),
+      GoRoute(
         name: AppRoute.settings.name,
         path: AppRoute.settings.path,
-        builder: (context, state) =>
-            const PinCodeSettingFlow(), // Todo: Replace with base Settings screen once PinCode feature is showcased
+        builder: (context, state) => const SettingsScreen(),
+        routes: SettingsRoutes
+            .routes, // Todo: Replace with base Settings screen once PinCode feature is showcased
       ),
       GoRoute(
         name: AppRoute.receive.name,

@@ -27,6 +27,7 @@ class PinCodeSettingFlow extends StatelessWidget {
                         ),
                       ),
                   (context, bloc) => PinCodeInputScreen(
+                        keyboardNumbers: state.pinCodeKeyboardNumbers,
                         pinCode: state.pinCode,
                         title: 'Set Pin Code',
                         subtitle: 'Enter a new pin code',
@@ -55,6 +56,8 @@ class PinCodeSettingFlow extends StatelessWidget {
                         disableSubmit: !state.isValidPinCode,
                       ), // Input new pin
                   (context, bloc) => PinCodeInputScreen(
+                        keyboardNumbers:
+                            state.pinCodeConfirmationKeyboardNumbers,
                         pinCode: state.pinCodeConfirmation,
                         title: 'Confirm Pin Code',
                         subtitle: 'Re-enter the new pin code',

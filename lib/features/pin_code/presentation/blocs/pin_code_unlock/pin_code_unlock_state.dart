@@ -12,6 +12,7 @@ enum PinCodeUnlockStatus {
 sealed class PinCodeUnlockState with _$PinCodeUnlockState {
   const factory PinCodeUnlockState({
     @Default(PinCodeUnlockStatus.initial) PinCodeUnlockStatus status,
+    required List<int> keyboardNumbers,
     @Default(4) int minPinCodeLength,
     @Default(8) int maxPinCodeLength,
     @Default('') String pinCode,

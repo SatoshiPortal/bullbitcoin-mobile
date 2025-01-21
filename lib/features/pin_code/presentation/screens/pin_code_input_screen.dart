@@ -1,8 +1,8 @@
 // Make sure the text, confirm handler and success state listener handler can
 //  be passed in so the screen can be used in different flows and pages.
 
+import 'package:bb_mobile/features/pin_code/presentation/widgets/numeric_keyboard.dart';
 import 'package:bb_mobile/features/pin_code/presentation/widgets/pin_code_display.dart';
-import 'package:bb_mobile/features/pin_code/presentation/widgets/shuffled_numbers_keyboard.dart';
 import 'package:flutter/material.dart';
 
 class PinCodeInputScreen extends StatelessWidget {
@@ -12,6 +12,7 @@ class PinCodeInputScreen extends StatelessWidget {
   final String submitButtonLabel;
   final void Function() onBackspace;
   final bool? disableBackspace;
+  final List<int> keyboardNumbers;
   final void Function(int key) onKey;
   final bool? disableKeys;
   final void Function() onSubmit;
@@ -28,6 +29,7 @@ class PinCodeInputScreen extends StatelessWidget {
     required this.submitButtonLabel,
     required this.onBackspace,
     this.disableBackspace,
+    required this.keyboardNumbers,
     required this.onKey,
     this.disableKeys,
     required this.onSubmit,
@@ -64,7 +66,8 @@ class PinCodeInputScreen extends StatelessWidget {
             pinCode: pinCode,
           ),
           const SizedBox(height: 20),
-          ShuffledNumbersKeyboard(
+          NumericKeyboard(
+            numbers: keyboardNumbers,
             onNumberSelected: onKey,
             onBackspacePressed: onBackspace,
             disableBackspace: disableBackspace,

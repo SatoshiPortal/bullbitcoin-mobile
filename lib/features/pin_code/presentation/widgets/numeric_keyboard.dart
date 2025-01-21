@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 
-class ShuffledNumbersKeyboard extends StatelessWidget {
+class NumericKeyboard extends StatelessWidget {
   final List<dynamic> items; // Use dynamic to handle both numbers and backspace
   final void Function(int) onNumberSelected;
   final void Function() onBackspacePressed;
   final bool? disableBackspace;
   final bool? disableKeys;
 
-  ShuffledNumbersKeyboard({
+  NumericKeyboard({
+    required List<int> numbers,
     required this.onNumberSelected,
     required this.onBackspacePressed,
     this.disableBackspace,
     this.disableKeys,
-  }) : items = List<dynamic>.generate(10, (i) => i)..shuffle() {
-    items.add('backspace'); // Add backspace as the last element
+  }) : items = List<num>.from(numbers) {
+    items.insert(
+      numbers.length - 1,
+      -1,
+    ); // Add backspace as the one before the last item
   }
 
   @override
@@ -29,7 +33,7 @@ class ShuffledNumbersKeyboard extends StatelessWidget {
       ),
       itemBuilder: (context, index) {
         final item = items[index];
-        if (item == 'backspace') {
+        if (item == -1) {
           return BackspaceButton(
             onPressed: onBackspacePressed,
             disabled: disableBackspace,

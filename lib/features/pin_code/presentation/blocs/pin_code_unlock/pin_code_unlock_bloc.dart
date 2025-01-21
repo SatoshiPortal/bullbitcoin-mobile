@@ -23,6 +23,7 @@ class PinCodeUnlockBloc extends Bloc<PinCodeUnlockEvent, PinCodeUnlockState> {
         _attemptUnlockWithPinCodeUseCase = attemptUnlockWithPinCodeUseCase,
         super(
           PinCodeUnlockState(
+            keyboardNumbers: List.generate(10, (i) => i)..shuffle(),
             minPinCodeLength: minPinCodeLength,
             maxPinCodeLength: maxPinCodeLength,
           ),

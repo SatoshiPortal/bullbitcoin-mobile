@@ -17,6 +17,9 @@ class PinCodeSettingBloc
   })  : _setPinCodeUsecase = setPinCodeUsecase,
         super(
           PinCodeSettingState(
+            pinCodeKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
+            pinCodeConfirmationKeyboardNumbers: List.generate(10, (i) => i)
+              ..shuffle(),
             minPinCodeLength: minPinCodeLength,
             maxPinCodeLength: maxPinCodeLength,
           ),

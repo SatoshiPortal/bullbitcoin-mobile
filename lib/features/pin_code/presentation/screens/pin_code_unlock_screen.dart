@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PinCodeUnlockScreen extends StatelessWidget {
-  const PinCodeUnlockScreen({super.key, required this.onSuccess});
+  const PinCodeUnlockScreen({
+    super.key,
+    required this.onSuccess,
+  });
 
   final void Function() onSuccess;
 
@@ -35,6 +38,7 @@ class PinCodeUnlockScreen extends StatelessWidget {
         },
         child: BlocBuilder<PinCodeUnlockBloc, PinCodeUnlockState>(
           builder: (context, state) => PinCodeInputScreen(
+            keyboardNumbers: state.keyboardNumbers,
             pinCode: state.pinCode,
             title: "Unlock",
             subtitle: "Enter your pin code to unlock",
