@@ -31,8 +31,14 @@ class WalletUpdate {
   ) {
     final updatedDerivations =
         Map<String, BIP85Derivation>.from(wallet.bip85Derivations);
+    final existingDerivation = updatedDerivations[bip85Path];
+    if (existingDerivation != null) {
+      updatedDerivations[bip85Path] = existingDerivation.copyWith(
+        label: label,
+      );
+      return wallet.copyWith(bip85Derivations: updatedDerivations);
+    }
 
-    // Mark any existing active derivation as deprecated
     final activeBIP85Derivation = updatedDerivations.entries
         .where((e) => e.value.status == BIP85DerivationStatus.active)
         .firstOrNull;
@@ -40,7 +46,7 @@ class WalletUpdate {
     if (activeBIP85Derivation != null) {
       updatedDerivations[activeBIP85Derivation.key] = BIP85Derivation(
         label: activeBIP85Derivation.value.label,
-        status: BIP85DerivationStatus.deprecated,
+        status: BIP85DerivationStatus.revoked,
       );
     }
     updatedDerivations[bip85Path] = BIP85Derivation(
