@@ -125,7 +125,24 @@ class ManualCubit extends Cubit<ManualState> {
   }
 
   Future<void> saveEncryptedBackup() async {
-    emit(state.copyWith(loading: true, error: ''));
+    if (state.loading) {
+      emit(state.copyWith(error: 'Backup already in progress'));
+      return;
+    }
+    final now = DateTime.now();
+    if (state.lastBackupAttempt != null) {
+      final difference = now.difference(state.lastBackupAttempt!);
+      if (difference.inSeconds < 30) {
+        emit(
+          state.copyWith(
+            error:
+                'Please wait ${30 - difference.inSeconds} seconds before creating another backup',
+          ),
+        );
+        return;
+      }
+    }
+    emit(state.copyWith(loading: true, lastBackupAttempt: now));
     await loadBackupData();
     final backups = state.loadedBackups;
 
