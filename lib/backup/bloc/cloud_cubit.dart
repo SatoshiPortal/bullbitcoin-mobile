@@ -46,8 +46,25 @@ class CloudCubit extends Cubit<CloudState> {
   Future<void> uploadBackup({
     required String fileSystemBackupPath,
   }) async {
+    if (state.loading) {
+      emit(state.copyWith(error: 'Backup already in progress'));
+      return;
+    }
+    final now = DateTime.now();
+    if (state.lastBackupAttempt != null) {
+      final difference = now.difference(state.lastBackupAttempt!);
+      if (difference.inSeconds < 30) {
+        emit(
+          state.copyWith(
+            error:
+                'Please wait ${30 - difference.inSeconds} seconds before creating another backup',
+          ),
+        );
+        return;
+      }
+    }
     if (state.backupFolderId.isEmpty) await connect();
-    emit(state.copyWith(loading: true));
+    emit(state.copyWith(loading: true, lastBackupAttempt: now));
 
     try {
       final backup = io.File(fileSystemBackupPath);
