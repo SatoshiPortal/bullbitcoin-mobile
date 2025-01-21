@@ -224,16 +224,11 @@ GoRouter setupRouter() => GoRouter(
         GoRoute(
           path: '/cloud-backup',
           builder: (context, state) {
-            final data = state.extra! as Map<String, dynamic>;
-            final cloudCubit = data['cubit'] as CloudCubit;
-            Function(String)? onBackupSelected;
-            if (data['callback'] != null) {
-              onBackupSelected = data['callback']! as Function(String)?;
-            }
+            final cloudCubit = state.extra! as CloudCubit;
 
             return BlocProvider.value(
               value: cloudCubit,
-              child: CloudPage(onBackupSelected: onBackupSelected),
+              child: const CloudPage(),
             );
           },
         ),
