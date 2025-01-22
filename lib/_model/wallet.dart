@@ -203,16 +203,17 @@ class Wallet with _$Wallet {
     return exDescDerivedKey;
   }
 
-  String generateNextBIP85Path() {
+  //TODO; re-create this to derive any bip85 path
+  String generateNextBIP85BackupKey() {
+    const prefix = "m/1608'/";
     final highestIndex = bip85Derivations.keys
-        .where((path) => path.startsWith("m/1608'/"))
+        .where((path) => path.startsWith(prefix))
         .map(
           (path) =>
               int.tryParse(path.split('/').last.replaceAll("'", "")) ?? -1,
         )
         .fold(-1, (max, index) => index > max ? index : max);
-
-    return "m/1608'/${highestIndex + 1}'";
+    return "$prefix${highestIndex + 1}'";
   }
 
   // storage key
