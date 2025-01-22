@@ -147,6 +147,8 @@ class _ScreenState extends State<_Screen> {
                   // const Gap(8),
                   const WalletDetailsButton(),
                   const Gap(8),
+                  const Bip85PathsButton(),
+                  const Gap(8),
                   const AddressesButtons(),
                   const Gap(8),
 
@@ -413,6 +415,24 @@ class AccountingButton extends StatelessWidget {
       onPressed: () {
         final wallet = context.read<WalletBloc>().state.wallet;
         context.push('/wallet-settings/accounting', extra: wallet.id);
+      },
+    );
+  }
+}
+
+class Bip85PathsButton extends StatelessWidget {
+  const Bip85PathsButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'BIP85 Paths',
+      onPressed: () {
+        final wallet = context.read<WalletBloc>().state.wallet;
+        context.push(
+          '/wallet-settings/bip85-paths',
+          extra: wallet.id,
+        );
       },
     );
   }
