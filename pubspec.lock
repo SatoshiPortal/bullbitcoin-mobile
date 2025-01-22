@@ -1340,7 +1340,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "498509da2a2376b1534ee49f1ca65b3d14809e59"
+      resolved-ref: "716b5650e0e0f9ccb12dec89ff54b0fee6461b47"
       url: "https://github.com/StaxoLotl/recoverbull-dart.git"
     source: git
     version: "0.0.1"
