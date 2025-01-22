@@ -40,6 +40,7 @@ import 'package:bb_mobile/wallet/information_page.dart';
 import 'package:bb_mobile/wallet/wallet_page.dart';
 import 'package:bb_mobile/wallet_settings/accounting.dart';
 import 'package:bb_mobile/wallet_settings/backup.dart';
+import 'package:bb_mobile/wallet_settings/bip85_paths.dart';
 import 'package:bb_mobile/wallet_settings/test_backup.dart';
 import 'package:bb_mobile/wallet_settings/wallet_settings_page.dart';
 import 'package:flutter/material.dart';
@@ -356,7 +357,13 @@ GoRouter setupRouter() => GoRouter(
             );
           },
         ),
-
+        GoRoute(
+          path: '/wallet-settings/bip85-paths',
+          builder: (context, state) {
+            final wallet = state.extra! as String;
+            return Bip85PathsPage(wallet: wallet);
+          },
+        ),
         //
         //
         //
