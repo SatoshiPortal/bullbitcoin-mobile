@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'state.freezed.dart';
@@ -24,6 +25,9 @@ class WalletSettingsState with _$WalletSettingsState {
      * SENSITIVE
      * 
      */
+    @Default({}) Map<String, BIP85Derivation> bip85Derivations,
+    @Default(false) bool updatingBip85Derivations,
+    @Default('') String errUpdatingBip85Derivations,
     @Default(false) bool backup,
     @Default(false) bool testingBackup,
     @Default('') String errTestingBackup,
