@@ -4,17 +4,9 @@ buildscript {
         google()
         mavenCentral()
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.3'
+        classpath 'com.android.tools.build:gradle:8.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
     }
 }
 
@@ -22,17 +14,44 @@ rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
 subprojects {
     afterEvaluate { project ->
         if (project.plugins.hasPlugin("com.android.application") ||
-                project.plugins.hasPlugin("com.android.library")) {
+            project.plugins.hasPlugin("com.android.library")) {
             project.android {
-                compileSdkVersion 34
-                buildToolsVersion "34.0.0"
+                compileSdkVersion 35
+                buildToolsVersion "34.0.0" 
+            }
+        }
+        if (project.hasProperty('android')) {
+            project.android {
+                // Required for subprojects that have not adapted to requiring a namespace
+                if (namespace == null) {
+                    namespace project.group
+                }
             }
         }
     }
-}                   
+}
+
+// Force subprojects to compile Java/Kotlin to Java 17:
+subprojects {
+    afterEvaluate { project ->
+        project.plugins.withId("org.jetbrains.kotlin.android") {
+            project.android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_17
+                    targetCompatibility JavaVersion.VERSION_17
+                }
+                kotlinOptions {
+                    jvmTarget = "17"
+                }
+            }
+        }
+    }
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

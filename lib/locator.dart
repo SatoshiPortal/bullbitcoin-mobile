@@ -58,7 +58,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
-const bbVersion = '0.4.0';
+const bbVersion = '0.4.0-06';
 
 GetIt locator = GetIt.instance;
 
