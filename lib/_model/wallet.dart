@@ -203,16 +203,15 @@ class Wallet with _$Wallet {
     return exDescDerivedKey;
   }
 
-//TODO:  This is a basic implementation - adjust the logic based on your needs
   String generateNextBIP85Path() {
-    int highestIndex = -1;
-    for (final path in bip85Derivations.keys) {
-      if (path.startsWith("m/1608'/")) {
-        final index =
-            int.tryParse(path.split("'")[1].replaceAll("'", "")) ?? -1;
-        if (index > highestIndex) highestIndex = index;
-      }
-    }
+    final highestIndex = bip85Derivations.keys
+        .where((path) => path.startsWith("m/1608'/"))
+        .map(
+          (path) =>
+              int.tryParse(path.split('/').last.replaceAll("'", "")) ?? -1,
+        )
+        .fold(-1, (max, index) => index > max ? index : max);
+
     return "m/1608'/${highestIndex + 1}'";
   }
 
