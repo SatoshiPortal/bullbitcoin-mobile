@@ -499,7 +499,7 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(updatingBip85Derivations: true));
     try {
       final wallet = _wallet;
-      final path = wallet.generateNextBIP85Path();
+      final path = wallet.generateNextBIP85BackupKey();
 
       await _appWalletsRepository.getWalletServiceById(wallet.id)?.updateWallet(
         WalletUpdate().updateBIP85Paths(wallet, path, label),
