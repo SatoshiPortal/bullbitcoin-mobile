@@ -105,11 +105,10 @@ packages:
   boltz:
     dependency: "direct main"
     description:
-      path: "."
-      ref: develop
-      resolved-ref: c97a3fc27dad3ca9b6e72a21c2b41b6d534e8d52
-      url: "https://github.com/SatoshiPortal/boltz-dart.git"
-    source: git
+      name: boltz
+      sha256: "402b2ec23a0c5ab30b498228021989a1fcc702c7b6efef3cba85b7e3136a5bae"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.8"
   boolean_selector:
     dependency: transitive
@@ -880,11 +879,10 @@ packages:
   lwk:
     dependency: "direct main"
     description:
-      path: "."
-      ref: develop
-      resolved-ref: ee25fb1c66d3a82fd4a13841ac7fc21cb8b49bdc
-      url: "https://github.com/SatoshiPortal/lwk-dart.git"
-    source: git
+      name: lwk
+      sha256: "7a0fd37a367a1acf824fc1ee174c32a2576e79c56ee639126c83ca5fce7033ab"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.6"
   macros:
     dependency: transitive
@@ -1576,10 +1574,10 @@ packages:
     dependency: transitive
     description:
       name: web_socket_channel
-      sha256: "9f187088ed104edd8662ca07af4b124465893caf063ba29758f97af57e61da8f"
+      sha256: "0b8e2457400d8a859b7b2030786835a28a8e80836ef64402abef392ff4f1d0e5"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.1"
+    version: "3.0.2"
   webdriver:
     dependency: transitive
     description:

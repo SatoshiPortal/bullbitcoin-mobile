@@ -75,14 +75,14 @@ dependencies:
   auto_size_text: ^3.0.0
   no_screenshot: ^0.0.1+6
   flutter_svg: ^2.0.10+1
-  boltz:
-    git:
-      url: https://github.com/SatoshiPortal/boltz-dart.git
-      ref: develop
-  lwk:
-    git:
-      url: https://github.com/SatoshiPortal/lwk-dart.git
-      ref: develop
+  boltz: ^0.1.8
+    # git:
+    #   url: https://github.com/SatoshiPortal/boltz-dart.git
+    #   ref: develop
+  lwk: ^0.1.6
+    # git:
+    #   url: https://github.com/SatoshiPortal/lwk-dart.git
+    #   ref: develop
   oktoast: ^3.4.0
   lottie: ^3.1.0
   share_plus: ^9.0.0
