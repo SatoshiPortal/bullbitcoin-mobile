@@ -69,57 +69,75 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
           title: const Text('Pin lock'),
           automaticallyImplyLeading: canPop,
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Enter your pin code to unlock',
-              style: theme.textTheme.bodySmall,
-            ),
-            const SizedBox(height: 20),
-            BlocSelector<PinCodeUnlockBloc, PinCodeUnlockState, String>(
-              selector: (state) => state.pinCode,
-              builder: (context, pinCode) {
-                return PinCodeDisplay(
-                  pinCode: pinCode,
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            BlocSelector<PinCodeUnlockBloc, PinCodeUnlockState, List<int>>(
-              selector: (state) => state.keyboardNumbers,
-              builder: (context, keyboardNumbers) {
-                return NumericKeyboard(
-                  numbers: keyboardNumbers,
-                  onNumberPressed: (number) {
-                    context.read<PinCodeUnlockBloc>().add(
-                          PinCodeUnlockNumberAdded(number),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(
+                        'Enter your pin code to unlock',
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      const SizedBox(height: 60),
+                      BlocSelector<PinCodeUnlockBloc, PinCodeUnlockState,
+                          String>(
+                        selector: (state) => state.pinCode,
+                        builder: (context, pinCode) {
+                          return PinCodeDisplay(
+                            pinCode: pinCode,
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 60),
+                      BlocSelector<PinCodeUnlockBloc, PinCodeUnlockState,
+                          List<int>>(
+                        selector: (state) => state.keyboardNumbers,
+                        builder: (context, keyboardNumbers) {
+                          return NumericKeyboard(
+                            numbers: keyboardNumbers,
+                            onNumberPressed: (number) {
+                              context.read<PinCodeUnlockBloc>().add(
+                                    PinCodeUnlockNumberAdded(number),
+                                  );
+                            },
+                            onBackspacePressed: () {
+                              context.read<PinCodeUnlockBloc>().add(
+                                    const PinCodeUnlockNumberRemoved(),
+                                  );
+                            },
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 80),
+                    ],
+                  ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    BlocSelector<PinCodeUnlockBloc, PinCodeUnlockState, bool>(
+                      selector: (state) => state.canSubmit,
+                      builder: (context, canSubmit) {
+                        return ElevatedButton(
+                          onPressed: canSubmit
+                              ? () => context.read<PinCodeUnlockBloc>().add(
+                                    const PinCodeUnlockSubmitted(),
+                                  )
+                              : null,
+                          child: const Text('Unlock'),
                         );
-                  },
-                  onBackspacePressed: () {
-                    context.read<PinCodeUnlockBloc>().add(
-                          const PinCodeUnlockNumberRemoved(),
-                        );
-                  },
-                );
-              },
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            BlocSelector<PinCodeUnlockBloc, PinCodeUnlockState, bool>(
-              selector: (state) => state.canSubmit,
-              builder: (context, canSubmit) {
-                return ElevatedButton(
-                  onPressed: canSubmit
-                      ? () => context.read<PinCodeUnlockBloc>().add(
-                            const PinCodeUnlockSubmitted(),
-                          )
-                      : null,
-                  child: const Text('Unlock'),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-          ],
+          ),
         ),
       ),
     );

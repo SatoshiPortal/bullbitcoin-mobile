@@ -43,7 +43,14 @@ import 'package:bb_mobile/_repositories/wallet/internal_network.dart';
 import 'package:bb_mobile/_repositories/wallet/internal_wallets.dart';
 import 'package:bb_mobile/_repositories/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repositories/wallet/wallet_storage.dart';
+import 'package:bb_mobile/core/data/datasources/exchange_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/impl/bull_bitcoin_exchange_datasource_impl.dart';
+import 'package:bb_mobile/core/data/datasources/impl/hive_key_value_storage_datasource_impl.dart';
+import 'package:bb_mobile/core/data/datasources/impl/secure_key_value_storage_data_source_impl.dart';
+import 'package:bb_mobile/core/data/datasources/key_value_storage_data_source.dart';
+import 'package:bb_mobile/core/locator/di_initializer.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
+import 'package:bb_mobile/features/pin_code/locator/di_setup.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/import/bloc/words_cubit.dart';
@@ -55,8 +62,10 @@ import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hive/hive.dart';
 
 const bbVersion = '0.4.0';
 
@@ -66,13 +75,16 @@ Future setupLocator({bool fromTest = false}) async {
   if (fromTest) return;
 
   locator.registerSingleton<Logger>(Logger());
-
   await _setupStorage();
   await _setupAPIs();
   await _setupRepositories();
   await _setupAppServices();
   await _setupWalletServices();
   await _setupBlocs();
+
+  // From refactoring
+  await _registerCoreDependencies();
+  setupPinCodeDependencies();
 }
 
 Future _setupStorage() async {
@@ -312,5 +324,25 @@ Future _setupBlocs() async {
       networkRepository: locator<NetworkRepository>(),
       appWalletsRepository: locator<AppWalletsRepository>(),
     ),
+  );
+}
+
+// Core dependencies like Hive, file storage, secure storage
+Future<void> _registerCoreDependencies() async {
+  // Data sources
+  locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
+    () => SecureKeyValueStorageDataSourceImpl(
+      const FlutterSecureStorage(),
+    ),
+    instanceName: secureStorageInstanceName,
+  );
+  final settingsBox = await Hive.openBox<String>(hiveSettingsBoxName);
+  locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
+    () => HiveKeyValueStorageDataSourceImpl<String>(settingsBox),
+    instanceName: settingsStorageInstanceName,
+  );
+  locator.registerLazySingleton<ExchangeDataSource>(
+    () => BullBitcoinExchangeDataSourceImpl(),
+    instanceName: bullBitcoinExchangeInstanceName,
   );
 }

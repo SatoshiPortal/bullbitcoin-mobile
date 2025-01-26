@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/data/datasources/key_value_storage_data_source.da
 import 'package:bb_mobile/features/app_startup/locator/di_setup.dart';
 import 'package:bb_mobile/features/fiat_currencies/locator/di_setup.dart';
 import 'package:bb_mobile/features/pin_code/locator/di_setup.dart';
+import 'package:bb_mobile/features/recover_wallet/locator/di_setup.dart';
 import 'package:bb_mobile/features/wallet/locator/di_setup.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
@@ -25,6 +26,7 @@ Future<void> initializeDI() async {
   //  may depend on them.
   await _registerCoreDependencies();
   setupAppStartupDependencies();
+  setupRecoverWalletDependencies();
   setupFiatCurrenciesDependencies();
   setupWalletDependencies();
   setupPinCodeDependencies();

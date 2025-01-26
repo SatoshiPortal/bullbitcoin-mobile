@@ -4,7 +4,7 @@ import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_reposit
 class PinCodeRepositoryImpl implements PinCodeRepository {
   final KeyValueStorageDataSource<String> _storage;
 
-  static const _key = 'pinCodeKey';
+  static const _key = 'securityKey'; // Use same key as in AuthCubit
   static const _failedUnlockAttemptsKey = 'failedUnlockAttemptsKey';
 
   PinCodeRepositoryImpl(this._storage);

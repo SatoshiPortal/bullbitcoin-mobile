@@ -17,55 +17,73 @@ class ChoosePinCodeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Set Pin Code'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Enter a new pin code',
-            style: theme.textTheme.bodySmall,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Text(
+                      'Enter a new pin code',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 60),
+                    BlocSelector<PinCodeSettingBloc, PinCodeSettingState,
+                        String>(
+                      selector: (state) => state.pinCode,
+                      builder: (context, pinCode) {
+                        return PinCodeDisplay(
+                          pinCode: pinCode,
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 60),
+                    BlocSelector<PinCodeSettingBloc, PinCodeSettingState,
+                        List<int>>(
+                      selector: (state) => state.choosePinKeyboardNumbers,
+                      builder: (context, keyboardNumbers) {
+                        return NumericKeyboard(
+                          numbers: keyboardNumbers,
+                          onNumberPressed: (number) =>
+                              context.read<PinCodeSettingBloc>().add(
+                                    PinCodeSettingPinCodeNumberAdded(number),
+                                  ),
+                          onBackspacePressed: () =>
+                              context.read<PinCodeSettingBloc>().add(
+                                    const PinCodeSettingPinCodeNumberRemoved(),
+                                  ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 80),
+                  ],
+                ),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  BlocSelector<PinCodeSettingBloc, PinCodeSettingState, bool>(
+                    selector: (state) => state.isValidPinCode,
+                    builder: (context, isValidPinCode) {
+                      return ElevatedButton(
+                        onPressed: isValidPinCode
+                            ? () => context.read<PinCodeSettingBloc>().add(
+                                  const PinCodeSettingPinCodeChosen(),
+                                )
+                            : null,
+                        child: const Text('Next'),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-          BlocSelector<PinCodeSettingBloc, PinCodeSettingState, String>(
-            selector: (state) => state.pinCode,
-            builder: (context, pinCode) {
-              return PinCodeDisplay(
-                pinCode: pinCode,
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-          BlocSelector<PinCodeSettingBloc, PinCodeSettingState, List<int>>(
-            selector: (state) => state.choosePinKeyboardNumbers,
-            builder: (context, keyboardNumbers) {
-              return NumericKeyboard(
-                numbers: keyboardNumbers,
-                onNumberPressed: (number) =>
-                    context.read<PinCodeSettingBloc>().add(
-                          PinCodeSettingPinCodeNumberAdded(number),
-                        ),
-                onBackspacePressed: () =>
-                    context.read<PinCodeSettingBloc>().add(
-                          const PinCodeSettingPinCodeNumberRemoved(),
-                        ),
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-          BlocSelector<PinCodeSettingBloc, PinCodeSettingState, bool>(
-            selector: (state) => state.isValidPinCode,
-            builder: (context, isValidPinCode) {
-              return ElevatedButton(
-                onPressed: isValidPinCode
-                    ? () => context.read<PinCodeSettingBloc>().add(
-                          const PinCodeSettingPinCodeChosen(),
-                        )
-                    : null,
-                child: const Text('Next'),
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-        ],
+        ),
       ),
     );
   }

@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/router/route_error_screen.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/features/pin_code/presentation/flows/pin_code_setting_flow.dart';
+import 'package:bb_mobile/features/landing/landing_screen.dart';
 import 'package:bb_mobile/features/pin_code/presentation/screens/pin_code_unlock_screen.dart';
+import 'package:bb_mobile/features/recover_wallet/presentation/flow/recover_wallet_flow.dart';
 import 'package:bb_mobile/features/settings/presentation/screens/settings_screen.dart';
 import 'package:bb_mobile/features/settings/router/settings_routes.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,8 @@ enum AppRoute {
   landing('/landing'),
   home('/home'),
   unlock('/unlock'),
+  recoverWallet('/recover-wallet'),
+  createWallet('/create-wallet'),
   settings('/settings'),
   receive('/receive'),
   send('/send');
@@ -40,10 +43,15 @@ class AppRouter {
           }
           // Redirect to settings page to showcase pin code feature for now,
           //  normally should redirect to landing page by returning null
-          return AppRoute.settings.path;
-          // return null;
+          // return AppRoute.settings.path;
+          return null;
         },
-        builder: (context, state) => const Text('Landing'),
+        builder: (context, state) => const LandingScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.recoverWallet.name,
+        path: AppRoute.recoverWallet.path,
+        builder: (context, state) => const RecoverWalletFlow(),
       ),
       GoRoute(
         name: AppRoute.home.name,

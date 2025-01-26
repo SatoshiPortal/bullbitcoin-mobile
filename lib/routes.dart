@@ -5,6 +5,7 @@ import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
 import 'package:bb_mobile/create/page.dart';
+import 'package:bb_mobile/features/pin_code/presentation/screens/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/home/market.dart';
 import 'package:bb_mobile/home/transactions.dart';

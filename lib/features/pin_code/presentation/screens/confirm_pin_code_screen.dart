@@ -35,56 +35,74 @@ class ConfirmPinCodeScreen extends StatelessWidget {
             onPressed: () => backHandler(),
           ),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Re-enter the new pin code',
-              style: theme.textTheme.bodySmall,
-            ),
-            const SizedBox(height: 20),
-            BlocSelector<PinCodeSettingBloc, PinCodeSettingState, String>(
-              selector: (state) => state.pinCodeConfirmation,
-              builder: (context, pinCode) {
-                return PinCodeDisplay(
-                  pinCode: pinCode,
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            BlocSelector<PinCodeSettingBloc, PinCodeSettingState, List<int>>(
-              selector: (state) => state.confirmPinKeyboardNumbers,
-              builder: (context, keyboardNumbers) {
-                return NumericKeyboard(
-                  numbers: keyboardNumbers,
-                  onNumberPressed: (number) => context
-                      .read<PinCodeSettingBloc>()
-                      .add(
-                        PinCodeSettingPinCodeConfirmationNumberAdded(number),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Text(
+                        'Re-enter the new pin code',
+                        style: theme.textTheme.bodySmall,
                       ),
-                  onBackspacePressed: () =>
-                      context.read<PinCodeSettingBloc>().add(
-                            const PinCodeSettingPinCodeConfirmationNumberRemoved(),
-                          ),
-                );
-              },
+                      const SizedBox(height: 60),
+                      BlocSelector<PinCodeSettingBloc, PinCodeSettingState,
+                          String>(
+                        selector: (state) => state.pinCodeConfirmation,
+                        builder: (context, pinCode) {
+                          return PinCodeDisplay(
+                            pinCode: pinCode,
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 60),
+                      BlocSelector<PinCodeSettingBloc, PinCodeSettingState,
+                          List<int>>(
+                        selector: (state) => state.confirmPinKeyboardNumbers,
+                        builder: (context, keyboardNumbers) {
+                          return NumericKeyboard(
+                            numbers: keyboardNumbers,
+                            onNumberPressed: (number) =>
+                                context.read<PinCodeSettingBloc>().add(
+                                      PinCodeSettingPinCodeConfirmationNumberAdded(
+                                          number),
+                                    ),
+                            onBackspacePressed: () =>
+                                context.read<PinCodeSettingBloc>().add(
+                                      const PinCodeSettingPinCodeConfirmationNumberRemoved(),
+                                    ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 80),
+                    ],
+                  ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    BlocSelector<PinCodeSettingBloc, PinCodeSettingState, bool>(
+                      selector: (state) => state.canConfirm,
+                      builder: (context, canConfirm) {
+                        return ElevatedButton(
+                          onPressed: canConfirm
+                              ? () => context.read<PinCodeSettingBloc>().add(
+                                    const PinCodeSettingPinCodeConfirmed(),
+                                  )
+                              : null,
+                          child: const Text('Confirm'),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            BlocSelector<PinCodeSettingBloc, PinCodeSettingState, bool>(
-              selector: (state) => state.canConfirm,
-              builder: (context, canConfirm) {
-                return ElevatedButton(
-                  onPressed: canConfirm
-                      ? () => context.read<PinCodeSettingBloc>().add(
-                            const PinCodeSettingPinCodeConfirmed(),
-                          )
-                      : null,
-                  child: const Text('Confirm'),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-          ],
+          ),
         ),
       ),
     );
