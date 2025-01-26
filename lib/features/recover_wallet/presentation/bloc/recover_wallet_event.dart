@@ -20,6 +20,18 @@ class RecoverWalletWordChanged extends RecoverWalletEvent {
   });
 }
 
+class RecoverWalletPassphraseChanged extends RecoverWalletEvent {
+  final String passphrase;
+
+  const RecoverWalletPassphraseChanged(this.passphrase);
+}
+
+class RecoverWalletLabelChanged extends RecoverWalletEvent {
+  final String label;
+
+  const RecoverWalletLabelChanged(this.label);
+}
+
 class RecoverWalletConfirmed extends RecoverWalletEvent {
   const RecoverWalletConfirmed();
 }

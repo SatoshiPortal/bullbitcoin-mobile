@@ -68,19 +68,24 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
   }
 
   OverlayEntry _createOverlayEntry() {
+    final renderBox = context.findRenderObject()! as RenderBox;
+    final size = renderBox.size; // Size of the TextField
+    final offset =
+        renderBox.localToGlobal(Offset.zero); // Position of the TextField
+
     final hintWords =
         context.read<RecoverWalletBloc>().state.hintWords[widget.wordIndex] ??
             [];
 
     return OverlayEntry(
       builder: (context) => Positioned(
-        width: MediaQuery.of(context).size.width * 0.4,
+        width: size.width - 24,
         child: CompositedTransformFollower(
           link: _layerLink,
           showWhenUnlinked: false,
-          offset: const Offset(0, 50),
+          offset: Offset(24, size.height),
           child: Material(
-            elevation: 4,
+            elevation: 2,
             child: ListView(
               padding: EdgeInsets.zero,
               shrinkWrap: true,
@@ -125,10 +130,54 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
       },
       child: CompositedTransformTarget(
         link: _layerLink,
-        child: TextField(
-          controller: _controller,
-          focusNode: _focusNode,
-          onEditingComplete: _removeOverlay,
+        child: Row(
+          children: [
+            SizedBox(
+              width: 24,
+              child: Text(
+                '${widget.wordIndex + 1}',
+              ),
+            ),
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                focusNode: _focusNode,
+                onEditingComplete: _removeOverlay,
+                decoration: InputDecoration(
+                  hintText: 'Enter text...', // Placeholder text
+                  hintStyle: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12, // Vertical padding inside TextField
+                    horizontal: 10, // Horizontal padding inside TextField
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8), // Rounded corners
+                    borderSide: const BorderSide(
+                      color: Colors.grey, // Border color
+                      width: 1.0, // Border width
+                    ),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8), // Rounded corners
+                    borderSide: const BorderSide(
+                      color: Colors.grey, // Border color for enabled state
+                      width: 1.0,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8), // Rounded corners
+                    borderSide: const BorderSide(
+                      color: Colors.blue, // Border color when focused
+                      width: 2.0,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

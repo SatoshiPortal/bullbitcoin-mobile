@@ -15,6 +15,8 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
         super(const RecoverWalletState()) {
     on<RecoverWalletWordsCountChanged>(_onWordsCountChanged);
     on<RecoverWalletWordChanged>(_onWordChanged);
+    on<RecoverWalletPassphraseChanged>(_onPassphraseChanged);
+    on<RecoverWalletLabelChanged>(_onLabelChanged);
     on<RecoverWalletConfirmed>(_onConfirmed);
   }
 
@@ -25,8 +27,8 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     RecoverWalletWordsCountChanged event,
     Emitter<RecoverWalletState> emit,
   ) {
-    final words = state.validWords;
-    final hintWords = state.hintWords;
+    final words = Map<int, String>.from(state.validWords);
+    final hintWords = Map<int, List<String>>.from(state.hintWords);
     // Remove words that are not needed anymore if the wordsCount is decreased,
     //  keep the rest so the user should not re-enter them if started with
     //  a wrong wordsCount.
@@ -53,13 +55,12 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     // Update the hint words for the entered word
     hintWords[wordIndex] = await _findMnemonicWordsUseCase.execute(word);
 
-    if (hintWords[wordIndex]?.length == 1 &&
-        hintWords[wordIndex]?.first == word) {
+    if (hintWords[wordIndex]?.contains(word) == true) {
       // A valid mnemonic word was entered,so add it to validWords
       validWords[event.index] = event.word;
     } else {
-      // None or more than one possible words, so not a valid mnemonic word yet.
-      // Clear the index of the recovered words.
+      // Word is not in the list of valid words, so remove any previous
+      //  valid word at the same index
       validWords.remove(event.index);
     }
 
@@ -69,6 +70,20 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
         hintWords: hintWords,
       ),
     );
+  }
+
+  void _onPassphraseChanged(
+    RecoverWalletPassphraseChanged event,
+    Emitter<RecoverWalletState> emit,
+  ) {
+    emit(state.copyWith(passphrase: event.passphrase));
+  }
+
+  void _onLabelChanged(
+    RecoverWalletLabelChanged event,
+    Emitter<RecoverWalletState> emit,
+  ) {
+    emit(state.copyWith(label: event.label));
   }
 
   Future<void> _onConfirmed(

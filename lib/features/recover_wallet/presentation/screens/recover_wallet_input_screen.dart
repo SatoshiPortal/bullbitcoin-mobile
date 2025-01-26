@@ -1,5 +1,8 @@
 import 'package:bb_mobile/features/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
+import 'package:bb_mobile/features/recover_wallet/presentation/widgets/label_input_field.dart';
 import 'package:bb_mobile/features/recover_wallet/presentation/widgets/mnemonic_word_input_field.dart';
+import 'package:bb_mobile/features/recover_wallet/presentation/widgets/mnemonic_words_count_selection.dart';
+import 'package:bb_mobile/features/recover_wallet/presentation/widgets/passphrase_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,6 +12,9 @@ class RecoverWalletInputScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Recover Wallet'),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -22,22 +28,42 @@ class RecoverWalletInputScreen extends StatelessWidget {
                     BlocSelector<RecoverWalletBloc, RecoverWalletState, int>(
                       selector: (state) => state.wordsCount,
                       builder: (context, wordsCount) {
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          itemCount: wordsCount,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                          ),
-                          itemBuilder: (context, index) {
-                            return MnemonicWordInputField(
-                              wordIndex: index,
-                            );
-                          },
+                        return Column(
+                          children: [
+                            const SizedBox(height: 20),
+                            MnemonicWordsCountSelection(
+                              selectedWordsCount: wordsCount,
+                            ),
+                            const SizedBox(height: 40),
+                            GridView.builder(
+                              physics:
+                                  const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling
+                              shrinkWrap:
+                                  true, // Allow GridView to take the height it needs
+                              itemCount: wordsCount,
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 32,
+                                childAspectRatio: 4,
+                              ),
+
+                              itemBuilder: (context, index) {
+                                return MnemonicWordInputField(
+                                  wordIndex: index,
+                                );
+                              },
+                            ),
+                          ],
                         );
                       },
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 40),
+                    const PassphraseInputField(),
+                    const SizedBox(height: 40),
+                    const LabelInputField(),
+                    const SizedBox(height: 80),
                   ],
                 ),
               ),

@@ -9,6 +9,8 @@ sealed class RecoverWalletState implements _$RecoverWalletState {
     @Default(12) int wordsCount,
     @Default({}) Map<int, String> validWords,
     @Default({}) Map<int, List<String>> hintWords,
+    @Default('') String passphrase,
+    @Default('') String label,
     @Default(false) bool isConfirming,
     @Default(null) Object? error,
   }) = _RecoverWalletState;
