@@ -9,6 +9,14 @@ class LandingScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Landing Screen'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              GoRouter.of(context).pushNamed(AppRoute.settings.name);
+            },
+            icon: const Icon(Icons.settings),
+          ),
+        ],
       ),
       body: Center(
         child: Column(

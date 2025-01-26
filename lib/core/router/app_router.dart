@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/router/route_error_screen.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
+import 'package:bb_mobile/features/create_wallet/presentation/flow/create_wallet_flow.dart';
 import 'package:bb_mobile/features/landing/landing_screen.dart';
 import 'package:bb_mobile/features/pin_code/presentation/screens/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/features/recover_wallet/presentation/flow/recover_wallet_flow.dart';
@@ -47,6 +48,11 @@ class AppRouter {
           return null;
         },
         builder: (context, state) => const LandingScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.createWallet.name,
+        path: AppRoute.createWallet.path,
+        builder: (context, state) => const CreateWalletFlow(),
       ),
       GoRoute(
         name: AppRoute.recoverWallet.name,
