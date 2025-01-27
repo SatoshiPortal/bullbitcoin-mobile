@@ -32,16 +32,16 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 34
-    ndkVersion flutter.ndkVersion
+    compileSdk = 34
 
+    ndkVersion flutter.ndkVersion
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = "21"
     }
 
     sourceSets {
@@ -49,7 +49,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.bullbitcoin.mobile'
+        applicationId = 'com.bullbitcoin.mobile'
         minSdkVersion 24
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
@@ -77,7 +77,10 @@ android {
 flutter {
     source '../..'
 }
+<<<<<<< HEAD
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
+=======
+>>>>>>> 2bce7651 (chore: update Android build configuration to Java 21 and SDK 34)
