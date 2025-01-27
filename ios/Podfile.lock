@@ -157,7 +157,7 @@ SPEC CHECKSUMS:
   payjoin_flutter: 6397d7b698cdad6453be4949ab6aca1863f6c5e5
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
-  SDWebImage: 73c6079366fea25fa4bb9640d5fb58f0893facd8
+  SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
