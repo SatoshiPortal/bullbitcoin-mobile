@@ -105,10 +105,11 @@ packages:
   boltz:
     dependency: "direct main"
     description:
-      name: boltz
-      sha256: "402b2ec23a0c5ab30b498228021989a1fcc702c7b6efef3cba85b7e3136a5bae"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "469bc1347f6a904ad7c0b7733322b09d1f970dd5"
+      resolved-ref: "469bc1347f6a904ad7c0b7733322b09d1f970dd5"
+      url: "https://github.com/StaxoLotl/boltz-dart.git"
+    source: git
     version: "0.1.8"
   boolean_selector:
     dependency: transitive

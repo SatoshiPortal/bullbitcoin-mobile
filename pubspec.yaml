@@ -75,8 +75,10 @@ dependencies:
   auto_size_text: ^3.0.0
   no_screenshot: ^0.0.1+6
   flutter_svg: ^2.0.10+1
-  boltz: ^0.1.8
-    # git:
+  boltz:
+    git:
+      url: https://github.com/StaxoLotl/boltz-dart.git
+      ref: 469bc1347f6a904ad7c0b7733322b09d1f970dd5
     #   url: https://github.com/SatoshiPortal/boltz-dart.git
     #   ref: develop
   lwk: ^0.1.6
