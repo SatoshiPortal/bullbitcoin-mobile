@@ -10,6 +10,6 @@ class GetAvailableFiatCurrenciesUseCase {
   Future<List<String>> execute() async {
     final currencies = await _fiatCurrenciesRepository.getAvailableCurrencies();
 
-    return currencies.map((e) => e.code).toList();
+    return currencies;
   }
 }

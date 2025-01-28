@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/data/datasources/exchange_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage_data_source.dart';
-import 'package:bb_mobile/core/data/models/fiat_currency_model.dart';
 import 'package:bb_mobile/features/fiat_currencies/domain/repositories/fiat_currencies_repository.dart';
 import 'package:decimal/decimal.dart';
 
@@ -18,7 +17,7 @@ class FiatCurrenciesRepositoryImpl implements FiatCurrenciesRepository {
         _storage = storage;
 
   @override
-  Future<List<FiatCurrencyModel>> getAvailableCurrencies() {
+  Future<List<String>> getAvailableCurrencies() {
     return _exchange.getAvailableCurrencies();
   }
 

@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/data/datasources/exchange_data_source.dart';
-import 'package:bb_mobile/core/data/models/fiat_currency_model.dart';
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 
@@ -17,7 +16,7 @@ class BullBitcoinExchangeDataSourceImpl implements ExchangeDataSource {
             );
 
   @override
-  Future<List<FiatCurrencyModel>> getAvailableCurrencies() async {
+  Future<List<String>> getAvailableCurrencies() async {
     // TODO: implement getAvailableCurrencies
     throw UnimplementedError();
   }
