@@ -529,6 +529,11 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.13.1"
+  flutter_localizations:
+    dependency: "direct main"
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_native_splash:
     dependency: "direct main"
     description:
@@ -626,10 +631,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_translate
-      sha256: "8b1c449bf6d17753e6f188185f735ebc0a328d21d745878a43be66857de8ebb3"
+      sha256: bc09db690098879e3f90eb3aac3499e5282f32d5f9d8f1cc597d67bbc1e065ef
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.4"
+    version: "4.1.0"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -793,10 +798,10 @@ packages:
     dependency: "direct main"
     description:
       name: intl
-      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      sha256: d6f56758b7d3014a48af9701c085700aac781a92a87a62b1333b46d8879661cf
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.1"
+    version: "0.19.0"
   io:
     dependency: transitive
     description:
@@ -1070,14 +1075,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.0"
-  pattern_formatter:
-    dependency: "direct main"
-    description:
-      name: pattern_formatter
-      sha256: "987d24df31179325897f58258132492e86de577c6ae50c8102b9a1342f607688"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
   payjoin_flutter:
     dependency: "direct main"
     description:

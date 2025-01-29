@@ -3,8 +3,11 @@ import 'package:bb_mobile/core/router/app_router.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/presentation/widgets/app_startup_widget.dart';
 import 'package:bb_mobile/features/fiat_currencies/presentation/bloc/fiat_currencies_bloc.dart';
+import 'package:bb_mobile/features/language/domain/entities/language.dart';
+import 'package:bb_mobile/features/language/presentation/bloc/language_settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BullBitcoinWalletApp extends StatefulWidget {
   const BullBitcoinWalletApp({super.key});
@@ -76,6 +79,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(
+          value: locator<LanguageSettingsCubit>()..getFromSettings(),
+        ),
+        BlocProvider.value(
           value: locator<AppStartupBloc>()
             ..add(
               const AppStartupStarted(),
@@ -88,14 +94,19 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             ),
         ),
       ],
-      child: MaterialApp.router(
-        title: 'BullBitcoin Wallet',
-        routeInformationParser: router.routeInformationParser,
-        routeInformationProvider: router.routeInformationProvider,
-        routerDelegate: router.routerDelegate,
-        builder: (_, child) {
-          return AppStartupWidget(app: child!);
-        },
+      child: BlocBuilder<LanguageSettingsCubit, Language?>(
+        builder: (context, language) => MaterialApp.router(
+          title: 'BullBitcoin Wallet',
+          routeInformationParser: router.routeInformationParser,
+          routeInformationProvider: router.routeInformationProvider,
+          routerDelegate: router.routerDelegate,
+          locale: language?.locale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          builder: (_, child) {
+            return AppStartupWidget(app: child!);
+          },
+        ),
       ),
     );
   }

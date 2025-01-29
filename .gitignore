@@ -65,6 +65,7 @@ migrate_working_dir/
 .pub/
 /build/
 **/ephemeral/
+untranslated-messages.txt
 
 # Symbolication related
 app.*.symbols

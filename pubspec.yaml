@@ -45,11 +45,8 @@ dependencies:
   carousel_slider: ^4.2.1
   qr_flutter: ^4.1.0
   flutter_translate: ^4.0.3
-  # flutter_localizations:
-  # sdk: flutter
   dio: ^5.2.1+1
   timeago: ^3.3.0
-  pattern_formatter: ^3.0.0
   flutter_native_splash: ^2.4.0
   url_launcher: ^6.1.10
   file_picker: ^8.0.3
@@ -63,7 +60,6 @@ dependencies:
   document_file_save_plus: ^2.0.0
   flutter_file_dialog: ^3.0.1
   currency_text_input_formatter: ^2.1.10
-  intl: ^0.18.1
   hex: ^0.2.0
   bloc_concurrency: ^0.2.5
   # flutter_zxing: ^1.4.1
@@ -94,6 +90,9 @@ dependencies:
       url: https://github.com/SatoshiPortal/lwk-dart.git
       ref: develop
   json_annotation: ^4.9.0
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
 dev_dependencies:
   build_runner: ^2.4.9
@@ -109,6 +108,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
 
 flutter:
+  generate: true # Needed for code generation, for example for internationalization
   uses-material-design: true
 
   assets:

@@ -1,0 +1,11 @@
+{
+  "@@locale": "fr",
+  "onboardingScreenTitle": "Bienvenue",
+  "onboardingCreateWalletButtonLabel": "Créer un wallet",
+  "onboardingRecoverWalletButtonLabel": "Restaurer un wallet",
+  "settingsScreenTitle": "Paramètres",
+  "pinCodeSettingsButtonLabel": "Code PIN",
+  "languageSettingsButtonLabel": "Langue",
+  "fiatCurrencySettingsButtonLabel": "Devise fiduciaire",
+  "languageSettingsScreenTitle": "Langue"
+}

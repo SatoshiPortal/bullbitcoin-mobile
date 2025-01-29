@@ -1,10 +1,13 @@
 import 'package:bb_mobile/core/locator/di_initializer.dart';
+import 'package:bb_mobile/core/presentation/build_context_extensions.dart';
 import 'package:bb_mobile/core/router/app_router.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/presentation/widgets/create_wallet_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
@@ -20,7 +23,7 @@ class OnboardingScreen extends StatelessWidget {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Onboarding Screen'),
+            title: Text(context.loc.onboardingScreenTitle),
             actions: [
               IconButton(
                 onPressed: () {
@@ -37,10 +40,10 @@ class OnboardingScreen extends StatelessWidget {
                 const CreateWalletButton(),
                 const SizedBox(height: 20),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     GoRouter.of(context).pushNamed(AppRoute.recoverWallet.name);
                   },
-                  child: const Text('Recover Wallet'),
+                  child: Text(context.loc.onboardingRecoverWalletButtonLabel),
                 ),
               ],
             ),

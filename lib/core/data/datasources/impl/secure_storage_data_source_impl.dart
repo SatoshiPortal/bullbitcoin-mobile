@@ -1,11 +1,10 @@
 import 'package:bb_mobile/core/data/datasources/key_value_storage_data_source.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class SecureKeyValueStorageDataSourceImpl
-    implements KeyValueStorageDataSource<String> {
+class SecureStorageDataSourceImpl implements KeyValueStorageDataSource<String> {
   final FlutterSecureStorage _storage;
 
-  SecureKeyValueStorageDataSourceImpl(this._storage);
+  SecureStorageDataSourceImpl(this._storage);
 
   @override
   Future<void> saveValue({required String key, required String value}) async {
