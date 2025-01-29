@@ -6,7 +6,6 @@ class PinCodeRepositoryImpl implements PinCodeRepository {
 
   static const _key =
       'securityKey'; // Use same key as in AuthCubit to stay backward compatible
-  static const _failedUnlockAttemptsKey = 'failedUnlockAttemptsKey';
 
   PinCodeRepositoryImpl(this._storage);
 
@@ -33,21 +32,6 @@ class PinCodeRepositoryImpl implements PinCodeRepository {
     }
 
     return pin == pinCode;
-  }
-
-  @override
-  Future<void> setFailedUnlockAttempts(int attempts) async {
-    await _storage.saveValue(
-      key: _failedUnlockAttemptsKey,
-      value: attempts.toString(),
-    );
-  }
-
-  @override
-  Future<int> getFailedUnlockAttempts() async {
-    final timeout = await _storage.getValue(_failedUnlockAttemptsKey);
-
-    return int.tryParse(timeout ?? '0') ?? 0;
   }
 }
 

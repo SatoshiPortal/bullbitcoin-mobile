@@ -22,30 +22,29 @@ class PinCodeSettingBloc
             maxPinCodeLength: maxPinCodeLength,
           ),
         ) {
-    on<PinCodeSettingStarted>(_onPinCodeSettingStarted);
-    on<PinCodeSettingPinCodeNumberAdded>(_onPinCodeSettingPinCodeNumberAdded);
-    on<PinCodeSettingPinCodeNumberRemoved>(
-        _onPinCodeSettingPinCodeNumberRemoved);
+    on<PinCodeSettingStarted>(_onStarted);
+    on<PinCodeSettingPinCodeNumberAdded>(_onPinCodeNumberAdded);
+    on<PinCodeSettingPinCodeNumberRemoved>(_onPinCodeNumberRemoved);
     on<PinCodeSettingPinCodeConfirmationNumberAdded>(
-      _onPinCodeSettingPinCodeConfirmationNumberAdded,
+      _onPinCodeConfirmationNumberAdded,
     );
     on<PinCodeSettingPinCodeConfirmationNumberRemoved>(
-      _onPinCodeSettingPinCodeConfirmationNumberRemoved,
+      _onPinCodeConfirmationNumberRemoved,
     );
-    on<PinCodeSettingPinCodeChosen>(_onPinCodeSettingPinCodeChosen);
-    on<PinCodeSettingPinCodeConfirmed>(_onPinCodeSettingConfirmed);
+    on<PinCodeSettingPinCodeChosen>(_onPinCodeChosen);
+    on<PinCodeSettingPinCodeConfirmed>(_onConfirmed);
   }
 
   final SetPinCodeUsecase _setPinCodeUsecase;
 
-  Future<void> _onPinCodeSettingStarted(
+  Future<void> _onStarted(
     PinCodeSettingStarted event,
     Emitter<PinCodeSettingState> emit,
   ) async {
     emit(state.copyWith(status: PinCodeSettingStatus.choose));
   }
 
-  Future<void> _onPinCodeSettingPinCodeNumberAdded(
+  Future<void> _onPinCodeNumberAdded(
     PinCodeSettingPinCodeNumberAdded event,
     Emitter<PinCodeSettingState> emit,
   ) async {
@@ -60,7 +59,7 @@ class PinCodeSettingBloc
     );
   }
 
-  Future<void> _onPinCodeSettingPinCodeNumberRemoved(
+  Future<void> _onPinCodeNumberRemoved(
     PinCodeSettingPinCodeNumberRemoved event,
     Emitter<PinCodeSettingState> emit,
   ) async {
@@ -75,7 +74,7 @@ class PinCodeSettingBloc
     );
   }
 
-  Future<void> _onPinCodeSettingPinCodeChosen(
+  Future<void> _onPinCodeChosen(
     PinCodeSettingPinCodeChosen event,
     Emitter<PinCodeSettingState> emit,
   ) async {
@@ -86,7 +85,7 @@ class PinCodeSettingBloc
     );
   }
 
-  Future<void> _onPinCodeSettingPinCodeConfirmationNumberAdded(
+  Future<void> _onPinCodeConfirmationNumberAdded(
     PinCodeSettingPinCodeConfirmationNumberAdded event,
     Emitter<PinCodeSettingState> emit,
   ) async {
@@ -102,7 +101,7 @@ class PinCodeSettingBloc
     );
   }
 
-  Future<void> _onPinCodeSettingPinCodeConfirmationNumberRemoved(
+  Future<void> _onPinCodeConfirmationNumberRemoved(
     PinCodeSettingPinCodeConfirmationNumberRemoved event,
     Emitter<PinCodeSettingState> emit,
   ) async {
@@ -120,7 +119,7 @@ class PinCodeSettingBloc
     );
   }
 
-  Future<void> _onPinCodeSettingConfirmed(
+  Future<void> _onConfirmed(
     PinCodeSettingPinCodeConfirmed event,
     Emitter<PinCodeSettingState> emit,
   ) async {

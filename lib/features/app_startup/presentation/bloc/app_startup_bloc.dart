@@ -1,12 +1,12 @@
+import 'package:bb_mobile/features/app_startup/domain/usecases/init_wallets_usecase.dart';
 import 'package:bb_mobile/features/wallet/domain/usecases/fetch_all_wallets_metadata_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/init_wallets_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'app_startup_bloc.freezed.dart';
 part 'app_startup_event.dart';
 part 'app_startup_state.dart';
-part 'app_startup_bloc.freezed.dart';
 
 class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   AppStartupBloc({

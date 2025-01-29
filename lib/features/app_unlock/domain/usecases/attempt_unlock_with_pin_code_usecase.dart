@@ -1,15 +1,19 @@
+import 'package:bb_mobile/features/app_unlock/domain/repositories/failed_unlock_attempts_repository.dart';
+import 'package:bb_mobile/features/app_unlock/domain/services/timeout_calculator.dart';
 import 'package:bb_mobile/features/pin_code/domain/entities/unlock_attempt.dart';
 import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_repository.dart';
-import 'package:bb_mobile/features/pin_code/domain/services/timeout_calculator.dart';
 
 class AttemptUnlockWithPinCodeUseCase {
   final PinCodeRepository _pinCodeRepository;
+  final FailedUnlockAttemptsRepository _failedUnlockAttemptsRepository;
   final TimeoutCalculator _timeoutCalculator;
 
   AttemptUnlockWithPinCodeUseCase({
     required PinCodeRepository pinCodeRepository,
+    required FailedUnlockAttemptsRepository failedUnlockAttemptsRepository,
     required TimeoutCalculator timeoutCalculator,
   })  : _pinCodeRepository = pinCodeRepository,
+        _failedUnlockAttemptsRepository = failedUnlockAttemptsRepository,
         _timeoutCalculator = timeoutCalculator;
 
   Future<UnlockAttempt> execute(String pinCode) async {
@@ -20,7 +24,7 @@ class AttemptUnlockWithPinCodeUseCase {
     if (!isCorrectPinCode) {
       // Get the current number of failed attempts
       final currentNrOfAttempts =
-          await _pinCodeRepository.getFailedUnlockAttempts();
+          await _failedUnlockAttemptsRepository.getFailedUnlockAttempts();
 
       // Increment the failed attempts
       attempts = currentNrOfAttempts + 1;
@@ -30,7 +34,7 @@ class AttemptUnlockWithPinCodeUseCase {
     }
 
     // Save the new number of failed attempts
-    await _pinCodeRepository.setFailedUnlockAttempts(attempts);
+    await _failedUnlockAttemptsRepository.setFailedUnlockAttempts(attempts);
 
     return UnlockAttempt(
       success: isCorrectPinCode,

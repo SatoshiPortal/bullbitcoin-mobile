@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/pin_code/presentation/blocs/pin_code_setting/pin_code_setting_bloc.dart';
+import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:bb_mobile/features/pin_code/presentation/widgets/numeric_keyboard.dart';
 import 'package:bb_mobile/features/pin_code/presentation/widgets/pin_code_display.dart';
 import 'package:flutter/material.dart';

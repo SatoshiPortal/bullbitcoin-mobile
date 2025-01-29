@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/locator/di_initializer.dart';
-import 'package:bb_mobile/features/pin_code/presentation/blocs/pin_code_unlock/pin_code_unlock_bloc.dart';
+import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/pin_code/presentation/widgets/numeric_keyboard.dart';
 import 'package:bb_mobile/features/pin_code/presentation/widgets/pin_code_display.dart';
 import 'package:flutter/material.dart';
@@ -18,13 +18,13 @@ class PinCodeUnlockScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => locator<PinCodeUnlockBloc>()
+      create: (_) => locator<AppUnlockBloc>()
         ..add(
-          const PinCodeUnlockStarted(),
+          const AppUnlockStarted(),
         ),
-      child: BlocListener<PinCodeUnlockBloc, PinCodeUnlockState>(
+      child: BlocListener<AppUnlockBloc, AppUnlockState>(
         listener: (context, state) async {
-          if (state.status == PinCodeUnlockStatus.success) {
+          if (state.status == AppUnlockStatus.success) {
             onSuccess();
           } else if (state.timeoutSeconds > 0) {
             await Future.delayed(
@@ -32,8 +32,8 @@ class PinCodeUnlockScreen extends StatelessWidget {
               () {
                 if (context.mounted) {
                   context
-                      .read<PinCodeUnlockBloc>()
-                      .add(const PinCodeUnlockCountdownTick());
+                      .read<AppUnlockBloc>()
+                      .add(const AppUnlockCountdownTick());
                 }
               },
             );
@@ -82,8 +82,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                         style: theme.textTheme.bodySmall,
                       ),
                       const SizedBox(height: 60),
-                      BlocSelector<PinCodeUnlockBloc, PinCodeUnlockState,
-                          String>(
+                      BlocSelector<AppUnlockBloc, AppUnlockState, String>(
                         selector: (state) => state.pinCode,
                         builder: (context, pinCode) {
                           return PinCodeDisplay(
@@ -92,20 +91,19 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                         },
                       ),
                       const SizedBox(height: 60),
-                      BlocSelector<PinCodeUnlockBloc, PinCodeUnlockState,
-                          List<int>>(
+                      BlocSelector<AppUnlockBloc, AppUnlockState, List<int>>(
                         selector: (state) => state.keyboardNumbers,
                         builder: (context, keyboardNumbers) {
                           return NumericKeyboard(
                             numbers: keyboardNumbers,
                             onNumberPressed: (number) {
-                              context.read<PinCodeUnlockBloc>().add(
-                                    PinCodeUnlockNumberAdded(number),
+                              context.read<AppUnlockBloc>().add(
+                                    AppUnlockPinCodeNumberAdded(number),
                                   );
                             },
                             onBackspacePressed: () {
-                              context.read<PinCodeUnlockBloc>().add(
-                                    const PinCodeUnlockNumberRemoved(),
+                              context.read<AppUnlockBloc>().add(
+                                    const AppUnlockPinCodeNumberRemoved(),
                                   );
                             },
                           );
@@ -119,13 +117,13 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    BlocSelector<PinCodeUnlockBloc, PinCodeUnlockState, bool>(
+                    BlocSelector<AppUnlockBloc, AppUnlockState, bool>(
                       selector: (state) => state.canSubmit,
                       builder: (context, canSubmit) {
                         return ElevatedButton(
                           onPressed: canSubmit
-                              ? () => context.read<PinCodeUnlockBloc>().add(
-                                    const PinCodeUnlockSubmitted(),
+                              ? () => context.read<AppUnlockBloc>().add(
+                                    const AppUnlockSubmitted(),
                                   )
                               : null,
                           child: const Text('Unlock'),

@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/router/route_error_screen.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/features/create_wallet/presentation/flow/create_wallet_flow.dart';
-import 'package:bb_mobile/features/landing/landing_screen.dart';
-import 'package:bb_mobile/features/pin_code/presentation/screens/pin_code_unlock_screen.dart';
+import 'package:bb_mobile/features/app_unlock/presentation/screens/pin_code_unlock_screen.dart';
+import 'package:bb_mobile/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:bb_mobile/features/recover_wallet/presentation/flow/recover_wallet_flow.dart';
 import 'package:bb_mobile/features/settings/presentation/screens/settings_screen.dart';
 import 'package:bb_mobile/features/settings/router/settings_routes.dart';
@@ -13,11 +12,10 @@ import 'package:go_router/go_router.dart';
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 enum AppRoute {
-  landing('/landing'),
+  onboarding('/onboarding'),
+  recoverWallet('/recover-wallet'),
   home('/home'),
   unlock('/unlock'),
-  recoverWallet('/recover-wallet'),
-  createWallet('/create-wallet'),
   settings('/settings'),
   receive('/receive'),
   send('/send');
@@ -30,11 +28,11 @@ enum AppRoute {
 class AppRouter {
   static final router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoute.landing.path,
+    initialLocation: AppRoute.onboarding.path,
     routes: [
       GoRoute(
-        name: AppRoute.landing.name,
-        path: AppRoute.landing.path,
+        name: AppRoute.onboarding.name,
+        path: AppRoute.onboarding.path,
         redirect: (context, state) {
           // Check AppStartupState to skip landing if user has existing wallets
           final appStartupState = context.read<AppStartupBloc>().state;
@@ -47,12 +45,7 @@ class AppRouter {
           // return AppRoute.settings.path;
           return null;
         },
-        builder: (context, state) => const LandingScreen(),
-      ),
-      GoRoute(
-        name: AppRoute.createWallet.name,
-        path: AppRoute.createWallet.path,
-        builder: (context, state) => const CreateWalletFlow(),
+        builder: (context, state) => const OnboardingScreen(),
       ),
       GoRoute(
         name: AppRoute.recoverWallet.name,

@@ -3,14 +3,14 @@ import 'package:bb_mobile/features/fiat_currencies/domain/usecases/get_available
 import 'package:bb_mobile/features/fiat_currencies/domain/usecases/get_fiat_currency_usecase.dart';
 import 'package:bb_mobile/features/fiat_currencies/domain/usecases/set_fiat_currency_usecase.dart';
 import 'package:decimal/decimal.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'fiat_currencies_bloc.freezed.dart';
 part 'fiat_currencies_event.dart';
 part 'fiat_currencies_state.dart';
-part 'fiat_currencies_bloc.freezed.dart';
 
 class FiatCurrenciesBloc
     extends Bloc<FiatCurrenciesEvent, FiatCurrenciesState> {

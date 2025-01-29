@@ -1,6 +1,6 @@
-part of 'pin_code_unlock_bloc.dart';
+part of 'app_unlock_bloc.dart';
 
-enum PinCodeUnlockStatus {
+enum AppUnlockStatus {
   initial,
   inputInProgress,
   verificationInProgress,
@@ -9,9 +9,9 @@ enum PinCodeUnlockStatus {
 }
 
 @freezed
-sealed class PinCodeUnlockState with _$PinCodeUnlockState {
-  const factory PinCodeUnlockState({
-    @Default(PinCodeUnlockStatus.initial) PinCodeUnlockStatus status,
+sealed class AppUnlockState with _$AppUnlockState {
+  const factory AppUnlockState({
+    @Default(AppUnlockStatus.initial) AppUnlockStatus status,
     @Default(4) int minPinCodeLength,
     @Default(8) int maxPinCodeLength,
     required List<int> keyboardNumbers,
@@ -19,11 +19,11 @@ sealed class PinCodeUnlockState with _$PinCodeUnlockState {
     @Default(0) int failedAttempts,
     @Default(0) int timeoutSeconds,
     Object? error,
-  }) = _PinCodeUnlockState;
-  const PinCodeUnlockState._();
+  }) = _AppUnlockState;
+  const AppUnlockState._();
 
   bool get canSubmit =>
       pinCode.length >= minPinCodeLength &&
       pinCode.length <= maxPinCodeLength &&
-      status == PinCodeUnlockStatus.inputInProgress;
+      status == AppUnlockStatus.inputInProgress;
 }

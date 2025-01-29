@@ -9,8 +9,11 @@ part 'wallet_metadata_model.g.dart';
 class WalletMetadataModel with _$WalletMetadataModel {
   factory WalletMetadataModel({
     required String id,
-    required String type,
-    required String name,
+    required String label,
+    required String network,
+    required String environment,
+    required String scriptType,
+    required String source,
   }) = _WalletMetadataModel;
   const WalletMetadataModel._();
 
@@ -20,16 +23,22 @@ class WalletMetadataModel with _$WalletMetadataModel {
   factory WalletMetadataModel.fromEntity(WalletMetadata entity) {
     return WalletMetadataModel(
       id: entity.id,
-      type: entity.type == WalletType.bdk ? 'bdk' : 'lwk',
-      name: entity.name,
+      label: entity.label,
+      network: entity.network.name,
+      environment: entity.environment.name,
+      scriptType: entity.scriptType.name,
+      source: entity.source.name,
     );
   }
 
   WalletMetadata toEntity() {
     return WalletMetadata(
       id: id,
-      type: type == 'bdk' ? WalletType.bdk : WalletType.lwk,
-      name: name,
+      label: label,
+      network: WalletNetwork.fromName(network),
+      environment: WalletEnvironment.fromName(environment),
+      scriptType: WalletScriptType.fromName(scriptType),
+      source: WalletSource.fromName(source),
     );
   }
 }

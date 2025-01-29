@@ -34,10 +34,10 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
   }
 
   WalletRepository _createRepository(WalletMetadata metadata) {
-    switch (metadata.type) {
-      case WalletType.bdk:
+    switch (metadata.network) {
+      case WalletNetwork.bitcoin:
         return BdkWalletRepositoryImpl(metadata: metadata);
-      case WalletType.lwk:
+      case WalletNetwork.liquid:
         return LwkWalletRepositoryImpl(metadata: metadata);
     }
   }
