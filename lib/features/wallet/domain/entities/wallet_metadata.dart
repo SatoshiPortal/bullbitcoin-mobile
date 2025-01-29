@@ -37,6 +37,12 @@ enum WalletSource {
   }
 }
 
+// TODO: Analyze if it would make sense to use a sealed WalletMetadata class with the following subclasses:
+// - BitcoinWalletMetadata
+// - LiquidWalletMetadata
+// WalletMetadata class would have some common properties and methods, like label, id, network, source etc. while the subclasses would have specific properties and methods.
+// The network property would be used to determine which subclass to use when deriving toEntity in the model.
+// This would make sense if there are a lot of differences in the fields or their values between the two types of wallets.
 class WalletMetadata {
   final String id;
   final String label;
