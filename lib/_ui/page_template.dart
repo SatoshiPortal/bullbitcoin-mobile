@@ -7,10 +7,12 @@ class StackedPage extends StatelessWidget {
     super.key,
     required this.child,
     required this.bottomChild,
+    this.bottomChildHeight = 72,
   });
 
   final Widget child;
   final Widget bottomChild;
+  final double bottomChildHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class StackedPage extends StatelessWidget {
         BottomCenter(
           child: Container(
             width: double.infinity,
-            height: 72,
+            height: bottomChildHeight,
             color: context.colour.primaryContainer.withValues(alpha: 0.95),
             padding:
                 const EdgeInsets.only(bottom: 16, top: 8, left: 16, right: 16),
