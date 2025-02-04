@@ -93,6 +93,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  bip32: ^2.0.0
+  bip39: ^1.0.6
 
 dev_dependencies:
   build_runner: ^2.4.9

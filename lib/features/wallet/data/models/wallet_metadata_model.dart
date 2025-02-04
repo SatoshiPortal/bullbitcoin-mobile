@@ -10,9 +10,12 @@ class WalletMetadataModel with _$WalletMetadataModel {
   factory WalletMetadataModel({
     required String id,
     required String label,
+    required String seedFingerprint,
     required String network,
     required String environment,
     required String scriptType,
+    required String externalPublicDescriptor,
+    required String internalPublicDescriptor,
     required String source,
   }) = _WalletMetadataModel;
   const WalletMetadataModel._();
@@ -24,9 +27,12 @@ class WalletMetadataModel with _$WalletMetadataModel {
     return WalletMetadataModel(
       id: entity.id,
       label: entity.label,
+      seedFingerprint: entity.seedFingerprint,
       network: entity.network.name,
       environment: entity.environment.name,
       scriptType: entity.scriptType.name,
+      externalPublicDescriptor: entity.externalPublicDescriptor,
+      internalPublicDescriptor: entity.internalPublicDescriptor,
       source: entity.source.name,
     );
   }
@@ -35,9 +41,12 @@ class WalletMetadataModel with _$WalletMetadataModel {
     return WalletMetadata(
       id: id,
       label: label,
-      network: WalletNetwork.fromName(network),
-      environment: WalletEnvironment.fromName(environment),
+      seedFingerprint: seedFingerprint,
+      network: Network.fromName(network),
+      environment: NetworkEnvironment.fromName(environment),
       scriptType: WalletScriptType.fromName(scriptType),
+      externalPublicDescriptor: externalPublicDescriptor,
+      internalPublicDescriptor: internalPublicDescriptor,
       source: WalletSource.fromName(source),
     );
   }

@@ -1,13 +1,83 @@
-import 'package:bb_mobile/features/wallet/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/features/wallet/domain/entities/address.dart';
+import 'package:bb_mobile/features/wallet/domain/entities/balance.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/features/wallet/domain/repositories/wallet_repository.dart';
+import 'package:lwk/lwk.dart' as lwk;
 
 class LwkWalletRepositoryImpl
     implements WalletRepository, LiquidWalletRepository {
-  final WalletMetadata metadata;
+  final String _id;
+  final lwk.Wallet _publicWallet;
+
+  const LwkWalletRepositoryImpl({
+    required String id,
+    required lwk.Wallet publicWallet,
+  })  : _id = id,
+        _publicWallet = publicWallet;
 
   @override
-  String get walletId => metadata.id;
+  String get id => _id;
 
-  const LwkWalletRepositoryImpl({required this.metadata});
+  @override
+  Future<Balance> getBalance() async {
+    final balances = await _publicWallet.balances();
+
+    final lBtcAssetBalance = balances
+        .firstWhere(
+          (balance) => balance.assetId == 'TODO: use assetId based on network',
+        )
+        .value;
+
+    final balance = Balance(
+      confirmedSat: BigInt.from(lBtcAssetBalance),
+      immatureSat: BigInt.zero,
+      trustedPendingSat: BigInt.zero,
+      untrustedPendingSat: BigInt.zero,
+      spendableSat: BigInt.from(lBtcAssetBalance),
+      totalSat: BigInt.from(lBtcAssetBalance),
+    );
+
+    return balance;
+  }
+
+  @override
+  Future<Address> getAddressByIndex(int index) async {
+    final addressInfo = await _publicWallet.address(index: index);
+
+    final address = Address.liquid(
+      index: addressInfo.index,
+      address: addressInfo.confidential,
+      kind: AddressKind.external,
+      state: AddressStatus.used,
+      // TODO: add more fields
+    );
+
+    return address;
+  }
+
+  @override
+  Future<Address> getLastUnusedAddress() async {
+    final addressInfo = await _publicWallet.addressLastUnused();
+
+    final address = Address.liquid(
+      index: addressInfo.index,
+      address: addressInfo.confidential,
+      kind: AddressKind.external,
+      state: AddressStatus.unused,
+      // TODO: add more fields
+    );
+
+    return address;
+  }
+
+  @override
+  Future<void> sync({
+    required String blockchainUrl,
+    required bool validateDomain,
+  }) async {
+    await _publicWallet.sync(
+      electrumUrl: blockchainUrl,
+      validateDomain: validateDomain,
+    );
+  }
 }

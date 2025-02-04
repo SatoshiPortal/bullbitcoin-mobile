@@ -1,18 +1,23 @@
-enum WalletNetwork {
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'wallet_metadata.freezed.dart';
+part 'wallet_metadata.g.dart';
+
+enum Network {
   bitcoin,
   liquid;
 
-  static WalletNetwork fromName(String name) {
-    return WalletNetwork.values.firstWhere((network) => network.name == name);
+  factory Network.fromName(String name) {
+    return Network.values.firstWhere((network) => network.name == name);
   }
 }
 
-enum WalletEnvironment {
+enum NetworkEnvironment {
   mainnet,
   testnet;
 
-  static WalletEnvironment fromName(String name) {
-    return WalletEnvironment.values.firstWhere((env) => env.name == name);
+  factory NetworkEnvironment.fromName(String name) {
+    return NetworkEnvironment.values.firstWhere((env) => env.name == name);
   }
 }
 
@@ -43,20 +48,21 @@ enum WalletSource {
 // WalletMetadata class would have some common properties and methods, like label, id, network, source etc. while the subclasses would have specific properties and methods.
 // The network property would be used to determine which subclass to use when deriving toEntity in the model.
 // This would make sense if there are a lot of differences in the fields or their values between the two types of wallets.
-class WalletMetadata {
-  final String id;
-  final String label;
-  final WalletNetwork network;
-  final WalletEnvironment environment;
-  final WalletScriptType scriptType;
-  final WalletSource source;
+@freezed
+class WalletMetadata with _$WalletMetadata {
+  const factory WalletMetadata({
+    required String id,
+    required String label,
+    required String seedFingerprint,
+    required Network network,
+    required NetworkEnvironment environment,
+    required WalletScriptType scriptType,
+    required String externalPublicDescriptor,
+    required String internalPublicDescriptor,
+    required WalletSource source,
+  }) = _WalletMetadata;
+  const WalletMetadata._();
 
-  WalletMetadata({
-    required this.id,
-    required this.label,
-    required this.network,
-    required this.environment,
-    required this.scriptType,
-    required this.source,
-  });
+  factory WalletMetadata.fromJson(Map<String, dynamic> json) =>
+      _$WalletMetadataFromJson(json);
 }
