@@ -163,7 +163,7 @@ class BDKSensitiveCreate {
       network: network,
       type: BBWalletType.words,
       scriptType: ScriptType.bip44,
-      backupTested: isImported,
+      physicalBackupTested: isImported,
       baseWalletType: BaseWalletType.Bitcoin,
     );
     final (bdkWallet44, errBdk44) =
@@ -195,7 +195,7 @@ class BDKSensitiveCreate {
       network: network,
       type: BBWalletType.words,
       scriptType: ScriptType.bip49,
-      backupTested: isImported,
+      physicalBackupTested: isImported,
       baseWalletType: BaseWalletType.Bitcoin,
     );
     final (bdkWallet49, errBdk49) =
@@ -226,7 +226,7 @@ class BDKSensitiveCreate {
       network: network,
       type: BBWalletType.words,
       scriptType: ScriptType.bip84,
-      backupTested: isImported,
+      physicalBackupTested: isImported,
       baseWalletType: BaseWalletType.Bitcoin,
     );
     final (bdkWallet84, errBdk84) =
