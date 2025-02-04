@@ -97,12 +97,11 @@ packages:
   bip85:
     dependency: "direct main"
     description:
-      path: "bindings/dart-bip85"
-      ref: master
-      resolved-ref: e1bea65d63c8b9a97d1fd77034ca11304c08ae96
-      url: "https://github.com/ethicnology/rust-bip85.git"
-    source: git
-    version: "1.0.2"
+      name: bip85
+      sha256: "1e556b32a6e2062a8e6f728bfdf1898058ecde9c9068f5272d4792af2477b10c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.3"
   bitcoin_utils:
     dependency: "direct main"
     description:
@@ -320,14 +319,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.6"
-  cryptography:
-    dependency: transitive
-    description:
-      name: cryptography
-      sha256: d146b76d33d94548cf035233fbc2f4338c1242fa119013bead807d033fc4ae05
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.7.0"
   csslib:
     dependency: transitive
     description:
@@ -1336,15 +1327,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.0"
-  recoverbull_dart:
+  recoverbull:
     dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "716b5650e0e0f9ccb12dec89ff54b0fee6461b47"
-      url: "https://github.com/StaxoLotl/recoverbull-dart.git"
+      resolved-ref: "1cb9cc5e408688d00f6dbda21abd34a8b3b7f5e2"
+      url: "https://github.com/SatoshiPortal/recoverbull-client-dart.git"
     source: git
-    version: "0.0.1"
+    version: "1.0.0"
   rxdart:
     dependency: "direct main"
     description:
