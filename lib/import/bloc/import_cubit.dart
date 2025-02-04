@@ -691,7 +691,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       return null;
     }
 
-    wallet = wallet!.copyWith(backupTested: true);
+    wallet = wallet!.copyWith(physicalBackupTested: true);
     if (state.mainWallet) {
       wallet = wallet.copyWith(
         mainWallet: true,

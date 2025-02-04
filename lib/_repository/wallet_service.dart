@@ -261,9 +261,10 @@ class WalletService {
           storageWallet = storageWallet!.copyWith(utxos: wallet.utxos);
 
         case UpdateWalletTypes.settings:
-          if (wallet.backupTested != storageWallet!.backupTested) {
+          if (wallet.physicalBackupTested !=
+              storageWallet!.physicalBackupTested) {
             storageWallet = storageWallet.copyWith(
-              backupTested: wallet.backupTested,
+              physicalBackupTested: wallet.physicalBackupTested,
             );
           }
 
@@ -273,10 +274,11 @@ class WalletService {
             );
           }
 
-          if (wallet.lastBackupTested != null &&
-              wallet.lastBackupTested != storageWallet.lastBackupTested) {
+          if (wallet.lastPhysicalBackupTested != null &&
+              wallet.lastPhysicalBackupTested !=
+                  storageWallet.lastPhysicalBackupTested) {
             storageWallet = storageWallet.copyWith(
-              lastBackupTested: wallet.lastBackupTested,
+              lastPhysicalBackupTested: wallet.lastPhysicalBackupTested,
             );
           }
         case UpdateWalletTypes.bip85Paths:

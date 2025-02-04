@@ -27,7 +27,7 @@
 //           myAddressBook: [],
 //           transactions: [],
 //           unsignedTxs: [],
-//           backupTested: hasImported,
+//           physicalBackupTested: hasImported,
 //           baseWalletType: BaseWalletType.Bitcoin,
 //         );
 //       case ScriptType.bip49:
@@ -52,7 +52,7 @@
 //           myAddressBook: [],
 //           transactions: [],
 //           unsignedTxs: [],
-//           backupTested: hasImported,
+//           physicalBackupTested: hasImported,
 //         );
 //       case ScriptType.bip84:
 //         return Wallet(
@@ -76,7 +76,7 @@
 //           myAddressBook: [],
 //           transactions: [],
 //           unsignedTxs: [],
-//           backupTested: hasImported,
+//           physicalBackupTested: hasImported,
 //         );
 //     }
 //   } else {
@@ -103,7 +103,7 @@
 //           myAddressBook: [],
 //           transactions: [],
 //           unsignedTxs: [],
-//           backupTested: hasImported,
+//           physicalBackupTested: hasImported,
 //         );
 //       case ScriptType.bip49:
 //         return Wallet(
@@ -127,7 +127,7 @@
 //           myAddressBook: [],
 //           transactions: [],
 //           unsignedTxs: [],
-//           backupTested: hasImported,
+//           physicalBackupTested: hasImported,
 //         );
 //       case ScriptType.bip84:
 //         return Wallet(
@@ -151,7 +151,7 @@
 //           myAddressBook: [],
 //           transactions: [],
 //           unsignedTxs: [],
-//           backupTested: hasImported,
+//           physicalBackupTested: hasImported,
 //         );
 //     }
 //   }

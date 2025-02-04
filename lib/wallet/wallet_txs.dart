@@ -230,10 +230,10 @@ class BackupAlertBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wallet = context.select((WalletBloc x) => x.state.wallet);
-    final backupTested =
-        context.select((WalletBloc x) => x.state.wallet.backupTested);
+    final physicalBackupTested =
+        context.select((WalletBloc x) => x.state.wallet.physicalBackupTested);
 
-    if (backupTested) return const SizedBox.shrink();
+    if (physicalBackupTested) return const SizedBox.shrink();
 
     return WarningBanner(
       onTap: () {

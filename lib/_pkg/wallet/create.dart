@@ -224,7 +224,7 @@ class WalletCreate implements IWalletCreate {
 //       network: network,
 //       type: BBWalletType.coldcard,
 //       scriptType: ScriptType.bip44,
-//       backupTested: true,
+//       physicalBackupTested: true,
 //       baseWalletType: BaseWalletType.Bitcoin,
 //     );
 //     final errBdk44 = await loadPublicBdkWallet(wallet44);
@@ -255,7 +255,7 @@ class WalletCreate implements IWalletCreate {
 //       network: network,
 //       type: BBWalletType.coldcard,
 //       scriptType: ScriptType.bip49,
-//       backupTested: true,
+//       physicalBackupTested: true,
 //       baseWalletType: BaseWalletType.Bitcoin,
 //     );
 //     final errBdk49 = await loadPublicBdkWallet(wallet49);
@@ -286,7 +286,7 @@ class WalletCreate implements IWalletCreate {
 //       network: network,
 //       type: BBWalletType.coldcard,
 //       scriptType: ScriptType.bip84,
-//       backupTested: true,
+//       physicalBackupTested: true,
 //       baseWalletType: BaseWalletType.Bitcoin,
 //     );
 //     final errBdk84 = await loadPublicBdkWallet(wallet84);
@@ -379,7 +379,7 @@ class WalletCreate implements IWalletCreate {
 //         network: network,
 //         type: BBWalletType.xpub,
 //         scriptType: scriptType,
-//         backupTested: true,
+//         physicalBackupTested: true,
 //         baseWalletType: BaseWalletType.Bitcoin,
 //       );
 //       final errBdk = await loadPublicBdkWallet(wallet);
@@ -468,7 +468,7 @@ class WalletCreate implements IWalletCreate {
 //         network: network,
 //         type: BBWalletType.xpub,
 //         scriptType: scriptType,
-//         backupTested: true,
+//         physicalBackupTested: true,
 //         baseWalletType: BaseWalletType.Bitcoin,
 //       );
 //       final errBdk = await loadPublicBdkWallet(wallet);

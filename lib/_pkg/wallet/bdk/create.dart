@@ -122,7 +122,7 @@ class BDKCreate {
       network: network,
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip44,
-      backupTested: true,
+      physicalBackupTested: true,
       baseWalletType: BaseWalletType.Bitcoin,
     );
     final (bdkWallet44, errBdk44) = await loadPublicBdkWallet(wallet44);
@@ -154,7 +154,7 @@ class BDKCreate {
       network: network,
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip49,
-      backupTested: true,
+      physicalBackupTested: true,
       baseWalletType: BaseWalletType.Bitcoin,
     );
     final (bdkWallet49, errBdk49) = await loadPublicBdkWallet(wallet49);
@@ -186,7 +186,7 @@ class BDKCreate {
       network: network,
       type: BBWalletType.coldcard,
       scriptType: ScriptType.bip84,
-      backupTested: true,
+      physicalBackupTested: true,
       baseWalletType: BaseWalletType.Bitcoin,
     );
     final (bdkWallet84, errBdk84) = await loadPublicBdkWallet(wallet84);
@@ -289,7 +289,7 @@ class BDKCreate {
         network: network,
         type: BBWalletType.xpub,
         scriptType: scriptType,
-        backupTested: true,
+        physicalBackupTested: true,
         baseWalletType: BaseWalletType.Bitcoin,
       );
       final (bdkWallet, errBdk) = await loadPublicBdkWallet(wallet);
@@ -379,7 +379,7 @@ class BDKCreate {
         network: network,
         type: BBWalletType.xpub,
         scriptType: ScriptType.bip84,
-        backupTested: true,
+        physicalBackupTested: true,
         baseWalletType: BaseWalletType.Bitcoin,
       );
 
@@ -392,7 +392,7 @@ class BDKCreate {
         network: network,
         type: BBWalletType.xpub,
         scriptType: ScriptType.bip49,
-        backupTested: true,
+        physicalBackupTested: true,
         baseWalletType: BaseWalletType.Bitcoin,
       );
 
@@ -405,7 +405,7 @@ class BDKCreate {
         network: network,
         type: BBWalletType.xpub,
         scriptType: ScriptType.bip44,
-        backupTested: true,
+        physicalBackupTested: true,
         baseWalletType: BaseWalletType.Bitcoin,
       );
 
@@ -480,7 +480,7 @@ class BDKCreate {
         network: network,
         type: BBWalletType.xpub,
         scriptType: scriptType,
-        backupTested: true,
+        physicalBackupTested: true,
         baseWalletType: BaseWalletType.Bitcoin,
       );
       final (bdkWallet, errBdk) = await loadPublicBdkWallet(wallet);

@@ -408,7 +408,7 @@ class HomeState with _$HomeState {
       return wb.balanceSats() > 100000000;
     }
 
-    bool backupWarning(Wallet wb) => !wb.backupTested;
+    bool backupWarning(Wallet wb) => !wb.physicalBackupTested;
 
     final warnings = <({String info, Wallet walletBloc})>{};
     final List<String> backupWalletFngrforBackupWarning = [];
