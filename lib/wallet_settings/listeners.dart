@@ -3,8 +3,10 @@ import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/wallet_settings/bloc/state.dart';
+import 'package:bb_mobile/wallet_settings/bloc/backup_settings_cubit.dart';
+import 'package:bb_mobile/wallet_settings/bloc/backup_settings_state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
+import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -53,7 +55,7 @@ class TestBackupListener extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) {
-    return BlocListener<WalletSettingsCubit, WalletSettingsState>(
+    return BlocListener<BackupSettingsCubit, BackupSettingsState>(
       listenWhen: (previous, current) =>
           previous.backupTested != current.backupTested,
       listener: (context, state) {
@@ -68,8 +70,8 @@ class TestBackupListener extends StatelessWidget {
         if (walletService == null) return;
 
         final w = walletService.wallet.copyWith(
-          backupTested: true,
-          lastBackupTested: DateTime.now(),
+          physicalBackupTested: true,
+          lastPhysicalBackupTested: DateTime.now(),
         );
 
         walletService.updateWallet(
