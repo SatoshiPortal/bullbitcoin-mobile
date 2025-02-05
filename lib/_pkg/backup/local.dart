@@ -58,8 +58,7 @@ class FileSystemBackupManager extends IBackupManager {
   }) async {
     try {
       final decodeEncryptedFile = jsonDecode(encrypted) as Map<String, dynamic>;
-
-      final backupId = decodeEncryptedFile['backupId']?.toString() ?? '';
+      final backupId = decodeEncryptedFile['id']?.toString() ?? '';
       final now = DateTime.now();
       final formattedDate = now.millisecondsSinceEpoch;
       final filename = '${formattedDate}_$backupId.json';
