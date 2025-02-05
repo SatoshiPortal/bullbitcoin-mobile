@@ -10,8 +10,8 @@ import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/addresses.dart';
-import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
+import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_state.dart';
 import 'package:bb_mobile/wallet_settings/listeners.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -85,12 +85,13 @@ class _ScreenState extends State<_Screen> {
     super.initState();
   }
 
+//TODO; Move it to backup-settings page
   void _init() {
     scheduleMicrotask(() async {
       if (widget.openBackup) {
         // await Future.delayed(const Duration(milliseconds: 300));
         await context.push(
-          '/wallet-settings/backup',
+          '/wallet-settings/backup-settings/physical',
           extra: context.read<WalletBloc>().state.wallet.id,
           // (
           //   context.read<WalletBloc>(),
@@ -136,7 +137,7 @@ class _ScreenState extends State<_Screen> {
                   // const Balances(),
                   const Gap(24),
                   if (!watchOnly) ...[
-                    const BackupButton(),
+                    const BackupSettingsButton(),
                     const Gap(8),
                     // const TestBackupButton(),
                     // const Gap(8),
@@ -459,7 +460,7 @@ class TestBackupButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isTested =
-        context.select((WalletBloc x) => x.state.wallet.backupTested);
+        context.select((WalletBloc x) => x.state.wallet.physicalBackupTested);
 
     // if (isTested) return const SizedBox.shrink();
     return BBButton.textWithStatusAndRightArrow(
@@ -467,6 +468,7 @@ class TestBackupButton extends StatelessWidget {
       statusText: isTested ? 'Tested' : 'Not Tested',
       isRed: !isTested,
       onPressed: () async {
+        ///TODO: Move it to backup-settings page
         context.push(
           '/wallet-settings/test-backup',
           extra: context.read<WalletBloc>().state.wallet.id,
@@ -497,18 +499,15 @@ class TestBackupButton extends StatelessWidget {
   }
 }
 
-class BackupButton extends StatelessWidget {
-  const BackupButton({super.key});
+class BackupSettingsButton extends StatelessWidget {
+  const BackupSettingsButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isTested =
-        context.select((WalletBloc x) => x.state.wallet.backupTested);
-
     return BBButton.textWithStatusAndRightArrow(
       onPressed: () async {
         context.push(
-          '/wallet-settings/backup',
+          '/wallet-settings/backup-settings',
           extra: context.read<WalletBloc>().state.wallet.id,
           //  (
           //   context.read<Wallet>(),
@@ -517,9 +516,7 @@ class BackupButton extends StatelessWidget {
         );
         // await BackupScreen.openPopup(context);
       },
-      label: 'Backup',
-      statusText: isTested ? 'Tested' : 'Not Tested',
-      isRed: !isTested,
+      label: 'Backup Settings',
     );
   }
 }
@@ -559,7 +556,7 @@ class DeletePopUp extends StatelessWidget {
           listener: (context, state) {
             if (state.deleted) {
               // final walletBloc = settings.walletBloc;
-              // context.read<HomeBloc>().clearWallet(walletBloc);
+
               context.go('/home');
             }
           },
