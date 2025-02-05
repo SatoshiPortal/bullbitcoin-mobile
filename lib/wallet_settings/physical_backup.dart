@@ -4,7 +4,7 @@ import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/word_grid.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
+import 'package:bb_mobile/wallet_settings/bloc/backup_settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -17,8 +17,8 @@ class InfoRead extends Cubit<bool> {
   void unread() => emit(false);
 }
 
-class BackupPage extends StatefulWidget {
-  const BackupPage({
+class PhysicalBackupPage extends StatefulWidget {
+  const PhysicalBackupPage({
     super.key,
     required this.wallet,
   });
@@ -26,18 +26,18 @@ class BackupPage extends StatefulWidget {
   final String wallet;
 
   @override
-  State<BackupPage> createState() => _BackupPageState();
+  State<PhysicalBackupPage> createState() => _PhysicalBackupPageState();
 }
 
-class _BackupPageState extends State<BackupPage> {
+class _PhysicalBackupPageState extends State<PhysicalBackupPage> {
   late WalletBloc walletBloc;
-  late WalletSettingsCubit walletSettings;
+  late BackupSettingsCubit backupSettings;
   @override
   void initState() {
     walletBloc = createOrRetreiveWalletBloc(widget.wallet);
-    walletSettings = createWalletSettingsCubit(widget.wallet);
+    backupSettings = createBackupSettingsCubit(widget.wallet);
 
-    walletSettings.loadBackupClicked();
+    backupSettings.loadBackupForVerification();
 
     super.initState();
   }
@@ -47,7 +47,7 @@ class _BackupPageState extends State<BackupPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: walletBloc),
-        BlocProvider(create: (BuildContext context) => walletSettings),
+        BlocProvider(create: (BuildContext context) => backupSettings),
         BlocProvider.value(value: InfoRead()),
       ],
       child: const _Screen(),
@@ -58,38 +58,55 @@ class _BackupPageState extends State<BackupPage> {
 class _Screen extends StatelessWidget {
   const _Screen();
 
+  Future<bool> _handleNavigationCleanup(
+    BuildContext context,
+    bool state,
+  ) async {
+    try {
+      if (state) {
+        context.read<InfoRead>().unread();
+      }
+      await context.read<BackupSettingsCubit>().clearSensitive();
+
+      if (!context.mounted) return false;
+      context.pop();
+      //TODO: context.go('/home');
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<InfoRead, bool>(
+    return BlocConsumer<InfoRead, bool>(
+      listener: (context, state) {
+        // debugPrint('InfoRead state changed to: $state');
+      },
       builder: (context, state) {
         return PopScope(
-          canPop: false,
-          onPopInvokedWithResult: (canPop, _) async {
-            if (state) context.read<InfoRead>().unread();
-            await context.read<WalletSettingsCubit>().clearSensitive();
-
-            if (!context.mounted) return;
-            context.go('/home');
+          onPopInvokedWithResult: (didPop, _) async {
+            if (!didPop) {
+              final result = await _handleNavigationCleanup(context, state);
+              if (!result) return;
+            }
           },
           child: Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
+              elevation: 0,
               flexibleSpace: BBAppBar(
-                text: 'Backup',
+                text: '',
                 onBack: () async {
-                  if (state) context.read<InfoRead>().unread();
-                  await context.read<WalletSettingsCubit>().clearSensitive();
-                  // context.pop();
-                  context
-                    ..pop()
-                    ..pop();
-                  // context.go('/home');
+                  await _handleNavigationCleanup(context, state);
                 },
               ),
             ),
             body: AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
-              child: state ? const BackupScreen() : const BackUpInfoScreen(),
+              child: state
+                  ? const BackupScreen(key: ValueKey('backup'))
+                  : const BackUpInfoScreen(key: ValueKey('info')),
             ),
           ),
         );
@@ -103,8 +120,9 @@ class BackUpInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final lastBackupTested = context
-        .select((WalletBloc cubit) => cubit.state.wallet.lastBackupTested);
+    final lastPhysicalBackupTested = context.select(
+      (WalletBloc cubit) => cubit.state.wallet.lastPhysicalBackupTested,
+    );
 
     final hasPassphrase = context
         .select((WalletBloc cubit) => cubit.state.wallet.hasPassphrase());
@@ -115,11 +133,14 @@ class BackUpInfoScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const BBText.titleLarge('Backup best practices'),
+            const BBText.titleLarge(
+              'Backup best practices',
+              isBold: true,
+            ),
             const Gap(8),
-            if (lastBackupTested != null) ...[
+            if (lastPhysicalBackupTested != null) ...[
               BBText.bodySmall(
-                'Last backup tested on ${lastBackupTested.toLocal()}',
+                'Last backup tested on ${lastPhysicalBackupTested.toLocal()}',
               ),
               const Gap(8),
             ],
@@ -166,11 +187,11 @@ class BackupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mnemonic = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.mnemonic,
+      (BackupSettingsCubit cubit) => cubit.state.mnemonic,
     );
 
     final password = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.password,
+      (BackupSettingsCubit cubit) => cubit.state.password,
     );
 
     return SingleChildScrollView(
@@ -236,11 +257,11 @@ class BackupScreen extends StatelessWidget {
                     context
                         // ..pop()
                         .push(
-                      '/wallet-settings/test-backup',
+                      '/wallet-settings/backup-settings/physical/test-backup',
                       extra: context.read<WalletBloc>().state.wallet.id,
                       // (
                       //   context.read<Wallet>(),
-                      //   context.read<WalletSettingsCubit>(),
+                      //   context.read<BackupSettingsCubit>(),
                       // ),
                     );
                     // context.pop();
