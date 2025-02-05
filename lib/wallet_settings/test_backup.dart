@@ -4,7 +4,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
+import 'package:bb_mobile/wallet_settings/bloc/backup_settings_cubit.dart';
 import 'package:bb_mobile/wallet_settings/listeners.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -27,14 +27,14 @@ class TestBackupPage extends StatefulWidget {
 }
 
 class _TestBackupPageState extends State<TestBackupPage> {
-  late WalletSettingsCubit walletSettings;
+  late BackupSettingsCubit backupSettings;
   late WalletBloc walletBloc;
   @override
   void initState() {
     walletBloc = createOrRetreiveWalletBloc(widget.wallet);
-    walletSettings = createWalletSettingsCubit(widget.wallet);
+    backupSettings = createBackupSettingsCubit(widget.wallet);
 
-    walletSettings.loadBackupClicked();
+    backupSettings.loadBackupForVerification();
 
     super.initState();
   }
@@ -44,7 +44,7 @@ class _TestBackupPageState extends State<TestBackupPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: walletBloc),
-        BlocProvider(create: (BuildContext context) => walletSettings),
+        BlocProvider(create: (BuildContext context) => backupSettings),
       ],
       child: TestBackupListener(
         child: Builder(
@@ -60,8 +60,8 @@ class _TestBackupPageState extends State<TestBackupPage> {
                   flexibleSpace: BBAppBar(
                     text: 'Test Backup',
                     onBack: () {
+                      context.read<BackupSettingsCubit>().resetBackupTested();
                       context.pop();
-                      context.read<WalletSettingsCubit>().resetBackupTested();
                     },
                   ),
                 ),
@@ -81,9 +81,9 @@ class TestBackupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mnemonic =
-        context.select((WalletSettingsCubit cubit) => cubit.state.mnemonic);
+        context.select((BackupSettingsCubit cubit) => cubit.state.mnemonic);
     final tested =
-        context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
+        context.select((BackupSettingsCubit cubit) => cubit.state.backupTested);
 
     return SingleChildScrollView(
       child: Padding(
@@ -105,7 +105,7 @@ class TestBackupScreen extends StatelessWidget {
               //   child: CenterLeft(
               //     child: BBButton.text(
               //       label: 'Reset Order',
-              //       onPressed: () => context.read<WalletSettingsCubit>().loadBackupClicked(),
+              //       onPressed: () => context.read<BackupSettingsCubit>().loadBackupClicked(),
               //     ),
               //   ),
               // ),
@@ -118,7 +118,7 @@ class TestBackupScreen extends StatelessWidget {
                         BackupTestItemWord(
                           index: i == 0 ? j : i * 2 + j,
                           // isSelected: context
-                          //     .select<WalletSettingsCubit>()
+                          //     .select<BackupSettingsCubit>()
                           //     .state
                           //     .shuffleIsSelected(i == 0 ? j : i * 2 + j),
                         ),
@@ -132,7 +132,7 @@ class TestBackupScreen extends StatelessWidget {
                         BackupTestItemWord(
                           index: i == 0 ? j : i * 2 + j,
                           // isSelected: context
-                          //     .select<WalletSettingsCubit>()
+                          //     .select<BackupSettingsCubit>()
                           //     .state
                           //     .shuffleIsSelected(i == 0 ? j : i * 2 + j),
                         ),
@@ -158,7 +158,7 @@ class TestBackupScreen extends StatelessWidget {
             //             '/wallet-settings/backup',
             //             extra: (
             //               context.read<WalletBloc>(),
-            //               context.read<WalletSettingsCubit>(),
+            //               context.read<BackupSettingsCubit>(),
             //             ),
             //           );
             //         // context.pop();
@@ -187,11 +187,11 @@ class BackupTestItemWord extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final mnemonic = context.select(
-      (WalletSettingsCubit cubit) => cubit.state.mnemonic,
+      (BackupSettingsCubit cubit) => cubit.state.mnemonic,
     );
 
     final (word, isSelected, actualIdx) = context.select(
-      (WalletSettingsCubit _) => _.state.shuffleElementAt(index),
+      (BackupSettingsCubit _) => _.state.shuffleElementAt(index),
     );
 
     final padLeft =
@@ -204,9 +204,9 @@ class BackupTestItemWord extends StatelessWidget {
           borderRadius: BorderRadius.circular(80),
           onTap: () {
             if (mnemonic.length == 12) {
-              context.read<WalletSettingsCubit>().wordClicked(index);
+              context.read<BackupSettingsCubit>().wordClicked(index);
             } else {
-              context.read<WalletSettingsCubit>().word24Clicked(index);
+              context.read<BackupSettingsCubit>().word24Clicked(index);
             }
           },
           child: Stack(
@@ -262,7 +262,7 @@ class TestBackupPassField extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final tested =
-        context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
+        context.select((BackupSettingsCubit cubit) => cubit.state.backupTested);
     if (tested) return const SizedBox.shrink();
 
     final hasPassphrase =
@@ -271,7 +271,7 @@ class TestBackupPassField extends HookWidget {
     if (!hasPassphrase) return const SizedBox.shrink();
 
     final text =
-        context.select((WalletSettingsCubit x) => x.state.testBackupPassword);
+        context.select((BackupSettingsCubit x) => x.state.testBackupPassword);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -286,7 +286,7 @@ class TestBackupPassField extends HookWidget {
           BBTextInput.big(
             value: text,
             onChanged: (t) {
-              context.read<WalletSettingsCubit>().changePassword(t);
+              context.read<BackupSettingsCubit>().changePassword(t);
             },
           ),
         ],
@@ -301,9 +301,9 @@ class TestBackupConfirmButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final testing = context
-        .select((WalletSettingsCubit cubit) => cubit.state.testingBackup);
+        .select((BackupSettingsCubit cubit) => cubit.state.testingBackup);
     final tested =
-        context.select((WalletSettingsCubit cubit) => cubit.state.backupTested);
+        context.select((BackupSettingsCubit cubit) => cubit.state.backupTested);
 
     return Column(
       children: [
@@ -329,7 +329,7 @@ class TestBackupConfirmButton extends StatelessWidget {
                 loading: testing,
                 filled: true,
                 onPressed: () =>
-                    context.read<WalletSettingsCubit>().testBackupClicked(),
+                    context.read<BackupSettingsCubit>().testBackupClicked(),
                 label: 'Test Backup',
               ),
             ),
@@ -352,7 +352,7 @@ class TestBackupConfirmButton extends StatelessWidget {
 //   @override
 //   Widget build(BuildContext context) {
 //     final text = context.select(
-//       (WalletSettingsCubit cubit) => cubit.state.mnemonic.elementAt(widget.index),
+//       (BackupSettingsCubit cubit) => cubit.state.mnemonic.elementAt(widget.index),
 //     );
 
 //     return Expanded(
@@ -373,7 +373,7 @@ class TestBackupConfirmButton extends StatelessWidget {
 //               child: BBTextInput.small(
 //                 value: text,
 //                 onChanged: (value) {
-//                   context.read<WalletSettingsCubit>().wordChanged(widget.index, value);
+//                   context.read<BackupSettingsCubit>().wordChanged(widget.index, value);
 //                 },
 //               ),
 //             ),
