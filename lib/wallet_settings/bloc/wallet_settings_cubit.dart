@@ -9,9 +9,8 @@ import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
-import 'package:bb_mobile/_ui/alert.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/wallet_settings/bloc/state.dart';
+import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_state.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -78,181 +77,9 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
     emit(state.copyWith(savedName: false));
   }
 
-  Future<void> loadBackupClicked() async {
-    final (seed, err) = await _walletSensRepository.readSeed(
-      fingerprintIndex: _wallet.getRelatedSeedStorageString(),
-    );
-    if (err != null) {
-      emit(state.copyWith(errTestingBackup: err.toString()));
-      return;
-    }
-
-    final words = seed!.mnemonic.split(' ');
-    final shuffled = words.toList()..shuffle();
-
-    emit(
-      state.copyWith(
-        testMnemonicOrder: [],
-        mnemonic: words,
-        errTestingBackup: '',
-        password:
-            seed.getPassphraseFromIndex(_wallet.sourceFingerprint).passphrase,
-        shuffledMnemonic: shuffled,
-      ),
-    );
-  }
-
-  void wordClicked(int shuffledIdx) {
-    emit(state.copyWith(errTestingBackup: ''));
-    final testMnemonic = state.testMnemonicOrder.toList();
-    if (testMnemonic.length == 12) return;
-
-    final (word, isSelected, actualIdx) = state.shuffleElementAt(shuffledIdx);
-    if (isSelected) return;
-    if (actualIdx != testMnemonic.length) {
-      invalidTestOrderClicked();
-      return;
-    }
-
-    testMnemonic.add(
-      (
-        word: word,
-        shuffleIdx: shuffledIdx,
-        selectedActualIdx: actualIdx,
-      ),
-    );
-
-    emit(state.copyWith(testMnemonicOrder: testMnemonic));
-  }
-
-  void word24Clicked(int shuffledIdx) {
-    emit(state.copyWith(errTestingBackup: ''));
-    final testMnemonic = state.testMnemonicOrder.toList();
-    if (testMnemonic.length == 24) return;
-
-    final (word, isSelected, actualIdx) = state.shuffleElementAt(shuffledIdx);
-    if (isSelected) return;
-    if (actualIdx != testMnemonic.length) {
-      invalidTestOrderClicked();
-      return;
-    }
-
-    testMnemonic.add(
-      (
-        word: word,
-        shuffleIdx: shuffledIdx,
-        selectedActualIdx: actualIdx,
-      ),
-    );
-
-    emit(state.copyWith(testMnemonicOrder: testMnemonic));
-  }
-
-  Future<void> invalidTestOrderClicked() async {
-    emit(
-      state.copyWith(
-        testMnemonicOrder: [],
-        errTestingBackup: 'Invalid order',
-      ),
-    );
-    BBAlert.showErrorAlertPopUp(
-      err: 'Invalid mnemonic order.',
-      onClose: () {
-        emit(state.copyWith(errTestingBackup: ''));
-      },
-    );
-    await Future.delayed(const Duration(milliseconds: 500));
-    final shuffled = state.mnemonic.toList()..shuffle();
-    emit(
-      state.copyWith(
-        shuffledMnemonic: shuffled,
-      ),
-    );
-  }
-
-  void changePassword(String password) {
-    emit(
-      state.copyWith(
-        testBackupPassword: password,
-        errTestingBackup: '',
-      ),
-    );
-  }
-
-  Future<void> testBackupClicked() async {
-    emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
-    final words = state.testMneString();
-    final password = state.testBackupPassword;
-    final (seed, err) = await _walletSensRepository.readSeed(
-      fingerprintIndex: _wallet.getRelatedSeedStorageString(),
-    );
-
-    if (err != null) {
-      emit(
-        state.copyWith(
-          errTestingBackup: err.toString(),
-          testingBackup: false,
-        ),
-      );
-      return;
-    }
-
-    final mne = seed!.mnemonic == words;
-
-    final psd =
-        seed.getPassphraseFromIndex(_wallet.sourceFingerprint).passphrase ==
-            password;
-    if (!mne) {
-      {
-        emit(
-          state.copyWith(
-            errTestingBackup: 'Your seed words are incorrect',
-            testingBackup: false,
-          ),
-        );
-        return;
-      }
-    }
-    if (!psd) {
-      emit(
-        state.copyWith(
-          errTestingBackup: 'Your passphrase is incorrect',
-          testingBackup: false,
-        ),
-      );
-      return;
-    }
-
-    final wallet =
-        _wallet.copyWith(backupTested: true, lastBackupTested: DateTime.now());
-
-    await _appWalletsRepository
-        .getWalletServiceById(wallet.id)
-        ?.updateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]);
-
-    emit(
-      state.copyWith(
-        backupTested: true,
-        testingBackup: false,
-      ),
-    );
-    clearSensitive();
-  }
-
   Future<void> resetBackupTested() async {
     await Future.delayed(const Duration(milliseconds: 800));
     emit(state.copyWith(backupTested: false));
-  }
-
-  void clearnMnemonic() {
-    emit(
-      state.copyWith(
-        mnemonic: [
-          for (var i = 0; i < 12; i++) '',
-        ],
-        testBackupPassword: '',
-      ),
-    );
   }
 
   Future<void> backupToSD() async {
@@ -574,7 +401,6 @@ class WalletSettingsCubit extends Cubit<WalletSettingsState> {
   }
 
   Future clearSensitive() async {
-    clearnMnemonic();
     emit(
       state.copyWith(
         password: '',
