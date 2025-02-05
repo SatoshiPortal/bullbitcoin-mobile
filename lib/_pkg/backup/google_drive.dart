@@ -100,9 +100,8 @@ class GoogleDriveBackupManager extends IBackupManager {
     if (_api == null) return (null, Err('Not connected to Google Drive'));
 
     try {
-      final decodeEncryptedFile = jsonDecode(utf8.decode(HEX.decode(encrypted)))
-          as Map<String, dynamic>;
-      final backupId = decodeEncryptedFile['backupId']?.toString() ?? '';
+      final decodeEncryptedFile = jsonDecode(encrypted) as Map<String, dynamic>;
+      final backupId = decodeEncryptedFile['id']?.toString() ?? '';
       final now = DateTime.now();
       final formattedDate = now.millisecondsSinceEpoch;
       final filename = '${formattedDate}_$backupId.json';
@@ -110,10 +109,10 @@ class GoogleDriveBackupManager extends IBackupManager {
         ..name = filename
         ..parents = [backupFolder];
 
-      final data = encrypted.codeUnits;
+      final data = encrypted;
       await _api!.files.create(
         file,
-        uploadMedia: Media(Stream.value(data), data.length),
+        uploadMedia: Media(Stream.value(utf8.encode(data)), data.length),
       );
 
       return (filename, null);
