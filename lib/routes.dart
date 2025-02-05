@@ -2,11 +2,8 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_ui/logger_page.dart';
 import 'package:bb_mobile/auth/page.dart';
-import 'package:bb_mobile/backup/backup_page.dart';
-import 'package:bb_mobile/backup/keychain_page.dart';
 import 'package:bb_mobile/create/page.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/home/market.dart';
@@ -15,10 +12,6 @@ import 'package:bb_mobile/import/hardware_page.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
-import 'package:bb_mobile/recover/bloc/cloud_cubit.dart';
-import 'package:bb_mobile/recover/cloud_page.dart';
-import 'package:bb_mobile/recover/keychain_page.dart';
-import 'package:bb_mobile/recover/manual_page.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/application_settings_page.dart';
@@ -39,8 +32,11 @@ import 'package:bb_mobile/wallet/details.dart';
 import 'package:bb_mobile/wallet/information_page.dart';
 import 'package:bb_mobile/wallet/wallet_page.dart';
 import 'package:bb_mobile/wallet_settings/accounting.dart';
-import 'package:bb_mobile/wallet_settings/backup.dart';
+import 'package:bb_mobile/wallet_settings/backup_settings.dart';
 import 'package:bb_mobile/wallet_settings/bip85_paths.dart';
+import 'package:bb_mobile/wallet_settings/encrypted_vault_backup.dart';
+import 'package:bb_mobile/wallet_settings/keychain_page.dart';
+import 'package:bb_mobile/wallet_settings/physical_backup.dart';
 import 'package:bb_mobile/wallet_settings/test_backup.dart';
 import 'package:bb_mobile/wallet_settings/wallet_settings_page.dart';
 import 'package:flutter/material.dart';
@@ -200,54 +196,67 @@ GoRouter setupRouter() => GoRouter(
             final wallet = state.extra! as String;
             return WalletSettingsPage(wallet: wallet);
           },
+          routes: [
+            GoRoute(
+              path: 'backup-settings',
+              builder: (context, state) => BackupSettings(
+                wallet: state.extra! as String,
+              ),
+              routes: [
+                GoRoute(
+                  path: 'backup-options',
+                  builder: (context, state) => BackupOptionsScreen(
+                    wallet: state.extra! as String,
+                  ),
+                ),
+                GoRoute(
+                  path: 'physical',
+                  builder: (context, state) => PhysicalBackupPage(
+                    wallet: state.extra! as String,
+                  ),
+                  routes: [
+                    GoRoute(
+                      path: 'test-backup',
+                      builder: (context, state) {
+                        final wallet = state.extra! as String;
+                        return TestBackupPage(
+                          wallet: wallet,
+                          // walletSettings: blocs.$2,
+                        );
+                        // const WalletSettingsPage(openTestBackup: true);
+                      },
+                    ),
+                  ],
+                ),
+                GoRoute(
+                  path: 'encrypted',
+                  builder: (context, state) => EncryptedVaultBackupPage(
+                    wallet: state.extra! as String,
+                  ),
+                ),
+                GoRoute(
+                  path: 'keychain',
+                  builder: (context, state) {
+                    final (backupId, (backupKey, backupSalt)) =
+                        state.extra! as (String, (String, String));
+                    return KeychainBackupPage(
+                      backupId: backupId,
+                      backupKey: backupKey,
+                      backupSalt: backupSalt,
+                    );
+                  },
+                ),
+                GoRoute(
+                  path: 'recover-options',
+                  builder: (context, state) => RecoverOptionsScreen(
+                    wallet: state.extra! as String,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-        GoRoute(
-          path: '/backupbull',
-          builder: (context, state) {
-            final wallets = state.extra! as List<Wallet>;
-            return ManualBackupPage(wallets: wallets);
-          },
-        ),
-        GoRoute(
-          path: '/recoverbull',
-          builder: (context, state) {
-            final wallets = state.extra! as List<Wallet>;
-            return ManualRecoverPage(wallets: wallets);
-          },
-        ),
-        GoRoute(
-          path: '/keychain-backup',
-          builder: (context, state) {
-            final (backupKey, backupId) = state.extra! as (String, String);
-            return KeychainBackupPage(backupKey: backupKey, backupId: backupId);
-          },
-        ),
-        GoRoute(
-          path: '/cloud-backup',
-          builder: (context, state) {
-            final cloudCubit = state.extra! as CloudCubit;
-
-            return BlocProvider.value(
-              value: cloudCubit,
-              child: const CloudPage(),
-            );
-          },
-        ),
-
-        GoRoute(
-          path: '/keychain-recover',
-          builder: (context, state) {
-            final backupId = state.extra! as String;
-            return KeychainRecoverPage(backupId: backupId);
-          },
-        ),
-
-        // GoRoute(
-        //   path: '/wallet-settings/open-test-backup',
-        //   builder: (context, state) {
-        //     return const WalletSettingsPage(openTestBackup: true);
-        //   },
-        // ),
+        //TODO: refactor route
         GoRoute(
           path: '/wallet-settings/open-backup',
           builder: (context, state) {
@@ -333,30 +342,6 @@ GoRouter setupRouter() => GoRouter(
           },
         ),
 
-        //
-        //
-
-        GoRoute(
-          path: '/wallet-settings/test-backup',
-          builder: (context, state) {
-            final wallet = state.extra! as String;
-            return TestBackupPage(
-              wallet: wallet,
-              // walletSettings: blocs.$2,
-            );
-            // const WalletSettingsPage(openTestBackup: true);
-          },
-        ),
-        GoRoute(
-          path: '/wallet-settings/backup',
-          builder: (context, state) {
-            final wallet = state.extra! as String;
-
-            return BackupPage(
-              wallet: wallet,
-            );
-          },
-        ),
         GoRoute(
           path: '/wallet-settings/bip85-paths',
           builder: (context, state) {
