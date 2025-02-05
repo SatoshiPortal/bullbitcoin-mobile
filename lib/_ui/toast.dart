@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 extension Xontext on BuildContext {
   SnackBar showToast(String text) {
     return SnackBar(
-      content: Center(child: BBText.titleLarge(text)),
+      content: Center(child: BBText.bodyBold(text)),
       backgroundColor: colour.primaryContainer,
       elevation: 4,
     );
