@@ -50,10 +50,6 @@ class _Screen extends StatelessWidget {
                 const BitcoinSettingsButton(),
                 const Gap(8),
                 const ApplicationSettingsButton(),
-                const Gap(8),
-                const BackupBullButton(),
-                const Gap(8),
-                const RecoverBullButton(),
 
                 const Gap(24),
                 const Center(
@@ -158,41 +154,6 @@ class SwapHistoryButton extends StatelessWidget {
         context.push('/swap-history');
 
         // context.push('/import');
-      },
-    );
-  }
-}
-
-class BackupBullButton extends StatelessWidget {
-  const BackupBullButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BBButton.textWithStatusAndRightArrow(
-      label: 'BackupBull',
-      onPressed: () {
-        final network = context.read<NetworkRepository>().getBBNetwork;
-        final wallets =
-            context.read<AppWalletsRepository>().walletsFromNetwork(network);
-        context.push('/backupbull', extra: wallets);
-      },
-    );
-  }
-}
-
-class RecoverBullButton extends StatelessWidget {
-  const RecoverBullButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BBButton.textWithStatusAndRightArrow(
-      label: 'RecoverBull',
-      onPressed: () {
-        final network = context.read<NetworkRepository>().getBBNetwork;
-        final wallets = context
-            .read<AppWalletsRepository>()
-            .walletNotMainFromNetwork(network);
-        context.push('/recoverbull', extra: wallets);
       },
     );
   }
