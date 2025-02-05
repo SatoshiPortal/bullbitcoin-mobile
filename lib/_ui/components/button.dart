@@ -10,10 +10,12 @@ import 'package:gap/gap.dart';
 
 enum _ButtonType {
   big,
+  withColour,
   text,
   textWithRightArrow,
   textWithLeftArrow,
   textWithStatusAndRightArrow,
+  textWithStatus,
 }
 
 class BBButton extends StatelessWidget {
@@ -34,6 +36,29 @@ class BBButton extends StatelessWidget {
   })  : type = _ButtonType.big,
         isBlue = null,
         isRed = null,
+        isGreen = null,
+        statusText = null,
+        centered = null,
+        onSurface = null;
+
+  const BBButton.withColour({
+    required this.label,
+    required this.onPressed,
+    this.leftIcon,
+    this.buttonKey,
+    this.disabled = false,
+    this.filled = false,
+    this.loading = false,
+    this.loadingText,
+    this.fillWidth = false,
+    this.leftSvgAsset,
+    this.leftImage,
+    this.center = false,
+    this.fontSize,
+  })  : type = _ButtonType.withColour,
+        isBlue = null,
+        isRed = null,
+        isGreen = null,
         statusText = null,
         centered = null,
         onSurface = null;
@@ -53,6 +78,7 @@ class BBButton extends StatelessWidget {
     this.center = false,
   })  : type = _ButtonType.text,
         filled = false,
+        isGreen = null,
         statusText = null,
         leftIcon = null,
         leftSvgAsset = null,
@@ -70,6 +96,7 @@ class BBButton extends StatelessWidget {
   })  : type = _ButtonType.textWithRightArrow,
         filled = false,
         isBlue = null,
+        isGreen = null,
         isRed = null,
         statusText = null,
         centered = null,
@@ -91,6 +118,7 @@ class BBButton extends StatelessWidget {
   })  : type = _ButtonType.textWithLeftArrow,
         filled = false,
         isBlue = null,
+        isGreen = null,
         isRed = null,
         statusText = null,
         centered = null,
@@ -114,6 +142,7 @@ class BBButton extends StatelessWidget {
     this.center = false,
   })  : type = _ButtonType.textWithStatusAndRightArrow,
         filled = false,
+        isGreen = null,
         centered = null,
         leftIcon = null,
         leftSvgAsset = null,
@@ -121,11 +150,32 @@ class BBButton extends StatelessWidget {
         fillWidth = true,
         onSurface = null,
         fontSize = null;
-
+  const BBButton.textWithStatus({
+    required this.label,
+    required this.onPressed,
+    this.disabled = false,
+    this.loading = false,
+    this.loadingText,
+    this.isGreen = false,
+    this.isRed = false,
+    this.statusText,
+    this.buttonKey,
+    this.center = false,
+  })  : type = _ButtonType.textWithStatus,
+        filled = false,
+        isBlue = null,
+        centered = null,
+        leftIcon = null,
+        leftSvgAsset = null,
+        leftImage = null,
+        fillWidth = true,
+        onSurface = null,
+        fontSize = null;
   final String label;
   final String? statusText;
   final bool? isRed;
   final bool? isBlue;
+  final bool? isGreen;
   final Function onPressed;
   final bool filled;
   final bool disabled;
@@ -353,6 +403,139 @@ class BBButton extends StatelessWidget {
               const Gap(8),
               BBText.title(label, isBlue: true),
             ],
+          ),
+        );
+
+      case _ButtonType.textWithStatus:
+        widget = TextButton(
+          style: TextButton.styleFrom(padding: EdgeInsets.zero),
+          onPressed: disabled ? null : () => onPressed(),
+          child: Row(
+            children: [
+              BBText.title(
+                label, isRed: true, // TODO ; Make this adaptive
+              ),
+              const Spacer(),
+              if (statusText != null)
+                AnimatedSwitcher(
+                  duration: 600.ms,
+                  child: !loading
+                      ? BBText.title(
+                          statusText!,
+                          isBold: true,
+                          isRed: isRed ?? false,
+                          isGreen: isGreen ?? false,
+                        )
+                      : SizedBox(
+                          height: 8,
+                          width: 66,
+                          child: LinearProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              context.colour.primary,
+                            ),
+                            backgroundColor: context.colour.primaryContainer,
+                          ),
+                        ),
+                ),
+              const Gap(8),
+            ],
+          ),
+        );
+
+      case _ButtonType.withColour:
+        final style = ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          backgroundColor: darkMode
+              ? context.colour.primaryContainer
+              : NewColours.lightGray.withValues(alpha: 0.25),
+          surfaceTintColor:
+              darkMode ? context.colour.primaryContainer : NewColours.lightGray,
+          // shadowColor: Colors.transparent,
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(vertical: 8),
+
+          // disabledForegroundColor: context.colour.onPrimaryContainer,
+        );
+
+        if (!loading) {
+          widget = ElevatedButton(
+            key: buttonKey,
+            style: style,
+            onPressed: disabled ? null : () => onPressed(),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (leftSvgAsset != null) ...[
+                  SvgPicture.asset(
+                    leftSvgAsset!,
+                    colorFilter: ColorFilter.mode(
+                      context.colour.onPrimaryContainer,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  const Gap(16),
+                ] else if (leftIcon != null) ...[
+                  Icon(
+                    leftIcon,
+                    color: context.colour.onPrimaryContainer,
+                  ),
+                  const Gap(16),
+                ] else if (leftImage != null) ...[
+                  Image.asset(
+                    leftImage!,
+                    height: 32,
+                    width: 32,
+                  ),
+                  const Gap(16),
+                ],
+                BBText.titleLarge(
+                  label,
+                  fontSize: fontSize ?? 16,
+                  isBold: true,
+                ),
+              ],
+            ),
+          );
+        } else {
+          widget = ElevatedButton(
+            style: style,
+            onPressed: () {},
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Gap(8),
+                SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(context.colour.surface),
+                  ),
+                ),
+                const Gap(8),
+                BBText.title(
+                  loadingText ?? label,
+                  // isRed: !filled,
+                  onSurface: filled,
+                ),
+              ],
+            ),
+          );
+        }
+
+        widget = Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(
+              Radius.circular(8.0),
+            ),
+          ),
+          child: SizedBox(
+            height: 45,
+            width: fillWidth ? null : 225,
+            child: widget,
           ),
         );
     }
