@@ -185,14 +185,14 @@ class _Screen extends StatelessWidget {
                       inputType: state.inputType,
                     )
                   : state.pageState == KeyChainPageState.enter
-                  ? _EnterPage(
-                      key: const ValueKey('enter'),
-                      inputType: state.inputType,
-                    )
-                  : _ConfirmPage(
-                      key: const ValueKey('confirm'),
-                      inputType: state.inputType,
-                    ),
+                      ? _EnterPage(
+                          key: const ValueKey('enter'),
+                          inputType: state.inputType,
+                        )
+                      : _ConfirmPage(
+                          key: const ValueKey('confirm'),
+                          inputType: state.inputType,
+                        ),
             ),
           );
         },
