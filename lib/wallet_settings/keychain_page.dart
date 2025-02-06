@@ -83,23 +83,31 @@ class _Screen extends StatelessWidget {
       ],
       child: BlocBuilder<KeychainCubit, KeychainState>(
         builder: (context, state) {
-          if (state.saving) return const _LoadingView();
+          if (state.loading) {
+            return const _LoadingView();
+          }
 
           return Scaffold(
             appBar: AppBar(
               automaticallyImplyLeading: false,
               elevation: 0,
               flexibleSpace: BBAppBar(
-                text: 'Keychain Backup',
+                text:
+                    state.isRecovering ? 'Recover Keychain' : 'Keychain Backup',
                 onBack: () {
-                  //TODO; clear sensitive data
+                  context.read<KeychainCubit>().clearSensitive();
                   context.pop();
                 },
               ),
             ),
             body: AnimatedSwitcher(
               duration: 300.ms,
-              child: state.pageState == KeyChainPageState.enter
+              child: state.pageState == KeyChainPageState.recovery
+                  ? _RecoveryPage(
+                      key: const ValueKey('recovery'),
+                      inputType: state.inputType,
+                    )
+                  : state.pageState == KeyChainPageState.enter
                   ? _EnterPage(
                       key: const ValueKey('enter'),
                       inputType: state.inputType,
@@ -123,9 +131,7 @@ class _LoadingView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: CircularProgressIndicator(
-          color: context.colour.onSurface,
-        ),
+        child: CircularProgressIndicator(color: context.colour.primary),
       ),
     );
   }
