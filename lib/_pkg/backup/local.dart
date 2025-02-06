@@ -36,10 +36,9 @@ class FileSystemBackupManager extends IBackupManager {
     required String encrypted,
   }) async {
     try {
-      final decodeEncryptedFile =
-          jsonDecode(utf8.decode(HEX.decode(encrypted))) as Map<String, String>;
-
-      final id = decodeEncryptedFile['backupId']?.toString() ?? '';
+      final decodeEncryptedFile = jsonDecode(utf8.decode(HEX.decode(encrypted)))
+          as Map<String, dynamic>;
+      final id = decodeEncryptedFile['id']?.toString() ?? '';
       if (id.isEmpty) {
         return (null, Err("Corrupted backup file"));
       }
