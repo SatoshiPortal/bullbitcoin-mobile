@@ -7,193 +7,170 @@ import 'package:recoverbull/recoverbull.dart';
 
 class KeychainCubit extends Cubit<KeychainState> {
   KeychainCubit() : super(const KeychainState()) {
-    _init();
+    shuffleAndEmit();
   }
-
-  void _init() => shuffleAndEmit();
 
   void shuffleAndEmit() {
     final shuffledList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]..shuffle();
+    emit(state.copyWith(shuffledNumbers: shuffledList));
+  }
+
+  void setChainState(
+    KeyChainPageState keyChainPageState,
+    String backupId,
+    String? backupKey,
+    String backupSalt,
+  ) {
     emit(
       state.copyWith(
-        shuffledNumbers: shuffledList,
-        error: '',
+        pageState: keyChainPageState,
+        backupKey: backupKey ?? '',
+        backupId: backupId,
+        backupSalt: HEX.decode(backupSalt),
       ),
     );
   }
 
-  void changeInputType(KeyChainInputType type) {
+  void updatePageState(
+    KeyChainInputType keyChainInputType,
+    KeyChainPageState keyChainPageState,
+  ) {
     emit(
       state.copyWith(
-        inputType: type,
-        pin: [],
-        password: '',
+        inputType: keyChainInputType,
+        pageState: keyChainPageState,
         error: '',
-        pageState: KeyChainPageState.enter,
-        tempPin: '',
-        tempPassword: '',
-        pinConfirmed: false,
-        passwordConfirmed: false,
+        secret: '',
+        tempSecret: '',
+        isSecretConfirmed: false,
+      ),
+    );
+  }
+
+  void updateInput(String value) {
+    if (state.inputType == KeyChainInputType.pin && value.length > 6) return;
+    emit(state.copyWith(secret: value, error: ''));
+  }
+
+  void backspacePressed() {
+    if (state.secret.isEmpty) return;
+    emit(
+      state.copyWith(
+        secret: state.secret.substring(0, state.secret.length - 1),
+        error: '',
       ),
     );
   }
 
   void keyPressed(String key) {
-    if (state.pin.length >= 6) return;
+    if (state.secret.length >= 6) return;
     emit(
       state.copyWith(
-        pin: List<String>.from(state.pin)..add(key),
+        secret: state.secret + key,
         error: '',
-      ),
-    );
-  }
-
-  void backspacePressed() {
-    if (state.pin.isEmpty) return;
-    emit(
-      state.copyWith(
-        pin: List<String>.from(state.pin)..removeLast(),
-        error: '',
-      ),
-    );
-  }
-
-  void passwordChanged(String password) {
-    emit(
-      state.copyWith(
-        password: password,
-        error: '',
-      ),
-    );
-  }
-
-  void clearError() => emit(
-        state.copyWith(
-          error: '',
-        ),
-      );
-  void clearSensitive() {
-    clearError();
-    emit(
-      state.copyWith(
-        pin: [],
-        password: '',
-        tempPin: '',
-        tempPassword: '',
-        pinConfirmed: false,
-        passwordConfirmed: false,
       ),
     );
   }
 
   void confirmPressed() {
-    if (!state.showButton()) return;
-
-    state.inputType == KeyChainInputType.pin
-        ? _confirmPin()
-        : _confirmPassword();
-  }
-
-  void _confirmPin() {
-    if (state.pageState == KeyChainPageState.enter) {
-      if (state.pin.length < 6) {
-        emit(state.copyWith(error: 'PIN must be at least 6 digits'));
-        return;
-      }
-
-      emit(
-        state.copyWith(
-          pageState: KeyChainPageState.confirm,
-          tempPin: state.pin.join(),
-          pin: [],
-          error: '',
-        ),
-      );
-      return;
-    }
-
-    if (state.pin.join() != state.tempPin) {
-      emit(
-        state.copyWith(
-          pageState: KeyChainPageState.enter,
-          tempPin: '',
-          pin: [],
-          error: 'PINs do not match. Please try again.',
-        ),
-      );
-      return;
-    }
-    emit(
-      state.copyWith(
-        pinConfirmed: true,
-        error: '',
-      ),
-    );
-  }
-
-  void _confirmPassword() {
-    if (!state.isPasswordValid) {
-      emit(state.copyWith(error: 'Password must be at least 6 characters'));
-      return;
-    }
+    if (!state.showButton) return;
 
     if (state.pageState == KeyChainPageState.enter) {
       emit(
         state.copyWith(
           pageState: KeyChainPageState.confirm,
-          tempPassword: state.password,
-          password: '',
-          error: '',
+          tempSecret: state.secret,
+          secret: '',
         ),
       );
       return;
     }
 
-    if (state.password != state.tempPassword) {
+    if (state.secret != state.tempSecret) {
       emit(
         state.copyWith(
           pageState: KeyChainPageState.enter,
-          tempPassword: '',
-          password: '',
-          error: 'Passwords do not match. Please try again.',
+          error: 'Values do not match. Please try again.',
+          secret: '',
+          tempSecret: '',
         ),
       );
       return;
     }
 
-    emit(
-      state.copyWith(
-        passwordConfirmed: true,
-        error: '',
-      ),
-    );
+    emit(state.copyWith(isSecretConfirmed: true));
   }
 
-  Future<void> secureKey(
-    String backupId,
-    String backupKey,
-    String backupSalt,
-  ) async {
-    final pinOrPassword = state.inputType == KeyChainInputType.pin
-        ? state.tempPin
-        : state.tempPassword;
+  Future<void> secureKey() async {
     try {
-      emit(state.copyWith(saving: true, error: ''));
+      emit(state.copyWith(loading: true, error: ''));
       await KeyService(keyServer: Uri.parse(keychainapi)).storeBackupKey(
-        backupId: backupId,
-        password: pinOrPassword,
-        backupKey: HEX.decode(backupKey),
-        salt: HEX.decode(backupSalt),
+        backupId: state.backupId,
+        password: state.tempSecret,
+        backupKey: HEX.decode(state.backupKey),
+        salt: state.backupSalt,
       );
-
-      emit(state.copyWith(saved: true, saving: false));
+      emit(
+        state.copyWith(loading: false, keySecretState: KeySecretState.saved),
+      );
     } catch (e) {
       debugPrint('Failed to store backup key on server: $e');
       emit(
         state.copyWith(
-          saving: false,
+          loading: false,
           error: 'Failed to store backup key on server',
-          passwordConfirmed: false,
+        ),
+      );
+    }
+  }
+
+  void clearSensitive() {
+    emit(
+      state.copyWith(
+        secret: '',
+        tempSecret: '',
+        isSecretConfirmed: false,
+        error: '',
+      ),
+    );
+  }
+
+  void setBackupId(String id) {
+    emit(state.copyWith(backupId: id));
+  }
+
+  Future<void> clickRecoverKey() async {
+    if (state.secret.length != 6) {
+      emit(state.copyWith(error: 'pin should be 6 digits long'));
+      return;
+    }
+
+    try {
+      emit(state.copyWith(loading: true, error: ''));
+
+      if (keychainapi.isEmpty) {
+        emit(state.copyWith(loading: false, error: 'keychain api is not set'));
+        return;
+      }
+      final backupKey =
+          await KeyService(keyServer: Uri.parse(keychainapi)).recoverBackupKey(
+        backupId: state.backupId,
+        password: state.secret,
+        salt: state.backupSalt,
+      );
+      emit(
+        state.copyWith(
+          backupKey: HEX.encode(backupKey),
+          loading: false,
+          keySecretState: KeySecretState.recovered,
+        ),
+      );
+    } catch (e) {
+      debugPrint("Failed to recover backup key: $e");
+      emit(
+        state.copyWith(
+          loading: false,
+          error: "Failed to recover backup key",
         ),
       );
     }
