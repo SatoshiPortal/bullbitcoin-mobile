@@ -32,7 +32,7 @@ class _TestBackupPageState extends State<TestBackupPage> {
   @override
   void initState() {
     walletBloc = createOrRetreiveWalletBloc(widget.wallet);
-    backupSettings = createBackupSettingsCubit(widget.wallet);
+    backupSettings = createBackupSettingsCubit(walletId: widget.wallet);
 
     backupSettings.loadBackupForVerification();
 
