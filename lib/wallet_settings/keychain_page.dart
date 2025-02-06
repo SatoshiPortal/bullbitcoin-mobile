@@ -199,6 +199,45 @@ class _ConfirmPage extends StatelessWidget {
   }
 }
 
+class _RecoveryPage extends StatelessWidget {
+  const _RecoveryPage({super.key, required this.inputType});
+  final KeyChainInputType inputType;
+
+  @override
+  Widget build(BuildContext context) {
+    return StackedPage(
+      bottomChildHeight: MediaQuery.of(context).size.height * 0.1,
+      bottomChild: _RecoverButton(inputType: inputType),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Gap(50),
+            BBText.titleLarge(
+              'Enter Recovery ${inputType == KeyChainInputType.pin ? 'PIN' : 'Password'}',
+              textAlign: TextAlign.center,
+              isBold: true,
+            ),
+            const Gap(8),
+            BBText.bodySmall(
+              'Enter the ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} you used to backup your keychain',
+              textAlign: TextAlign.center,
+            ),
+            const Gap(50),
+            if (inputType == KeyChainInputType.pin) ...[
+              _PinField(),
+              const KeyPad(),
+            ] else
+              _PasswordField(),
+            const Gap(30),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _PinField extends StatelessWidget {
   const _PinField();
 
@@ -428,6 +467,75 @@ class _ConfirmButton extends StatelessWidget {
             Icons.arrow_forward,
             color: Colors.white,
             size: 16,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecoverButton extends StatelessWidget {
+  const _RecoverButton({required this.inputType});
+  final KeyChainInputType inputType;
+
+  @override
+  Widget build(BuildContext context) {
+    final canRecover = context.select((KeychainCubit x) => x.state.canRecover);
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () {
+              final cubit = context.read<KeychainCubit>();
+              if (inputType == KeyChainInputType.pin) {
+                cubit.updatePageState(
+                  KeyChainInputType.password,
+                  KeyChainPageState.recovery,
+                );
+              } else {
+                cubit.updatePageState(
+                  KeyChainInputType.pin,
+                  KeyChainPageState.recovery,
+                );
+              }
+            },
+            child: BBText.bodySmall(
+              inputType == KeyChainInputType.pin
+                  ? 'Use a password instead of a pin'
+                  : 'Use a PIN instead of a password',
+            ),
+          ),
+          const Gap(5),
+          FilledButton(
+            onPressed: () {
+              if (canRecover) context.read<KeychainCubit>().clickRecoverKey();
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor:
+                  canRecover ? context.colour.shadow : context.colour.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Recover with ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}',
+                  style: context.font.bodyMedium!.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(
+                  Icons.arrow_forward,
+                  color: Colors.white,
+                  size: 16,
+                ),
+              ],
+            ),
           ),
         ],
       ),
