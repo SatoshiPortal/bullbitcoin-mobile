@@ -4,7 +4,6 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/page_template.dart';
-import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet_settings/bloc/backup_settings_cubit.dart';
 import 'package:bb_mobile/wallet_settings/bloc/backup_settings_state.dart';
@@ -47,7 +46,6 @@ class KeychainBackupPage extends StatelessWidget {
         ),
       ],
       child: _Screen(
-        backupId: backupId,
         backupKey: backupKey,
         encryptedBackup: backup,
       ),
@@ -113,8 +111,9 @@ class _Screen extends StatelessWidget {
         ),
         BlocListener<KeychainCubit, KeychainState>(
           listenWhen: (previous, current) =>
-              previous.pinConfirmed != current.pinConfirmed ||
-              previous.passwordConfirmed != current.passwordConfirmed,
+              previous.isSecretConfirmed != current.isSecretConfirmed ||
+              previous.keySecretState != current.keySecretState ||
+              previous.error != current.error,
           listener: (context, state) {
             if (state.isSecretConfirmed &&
                 !state.loading &&
@@ -133,9 +132,27 @@ class _Screen extends StatelessWidget {
                 builder: (context) => const _SuccessDialog(isRecovery: false),
               );
             }
-            if (state.error.isNotEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                context.showToast(state.error),
+
+            if (state.keySecretState == KeySecretState.recovered &&
+                !state.loading &&
+                !state.hasError) {
+              if (encryptedBackup.isNotEmpty) {
+                context.read<BackupSettingsCubit>().recoverBackup(
+                      jsonEncode(encryptedBackup),
+                      state.backupKey,
+                    );
+                // Remove immediate success dialog - will show after successful recovery
+                // showDialog(...)
+              }
+            }
+
+            if (state.hasError) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => _ErrorDialog(
+                  error: state.error,
+                ),
               );
             }
           },
