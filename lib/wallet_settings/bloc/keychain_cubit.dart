@@ -141,7 +141,6 @@ class KeychainCubit extends Cubit<KeychainState> {
 
   Future<void> clickRecoverKey() async {
     if (state.secret.length < 6) {
-      print(state.secret);
       state.inputType == KeyChainInputType.pin
           ? emit(state.copyWith(error: 'pin should be atleast 6 digits long'))
           : emit(
@@ -165,7 +164,6 @@ class KeychainCubit extends Cubit<KeychainState> {
         password: state.secret,
         salt: state.backupSalt,
       );
-      print(state.secret);
       emit(
         state.copyWith(
           backupKey: HEX.encode(backupKey),
