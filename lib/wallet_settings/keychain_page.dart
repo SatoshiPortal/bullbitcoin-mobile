@@ -430,8 +430,7 @@ class _ConfirmButton extends StatelessWidget {
   final KeyChainInputType inputType;
   @override
   Widget build(BuildContext context) {
-    final showButton =
-        context.select((KeychainCubit x) => x.state.showButton());
+    final showButton = context.select((KeychainCubit x) => x.state.showButton);
     final err = context.select((KeychainCubit x) => x.state.error);
 
     if (err.isNotEmpty && inputType == KeyChainInputType.password) {
