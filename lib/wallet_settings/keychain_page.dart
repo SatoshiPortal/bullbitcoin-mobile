@@ -21,22 +21,35 @@ import 'package:go_router/go_router.dart';
 class KeychainBackupPage extends StatelessWidget {
   const KeychainBackupPage({
     super.key,
-    required this.backupKey,
-    required this.backupId,
-    required this.backupSalt,
+    this.backupKey,
+    required this.backup,
   });
 
-  final String backupSalt;
-  final String backupKey;
-  final String backupId;
+  final String? backupKey;
+  final Map<String, dynamic> backup;
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => KeychainCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<KeychainCubit>(
+          create: (context) => KeychainCubit()
+            ..setChainState(
+              (backupKey == null || backupKey!.isEmpty)
+                  ? KeyChainPageState.recovery
+                  : KeyChainPageState.enter,
+              backup["id"] as String,
+              backupKey,
+              backup["salt"] as String,
+            ),
+        ),
+        BlocProvider.value(
+          value: createBackupSettingsCubit(),
+        ),
+      ],
       child: _Screen(
         backupId: backupId,
         backupKey: backupKey,
-        backupSalt: backupSalt,
+        encryptedBackup: backup,
       ),
     );
   }
@@ -44,13 +57,9 @@ class KeychainBackupPage extends StatelessWidget {
 
 class _Screen extends StatelessWidget {
   const _Screen({
-    required this.backupKey,
-    required this.backupId,
-    required this.backupSalt,
+    this.backupKey,
+    required this.encryptedBackup,
   });
-  final String backupSalt;
-  final String backupKey;
-  final String backupId;
 
   final String? backupKey;
   final Map<String, dynamic> encryptedBackup;
@@ -107,12 +116,22 @@ class _Screen extends StatelessWidget {
               previous.pinConfirmed != current.pinConfirmed ||
               previous.passwordConfirmed != current.passwordConfirmed,
           listener: (context, state) {
-            if ((state.pinConfirmed || state.passwordConfirmed) &&
-                !state.saving &&
-                state.error.isEmpty) {
-              context
-                  .read<KeychainCubit>()
-                  .secureKey(backupId, backupKey, backupSalt);
+            if (state.isSecretConfirmed &&
+                !state.loading &&
+                !state.hasError &&
+                state.keySecretState != KeySecretState.saved) {
+              context.read<KeychainCubit>().secureKey();
+            }
+
+            if (state.keySecretState == KeySecretState.saved &&
+                !state.loading &&
+                !state.hasError) {
+              context.read<KeychainCubit>().clearSensitive();
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const _SuccessDialog(isRecovery: false),
+              );
             }
             if (state.error.isNotEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
