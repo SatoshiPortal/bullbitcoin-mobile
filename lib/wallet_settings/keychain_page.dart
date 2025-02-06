@@ -534,3 +534,104 @@ class KeyPad extends StatelessWidget {
     );
   }
 }
+
+class _SuccessDialog extends StatelessWidget {
+  const _SuccessDialog({required this.isRecovery});
+  final bool isRecovery;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget dialogContent = Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.check_circle_outline,
+            color: context.colour.shadow,
+            size: 48,
+          ),
+          const Gap(16),
+          BBText.title(
+            isRecovery ? 'Recovery Successful' : 'Backup Successful',
+            textAlign: TextAlign.center,
+            isBold: true,
+          ),
+          const Gap(8),
+          BBText.bodySmall(
+            isRecovery
+                ? 'Your wallet has been recovered successfully'
+                : 'Your wallet has been backed up successfully',
+            textAlign: TextAlign.center,
+          ),
+          const Gap(24),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              context.go('/home');
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: context.colour.shadow,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text('Continue'),
+          ),
+        ],
+      ),
+    );
+
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: dialogContent,
+    );
+  }
+}
+
+class _ErrorDialog extends StatelessWidget {
+  const _ErrorDialog({required this.error});
+  final String error;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.error_outline,
+              color: context.colour.error,
+              size: 48,
+            ),
+            const Gap(16),
+            BBText.title(
+              'Recovery Failed',
+              textAlign: TextAlign.center,
+              isBold: true,
+            ),
+            const Gap(8),
+            BBText.bodySmall(
+              error,
+              textAlign: TextAlign.center,
+            ),
+            const Gap(24),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: FilledButton.styleFrom(
+                backgroundColor: context.colour.shadow,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Close'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
