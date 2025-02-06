@@ -16,6 +16,7 @@ class BackupSettingsState with _$BackupSettingsState {
     @Default(false) bool testingBackup,
     @Default('') String errTestingBackup,
     @Default(false) bool backupTested,
+    @Default(false) bool loadingBackups,
     @Default([]) List<Backup> loadedBackups,
     @Default('') String errorLoadingBackups,
     @Default(false) bool savingBackups,
@@ -25,6 +26,7 @@ class BackupSettingsState with _$BackupSettingsState {
     @Default('') String backupFolderId,
     @Default('') String backupSalt,
     @Default('') String backupKey,
+    @Default({}) Map<String, dynamic> latestRecoveredBackup,
     @Default(null) DateTime? lastBackupAttempt,
   }) = _BackupSettingsState;
 
