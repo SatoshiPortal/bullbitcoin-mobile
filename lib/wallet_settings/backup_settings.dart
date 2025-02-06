@@ -31,7 +31,7 @@ class _BackupSettingsState extends State<BackupSettings> {
         ),
         BlocProvider(
           create: (BuildContext context) =>
-              createBackupSettingsCubit(widget.wallet),
+              createBackupSettingsCubit(walletId: widget.wallet),
         ),
       ],
       child: Scaffold(
@@ -126,7 +126,7 @@ class _Screen extends StatelessWidget {
             label: "Recover or test backup",
             onPressed: () {
               context.push(
-                '/wallet-settings/backup-settings/recover-options',
+                '/wallet-settings/backup-settings/recover-encrypted',
                 extra: context.read<WalletBloc>().state.wallet.id,
               );
             },
@@ -136,15 +136,6 @@ class _Screen extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class RecoverOptionsScreen extends StatelessWidget {
-  const RecoverOptionsScreen({super.key, required this.wallet});
-  final String wallet;
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }
 
