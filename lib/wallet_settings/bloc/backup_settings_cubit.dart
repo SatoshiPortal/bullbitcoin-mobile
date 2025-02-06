@@ -88,6 +88,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   static const _kMinBackupInterval = Duration(seconds: 5);
   static const _kDerivationPath = "m/1608'/0'";
 
+  @override
+  Future<void> close() async {
+    await _driveManager.dispose();
+    await super.close();
+  }
+
   // Seed loading helper
   Future<(Seed?, String?)> _loadWalletSeed(Wallet wallet) async {
     final (seed, err) = await _walletSensRepository.readSeed(
