@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:bb_mobile/_model/backup.dart';
@@ -6,49 +7,82 @@ import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/backup/google_drive.dart';
 import 'package:bb_mobile/_pkg/backup/local.dart';
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bb_mobile/_pkg/file_picker.dart';
+import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
+import 'package:bb_mobile/_pkg/wallet/create.dart';
+import 'package:bb_mobile/_pkg/wallet/create_sensitive.dart';
+import 'package:bb_mobile/_pkg/wallet/lwk/sensitive_create.dart';
 import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
+import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/wallet_settings/bloc/backup_settings_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-BackupSettingsCubit createBackupSettingsCubit(String walletId) {
+BackupSettingsCubit createBackupSettingsCubit({String? walletId}) {
   final appWalletsRepo = locator<AppWalletsRepository>();
-  final activeWallet = appWalletsRepo.getWalletById(walletId);
+  final wallets = appWalletsRepo.allWallets;
+
+  final currentWallet = walletId != null
+      ? wallets.firstWhere((w) => w.id == walletId, orElse: () => wallets.first)
+      : wallets.first;
+
   return BackupSettingsCubit(
-    activeWallet: activeWallet!,
-    wallets: appWalletsRepo.allWallets,
+    wallets: wallets,
     appWalletsRepository: appWalletsRepo,
     walletSensRepository: locator<WalletSensitiveStorageRepository>(),
     manager: locator<FileSystemBackupManager>(),
     driveManager: locator<GoogleDriveBackupManager>(),
+    lwkSensitiveCreate: locator<LWKSensitiveCreate>(),
+    bdkSensitiveCreate: locator<BDKSensitiveCreate>(),
+    walletCreate: locator<WalletCreate>(),
+    walletSensitiveCreate: locator<WalletSensitiveCreate>(),
+    walletsStorageRepository: locator<WalletsStorageRepository>(),
+    currentWallet: currentWallet,
   );
 }
 
 class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   BackupSettingsCubit({
-    required Wallet activeWallet,
     required List<Wallet> wallets,
     required AppWalletsRepository appWalletsRepository,
     required WalletSensitiveStorageRepository walletSensRepository,
-    required FileSystemBackupManager manager,
+    required LWKSensitiveCreate lwkSensitiveCreate,
+    required BDKSensitiveCreate bdkSensitiveCreate,
+    required WalletCreate walletCreate,
+    required WalletSensitiveCreate walletSensitiveCreate,
+    required WalletsStorageRepository walletsStorageRepository,
     required GoogleDriveBackupManager driveManager,
+    required FileSystemBackupManager manager,
+    required Wallet? currentWallet,
   })  : _walletSensRepository = walletSensRepository,
         _appWalletsRepository = appWalletsRepository,
-        _wallet = activeWallet,
         _wallets = wallets,
+        _currentWallet = currentWallet,
         _manager = manager,
         _driveManager = driveManager,
+        _filePicker = locator<FilePick>(),
+        _walletSensitiveCreate = walletSensitiveCreate,
+        _bdkSensitiveCreate = bdkSensitiveCreate,
+        _walletCreate = walletCreate,
+        _lwkSensitiveCreate = lwkSensitiveCreate,
+        _walletsStorageRepository = walletsStorageRepository,
         super(const BackupSettingsState());
 
+  final WalletsStorageRepository _walletsStorageRepository;
   final WalletSensitiveStorageRepository _walletSensRepository;
   final AppWalletsRepository _appWalletsRepository;
-  final Wallet _wallet;
+  final WalletSensitiveCreate _walletSensitiveCreate;
+  final BDKSensitiveCreate _bdkSensitiveCreate;
+  final WalletCreate _walletCreate;
+  final LWKSensitiveCreate _lwkSensitiveCreate;
+  Wallet? _currentWallet;
   final List<Wallet> _wallets;
   final FileSystemBackupManager _manager;
   final GoogleDriveBackupManager _driveManager;
+  final FilePick? _filePicker;
   static const _kDelayDuration = Duration(milliseconds: 800);
   static const _kShuffleDelay = Duration(milliseconds: 500);
   static const _kMinBackupInterval = Duration(seconds: 5);
