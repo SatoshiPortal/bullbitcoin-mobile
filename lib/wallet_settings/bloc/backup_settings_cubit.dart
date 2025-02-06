@@ -90,7 +90,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
   @override
   Future<void> close() async {
-    await _driveManager.dispose();
     await super.close();
   }
 
