@@ -2,42 +2,39 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'keychain_state.freezed.dart';
 
-enum KeyChainPageState { enter, confirm }
+enum KeyChainPageState { enter, confirm, recovery }
 
 enum KeyChainInputType { pin, password }
+
+enum KeySecretState { saved, recovered, none }
 
 @freezed
 class KeychainState with _$KeychainState {
   const factory KeychainState({
-    @Default(false) bool saving,
-    @Default(false) bool saved,
-    @Default('') String error,
     @Default(false) bool loading,
-    @Default([]) List<String> pin,
-    @Default('') String password,
-    @Default([]) List<int> shuffledNumbers,
     @Default(KeyChainPageState.enter) KeyChainPageState pageState,
     @Default(KeyChainInputType.pin) KeyChainInputType inputType,
-    @Default('') String tempPin,
-    @Default('') String tempPassword,
-    @Default(false) bool pinConfirmed,
-    @Default(false) bool passwordConfirmed,
+    @Default(KeySecretState.none) KeySecretState keySecretState,
+    @Default('') String secret,
+    @Default('') String tempSecret,
+    @Default('') String backupId,
+    @Default('') String backupKey,
+    @Default([]) List<int> backupSalt,
+    @Default(false) bool isSecretConfirmed,
+    @Default([]) List<int> shuffledNumbers,
+    @Default('') String error,
   }) = _KeychainState;
+
   const KeychainState._();
 
-  String displayPin() {
-    final hide = List.filled(pin.length, 'x').join('');
-    return hide;
-  }
+  String displayPin() => List.filled(secret.length, 'x').join('');
 
-  bool showButton() {
-    if (inputType == KeyChainInputType.pin) {
-      return pin.length >= 6;
-    } else {
-      //TODO: Implement password  validation
-      return password.isNotEmpty && password.length >= 6;
-    }
-  }
+  bool get isValid => inputType == KeyChainInputType.pin
+      ? secret.length == 6
+      : secret.length >= 6;
 
-  bool get isPasswordValid => password.length >= 6;
+  bool get showButton => isValid;
+  bool get hasError => error.isNotEmpty;
+  bool get isRecovering => pageState == KeyChainPageState.recovery;
+  bool get canRecover => backupId.isNotEmpty && isValid && !loading;
 }
