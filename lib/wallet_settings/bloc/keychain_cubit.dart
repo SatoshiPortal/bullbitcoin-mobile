@@ -141,7 +141,13 @@ class KeychainCubit extends Cubit<KeychainState> {
 
   Future<void> clickRecoverKey() async {
     if (state.secret.length != 6) {
-      emit(state.copyWith(error: 'pin should be 6 digits long'));
+      state.inputType == KeyChainInputType.pin
+          ? emit(state.copyWith(error: 'pin should be atleast 6 digits long'))
+          : emit(
+              state.copyWith(
+                error: 'password should be atleast 6 characters long',
+              ),
+            );
       return;
     }
 
