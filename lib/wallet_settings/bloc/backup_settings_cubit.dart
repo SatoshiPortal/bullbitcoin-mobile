@@ -102,30 +102,64 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     return (seed, err?.toString());
   }
 
-  // Backup verification methods
+  // physical backup & verification methods
+
+  void _emitBackupState(Seed seed) {
+    if (_currentWallet == null) {
+      emit(
+        state.copyWith(
+          errorLoadingBackups: 'No active wallet selected',
+          loadingBackups: false,
+        ),
+      );
+      return;
+    }
+
+    final words = seed.mnemonic.split(' ');
+    final shuffled = words.toList()..shuffle();
+
+    emit(state.copyWith(
+      testMnemonicOrder: [],
+      mnemonic: words,
+      errTestingBackup: '',
+      password: seed
+          .getPassphraseFromIndex(_currentWallet!.sourceFingerprint)
+          .passphrase,
+      shuffledMnemonic: shuffled,
+      loadingBackups: false,
+    ));
+  }
+
+  void _emitBackupTestSuccessState() {
+    emit(
+      state.copyWith(
+        backupTested: true,
+        testingBackup: false,
+      ),
+    );
+    clearSensitive();
+  }
+
   Future<void> loadBackupForVerification() async {
-    final (seed, error) = await _loadWalletSeed(_wallet);
+    if (_currentWallet == null) {
+      emit(state.copyWith(
+        errorLoadingBackups: 'No wallet selected for verification',
+        loadingBackups: false,
+      ));
+      return;
+    }
+
+    emit(state.copyWith(loadingBackups: true));
+    final (seed, error) = await _loadWalletSeed(_currentWallet!);
     if (error != null || seed == null) {
-      emit(state.copyWith(errTestingBackup: error ?? 'Seed data not found'));
+      emit(state.copyWith(
+        errTestingBackup: error ?? 'Seed data not found',
+        loadingBackups: false,
+      ));
       return;
     }
 
     _emitBackupState(seed);
-  }
-
-  void _emitBackupState(Seed seed) {
-    final words = seed.mnemonic.split(' ');
-    final shuffled = words.toList()..shuffle();
-    emit(
-      state.copyWith(
-        testMnemonicOrder: [],
-        mnemonic: words,
-        errTestingBackup: '',
-        password:
-            seed.getPassphraseFromIndex(_wallet.sourceFingerprint).passphrase,
-        shuffledMnemonic: shuffled,
-      ),
-    );
   }
 
   Future<void> testBackupClicked() async {
@@ -133,7 +167,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     final words = state.testMneString();
     final password = state.testBackupPassword;
-    final seed = await _loadSeedData(_wallet);
+    final seed = await _loadSeedData(_currentWallet!);
 
     if (seed == null) {
       emit(
@@ -172,9 +206,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   bool _verifyWords(String seedMnemonic, String testWords) =>
       seedMnemonic == testWords;
 
-  bool _verifyPassphrase(Seed seed, String password) =>
-      seed.getPassphraseFromIndex(_wallet.sourceFingerprint).passphrase ==
-      password;
+  bool _verifyPassphrase(Seed seed, String password) {
+    final storedPassphrase = seed
+        .getPassphraseFromIndex(_currentWallet!.sourceFingerprint)
+        .passphrase;
+    return storedPassphrase == password;
+  }
 
   Future<Seed?> _loadSeedData(Wallet wallet) async {
     final (seed, err) = await _walletSensRepository.readSeed(
@@ -188,24 +225,19 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   Future<void> _updateWalletBackupStatus() async {
-    final wallet = _wallet.copyWith(
+    final wallet = _currentWallet!.copyWith(
       physicalBackupTested: true,
       lastPhysicalBackupTested: DateTime.now(),
     );
 
-    await _appWalletsRepository
-        .getWalletServiceById(wallet.id)
-        ?.updateWallet(wallet, updateTypes: [UpdateWalletTypes.settings]);
-  }
-
-  void _emitBackupTestSuccessState() {
-    emit(
-      state.copyWith(
-        backupTested: true,
-        testingBackup: false,
-      ),
-    );
-    clearSensitive();
+    final service = _appWalletsRepository.getWalletServiceById(wallet.id);
+    if (service != null) {
+      await service.updateWallet(
+        wallet,
+        updateTypes: [UpdateWalletTypes.settings],
+      );
+      _currentWallet = wallet;
+    }
   }
 
   void word24Clicked(int shuffledIdx) {
