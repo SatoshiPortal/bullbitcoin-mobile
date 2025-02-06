@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:nostr_sdk/nostr_sdk.dart';
+import 'package:nostr/nostr.dart';
 
 part 'state.freezed.dart';
 
@@ -7,6 +7,6 @@ part 'state.freezed.dart';
 class WhispersState with _$WhispersState {
   const factory WhispersState({
     @Default('') String toast,
-    @Default({}) Map<String, List<UnsignedEvent>> privateEvents,
+    @Default({}) Map<String, List<Event>> privateEvents,
   }) = _WhispersState;
 }

@@ -61,9 +61,7 @@ class NostrSettingsPage extends StatelessWidget {
                         maxLength: 64,
                       ),
                       if (state.secret.length == 64)
-                        SelectableText(
-                          'Pubkey: ${state.keys.publicKey().toHex()}',
-                        ),
+                        SelectableText('Pubkey: ${state.keys.public}'),
                       const SizedBox(height: 16),
                       BBButton.textWithStatusAndRightArrow(
                         label: 'Chat',

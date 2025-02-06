@@ -5,9 +5,8 @@ import 'package:bb_mobile/nostr/whispers/cubit.dart';
 import 'package:bb_mobile/nostr/whispers/state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nostr_sdk/nostr_sdk.dart';
+import 'package:nostr/nostr.dart';
 
 class WhispersPage extends StatelessWidget {
   const WhispersPage({super.key, required this.nostr});
@@ -32,7 +31,7 @@ class WhispersPage extends StatelessWidget {
         child: BlocBuilder<WhispersCubit, WhispersState>(
           builder: (context, state) {
             final privateEvents =
-                Map<String, List<UnsignedEvent>>.from(nostr.privateEventsTmp);
+                Map<String, List<Event>>.from(nostr.privateEventsTmp);
 
             return Scaffold(
               backgroundColor: Colors.black,
@@ -47,7 +46,8 @@ class WhispersPage extends StatelessWidget {
                 itemCount: privateEvents.keys.length,
                 itemBuilder: (context, index) {
                   final author = privateEvents.keys.elementAt(index);
-                  final lastMsg = privateEvents[author]!.last.content();
+                  final lastMsg = privateEvents[author]!.last;
+                  // final event = Event.fromJson(lastMsg);
 
                   return ListTile(
                     leading: ClipOval(
@@ -62,7 +62,7 @@ class WhispersPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    title: Text(lastMsg),
+                    title: Text(lastMsg.content),
                     onTap: () => context
                         .push('/nostr-private-message', extra: (nostr, author)),
                   );

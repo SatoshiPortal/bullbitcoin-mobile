@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_pkg/nostr/cache.dart';
 import 'package:bb_mobile/_pkg/nostr/nostr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -21,6 +22,11 @@ class ActionsButtons extends StatelessWidget {
             child: const Icon(Icons.message_rounded),
             label: 'Whispers',
             onTap: () => context.push('/nostr-whispers', extra: nostr),
+          ),
+          SpeedDialChild(
+            child: const Icon(Icons.message_rounded),
+            label: 'Clear',
+            onTap: Cache.clear,
           ),
         ],
       ),

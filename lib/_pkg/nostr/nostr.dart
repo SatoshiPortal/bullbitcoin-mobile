@@ -1,33 +1,29 @@
 import 'dart:async';
-import 'dart:convert';
 
+import 'package:bb_mobile/_pkg/nostr/cache.dart';
 import 'package:bb_mobile/_pkg/nostr/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:nostr_sdk/nostr_sdk.dart';
+import 'package:nostr/nostr.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Nostr with ChangeNotifier {
   late WebSocketChannel _channel;
+  WebSocketSink get sink => _channel.sink;
+  Stream get stream => _channel.stream;
 
-  late Keys keys;
-  late NostrSigner signer;
+  late Keychain keys;
 
   final List<Event> _events = [];
   final events = StreamController<List<Event>>.broadcast();
 
-  final Map<String, List<UnsignedEvent>> privateEventsTmp = {};
-  final privateEvents =
-      StreamController<Map<String, List<UnsignedEvent>>>.broadcast();
-
-  Stream get stream => _channel.stream;
-  WebSocketSink get sink => _channel.sink;
+  final Map<String, List<Event>> privateEventsTmp = {};
+  final privateEvents = StreamController<Map<String, List<Event>>>.broadcast();
 
   Nostr({required String relay, required String nsec}) {
     try {
       connect(relay);
       sendInitialRequest();
-      keys = Keys.parse(secretKey: nsec);
-      signer = NostrSigner.keys(keys: keys);
+      keys = Keychain.from(privateKeyHexOrBech32: nsec);
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -44,58 +40,50 @@ class Nostr with ChangeNotifier {
   }
 
   Future<void> sendInitialRequest() async {
-    final request = json.encode(["REQ", generateHexBytes(32), {}]);
-    sink.add(request);
+    final request = Request(
+      subscriptionId: generateHexBytes(32),
+      filters: [Filter(limit: 100)],
+    );
+    print(request.serialize());
+    sink.add(request.serialize());
   }
 
   String createEvent({required String message}) {
-    final event =
-        EventBuilder.textNote(content: message).signWithKeys(keys: keys);
-    return '["EVENT", ${event.asJson()}]';
+    final event = Event.from(kind: 1, content: message, privkey: keys.private);
+    return event.serialize();
   }
 
   Future<void> sendPrivateMessage({
     required String receiver,
     required String message,
   }) async {
-    final receiverPubkey = PublicKey.parse(publicKey: receiver);
-
-    final event = await EventBuilder.privateMsg(
-      signer: signer,
-      receiver: receiverPubkey,
+    final event = await Nip17.encode(
       message: message,
-      rumorExtraTags: [],
+      authorPrivkey: keys.private,
+      receiverPubkey: receiver,
     );
 
-    // TODO: Integrate my own library to be able to do partial events, to add fake events
-    // updatePrivateEvents(
-    //   receiver,
-    //   UnsignedEvent.fromJson(
-    //     json: json.encode(
-    //       {
-    //         "id": "",
-    //         "pubkey": keys.publicKey().toHex(),
-    //         "created_at": 1737056385,
-    //         "kind": 0,
-    //         "tags": [],
-    //         "content": "message"
-    //       },
-    //     ),
-    //   ),
-    // );
+    updatePrivateEvents(
+      receiver,
+      Event.partial(
+        pubkey: keys.public,
+        createdAt: currentUnixTimestampSeconds(),
+        content: message,
+      ),
+    );
 
-    sink.add('["EVENT", ${event.asJson()}]');
+    sink.add(event.serialize());
   }
 
-  Future<UnsignedEvent?> unwrapPrivateMessage({required Event event}) async {
-    if (event.kind() != 1059) return null;
+  Future<Event?> unwrapPrivateMessage({required Event event}) async {
+    if (event.kind != 1059) return null;
 
     try {
-      final unwrappedGift = await UnwrappedGift.fromGiftWrap(
-        signer: signer,
+      final rumor = await Nip59.unwrap(
         giftWrap: event,
+        recipientPrivkey: keys.private,
       );
-      return unwrappedGift.rumor();
+      return rumor;
     } catch (e) {
       debugPrint(e.toString());
       return null;
@@ -104,30 +92,30 @@ class Nostr with ChangeNotifier {
 
   Future<void> onData(dynamic data) async {
     try {
-      final msg = json.decode(data as String);
+      final msg = Message.deserialize(data as String);
+      if (msg.messageType == MessageType.event) {
+        final event = msg.message as Event;
 
-      if (msg[0] as String == "EVENT") {
-        final data = json.encode(msg[2]);
-        final event = Event.fromJson(json: data);
-
-        final myPubkey = keys.publicKey().toHex();
-        final isMyTag = event.tags().any((e) => e.content() == myPubkey);
-        if (event.kind() == 1059 && isMyTag) {
+        final isMyTag = event.tags.any((e) => e.contains(keys.public));
+        if (event.kind == 1059 && isMyTag) {
           try {
             final pm = await unwrapPrivateMessage(event: event);
             if (pm == null) return;
 
-            final author = pm.author().toHex();
+            print(pm.toJson());
+
+            final author = pm.pubkey;
             updatePrivateEvents(author, pm);
           } catch (e) {
             debugPrint(e.toString());
           }
         } else {
+          Cache.store({event.toJson()});
           _events.add(event);
           events.add(List.unmodifiable(_events));
         }
       } else {
-        debugPrint(msg.toString());
+        debugPrint(data);
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -136,12 +124,13 @@ class Nostr with ChangeNotifier {
     notifyListeners();
   }
 
-  void updatePrivateEvents(String author, UnsignedEvent unsignedEvent) {
+  void updatePrivateEvents(String author, Event event) {
     if (privateEventsTmp.containsKey(author)) {
-      privateEventsTmp[author]!.add(unsignedEvent);
+      privateEventsTmp[author]!.add(event);
     } else {
-      privateEventsTmp[author] = [unsignedEvent];
+      privateEventsTmp[author] = [event];
     }
+    Cache.store({event.toJson()});
     privateEvents.add(Map.unmodifiable(privateEventsTmp));
   }
 

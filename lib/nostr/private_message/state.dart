@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:nostr_sdk/nostr_sdk.dart';
+import 'package:nostr/nostr.dart';
 
 part 'state.freezed.dart';
 
@@ -9,6 +9,6 @@ class PrivateMessageState with _$PrivateMessageState {
     @Default('') String toast,
     @Default('') String message,
     @Default('') String contact,
-    @Default({}) Map<String, List<UnsignedEvent>> privateEvents,
+    @Default({}) Map<String, List<Event>> privateEvents,
   }) = _PrivateMessageState;
 }

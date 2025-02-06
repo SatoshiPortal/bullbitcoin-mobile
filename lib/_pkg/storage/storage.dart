@@ -21,6 +21,9 @@ class StorageKeys {
   static const hiveEncryption = 'hiveEncryptionKey';
   static const version = 'version';
   static const payjoin = 'payjoin';
+  static const nostrFeed = 'nostr-feed';
+  static const nostrContacts = 'nostr-contacts';
+  static const nostrDirectMessages = 'nostr-direct-messages';
 }
 
 abstract class IStorage {

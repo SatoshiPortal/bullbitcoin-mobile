@@ -9,7 +9,7 @@ class WhispersCubit extends Cubit<WhispersState> {
 
   void clearToast() => state.copyWith(toast: '');
 
-  void subscribe() {
+  Future<void> subscribe() async {
     nostr.privateEvents.stream.listen((value) {
       emit(state.copyWith(privateEvents: value));
     });

@@ -35,4 +35,16 @@ class PrivateMessageCubit extends Cubit<PrivateMessageState> {
       print(e);
     }
   }
+
+  Future<void> myClickOnSend() async {
+    try {
+      await nostr.sendPrivateMessage(
+        receiver: state.contact,
+        message: state.message,
+      );
+      updateMessage('');
+    } catch (e) {
+      print(e);
+    }
+  }
 }

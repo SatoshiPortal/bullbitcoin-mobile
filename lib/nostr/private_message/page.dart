@@ -6,7 +6,7 @@ import 'package:bb_mobile/nostr/tweet_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nostr_sdk/nostr_sdk.dart';
+import 'package:nostr/nostr.dart';
 
 class PrivateMessagePage extends StatelessWidget {
   const PrivateMessagePage({super.key, required this.nostr, this.contact});
@@ -38,11 +38,11 @@ class PrivateMessagePage extends StatelessWidget {
 
             final privateEvents = nostr.privateEventsTmp;
 
-            final history = <UnsignedEvent>[];
+            final history = <Event>[];
             if (state.contact.isNotEmpty &&
                 privateEvents.containsKey(state.contact)) {
               history.addAll(List.from(privateEvents[state.contact]!));
-              history.sort((a, b) => b.createdAt().compareTo(a.createdAt()));
+              history.sort((a, b) => b.createdAt.compareTo(a.createdAt));
             }
 
             return Scaffold(
@@ -73,13 +73,13 @@ class PrivateMessagePage extends StatelessWidget {
                       child: ListView.builder(
                         itemCount: history.length,
                         itemBuilder: (context, index) {
-                          final author = history[index].author().toHex();
-                          final timestamp = history[index].createdAt();
-                          final content = history[index].content();
+                          final author = history[index].pubkey;
+                          final timestamp = history[index].createdAt;
+                          final content = history[index].content;
 
                           return TweetWidget(
                             pubkey: author,
-                            timestamp: timestamp.toInt(),
+                            timestamp: timestamp,
                             text: content,
                           );
                           // }
@@ -104,6 +104,11 @@ class PrivateMessagePage extends StatelessWidget {
                         const SizedBox(width: 8),
                         IconButton(
                           icon: const Icon(Icons.send),
+                          onPressed: cubit.clickOnSend,
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.send_and_archive),
                           onPressed: cubit.clickOnSend,
                         ),
                       ],

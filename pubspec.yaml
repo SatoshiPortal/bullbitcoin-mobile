@@ -92,12 +92,13 @@ dependencies:
   permission_handler: ^11.3.1
   rxdart: ^0.28.0
   synchronized: ^3.3.0+3
-  nostr_sdk:
+  nostr:
     git:
-      url: https://github.com/rust-nostr/nostr-sdk-flutter.git
-      ref: master
+      url: https://github.com/ethicnology/dart-nostr.git
+      ref: develop
   web_socket_channel: ^3.0.1
   flutter_speed_dial: ^7.0.0
+  shared_preferences: ^2.5.1
 
 dev_dependencies:
   build_runner: ^2.4.9
