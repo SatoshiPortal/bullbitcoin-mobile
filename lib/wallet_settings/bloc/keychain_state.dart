@@ -17,6 +17,7 @@ class KeychainState with _$KeychainState {
     @Default(KeySecretState.none) KeySecretState keySecretState,
     @Default('') String secret,
     @Default('') String tempSecret,
+    @Default(false) bool obscure,
     @Default('') String backupId,
     @Default('') String backupKey,
     @Default([]) List<int> backupSalt,
