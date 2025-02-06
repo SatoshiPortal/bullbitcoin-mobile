@@ -365,10 +365,17 @@ class _PasswordField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final secret = context.select((KeychainCubit x) => x.state.secret);
-    return BBTextInput.big(
+    final isObscure = context.select((KeychainCubit x) => x.state.obscure);
+    return BBTextInput.bigWithIcon(
       value: secret,
       onChanged: (value) => context.read<KeychainCubit>().updateInput(value),
+      obscure: isObscure,
       hint: 'Enter your password',
+      rightIcon: Icon(
+        isObscure ? Icons.visibility_off : Icons.visibility,
+        color: context.colour.onPrimaryContainer,
+      ),
+      onRightTap: () => context.read<KeychainCubit>().clickObscure(),
     );
   }
 }
