@@ -263,12 +263,6 @@ GoRouter setupRouter() => GoRouter(
                     );
                   },
                 ),
-                GoRoute(
-                  path: 'recover-options',
-                  builder: (context, state) => RecoverOptionsScreen(
-                    wallet: state.extra! as String,
-                  ),
-                ),
               ],
             ),
           ],
