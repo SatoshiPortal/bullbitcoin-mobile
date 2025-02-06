@@ -338,6 +338,27 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
   }
 
+// encrypted vault backup methods
+  void _emitBackupError(String message) {
+    emit(
+      state.copyWith(
+        savingBackups: false,
+        errorSavingBackups: message,
+      ),
+    );
+  }
+
+  bool _canStartBackup() {
+    final lastAttempt = state.lastBackupAttempt;
+    if (lastAttempt != null) {
+      final timeSinceLastBackup = DateTime.now().difference(lastAttempt);
+      if (timeSinceLastBackup < _kMinBackupInterval) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<void> saveEncryptedBackup() async {
     if (!_canStartBackup()) {
       emit(
@@ -383,6 +404,22 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       final backups = await _createBackupsForAllWallets();
       if (backups.isEmpty) {
         _emitBackupError('No wallets available for backup');
+        return;
+      }
+
+      // Connect if needed
+      if (state.backupFolderId.isEmpty) {
+        final (folderId, err) = await _driveManager.connect();
+        if (err != null) {
+          _emitBackupError('Failed to connect to Google Drive: ${err.message}');
+          return;
+        }
+        emit(state.copyWith(backupFolderId: folderId ?? ''));
+      }
+
+      // Ensure we have a folder ID
+      if (state.backupFolderId.isEmpty) {
+        _emitBackupError('Failed to initialize Google Drive backup folder');
         return;
       }
 
@@ -527,6 +564,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         name: wallet.name ?? '',
         network: wallet.network.name,
         mnemonicFingerPrint: wallet.mnemonicFingerprint,
+        layer: wallet.baseWalletType.name,
+        script: wallet.scriptType.name,
+        type: wallet.type.name,
       );
 
       if (!wallet.hasPassphrase()) {
