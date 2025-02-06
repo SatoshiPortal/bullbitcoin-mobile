@@ -383,7 +383,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     if (err != null || encryptedData == null) {
       return;
     }
-
     await _saveToFileSystem(encryptedData);
   }
 
@@ -396,11 +395,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     emit(state.copyWith(savingBackups: true, errorSavingBackups: ''));
 
     try {
-      if (state.backupFolderId.isEmpty) {
-        await connectToGoogleDrive();
-        if (state.backupFolderId.isEmpty) return;
-      }
-
       final backups = await _createBackupsForAllWallets();
       if (backups.isEmpty) {
         _emitBackupError('No wallets available for backup');
@@ -594,19 +588,136 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
-  void _emitBackupError(String message) {
-    emit(
-      state.copyWith(
-        savingBackups: false,
-        errorSavingBackups: message,
-      ),
-    );
-  }
-
   void disconnectGoogleDrive() {
     _driveManager.disconnect();
     emit(state.copyWith(backupFolderId: ''));
   }
+
+// encrypted vault backup methods
+
+  Future<void> fetchLatestBacup({bool forceRefresh = false}) async {
+    try {
+      if (!forceRefresh && state.loadedBackups.isNotEmpty) {
+        emit(state.copyWith(loadingBackups: false));
+        return;
+      }
+
+      emit(state.copyWith(loadingBackups: true));
+
+      // Connect if needed
+      if (state.backupFolderId.isEmpty) {
+        final (folderId, err) = await _driveManager.connect();
+        if (err != null) {
+          emit(state.copyWith(
+            loadingBackups: false,
+            errorLoadingBackups: err.message,
+          ));
+          return;
+        }
+        emit(state.copyWith(backupFolderId: folderId ?? ''));
+      }
+
+      // Ensure we have a folder ID
+      if (state.backupFolderId.isEmpty) {
+        emit(state.copyWith(
+          loadingBackups: false,
+          errorLoadingBackups: "Failed to initialize Google Drive folder",
+        ));
+        return;
+      }
+
+      // Rest of the existing code...
+      final (availableBackups, err) =
+          await _driveManager.loadAllEncryptedBackupFiles(
+        backupFolder: state.backupFolderId,
+      );
+
+      if (err != null) {
+        debugPrint('Error loading backups: ${err.message}');
+        emit(
+          state.copyWith(
+            loadingBackups: false,
+            errorLoadingBackups: "Failed to get backup files",
+          ),
+        );
+        return;
+      }
+
+      if (availableBackups != null && availableBackups.isNotEmpty) {
+        final latestBackup = availableBackups.reduce((a, b) {
+          final aTime = a.createdTime;
+          final bTime = b.createdTime;
+          if (aTime == null) return b;
+          if (bTime == null) return a;
+          return aTime.compareTo(bTime) > 0 ? a : b;
+        });
+        final backupId = latestBackup.name?.split('_').last.split('.').first;
+        if (backupId == null) {
+          emit(
+            state.copyWith(
+              loadingBackups: false,
+              errorLoadingBackups: "Corrupted backup file",
+            ),
+          );
+          return;
+        }
+        final (loadedBackupMetaData, mediaErr) =
+            await _driveManager.fetchMediaStream(
+          file: latestBackup,
+        );
+
+        if (mediaErr != null || loadedBackupMetaData == null) {
+          emit(
+            state.copyWith(
+              loadingBackups: false,
+              errorLoadingBackups: "Failed to load backup data",
+            ),
+          );
+          return;
+        }
+
+        final (loadedBackup, err) = await _driveManager.loadEncryptedBackup(
+          encrypted: utf8.decode(loadedBackupMetaData),
+        );
+        if (loadedBackup != null) {
+          emit(
+            state.copyWith(
+              loadingBackups: false,
+              latestRecoveredBackup: loadedBackup,
+              lastBackupAttempt: DateTime.now(),
+            ),
+          );
+          return;
+        } else if ((err != null) || loadedBackup?["id"] == null) {
+          debugPrint('Error loading backups: ${err?.message}');
+          emit(
+            state.copyWith(
+              loadingBackups: false,
+              errorLoadingBackups: "Corrupted backup file",
+            ),
+          );
+          return;
+        }
+      } else {
+        emit(
+          state.copyWith(
+            loadingBackups: false,
+            errorLoadingBackups: "Failed to get backup files",
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error loading backups: $e');
+      emit(
+        state.copyWith(
+          loadingBackups: false,
+          errorLoadingBackups: "Failed to get backup files",
+        ),
+      );
+    }
+  }
+
+  Future<void> refreshBackups() => fetchLatestBacup(forceRefresh: true);
 
   void clearError() => emit(
         state.copyWith(
@@ -616,14 +727,262 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         ),
       );
 
-  bool _canStartBackup() {
-    final lastAttempt = state.lastBackupAttempt;
-    if (lastAttempt != null) {
-      final timeSinceLastBackup = DateTime.now().difference(lastAttempt);
-      if (timeSinceLastBackup < _kMinBackupInterval) {
-        return false;
-      }
+  Future<void> recoverFromFs() async {
+    if (_filePicker == null) {
+      return;
     }
-    return true;
+    final (file, error) = await _filePicker.pickFile();
+
+    if (error != null) {
+      emit(state.copyWith(errorLoadingBackups: "Error picking file"));
+      return;
+    }
+
+    if (file == null || file.isEmpty) {
+      emit(state.copyWith(errorLoadingBackups: 'Corrupted backup file'));
+      return;
+    }
+    final (loadedBackup, err) = await _manager.loadEncryptedBackup(
+      encrypted: file,
+    );
+    if (loadedBackup != null) {
+      final id = loadedBackup['id'] as String;
+
+      debugPrint('Loaded backup: $id');
+      emit(
+        state.copyWith(
+          loadingBackups: false,
+          latestRecoveredBackup: loadedBackup,
+          lastBackupAttempt: DateTime.now(),
+        ),
+      );
+      return;
+    } else if ((err != null) || loadedBackup?["id"] == null) {
+      debugPrint('Error loading backups: ${err?.message}');
+      emit(
+        state.copyWith(
+          loadingBackups: false,
+          errorLoadingBackups: "Corrupted backup file",
+        ),
+      );
+      return;
+    }
+  }
+
+  Future<void> recoverBackup(String encrypted, String backupKey) async {
+    emit(
+      state.copyWith(
+        loadingBackups: true,
+        backupKey: backupKey,
+        errorLoadingBackups: '',
+      ),
+    );
+
+    if (state.backupKey.isEmpty) {
+      emit(
+        state.copyWith(
+          loadingBackups: false,
+          errorLoadingBackups: 'Backup key is missing',
+        ),
+      );
+      return;
+    }
+
+    try {
+      final decodeEncryptedFile = jsonDecode(encrypted) as Map<String, dynamic>;
+      final id = decodeEncryptedFile['id']?.toString() ?? '';
+
+      if (id.isEmpty) {
+        emit(
+          state.copyWith(
+            loadingBackups: false,
+            errorLoadingBackups: 'Invalid backup format',
+          ),
+        );
+        return;
+      }
+
+      // Then decrypt the backup data
+      final (backups, err) = await _manager.decryptBackups(
+        encrypted: encrypted,
+        backupKey: state.backupKey,
+      );
+
+      if (err != null || backups == null || backups.isEmpty) {
+        debugPrint('Error loading backups: ${err?.message}');
+        emit(
+          state.copyWith(
+            loadingBackups: false,
+            errorLoadingBackups: err?.message ?? 'No wallets found in backup',
+          ),
+        );
+        return;
+      }
+
+      // Process each backup
+      for (final backup in backups) {
+        await _processBackupRecovery(backup);
+        if (state.errorLoadingBackups.isNotEmpty) {
+          return;
+        }
+      }
+
+      emit(
+        state.copyWith(
+          loadingBackups: false,
+          loadedBackups: backups,
+          errorLoadingBackups: '',
+        ),
+      );
+    } catch (e) {
+      debugPrint('Recovery error: $e');
+      emit(
+        state.copyWith(
+          loadingBackups: false,
+          errorLoadingBackups: 'Recovery failed: $e',
+        ),
+      );
+    }
+  }
+
+  Future<void> _processBackupRecovery(Backup backup) async {
+    final network = _getNetwork(backup.network);
+    final layer = _getLayer(backup.layer);
+    final script = _getScript(backup.script);
+    final type = _getWalletType(backup.type);
+
+    if (network == null || layer == null || script == null || type == null) {
+      emit(
+        state.copyWith(
+          errorLoadingBackups:
+              'Invalid backup configuration for ${backup.network}',
+          loadingBackups: false,
+        ),
+      );
+      return;
+    }
+
+    await _addOrUpdateWallet(
+      network,
+      layer,
+      script,
+      type,
+      backup.mnemonic.join(' '),
+      backup.passphrase,
+    );
+  }
+
+  BBNetwork? _getNetwork(String network) => switch (network.toLowerCase()) {
+        'mainnet' => BBNetwork.Mainnet,
+        'testnet' => BBNetwork.Testnet,
+        _ => null
+      };
+
+  BaseWalletType? _getLayer(String layer) => switch (layer.toLowerCase()) {
+        'bitcoin' => BaseWalletType.Bitcoin,
+        'liquid' => BaseWalletType.Liquid,
+        _ => null
+      };
+
+  ScriptType? _getScript(String script) => switch (script.toLowerCase()) {
+        'bip44' => ScriptType.bip44,
+        'bip49' => ScriptType.bip49,
+        'bip84' => ScriptType.bip84,
+        _ => null
+      };
+
+  BBWalletType? _getWalletType(String type) => switch (type.toLowerCase()) {
+        'main' => BBWalletType.main,
+        'xpub' => BBWalletType.xpub,
+        'words' => BBWalletType.words,
+        'descriptors' => BBWalletType.descriptors,
+        'coldcard' => BBWalletType.coldcard,
+        _ => null
+      };
+
+  Future<void> _addOrUpdateWallet(
+    BBNetwork network,
+    BaseWalletType layer,
+    ScriptType script,
+    BBWalletType type,
+    String mnemonic,
+    String passphrase,
+  ) async {
+    final (seed, error) =
+        await _walletSensitiveCreate.mnemonicSeed(mnemonic, network);
+    if (seed == null) {
+      emit(
+        state.copyWith(
+          errorLoadingBackups: 'Failed to create seed',
+          loadingBackups: false,
+        ),
+      );
+      return;
+    }
+
+    try {
+      await _walletSensRepository.newSeed(seed: seed);
+
+      final wallet = await _createWalletFromSeed(
+        layer,
+        seed,
+        passphrase,
+        script,
+        network,
+        type,
+      );
+
+      if (wallet == null) {
+        emit(
+          state.copyWith(
+            errorLoadingBackups: 'Failed to create wallet',
+            loadingBackups: false,
+          ),
+        );
+        return;
+      }
+
+      await _walletsStorageRepository.newWallet(wallet);
+    } catch (e) {
+      debugPrint('Wallet creation error: $e');
+      emit(
+        state.copyWith(
+          errorLoadingBackups: 'Failed to save wallet: $e',
+          loadingBackups: false,
+        ),
+      );
+    }
+  }
+
+  Future<Wallet?> _createWalletFromSeed(
+    BaseWalletType layer,
+    Seed seed,
+    String passphrase,
+    ScriptType script,
+    BBNetwork network,
+    BBWalletType type,
+  ) async {
+    switch (layer) {
+      case BaseWalletType.Bitcoin:
+        final (wallet, error) = await _bdkSensitiveCreate.oneFromBIP39(
+          seed: seed,
+          passphrase: passphrase,
+          scriptType: script,
+          network: network,
+          walletType: type,
+          walletCreate: _walletCreate,
+        );
+        return wallet;
+      case BaseWalletType.Liquid:
+        final (wallet, error) = await _lwkSensitiveCreate.oneLiquidFromBIP39(
+          seed: seed,
+          passphrase: passphrase,
+          scriptType: script,
+          network: network,
+          walletType: type,
+          walletCreate: _walletCreate,
+        );
+        return wallet;
+    }
   }
 }
