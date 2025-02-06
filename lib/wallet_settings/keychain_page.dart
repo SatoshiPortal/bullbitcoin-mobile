@@ -152,10 +152,10 @@ class _EnterPage extends StatelessWidget {
             const _SubtitleText(),
             const Gap(50),
             if (inputType == KeyChainInputType.pin) ...[
-              const _PinField(),
+              _PinField(),
               const KeyPad(),
             ] else
-              const _PasswordField(),
+              _PasswordField(),
             const Gap(30),
           ],
         ),
@@ -186,10 +186,10 @@ class _ConfirmPage extends StatelessWidget {
               const _ConfirmSubtitleText(),
               const Gap(48),
               if (inputType == KeyChainInputType.pin) ...[
-                const _PinField(),
+                _PinField(),
                 const KeyPad(),
               ] else
-                const _PasswordField(),
+                _PasswordField(),
               const Gap(24),
             ],
           ),
@@ -239,8 +239,6 @@ class _RecoveryPage extends StatelessWidget {
 }
 
 class _PinField extends StatelessWidget {
-  const _PinField();
-
   @override
   Widget build(BuildContext context) {
     final pin = context.select((KeychainCubit x) => x.state.displayPin());
@@ -281,17 +279,12 @@ class _PinField extends StatelessWidget {
 }
 
 class _PasswordField extends StatelessWidget {
-  const _PasswordField();
-
   @override
   Widget build(BuildContext context) {
-    final password = context.select((KeychainCubit x) => x.state.password);
-    // final err = context.select((KeychainCubit x) => x.state.err);
+    final secret = context.select((KeychainCubit x) => x.state.secret);
     return BBTextInput.big(
-      value: password,
-      onChanged: (value) {
-        context.read<KeychainCubit>().passwordChanged(value);
-      },
+      value: secret,
+      onChanged: (value) => context.read<KeychainCubit>().updateInput(value),
       hint: 'Enter your password',
     );
   }
@@ -362,13 +355,11 @@ class _SubtitleText extends StatelessWidget {
 }
 
 class _SetButton extends StatelessWidget {
-  const _SetButton({required this.inputType});
   final KeyChainInputType inputType;
+  const _SetButton({required this.inputType});
   @override
   Widget build(BuildContext context) {
-    final showButton =
-        context.select((KeychainCubit x) => x.state.showButton());
-
+    final showButton = context.select((KeychainCubit x) => x.state.showButton);
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       child: Column(
@@ -377,9 +368,15 @@ class _SetButton extends StatelessWidget {
             onTap: () {
               final cubit = context.read<KeychainCubit>();
               if (inputType == KeyChainInputType.pin) {
-                cubit.changeInputType(KeyChainInputType.password);
+                cubit.updatePageState(
+                  KeyChainInputType.password,
+                  KeyChainPageState.enter,
+                );
               } else {
-                cubit.changeInputType(KeyChainInputType.pin);
+                cubit.updatePageState(
+                  KeyChainInputType.pin,
+                  KeyChainPageState.enter,
+                );
               }
             },
             child: BBText.bodySmall(
