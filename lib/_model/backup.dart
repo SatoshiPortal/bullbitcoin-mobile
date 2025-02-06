@@ -8,10 +8,13 @@ class Backup with _$Backup {
   const factory Backup({
     @Default(1) int version,
     @Default('') String name,
-    @Default('') String network,
     @Default(<String>[]) List<String> mnemonic,
     @Default('') String passphrase,
     @Default('') String mnemonicFingerPrint,
+    @Default('') String network,
+    @Default('') String layer,
+    @Default('') String type,
+    @Default('') String script,
   }) = _Backup;
 
   factory Backup.fromJson(Map<String, dynamic> json) => _$BackupFromJson(json);
