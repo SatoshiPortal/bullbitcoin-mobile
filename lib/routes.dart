@@ -235,6 +235,24 @@ GoRouter setupRouter() => GoRouter(
                   ),
                 ),
                 GoRoute(
+                  path: 'recover-encrypted',
+                  builder: (context, state) => EncryptedVaultRecoverPage(
+                    wallet: state.extra! as String,
+                  ),
+                  routes: [
+                    GoRoute(
+                      path: 'info',
+                      builder: (context, state) {
+                        final recoveredBackup =
+                            state.extra! as Map<String, dynamic>;
+                        return RecoveredBackupInfoPage(
+                          recoveredBackup: recoveredBackup,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+                GoRoute(
                   path: 'keychain',
                   builder: (context, state) {
                     final (backupKey, backup) =
