@@ -49,5 +49,19 @@
 	<true/>
 	<key>UIFileSharingEnabled</key>
 	<true/>
+	<!-- Google Drive -->
+	<key>GIDClientID</key>
+	<string>249304738825-k5vfkegjtqv85pffdmcdr1hv6chusth6.apps.googleusercontent.com</string>
+	<key>BUNDLE_ID</key>
+	<string>com.bullbitcoin.mobile</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+	<dict>
+		<key>CFBundleURLSchemes</key>
+		<array>
+		<string>com.googleusercontent.apps.249304738825-k5vfkegjtqv85pffdmcdr1hv6chusth6</string>
+		</array>
+	</dict>
+	</array>
 </dict>
 </plist>
