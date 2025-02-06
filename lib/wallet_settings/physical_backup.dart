@@ -35,7 +35,7 @@ class _PhysicalBackupPageState extends State<PhysicalBackupPage> {
   @override
   void initState() {
     walletBloc = createOrRetreiveWalletBloc(widget.wallet);
-    backupSettings = createBackupSettingsCubit(widget.wallet);
+    backupSettings = createBackupSettingsCubit(walletId: widget.wallet);
 
     backupSettings.loadBackupForVerification();
 
