@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/page_template.dart';
 import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/styles.dart';
+import 'package:bb_mobile/wallet_settings/bloc/backup_settings_cubit.dart';
+import 'package:bb_mobile/wallet_settings/bloc/backup_settings_state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/keychain_cubit.dart';
 import 'package:bb_mobile/wallet_settings/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
@@ -48,16 +52,53 @@ class _Screen extends StatelessWidget {
   final String backupKey;
   final String backupId;
 
+  final String? backupKey;
+  final Map<String, dynamic> encryptedBackup;
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        BlocListener<KeychainCubit, KeychainState>(
-          listenWhen: (previous, current) => previous.saved != current.saved,
+        BlocListener<BackupSettingsCubit, BackupSettingsState>(
+          listenWhen: (previous, current) =>
+              previous.errorLoadingBackups != current.errorLoadingBackups ||
+              previous.loadingBackups != current.loadingBackups ||
+              previous.loadedBackups != current.loadedBackups,
           listener: (context, state) {
-            if (state.saved) {
-              context.read<KeychainCubit>().clearSensitive();
-              context.go('/home');
+            // Always close loading dialog first if it's open
+            if (state.loadingBackups == false) {
+              Navigator.of(context).pop(); // Close loading dialog
+            }
+
+            // Handle errors
+            if (state.errorLoadingBackups.isNotEmpty) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => _ErrorDialog(
+                  error: state.errorLoadingBackups,
+                ),
+              );
+              return;
+            }
+
+            if (state.loadingBackups) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const _LoadingView(),
+              );
+              return;
+            }
+
+            // Only show success if we have loaded backups and no errors
+            if (!state.loadingBackups &&
+                state.loadedBackups.isNotEmpty &&
+                state.errorLoadingBackups.isEmpty) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const _SuccessDialog(isRecovery: true),
+              );
             }
           },
         ),
