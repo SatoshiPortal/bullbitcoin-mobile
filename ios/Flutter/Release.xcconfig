@@ -1,2 +1,5 @@
 #include? "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"
 #include "Generated.xcconfig"
+
+GOOGLE_DRIVE_CLIENT_ID=<your GIDClientID>
+GOOGLE_DRIVE_URL_SCHEME=<your CFBundleURLSchemes>
