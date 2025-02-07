@@ -33,7 +33,6 @@ import 'package:bb_mobile/wallet/information_page.dart';
 import 'package:bb_mobile/wallet/wallet_page.dart';
 import 'package:bb_mobile/wallet_settings/accounting.dart';
 import 'package:bb_mobile/wallet_settings/backup_settings.dart';
-import 'package:bb_mobile/wallet_settings/bip85_paths.dart';
 import 'package:bb_mobile/wallet_settings/encrypted_vault_backup.dart';
 import 'package:bb_mobile/wallet_settings/keychain_page.dart';
 import 'package:bb_mobile/wallet_settings/physical_backup.dart';
@@ -352,17 +351,6 @@ GoRouter setupRouter() => GoRouter(
             return BumpFeesPage(tx: tx);
           },
         ),
-
-        GoRoute(
-          path: '/wallet-settings/bip85-paths',
-          builder: (context, state) {
-            final wallet = state.extra! as String;
-            return Bip85PathsPage(wallet: wallet);
-          },
-        ),
-        //
-        //
-        //
 
         GoRoute(
           path: '/swap-page',
