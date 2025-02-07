@@ -16,6 +16,8 @@ import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/wallet_settings/bloc/backup_settings_state.dart';
 import 'package:flutter/material.dart';
@@ -825,6 +827,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           return;
         }
       }
+
+      // Notify HomeBloc that wallets have been recovered
+      locator<HomeBloc>().add(LoadWalletsFromStorage());
 
       emit(
         state.copyWith(
