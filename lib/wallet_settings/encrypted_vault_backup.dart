@@ -62,7 +62,7 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
       case BackupProvider.iCloud:
         debugPrint('iCloud backup');
       case BackupProvider.custom:
-        _cubit.saveEncryptedBackup();
+        _cubit.saveFileSystemBackup();
     }
   }
 
