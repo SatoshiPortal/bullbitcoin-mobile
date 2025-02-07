@@ -10,7 +10,6 @@ class Backup with _$Backup {
     @Default('') String name,
     @Default(<String>[]) List<String> mnemonic,
     @Default('') String passphrase,
-    @Default('') String mnemonicFingerPrint,
     @Default('') String network,
     @Default('') String layer,
     @Default('') String type,

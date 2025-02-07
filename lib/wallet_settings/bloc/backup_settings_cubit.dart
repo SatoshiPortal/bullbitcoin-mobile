@@ -614,7 +614,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       final backup = Backup(
         name: wallet.name ?? '',
         network: wallet.network.name,
-        mnemonicFingerPrint: wallet.mnemonicFingerprint,
         layer: wallet.baseWalletType.name,
         script: wallet.scriptType.name,
         type: wallet.type.name,
