@@ -477,65 +477,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       final (encryptedData, err) = await _encryptBackups(backups);
       if (err != null || encryptedData == null) return;
 
-      await _saveToGoogleDrive(encryptedData);
-    } catch (e) {
-      debugPrint('Error saving to Google Drive: $e');
-      _emitBackupError('Failed to save Google Drive backup');
-    }
-  }
-
-  Future<((String, String)?, Err?)> _encryptBackups(
-    List<Backup> backups,
-  ) async {
-    try {
-      final (encData, err) = await _manager.encryptBackups(
-        backups: backups,
-        derivationPath: _kDerivationPath,
-      );
-
-      if (err != null || encData == null) {
-        return (null, err);
-      }
-
-      return (encData, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
-
-  Future<void> _saveToFileSystem((String, String) encryptedData) async {
-    final (filePath, errSave) = await _manager.saveEncryptedBackup(
-      encrypted: encryptedData.$2,
-    );
-
-    if (errSave != null) {
-      _emitBackupError('Save failed: ${errSave.message}');
-      return;
-    }
-
-    final fileName = filePath?.split('/').last;
-    final backupId = fileName?.split('_').last.split('.').first;
-    if (backupId == null) {
-      _emitBackupError('Failed to extract backup ID');
-      return;
-    }
-
-    final backupSalt = jsonDecode(encryptedData.$2)['salt'] as String;
-
-    emit(
-      state.copyWith(
-        backupId: backupId,
-        backupKey: encryptedData.$1,
-        backupFolderPath: filePath ?? '',
-        backupSalt: backupSalt,
-        savingBackups: false,
-        lastBackupAttempt: DateTime.now(),
-      ),
-    );
-  }
-
-  Future<void> _saveToGoogleDrive((String, String) encryptedData) async {
-    try {
       final backupSalt = jsonDecode(encryptedData.$2)['salt'] as String;
 
       final (filePath, error) = await _driveManager.saveEncryptedBackup(
@@ -566,7 +507,27 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         ),
       );
     } catch (e) {
-      _emitBackupError('Failed to save to Google Drive: $e');
+      debugPrint('Error saving to Google Drive: $e');
+      _emitBackupError('Failed to save Google Drive backup');
+    }
+  }
+
+  Future<((String, String)?, Err?)> _encryptBackups(
+    List<Backup> backups,
+  ) async {
+    try {
+      final (encData, err) = await _manager.encryptBackups(
+        backups: backups,
+        derivationPath: _kDerivationPath,
+      );
+
+      if (err != null || encData == null) {
+        return (null, err);
+      }
+
+      return (encData, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
     }
   }
 
