@@ -56,12 +56,12 @@
 	<string>com.bullbitcoin.mobile</string>
 	<key>CFBundleURLTypes</key>
 	<array>
-	<dict>
-		<key>CFBundleURLSchemes</key>
-		<array>
-		<string>$(GOOGLE_DRIVE_URL_SCHEME)</string>
-		</array>
-	</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>$(GOOGLE_DRIVE_URL_SCHEME)</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>
