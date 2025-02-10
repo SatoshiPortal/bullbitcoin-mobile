@@ -88,7 +88,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   static const _kDelayDuration = Duration(milliseconds: 800);
   static const _kShuffleDelay = Duration(milliseconds: 500);
   static const _kMinBackupInterval = Duration(seconds: 5);
-  static const _kDerivationPath = "m/1608'/0'";
 
   @override
   Future<void> close() async {
@@ -518,7 +517,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     try {
       final (encData, err) = await _manager.encryptBackups(
         backups: backups,
-        derivationPath: _kDerivationPath,
       );
 
       if (err != null || encData == null) {

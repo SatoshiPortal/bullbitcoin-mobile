@@ -95,7 +95,7 @@ packages:
     source: hosted
     version: "3.0.7"
   bip85:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: bip85
       sha256: "1e556b32a6e2062a8e6f728bfdf1898058ecde9c9068f5272d4792af2477b10c"
@@ -489,6 +489,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_env_native:
+    dependency: "direct dev"
+    description:
+      name: flutter_env_native
+      sha256: "3da347b4769452b9a67ea63239f6f63a46d7c183cac55c1a41972cbb8763eb8a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   flutter_file_dialog:
     dependency: "direct main"
     description:
