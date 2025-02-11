@@ -25,11 +25,8 @@ class WalletSettingsPage extends StatelessWidget {
   const WalletSettingsPage({
     super.key,
     required this.wallet,
-    // this.openTestBackup = false,
     this.openBackup = false,
   });
-
-  // final bool openTestBackup;
   final bool openBackup;
   final String wallet;
 
@@ -59,7 +56,6 @@ class WalletSettingsPage extends StatelessWidget {
       ],
       child: WalletSettingsListeners(
         child: _Screen(
-          // openTestBackup: openTestBackup,
           openBackup: openBackup,
         ),
       ),
@@ -78,14 +74,12 @@ class _Screen extends StatefulWidget {
 }
 
 class _ScreenState extends State<_Screen> {
-  // bool showPage = false;
   @override
   void initState() {
     _init();
     super.initState();
   }
 
-//TODO; Move it to backup-settings page
   void _init() {
     scheduleMicrotask(() async {
       if (widget.openBackup) {
@@ -139,16 +133,12 @@ class _ScreenState extends State<_Screen> {
                   if (!watchOnly) ...[
                     const BackupSettingsButton(),
                     const Gap(8),
-                    // const TestBackupButton(),
-                    // const Gap(8),
                   ],
                   // const PublicDescriptorButton(),
                   // const Gap(8),
                   // const ExtendedPublicKeyButton(),
                   // const Gap(8),
                   const WalletDetailsButton(),
-                  const Gap(8),
-                  const Bip85PathsButton(),
                   const Gap(8),
                   const AddressesButtons(),
                   const Gap(8),
@@ -421,24 +411,6 @@ class AccountingButton extends StatelessWidget {
   }
 }
 
-class Bip85PathsButton extends StatelessWidget {
-  const Bip85PathsButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BBButton.textWithStatusAndRightArrow(
-      label: 'BIP85 Paths',
-      onPressed: () {
-        final wallet = context.read<WalletBloc>().state.wallet;
-        context.push(
-          '/wallet-settings/bip85-paths',
-          extra: wallet.id,
-        );
-      },
-    );
-  }
-}
-
 class WalletDetailsButton extends StatelessWidget {
   const WalletDetailsButton({super.key});
 
@@ -451,51 +423,6 @@ class WalletDetailsButton extends StatelessWidget {
         context.push('/wallet/details', extra: wallet.id);
       },
     );
-  }
-}
-
-class TestBackupButton extends StatelessWidget {
-  const TestBackupButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final isTested =
-        context.select((WalletBloc x) => x.state.wallet.physicalBackupTested);
-
-    // if (isTested) return const SizedBox.shrink();
-    return BBButton.textWithStatusAndRightArrow(
-      label: 'Test Backup',
-      statusText: isTested ? 'Tested' : 'Not Tested',
-      isRed: !isTested,
-      onPressed: () async {
-        ///TODO: Move it to backup-settings page
-        context.push(
-          '/wallet-settings/test-backup',
-          extra: context.read<WalletBloc>().state.wallet.id,
-          // (
-          //   context.read<Wallet>(),
-          //   context.read<WalletSettingsCubit>(),
-          // ),
-        );
-        // await TestBackupScreen.openPopup(context);
-      },
-    );
-    // return Row(
-    //   children: [
-    //     BBButton.textWithLeftArrow(
-    //       label: 'Test Backup',
-    //       onPressed: () async {
-    //         await TestBackupScreen.openPopup(context);
-    //       },
-    //     ),
-    //     const Spacer(),
-    //     BBText.body(
-    //       isTested ? 'Tested' : 'Not tested',
-    //       isGreen: isTested,
-    //       isRed: !isTested,
-    //     ),
-    //   ],
-    // );
   }
 }
 

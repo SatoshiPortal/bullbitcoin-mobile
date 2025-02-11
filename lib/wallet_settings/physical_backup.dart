@@ -70,7 +70,6 @@ class _Screen extends StatelessWidget {
 
       if (!context.mounted) return false;
       context.pop();
-      //TODO: context.go('/home');
       return true;
     } catch (e) {
       return false;

@@ -15,6 +15,12 @@ class KeychainCubit extends Cubit<KeychainState> {
     emit(state.copyWith(shuffledNumbers: shuffledList));
   }
 
+  void clickObscure() {
+    emit(
+      state.copyWith(obscure: !state.obscure),
+    );
+  }
+
   void setChainState(
     KeyChainPageState keyChainPageState,
     String backupId,

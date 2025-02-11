@@ -23,4 +23,14 @@ class FilePick {
       return (null, Err(e.toString()));
     }
   }
+
+  Future<(String?, Err?)> getDirectoryPath() async {
+    try {
+      final path = await FilePicker.platform.getDirectoryPath();
+      if (path == null) return (null, Err('No directory selected'));
+      return (path, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
 }

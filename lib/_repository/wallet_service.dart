@@ -281,12 +281,6 @@ class WalletService {
               lastPhysicalBackupTested: wallet.lastPhysicalBackupTested,
             );
           }
-        case UpdateWalletTypes.bip85Paths:
-          if (wallet.bip85Derivations != storageWallet!.bip85Derivations) {
-            storageWallet = storageWallet.copyWith(
-              bip85Derivations: wallet.bip85Derivations,
-            );
-          }
       }
 
       final err = await _walletsStorageRepository.updateWallet(
@@ -396,5 +390,4 @@ enum UpdateWalletTypes {
   addresses,
   settings,
   utxos,
-  bip85Paths,
 }

@@ -66,12 +66,39 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final walletServicesData = event.walletServices
         .map((_) => WalletServiceData(wallet: _.wallet))
         .toList();
-    emit(state.copyWith(wallets: walletServicesData));
 
-    // Listen to wallet data updates
-    for (final ws in event.walletServices) {
+    // Check for new wallets
+    final currentWalletIds = state.wallets.map((w) => w.wallet.id).toSet();
+    final newWalletIds = walletServicesData.map((w) => w.wallet.id).toSet();
+    final hasNewWallets = newWalletIds.difference(currentWalletIds).isNotEmpty;
+
+    // Only emit if we have changes
+    if (hasNewWallets || state.wallets != walletServicesData) {
+      emit(state.copyWith(
+        wallets: walletServicesData,
+        updated: hasNewWallets,
+      ));
+    }
+
+    // Update subscriptions for wallet data changes
+    _updateWalletSubscriptions(event.walletServices);
+  }
+
+  void _updateWalletSubscriptions(List<WalletService> services) {
+    // Cancel old subscriptions that are no longer needed
+    final newIds = services.map((ws) => ws.wallet.id).toSet();
+    _walletServiceDataUpdateSubscriptions.keys
+        .where((id) => !newIds.contains(id))
+        .toList()
+        .forEach((id) {
+      _walletServiceDataUpdateSubscriptions[id]?.cancel();
+      _walletServiceDataUpdateSubscriptions.remove(id);
+    });
+
+    // Add or update subscriptions for current services
+    for (final ws in services) {
       if (_walletServiceDataUpdateSubscriptions.containsKey(ws.wallet.id)) {
-        _walletServiceDataUpdateSubscriptions[ws.wallet.id]!.cancel();
+        continue; // Skip if subscription already exists
       }
       _walletServiceDataUpdateSubscriptions[ws.wallet.id] =
           ws.dataStream.listen(

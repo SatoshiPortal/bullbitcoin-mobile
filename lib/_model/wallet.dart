@@ -61,7 +61,6 @@ class Wallet with _$Wallet {
     @Default('') String externalPublicDescriptor,
     @Default('') String internalPublicDescriptor,
     // public
-    @Default({}) Map<String, BIP85Derivation> bip85Derivations,
     @Default('') String mnemonicFingerprint,
     @Default('') String sourceFingerprint,
     required BBNetwork network,
@@ -203,19 +202,6 @@ class Wallet with _$Wallet {
         )
         .toString();
     return exDescDerivedKey;
-  }
-
-  //TODO; re-create this to derive any bip85 path
-  String generateNextBIP85BackupKey() {
-    const prefix = "m/1608'/";
-    final highestIndex = bip85Derivations.keys
-        .where((path) => path.startsWith(prefix))
-        .map(
-          (path) =>
-              int.tryParse(path.split('/').last.replaceAll("'", "")) ?? -1,
-        )
-        .fold(-1, (max, index) => index > max ? index : max);
-    return "$prefix${highestIndex + 1}'";
   }
 
   // storage key
@@ -560,19 +546,6 @@ class Wallet with _$Wallet {
   int balanceSats() => balance ?? 0;
 
   String balanceStr() => ((balance ?? 0) / 100000000).toStringAsFixed(8);
-}
-
-enum BIP85DerivationStatus { active, revoked }
-
-@freezed
-class BIP85Derivation with _$BIP85Derivation {
-  const factory BIP85Derivation({
-    required String label,
-    @Default(BIP85DerivationStatus.active) BIP85DerivationStatus status,
-  }) = _BIP85Derivation;
-
-  factory BIP85Derivation.fromJson(Map<String, dynamic> json) =>
-      _$BIP85DerivationFromJson(json);
 }
 
 @freezed

@@ -26,7 +26,7 @@ jobs:
     - run: dart run build_runner build --delete-conflicting-outputs
 
     - name: Build no-codesign release
-      run: flutter build ios --release --no-codesign
+      run: flutter build ios --release --no-codesign --dart-define=GOOGLE_DRIVE_CLIENT_ID=${{ secrets.GOOGLE_DRIVE_CLIENT_ID }} --dart-define=GOOGLE_DRIVE_URL_SCHEME=${{ secrets.GOOGLE_DRIVE_URL_SCHEME }}
     
     - name: Upload artifact
       uses: actions/upload-artifact@v4

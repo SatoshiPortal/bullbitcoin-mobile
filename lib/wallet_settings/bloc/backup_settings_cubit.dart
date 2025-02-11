@@ -16,6 +16,8 @@ import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
+import 'package:bb_mobile/home/bloc/home_bloc.dart';
+import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/wallet_settings/bloc/backup_settings_state.dart';
 import 'package:flutter/material.dart';
@@ -86,7 +88,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   static const _kDelayDuration = Duration(milliseconds: 800);
   static const _kShuffleDelay = Duration(milliseconds: 500);
   static const _kMinBackupInterval = Duration(seconds: 5);
-  static const _kDerivationPath = "m/1608'/0'";
 
   @override
   Future<void> close() async {
@@ -117,16 +118,18 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     final words = seed.mnemonic.split(' ');
     final shuffled = words.toList()..shuffle();
 
-    emit(state.copyWith(
-      testMnemonicOrder: [],
-      mnemonic: words,
-      errTestingBackup: '',
-      password: seed
-          .getPassphraseFromIndex(_currentWallet!.sourceFingerprint)
-          .passphrase,
-      shuffledMnemonic: shuffled,
-      loadingBackups: false,
-    ));
+    emit(
+      state.copyWith(
+        testMnemonicOrder: [],
+        mnemonic: words,
+        errTestingBackup: '',
+        password: seed
+            .getPassphraseFromIndex(_currentWallet!.sourceFingerprint)
+            .passphrase,
+        shuffledMnemonic: shuffled,
+        loadingBackups: false,
+      ),
+    );
   }
 
   void _emitBackupTestSuccessState() {
@@ -141,20 +144,24 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
   Future<void> loadBackupForVerification() async {
     if (_currentWallet == null) {
-      emit(state.copyWith(
-        errorLoadingBackups: 'No wallet selected for verification',
-        loadingBackups: false,
-      ));
+      emit(
+        state.copyWith(
+          errorLoadingBackups: 'No wallet selected for verification',
+          loadingBackups: false,
+        ),
+      );
       return;
     }
 
     emit(state.copyWith(loadingBackups: true));
     final (seed, error) = await _loadWalletSeed(_currentWallet!);
     if (error != null || seed == null) {
-      emit(state.copyWith(
-        errTestingBackup: error ?? 'Seed data not found',
-        loadingBackups: false,
-      ));
+      emit(
+        state.copyWith(
+          errTestingBackup: error ?? 'Seed data not found',
+          loadingBackups: false,
+        ),
+      );
       return;
     }
 
@@ -358,7 +365,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     return true;
   }
 
-  Future<void> saveEncryptedBackup() async {
+  Future<void> saveFileSystemBackup() async {
     if (!_canStartBackup()) {
       emit(
         state.copyWith(
@@ -367,6 +374,11 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           backupKey: '',
         ),
       );
+      return;
+    }
+
+    if (_filePicker == null) {
+      _emitBackupError('Failed to pick the file');
       return;
     }
 
@@ -382,7 +394,52 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     if (err != null || encryptedData == null) {
       return;
     }
-    await _saveToFileSystem(encryptedData);
+
+    try {
+      final (savePath, pickErr) = await _filePicker.getDirectoryPath();
+      if (pickErr != null) {
+        _emitBackupError('Failed to select backup location');
+        return;
+      }
+
+      if (savePath == null || savePath.isEmpty) {
+        _emitBackupError('No location selected for backup');
+        return;
+      }
+
+      // Use the selected path with the manager
+      final (filePath, errSave) = await _manager.saveEncryptedBackup(
+        encrypted: encryptedData.$2,
+        backupFolder: savePath,
+      );
+
+      if (errSave != null) {
+        _emitBackupError('Save failed: ${errSave.message}');
+        return;
+      }
+
+      final fileName = filePath?.split('/').last;
+      final backupId = fileName?.split('_').last.split('.').first;
+      if (backupId == null) {
+        _emitBackupError('Failed to extract backup ID');
+        return;
+      }
+
+      final backupSalt = jsonDecode(encryptedData.$2)['salt'] as String;
+
+      emit(
+        state.copyWith(
+          backupId: backupId,
+          backupKey: encryptedData.$1,
+          backupFolderPath: filePath ?? '',
+          backupSalt: backupSalt,
+          savingBackups: false,
+          lastBackupAttempt: DateTime.now(),
+        ),
+      );
+    } catch (e) {
+      _emitBackupError('Failed to save backup: $e');
+    }
   }
 
   Future<void> saveGoogleDriveBackup() async {
@@ -419,65 +476,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       final (encryptedData, err) = await _encryptBackups(backups);
       if (err != null || encryptedData == null) return;
 
-      await _saveToGoogleDrive(encryptedData);
-    } catch (e) {
-      debugPrint('Error saving to Google Drive: $e');
-      _emitBackupError('Failed to save Google Drive backup');
-    }
-  }
-
-  Future<((String, String)?, Err?)> _encryptBackups(
-    List<Backup> backups,
-  ) async {
-    try {
-      final (encData, err) = await _manager.encryptBackups(
-        backups: backups,
-        derivationPath: _kDerivationPath,
-      );
-
-      if (err != null || encData == null) {
-        return (null, err);
-      }
-
-      return (encData, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
-
-  Future<void> _saveToFileSystem((String, String) encryptedData) async {
-    final (filePath, errSave) = await _manager.saveEncryptedBackup(
-      encrypted: encryptedData.$2,
-    );
-
-    if (errSave != null) {
-      _emitBackupError('Save failed: ${errSave.message}');
-      return;
-    }
-
-    final fileName = filePath?.split('/').last;
-    final backupId = fileName?.split('_').last.split('.').first;
-    if (backupId == null) {
-      _emitBackupError('Failed to extract backup ID');
-      return;
-    }
-
-    final backupSalt = jsonDecode(encryptedData.$2)['salt'] as String;
-
-    emit(
-      state.copyWith(
-        backupId: backupId,
-        backupKey: encryptedData.$1,
-        backupFolderPath: filePath ?? '',
-        backupSalt: backupSalt,
-        savingBackups: false,
-        lastBackupAttempt: DateTime.now(),
-      ),
-    );
-  }
-
-  Future<void> _saveToGoogleDrive((String, String) encryptedData) async {
-    try {
       final backupSalt = jsonDecode(encryptedData.$2)['salt'] as String;
 
       final (filePath, error) = await _driveManager.saveEncryptedBackup(
@@ -508,7 +506,26 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         ),
       );
     } catch (e) {
-      _emitBackupError('Failed to save to Google Drive: $e');
+      debugPrint('Error saving to Google Drive: $e');
+      _emitBackupError('Failed to save Google Drive backup');
+    }
+  }
+
+  Future<((String, String)?, Err?)> _encryptBackups(
+    List<Backup> backups,
+  ) async {
+    try {
+      final (encData, err) = await _manager.encryptBackups(
+        backups: backups,
+      );
+
+      if (err != null || encData == null) {
+        return (null, err);
+      }
+
+      return (encData, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
     }
   }
 
@@ -556,7 +573,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       final backup = Backup(
         name: wallet.name ?? '',
         network: wallet.network.name,
-        mnemonicFingerPrint: wallet.mnemonicFingerprint,
         layer: wallet.baseWalletType.name,
         script: wallet.scriptType.name,
         type: wallet.type.name,
@@ -607,10 +623,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       if (state.backupFolderId.isEmpty) {
         final (folderId, err) = await _driveManager.connect();
         if (err != null) {
-          emit(state.copyWith(
-            loadingBackups: false,
-            errorLoadingBackups: err.message,
-          ));
+          emit(
+            state.copyWith(
+              loadingBackups: false,
+              errorLoadingBackups: err.message,
+            ),
+          );
           return;
         }
         emit(state.copyWith(backupFolderId: folderId ?? ''));
@@ -618,10 +636,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
       // Ensure we have a folder ID
       if (state.backupFolderId.isEmpty) {
-        emit(state.copyWith(
-          loadingBackups: false,
-          errorLoadingBackups: "Failed to initialize Google Drive folder",
-        ));
+        emit(
+          state.copyWith(
+            loadingBackups: false,
+            errorLoadingBackups: "Failed to initialize Google Drive folder",
+          ),
+        );
         return;
       }
 
@@ -825,6 +845,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           return;
         }
       }
+
+      // Notify HomeBloc that wallets have been recovered
+      locator<HomeBloc>().add(LoadWalletsFromStorage());
 
       emit(
         state.copyWith(

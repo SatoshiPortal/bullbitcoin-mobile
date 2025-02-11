@@ -1,10 +1,8 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:bb_mobile/_model/backup.dart';
-import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bdk_flutter/bdk_flutter.dart';
-import 'package:bip85/bip85.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
@@ -12,7 +10,6 @@ abstract class IBackupManager {
   /// Encrypts a list of backups using BIP85 derivation
   Future<((String, String)?, Err?)> encryptBackups({
     required List<Backup> backups,
-    required String derivationPath,
   }) async {
     if (backups.isEmpty) {
       return (null, Err('No backups provided'));
@@ -20,11 +17,7 @@ abstract class IBackupManager {
 
     try {
       final plaintext = json.encode(backups.map((i) => i.toJson()).toList());
-      final key = await _deriveBackupKey(
-        mnemonic: backups.first.mnemonic.join(' '),
-        network: backups.first.network,
-        path: derivationPath,
-      );
+      final key = await _deriveBackupKey();
 
       if (key == null) {
         return (null, Err('Failed to derive backup key'));
@@ -57,22 +50,20 @@ abstract class IBackupManager {
     }
   }
 
-  Future<List<int>?> _deriveBackupKey({
-    required String mnemonic,
-    required String network,
-    required String path,
-  }) async {
+  Future<List<int>?> _deriveBackupKey() async {
     try {
-      final mne = await Mnemonic.fromString(mnemonic);
-      final descriptorSecretKey = await DescriptorSecretKey.create(
-        network: BBNetwork.fromString(network).toBdkNetwork(),
-        mnemonic: mne,
+      final now = DateTime.now();
+      final nowBytes =
+          utf8.encode(now.toUtc().millisecondsSinceEpoch.toString());
+
+      final secureRandom = Random.secure();
+      final randomBytes =
+          List<int>.generate(32, (_) => secureRandom.nextInt(256));
+      final key = List<int>.generate(
+        32,
+        (i) => randomBytes[i] ^ nowBytes[i % nowBytes.length],
       );
-      final res = derive(
-        xprv: descriptorSecretKey.toString().split('/*').first,
-        path: path,
-      );
-      return res.sublist(0, 32);
+      return key;
     } catch (e) {
       return null;
     }

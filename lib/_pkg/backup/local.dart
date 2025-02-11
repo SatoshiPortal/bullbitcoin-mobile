@@ -67,8 +67,7 @@ class FileSystemBackupManager extends IBackupManager {
         return (null, Err('Failed to get application directory.'));
       }
 
-      final backupDir =
-          await Directory('${appDir!}/$backupFolder').create(recursive: true);
+      final backupDir = await Directory(backupFolder).create(recursive: true);
       final file = File('${backupDir.path}/$filename');
 
       final (f, errSave) = await fileStorage.saveToFile(
