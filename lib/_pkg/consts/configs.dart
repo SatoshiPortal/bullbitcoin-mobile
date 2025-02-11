@@ -2,7 +2,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
 void setupConfigs() {}
-final keychainapi = dotenv.env['KEYCHAIN_API'] ?? 'http://localhost:3000';
 final bbmempoolapi = dotenv.env['BB_MEMPOOL_API'] ?? 'mempool.bullbitcoin.com';
 final openmempoolapi = dotenv.env['MEMPOOL_API'] ?? 'mempool.space';
 final bbexchangeapi = dotenv.env['BB_API'] ?? 'api.bullbitcoin.com/price';
@@ -32,4 +31,6 @@ const liquidMainnetAssetId = lwk.lBtcAssetId;
 const liquidTestnetAssetId = lwk.lTestAssetId;
 
 //Backups
+final keyServerUrl = dotenv.env['KEY_SERVER'] ?? 'http://localhost:3000';
+
 const defaultBackupPath = 'backups'; //todo; create a better folder structure

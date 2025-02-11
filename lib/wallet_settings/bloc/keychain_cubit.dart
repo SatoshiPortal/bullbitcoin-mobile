@@ -110,7 +110,7 @@ class KeychainCubit extends Cubit<KeychainState> {
   Future<void> secureKey() async {
     try {
       emit(state.copyWith(loading: true, error: ''));
-      await KeyService(keyServer: Uri.parse(keychainapi)).storeBackupKey(
+      await KeyService(keyServer: Uri.parse(keyServerUrl)).storeBackupKey(
         backupId: state.backupId,
         password: state.tempSecret,
         backupKey: HEX.decode(state.backupKey),
@@ -160,12 +160,12 @@ class KeychainCubit extends Cubit<KeychainState> {
     try {
       emit(state.copyWith(loading: true, error: ''));
 
-      if (keychainapi.isEmpty) {
+      if (keyServerUrl.isEmpty) {
         emit(state.copyWith(loading: false, error: 'keychain api is not set'));
         return;
       }
       final backupKey =
-          await KeyService(keyServer: Uri.parse(keychainapi)).recoverBackupKey(
+          await KeyService(keyServer: Uri.parse(keyServerUrl)).recoverBackupKey(
         backupId: state.backupId,
         password: state.secret,
         salt: state.backupSalt,
