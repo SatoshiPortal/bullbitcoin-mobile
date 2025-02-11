@@ -94,14 +94,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
-  bip85:
-    dependency: transitive
-    description:
-      name: bip85
-      sha256: "1e556b32a6e2062a8e6f728bfdf1898058ecde9c9068f5272d4792af2477b10c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.3"
   bitcoin_utils:
     dependency: "direct main"
     description:
@@ -187,18 +179,18 @@ packages:
     dependency: transitive
     description:
       name: build_daemon
-      sha256: "294a2edaf4814a378725bfe6358210196f5ea37af89ecd81bfa32960113d4948"
+      sha256: "8e928697a82be082206edb0b9c99c5a4ad6bc31c9e9b8b2f291ae65cd4a25daa"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.3"
+    version: "4.0.4"
   build_resolvers:
     dependency: transitive
     description:
       name: build_resolvers
-      sha256: "99d3980049739a985cf9b21f30881f46db3ebc62c5b8d5e60e27440876b1ba1e"
+      sha256: b9e4fda21d846e192628e7a4f6deda6888c36b5b69ba02ff291a01fd529140f0
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.3"
+    version: "2.4.4"
   build_runner:
     dependency: "direct dev"
     description:
@@ -740,10 +732,10 @@ packages:
     dependency: "direct main"
     description:
       name: go_router
-      sha256: "9b736a9fa879d8ad6df7932cbdcc58237c173ab004ef90d8377923d7ad731eaa"
+      sha256: "04539267a740931c6d4479a10d466717ca5901c6fdfd3fcda09391bbb8ebd651"
       url: "https://pub.dev"
     source: hosted
-    version: "14.7.2"
+    version: "14.8.0"
   google_fonts:
     dependency: "direct main"
     description:
@@ -1331,7 +1323,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "1f3a181993fa66c8ca471012a19c4537f2d66403"
+      resolved-ref: c8c7dc5200d9b1ffacbdd0b2c3f9ca34abffab03
       url: "https://github.com/SatoshiPortal/recoverbull-client-dart.git"
     source: git
     version: "1.0.0"
