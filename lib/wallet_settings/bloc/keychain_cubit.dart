@@ -69,7 +69,7 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   void keyPressed(String key) {
-    if (state.secret.length >= 6) return;
+    if (state.secret.length >= 7) return;
     emit(
       state.copyWith(
         secret: state.secret + key,
