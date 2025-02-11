@@ -141,8 +141,6 @@ class _Screen extends StatelessWidget {
                       jsonEncode(encryptedBackup),
                       state.backupKey,
                     );
-                // Remove immediate success dialog - will show after successful recovery
-                // showDialog(...)
               }
             }
 
@@ -152,6 +150,7 @@ class _Screen extends StatelessWidget {
                 barrierDismissible: false,
                 builder: (context) => _ErrorDialog(
                   error: state.error,
+                  isRecovery: state.pageState == KeyChainPageState.recovery,
                 ),
               );
             }
@@ -325,39 +324,52 @@ class _RecoveryPage extends StatelessWidget {
 class _PinField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final pin = context.select((KeychainCubit x) => x.state.displayPin());
-    return Center(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const SizedBox(width: 40),
-          Expanded(
-            child: Center(
-              child: BBText.titleLarge(
-                pin,
-                isBold: true,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 40,
-            child: IconButton(
-              iconSize: 32,
-              color: pin.isEmpty
-                  ? context.colour.surface
-                  : context.colour.onPrimaryContainer,
-              splashColor: Colors.transparent,
-              onPressed: () {
-                SystemSound.play(SystemSoundType.click);
-                HapticFeedback.mediumImpact();
+    final state = context.select((KeychainCubit x) => x.state);
+    final error = state.getValidationError();
 
-                context.read<KeychainCubit>().backspacePressed();
-              },
-              icon: const FaIcon(FontAwesomeIcons.deleteLeft),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(width: 40),
+              Expanded(
+                child: Center(
+                  child: BBText.titleLarge(
+                    state.displayPin(),
+                    isBold: true,
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 40,
+                child: IconButton(
+                  iconSize: 32,
+                  color: state.secret.isEmpty
+                      ? context.colour.surface
+                      : context.colour.onPrimaryContainer,
+                  splashColor: Colors.transparent,
+                  onPressed: () {
+                    SystemSound.play(SystemSoundType.click);
+                    HapticFeedback.mediumImpact();
+                    context.read<KeychainCubit>().backspacePressed();
+                  },
+                  icon: const FaIcon(FontAwesomeIcons.deleteLeft),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (error != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Center(
+              child: BBText.errorSmall(error),
             ),
           ),
-        ],
-      ),
+      ],
     );
   }
 }
@@ -365,18 +377,30 @@ class _PinField extends StatelessWidget {
 class _PasswordField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final secret = context.select((KeychainCubit x) => x.state.secret);
-    final isObscure = context.select((KeychainCubit x) => x.state.obscure);
-    return BBTextInput.bigWithIcon(
-      value: secret,
-      onChanged: (value) => context.read<KeychainCubit>().updateInput(value),
-      obscure: isObscure,
-      hint: 'Enter your password',
-      rightIcon: Icon(
-        isObscure ? Icons.visibility_off : Icons.visibility,
-        color: context.colour.onPrimaryContainer,
-      ),
-      onRightTap: () => context.read<KeychainCubit>().clickObscure(),
+    final state = context.select((KeychainCubit x) => x.state);
+    final error = state.getValidationError();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BBTextInput.bigWithIcon(
+          value: state.secret,
+          onChanged: (value) =>
+              context.read<KeychainCubit>().updateInput(value),
+          obscure: state.obscure,
+          hint: 'Enter your password',
+          rightIcon: Icon(
+            state.obscure ? Icons.visibility_off : Icons.visibility,
+            color: context.colour.onPrimaryContainer,
+          ),
+          onRightTap: () => context.read<KeychainCubit>().clickObscure(),
+        ),
+        if (error != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8, left: 8),
+            child: BBText.errorSmall(error),
+          ),
+      ],
     );
   }
 }
@@ -785,9 +809,9 @@ class _SuccessDialog extends StatelessWidget {
 }
 
 class _ErrorDialog extends StatelessWidget {
-  const _ErrorDialog({required this.error});
+  const _ErrorDialog({required this.error, this.isRecovery = false});
   final String error;
-
+  final bool isRecovery;
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -803,8 +827,8 @@ class _ErrorDialog extends StatelessWidget {
               size: 48,
             ),
             const Gap(16),
-            const BBText.title(
-              'Recovery Failed',
+            BBText.title(
+              isRecovery ? 'Recovery Failed' : 'Backup Failed',
               textAlign: TextAlign.center,
               isBold: true,
             ),
@@ -822,7 +846,13 @@ class _ErrorDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Close'),
+              child: Text(
+                'Close',
+                style: context.font.bodyMedium!.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ),
           ],
         ),
