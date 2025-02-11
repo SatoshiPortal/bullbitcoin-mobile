@@ -67,7 +67,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final InternalWalletsRepository _walletsRepository;
   final WalletSync _walletSync;
   final AppWalletsRepository _appWalletsRepository;
-  WalletService? _walletServiceFromTempWallets;
+  late WalletService? _walletServiceFromTempWallets;
 
   FutureOr<void> _removeInternalWallet(
     RemoveInternalWallet event,

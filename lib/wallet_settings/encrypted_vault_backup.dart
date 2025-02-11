@@ -297,13 +297,10 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
     switch (provider) {
       case BackupProvider.googleDrive:
         await _cubit.fetchLatestBacup();
-        break;
       case BackupProvider.iCloud:
         debugPrint('iCloud backup');
-        break;
       case BackupProvider.custom:
         _cubit.recoverFromFs();
-        break;
     }
   }
 

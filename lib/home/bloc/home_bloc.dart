@@ -74,10 +74,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     // Only emit if we have changes
     if (hasNewWallets || state.wallets != walletServicesData) {
-      emit(state.copyWith(
-        wallets: walletServicesData,
-        updated: hasNewWallets,
-      ));
+      emit(
+        state.copyWith(
+          wallets: walletServicesData,
+          updated: hasNewWallets,
+        ),
+      );
     }
 
     // Update subscriptions for wallet data changes

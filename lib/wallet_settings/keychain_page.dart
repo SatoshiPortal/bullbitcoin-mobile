@@ -736,7 +736,7 @@ class _SuccessDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget dialogContent = Padding(
+    final dialogContent = Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -803,7 +803,7 @@ class _ErrorDialog extends StatelessWidget {
               size: 48,
             ),
             const Gap(16),
-            BBText.title(
+            const BBText.title(
               'Recovery Failed',
               textAlign: TextAlign.center,
               isBold: true,
