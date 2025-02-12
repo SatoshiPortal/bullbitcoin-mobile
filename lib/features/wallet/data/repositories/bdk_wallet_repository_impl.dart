@@ -65,8 +65,10 @@ class BdkWalletRepositoryImpl
       address: addressInfo.address.asString(),
       index: addressInfo.index,
       kind: AddressKind.external,
-      state: AddressStatus.used, // Todo: change this to correct value
-      // TODO: Get other address info
+      state: await _isAddressUsed(addressInfo.address.asString())
+          ? AddressStatus.used
+          : AddressStatus.unused,
+      balanceSat: await _getAddressBalance(addressInfo.address.asString()),
     );
 
     return address;
@@ -110,5 +112,44 @@ class BdkWalletRepositoryImpl
     );
 
     return blockchain;
+  }
+
+  Future<bool> _isAddressUsed(String address) async {
+    final txOutputLists = await Future.wait(
+      _publicWallet.listTransactions(includeRaw: false).map((tx) async {
+        return await tx.transaction?.output() ?? <bdk.TxOut>[];
+      }),
+    );
+
+    final outputs = txOutputLists.expand((list) => list).toList();
+    final isUsed = await Future.any(
+      outputs.map((output) async {
+        final generatedAddress = await bdk.Address.fromScript(
+          script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
+          network: _publicWallet.network(),
+        );
+        return generatedAddress.asString() == address;
+      }),
+    ).catchError((_) => false); // To handle empty lists
+
+    return isUsed;
+  }
+
+  Future<BigInt> _getAddressBalance(String address) async {
+    final utxos = _publicWallet.listUnspent();
+    BigInt balance = BigInt.zero;
+
+    for (final utxo in utxos) {
+      final utxoAddress = await bdk.Address.fromScript(
+        script: bdk.ScriptBuf(bytes: utxo.txout.scriptPubkey.bytes),
+        network: _publicWallet.network(),
+      );
+
+      if (utxoAddress.asString() == address) {
+        balance += utxo.txout.value;
+      }
+    }
+
+    return balance;
   }
 }

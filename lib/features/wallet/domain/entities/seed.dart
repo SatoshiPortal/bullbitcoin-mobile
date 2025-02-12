@@ -15,19 +15,20 @@ sealed class Seed with _$Seed {
     String? passphrase,
   }) = MnemonicSeed;
 
-  /// Compute seed fingerprint
-  String get fingerprint {
+  Uint8List get seedBytes {
     return when(
-      mnemonic: (mnemonicWords, passphrase) {
-        final mnemonic = mnemonicWords.join(' ');
-        final seed =
-            bip39.mnemonicToSeed(mnemonic, passphrase: passphrase ?? '');
-        final root = bip32.BIP32.fromSeed(seed);
-        final fingerprint = root.fingerprint;
-        return fingerprint
-            .map((b) => b.toRadixString(16).padLeft(2, '0'))
-            .join();
-      },
+      mnemonic: (mnemonicWords, passphrase) => bip39.mnemonicToSeed(
+        mnemonicWords.join(' '),
+        passphrase: passphrase ?? '',
+      ),
     );
+  }
+
+  String get masterFingerprint {
+    final root = bip32.BIP32.fromSeed(seedBytes);
+    final fingerprintBytes = root.fingerprint;
+    final fingerprintHex =
+        fingerprintBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    return fingerprintHex;
   }
 }

@@ -136,7 +136,7 @@ packages:
     source: hosted
     version: "2.1.1"
   bs58check:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: bs58check
       sha256: c4a164d42b25c2f6bc88a8beccb9fc7d01440f3c60ba23663a20a70faf484ea9

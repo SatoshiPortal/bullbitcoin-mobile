@@ -7,10 +7,7 @@ import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
 abstract class WalletRepositoryManager {
-  Future<void> registerWallet(
-    WalletMetadata metadata, {
-    required String blockchainUrl,
-  });
+  Future<void> registerWallet(WalletMetadata metadata);
   WalletRepository? getRepository(String walletId);
   List<WalletRepository> getAllRepositories();
 }
@@ -19,20 +16,14 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
   final Map<String, WalletRepository> _repositories = {};
 
   @override
-  Future<void> registerWallet(
-    WalletMetadata metadata, {
-    required String blockchainUrl,
-  }) async {
+  Future<void> registerWallet(WalletMetadata metadata) async {
     final id = metadata.id;
 
     if (_repositories.containsKey(id)) {
       return;
     }
 
-    _repositories[id] = await _createRepository(
-      walletMetadata: metadata,
-      blockchainUrl: blockchainUrl,
-    );
+    _repositories[id] = await _createRepository(walletMetadata: metadata);
   }
 
   @override
@@ -45,48 +36,49 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
     return _repositories.values.toList();
   }
 
-  Future<WalletRepository> _createRepository(
-      {required WalletMetadata walletMetadata,
-      required String blockchainUrl}) async {
-    switch (walletMetadata.network) {
-      case Network.bitcoin:
-        final wallet = await _createPublicBdkWalletInstance(
-          walletId: walletMetadata.id,
-          environment: walletMetadata.environment,
-          externalPublicDescriptor: walletMetadata.externalPublicDescriptor,
-          internalPublicDescriptor: walletMetadata.internalPublicDescriptor,
-        );
+  Future<WalletRepository> _createRepository({
+    required WalletMetadata walletMetadata,
+  }) async {
+    if (walletMetadata.network.isBitcoin) {
+      final wallet = await _createPublicBdkWalletInstance(
+        walletId: walletMetadata.id,
+        network: walletMetadata.network,
+        externalPublicDescriptor: walletMetadata.externalPublicDescriptor,
+        internalPublicDescriptor: walletMetadata.internalPublicDescriptor,
+      );
 
-        return BdkWalletRepositoryImpl(
-          id: walletMetadata.id,
-          publicWallet: wallet,
-        );
-      case Network.liquid:
-        final wallet = await _createPublicLwkWalletInstance(
-          walletId: walletMetadata.id,
-          environment: walletMetadata.environment,
-          externalPublicDescriptor: walletMetadata.externalPublicDescriptor,
-        );
-        return LwkWalletRepositoryImpl(
-            id: walletMetadata.id, publicWallet: wallet);
+      return BdkWalletRepositoryImpl(
+        id: walletMetadata.id,
+        publicWallet: wallet,
+      );
+    } else {
+      final wallet = await _createPublicLwkWalletInstance(
+        walletId: walletMetadata.id,
+        network: walletMetadata.network,
+        externalPublicDescriptor: walletMetadata.externalPublicDescriptor,
+      );
+      return LwkWalletRepositoryImpl(
+        id: walletMetadata.id,
+        publicWallet: wallet,
+      );
     }
   }
 
   Future<bdk.Wallet> _createPublicBdkWalletInstance({
     required String walletId,
-    NetworkEnvironment environment = NetworkEnvironment.mainnet,
+    Network network = Network.bitcoinMainnet,
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
   }) async {
-    final network = environment.bdkNetwork;
+    final bdkNetwork = network.bdkNetwork;
 
     final external = await bdk.Descriptor.create(
       descriptor: externalPublicDescriptor,
-      network: network,
+      network: bdkNetwork,
     );
     final internal = await bdk.Descriptor.create(
       descriptor: internalPublicDescriptor,
-      network: network,
+      network: bdkNetwork,
     );
 
     final appDocDir = await getApplicationDocumentsDirectory();
@@ -99,7 +91,7 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
     final wallet = await bdk.Wallet.create(
       descriptor: external,
       changeDescriptor: internal,
-      network: network,
+      network: bdkNetwork,
       databaseConfig: dbConfig,
     );
 
@@ -108,7 +100,7 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
 
   Future<lwk.Wallet> _createPublicLwkWalletInstance({
     required String walletId,
-    NetworkEnvironment environment = NetworkEnvironment.mainnet,
+    Network network = Network.liquidMainnet,
     required String externalPublicDescriptor,
   }) async {
     final appDocDir = await getApplicationDocumentsDirectory();
@@ -119,7 +111,7 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
     );
 
     final wallet = await lwk.Wallet.init(
-      network: environment.lwkNetwork,
+      network: network.lwkNetwork,
       dbpath: dbDir,
       descriptor: descriptor,
     );
@@ -128,22 +120,34 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
   }
 }
 
-extension NetworkEnvironmentX on NetworkEnvironment {
+extension NetworkX on Network {
   bdk.Network get bdkNetwork {
     switch (this) {
-      case NetworkEnvironment.mainnet:
+      case Network.bitcoinMainnet:
         return bdk.Network.bitcoin;
-      case NetworkEnvironment.testnet:
+      case Network.bitcoinTestnet:
         return bdk.Network.testnet;
+      case Network.liquidMainnet:
+      case Network.liquidTestnet:
+        throw WrongNetworkException('Liquid network is not supported by BDK');
     }
   }
 
   lwk.Network get lwkNetwork {
     switch (this) {
-      case NetworkEnvironment.mainnet:
+      case Network.liquidMainnet:
         return lwk.Network.mainnet;
-      case NetworkEnvironment.testnet:
+      case Network.liquidTestnet:
         return lwk.Network.testnet;
+      case Network.bitcoinMainnet:
+      case Network.bitcoinTestnet:
+        throw WrongNetworkException('Bitcoin network is not supported by LWK');
     }
   }
+}
+
+class WrongNetworkException implements Exception {
+  final String message;
+
+  WrongNetworkException(this.message);
 }

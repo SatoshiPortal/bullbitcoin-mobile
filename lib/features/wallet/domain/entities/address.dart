@@ -24,11 +24,10 @@ sealed class Address with _$Address {
     int? index,
     required AddressKind kind,
     required AddressStatus state,
-    String? label,
     String? spentTxId,
     @Default(true) bool spendable,
-    @Default(0) int highestPreviousBalance,
-    @Default(0) int balance,
+    BigInt? highestPreviousBalance,
+    BigInt? balanceSat,
   }) = BitcoinAddress;
 
   factory Address.liquid({
@@ -37,10 +36,9 @@ sealed class Address with _$Address {
     int? index,
     required AddressKind kind,
     required AddressStatus state,
-    String? label,
     String? spentTxId,
     @Default(true) bool spendable,
-    @Default(0) int highestPreviousBalance,
-    @Default(0) int balance,
+    BigInt? highestPreviousBalanceSat,
+    BigInt? balanceSat,
   }) = LiquidAddress;
 }

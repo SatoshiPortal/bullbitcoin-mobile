@@ -33,7 +33,7 @@ Future<void> initializeDI() async {
   setupOnboardingDependencies();
   setupRecoverWalletDependencies();
   setupFiatCurrenciesDependencies();
-  setupWalletDependencies();
+  await setupWalletDependencies();
   setupPinCodeDependencies();
   setupAppUnlockDependencies();
 }

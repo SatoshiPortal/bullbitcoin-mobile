@@ -4,30 +4,65 @@ part 'wallet_metadata.freezed.dart';
 part 'wallet_metadata.g.dart';
 
 enum Network {
-  bitcoin,
-  liquid;
+  bitcoinMainnet(
+    coinType: 0,
+    isBitcoin: true,
+    isLiquid: false,
+    isMainnet: true,
+    isTestnet: false,
+  ),
+  bitcoinTestnet(
+    coinType: 1,
+    isBitcoin: true,
+    isLiquid: false,
+    isMainnet: false,
+    isTestnet: true,
+  ),
+  liquidMainnet(
+    coinType: 1776,
+    isBitcoin: false,
+    isLiquid: true,
+    isMainnet: true,
+    isTestnet: false,
+  ),
+  liquidTestnet(
+    coinType: 1,
+    isBitcoin: false,
+    isLiquid: true,
+    isMainnet: false,
+    isTestnet: true,
+  );
+
+  final int coinType;
+  final bool isBitcoin;
+  final bool isLiquid;
+  final bool isMainnet;
+  final bool isTestnet;
+
+  const Network({
+    required this.coinType,
+    required this.isBitcoin,
+    required this.isLiquid,
+    required this.isMainnet,
+    required this.isTestnet,
+  });
 
   factory Network.fromName(String name) {
     return Network.values.firstWhere((network) => network.name == name);
   }
 }
 
-enum NetworkEnvironment {
-  mainnet,
-  testnet;
+enum ScriptType {
+  bip84(purpose: 84),
+  bip49(purpose: 49),
+  bip44(purpose: 44);
 
-  factory NetworkEnvironment.fromName(String name) {
-    return NetworkEnvironment.values.firstWhere((env) => env.name == name);
-  }
-}
+  final int purpose;
 
-enum WalletScriptType {
-  bip84,
-  bip49,
-  bip44;
+  const ScriptType({required this.purpose});
 
-  static WalletScriptType fromName(String name) {
-    return WalletScriptType.values.firstWhere((script) => script.name == name);
+  static ScriptType fromName(String name) {
+    return ScriptType.values.firstWhere((script) => script.name == name);
   }
 }
 
@@ -51,18 +86,38 @@ enum WalletSource {
 @freezed
 class WalletMetadata with _$WalletMetadata {
   const factory WalletMetadata({
-    required String id,
-    required String label,
-    required String seedFingerprint,
+    required String masterFingerprint,
     required Network network,
-    required NetworkEnvironment environment,
-    required WalletScriptType scriptType,
+    required ScriptType scriptType,
+    required String xpub,
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
     required WalletSource source,
+    String? label,
   }) = _WalletMetadata;
   const WalletMetadata._();
 
   factory WalletMetadata.fromJson(Map<String, dynamic> json) =>
       _$WalletMetadataFromJson(json);
+
+  String get id => '$masterFingerprint-${scriptType.name}-${network.name}';
+
+  String get name => label == null || label!.isEmpty ? _defaultName : label!;
+
+  String get _defaultName {
+    switch (source) {
+      case WalletSource.mnemonic:
+        if (network.isBitcoin) {
+          return 'Secure Bitcoin Wallet';
+        } else {
+          return 'Instant Payments Wallet';
+        }
+      case WalletSource.xpub:
+        return 'Xpub:${id.substring(0, 5)}';
+      case WalletSource.coldcard:
+        return 'Coldcard:${id.substring(0, 5)}';
+      case WalletSource.descriptors:
+        return 'Imported Descriptor:${id.substring(0, 5)}';
+    }
+  }
 }
