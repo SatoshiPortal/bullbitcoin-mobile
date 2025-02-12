@@ -8,6 +8,17 @@ import 'package:recoverbull/recoverbull.dart';
 class KeychainCubit extends Cubit<KeychainState> {
   KeychainCubit() : super(const KeychainState()) {
     shuffleAndEmit();
+    _initKeyService();
+  }
+
+  late final KeyService _keyService;
+
+  void _initKeyService() {
+    if (keyServerUrl.isEmpty) {
+      emit(state.copyWith(error: 'keychain api is not set'));
+      return;
+    }
+    _keyService = KeyService(keyServer: Uri.parse(keyServerUrl));
   }
 
   void shuffleAndEmit() {
@@ -110,7 +121,7 @@ class KeychainCubit extends Cubit<KeychainState> {
   Future<void> secureKey() async {
     try {
       emit(state.copyWith(loading: true, error: ''));
-      await KeyService(keyServer: Uri.parse(keyServerUrl)).storeBackupKey(
+      await _keyService.storeBackupKey(
         backupId: state.backupId,
         password: state.tempSecret,
         backupKey: HEX.decode(state.backupKey),
@@ -160,12 +171,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     try {
       emit(state.copyWith(loading: true, error: ''));
 
-      if (keyServerUrl.isEmpty) {
-        emit(state.copyWith(loading: false, error: 'keychain api is not set'));
-        return;
-      }
-      final backupKey =
-          await KeyService(keyServer: Uri.parse(keyServerUrl)).recoverBackupKey(
+      final backupKey = await _keyService.recoverBackupKey(
         backupId: state.backupId,
         password: state.secret,
         salt: state.backupSalt,
