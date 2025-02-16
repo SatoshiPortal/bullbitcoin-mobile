@@ -126,7 +126,7 @@ class _Screen extends StatelessWidget {
             label: "Recover or test backup",
             onPressed: () {
               context.push(
-                '/wallet-settings/backup-settings/recover-encrypted',
+                '/wallet-settings/backup-settings/recover-options',
                 extra: context.read<WalletBloc>().state.wallet.id,
               );
             },
@@ -160,7 +160,7 @@ class BackupOptionsScreen extends StatelessWidget {
         child: Column(
           children: [
             const BBText.titleLarge(
-              'Backup you wallet',
+              'Backup your wallet',
               isBold: true,
               fontSize: 25,
             ),
@@ -198,7 +198,7 @@ class BackupOptionsScreen extends StatelessWidget {
               description:
                   'Your backup is encrypted with a secure key that cannot be cracked, and uploaded to your cloud account. The key to unlock your vault is stored in an anonymous password manager and accessible with your PIN.',
               onTap: () => context.push(
-                '/wallet-settings/backup-settings/encrypted',
+                '/wallet-settings/backup-settings/backup-options/encrypted',
                 extra: wallet,
               ),
             ),
@@ -208,8 +208,138 @@ class BackupOptionsScreen extends StatelessWidget {
               description:
                   'You have to write down 12 words on a piece of paper or engrave it in metal. Make sure not to lose it. If anybody ever finds those 12 words, they can steal your Bitcoin.',
               onTap: () async => context.push(
-                '/wallet-settings/backup-settings/physical',
+                '/wallet-settings/backup-settings/backup-options/physical',
                 extra: wallet,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _renderBackupSetting({
+    required String title,
+    required String description,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: NewColours.lightGray.withAlpha(50),
+              blurRadius: 30,
+              spreadRadius: 2,
+              offset: const Offset(0, 10),
+            ),
+          ],
+          border: Border.all(color: NewColours.lightGray.withAlpha(100)),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 6,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BBText.title(
+                    title,
+                    isBold: true,
+                  ),
+                  const Gap(4),
+                  BBText.bodySmall(
+                    description,
+                    removeColourOpacity: true,
+                  ),
+                ],
+              ),
+            ),
+            const Expanded(
+              child: Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class RecoverOptionsScreen extends StatelessWidget {
+  const RecoverOptionsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        flexibleSpace: BBAppBar(
+          onBack: () => context.pop(),
+          text: '',
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            const BBText.titleLarge(
+              'Recover or test your backup',
+              isBold: true,
+              fontSize: 25,
+            ),
+            const Gap(10),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: 'Testing your backup is ',
+                    style: context.font.bodySmall!.copyWith(
+                      fontSize: 12,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'critically important ',
+                    style: context.font.bodySmall!.copyWith(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 12,
+                    ),
+                  ),
+                  TextSpan(
+                    text:
+                        'to ensure you can recover your wallet if needed. Choose your recovery method below.',
+                    style: context.font.bodySmall!.copyWith(
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Gap(20),
+            _renderBackupSetting(
+              title: 'Encrypted vault',
+              description:
+                  "Restore your wallet using the encrypted backup stored in your cloud account. You'll need your PIN to access the decryption key from the password manager.",
+              onTap: () => context.push(
+                '/wallet-settings/backup-settings/recover-options/encrypted',
+              ),
+            ),
+            const Gap(20),
+            _renderBackupSetting(
+              title: 'Physical backup',
+              description:
+                  "Restore your wallet by entering the 12 words from your physical backup.",
+              onTap: () async => context.push(
+                '/wallet-settings/backup-settings/recover-options/physical',
               ),
             ),
           ],
