@@ -29,7 +29,7 @@ BackupSettingsCubit createBackupSettingsCubit({String? walletId}) {
 
   final currentWallet = walletId != null
       ? wallets.firstWhere((w) => w.id == walletId, orElse: () => wallets.first)
-      : wallets.first;
+      : null;
 
   return BackupSettingsCubit(
     wallets: wallets,
@@ -576,6 +576,10 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         layer: wallet.baseWalletType.name,
         script: wallet.scriptType.name,
         type: wallet.type.name,
+        publicDescriptors: [
+          wallet.externalPublicDescriptor,
+          wallet.internalPublicDescriptor,
+        ].join(','),
       );
 
       if (!wallet.hasPassphrase()) {
@@ -845,10 +849,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           return;
         }
       }
-
+      print('Backups recovered: ${backups.length}');
       // Notify HomeBloc that wallets have been recovered
       locator<HomeBloc>().add(LoadWalletsFromStorage());
-
+      print('called LoadWalletsFromStorage');
+      await locator<WalletsStorageRepository>().sortWallets();
+      print('called sortWallets');
       emit(
         state.copyWith(
           loadingBackups: false,
@@ -868,12 +874,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   Future<void> _processBackupRecovery(Backup backup) async {
-    final network = _getNetwork(backup.network);
+    final network = BBNetwork.fromString(backup.network);
     final layer = _getLayer(backup.layer);
     final script = _getScript(backup.script);
     final type = _getWalletType(backup.type);
 
-    if (network == null || layer == null || script == null || type == null) {
+    if (layer == null || script == null || type == null) {
       emit(
         state.copyWith(
           errorLoadingBackups:
@@ -891,14 +897,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       type,
       backup.mnemonic.join(' '),
       backup.passphrase,
+      backup.publicDescriptors,
     );
   }
-
-  BBNetwork? _getNetwork(String network) => switch (network.toLowerCase()) {
-        'mainnet' => BBNetwork.Mainnet,
-        'testnet' => BBNetwork.Testnet,
-        _ => null
-      };
 
   BaseWalletType? _getLayer(String layer) => switch (layer.toLowerCase()) {
         'bitcoin' => BaseWalletType.Bitcoin,
@@ -929,6 +930,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     BBWalletType type,
     String mnemonic,
     String passphrase,
+    String publicDescriptors,
   ) async {
     final (seed, error) =
         await _walletSensitiveCreate.mnemonicSeed(mnemonic, network);
@@ -944,7 +946,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     try {
       await _walletSensRepository.newSeed(seed: seed);
-
       final wallet = await _createWalletFromSeed(
         layer,
         seed,
@@ -952,6 +953,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         script,
         network,
         type,
+        publicDescriptors,
       );
 
       if (wallet == null) {
@@ -983,6 +985,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     ScriptType script,
     BBNetwork network,
     BBWalletType type,
+    String publicDescriptors,
   ) async {
     switch (layer) {
       case BaseWalletType.Bitcoin:
@@ -993,6 +996,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           network: network,
           walletType: type,
           walletCreate: _walletCreate,
+          publicDescriptors: publicDescriptors,
         );
         return wallet;
       case BaseWalletType.Liquid:

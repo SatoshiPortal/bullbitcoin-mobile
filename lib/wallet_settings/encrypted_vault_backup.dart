@@ -267,8 +267,8 @@ class _StorageOptionCard extends StatelessWidget {
 }
 
 class EncryptedVaultRecoverPage extends StatefulWidget {
-  const EncryptedVaultRecoverPage({super.key, required this.wallet});
-  final String wallet;
+  const EncryptedVaultRecoverPage({super.key, this.wallet});
+  final String? wallet;
 
   @override
   State<EncryptedVaultRecoverPage> createState() =>
