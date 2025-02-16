@@ -236,7 +236,7 @@ GoRouter setupRouter() => GoRouter(
                 GoRoute(
                   path: 'recover-encrypted',
                   builder: (context, state) => EncryptedVaultRecoverPage(
-                    wallet: state.extra! as String,
+                    wallet: state.extra as String?,
                   ),
                   routes: [
                     GoRoute(
