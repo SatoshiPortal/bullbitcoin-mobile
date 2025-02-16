@@ -32,5 +32,6 @@ const liquidTestnetAssetId = lwk.lTestAssetId;
 
 //Backups
 final keyServerUrl = dotenv.env['KEY_SERVER'] ?? 'http://localhost:3000';
-
-const defaultBackupPath = 'backups'; //todo; create a better folder structure
+final keyServerPublicKey = dotenv.env['KEY_SERVER_PUBLIC_KEY'] ??
+    '6a04ab98d9e4774ad806e302dddeb63bea16b5cb5f223ee77478e861bb583eb3';
+const defaultBackupPath = 'backups';
