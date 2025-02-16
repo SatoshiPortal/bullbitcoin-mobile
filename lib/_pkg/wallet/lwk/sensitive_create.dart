@@ -26,11 +26,8 @@ class LWKSensitiveCreate {
     required BBWalletType walletType,
     required BBNetwork network,
     required WalletCreate walletCreate,
-    // bool isImported,
   }) async {
-    final lwkNetwork = network == BBNetwork.Mainnet
-        ? lwk.Network.mainnet
-        : lwk.Network.testnet;
+    final lwkNetwork = network.toLwkNetwork();
     final lwk.Descriptor descriptor = await lwk.Descriptor.newConfidential(
       network: lwkNetwork,
       mnemonic: seed.mnemonic,
