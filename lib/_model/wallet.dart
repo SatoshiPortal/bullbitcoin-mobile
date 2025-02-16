@@ -6,6 +6,7 @@ import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:crypto/crypto.dart';
+import 'package:lwk/lwk.dart' as lwk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
@@ -17,13 +18,17 @@ enum BBNetwork {
   Mainnet;
 
   static BBNetwork fromString(String network) {
-    switch (network) {
-      case 'Testnet':
-        return BBNetwork.Testnet;
-      case 'Mainnet':
-        return BBNetwork.Mainnet;
-      default:
-        return BBNetwork.Mainnet;
+    return network.toLowerCase() == 'testnet'
+        ? BBNetwork.Testnet
+        : BBNetwork.Mainnet;
+  }
+
+  lwk.Network toLwkNetwork() {
+    switch (this) {
+      case BBNetwork.Testnet:
+        return lwk.Network.testnet;
+      case BBNetwork.Mainnet:
+        return lwk.Network.mainnet;
     }
   }
 
