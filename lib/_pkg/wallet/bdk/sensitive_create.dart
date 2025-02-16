@@ -259,97 +259,105 @@ class BDKSensitiveCreate {
     required BBWalletType walletType,
     required BBNetwork network,
     required WalletCreate walletCreate,
+    String? publicDescriptors,
   }) async {
-    final bdkMnemonic = await bdk.Mnemonic.fromString(seed.mnemonic);
-    final bdkNetwork = network == BBNetwork.Testnet
-        ? bdk.Network.testnet
-        : bdk.Network.bitcoin;
-    final rootXprv = await bdk.DescriptorSecretKey.create(
-      network: bdkNetwork,
-      mnemonic: bdkMnemonic,
-      password: passphrase,
-    );
-    final networkPath = network == BBNetwork.Mainnet ? '0h' : '1h';
-    const accountPath = '0h';
-
     // final sourceFingerprint = fing/erPrintFromXKeyDesc(bdkXpub84.asString());
     final (sourceFingerprint, sfErr) = await getFingerprint(
       mnemonic: seed.mnemonic,
       passphrase: passphrase,
     );
-    if (sfErr != null) {
+    if (sfErr != null || sourceFingerprint == null) {
       return (null, Err('Error Getting Fingerprint'));
     }
+    final bdkNetwork = network.toBdkNetwork();
     bdk.Descriptor? internal;
     bdk.Descriptor? external;
+    if (publicDescriptors == null) {
+      final bdkMnemonic = await bdk.Mnemonic.fromString(seed.mnemonic);
 
-    switch (scriptType) {
-      case ScriptType.bip84:
-        final mOnlybdkXpriv84 = await rootXprv.derive(
-          await bdk.DerivationPath.create(
-            path: 'm/84h/$networkPath/$accountPath',
-          ),
-        );
+      final rootXprv = await bdk.DescriptorSecretKey.create(
+        network: bdkNetwork,
+        mnemonic: bdkMnemonic,
+        password: passphrase,
+      );
+      final networkPath = network == BBNetwork.Mainnet ? '0h' : '1h';
+      const accountPath = '0h';
 
-        final bdkXpub84 = mOnlybdkXpriv84.toPublic();
+      switch (scriptType) {
+        case ScriptType.bip84:
+          final mOnlybdkXpriv84 = await rootXprv.derive(
+            await bdk.DerivationPath.create(
+              path: 'm/84h/$networkPath/$accountPath',
+            ),
+          );
 
-        internal = await bdk.Descriptor.newBip84Public(
-          publicKey: bdkXpub84,
-          fingerPrint: sourceFingerprint!,
-          network: bdkNetwork,
-          keychain: bdk.KeychainKind.internalChain,
-        );
-        external = await bdk.Descriptor.newBip84Public(
-          publicKey: bdkXpub84,
-          fingerPrint: sourceFingerprint,
-          network: bdkNetwork,
-          keychain: bdk.KeychainKind.externalChain,
-        );
-      case ScriptType.bip49:
-        final bdkXpriv49 = await rootXprv.derive(
-          await bdk.DerivationPath.create(
-            path: 'm/49h/$networkPath/$accountPath',
-          ),
-        );
+          final bdkXpub84 = mOnlybdkXpriv84.toPublic();
 
-        final bdkXpub49 = bdkXpriv49.toPublic();
-        internal = await bdk.Descriptor.newBip49Public(
-          publicKey: bdkXpub49,
-          fingerPrint: sourceFingerprint!,
-          network: bdkNetwork,
-          keychain: bdk.KeychainKind.internalChain,
-        );
-        external = await bdk.Descriptor.newBip49Public(
-          publicKey: bdkXpub49,
-          fingerPrint: sourceFingerprint,
-          network: bdkNetwork,
-          keychain: bdk.KeychainKind.externalChain,
-        );
-      case ScriptType.bip44:
-        final bdkXpriv44 = await rootXprv.derive(
-          await bdk.DerivationPath.create(
-            path: 'm/44h/$networkPath/$accountPath',
-          ),
-        );
-        final bdkXpub44 = bdkXpriv44.toPublic();
-        internal = await bdk.Descriptor.newBip44Public(
-          publicKey: bdkXpub44,
-          fingerPrint: sourceFingerprint!,
-          network: bdkNetwork,
-          keychain: bdk.KeychainKind.internalChain,
-        );
-        external = await bdk.Descriptor.newBip44Public(
-          publicKey: bdkXpub44,
-          fingerPrint: sourceFingerprint,
-          network: bdkNetwork,
-          keychain: bdk.KeychainKind.externalChain,
-        );
+          internal = await bdk.Descriptor.newBip84Public(
+            publicKey: bdkXpub84,
+            fingerPrint: sourceFingerprint,
+            network: bdkNetwork,
+            keychain: bdk.KeychainKind.internalChain,
+          );
+          external = await bdk.Descriptor.newBip84Public(
+            publicKey: bdkXpub84,
+            fingerPrint: sourceFingerprint,
+            network: bdkNetwork,
+            keychain: bdk.KeychainKind.externalChain,
+          );
+        case ScriptType.bip49:
+          final bdkXpriv49 = await rootXprv.derive(
+            await bdk.DerivationPath.create(
+              path: 'm/49h/$networkPath/$accountPath',
+            ),
+          );
+
+          final bdkXpub49 = bdkXpriv49.toPublic();
+          internal = await bdk.Descriptor.newBip49Public(
+            publicKey: bdkXpub49,
+            fingerPrint: sourceFingerprint,
+            network: bdkNetwork,
+            keychain: bdk.KeychainKind.internalChain,
+          );
+          external = await bdk.Descriptor.newBip49Public(
+            publicKey: bdkXpub49,
+            fingerPrint: sourceFingerprint,
+            network: bdkNetwork,
+            keychain: bdk.KeychainKind.externalChain,
+          );
+        case ScriptType.bip44:
+          final bdkXpriv44 = await rootXprv.derive(
+            await bdk.DerivationPath.create(
+              path: 'm/44h/$networkPath/$accountPath',
+            ),
+          );
+          final bdkXpub44 = bdkXpriv44.toPublic();
+          internal = await bdk.Descriptor.newBip44Public(
+            publicKey: bdkXpub44,
+            fingerPrint: sourceFingerprint,
+            network: bdkNetwork,
+            keychain: bdk.KeychainKind.internalChain,
+          );
+          external = await bdk.Descriptor.newBip44Public(
+            publicKey: bdkXpub44,
+            fingerPrint: sourceFingerprint,
+            network: bdkNetwork,
+            keychain: bdk.KeychainKind.externalChain,
+          );
+      }
+    } else {
+      external = await bdk.Descriptor.create(
+        descriptor: publicDescriptors.split(',')[0],
+        network: bdkNetwork,
+      );
+      internal = await bdk.Descriptor.create(
+        descriptor: publicDescriptors.split(',')[0],
+        network: bdkNetwork,
+      );
     }
 
     final descHashId =
         createDescriptorHashId(external.asString()).substring(0, 12);
-    // final type = isImported ? BBWalletType.words : BBWalletType.newSeed;
-
     var wallet = Wallet(
       id: descHashId,
       externalPublicDescriptor: external.asString(),
