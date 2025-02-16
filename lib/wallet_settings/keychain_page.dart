@@ -498,6 +498,7 @@ class _SetButton extends StatelessWidget {
               inputType == KeyChainInputType.pin
                   ? 'Use a password instead of a pin'
                   : 'Use a PIN instead of a password',
+              isBold: true,
             ),
           ),
           const Gap(5),
@@ -760,50 +761,48 @@ class _SuccessDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dialogContent = Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.check_circle_outline,
-            color: context.colour.shadow,
-            size: 48,
-          ),
-          const Gap(16),
-          BBText.title(
-            isRecovery ? 'Recovery Successful' : 'Backup Successful',
-            textAlign: TextAlign.center,
-            isBold: true,
-          ),
-          const Gap(8),
-          BBText.bodySmall(
-            isRecovery
-                ? 'Your wallet has been recovered successfully'
-                : 'Your wallet has been backed up successfully',
-            textAlign: TextAlign.center,
-          ),
-          const Gap(24),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              context.go('/home');
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: context.colour.shadow,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: const Text('Continue'),
-          ),
-        ],
-      ),
-    );
-
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: dialogContent,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.check_circle_outline,
+              color: context.colour.shadow,
+              size: 48,
+            ),
+            const Gap(16),
+            BBText.title(
+              isRecovery ? 'Recovery Successful' : 'Backup Successful',
+              textAlign: TextAlign.center,
+              isBold: true,
+            ),
+            const Gap(8),
+            BBText.bodySmall(
+              isRecovery
+                  ? 'Your wallet has been recovered successfully'
+                  : 'Your wallet has been backed up successfully',
+              textAlign: TextAlign.center,
+            ),
+            const Gap(24),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.go('/home');
+              },
+              style: FilledButton.styleFrom(
+                backgroundColor: context.colour.shadow,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Continue'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
