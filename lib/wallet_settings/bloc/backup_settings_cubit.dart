@@ -205,7 +205,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    await _updateWalletBackupStatus();
+    await _updateWalletBackupStatus(
+      _currentWallet!.copyWith(
+        physicalBackupTested: true,
+        lastPhysicalBackupTested: DateTime.now(),
+      ),
+    );
     _emitBackupTestSuccessState();
   }
 
@@ -230,19 +235,15 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     return seed;
   }
 
-  Future<void> _updateWalletBackupStatus() async {
-    final wallet = _currentWallet!.copyWith(
-      physicalBackupTested: true,
-      lastPhysicalBackupTested: DateTime.now(),
-    );
-
-    final service = _appWalletsRepository.getWalletServiceById(wallet.id);
+  Future<void> _updateWalletBackupStatus(Wallet updatedWallet) async {
+    final service =
+        _appWalletsRepository.getWalletServiceById(updatedWallet.id);
     if (service != null) {
       await service.updateWallet(
-        wallet,
+        updatedWallet,
         updateTypes: [UpdateWalletTypes.settings],
       );
-      _currentWallet = wallet;
+      _currentWallet = updatedWallet;
     }
   }
 
@@ -769,9 +770,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       encrypted: file,
     );
     if (loadedBackup != null) {
-      final id = loadedBackup['id'] as String;
-
-      debugPrint('Loaded backup: $id');
       emit(
         state.copyWith(
           loadingBackups: false,
@@ -853,6 +851,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       // Notify HomeBloc that wallets have been recovered
       locator<HomeBloc>().add(LoadWalletsFromStorage());
       await locator<WalletsStorageRepository>().sortWallets();
+
       emit(
         state.copyWith(
           loadingBackups: false,
@@ -888,7 +887,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    await _addOrUpdateWallet(
+    final savedWallet = await _addOrUpdateWallet(
       network,
       layer,
       script,
@@ -897,6 +896,14 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       backup.passphrase,
       backup.publicDescriptors,
     );
+    if (savedWallet != null) {
+      await _updateWalletBackupStatus(
+        savedWallet.copyWith(
+          vaultBackupTested: true,
+          lastVaultBackupTested: DateTime.now(),
+        ),
+      );
+    }
   }
 
   BaseWalletType? _getLayer(String layer) => switch (layer.toLowerCase()) {
@@ -921,7 +928,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         _ => null
       };
 
-  Future<void> _addOrUpdateWallet(
+  Future<Wallet?> _addOrUpdateWallet(
     BBNetwork network,
     BaseWalletType layer,
     ScriptType script,
@@ -939,7 +946,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           loadingBackups: false,
         ),
       );
-      return;
+      return null;
     }
 
     try {
@@ -961,10 +968,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
             loadingBackups: false,
           ),
         );
-        return;
+        return null;
       }
 
-      await _walletsStorageRepository.newWallet(wallet);
+      await _walletsStorageRepository
+          .newWallet(wallet.copyWith(vaultBackupTested: true));
+      return wallet;
     } catch (e) {
       debugPrint('Wallet creation error: $e');
       emit(
@@ -973,6 +982,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           loadingBackups: false,
         ),
       );
+      return null;
     }
   }
 
