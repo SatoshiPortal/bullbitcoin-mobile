@@ -107,9 +107,9 @@ class _ScreenState extends State<_Screen> {
     );
 
     // final hasWallets = context.select((HomeBloc x) => x.state.hasWallets());
-    final hasMainWallets = context.select(
-      (HomeBloc x) => x.state.hasMainWallets(),
-    );
+    // final hasMainWallets = context.select(
+    //   (HomeBloc x) => x.state.hasMainWallets(),
+    // );
 
     // final walletBlocsLen =
     //     context.select((HomeBloc x) => x.state.lenWalletsFromNetwork(network));
@@ -1030,7 +1030,7 @@ class HomeNoWalletsWithCreation extends StatelessWidget {
               centered: true,
               onPressed: () {
                 context1.push(
-                  '/wallet-settings/backup-settings/recover-encrypted',
+                  '/wallet-settings/backup-settings/recover-options/encrypted',
                 );
               },
             ),
@@ -1127,7 +1127,7 @@ class HomeNoWalletsView extends StatelessWidget {
                   fontSize: 11,
                   onPressed: () {
                     context.push(
-                      '/wallet-settings/backup-settings/recover-encrypted',
+                      '/wallet-settings/backup-settings/recover-options/encrypted',
                     );
                   },
                 ),
@@ -1156,7 +1156,7 @@ class HomeWarnings extends StatelessWidget {
           WarningBanner(
             onTap: () {
               context.push(
-                '/wallet-settings/open-backup',
+                '/wallet-settings/backup-settings/backup-options',
                 extra: w.walletBloc.id,
               );
             },
