@@ -849,12 +849,10 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           return;
         }
       }
-      print('Backups recovered: ${backups.length}');
+
       // Notify HomeBloc that wallets have been recovered
       locator<HomeBloc>().add(LoadWalletsFromStorage());
-      print('called LoadWalletsFromStorage');
       await locator<WalletsStorageRepository>().sortWallets();
-      print('called sortWallets');
       emit(
         state.copyWith(
           loadingBackups: false,
