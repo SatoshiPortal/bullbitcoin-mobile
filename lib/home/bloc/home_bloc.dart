@@ -62,7 +62,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     WalletServicesUpdated event,
     Emitter<HomeState> emit,
   ) async {
-    debugPrint('wallet services updated: ${event.walletServices.length}');
     final walletServicesData = event.walletServices
         .map((_) => WalletServiceData(wallet: _.wallet))
         .toList();
