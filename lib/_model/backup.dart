@@ -14,6 +14,7 @@ class Backup with _$Backup {
     @Default('') String layer,
     @Default('') String type,
     @Default('') String script,
+    @Default('') String publicDescriptors,
   }) = _Backup;
 
   factory Backup.fromJson(Map<String, dynamic> json) => _$BackupFromJson(json);
