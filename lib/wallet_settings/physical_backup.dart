@@ -256,7 +256,7 @@ class BackupScreen extends StatelessWidget {
                     context
                         // ..pop()
                         .push(
-                      '/wallet-settings/backup-settings/physical/test-backup',
+                      '/wallet-settings/backup-settings/backup-options/physical/test-backup',
                       extra: context.read<WalletBloc>().state.wallet.id,
                       // (
                       //   context.read<Wallet>(),
