@@ -78,7 +78,7 @@ class Wallet with _$Wallet {
     @Default(false) bool physicalBackupTested,
     DateTime? lastPhysicalBackupTested,
     @Default(false) bool vaultBackupTested,
-    @Default(false) bool lastVaultBackupTested,
+    DateTime? lastVaultBackupTested,
     @Default(false) bool hide,
     @Default(false) bool mainWallet,
     required BaseWalletType baseWalletType,
