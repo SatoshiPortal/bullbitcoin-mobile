@@ -238,7 +238,7 @@ class BackupAlertBanner extends StatelessWidget {
     return WarningBanner(
       onTap: () {
         context.push(
-          '/wallet-settings/open-backup',
+          '/wallet-settings/backup-settings/backup-options',
           extra: wallet.id,
         );
       },
