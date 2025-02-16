@@ -348,7 +348,7 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
           }
           if (state.latestRecoveredBackup.isNotEmpty) {
             context.push(
-              '/wallet-settings/backup-settings/recover-encrypted/info',
+              '/wallet-settings/backup-settings/recover-options/encrypted/info',
               extra: state.latestRecoveredBackup,
             );
             _cubit.clearError();
