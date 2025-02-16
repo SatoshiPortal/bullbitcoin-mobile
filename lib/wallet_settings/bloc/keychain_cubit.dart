@@ -18,7 +18,10 @@ class KeychainCubit extends Cubit<KeychainState> {
       emit(state.copyWith(error: 'keychain api is not set'));
       return;
     }
-    _keyService = KeyService(keyServer: Uri.parse(keyServerUrl));
+    _keyService = KeyService(
+      keyServer: Uri.parse(keyServerUrl),
+      keyServerPublicKey: keyServerPublicKey,
+    );
   }
 
   void shuffleAndEmit() {
@@ -176,6 +179,7 @@ class KeychainCubit extends Cubit<KeychainState> {
         password: state.secret,
         salt: state.backupSalt,
       );
+
       emit(
         state.copyWith(
           backupKey: HEX.encode(backupKey),
