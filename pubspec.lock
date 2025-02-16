@@ -78,6 +78,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.31.2"
+  bech32:
+    dependency: transitive
+    description:
+      name: bech32
+      sha256: "156cbace936f7720c79a79d16a03efad343b1ef17106716e04b8b8e39f99f7f7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.2"
   bip32:
     dependency: transitive
     description:
@@ -86,6 +94,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  bip340:
+    dependency: transitive
+    description:
+      name: bip340
+      sha256: b7bcd70a860e605046006adaa72bc4f7453f4d31d7ba74a4ad9d5de387a0fc0b
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   bip39_mnemonic:
     dependency: transitive
     description:
@@ -375,6 +391,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  elliptic:
+    dependency: transitive
+    description:
+      name: elliptic
+      sha256: "0c303d810603953a65dc39c4c542fb7538defd9e212403c54c266140819523b6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.11"
   extension_google_sign_in_as_googleapis_auth:
     dependency: "direct main"
     description:
@@ -1077,6 +1101,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  nostr:
+    dependency: transitive
+    description:
+      path: "."
+      ref: develop
+      resolved-ref: "6197278729b2806f116e25e290e92019cf408a23"
+      url: "https://github.com/ethicnology/dart-nostr"
+    source: git
+    version: "1.5.0"
   oktoast:
     dependency: "direct main"
     description:
@@ -1323,7 +1356,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: c8c7dc5200d9b1ffacbdd0b2c3f9ca34abffab03
+      resolved-ref: "6941511cce648d3478792f696874e057cac96ee7"
       url: "https://github.com/SatoshiPortal/recoverbull-client-dart.git"
     source: git
     version: "1.0.0"
