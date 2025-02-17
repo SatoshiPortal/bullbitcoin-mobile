@@ -22,6 +22,11 @@ class SecureStorageDataSourceImpl implements KeyValueStorageDataSource<String> {
   }
 
   @override
+  Future<bool> hasValue(String key) async {
+    return _storage.containsKey(key: key);
+  }
+
+  @override
   Future<void> deleteValue(String key) async {
     await _storage.delete(key: key);
   }

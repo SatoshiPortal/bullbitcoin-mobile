@@ -24,7 +24,9 @@ class LwkWalletRepositoryImpl
 
     final lBtcAssetBalance = balances
         .firstWhere(
-          (balance) => balance.assetId == 'TODO: use assetId based on network',
+          (balance) =>
+              balance.assetId ==
+              '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d',
         )
         .value;
 

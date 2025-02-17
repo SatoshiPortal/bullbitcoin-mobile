@@ -28,13 +28,6 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     _listener = AppLifecycleListener(
       onStateChange: _onStateChanged,
     );
-
-    // Trigger the "resumed" logic on startup as well
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _onResumed();
-      }
-    });
   }
 
   @override
@@ -65,7 +58,10 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   void _onResumed() {
     debugPrint('resumed');
-    router.pushNamed(AppRoute.unlock.name);
+    router.pushNamed(
+      AppRoute.unlock.name,
+      extra: () => router.pop(),
+    );
   }
 
   void _onInactive() => debugPrint('inactive');

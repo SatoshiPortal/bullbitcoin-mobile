@@ -22,6 +22,11 @@ class HiveStorageDataSourceImpl<T> implements KeyValueStorageDataSource<T> {
   }
 
   @override
+  Future<bool> hasValue(String key) async {
+    return _box.containsKey(key);
+  }
+
+  @override
   Future<void> deleteValue(String key) async {
     await _box.delete(key);
   }

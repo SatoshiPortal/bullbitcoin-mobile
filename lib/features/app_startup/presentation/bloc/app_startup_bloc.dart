@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/app_startup/domain/usecases/init_wallets_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/fetch_all_wallets_metadata_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/fetch_usable_wallets_metadata_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -10,15 +10,15 @@ part 'app_startup_state.dart';
 
 class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   AppStartupBloc({
-    required FetchAllWalletsMetadataUseCase fetchAllWalletsMetadataUseCase,
+    required FetchUsableWalletsMetadataUseCase fetchAllWalletsMetadataUseCase,
     required InitWalletsUseCase initWalletsUseCase,
-  })  : _fetchAllWalletsMetadataUseCase = fetchAllWalletsMetadataUseCase,
+  })  : _fetchUsableWalletsMetadataUseCase = fetchAllWalletsMetadataUseCase,
         _initWalletsUseCase = initWalletsUseCase,
         super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
 
-  final FetchAllWalletsMetadataUseCase _fetchAllWalletsMetadataUseCase;
+  final FetchUsableWalletsMetadataUseCase _fetchUsableWalletsMetadataUseCase;
   final InitWalletsUseCase _initWalletsUseCase;
 
   Future<void> _onAppStartupStarted(
@@ -27,7 +27,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   ) async {
     emit(const AppStartupState.loadingInProgress());
     try {
-      final walletsMetadata = await _fetchAllWalletsMetadataUseCase.execute();
+      final walletsMetadata =
+          await _fetchUsableWalletsMetadataUseCase.execute();
       final hasExistingWallets = walletsMetadata.isNotEmpty;
 
       if (hasExistingWallets) {

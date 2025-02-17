@@ -38,6 +38,12 @@ class SeedRepositoryImpl implements SeedRepository {
   }
 
   @override
+  Future<bool> hasSeed(String fingerprint) {
+    final key = '$_keyPrefix$fingerprint';
+    return _storage.hasValue(key);
+  }
+
+  @override
   Future<void> deleteSeed(String fingerprint) {
     final key = '$_keyPrefix$fingerprint';
     return _storage.deleteValue(key);

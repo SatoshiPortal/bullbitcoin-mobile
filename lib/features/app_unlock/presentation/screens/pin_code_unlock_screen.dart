@@ -39,9 +39,24 @@ class PinCodeUnlockScreen extends StatelessWidget {
             );
           }
         },
-        child: PinCodeUnlockInputScreen(
-          onSuccess: onSuccess,
-          canPop: canPop,
+        child: BlocSelector<AppUnlockBloc, AppUnlockState, AppUnlockStatus>(
+          selector: (state) => state.status,
+          builder: (context, status) {
+            switch (status) {
+              case AppUnlockStatus.inputInProgress:
+                return PinCodeUnlockInputScreen(
+                  onSuccess: onSuccess,
+                  canPop: canPop,
+                );
+              default:
+                // TODO: use a proper loading screen
+                return const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+            }
+          },
         ),
       ),
     );

@@ -8,7 +8,9 @@ import 'package:bb_mobile/features/wallet/domain/repositories/wallet_metadata_re
 import 'package:bb_mobile/features/wallet/domain/services/mnemonic_generator.dart';
 import 'package:bb_mobile/features/wallet/domain/services/wallet_derivation_service.dart';
 import 'package:bb_mobile/features/wallet/domain/services/wallet_repository_manager.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/fetch_all_wallets_metadata_usecase.dart';
+import 'package:bb_mobile/features/app_startup/domain/usecases/fetch_usable_wallets_metadata_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_default_wallets_metadata_usecase.dart';
+import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_balance_sat_usecase.dart';
 import 'package:hive/hive.dart';
 
 const String hiveWalletsBoxName = 'wallets';
@@ -50,9 +52,20 @@ Future<void> setupWalletDependencies() async {
   );
 
   // Use cases
-  locator.registerFactory<FetchAllWalletsMetadataUseCase>(
-    () => FetchAllWalletsMetadataUseCase(
+  locator.registerFactory<FetchUsableWalletsMetadataUseCase>(
+    () => FetchUsableWalletsMetadataUseCase(
+      seedRepository: locator<SeedRepository>(),
       walletMetadataRepository: locator<WalletMetadataRepository>(),
+    ),
+  );
+  locator.registerFactory<GetDefaultWalletsMetadataUseCase>(
+    () => GetDefaultWalletsMetadataUseCase(
+      walletMetadataRepository: locator<WalletMetadataRepository>(),
+    ),
+  );
+  locator.registerFactory<GetWalletBalanceSatUseCase>(
+    () => GetWalletBalanceSatUseCase(
+      walletRepositoryManager: locator<WalletRepositoryManager>(),
     ),
   );
 }

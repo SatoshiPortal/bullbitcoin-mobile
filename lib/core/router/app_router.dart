@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/router/route_error_screen.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/screens/pin_code_unlock_screen.dart';
+import 'package:bb_mobile/features/home/presentation/home_screen.dart';
 import 'package:bb_mobile/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:bb_mobile/features/recover_wallet/presentation/flow/recover_wallet_flow.dart';
 import 'package:bb_mobile/features/settings/presentation/screens/settings_screen.dart';
@@ -34,15 +35,14 @@ class AppRouter {
         name: AppRoute.onboarding.name,
         path: AppRoute.onboarding.path,
         redirect: (context, state) {
-          // Check AppStartupState to skip landing if user has existing wallets
+          // Check AppStartupState to skip onboarding if user has existing wallets
           final appStartupState = context.read<AppStartupBloc>().state;
           if (appStartupState is AppStartupSuccess &&
               appStartupState.hasExistingWallets) {
-            return AppRoute.home.path;
+            // First thing to do is unlock the app if user has existing wallets
+            return AppRoute.unlock.path;
           }
-          // Redirect to settings page to showcase pin code feature for now,
-          //  normally should redirect to landing page by returning null
-          // return AppRoute.settings.path;
+
           return null;
         },
         builder: (context, state) => const OnboardingScreen(),
@@ -55,14 +55,18 @@ class AppRouter {
       GoRoute(
         name: AppRoute.home.name,
         path: AppRoute.home.path,
-        builder: (context, state) => const Text('Home'),
+        builder: (context, state) => const HomeScreen(),
       ),
       GoRoute(
         name: AppRoute.unlock.name,
         path: AppRoute.unlock.path,
-        builder: (context, state) => PinCodeUnlockScreen(
-          onSuccess: GoRouter.of(context).pop,
-        ),
+        builder: (context, state) {
+          // If no onSuccess callback is passed, navigate to home screen on success
+          final onSuccess = state.extra as VoidCallback? ??
+              () => GoRouter.of(context).goNamed(AppRoute.home.name);
+
+          return PinCodeUnlockScreen(onSuccess: onSuccess);
+        },
       ),
       GoRoute(
         name: AppRoute.settings.name,

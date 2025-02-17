@@ -10,10 +10,22 @@ class CreateWalletButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isCreationInProgress = context.select(
+      (OnboardingBloc bloc) => bloc.state.maybeMap(
+        walletCreationInProgress: (_) => true,
+        orElse: () => false,
+      ),
+    );
+
     return ElevatedButton(
-      onPressed: () =>
-          context.read<OnboardingBloc>().add(const OnboardingWalletCreated()),
-      child: Text(context.loc.onboardingCreateWalletButtonLabel),
+      onPressed: isCreationInProgress
+          ? null
+          : () => context
+              .read<OnboardingBloc>()
+              .add(const OnboardingWalletCreated()),
+      child: isCreationInProgress
+          ? const CircularProgressIndicator()
+          : Text(context.loc.onboardingCreateWalletButtonLabel),
     );
   }
 }

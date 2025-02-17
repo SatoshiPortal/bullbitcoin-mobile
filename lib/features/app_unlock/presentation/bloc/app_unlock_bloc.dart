@@ -47,17 +47,17 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
       if (!isPinCodeSet) {
         // No pin code exists, go directly to success state since no pin is required
         emit(state.copyWith(status: AppUnlockStatus.success));
+      } else {
+        final latestAttempt = await _getLatestUnlockAttemptUseCase.execute();
+
+        emit(
+          state.copyWith(
+            status: AppUnlockStatus.inputInProgress,
+            failedAttempts: latestAttempt.failedAttempts,
+            timeoutSeconds: latestAttempt.timeout,
+          ),
+        );
       }
-
-      final latestAttempt = await _getLatestUnlockAttemptUseCase.execute();
-
-      emit(
-        state.copyWith(
-          status: AppUnlockStatus.inputInProgress,
-          failedAttempts: latestAttempt.failedAttempts,
-          timeoutSeconds: latestAttempt.timeout,
-        ),
-      );
     } catch (e) {
       emit(
         state.copyWith(

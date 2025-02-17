@@ -1,8 +1,6 @@
-import 'package:bb_mobile/core/router/app_router.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class AppStartupWidget extends StatefulWidget {
   const AppStartupWidget({super.key, required this.app});

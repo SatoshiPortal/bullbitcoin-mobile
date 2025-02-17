@@ -21,13 +21,13 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     Emitter<OnboardingState> emit,
   ) async {
     try {
-      // Todo: uncomment when use case is implemented
-      //emit(const OnboardingState.walletCreationInProgress());
+      emit(const OnboardingState.walletCreationInProgress());
+
       await _createDefaultWalletsUseCase.execute();
-      /* TODO: uncomment when use case is implemented 
+
       emit(
         const OnboardingState.success(),
-      );*/
+      );
     } catch (e) {
       emit(
         OnboardingState.failure(e),

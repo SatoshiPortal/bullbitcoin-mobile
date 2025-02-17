@@ -28,7 +28,6 @@ class CreateDefaultWalletsUseCase {
 
   Future<void> execute() async {
     final mnemonicSeed = await _generateMnemonicSeed();
-    await _seedRepository.storeSeed(mnemonicSeed);
 
     // Get the default wallets metadata for Bitcoin and Liquid
     final defaultWalletsMetadata = await Future.wait([
@@ -36,8 +35,9 @@ class CreateDefaultWalletsUseCase {
       _deriveLiquidWalletMetadata(seed: mnemonicSeed),
     ]);
 
-    // Store the default wallets metadata and register them in the wallet repository manager
+    // Store the seed, default wallets metadata and register them in the wallet repository manager
     await Future.wait([
+      _seedRepository.storeSeed(mnemonicSeed),
       _walletMetadataRepository.storeWalletMetadata(defaultWalletsMetadata[0]),
       _walletMetadataRepository.storeWalletMetadata(defaultWalletsMetadata[1]),
       _walletRepositoryManager.registerWallet(defaultWalletsMetadata[0]),
@@ -55,16 +55,28 @@ class CreateDefaultWalletsUseCase {
 
   Future<WalletMetadata> _deriveBitcoinWalletMetadata({
     required MnemonicSeed seed,
-    Network network = Network.bitcoinMainnet,
-    ScriptType scriptType = ScriptType.bip84,
   }) async {
-    final xpub = await _walletDerivationservice.getAccountXpub(seed);
+    // Todo: check environment and use bitcoinTestnet if needed
+    const network = Network.bitcoinMainnet;
+    // Use bip84 as the default script type for Bitcoin
+    const scriptType = ScriptType.bip84;
+    final xpub = await _walletDerivationservice.getAccountXpub(
+      seed,
+      network: network,
+      scriptType: scriptType,
+    );
 
     final descriptors = await Future.wait([
-      _walletDerivationservice.derivePublicDescriptor(seed,
-          network: network, scriptType: scriptType),
-      _walletDerivationservice.derivePublicChangeDescriptor(seed,
-          network: network, scriptType: scriptType),
+      _walletDerivationservice.derivePublicDescriptor(
+        seed,
+        network: network,
+        scriptType: scriptType,
+      ),
+      _walletDerivationservice.derivePublicChangeDescriptor(
+        seed,
+        network: network,
+        scriptType: scriptType,
+      ),
     ]);
 
     return WalletMetadata(
@@ -80,13 +92,22 @@ class CreateDefaultWalletsUseCase {
 
   Future<WalletMetadata> _deriveLiquidWalletMetadata({
     required MnemonicSeed seed,
-    Network network = Network.liquidMainnet,
-    ScriptType scriptType = ScriptType.bip84,
   }) async {
-    final xpub = await _walletDerivationservice.getAccountXpub(seed);
+    // Todo: check environment and use liquidTestnet if needed
+    const network = Network.liquidMainnet;
+    // Use bip84 as the default script type for Liquid
+    const scriptType = ScriptType.bip84;
+    final xpub = await _walletDerivationservice.getAccountXpub(
+      seed,
+      network: network,
+      scriptType: scriptType,
+    );
 
-    final descriptor = await _walletDerivationservice
-        .derivePublicDescriptor(seed, network: network, scriptType: scriptType);
+    final descriptor = await _walletDerivationservice.derivePublicDescriptor(
+      seed,
+      network: network,
+      scriptType: scriptType,
+    );
 
     return WalletMetadata(
       masterFingerprint: seed.masterFingerprint,

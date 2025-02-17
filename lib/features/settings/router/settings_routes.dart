@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/language/presentation/screens/language_settings_screen.dart';
-import 'package:bb_mobile/features/pin_code/presentation/flows/pin_code_setting_flow.dart';
+import 'package:bb_mobile/features/pin_code/presentation/pin_code_setting_flow.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

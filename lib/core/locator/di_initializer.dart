@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/data/datasources/key_value_storage_data_source.da
 import 'package:bb_mobile/features/app_startup/locator/di_setup.dart';
 import 'package:bb_mobile/features/app_unlock/locator/di_setup.dart';
 import 'package:bb_mobile/features/fiat_currencies/locator/di_setup.dart';
+import 'package:bb_mobile/features/home/di_setup.dart';
 import 'package:bb_mobile/features/language/locator/di_setup.dart';
 import 'package:bb_mobile/features/onboarding/locator/di_setup.dart';
 import 'package:bb_mobile/features/pin_code/locator/di_setup.dart';
@@ -28,12 +29,13 @@ Future<void> initializeDI() async {
   // Always register core dependencies first since feature specific dependencies
   //  may depend on them.
   await _registerCoreDependencies();
+  await setupWalletDependencies();
   setupAppStartupDependencies();
   setupLanguageDependencies();
   setupOnboardingDependencies();
   setupRecoverWalletDependencies();
   setupFiatCurrenciesDependencies();
-  await setupWalletDependencies();
+  setupHomeDependencies();
   setupPinCodeDependencies();
   setupAppUnlockDependencies();
 }

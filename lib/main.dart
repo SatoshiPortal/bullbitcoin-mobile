@@ -7,12 +7,14 @@ import 'package:bb_mobile/core/presentation/bloc_observer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:lwk/lwk.dart';
 
 Future main() async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
     await Hive.initFlutter();
+    await LibLwk.init();
     await initializeDI();
 
     Bloc.observer = const BullBitcoinWalletAppBlocObserver();
