@@ -52,7 +52,7 @@ class WalletSettingsPage extends StatelessWidget {
           create: (BuildContext context) => createWalletSettingsCubit(wallet),
         ),
       ],
-      child: WalletSettingsListeners(
+      child: const WalletSettingsListeners(
         child: _Screen(),
       ),
     );
