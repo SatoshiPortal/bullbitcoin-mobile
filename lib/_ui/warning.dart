@@ -72,7 +72,10 @@ class WarningBanner extends StatelessWidget {
                     size: 16,
                   ),
                   const Gap(8),
-                  BBText.errorSmall(info),
+                  BBText.errorSmall(
+                    info,
+                    overflow: TextOverflow.fade,
+                  ),
                 ],
               ),
             ),

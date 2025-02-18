@@ -25,6 +25,7 @@ class BBText extends StatelessWidget {
     this.fontSize,
     this.uiKey,
     this.compact = false,
+    this.overflow = TextOverflow.clip,
   })  : type = _FontTypes.headline,
         textAlign = TextAlign.left;
 
@@ -40,6 +41,7 @@ class BBText extends StatelessWidget {
     this.fontSize,
     this.uiKey,
     this.compact = false,
+    this.overflow = TextOverflow.clip,
   }) : type = _FontTypes.titleLarge;
 
   const BBText.title(
@@ -54,6 +56,7 @@ class BBText extends StatelessWidget {
     this.fontSize,
     this.uiKey,
     this.compact = false,
+    this.overflow = TextOverflow.clip,
   }) : type = _FontTypes.title;
 
   const BBText.body(
@@ -68,6 +71,7 @@ class BBText extends StatelessWidget {
     this.fontSize,
     this.uiKey,
     this.compact = false,
+    this.overflow = TextOverflow.clip,
   }) : type = _FontTypes.body;
 
   const BBText.bodySmall(
@@ -82,6 +86,7 @@ class BBText extends StatelessWidget {
     this.fontSize,
     this.uiKey,
     this.compact = false,
+    this.overflow = TextOverflow.clip,
   }) : type = _FontTypes.bodySmall;
 
   const BBText.bodyBold(
@@ -96,6 +101,7 @@ class BBText extends StatelessWidget {
     this.fontSize,
     this.uiKey,
     this.compact = false,
+    this.overflow = TextOverflow.clip,
   }) : type = _FontTypes.body;
 
   const BBText.error(
@@ -110,6 +116,7 @@ class BBText extends StatelessWidget {
     this.fontSize,
     this.uiKey,
     this.compact = false,
+    this.overflow = TextOverflow.clip,
   }) : type = _FontTypes.error;
 
   const BBText.errorSmall(
@@ -124,6 +131,7 @@ class BBText extends StatelessWidget {
     this.fontSize,
     this.uiKey,
     this.compact = false,
+    this.overflow = TextOverflow.clip,
   }) : type = _FontTypes.errorSmall;
 
   final String text;
@@ -138,7 +146,7 @@ class BBText extends StatelessWidget {
   final Key? uiKey;
   final double? fontSize;
   final bool compact;
-
+  final TextOverflow? overflow;
   @override
   Widget build(BuildContext context) {
     TextStyle style;
@@ -163,7 +171,7 @@ class BBText extends StatelessWidget {
       case _FontTypes.errorSmall:
         style = context.font.bodySmall!.copyWith(color: context.colour.error);
     }
-
+    style = style.copyWith(overflow: overflow);
     if (onSurface) style = style.copyWith(color: context.colour.onSurface);
     if (isBlue) style = style.copyWith(color: context.colour.secondary);
     if (isRed) style = style.copyWith(color: context.colour.primary);
