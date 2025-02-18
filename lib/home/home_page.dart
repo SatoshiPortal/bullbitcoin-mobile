@@ -1149,14 +1149,13 @@ class HomeWarnings extends StatelessWidget {
     final network = context.select((NetworkBloc _) => _.state.getBBNetwork());
     final warnings =
         context.select((HomeBloc _) => _.state.homeWarnings(network));
-
     return Column(
       children: [
         for (final w in warnings)
           WarningBanner(
             onTap: () {
               context.push(
-                '/wallet-settings/backup-settings/backup-options',
+                w.route ?? '/home',
                 extra: w.walletBloc.id,
               );
             },
