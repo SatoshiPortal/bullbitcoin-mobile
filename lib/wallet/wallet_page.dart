@@ -64,6 +64,8 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     final physicalBackupTested =
         context.select((WalletBloc x) => x.state.wallet.physicalBackupTested);
+    final vaultBackupTested =
+        context.select((WalletBloc x) => x.state.wallet.vaultBackupTested);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -77,7 +79,7 @@ class _Screen extends StatelessWidget {
               children: <Widget>[
                 const WalletHeader(),
                 const ActionsRow(),
-                if (!physicalBackupTested) ...[
+                if (!physicalBackupTested || !vaultBackupTested) ...[
                   const Gap(24),
                   const BackupAlertBanner(),
                   // const Gap(24),
