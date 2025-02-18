@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/locator/di_initializer.dart';
+import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/pin_code/presentation/widgets/numeric_keyboard.dart';
 import 'package:bb_mobile/features/pin_code/presentation/widgets/pin_code_display.dart';
@@ -43,7 +43,7 @@ class PinCodeUnlockScreen extends StatelessWidget {
           selector: (state) => state.status,
           builder: (context, status) {
             switch (status) {
-              case AppUnlockStatus.inputInProgress:
+              case AppUnlockStatus.inProgress:
                 return PinCodeUnlockInputScreen(
                   onSuccess: onSuccess,
                   canPop: canPop,

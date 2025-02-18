@@ -5,7 +5,7 @@ import 'package:bb_mobile/_repositories/app_wallets_repository.dart';
 import 'package:bb_mobile/_repositories/network_repository.dart';
 import 'package:bb_mobile/_repositories/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/locator_old.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/swap_page_progress.dart';

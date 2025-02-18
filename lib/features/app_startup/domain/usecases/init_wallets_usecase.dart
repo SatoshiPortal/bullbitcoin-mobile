@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/wallet/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/features/wallet/domain/services/wallet_repository_manager.dart';
+import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 
 class InitWalletsUseCase {
   final WalletRepositoryManager _walletManager;

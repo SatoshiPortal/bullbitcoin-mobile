@@ -10,7 +10,7 @@ import 'package:bb_mobile/_repositories/wallet/sensitive_wallet_storage.dart';
 import 'package:bb_mobile/_repositories/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_repositories/wallet_service.dart';
 import 'package:bb_mobile/_ui/alert.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/locator_old.dart';
 import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

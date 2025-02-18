@@ -2,7 +2,7 @@ import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/import/hardware_import_bloc/hardware_import_cubit.dart';
 import 'package:bb_mobile/import/hardware_import_bloc/hardware_import_state.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/locator_old.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

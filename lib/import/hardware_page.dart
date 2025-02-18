@@ -12,7 +12,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/import/hardware_import_bloc/hardware_import_cubit.dart';
 import 'package:bb_mobile/import/listeners.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/locator_old.dart';
 import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/material.dart';

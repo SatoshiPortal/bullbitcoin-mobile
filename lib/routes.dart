@@ -10,7 +10,7 @@ import 'package:bb_mobile/home/market.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/import/hardware_page.dart';
 import 'package:bb_mobile/import/page.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/locator_old.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 // import 'package:bb_mobile/seeds/seeds_page.dart';

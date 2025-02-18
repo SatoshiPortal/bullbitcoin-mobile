@@ -10,7 +10,7 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_repositories/app_wallets_repository.dart';
 import 'package:bb_mobile/_repositories/network_repository.dart';
 import 'package:bb_mobile/_repositories/wallet_service.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/locator_old.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_event.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';

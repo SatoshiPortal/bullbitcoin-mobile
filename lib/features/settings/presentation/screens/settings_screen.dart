@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/presentation/build_context_extensions.dart';
-import 'package:bb_mobile/features/settings/router/settings_routes.dart';
+import 'package:bb_mobile/build_context_x.dart';
+import 'package:bb_mobile/features/language/language_router.dart';
+import 'package:bb_mobile/features/pin_code/pin_code_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,14 +20,14 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 title: Text(context.loc.pinCodeSettingsButtonLabel),
                 onTap: () {
-                  GoRouter.of(context).pushNamed(SettingsRoute.pinCode.name);
+                  GoRouter.of(context).pushNamed(PinCodeRoute.pinCode.name);
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),
               ListTile(
                 title: Text(context.loc.languageSettingsButtonLabel),
                 onTap: () {
-                  GoRouter.of(context).pushNamed(SettingsRoute.language.name);
+                  GoRouter.of(context).pushNamed(LanguageRoute.language.name);
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),

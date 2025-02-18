@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/locator/di_initializer.dart';
-import 'package:bb_mobile/core/router/app_router.dart';
+import 'package:bb_mobile/app_locator.dart';
+import 'package:bb_mobile/app_router.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/presentation/widgets/app_startup_widget.dart';
+import 'package:bb_mobile/features/app_unlock/app_unlock_router.dart';
 import 'package:bb_mobile/features/fiat_currencies/presentation/bloc/fiat_currencies_bloc.dart';
 import 'package:bb_mobile/features/language/domain/entities/language.dart';
 import 'package:bb_mobile/features/language/presentation/bloc/language_settings_cubit.dart';
@@ -59,7 +60,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   void _onResumed() {
     debugPrint('resumed');
     router.pushNamed(
-      AppRoute.unlock.name,
+      AppUnlockRoute.unlock.name,
       extra: () => router.pop(),
     );
   }

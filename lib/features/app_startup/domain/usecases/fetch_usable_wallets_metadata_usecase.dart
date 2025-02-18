@@ -1,6 +1,6 @@
-import 'package:bb_mobile/features/wallet/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/features/wallet/domain/repositories/seed_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/repositories/wallet_metadata_repository.dart';
+import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
+import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 
 class FetchUsableWalletsMetadataUseCase {
   // Todo: add final EnvironmentRepository _environmentRepository;

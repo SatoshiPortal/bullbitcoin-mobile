@@ -9,7 +9,7 @@ import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/import/bloc/import_cubit.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/import/page.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/locator_old.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -470,6 +470,6 @@ const steps = '''
 6. Use Bull Bitcoin to scan QR code
 ''';
 
-const desc = 'Import a hardware wallet or any external Bitcoin wallet.'; 
-    
-    // You will be able to monitor your balance and transactions, receive Bitcoin and create unsigned Bitcoin transactions (PSBT).';
+const desc = 'Import a hardware wallet or any external Bitcoin wallet.';
+
+// You will be able to monitor your balance and transactions, receive Bitcoin and create unsigned Bitcoin transactions (PSBT).';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/locator/di_initializer.dart';
+import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bb_mobile/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:bb_mobile/features/home/presentation/widgets/home_bottom_buttons.dart';

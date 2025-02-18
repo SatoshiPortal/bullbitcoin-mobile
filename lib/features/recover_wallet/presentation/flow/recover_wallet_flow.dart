@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/locator/di_initializer.dart';
+import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/features/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
 import 'package:bb_mobile/features/recover_wallet/presentation/screens/recover_wallet_input_screen.dart';
 import 'package:bb_mobile/features/recover_wallet/presentation/screens/recover_wallet_success_screen.dart';

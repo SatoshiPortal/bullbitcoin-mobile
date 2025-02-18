@@ -1,12 +1,6 @@
 part of 'app_unlock_bloc.dart';
 
-enum AppUnlockStatus {
-  initial,
-  inputInProgress,
-  verificationInProgress,
-  success,
-  failure
-}
+enum AppUnlockStatus { initial, inProgress, success, failure }
 
 @freezed
 sealed class AppUnlockState with _$AppUnlockState {
@@ -16,6 +10,7 @@ sealed class AppUnlockState with _$AppUnlockState {
     @Default(8) int maxPinCodeLength,
     required List<int> keyboardNumbers,
     @Default('') String pinCode,
+    @Default(false) bool isVerifying,
     @Default(0) int failedAttempts,
     @Default(0) int timeoutSeconds,
     Object? error,
@@ -25,5 +20,5 @@ sealed class AppUnlockState with _$AppUnlockState {
   bool get canSubmit =>
       pinCode.length >= minPinCodeLength &&
       pinCode.length <= maxPinCodeLength &&
-      status == AppUnlockStatus.inputInProgress;
+      !isVerifying;
 }

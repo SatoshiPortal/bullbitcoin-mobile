@@ -1,10 +1,10 @@
-import 'package:bb_mobile/features/wallet/domain/entities/seed.dart';
-import 'package:bb_mobile/features/wallet/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/features/wallet/domain/repositories/seed_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/features/wallet/domain/services/mnemonic_generator.dart';
-import 'package:bb_mobile/features/wallet/domain/services/wallet_derivation_service.dart';
-import 'package:bb_mobile/features/wallet/domain/services/wallet_repository_manager.dart';
+import 'package:bb_mobile/core/domain/entities/seed.dart';
+import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
+import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
+import 'package:bb_mobile/core/domain/services/wallet_derivation_service.dart';
+import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
+import 'package:bb_mobile/features/onboarding/domain/services/mnemonic_generator.dart';
 
 class CreateDefaultWalletsUseCase {
   // TODO: final NetworkEnvironmentRepository _networkEnvironmentRepository;

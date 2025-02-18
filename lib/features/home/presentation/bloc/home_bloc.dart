@@ -1,13 +1,12 @@
+import 'package:bb_mobile/core/domain/usecases/get_default_wallets_metadata_usecase.dart';
+import 'package:bb_mobile/core/domain/usecases/get_wallet_balance_sat_usecase.dart';
 import 'package:bb_mobile/features/home/presentation/view_models/wallet_card_view_model.dart';
-import 'package:bb_mobile/features/wallet/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_default_wallets_metadata_usecase.dart';
-import 'package:bb_mobile/features/wallet/domain/usecases/get_wallet_balance_sat_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'home_state.dart';
-part 'home_event.dart';
 part 'home_bloc.freezed.dart';
+part 'home_event.dart';
+part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({

@@ -6,7 +6,7 @@ import 'package:bb_mobile/_repositories/app_wallets_repository.dart';
 import 'package:bb_mobile/_repositories/wallet/internal_wallets.dart';
 import 'package:bb_mobile/_repositories/wallet_service.dart';
 import 'package:bb_mobile/home/home_page.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/locator_old.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';

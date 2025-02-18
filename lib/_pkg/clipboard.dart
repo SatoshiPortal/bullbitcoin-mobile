@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_pkg/logger.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/locator_old.dart';
 import 'package:flutter/services.dart';
 
 class BBClipboard {

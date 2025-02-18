@@ -5,7 +5,7 @@ import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
 import 'package:bb_mobile/home/home_page.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/locator_old.dart';
 import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';

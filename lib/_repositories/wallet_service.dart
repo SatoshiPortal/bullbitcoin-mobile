@@ -12,7 +12,7 @@ import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/_repositories/network_repository.dart';
 import 'package:bb_mobile/_repositories/wallet/internal_network.dart';
 import 'package:bb_mobile/_repositories/wallet/wallet_storage.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/locator_old.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 

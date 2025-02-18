@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/presentation/build_context_extensions.dart';
+import 'package:bb_mobile/build_context_x.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
