@@ -351,11 +351,10 @@ class BDKSensitiveCreate {
         network: bdkNetwork,
       );
       internal = await bdk.Descriptor.create(
-        descriptor: publicDescriptors.split(',')[0],
+        descriptor: publicDescriptors.split(',')[1],
         network: bdkNetwork,
       );
     }
-
     final descHashId =
         createDescriptorHashId(external.asString()).substring(0, 12);
     var wallet = Wallet(
