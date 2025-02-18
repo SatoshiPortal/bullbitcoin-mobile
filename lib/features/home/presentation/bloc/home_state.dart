@@ -1,13 +1,26 @@
 part of 'home_bloc.dart';
 
+enum HomeStatus { initial, success, failure }
+
 @freezed
 sealed class HomeState with _$HomeState {
-  const factory HomeState.initial() = _Initial;
-  const factory HomeState.success({
-    required WalletCardViewModel liquidWalletCard,
-    required WalletCardViewModel bitcoinWalletCard,
+  const factory HomeState({
+    @Default(HomeStatus.initial) HomeStatus status,
+    @Default([]) List<Wallet> wallets,
     //required List<Transaction> transactions,
     @Default(false) bool isSyncingTransactions,
-  }) = _Success;
-  const factory HomeState.failure({Object? error}) = _Failure;
+    @Default(null) Object? error,
+  }) = _HomeState;
+  const HomeState._();
+
+  Wallet? get defaultLiquidWallet => wallets.isEmpty
+      ? null
+      : wallets.firstWhere(
+          (wallet) => wallet.network.isLiquid,
+        );
+  Wallet? get defaultBitcoinWallet => wallets.isEmpty
+      ? null
+      : wallets.firstWhere(
+          (wallet) => wallet.network.isBitcoin,
+        );
 }

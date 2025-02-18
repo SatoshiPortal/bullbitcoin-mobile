@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
-import 'package:bb_mobile/features/home/presentation/view_models/wallet_card_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -8,16 +8,13 @@ class BitcoinWalletCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletCardModel = context.select(
-      (HomeBloc bloc) => bloc.state.maybeWhen(
-        success: (_, bitcoinWalletCard, __) => bitcoinWalletCard,
-        orElse: () => null,
-      ),
+    final wallet = context.select(
+      (HomeBloc bloc) => bloc.state.defaultBitcoinWallet,
     );
 
     return WalletCard(
       color: Colors.orange,
-      walletCardModel: walletCardModel,
+      wallet: wallet,
     );
   }
 }
@@ -27,27 +24,24 @@ class LiquidWalletCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final walletCardModel = context.select(
-      (HomeBloc bloc) => bloc.state.maybeWhen(
-        success: (liquidWalletCard, _, __) => liquidWalletCard,
-        orElse: () => null,
-      ),
+    final wallet = context.select(
+      (HomeBloc bloc) => bloc.state.defaultLiquidWallet,
     );
 
     return WalletCard(
       color: Colors.yellow,
-      walletCardModel: walletCardModel,
+      wallet: wallet,
     );
   }
 }
 
 class WalletCard extends StatelessWidget {
   final Color color;
-  final WalletCardViewModel? walletCardModel;
+  final Wallet? wallet;
 
   const WalletCard({
     required this.color,
-    this.walletCardModel,
+    this.wallet,
   });
 
   @override
@@ -56,7 +50,7 @@ class WalletCard extends StatelessWidget {
       color: color,
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: walletCardModel == null
+        child: wallet == null
             ? const Center(
                 child: CircularProgressIndicator(),
               )
@@ -64,7 +58,7 @@ class WalletCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    walletCardModel!.name,
+                    wallet!.name,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -72,14 +66,14 @@ class WalletCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    walletCardModel!.balanceSat.toString(),
+                    wallet!.balanceSat.toString(),
                     style: const TextStyle(
                       fontSize: 16,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    walletCardModel!.network.name,
+                    wallet!.network.name,
                     style: const TextStyle(
                       fontSize: 16,
                     ),

@@ -10,7 +10,7 @@ import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/domain/services/wallet_derivation_service.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
-import 'package:bb_mobile/core/domain/usecases/get_default_wallets_metadata_usecase.dart';
+import 'package:bb_mobile/core/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_wallet_balance_sat_usecase.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';

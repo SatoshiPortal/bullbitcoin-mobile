@@ -10,8 +10,8 @@ import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/domain/services/wallet_derivation_service.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
-import 'package:bb_mobile/core/domain/usecases/get_default_wallets_metadata_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_wallet_balance_sat_usecase.dart';
+import 'package:bb_mobile/core/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 
@@ -72,8 +72,9 @@ class CoreLocator {
     );
 
     // Use cases
-    locator.registerFactory<GetDefaultWalletsMetadataUseCase>(
-      () => GetDefaultWalletsMetadataUseCase(
+    locator.registerFactory<GetWalletsUseCase>(
+      () => GetWalletsUseCase(
+        walletRepositoryManager: locator<WalletRepositoryManager>(),
         walletMetadataRepository: locator<WalletMetadataRepository>(),
       ),
     );

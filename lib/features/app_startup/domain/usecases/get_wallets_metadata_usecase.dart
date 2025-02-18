@@ -2,12 +2,12 @@ import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 
-class FetchUsableWalletsMetadataUseCase {
+class GetWalletsMetadataUseCase {
   // Todo: add final EnvironmentRepository _environmentRepository;
   final WalletMetadataRepository _walletMetadataRepository;
   final SeedRepository _seedRepository;
 
-  FetchUsableWalletsMetadataUseCase({
+  GetWalletsMetadataUseCase({
     required WalletMetadataRepository walletMetadataRepository,
     required SeedRepository seedRepository,
   })  : _walletMetadataRepository = walletMetadataRepository,
