@@ -783,14 +783,18 @@ class _SuccessDialog extends StatelessWidget {
             BBText.bodySmall(
               isRecovery
                   ? 'Your wallet has been recovered successfully'
-                  : 'Your wallet has been backed up successfully',
+                  : 'Your wallet has been backed up successfully \n Please test your backup',
               textAlign: TextAlign.center,
             ),
             const Gap(24),
             FilledButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.go('/home');
+                context.go(
+                  isRecovery
+                      ? '/home'
+                      : '/wallet-settings/backup-settings/recover-options/encrypted',
+                );
               },
               style: FilledButton.styleFrom(
                 backgroundColor: context.colour.shadow,
