@@ -1,13 +1,15 @@
 import 'package:bb_mobile/core/domain/entities/seed.dart';
+import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
+import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/domain/services/wallet_derivation_service.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 import 'package:bb_mobile/features/onboarding/domain/services/mnemonic_generator.dart';
 
 class CreateDefaultWalletsUseCase {
-  // TODO: final NetworkEnvironmentRepository _networkEnvironmentRepository;
+  final SettingsRepository _settingsRepository;
   final MnemonicGenerator _mnemonicGenerator;
   final SeedRepository _seedRepository;
   final WalletDerivationService _walletDerivationservice;
@@ -15,24 +17,28 @@ class CreateDefaultWalletsUseCase {
   final WalletRepositoryManager _walletRepositoryManager;
 
   CreateDefaultWalletsUseCase({
+    required SettingsRepository settingsRepository,
     required MnemonicGenerator mnemonicGenerator,
     required SeedRepository seedRepository,
     required WalletDerivationService walletDerivationService,
     required WalletMetadataRepository walletMetadataRepository,
     required WalletRepositoryManager walletRepositoryManager,
-  })  : _mnemonicGenerator = mnemonicGenerator,
+  })  : _settingsRepository = settingsRepository,
+        _mnemonicGenerator = mnemonicGenerator,
         _seedRepository = seedRepository,
         _walletDerivationservice = walletDerivationService,
         _walletMetadataRepository = walletMetadataRepository,
         _walletRepositoryManager = walletRepositoryManager;
 
   Future<void> execute() async {
+    final environment = await _settingsRepository.getEnvironment();
     final mnemonicSeed = await _generateMnemonicSeed();
 
     // Get the default wallets metadata for Bitcoin and Liquid
     final defaultWalletsMetadata = await Future.wait([
-      _deriveBitcoinWalletMetadata(seed: mnemonicSeed),
-      _deriveLiquidWalletMetadata(seed: mnemonicSeed),
+      _deriveBitcoinWalletMetadata(
+          seed: mnemonicSeed, environment: environment),
+      _deriveLiquidWalletMetadata(seed: mnemonicSeed, environment: environment),
     ]);
 
     // Store the seed, default wallets metadata and register them in the wallet repository manager
@@ -55,9 +61,11 @@ class CreateDefaultWalletsUseCase {
 
   Future<WalletMetadata> _deriveBitcoinWalletMetadata({
     required MnemonicSeed seed,
+    required Environment environment,
   }) async {
-    // Todo: check environment and use bitcoinTestnet if needed
-    const network = Network.bitcoinMainnet;
+    final network = environment == Environment.mainnet
+        ? Network.bitcoinMainnet
+        : Network.bitcoinTestnet;
     // Use bip84 as the default script type for Bitcoin
     const scriptType = ScriptType.bip84;
     final xpub = await _walletDerivationservice.getAccountXpub(
@@ -87,14 +95,17 @@ class CreateDefaultWalletsUseCase {
       xpub: xpub,
       externalPublicDescriptor: descriptors[0],
       internalPublicDescriptor: descriptors[1],
+      isDefault: true,
     );
   }
 
   Future<WalletMetadata> _deriveLiquidWalletMetadata({
     required MnemonicSeed seed,
+    required Environment environment,
   }) async {
-    // Todo: check environment and use liquidTestnet if needed
-    const network = Network.liquidMainnet;
+    final network = environment == Environment.mainnet
+        ? Network.liquidMainnet
+        : Network.liquidTestnet;
     // Use bip84 as the default script type for Liquid
     const scriptType = ScriptType.bip84;
     final xpub = await _walletDerivationservice.getAccountXpub(
@@ -117,6 +128,7 @@ class CreateDefaultWalletsUseCase {
       xpub: xpub,
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: descriptor,
+      isDefault: true,
     );
   }
 }

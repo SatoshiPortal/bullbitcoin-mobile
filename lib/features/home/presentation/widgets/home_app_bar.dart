@@ -1,5 +1,5 @@
+import 'package:bb_mobile/app_router.dart';
 import 'package:bb_mobile/build_context_x.dart';
-import 'package:bb_mobile/features/settings/settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -47,7 +47,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           onPressed: () =>
-              GoRouter.of(context).pushNamed(SettingsRoute.settings.name),
+              GoRouter.of(context).pushNamed(AppRoute.settings.name),
           icon: const Icon(Icons.settings),
         ),
         const IconButton(onPressed: null, icon: Icon(Icons.person)),

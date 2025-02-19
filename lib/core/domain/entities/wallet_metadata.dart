@@ -93,7 +93,8 @@ class WalletMetadata with _$WalletMetadata {
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
     required WalletSource source,
-    String? label,
+    @Default(false) bool isDefault,
+    @Default('') String label,
   }) = _WalletMetadata;
   const WalletMetadata._();
 

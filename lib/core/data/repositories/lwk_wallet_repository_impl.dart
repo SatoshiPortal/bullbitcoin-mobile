@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/domain/entities/address.dart';
 import 'package:bb_mobile/core/domain/entities/balance.dart';
+import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/core/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_repository.dart';
 import 'package:lwk/lwk.dart' as lwk;
@@ -7,16 +8,22 @@ import 'package:lwk/lwk.dart' as lwk;
 class LwkWalletRepositoryImpl
     implements WalletRepository, LiquidWalletRepository {
   final String _id;
+  final Network _network;
   final lwk.Wallet _publicWallet;
 
   const LwkWalletRepositoryImpl({
     required String id,
+    required Network network,
     required lwk.Wallet publicWallet,
   })  : _id = id,
+        _network = network,
         _publicWallet = publicWallet;
 
   @override
   String get id => _id;
+
+  @override
+  Network get network => _network;
 
   @override
   Future<Balance> getBalance() async {

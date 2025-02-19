@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/data/repositories/bdk_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/data/repositories/lwk_wallet_repository_impl.dart';
+import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_repository.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -9,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 abstract class WalletRepositoryManager {
   Future<void> registerWallet(WalletMetadata metadata);
   WalletRepository? getRepository(String walletId);
-  List<WalletRepository> getAllRepositories();
+  List<WalletRepository> getRepositories({Environment? environment});
 }
 
 class WalletRepositoryManagerImpl implements WalletRepositoryManager {
@@ -23,7 +24,8 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
       return;
     }
 
-    _repositories[id] = await _createRepository(walletMetadata: metadata);
+    final repository = await _createRepository(walletMetadata: metadata);
+    _repositories[id] = repository;
   }
 
   @override
@@ -32,8 +34,19 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
   }
 
   @override
-  List<WalletRepository> getAllRepositories() {
-    return _repositories.values.toList();
+  List<WalletRepository> getRepositories({Environment? environment}) {
+    if (environment == null) {
+      // Return all wallets
+      return _repositories.values.toList();
+    } else if (environment == Environment.mainnet) {
+      return _repositories.values
+          .where((wallet) => wallet.network.isMainnet)
+          .toList();
+    } else {
+      return _repositories.values
+          .where((wallet) => wallet.network.isTestnet)
+          .toList();
+    }
   }
 
   Future<WalletRepository> _createRepository({
@@ -59,6 +72,7 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
       );
       return LwkWalletRepositoryImpl(
         id: walletMetadata.id,
+        network: walletMetadata.network,
         publicWallet: wallet,
       );
     }
@@ -66,7 +80,7 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
 
   Future<bdk.Wallet> _createPublicBdkWalletInstance({
     required String walletId,
-    Network network = Network.bitcoinMainnet,
+    required Network network,
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
   }) async {
@@ -100,7 +114,7 @@ class WalletRepositoryManagerImpl implements WalletRepositoryManager {
 
   Future<lwk.Wallet> _createPublicLwkWalletInstance({
     required String walletId,
-    Network network = Network.liquidMainnet,
+    required Network network,
     required String externalPublicDescriptor,
   }) async {
     final appDocDir = await getApplicationDocumentsDirectory();

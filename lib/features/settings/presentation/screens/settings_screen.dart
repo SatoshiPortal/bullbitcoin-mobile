@@ -1,6 +1,7 @@
+import 'package:bb_mobile/app_router.dart';
 import 'package:bb_mobile/build_context_x.dart';
-import 'package:bb_mobile/features/language/language_router.dart';
-import 'package:bb_mobile/features/pin_code/pin_code_router.dart';
+import 'package:bb_mobile/features/settings/presentation/widgets/sats_bitcoin_unit_switch.dart';
+import 'package:bb_mobile/features/settings/presentation/widgets/testnet_mode_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,21 +19,29 @@ class SettingsScreen extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                title: Text(context.loc.pinCodeSettingsButtonLabel),
+                title: Text(context.loc.testnetModeSettingsLabel),
+                trailing: const TestnetModeSwitch(),
+              ),
+              ListTile(
+                title: Text(context.loc.satsBitcoinUnitSettingsLabel),
+                trailing: const SatsBitcoinUnitSwitch(),
+              ),
+              ListTile(
+                title: Text(context.loc.pinCodeSettingsLabel),
                 onTap: () {
-                  GoRouter.of(context).pushNamed(PinCodeRoute.pinCode.name);
+                  GoRouter.of(context).pushNamed(AppRoute.pinCode.name);
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),
               ListTile(
-                title: Text(context.loc.languageSettingsButtonLabel),
+                title: Text(context.loc.languageSettingsLabel),
                 onTap: () {
-                  GoRouter.of(context).pushNamed(LanguageRoute.language.name);
+                  GoRouter.of(context).pushNamed(AppRoute.language.name);
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),
               ListTile(
-                title: Text(context.loc.fiatCurrencySettingsButtonLabel),
+                title: Text(context.loc.fiatCurrencySettingsLabel),
                 onTap: () {},
                 trailing: const Icon(Icons.chevron_right),
               ),

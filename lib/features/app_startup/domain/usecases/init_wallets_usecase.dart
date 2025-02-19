@@ -10,7 +10,7 @@ class InitWalletsUseCase {
 
   Future<void> execute(List<WalletMetadata> walletsMetadata) async {
     for (final metadata in walletsMetadata) {
-      _walletManager.registerWallet(metadata);
+      await _walletManager.registerWallet(metadata);
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
+import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/domain/services/wallet_derivation_service.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
@@ -17,6 +18,7 @@ class OnboardingLocator {
     // Use cases
     locator.registerFactory<CreateDefaultWalletsUseCase>(
       () => CreateDefaultWalletsUseCase(
+        settingsRepository: locator<SettingsRepository>(),
         mnemonicGenerator: locator<MnemonicGenerator>(),
         seedRepository: locator<SeedRepository>(),
         walletDerivationService: locator<WalletDerivationService>(),

@@ -1,18 +1,20 @@
 import 'package:bb_mobile/app_locator.dart';
+import 'package:bb_mobile/app_router.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/pin_code/presentation/widgets/numeric_keyboard.dart';
 import 'package:bb_mobile/features/pin_code/presentation/widgets/pin_code_display.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class PinCodeUnlockScreen extends StatelessWidget {
   const PinCodeUnlockScreen({
     super.key,
-    required this.onSuccess,
+    this.onSuccess,
     this.canPop = false,
   });
 
-  final void Function() onSuccess;
+  final void Function()? onSuccess;
   final bool canPop;
 
   @override
@@ -25,7 +27,10 @@ class PinCodeUnlockScreen extends StatelessWidget {
       child: BlocListener<AppUnlockBloc, AppUnlockState>(
         listener: (context, state) async {
           if (state.status == AppUnlockStatus.success) {
-            onSuccess();
+            // If onSuccess is provided, call it, otherwise go to home as default
+            onSuccess != null
+                ? onSuccess!()
+                : GoRouter.of(context).goNamed(AppRoute.home.name);
           } else if (state.timeoutSeconds > 0) {
             await Future.delayed(
               const Duration(seconds: 1),
@@ -39,24 +44,8 @@ class PinCodeUnlockScreen extends StatelessWidget {
             );
           }
         },
-        child: BlocSelector<AppUnlockBloc, AppUnlockState, AppUnlockStatus>(
-          selector: (state) => state.status,
-          builder: (context, status) {
-            switch (status) {
-              case AppUnlockStatus.inProgress:
-                return PinCodeUnlockInputScreen(
-                  onSuccess: onSuccess,
-                  canPop: canPop,
-                );
-              default:
-                // TODO: use a proper loading screen
-                return const Scaffold(
-                  body: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-            }
-          },
+        child: PinCodeUnlockInputScreen(
+          canPop: canPop,
         ),
       ),
     );
@@ -66,11 +55,9 @@ class PinCodeUnlockScreen extends StatelessWidget {
 class PinCodeUnlockInputScreen extends StatelessWidget {
   const PinCodeUnlockInputScreen({
     super.key,
-    required this.onSuccess,
     this.canPop = false,
   });
 
-  final void Function() onSuccess;
   final bool canPop;
 
   @override

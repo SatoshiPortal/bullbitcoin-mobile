@@ -15,12 +15,19 @@ sealed class HomeState with _$HomeState {
 
   Wallet? get defaultLiquidWallet => wallets.isEmpty
       ? null
-      : wallets.firstWhere(
-          (wallet) => wallet.network.isLiquid,
-        );
+      : wallets
+          .where(
+            (wallet) => wallet.isDefault && wallet.network.isLiquid,
+          )
+          .firstOrNull;
   Wallet? get defaultBitcoinWallet => wallets.isEmpty
       ? null
-      : wallets.firstWhere(
-          (wallet) => wallet.network.isBitcoin,
-        );
+      : wallets
+          .where(
+            (wallet) => wallet.isDefault && wallet.network.isBitcoin,
+          )
+          .firstOrNull;
+
+  List<Wallet> get nonDefaultWallets =>
+      wallets.where((wallet) => !wallet.isDefault).toList();
 }

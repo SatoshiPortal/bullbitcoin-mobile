@@ -1,11 +1,43 @@
 {
   "@@locale": "fr",
   "onboardingScreenTitle": "Bienvenue",
+  "@onboardingScreenTitle": {
+    "description": "Le titre de l'écran d'accueil"
+  },
   "onboardingCreateWalletButtonLabel": "Créer un wallet",
+  "@onboardingCreateWalletButtonLabel": {
+    "description": "Le libellé du bouton pour créer un wallet depuis l'écran d'accueil"
+  },
   "onboardingRecoverWalletButtonLabel": "Restaurer un wallet",
+  "@onboardingRecoverWalletButtonLabel": {
+    "description": "Le libellé du bouton pour restaurer un wallet depuis l'écran d'accueil"
+  },
   "settingsScreenTitle": "Paramètres",
-  "pinCodeSettingsButtonLabel": "Code PIN",
-  "languageSettingsButtonLabel": "Langue",
-  "fiatCurrencySettingsButtonLabel": "Devise fiduciaire",
-  "languageSettingsScreenTitle": "Langue"
+  "@settingsScreenTitle": {
+    "description": "Le titre de l'écran des paramètres"
+  },
+  "testnetModeSettingsLabel": "Mode Testnet",
+  "@testnetModeSettingsLabel": {
+    "description": "Le libellé du paramètre du mode Testnet"
+  },
+  "satsBitcoinUnitSettingsLabel": "Afficher l'unité en sats",
+  "@satsBitcoinUnitSettingsLabel": {
+    "description": "Le libellé pour activer l'affichage des unités Bitcoin en sats dans les paramètres"
+  },
+  "pinCodeSettingsLabel": "Code PIN",
+  "@pinCodeSettingsLabel": {
+    "description": "Le libellé du bouton pour accéder aux paramètres du code PIN"
+  },
+  "languageSettingsLabel": "Langue",
+  "@languageSettingsLabel": {
+    "description": "Le libellé du bouton pour accéder aux paramètres de la langue"
+  },
+  "fiatCurrencySettingsLabel": "Devise fiduciaire",
+  "@fiatCurrencySettingsLabel": {
+    "description": "Le libellé du bouton pour accéder aux paramètres de la devise fiduciaire"
+  },
+  "languageSettingsScreenTitle": "Langue",
+  "@languageSettingsScreenTitle": {
+    "description": "Le titre de l'écran des paramètres de la langue"
+  }
 }

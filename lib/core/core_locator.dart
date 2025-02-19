@@ -5,11 +5,16 @@ import 'package:bb_mobile/core/data/datasources/impl/hive_storage_datasource_imp
 import 'package:bb_mobile/core/data/datasources/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage_data_source.dart';
 import 'package:bb_mobile/core/data/repositories/seed_repository_impl.dart';
+import 'package:bb_mobile/core/data/repositories/settings_repository_impl.dart';
 import 'package:bb_mobile/core/data/repositories/wallet_metadata_repository_impl.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
+import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/domain/services/wallet_derivation_service.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
+import 'package:bb_mobile/core/domain/usecases/get_bitcoin_unit_usecase.dart';
+import 'package:bb_mobile/core/domain/usecases/get_environment_usecase.dart';
+import 'package:bb_mobile/core/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_wallet_balance_sat_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -48,6 +53,13 @@ class CoreLocator {
     );
 
     // Repositories
+    locator.registerLazySingleton<SettingsRepository>(
+      () => SettingsRepositoryImpl(
+        storage: locator<KeyValueStorageDataSource<String>>(
+          instanceName: CoreLocator.settingsStorageInstanceName,
+        ),
+      ),
+    );
     locator.registerLazySingleton<WalletMetadataRepository>(
       () => HiveWalletMetadataRepositoryImpl(
         locator<KeyValueStorageDataSource<String>>(
@@ -72,10 +84,26 @@ class CoreLocator {
     );
 
     // Use cases
+    locator.registerFactory<GetEnvironmentUseCase>(
+      () => GetEnvironmentUseCase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<GetBitcoinUnitUseCase>(
+      () => GetBitcoinUnitUseCase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<GetLanguageUseCase>(
+      () => GetLanguageUseCase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
     locator.registerFactory<GetWalletsUseCase>(
       () => GetWalletsUseCase(
         walletRepositoryManager: locator<WalletRepositoryManager>(),
         walletMetadataRepository: locator<WalletMetadataRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<GetWalletBalanceSatUseCase>(

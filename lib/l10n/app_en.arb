@@ -16,16 +16,24 @@
   "@settingsScreenTitle": {
     "description": "The title of the settings screen"
   },
-  "pinCodeSettingsButtonLabel": "PIN code",
-  "@pinCodeSettingsButtonLabel": {
+  "testnetModeSettingsLabel": "Testnet mode",
+  "@testnetModeSettingsLabel": {
+    "description": "The label for the testnet mode settings"
+  },
+  "satsBitcoinUnitSettingsLabel": "Display unit in sats",
+  "@satsBitcoinUnitSettingsLabel": {
+    "description": "The label to switch the Bitcoin unit to sats in settings"
+  },
+  "pinCodeSettingsLabel": "PIN code",
+  "@pinCodeSettingsLabel": {
     "description": "The label for the button to access the PIN code settings"
   },
-  "languageSettingsButtonLabel": "Language",
-  "@languageSettingsButtonLabel": {
+  "languageSettingsLabel": "Language",
+  "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
-  "fiatCurrencySettingsButtonLabel": "Fiat currency",
-  "@fiatCurrencySettingsButtonLabel": {
+  "fiatCurrencySettingsLabel": "Fiat currency",
+  "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
   },
   "languageSettingsScreenTitle": "Language",

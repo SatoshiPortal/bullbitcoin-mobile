@@ -1,7 +1,7 @@
 import 'package:bb_mobile/build_context_x.dart';
-import 'package:bb_mobile/features/language/domain/entities/language.dart';
-import 'package:bb_mobile/features/language/presentation/bloc/language_settings_cubit.dart';
-import 'package:bb_mobile/features/language/presentation/widgets/language_option.dart';
+import 'package:bb_mobile/core/domain/entities/settings.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/widgets/language_option.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +11,9 @@ class LanguageSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LanguageSettingsCubit, Language?>(
+    return BlocListener<SettingsCubit, Settings?>(
+      listenWhen: (previous, current) =>
+          current?.language != previous?.language,
       listener: (context, state) => GoRouter.of(context).pop(),
       child: Scaffold(
         appBar: AppBar(

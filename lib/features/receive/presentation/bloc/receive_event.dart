@@ -5,8 +5,8 @@ sealed class ReceiveEvent {
 }
 
 // Todo: add event to receive to a specific wallet only (so disable the other wallets)
-class ReceiveEventWalletSelected extends ReceiveEvent {
+class ReceiveEventWalletPreselected extends ReceiveEvent {
   final String walletId;
 
-  ReceiveEventWalletSelected({required this.walletId});
+  ReceiveEventWalletPreselected({required this.walletId});
 }

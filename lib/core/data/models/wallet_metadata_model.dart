@@ -15,7 +15,8 @@ class WalletMetadataModel with _$WalletMetadataModel {
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
     required String source,
-    String? label,
+    @Default(false) bool isDefault,
+    @Default('') String label,
   }) = _WalletMetadataModel;
   const WalletMetadataModel._();
 
@@ -24,7 +25,6 @@ class WalletMetadataModel with _$WalletMetadataModel {
 
   factory WalletMetadataModel.fromEntity(WalletMetadata entity) {
     return WalletMetadataModel(
-      label: entity.label,
       masterFingerprint: entity.masterFingerprint,
       network: entity.network.name,
       scriptType: entity.scriptType.name,
@@ -32,12 +32,13 @@ class WalletMetadataModel with _$WalletMetadataModel {
       externalPublicDescriptor: entity.externalPublicDescriptor,
       internalPublicDescriptor: entity.internalPublicDescriptor,
       source: entity.source.name,
+      isDefault: entity.isDefault,
+      label: entity.label,
     );
   }
 
   WalletMetadata toEntity() {
     return WalletMetadata(
-      label: label,
       masterFingerprint: masterFingerprint,
       network: Network.fromName(network),
       scriptType: ScriptType.fromName(scriptType),
@@ -45,6 +46,8 @@ class WalletMetadataModel with _$WalletMetadataModel {
       externalPublicDescriptor: externalPublicDescriptor,
       internalPublicDescriptor: internalPublicDescriptor,
       source: WalletSource.fromName(source),
+      label: label,
+      isDefault: isDefault,
     );
   }
 }

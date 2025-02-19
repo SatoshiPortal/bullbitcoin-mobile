@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 
 class GetWalletsMetadataUseCase {
-  // Todo: add final EnvironmentRepository _environmentRepository;
   final WalletMetadataRepository _walletMetadataRepository;
   final SeedRepository _seedRepository;
 
@@ -13,12 +12,7 @@ class GetWalletsMetadataUseCase {
   })  : _walletMetadataRepository = walletMetadataRepository,
         _seedRepository = seedRepository;
 
-  Future<List<WalletMetadata>> execute(
-      /*{
-    Environment environment = Environment.mainnet,
-  }*/
-      ) async {
-    // TODO: filter by environment, maybe by a query parameter in the repo instead of here
+  Future<List<WalletMetadata>> execute() async {
     final wallets = await _walletMetadataRepository.getAllWalletsMetadata();
     final usableWallets = <WalletMetadata>[];
 

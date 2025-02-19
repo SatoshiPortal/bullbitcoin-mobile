@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/domain/entities/address.dart';
 import 'package:bb_mobile/core/domain/entities/balance.dart';
+import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/core/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_repository.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
@@ -17,6 +18,9 @@ class BdkWalletRepositoryImpl
 
   @override
   String get id => _id;
+
+  @override
+  Network get network => _publicWallet.network().network;
 
   @override
   Future<Balance> getBalance() async {
@@ -151,5 +155,15 @@ class BdkWalletRepositoryImpl
     }
 
     return balance;
+  }
+}
+
+extension BdkNetworkX on bdk.Network {
+  Network get network {
+    if (this == bdk.Network.bitcoin) {
+      return Network.bitcoinMainnet;
+    } else {
+      return Network.bitcoinTestnet;
+    }
   }
 }

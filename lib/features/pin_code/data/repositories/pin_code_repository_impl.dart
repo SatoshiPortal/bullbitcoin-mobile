@@ -33,6 +33,11 @@ class PinCodeRepositoryImpl implements PinCodeRepository {
 
     return pin == pinCode;
   }
+
+  @override
+  Future<void> deletePinCode() async {
+    await _storage.deleteValue(_key);
+  }
 }
 
 class PinCodeNotSetException implements Exception {

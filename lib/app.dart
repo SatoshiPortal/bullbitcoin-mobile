@@ -2,10 +2,10 @@ import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/app_router.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/presentation/widgets/app_startup_widget.dart';
-import 'package:bb_mobile/features/app_unlock/app_unlock_router.dart';
+import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/fiat_currencies/presentation/bloc/fiat_currencies_bloc.dart';
-import 'package:bb_mobile/features/language/domain/entities/language.dart';
-import 'package:bb_mobile/features/language/presentation/bloc/language_settings_cubit.dart';
+import 'package:bb_mobile/core/domain/entities/settings.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -59,10 +59,14 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   void _onResumed() {
     debugPrint('resumed');
-    router.pushNamed(
-      AppUnlockRoute.unlock.name,
-      extra: () => router.pop(),
-    );
+    locator<CheckPinCodeExistsUsecase>().execute().then((exists) {
+      if (exists) {
+        router.pushNamed(
+          AppRoute.appUnlock.name,
+          extra: () => router.pop(),
+        );
+      }
+    });
   }
 
   void _onInactive() => debugPrint('inactive');
@@ -76,7 +80,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(
-          value: locator<LanguageSettingsCubit>()..getFromSettings(),
+          value: locator<SettingsCubit>()..init(),
         ),
         BlocProvider.value(
           value: locator<AppStartupBloc>()
@@ -91,7 +95,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             ),
         ),
       ],
-      child: BlocBuilder<LanguageSettingsCubit, Language?>(
+      child: BlocSelector<SettingsCubit, Settings?, Language?>(
+        selector: (settings) => settings?.language,
         builder: (context, language) => MaterialApp.router(
           title: 'BullBitcoin Wallet',
           routeInformationParser: router.routeInformationParser,

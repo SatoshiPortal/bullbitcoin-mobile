@@ -1,5 +1,6 @@
-import 'package:bb_mobile/features/language/domain/entities/language.dart';
-import 'package:bb_mobile/features/language/presentation/bloc/language_settings_cubit.dart';
+import 'package:bb_mobile/core/domain/entities/settings.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,12 +15,12 @@ class LanguageOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      selected: context.watch<LanguageSettingsCubit>().state == language,
+      selected: context.watch<SettingsCubit>().state?.language == language,
       title: Text(
         '${language.languageCode}${language.countryCode != null ? ' (${language.countryCode})' : ''}',
       ),
       onTap: () {
-        context.read<LanguageSettingsCubit>().changeLanguage(language);
+        context.read<SettingsCubit>().changeLanguage(language);
       },
     );
   }

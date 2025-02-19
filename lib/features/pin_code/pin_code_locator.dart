@@ -8,6 +8,8 @@ import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_b
 
 class PinCodeLocator {
   static void setup() {
+    // Todo: check what can be moved to core (since the pin code repository is needed both in settings as in app unlock)
+
     // Repositories
     locator.registerLazySingleton<PinCodeRepository>(
       () => PinCodeRepositoryImpl(
