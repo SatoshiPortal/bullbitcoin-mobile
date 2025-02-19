@@ -2,13 +2,10 @@ import 'package:bb_mobile/_pkg/logger.dart';
 import 'package:bb_mobile/_pkg/payjoin/listeners.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
-import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
 import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/locator_old.dart';
-import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -51,7 +48,7 @@ class _HomeWalletsSetupListenerState extends State<HomeWalletsSetupListener> {
     final wallets = context.read<HomeBloc>().state.wallets;
     if (wallets.isNotEmpty) {
       context.read<AppWalletBlocs>().updateWalletBlocs([
-        for (final w in wallets) createOrRetreiveWalletBloc(w.id),
+        for (final w in wallets) createOrRetreiveWalletBloc(w.wallet.id),
       ]);
     }
     super.initState();
@@ -67,7 +64,8 @@ class _HomeWalletsSetupListenerState extends State<HomeWalletsSetupListener> {
         if (state.wallets.isEmpty) return;
 
         context.read<AppWalletBlocs>().updateWalletBlocs([
-          for (final w in state.wallets) createOrRetreiveWalletBloc(w.id),
+          for (final w in state.wallets)
+            createOrRetreiveWalletBloc(w.wallet.id),
         ]); // final walletBlocs = createWalletBlocs(state.tempwallets!);
         // context.read<HomeBloc>().updateWalletBlocs(
         //       createWalletBlocs(state.tempwallets!),
@@ -97,23 +95,23 @@ class WalletBlocListeners extends StatelessWidget {
     }
     final mainWalletBloc = wallets.firstWhere(
       (bloc) =>
-          bloc.mainWallet == true &&
-          !bloc.watchOnly() &&
-          bloc.isSecure() &&
-          bloc.isActive(),
+          bloc.wallet.mainWallet == true &&
+          !bloc.wallet.watchOnly() &&
+          bloc.wallet.isSecure() &&
+          bloc.wallet.isActive(),
       orElse: () =>
           wallets.first, // Return first wallet if no main wallet found
     );
 
     var walletChild = child;
-    if (mainWalletBloc.mainWallet == true &&
-        !mainWalletBloc.watchOnly() &&
-        mainWalletBloc.isSecure()) {
+    if (mainWalletBloc.wallet.mainWallet == true &&
+        !mainWalletBloc.wallet.watchOnly() &&
+        mainWalletBloc.wallet.isSecure()) {
       // print(
       //   'mainWalletBloc.state.wallet!.mainWallet: ${mainWalletBloc.id}',
       // );
       walletChild = PayjoinLifecycleManager(
-        wallet: mainWalletBloc,
+        wallet: mainWalletBloc.wallet,
         payjoinManager: locator<PayjoinManager>(),
         child: child,
       );
@@ -121,103 +119,7 @@ class WalletBlocListeners extends StatelessWidget {
 
     if (blocs.isEmpty) return walletChild;
 
-    return MultiBlocListener(
-      listeners: [
-        for (final bloc in context.read<AppWalletBlocs>().state)
-          BlocListener<WalletBloc, WalletState>(
-            bloc: bloc,
-            // bloc: createWalletBloc(w),
-            listenWhen: (previous, current) =>
-                previous.wallet != current.wallet,
-            listener: (context, state) {
-              context.read<HomeBloc>().add(WalletUpdated(state.wallet));
-            },
-          ),
-      ],
-      child: walletChild,
-    );
-  }
-}
-
-class HomeLoadingEvent {}
-
-class SetLoading extends HomeLoadingEvent {
-  SetLoading(this.id, this.loading);
-  final String id;
-  final bool loading;
-}
-
-class HomeLoadingCubit extends Bloc<HomeLoadingEvent, Map<String, bool>> {
-  HomeLoadingCubit() : super({}) {
-    on<SetLoading>(
-      (event, emit) {
-        final map = state;
-        map[event.id] = event.loading;
-        emit({});
-        emit(map);
-      },
-      transformer: droppable(),
-    );
-  }
-}
-
-class HomeWalletLoadingListeners extends StatefulWidget {
-  const HomeWalletLoadingListeners({super.key, required this.child});
-
-  final Widget child;
-
-  @override
-  State<HomeWalletLoadingListeners> createState() =>
-      _HomeWalletLoadingListenersState();
-}
-
-class _HomeWalletLoadingListenersState
-    extends State<HomeWalletLoadingListeners> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void _setup() {
-    if (!context.mounted) return;
-    final blocs = context.read<AppWalletBlocs>().state;
-
-    for (final bloc in blocs) {
-      context
-          .read<HomeLoadingCubit>()
-          .add(SetLoading(bloc.state.wallet.id, bloc.state.syncing));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final walletBlocs = context.select((AppWalletBlocs x) => x.state);
-
-    if (walletBlocs.isEmpty) return widget.child;
-
-    _setup();
-    return MultiBlocListener(
-      listeners: [
-        for (final walletBloc in walletBlocs)
-          BlocListener<WalletBloc, WalletState>(
-            bloc: walletBloc,
-            listenWhen: (previous, current) =>
-                previous.syncing != current.syncing,
-            listener: (context, state) {
-              if (state.syncing) {
-                context
-                    .read<HomeLoadingCubit>()
-                    .add(SetLoading(state.wallet.id, true));
-              } else {
-                context
-                    .read<HomeLoadingCubit>()
-                    .add(SetLoading(state.wallet.id, false));
-              }
-            },
-          ),
-      ],
-      child: widget.child,
-    );
+    return walletChild;
   }
 }
 

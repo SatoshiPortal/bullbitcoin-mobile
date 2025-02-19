@@ -48,12 +48,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: HomeLoadingCubit(),
-      child: const HomeWalletLoadingListeners(
-        child: _Screen(),
-      ),
-    );
+    return const _Screen();
   }
 }
 
@@ -879,13 +874,8 @@ class HomeLoadingTxsIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeLoadingCubit, Map<String, bool>>(
-      buildWhen: (previous, current) => previous.values != current.values,
-      builder: (context, state) {
-        final isLoading = state.values.contains(true);
-        return _Loading(loading: isLoading);
-      },
-    );
+    final isSyncing = context.select((HomeBloc x) => x.state.syncingAny());
+    return _Loading(loading: isSyncing);
   }
 }
 
