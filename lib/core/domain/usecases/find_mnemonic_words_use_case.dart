@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/recover_wallet/domain/repositories/word_list_repository.dart';
+import 'package:bb_mobile/core/domain/repositories/word_list_repository.dart';
 
 class FindMnemonicWordsUseCase {
   final WordListRepository _wordListRepository;

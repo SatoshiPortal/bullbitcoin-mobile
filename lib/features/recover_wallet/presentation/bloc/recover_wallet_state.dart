@@ -10,6 +10,7 @@ sealed class RecoverWalletState implements _$RecoverWalletState {
     @Default({}) Map<int, String> validWords,
     @Default({}) Map<int, List<String>> hintWords,
     @Default('') String passphrase,
+    @Default(ScriptType.bip84) ScriptType scriptType,
     @Default('') String label,
     @Default(false) bool isConfirming,
     @Default(null) Object? error,

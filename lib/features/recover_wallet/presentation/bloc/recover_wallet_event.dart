@@ -32,6 +32,12 @@ class RecoverWalletLabelChanged extends RecoverWalletEvent {
   const RecoverWalletLabelChanged(this.label);
 }
 
+class RecoverWalletScriptTypeChanged extends RecoverWalletEvent {
+  final ScriptType scriptType;
+
+  const RecoverWalletScriptTypeChanged(this.scriptType);
+}
+
 class RecoverWalletConfirmed extends RecoverWalletEvent {
   const RecoverWalletConfirmed();
 }

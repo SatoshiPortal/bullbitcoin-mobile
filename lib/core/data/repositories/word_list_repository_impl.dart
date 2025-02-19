@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/recover_wallet/data/datasources/bip39_word_list_data_source.dart';
-import 'package:bb_mobile/features/recover_wallet/domain/repositories/word_list_repository.dart';
+import 'package:bb_mobile/core/data/datasources/bip39_word_list_data_source.dart';
+import 'package:bb_mobile/core/domain/repositories/word_list_repository.dart';
 
 class WordListRepositoryImpl implements WordListRepository {
   final Bip39WordListDataSource _dataSource;

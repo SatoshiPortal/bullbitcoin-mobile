@@ -47,48 +47,78 @@ extension ScriptTypeX on ScriptType {
   }
 }
 
-abstract class WalletDerivationService {
-  Future<String> getAccountXpub(
-    Seed seed, {
-    Network network,
-    ScriptType scriptType,
-  });
-  Future<String> derivePublicDescriptor(
-    Seed seed, {
-    Network network,
-    ScriptType scriptType,
-  });
-  Future<String> derivePublicChangeDescriptor(
-    Seed seed, {
-    Network network,
-    ScriptType scriptType,
+abstract class WalletMetadataDerivationService {
+  Future<WalletMetadata> fromSeed({
+    required Seed seed,
+    required Network network,
+    required ScriptType scriptType,
+    String label,
   });
 }
 
-class WalletDerivationServiceImpl implements WalletDerivationService {
-  const WalletDerivationServiceImpl();
+class WalletMetadataDerivationServiceImpl
+    implements WalletMetadataDerivationService {
+  const WalletMetadataDerivationServiceImpl();
 
   @override
-  Future<String> getAccountXpub(
+  Future<WalletMetadata> fromSeed({
+    required Seed seed,
+    required Network network,
+    required ScriptType scriptType,
+    String label = '',
+  }) async {
+    final xpub = await _getAccountXpub(
+      seed,
+      network: network,
+      scriptType: scriptType,
+    );
+
+    final descriptor = await _derivePublicDescriptor(
+      seed,
+      network: network,
+      scriptType: scriptType,
+    );
+    final changeDescriptor = network.isLiquid
+        ? descriptor
+        : await _derivePublicChangeDescriptor(
+            seed,
+            network: network,
+            scriptType: scriptType,
+          );
+
+    return WalletMetadata(
+      masterFingerprint: seed.masterFingerprint,
+      xpubFingerprint: xpub.fingerprintHex,
+      source: WalletSource.mnemonic,
+      network: network,
+      scriptType: scriptType,
+      xpub: xpub.convert(scriptType.getXpubType(network)),
+      externalPublicDescriptor: descriptor,
+      internalPublicDescriptor: changeDescriptor,
+      isDefault: true,
+      label: label,
+    );
+  }
+
+  Future<bip32.BIP32> _getAccountXpub(
     Seed seed, {
+    required ScriptType scriptType,
     Network network = Network.bitcoinMainnet,
-    ScriptType scriptType = ScriptType.bip84,
     int accountIndex = 0,
   }) async {
     final root = bip32.BIP32.fromSeed(seed.seedBytes);
     final derivationPath =
         "m/${scriptType.purpose}'/${network.coinType}'/$accountIndex'";
     final derivedAccountKey = root.derivePath(derivationPath);
-    final xpub = derivedAccountKey.neutered().toBase58();
-    // Convert xpub to the correct format
-    return _convertXpubToFormat(xpub, scriptType.getXpubType(network));
+    final xpub = derivedAccountKey.neutered();
+
+    return xpub;
   }
 
-  @override
-  Future<String> derivePublicDescriptor(
+  Future<String> _derivePublicDescriptor(
     Seed seed, {
+    required ScriptType scriptType,
     Network network = Network.bitcoinMainnet,
-    ScriptType scriptType = ScriptType.bip84,
   }) async {
     if (network.isBitcoin) {
       final xprv = _getXprvFromSeed(seed);
@@ -138,11 +168,10 @@ class WalletDerivationServiceImpl implements WalletDerivationService {
     }
   }
 
-  @override
-  Future<String> derivePublicChangeDescriptor(
+  Future<String> _derivePublicChangeDescriptor(
     Seed seed, {
+    required ScriptType scriptType,
     Network network = Network.bitcoinMainnet,
-    ScriptType scriptType = ScriptType.bip84,
   }) async {
     final xprv = _getXprvFromSeed(seed);
     final secretKey = await bdk.DescriptorSecretKey.fromString(xprv);
@@ -184,9 +213,20 @@ class WalletDerivationServiceImpl implements WalletDerivationService {
     final root = bip32.BIP32.fromSeed(seed.seedBytes);
     return root.toBase58();
   }
+}
+
+extension Bip32X on bip32.BIP32 {
+  /// Get the fingerprint of the BIP32 key as a hex string
+  String get fingerprintHex {
+    final fingerprintBytes = fingerprint;
+    return fingerprintBytes
+        .map((b) => b.toRadixString(16).padLeft(2, '0'))
+        .join();
+  }
 
   /// Converts an xpub to different extended public key formats
-  String _convertXpubToFormat(String xpub, XpubType targetType) {
+  String convert(XpubType targetType) {
+    final xpub = toBase58();
     final decoded = base58.decode(xpub);
     final versionBytes = Uint8List.fromList(targetType.versionBytes);
     final keyBytes = decoded.sublist(4); // Remove existing xpub version bytes

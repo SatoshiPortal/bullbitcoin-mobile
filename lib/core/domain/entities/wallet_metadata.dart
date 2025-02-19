@@ -86,7 +86,9 @@ enum WalletSource {
 @freezed
 class WalletMetadata with _$WalletMetadata {
   const factory WalletMetadata({
-    required String masterFingerprint,
+    // The fingerprint of the BIP32 root/master key (if a seed was used to derive the wallet)
+    @Default('') String masterFingerprint,
+    required String xpubFingerprint,
     required Network network,
     required ScriptType scriptType,
     required String xpub,
@@ -101,9 +103,9 @@ class WalletMetadata with _$WalletMetadata {
   factory WalletMetadata.fromJson(Map<String, dynamic> json) =>
       _$WalletMetadataFromJson(json);
 
-  String get id => '$masterFingerprint-${scriptType.name}-${network.name}';
+  String get id => '$xpubFingerprint-${scriptType.name}-${network.name}';
 
-  String get name => label == null || label!.isEmpty ? _defaultName : label!;
+  String get name => label.isEmpty ? _defaultName : label!;
 
   String get _defaultName {
     switch (source) {

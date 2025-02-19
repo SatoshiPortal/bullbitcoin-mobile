@@ -8,7 +8,8 @@ part 'wallet_metadata_model.g.dart';
 @freezed
 class WalletMetadataModel with _$WalletMetadataModel {
   factory WalletMetadataModel({
-    required String masterFingerprint,
+    @Default('') String masterFingerprint,
+    required String xpubFingerprint,
     required String network,
     required String scriptType,
     required String xpub,
@@ -26,6 +27,7 @@ class WalletMetadataModel with _$WalletMetadataModel {
   factory WalletMetadataModel.fromEntity(WalletMetadata entity) {
     return WalletMetadataModel(
       masterFingerprint: entity.masterFingerprint,
+      xpubFingerprint: entity.xpubFingerprint,
       network: entity.network.name,
       scriptType: entity.scriptType.name,
       xpub: entity.xpub,
@@ -40,6 +42,7 @@ class WalletMetadataModel with _$WalletMetadataModel {
   WalletMetadata toEntity() {
     return WalletMetadata(
       masterFingerprint: masterFingerprint,
+      xpubFingerprint: xpubFingerprint,
       network: Network.fromName(network),
       scriptType: ScriptType.fromName(scriptType),
       xpub: xpub,

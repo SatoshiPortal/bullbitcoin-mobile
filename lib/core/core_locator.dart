@@ -1,17 +1,21 @@
 import 'package:bb_mobile/app_locator.dart';
+import 'package:bb_mobile/core/data/datasources/bip39_word_list_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/exchange_data_source.dart';
-import 'package:bb_mobile/core/data/datasources/impl/bull_bitcoin_exchange_datasource_impl.dart';
-import 'package:bb_mobile/core/data/datasources/impl/hive_storage_datasource_impl.dart';
-import 'package:bb_mobile/core/data/datasources/impl/secure_storage_data_source_impl.dart';
-import 'package:bb_mobile/core/data/datasources/key_value_storage_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
+import 'package:bb_mobile/core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
+import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/core/data/repositories/seed_repository_impl.dart';
 import 'package:bb_mobile/core/data/repositories/settings_repository_impl.dart';
 import 'package:bb_mobile/core/data/repositories/wallet_metadata_repository_impl.dart';
+import 'package:bb_mobile/core/data/repositories/word_list_repository_impl.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/core/domain/services/wallet_derivation_service.dart';
+import 'package:bb_mobile/core/domain/repositories/word_list_repository.dart';
+import 'package:bb_mobile/core/domain/services/mnemonic_seed_factory.dart';
+import 'package:bb_mobile/core/domain/services/wallet_metadata_derivation_service.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
+import 'package:bb_mobile/core/domain/usecases/find_mnemonic_words_use_case.dart';
 import 'package:bb_mobile/core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_language_usecase.dart';
@@ -45,11 +49,13 @@ class CoreLocator {
       () => BullBitcoinExchangeDataSourceImpl(),
       instanceName: bullBitcoinExchangeInstanceName,
     );
-
     final walletsBox = await Hive.openBox<String>(hiveWalletsBoxName);
     locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
       () => HiveStorageDataSourceImpl<String>(walletsBox),
       instanceName: walletsStorageInstanceName,
+    );
+    locator.registerLazySingleton<Bip39WordListDataSource>(
+      () => Bip39EnglishWordListDataSourceImpl(),
     );
 
     // Repositories
@@ -74,16 +80,29 @@ class CoreLocator {
         ),
       ),
     );
+    locator.registerLazySingleton<WordListRepository>(
+      () => WordListRepositoryImpl(
+        dataSource: locator<Bip39WordListDataSource>(),
+      ),
+    );
 
     // Managers or services responsible for handling specific logic
-    locator.registerLazySingleton<WalletDerivationService>(
-      () => const WalletDerivationServiceImpl(),
+    locator.registerLazySingleton<WalletMetadataDerivationService>(
+      () => const WalletMetadataDerivationServiceImpl(),
     );
     locator.registerLazySingleton<WalletRepositoryManager>(
       () => WalletRepositoryManagerImpl(),
     );
+    locator.registerLazySingleton<MnemonicSeedFactory>(
+      () => const MnemonicSeedFactoryImpl(),
+    );
 
     // Use cases
+    locator.registerFactory<FindMnemonicWordsUseCase>(
+      () => FindMnemonicWordsUseCase(
+        wordListRepository: locator<WordListRepository>(),
+      ),
+    );
     locator.registerFactory<GetEnvironmentUseCase>(
       () => GetEnvironmentUseCase(
         settingsRepository: locator<SettingsRepository>(),

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/data/datasources/key_value_storage_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/core/domain/repositories/version_repository.dart';
 
 class VersionRepositoryImpl implements VersionRepository {
