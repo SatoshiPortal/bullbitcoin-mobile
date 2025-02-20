@@ -20,6 +20,7 @@ import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/listeners.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
+import 'package:bip85/bip85.dart' as bip85;
 import 'package:boltz/boltz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,6 +41,7 @@ Future main({bool fromTest = false}) async {
     await core.init();
     await LibLwk.init();
     await LibBoltz.init();
+    bip85.LibBip85.init();
     await dotenv.load(isOptional: true);
     Bloc.observer = BBlocObserver();
     // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
