@@ -7,6 +7,8 @@ PODS:
     - AppAuth/Core
   - bdk_flutter (0.31.2):
     - Flutter
+  - bip85 (0.0.1):
+    - Flutter
   - boltz (0.1.6)
   - DKImagePickerController/Core (4.3.9):
     - DKImagePickerController/ImageDataManager
@@ -99,6 +101,7 @@ PODS:
 
 DEPENDENCIES:
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
+  - bip85 (from `.symlinks/plugins/bip85/ios`)
   - boltz (from `.symlinks/plugins/boltz/ios`)
   - document_file_save_plus (from `.symlinks/plugins/document_file_save_plus/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
@@ -134,6 +137,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   bdk_flutter:
     :path: ".symlinks/plugins/bdk_flutter/ios"
+  bip85:
+    :path: ".symlinks/plugins/bip85/ios"
   boltz:
     :path: ".symlinks/plugins/boltz/ios"
   document_file_save_plus:
@@ -176,6 +181,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   bdk_flutter: fb57a7400a7f3f181c5977bcdc2a5ef347ae4e7f
+  bip85: f656a7e6b23afda4960efb11c87d51d68e8be3db
   boltz: 6388ec2412f3753b63a9e65c97f87ea26f43bddc
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
@@ -188,7 +194,7 @@ SPEC CHECKSUMS:
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   flutter_native_splash: f71420956eb811e6d310720fee915f1d42852e7a
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
-  google_sign_in_ios: 07375bfbf2620bc93a602c0e27160d6afc6ead38
+  google_sign_in_ios: 4111e87aa5e24a4404f00ea13479f35e571969cc
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
