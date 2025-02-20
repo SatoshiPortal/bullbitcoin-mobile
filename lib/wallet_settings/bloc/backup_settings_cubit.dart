@@ -99,7 +99,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     final (seed, err) = await _walletSensRepository.readSeed(
       fingerprintIndex: wallet.getRelatedSeedStorageString(),
     );
-    return (seed, err?.toString());
+    return (seed, err);
   }
 
   // physical backup & verification methods
@@ -158,7 +158,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     if (error != null || seed == null) {
       emit(
         state.copyWith(
-          errTestingBackup: error ?? 'Seed data not found',
+          errTestingBackup: error?.toString() ?? 'Seed data not found',
           loadingBackups: false,
         ),
       );
@@ -373,10 +373,13 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
 
     _emitSafe(state.copyWith(savingBackups: true, errorSavingBackups: ''));
-
+    if (_wallets.isEmpty) {
+      _handleLoadError('No wallets available for backup');
+      return;
+    }
     final backups = await _createBackupsForAllWallets();
     if (backups.isEmpty) {
-      _handleSaveError('No wallets available for backup');
+      _handleSaveError('Failed to create backups');
       return;
     }
 
@@ -450,9 +453,13 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     _emitSafe(state.copyWith(savingBackups: true, errorSavingBackups: ''));
 
+    if (_wallets.isEmpty) {
+      _handleLoadError('No wallets available for backup');
+      return;
+    }
     final backups = await _createBackupsForAllWallets();
     if (backups.isEmpty) {
-      _handleSaveError('No wallets available for backup');
+      _handleSaveError('Failed to create backups');
       return;
     }
 
