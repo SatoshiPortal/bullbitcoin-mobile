@@ -1,8 +1,12 @@
 import 'dart:convert';
-import 'dart:math';
+
 import 'package:bb_mobile/_model/backup.dart';
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
+import 'package:bdk_flutter/bdk_flutter.dart';
+import 'package:bip85/bip85.dart' as bip85;
+import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
@@ -10,23 +14,32 @@ abstract class IBackupManager {
   /// Encrypts a list of backups using BIP85 derivation
   Future<((String, String)?, Err?)> encryptBackups({
     required List<Backup> backups,
+    required List<String> mnemonic,
+    required String network,
   }) async {
     if (backups.isEmpty) {
       return (null, Err('No backups provided'));
     }
 
     try {
+      final now = DateTime.now();
+      final (derived, err) = await deriveBackupKey(
+        mnemonic,
+        network,
+        now,
+      );
       final plaintext = json.encode(backups.map((i) => i.toJson()).toList());
-      final key = await _deriveBackupKey();
 
-      if (key == null) {
+      if (derived == null) {
+        debugPrint(err.toString());
         return (null, Err('Failed to derive backup key'));
       }
       final encrypted = recoverbull.BackupService.createBackup(
         secret: utf8.encode(plaintext),
-        backupKey: key,
+        backupKey: derived,
+        createdAt: now,
       );
-      return ((HEX.encode(key), encrypted), null);
+      return ((HEX.encode(derived), encrypted), null);
     } catch (e) {
       return (null, Err('Encryption failed: $e'));
     }
@@ -35,13 +48,12 @@ abstract class IBackupManager {
   /// Decrypts an encrypted backup using the provided key
   Future<(List<Backup>?, Err?)> decryptBackups({
     required String encrypted,
-    required String backupKey,
+    required List<int> backupKey,
   }) async {
     try {
-      final key = HEX.decode(backupKey);
       final plaintext = recoverbull.BackupService.restoreBackup(
         backup: encrypted,
-        backupKey: key,
+        backupKey: backupKey,
       );
 
       return _parseBackups(plaintext);
@@ -50,22 +62,28 @@ abstract class IBackupManager {
     }
   }
 
-  Future<List<int>?> _deriveBackupKey() async {
+  Future<(List<int>?, Err?)> deriveBackupKey(
+    List<String> mnemonic,
+    String network,
+    DateTime now,
+  ) async {
     try {
-      final now = DateTime.now();
-      final nowBytes =
-          utf8.encode(now.toUtc().millisecondsSinceEpoch.toString());
-
-      final secureRandom = Random.secure();
-      final randomBytes =
-          List<int>.generate(32, (_) => secureRandom.nextInt(256));
-      final key = List<int>.generate(
-        32,
-        (i) => randomBytes[i] ^ nowBytes[i % nowBytes.length],
+      final descriptorSecretKey = await DescriptorSecretKey.create(
+        network: BBNetwork.fromString(network).toBdkNetwork(),
+        mnemonic: await Mnemonic.fromString(mnemonic.join(' ')),
       );
-      return key;
+      // $index must remains within 0 to 2^31−1; ie. 0 to 2147483647
+      final index = (now.toUtc().millisecondsSinceEpoch % 2147483647).abs();
+      final path = "m/1608'/0'/$index";
+      final key = bip85
+          .derive(
+            xprv: descriptorSecretKey.toString().split('/*').first,
+            path: path,
+          )
+          .sublist(0, 32);
+      return (key, null);
     } catch (e) {
-      return null;
+      return (null, Err(e.toString()));
     }
   }
 
