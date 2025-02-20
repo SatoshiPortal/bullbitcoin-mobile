@@ -108,18 +108,6 @@ abstract class IBackupManager {
     }
   }
 
-  (List<Backup>?, Err?) _parseBackups(String plaintext) {
-    try {
-      final decodedJson = jsonDecode(plaintext) as List;
-      final backups = decodedJson
-          .map((item) => Backup.fromJson(item as Map<String, dynamic>))
-          .toList();
-      return (backups, null);
-    } catch (e) {
-      return (null, Err('Failed to parse backups: $e'));
-    }
-  }
-
   // Abstract methods to be implemented by concrete classes
   Future<(String?, Err?)> saveEncryptedBackup({
     required String encrypted,
