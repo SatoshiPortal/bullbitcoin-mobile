@@ -174,7 +174,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     try {
       emit(state.copyWith(loading: true, error: ''));
 
-      final backupKey = await _keyService.recoverBackupKey(
+      final backupKey = await _keyService.fetchBackupKey(
         backupId: state.backupId,
         password: state.secret,
         salt: state.backupSalt,
