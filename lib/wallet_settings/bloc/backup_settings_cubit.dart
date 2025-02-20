@@ -600,7 +600,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     try {
       final (seed, err) = await _loadWalletSeed(wallet);
       if (err != null || seed == null) {
-        _emitBackupError('Failed to read wallet ${wallet.name}: $err');
+        debugPrint('Failed to read wallet ${wallet.name}: $err');
+        _emitBackupError('Failed to read wallet ${wallet.name}');
         return null;
       }
 
@@ -704,6 +705,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         );
 
         if (mediaErr != null || loadedBackupMetaData == null) {
+          debugPrint('Error loading backups: ${mediaErr?.message}');
           _handleLoadError("Failed to load backup data");
           return;
         }
@@ -825,6 +827,78 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     locator<HomeBloc>().add(LoadWalletsFromStorage());
     await locator<WalletsStorageRepository>().sortWallets();
 
+    _emitSafe(
+      state.copyWith(
+        loadingBackups: false,
+        loadedBackups: backups,
+        errorLoadingBackups: '',
+      ),
+    );
+  }
+
+  Future<void> recoverFromSecureStorage(String encrypted) async {
+    _emitSafe(
+      state.copyWith(
+        loadingBackups: true,
+        errorLoadingBackups: '',
+      ),
+    );
+
+    if (_wallets.isEmpty) {
+      _handleLoadError('Failed to get internal wallets');
+      return;
+    }
+
+    final (mainSeed, fetchMainSeedErr) = await _fetchMainSeed();
+
+    if (_wallets.isEmpty) {
+      _handleLoadError('No Wallets found');
+      return;
+    }
+
+    if (fetchMainSeedErr != null || mainSeed == null) {
+      debugPrint('Error fetching main seed: $fetchMainSeedErr');
+      _handleLoadError('Failed to load seed data');
+      return;
+    }
+    final decoded = jsonDecode(encrypted) as Map<String, dynamic>;
+    final createdAt = decoded['createdAt'] as int?;
+    if (createdAt == null) {
+      _handleLoadError('Invalid backup format');
+      return;
+    }
+    final (backupKey, deriveBackupErr) = await _manager.deriveBackupKey(
+      mainSeed.mnemonic.split(' '),
+      mainSeed.network.toString(),
+      DateTime.fromMillisecondsSinceEpoch(createdAt),
+    );
+
+    if (backupKey == null) {
+      debugPrint('Error deriving backup key: $deriveBackupErr');
+      _handleLoadError('Failed to derive backup key');
+      return;
+    }
+
+    final (backups, decryptErr) = await _manager.decryptBackups(
+      encrypted: encrypted,
+      backupKey: backupKey,
+    );
+    if (decryptErr != null || backups == null || backups.isEmpty) {
+      _handleLoadError(decryptErr?.message ?? 'No wallets found in backup');
+      return;
+    }
+
+    for (final backup in backups) {
+      final err = await _processBackupRecovery(backup);
+      if (err != null) {
+        _handleLoadError(err.message);
+        return;
+      }
+    }
+
+    // Update home state and sort wallets
+    locator<HomeBloc>().add(LoadWalletsFromStorage());
+    await locator<WalletsStorageRepository>().sortWallets();
     _emitSafe(
       state.copyWith(
         loadingBackups: false,
