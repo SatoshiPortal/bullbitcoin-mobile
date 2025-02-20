@@ -22,6 +22,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/wallet_settings/bloc/backup_settings_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hex/hex.dart';
 
 BackupSettingsCubit createBackupSettingsCubit({String? walletId}) {
   final appWalletsRepo = locator<AppWalletsRepository>();
@@ -94,8 +95,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     await super.close();
   }
 
-  // Seed loading helper
-  Future<(Seed?, String?)> _loadWalletSeed(Wallet wallet) async {
+  Future<(Seed?, Err?)> _loadWalletSeed(Wallet wallet) async {
     final (seed, err) = await _walletSensRepository.readSeed(
       fingerprintIndex: wallet.getRelatedSeedStorageString(),
     );
