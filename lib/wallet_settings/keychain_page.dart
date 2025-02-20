@@ -28,6 +28,23 @@ class KeychainBackupPage extends StatelessWidget {
   final Map<String, dynamic> backup;
   @override
   Widget build(BuildContext context) {
+    String? backupId;
+    String? backupSalt;
+
+    if (backupKey != null && backupKey!.isNotEmpty) {
+      print("testing");
+      print(backup);
+      backupId = backup['id']?.toString();
+      backupSalt = backup['salt']?.toString();
+    } else {
+      print("testing2");
+      // Backup mode - extract from encrypted data
+      final encryptedData =
+          jsonDecode(backup["encrypted"] as String) as Map<String, dynamic>;
+      backupId = encryptedData["id"]?.toString();
+      backupSalt = encryptedData["salt"] as String?;
+    }
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<KeychainCubit>(
@@ -36,9 +53,9 @@ class KeychainBackupPage extends StatelessWidget {
               (backupKey == null || backupKey!.isEmpty)
                   ? KeyChainPageState.recovery
                   : KeyChainPageState.enter,
-              backup["id"] as String,
+              backupId ?? '',
               backupKey,
-              backup["salt"] as String,
+              backupSalt ?? '',
             ),
         ),
         BlocProvider.value(
@@ -137,7 +154,7 @@ class _Screen extends StatelessWidget {
                 !state.loading &&
                 !state.hasError) {
               if (encryptedBackup.isNotEmpty) {
-                context.read<BackupSettingsCubit>().recoverBackup(
+                context.read<BackupSettingsCubit>().recoverWithKeyServer(
                       jsonEncode(encryptedBackup),
                       state.backupKey,
                     );
