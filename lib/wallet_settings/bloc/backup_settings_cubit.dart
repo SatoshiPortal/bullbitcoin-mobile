@@ -423,7 +423,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       _handleSaveError('Failed to extract backup salt');
       return;
     }
-
     _emitSafe(
       state.copyWith(
         backupId: backupId,
@@ -438,9 +437,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
   String? _extractBackupSalt(String encrypted) {
     try {
-      final decoded = jsonDecode(encrypted) as Map<String, dynamic>;
-      return decoded['salt'] as String?;
-    } catch (_) {
+      final data = jsonDecode(encrypted) as Map<String, dynamic>;
+      final encryptedData =
+          jsonDecode(data['encrypted'] as String) as Map<String, dynamic>;
+      return encryptedData['salt'] as String?;
+    } catch (e) {
+      debugPrint('Failed to extract salt: $e');
       return null;
     }
   }
@@ -451,29 +453,27 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    _emitSafe(state.copyWith(savingBackups: true, errorSavingBackups: ''));
+    _emitSafe(
+      state.copyWith(
+        savingBackups: true,
+        errorSavingBackups: '',
+      ),
+    );
 
     if (_wallets.isEmpty) {
       _handleLoadError('No wallets available for backup');
       return;
     }
-    final backups = await _createBackupsForAllWallets();
-    if (backups.isEmpty) {
-      _handleSaveError('Failed to create backups');
+
+    final (api, connectErr) = await _driveManager.connect();
+    if (connectErr != null) {
+      _handleSaveError(connectErr.message);
       return;
     }
 
-    if (state.backupFolderId.isEmpty) {
-      final (folderId, err) = await _driveManager.connect();
-      if (err != null) {
-        _handleSaveError('Failed to connect to Google Drive: ${err.message}');
-        return;
-      }
-      _emitSafe(state.copyWith(backupFolderId: folderId ?? ''));
-    }
-
-    if (state.backupFolderId.isEmpty) {
-      _handleSaveError('Failed to initialize Google Drive backup folder');
+    final backups = await _createBackupsForAllWallets();
+    if (backups.isEmpty) {
+      _handleSaveError('Failed to create backups');
       return;
     }
 
@@ -482,7 +482,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       _handleSaveError(encryptErr?.message ?? 'Encryption failed');
       return;
     }
-
     final backupSalt = _extractBackupSalt(encryptedData.$2);
     if (backupSalt == null) {
       _handleSaveError('Failed to extract backup salt');
@@ -491,7 +490,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     final (filePath, saveErr) = await _driveManager.saveEncryptedBackup(
       encrypted: encryptedData.$2,
-      backupFolder: state.backupFolderId,
+      backupFolder: '', // No longer needed
     );
 
     if (saveErr != null) {
@@ -564,14 +563,15 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
   Future<void> connectToGoogleDrive() async {
     try {
-      final (folderId, err) = await _driveManager.connect();
+      final (api, err) = await _driveManager.connect();
       if (err != null) {
         _emitBackupError('Failed to connect to Google Drive: ${err.message}');
+
         return;
       }
-      emit(
+
+      _emitSafe(
         state.copyWith(
-          backupFolderId: folderId ?? '',
           errorSavingBackups: '',
         ),
       );
@@ -644,7 +644,11 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
   void disconnectGoogleDrive() {
     _driveManager.disconnect();
-    emit(state.copyWith(backupFolderId: ''));
+    emit(
+      state.copyWith(
+        backupFolderPath: '',
+      ),
+    );
   }
 
 // encrypted vault backup methods
@@ -656,28 +660,22 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         return;
       }
 
-      emit(state.copyWith(loadingBackups: true));
+      _emitSafe(
+        state.copyWith(
+          loadingBackups: true,
+        ),
+      );
 
-      // Connect if needed
-      if (state.backupFolderId.isEmpty) {
-        final (folderId, err) = await _driveManager.connect();
-        if (err != null) {
-          _handleLoadError(err.message);
-          return;
-        }
-        emit(state.copyWith(backupFolderId: folderId ?? ''));
-      }
+      final (api, connectErr) = await _driveManager.connect();
+      if (connectErr != null) {
+        _handleLoadError(connectErr.message);
 
-      // Ensure we have a folder ID
-      if (state.backupFolderId.isEmpty) {
-        _handleLoadError("Failed to initialize Google Drive folder");
         return;
       }
 
-      // Rest of the existing code...
       final (availableBackups, err) =
           await _driveManager.loadAllEncryptedBackupFiles(
-        backupFolder: state.backupFolderId,
+        backupFolder: '', // No longer needed
       );
 
       if (err != null) {
@@ -784,7 +782,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
-  Future<void> recoverBackup(String encrypted, String backupKey) async {
+  Future<void> recoverWithKeyServer(String encrypted, String backupKey) async {
     _emitSafe(
       state.copyWith(
         loadingBackups: true,
@@ -798,7 +796,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
     final decoded = jsonDecode(encrypted) as Map<String, dynamic>;
-    final backupId = decoded['id'] as String?;
+    final backupId =
+        jsonDecode(decoded['encrypted'] as String)['id'] as String?;
 
     if (backupId == null) {
       _handleLoadError('Invalid backup format');
@@ -836,7 +835,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
   }
 
-  Future<void> recoverFromSecureStorage(String encrypted) async {
+  Future<void> recoverWithMnemonic(String encrypted) async {
     _emitSafe(
       state.copyWith(
         loadingBackups: true,
@@ -844,68 +843,64 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       ),
     );
 
-    if (_wallets.isEmpty) {
-      _handleLoadError('Failed to get internal wallets');
-      return;
-    }
+    try {
+      final data = jsonDecode(encrypted) as Map<String, dynamic>;
 
-    final (mainSeed, fetchMainSeedErr) = await _fetchMainSeed();
+      final index = data['index'] as int?;
 
-    if (_wallets.isEmpty) {
-      _handleLoadError('No Wallets found');
-      return;
-    }
-
-    if (fetchMainSeedErr != null || mainSeed == null) {
-      debugPrint('Error fetching main seed: $fetchMainSeedErr');
-      _handleLoadError('Failed to load seed data');
-      return;
-    }
-    final decoded = jsonDecode(encrypted) as Map<String, dynamic>;
-    final createdAt = decoded['createdAt'] as int?;
-    if (createdAt == null) {
-      _handleLoadError('Invalid backup format');
-      return;
-    }
-    final (backupKey, deriveBackupErr) = await _manager.deriveBackupKey(
-      mainSeed.mnemonic.split(' '),
-      mainSeed.network.toString(),
-      DateTime.fromMillisecondsSinceEpoch(createdAt),
-    );
-
-    if (backupKey == null) {
-      debugPrint('Error deriving backup key: $deriveBackupErr');
-      _handleLoadError('Failed to derive backup key');
-      return;
-    }
-
-    final (backups, decryptErr) = await _manager.decryptBackups(
-      encrypted: encrypted,
-      backupKey: backupKey,
-    );
-    if (decryptErr != null || backups == null || backups.isEmpty) {
-      _handleLoadError(decryptErr?.message ?? 'No wallets found in backup');
-      return;
-    }
-
-    for (final backup in backups) {
-      final err = await _processBackupRecovery(backup);
-      if (err != null) {
-        _handleLoadError(err.message);
+      if (index == null) {
+        _handleLoadError('Invalid backup format - missing index');
         return;
       }
-    }
 
-    // Update home state and sort wallets
-    locator<HomeBloc>().add(LoadWalletsFromStorage());
-    await locator<WalletsStorageRepository>().sortWallets();
-    _emitSafe(
-      state.copyWith(
-        loadingBackups: false,
-        loadedBackups: backups,
-        errorLoadingBackups: '',
-      ),
-    );
+      final (mainSeed, fetchMainSeedErr) = await _fetchMainSeed();
+      if (fetchMainSeedErr != null || mainSeed == null) {
+        _handleLoadError('Failed to load seed data');
+        return;
+      }
+
+      final (backupKey, deriveErr) = await _manager.deriveBackupKey(
+        mainSeed.mnemonic.split(' '),
+        mainSeed.network.toString(),
+        index,
+      );
+
+      if (backupKey == null) {
+        debugPrint('Error deriving backup key: $deriveErr');
+        _handleLoadError('Failed to derive backup key');
+        return;
+      }
+
+      final (backups, decryptErr) = await _manager.decryptBackups(
+        encrypted: encrypted,
+        backupKey: backupKey,
+      );
+      if (decryptErr != null || backups == null || backups.isEmpty) {
+        _handleLoadError(decryptErr?.message ?? 'No wallets found in backup');
+        return;
+      }
+
+      for (final backup in backups) {
+        final err = await _processBackupRecovery(backup);
+        if (err != null) {
+          _handleLoadError(err.message);
+          return;
+        }
+      }
+
+      // Update home state and sort wallets
+      locator<HomeBloc>().add(LoadWalletsFromStorage());
+      await locator<WalletsStorageRepository>().sortWallets();
+      _emitSafe(
+        state.copyWith(
+          loadingBackups: false,
+          loadedBackups: backups,
+          errorLoadingBackups: '',
+        ),
+      );
+    } catch (e) {
+      _handleLoadError('Recovery failed: $e');
+    }
   }
 
   Future<Err?> _processBackupRecovery(Backup backup) async {
