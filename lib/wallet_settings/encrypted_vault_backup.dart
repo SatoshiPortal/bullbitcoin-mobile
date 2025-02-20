@@ -377,13 +377,33 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
   }
 }
 
-class RecoveredBackupInfoPage extends StatelessWidget {
+class RecoveredBackupInfoPage extends StatefulWidget {
   const RecoveredBackupInfoPage({
     super.key,
     required this.recoveredBackup,
   });
 
   final Map<String, dynamic> recoveredBackup;
+
+  @override
+  State<RecoveredBackupInfoPage> createState() =>
+      _RecoveredBackupInfoPageState();
+}
+
+class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
+  late final BackupSettingsCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = createBackupSettingsCubit();
+  }
+
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
 
   Widget _buildErrorView(BuildContext context) {
     return Center(
@@ -440,7 +460,7 @@ class RecoveredBackupInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (recoveredBackup.isEmpty) {
+    if (widget.recoveredBackup.isEmpty) {
       return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -450,8 +470,8 @@ class RecoveredBackupInfoPage extends StatelessWidget {
         ),
         body: _buildErrorView(context),
       );
-    } else if (recoveredBackup['id'] == null ||
-        recoveredBackup['createdAt'] == null) {
+    } else if (widget.recoveredBackup['id'] == null ||
+        widget.recoveredBackup['createdAt'] == null) {
       return Scaffold(
         appBar: AppBar(
           elevation: 0,
