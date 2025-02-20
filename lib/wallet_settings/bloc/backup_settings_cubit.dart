@@ -518,12 +518,38 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
   }
 
+  Future<(Seed?, Err?)> _fetchMainSeed() async {
+    final mainWallet = _wallets.firstWhere(
+      (wallet) =>
+          wallet.mainWallet &&
+          wallet.type == BBWalletType.main &&
+          wallet.baseWalletType == BaseWalletType.Bitcoin &&
+          wallet.network == BBNetwork.Mainnet,
+      orElse: () => _wallets.firstWhere(
+        (wallet) =>
+            wallet.mainWallet &&
+            wallet.type == BBWalletType.main &&
+            wallet.baseWalletType == BaseWalletType.Bitcoin &&
+            wallet.network == BBNetwork.Testnet,
+        orElse: () => _wallets.first,
+      ),
+    );
+
+    return await _loadWalletSeed(mainWallet);
+  }
+
   Future<((String, String)?, Err?)> _encryptBackups(
     List<Backup> backups,
   ) async {
     try {
+      final (mainSeed, fetchMainMnemonicErr) = await _fetchMainSeed();
+      if (fetchMainMnemonicErr != null || mainSeed == null) {
+        return (null, fetchMainMnemonicErr);
+      }
       final (encData, err) = await _manager.encryptBackups(
         backups: backups,
+        mnemonic: mainSeed.mnemonic.split(' '),
+        network: mainSeed.network.toString().toLowerCase(),
       );
 
       if (err != null || encData == null) {
@@ -564,7 +590,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       }
       return backups;
     } catch (e) {
-      _emitBackupError('Failed to create backups: $e');
+      debugPrint('Error creating backups: $e');
+      _emitBackupError('Failed to create backups');
       return [];
     }
   }
@@ -778,7 +805,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     final (backups, decryptErr) = await _manager.decryptBackups(
       encrypted: encrypted,
-      backupKey: backupKey,
+      backupKey: HEX.decode(backupKey),
     );
 
     if (decryptErr != null || backups == null || backups.isEmpty) {
