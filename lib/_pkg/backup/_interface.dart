@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:bb_mobile/_model/backup.dart';
 import 'package:bb_mobile/_model/wallet.dart';
@@ -22,12 +23,9 @@ abstract class IBackupManager {
     }
 
     try {
-      final now = DateTime.now();
-      final (derived, err) = await deriveBackupKey(
-        mnemonic,
-        network,
-        now,
-      );
+      final randomIndex = _deriveRandomIndex();
+      final (derived, err) =
+          await deriveBackupKey(mnemonic, network, randomIndex);
       final plaintext = json.encode(backups.map((i) => i.toJson()).toList());
 
       if (derived == null) {
@@ -37,9 +35,12 @@ abstract class IBackupManager {
       final encrypted = recoverbull.BackupService.createBackup(
         secret: utf8.encode(plaintext),
         backupKey: derived,
-        createdAt: now,
       );
-      return ((HEX.encode(derived), encrypted), null);
+      final encoded = jsonEncode({
+        'index': randomIndex,
+        'encrypted': encrypted,
+      });
+      return ((HEX.encode(derived), encoded), null);
     } catch (e) {
       return (null, Err('Encryption failed: $e'));
     }
@@ -51,34 +52,54 @@ abstract class IBackupManager {
     required List<int> backupKey,
   }) async {
     try {
+      final decodedBackup = jsonDecode(encrypted) as Map<String, dynamic>;
+      if (!decodedBackup.containsKey("encrypted")) {
+        return (null, Err('Invalid backup format'));
+      }
+
       final plaintext = recoverbull.BackupService.restoreBackup(
-        backup: encrypted,
+        backup: decodedBackup['encrypted'] as String,
         backupKey: backupKey,
       );
 
-      return _parseBackups(plaintext);
+      final decodedJson = jsonDecode(plaintext) as List;
+      final backups = decodedJson
+          .map((item) => Backup.fromJson(item as Map<String, dynamic>))
+          .toList();
+
+      return (backups, null);
     } catch (e) {
       return (null, Err('Decryption failed: $e'));
     }
   }
 
+  int _deriveRandomIndex() {
+    final random = Uint8List(4);
+    final secureRandom = Random.secure();
+    for (int i = 0; i < 4; i++) {
+      random[i] = secureRandom.nextInt(256);
+    }
+    final randomIndex =
+        ByteData.view(random.buffer).getUint32(0, Endian.little) & 0x7FFFFFFF;
+
+    return randomIndex;
+  }
+
   Future<(List<int>?, Err?)> deriveBackupKey(
     List<String> mnemonic,
     String network,
-    DateTime now,
+    int keyPathIndex,
   ) async {
     try {
       final descriptorSecretKey = await DescriptorSecretKey.create(
         network: BBNetwork.fromString(network).toBdkNetwork(),
         mnemonic: await Mnemonic.fromString(mnemonic.join(' ')),
       );
-      // $index must remains within 0 to 2^31−1; ie. 0 to 2147483647
-      final index = (now.toUtc().millisecondsSinceEpoch % 2147483647).abs();
-      final path = "m/1608'/0'/$index";
+
       final key = bip85
           .derive(
             xprv: descriptorSecretKey.toString().split('/*').first,
-            path: path,
+            path: "m/1608'/0'/$keyPathIndex",
           )
           .sublist(0, 32);
       return (key, null);
