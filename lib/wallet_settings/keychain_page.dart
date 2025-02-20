@@ -32,13 +32,9 @@ class KeychainBackupPage extends StatelessWidget {
     String? backupSalt;
 
     if (backupKey != null && backupKey!.isNotEmpty) {
-      print("testing");
-      print(backup);
       backupId = backup['id']?.toString();
       backupSalt = backup['salt']?.toString();
     } else {
-      print("testing2");
-      // Backup mode - extract from encrypted data
       final encryptedData =
           jsonDecode(backup["encrypted"] as String) as Map<String, dynamic>;
       backupId = encryptedData["id"]?.toString();
