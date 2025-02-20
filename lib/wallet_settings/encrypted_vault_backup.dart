@@ -471,8 +471,8 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
         ),
         body: _buildErrorView(context),
       );
-    } else if (widget.recoveredBackup['id'] == null ||
-        widget.recoveredBackup['createdAt'] == null) {
+    } else if (widget.recoveredBackup['index'] == null ||
+        widget.recoveredBackup['encrypted'] == null) {
       return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -505,6 +505,9 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
           }
         },
         builder: (context, state) {
+          final recoveredBackupEncrypted =
+              jsonDecode(widget.recoveredBackup["encrypted"] as String)
+                  as Map<String, dynamic>;
           return Scaffold(
             appBar: AppBar(
               elevation: 0,
@@ -535,7 +538,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                           ),
                         ),
                         TextSpan(
-                          text: '${widget.recoveredBackup['id']}',
+                          text: '${recoveredBackupEncrypted['id']}',
                           style: context.font.bodyMedium!.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -556,7 +559,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                         ),
                         TextSpan(
                           text:
-                              ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(widget.recoveredBackup['createdAt'] as int).toLocal())}',
+                              ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(recoveredBackupEncrypted['createdAt'] as int).toLocal())}',
                           style: context.font.bodyMedium!.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -575,10 +578,12 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                   ),
                   const Gap(20),
                   FilledButton(
-                    onPressed: () => context.push(
-                      '/wallet-settings/backup-settings/keychain',
-                      extra: ('', widget.recoveredBackup),
-                    ),
+                    onPressed: () => {
+                      context.push(
+                        '/wallet-settings/backup-settings/keychain',
+                        extra: ('', widget.recoveredBackup),
+                      ),
+                    },
                     style: FilledButton.styleFrom(
                       backgroundColor: context.colour.shadow,
                       padding: const EdgeInsets.symmetric(
@@ -610,7 +615,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                   ),
                   const Gap(10),
                   InkWell(
-                    onTap: () => _cubit.recoverFromSecureStorage(
+                    onTap: () => _cubit.recoverWithMnemonic(
                       jsonEncode(widget.recoveredBackup),
                     ),
                     child: const BBText.bodySmall(
