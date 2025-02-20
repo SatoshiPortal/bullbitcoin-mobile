@@ -483,111 +483,145 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        flexibleSpace: BBAppBar(text: '', onBack: () => context.pop()),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'We have your file',
-              style: context.font.titleLarge!.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
+    return BlocProvider.value(
+      value: _cubit,
+      child: BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
+        listenWhen: (previous, current) =>
+            previous.errorLoadingBackups != current.errorLoadingBackups ||
+            previous.loadingBackups != current.loadingBackups ||
+            previous.loadedBackups != current.loadedBackups,
+        listener: (context, state) {
+          if (state.errorLoadingBackups.isNotEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              context.showToast(state.errorLoadingBackups),
+            );
+            _cubit.clearError();
+            return;
+          }
+
+          if (!state.loadingBackups && state.loadedBackups.isNotEmpty) {
+            context.go('/home');
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              centerTitle: true,
+              flexibleSpace: BBAppBar(text: '', onBack: () => context.pop()),
             ),
-            const Gap(20),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Backup ID:',
-                    style: context.font.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '${recoveredBackup['id']}',
-                    style: context.font.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Gap(8),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Created at:',
-                    style: context.font.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextSpan(
-                    text:
-                        ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(recoveredBackup['createdAt'] as int).toLocal())}',
-                    style: context.font.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Gap(16),
-            Text(
-              "Now let's decrypt",
-              textAlign: TextAlign.center,
-              style: context.font.bodyMedium!.copyWith(
-                fontWeight: FontWeight.bold,
-                color: NewColours.lightGray,
-              ),
-            ),
-            const Gap(20),
-            FilledButton(
-              onPressed: () => context.push(
-                '/wallet-settings/backup-settings/keychain',
-                extra: ('', recoveredBackup),
-              ),
-              style: FilledButton.styleFrom(
-                backgroundColor: context.colour.shadow,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Row(
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Decrypt Backup',
-                    style: context.font.bodyMedium!.copyWith(
-                      color: Colors.white,
+                    'We have your file',
+                    style: context.font.titleLarge!.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
                   ),
+                  const Gap(20),
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Backup ID:',
+                          style: context.font.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '${widget.recoveredBackup['id']}',
+                          style: context.font.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const Gap(8),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: Colors.white,
-                    size: 20,
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Created at:',
+                          style: context.font.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(widget.recoveredBackup['createdAt'] as int).toLocal())}',
+                          style: context.font.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Gap(16),
+                  Text(
+                    "Now let's decrypt",
+                    textAlign: TextAlign.center,
+                    style: context.font.bodyMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: NewColours.lightGray,
+                    ),
+                  ),
+                  const Gap(20),
+                  FilledButton(
+                    onPressed: () => context.push(
+                      '/wallet-settings/backup-settings/keychain',
+                      extra: ('', widget.recoveredBackup),
+                    ),
+                    style: FilledButton.styleFrom(
+                      backgroundColor: context.colour.shadow,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Decrypt Backup',
+                          style: context.font.bodyMedium!.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const Gap(8),
+                        const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Gap(10),
+                  InkWell(
+                    onTap: () => _cubit.recoverFromSecureStorage(
+                      jsonEncode(widget.recoveredBackup),
+                    ),
+                    child: const BBText.bodySmall(
+                      'Forgot your secret? Click to recover from storage!',
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
