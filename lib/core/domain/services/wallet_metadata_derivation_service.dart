@@ -53,6 +53,13 @@ abstract class WalletMetadataDerivationService {
     required Network network,
     required ScriptType scriptType,
     String label,
+    bool isDefault,
+  });
+  Future<WalletMetadata> fromXpub({
+    required String xpub,
+    required Network network,
+    required ScriptType scriptType,
+    String label,
   });
 }
 
@@ -66,6 +73,7 @@ class WalletMetadataDerivationServiceImpl
     required Network network,
     required ScriptType scriptType,
     String label = '',
+    bool isDefault = true,
   }) async {
     final xpub = await _getAccountXpub(
       seed,
@@ -73,17 +81,18 @@ class WalletMetadataDerivationServiceImpl
       scriptType: scriptType,
     );
 
-    final descriptor = await _derivePublicDescriptor(
+    final descriptor = await _derivePublicDescriptorFromSeed(
       seed,
       network: network,
       scriptType: scriptType,
     );
     final changeDescriptor = network.isLiquid
         ? descriptor
-        : await _derivePublicChangeDescriptor(
+        : await _derivePublicDescriptorFromSeed(
             seed,
             network: network,
             scriptType: scriptType,
+            isInternalKeychain: true,
           );
 
     return WalletMetadata(
@@ -95,7 +104,46 @@ class WalletMetadataDerivationServiceImpl
       xpub: xpub.convert(scriptType.getXpubType(network)),
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: changeDescriptor,
-      isDefault: true,
+      isDefault: isDefault,
+      label: label,
+    );
+  }
+
+  @override
+  Future<WalletMetadata> fromXpub({
+    required String xpub,
+    required Network network,
+    required ScriptType scriptType,
+    String label = '',
+  }) async {
+    if (network.isLiquid) {
+      throw UnimplementedError(
+        'Importing xpubs for Liquid network is not supported',
+      );
+    }
+
+    final bip32Xpub = bip32.BIP32.fromBase58(xpub);
+
+    final descriptor = await _deriveDescriptorFromXpub(
+      bip32Xpub,
+      network: network,
+      scriptType: scriptType,
+    );
+    final changeDescriptor = await _deriveDescriptorFromXpub(
+      bip32Xpub,
+      network: network,
+      scriptType: scriptType,
+      isInternalKeychain: true,
+    );
+
+    return WalletMetadata(
+      xpubFingerprint: bip32Xpub.fingerprintHex,
+      source: WalletSource.xpub,
+      network: network,
+      scriptType: scriptType,
+      xpub: bip32Xpub.convert(scriptType.getXpubType(network)),
+      externalPublicDescriptor: descriptor,
+      internalPublicDescriptor: changeDescriptor,
       label: label,
     );
   }
@@ -115,15 +163,25 @@ class WalletMetadataDerivationServiceImpl
     return xpub;
   }
 
-  Future<String> _derivePublicDescriptor(
+  Future<String> _derivePublicDescriptorFromSeed(
     Seed seed, {
     required ScriptType scriptType,
     Network network = Network.bitcoinMainnet,
+    bool isInternalKeychain = false,
   }) async {
+    if (network.isLiquid && isInternalKeychain) {
+      throw UnimplementedError(
+        'No internal chain support in lwk for Liquid network',
+      );
+    }
+
     if (network.isBitcoin) {
       final xprv = _getXprvFromSeed(seed);
       final secretKey = await bdk.DescriptorSecretKey.fromString(xprv);
       final bdkNetwork = network.bdkNetwork;
+      final keychain = isInternalKeychain
+          ? bdk.KeychainKind.internalChain
+          : bdk.KeychainKind.externalChain;
       bdk.Descriptor descriptor;
 
       switch (scriptType) {
@@ -131,22 +189,23 @@ class WalletMetadataDerivationServiceImpl
           descriptor = await bdk.Descriptor.newBip84(
             secretKey: secretKey,
             network: bdkNetwork,
-            keychain: bdk.KeychainKind.externalChain,
+            keychain: keychain,
           );
         case ScriptType.bip49:
           descriptor = await bdk.Descriptor.newBip49(
             secretKey: secretKey,
             network: bdkNetwork,
-            keychain: bdk.KeychainKind.externalChain,
+            keychain: keychain,
           );
         case ScriptType.bip44:
           descriptor = await bdk.Descriptor.newBip44(
             secretKey: secretKey,
             network: bdkNetwork,
-            keychain: bdk.KeychainKind.externalChain,
+            keychain: keychain,
           );
       }
 
+      // `asString` returns the public descriptor.
       return descriptor.asString();
     } else {
       if (seed is! MnemonicSeed) {
@@ -168,41 +227,48 @@ class WalletMetadataDerivationServiceImpl
     }
   }
 
-  Future<String> _derivePublicChangeDescriptor(
-    Seed seed, {
+  Future<String> _deriveDescriptorFromXpub(
+    bip32.BIP32 xpub, {
     required ScriptType scriptType,
     Network network = Network.bitcoinMainnet,
+    bool isInternalKeychain = false,
   }) async {
-    final xprv = _getXprvFromSeed(seed);
-    final secretKey = await bdk.DescriptorSecretKey.fromString(xprv);
-
-    if (network.isLiquid) {
-      throw UnimplementedError(
-        'No internal chain support in lwk for Liquid network',
-      );
-    }
-
+    final publicKey = await bdk.DescriptorPublicKey.fromString(xpub.toBase58());
+    final fingerPrint = xpub.fingerprintHex;
     final bdkNetwork = network.bdkNetwork;
+    final keychain = isInternalKeychain
+        ? bdk.KeychainKind.internalChain
+        : bdk.KeychainKind.externalChain;
+
+    bdk.Descriptor.newBip84Public(
+      publicKey: publicKey,
+      fingerPrint: fingerPrint,
+      network: bdkNetwork,
+      keychain: keychain,
+    );
     bdk.Descriptor descriptor;
 
     switch (scriptType) {
       case ScriptType.bip84:
-        descriptor = await bdk.Descriptor.newBip84(
-          secretKey: secretKey,
+        descriptor = await bdk.Descriptor.newBip84Public(
+          publicKey: publicKey,
+          fingerPrint: fingerPrint,
           network: bdkNetwork,
-          keychain: bdk.KeychainKind.internalChain,
+          keychain: keychain,
         );
       case ScriptType.bip49:
-        descriptor = await bdk.Descriptor.newBip49(
-          secretKey: secretKey,
+        descriptor = await bdk.Descriptor.newBip49Public(
+          publicKey: publicKey,
+          fingerPrint: fingerPrint,
           network: bdkNetwork,
-          keychain: bdk.KeychainKind.internalChain,
+          keychain: keychain,
         );
       case ScriptType.bip44:
-        descriptor = await bdk.Descriptor.newBip44(
-          secretKey: secretKey,
+        descriptor = await bdk.Descriptor.newBip44Public(
+          publicKey: publicKey,
+          fingerPrint: fingerPrint,
           network: bdkNetwork,
-          keychain: bdk.KeychainKind.internalChain,
+          keychain: keychain,
         );
     }
 

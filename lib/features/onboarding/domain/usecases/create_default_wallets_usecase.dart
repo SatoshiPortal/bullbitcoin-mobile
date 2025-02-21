@@ -52,6 +52,7 @@ class CreateDefaultWalletsUseCase {
             ? Network.bitcoinMainnet
             : Network.bitcoinTestnet,
         scriptType: scriptType,
+        isDefault: true,
       ),
       _walletMetadataDerivationService.fromSeed(
         seed: mnemonicSeed,
@@ -59,6 +60,7 @@ class CreateDefaultWalletsUseCase {
             ? Network.liquidMainnet
             : Network.liquidTestnet,
         scriptType: scriptType,
+        isDefault: true,
       ),
     ]);
 
