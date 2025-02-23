@@ -133,7 +133,7 @@ class KeychainCubit extends Cubit<KeychainState> {
 
   Future<void> secureKey() async {
     try {
-      emit(state.copyWith(loading: true, error: ''));
+      await serverInfo();
       await _keyService.storeBackupKey(
         backupId: state.backupId,
         password: state.tempSecret,
@@ -169,7 +169,29 @@ class KeychainCubit extends Cubit<KeychainState> {
     emit(state.copyWith(backupId: id));
   }
 
+  Future<void> serverInfo() async {
+    emit(state.copyWith(loading: true));
+    try {
+      final info = await _keyService.serverInfo();
+      //TODO; Update the logic to check the cooldown
+      if (info.cooldown > 1) {
+        emit(state.copyWith(loading: false, error: 'Server is on cooldown'));
+        return;
+      }
+      if (state.tempSecret.length > info.secretMaxLength ||
+          state.secret.length > info.secretMaxLength) {
+        emit(state.copyWith(loading: false, error: 'Secret is too long'));
+      }
+      return;
+    } catch (e) {
+      debugPrint('Failed to get server info: $e');
+      emit(state.copyWith(loading: false, error: 'Failed to get server info'));
+      return;
+    }
+  }
+
   Future<void> clickRecover() async {
+    await serverInfo();
     if (state.backupKey.isNotEmpty) {
       emit(
         state.copyWith(
