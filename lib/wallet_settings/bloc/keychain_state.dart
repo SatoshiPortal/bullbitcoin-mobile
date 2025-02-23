@@ -5,7 +5,7 @@ part 'keychain_state.freezed.dart';
 
 enum KeyChainPageState { enter, confirm, recovery }
 
-enum KeyChainInputType { pin, password }
+enum KeyChainInputType { pin, password, backupKey }
 
 enum KeySecretState { saved, recovered, none }
 
@@ -65,7 +65,7 @@ class KeychainState with _$KeychainState {
   bool get showButton => isValid;
   bool get hasError => error.isNotEmpty;
   bool get isRecovering => pageState == KeyChainPageState.recovery;
-  bool get canRecover => backupId.isNotEmpty && isValid && !loading;
+  bool get canRecoverKey => backupId.isNotEmpty && isValid && !loading;
 
   // Cache the compiled regex patterns
   static final _blacklistPattern = RegExp(
