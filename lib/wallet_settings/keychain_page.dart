@@ -131,7 +131,7 @@ class _Screen extends StatelessWidget {
             if (state.isSecretConfirmed &&
                 !state.loading &&
                 !state.hasError &&
-                state.keySecretState != KeySecretState.saved) {
+                state.keySecretState == KeySecretState.none) {
               context.read<KeychainCubit>().secureKey();
             }
 
