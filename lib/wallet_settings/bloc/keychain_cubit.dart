@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/wallet_settings/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
@@ -131,9 +130,37 @@ class KeychainCubit extends Cubit<KeychainState> {
     emit(state.copyWith(isSecretConfirmed: true));
   }
 
+  Future<bool> serverInfo() async {
+    emit(state.copyWith(loading: true));
+    try {
+      final info = await _keyService.serverInfo();
+      if (info.cooldown > 1) {
+        emit(state.copyWith(loading: false, error: 'Server is on cooldown'));
+        return false;
+      }
+      if (state.tempSecret.length > info.secretMaxLength ||
+          state.secret.length > info.secretMaxLength) {
+        emit(state.copyWith(loading: false, error: 'Secret is too long'));
+        return false;
+      }
+      return true;
+    } catch (e) {
+      debugPrint('Failed to get server info: $e');
+      emit(
+        state.copyWith(
+          loading: false,
+          error: 'Key server is not reachable! Please try again later',
+        ),
+      );
+      return false;
+    }
+  }
+
   Future<void> secureKey() async {
     try {
-      await serverInfo();
+      final isServerReady = await serverInfo();
+      if (!isServerReady) return;
+
       await _keyService.storeBackupKey(
         backupId: state.backupId,
         password: state.tempSecret,
@@ -154,49 +181,10 @@ class KeychainCubit extends Cubit<KeychainState> {
     }
   }
 
-  void clearSensitive() {
-    emit(
-      state.copyWith(
-        secret: '',
-        tempSecret: '',
-        isSecretConfirmed: false,
-        error: '',
-      ),
-    );
-  }
-
-  void setBackupId(String id) {
-    emit(state.copyWith(backupId: id));
-  }
-
-  Future<void> serverInfo() async {
-    emit(state.copyWith(loading: true));
-    try {
-      final info = await _keyService.serverInfo();
-      //TODO; Update the logic to check the cooldown & server status
-      if (info.cooldown > 1) {
-        emit(state.copyWith(loading: false, error: 'Server is on cooldown'));
-        return;
-      }
-      if (state.tempSecret.length > info.secretMaxLength ||
-          state.secret.length > info.secretMaxLength) {
-        emit(state.copyWith(loading: false, error: 'Secret is too long'));
-      }
-      return;
-    } catch (e) {
-      debugPrint('Failed to get server info: $e');
-      emit(
-        state.copyWith(
-          loading: false,
-          error: 'Key server is not reachable!, Please try again later',
-        ),
-      );
-      return;
-    }
-  }
-
   Future<void> clickRecover() async {
-    await serverInfo();
+    final isServerReady = await serverInfo();
+    if (!isServerReady) return;
+
     if (state.backupKey.isNotEmpty) {
       emit(
         state.copyWith(
@@ -206,6 +194,7 @@ class KeychainCubit extends Cubit<KeychainState> {
       );
       return;
     }
+
     if (state.secret.length < 6) {
       state.inputType == KeyChainInputType.pin
           ? emit(state.copyWith(error: 'pin should be atleast 6 digits long'))
@@ -242,5 +231,20 @@ class KeychainCubit extends Cubit<KeychainState> {
         ),
       );
     }
+  }
+
+  void clearSensitive() {
+    emit(
+      state.copyWith(
+        secret: '',
+        tempSecret: '',
+        isSecretConfirmed: false,
+        error: '',
+      ),
+    );
+  }
+
+  void setBackupId(String id) {
+    emit(state.copyWith(backupId: id));
   }
 }
