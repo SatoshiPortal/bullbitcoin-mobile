@@ -10,6 +10,7 @@ import 'package:bb_mobile/wallet_settings/bloc/backup_settings_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -490,7 +491,8 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
         listenWhen: (previous, current) =>
             previous.errorLoadingBackups != current.errorLoadingBackups ||
             previous.loadingBackups != current.loadingBackups ||
-            previous.loadedBackups != current.loadedBackups,
+            previous.loadedBackups != current.loadedBackups ||
+            previous.backupKey != current.backupKey,
         listener: (context, state) {
           if (state.errorLoadingBackups.isNotEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -499,9 +501,47 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
             _cubit.clearError();
             return;
           }
-
-          if (!state.loadingBackups && state.loadedBackups.isNotEmpty) {
-            context.go('/home');
+          if (!state.errorLoadingBackups.isNotEmpty &&
+              !state.loadingBackups &&
+              state.backupKey.isNotEmpty) {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: BBText.titleLarge(
+                  'Secret key',
+                  isBold: true,
+                ),
+                content: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        state.backupKey,
+                        style: context.font.bodySmall!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Clipboard.setData(
+                          ClipboardData(text: state.backupKey),
+                        );
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          context.showToast('Copied to clipboard'),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.copy,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+            _cubit.clearError();
+            return;
           }
         },
         builder: (context, state) {
@@ -615,11 +655,11 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                   ),
                   const Gap(10),
                   InkWell(
-                    onTap: () => _cubit.recoverWithMnemonic(
-                      jsonEncode(widget.recoveredBackup),
+                    onTap: () => _cubit.recoverBackupKeyFromMnemonic(
+                      widget.recoveredBackup['index'] as int?,
                     ),
                     child: const BBText.bodySmall(
-                      'Forgot your secret? Click to recover from storage!',
+                      'Forgot your secret? Click to recover',
                       textAlign: TextAlign.center,
                     ),
                   ),
