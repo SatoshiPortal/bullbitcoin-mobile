@@ -390,20 +390,31 @@ class _PinField extends StatelessWidget {
 class _PasswordField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final state = context.select((KeychainCubit x) => x.state);
-    final error = state.getValidationError();
+    final state = context.select(
+      (KeychainCubit x) => (
+        x.state.secret,
+        x.state.obscure,
+        x.state.inputType,
+        x.state.backupKey,
+        x.state.getValidationError()
+      ),
+    );
+    final (secret, obscure, inputType, backupKey, error) = state;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         BBTextInput.bigWithIcon(
-          value: state.secret,
-          onChanged: (value) =>
-              context.read<KeychainCubit>().updateInput(value),
-          obscure: state.obscure,
-          hint: 'Enter your password',
+          value: inputType == KeyChainInputType.backupKey ? backupKey : secret,
+          onChanged: (value) => inputType == KeyChainInputType.backupKey
+              ? context.read<KeychainCubit>().updateBackupKey(value)
+              : context.read<KeychainCubit>().updateInput(value),
+          obscure: obscure,
+          hint: inputType == KeyChainInputType.backupKey
+              ? 'Enter your backup key'
+              : 'Enter your password',
           rightIcon: Icon(
-            state.obscure ? Icons.visibility_off : Icons.visibility,
+            obscure ? Icons.visibility_off : Icons.visibility,
             color: context.colour.onPrimaryContainer,
           ),
           onRightTap: () => context.read<KeychainCubit>().clickObscure(),
