@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/wallet_settings/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
@@ -70,6 +71,15 @@ class KeychainCubit extends Cubit<KeychainState> {
   void updateInput(String value) {
     if (state.inputType == KeyChainInputType.pin && value.length > 6) return;
     emit(state.copyWith(secret: value, error: ''));
+  }
+
+  void updateBackupKey(String value) {
+    emit(
+      state.copyWith(
+        backupKey: value,
+        error: '',
+      ),
+    );
   }
 
   void backspacePressed() {
@@ -159,7 +169,16 @@ class KeychainCubit extends Cubit<KeychainState> {
     emit(state.copyWith(backupId: id));
   }
 
-  Future<void> clickRecoverKey() async {
+  Future<void> clickRecover() async {
+    if (state.backupKey.isNotEmpty) {
+      emit(
+        state.copyWith(
+          loading: false,
+          keySecretState: KeySecretState.recovered,
+        ),
+      );
+      return;
+    }
     if (state.secret.length < 6) {
       state.inputType == KeyChainInputType.pin
           ? emit(state.copyWith(error: 'pin should be atleast 6 digits long'))
