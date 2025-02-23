@@ -173,7 +173,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     emit(state.copyWith(loading: true));
     try {
       final info = await _keyService.serverInfo();
-      //TODO; Update the logic to check the cooldown
+      //TODO; Update the logic to check the cooldown & server status
       if (info.cooldown > 1) {
         emit(state.copyWith(loading: false, error: 'Server is on cooldown'));
         return;
@@ -185,7 +185,12 @@ class KeychainCubit extends Cubit<KeychainState> {
       return;
     } catch (e) {
       debugPrint('Failed to get server info: $e');
-      emit(state.copyWith(loading: false, error: 'Failed to get server info'));
+      emit(
+        state.copyWith(
+          loading: false,
+          error: 'Key server is not reachable!, Please try again later',
+        ),
+      );
       return;
     }
   }
