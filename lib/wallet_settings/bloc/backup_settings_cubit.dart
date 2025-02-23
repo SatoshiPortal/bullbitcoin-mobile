@@ -782,7 +782,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
-  Future<void> recoverWithKeyServer(String encrypted, String backupKey) async {
+  Future<void> recoverBackup(String encrypted, String backupKey) async {
     _emitSafe(
       state.copyWith(
         loadingBackups: true,
@@ -835,7 +835,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
   }
 
-  Future<void> recoverWithMnemonic(String encrypted) async {
+  Future<void> recoverBackupKeyFromMnemonic(int? backupKeyIndex) async {
     _emitSafe(
       state.copyWith(
         loadingBackups: true,
@@ -844,11 +844,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
 
     try {
-      final data = jsonDecode(encrypted) as Map<String, dynamic>;
-
-      final index = data['index'] as int?;
-
-      if (index == null) {
+      if (backupKeyIndex == null) {
         _handleLoadError('Invalid backup format - missing index');
         return;
       }
@@ -862,7 +858,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       final (backupKey, deriveErr) = await _manager.deriveBackupKey(
         mainSeed.mnemonic.split(' '),
         mainSeed.network.toString(),
-        index,
+        backupKeyIndex,
       );
 
       if (backupKey == null) {
@@ -870,31 +866,10 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         _handleLoadError('Failed to derive backup key');
         return;
       }
-
-      final (backups, decryptErr) = await _manager.decryptBackups(
-        encrypted: encrypted,
-        backupKey: backupKey,
-      );
-      if (decryptErr != null || backups == null || backups.isEmpty) {
-        _handleLoadError(decryptErr?.message ?? 'No wallets found in backup');
-        return;
-      }
-
-      for (final backup in backups) {
-        final err = await _processBackupRecovery(backup);
-        if (err != null) {
-          _handleLoadError(err.message);
-          return;
-        }
-      }
-
-      // Update home state and sort wallets
-      locator<HomeBloc>().add(LoadWalletsFromStorage());
-      await locator<WalletsStorageRepository>().sortWallets();
       _emitSafe(
         state.copyWith(
           loadingBackups: false,
-          loadedBackups: backups,
+          backupKey: HEX.encode(backupKey),
           errorLoadingBackups: '',
         ),
       );
