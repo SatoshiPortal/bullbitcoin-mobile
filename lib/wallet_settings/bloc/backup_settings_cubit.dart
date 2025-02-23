@@ -544,8 +544,11 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     final words = state.testMneString();
     final password = state.testBackupPassword;
-    final seed = await _loadSeedData(_currentWallet!);
-
+    final (seed, error) = await _loadWalletSeed(_currentWallet!);
+    if (error != null) {
+      debugPrint('Failed to read wallet ${_currentWallet!.name}: $error');
+      return;
+    }
     if (seed == null) {
       emit(
         state.copyWith(
@@ -838,7 +841,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   Future<((String, String)?, Err?)> _encryptBackups(
-      List<Backup> backups) async {
+    List<Backup> backups,
+  ) async {
     try {
       final (mainSeed, fetchMainMnemonicErr) = await _fetchMainSeed();
       if (fetchMainMnemonicErr != null || mainSeed == null) {
