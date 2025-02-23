@@ -3,11 +3,11 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'keychain_state.freezed.dart';
 
-enum KeyChainPageState { enter, confirm, recovery }
+enum KeyChainPageState { enter, confirm, recovery, delete }
 
 enum KeyChainInputType { pin, password, backupKey }
 
-enum KeySecretState { saved, recovered, none }
+enum KeySecretState { none, saved, recovered, deleted }
 
 @freezed
 class KeychainState with _$KeychainState {
