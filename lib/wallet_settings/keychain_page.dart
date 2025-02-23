@@ -302,7 +302,7 @@ class _RecoveryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StackedPage(
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.12,
+      bottomChildHeight: MediaQuery.of(context).size.height * 0.15,
       bottomChild: _RecoverButton(inputType: inputType),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -616,66 +616,123 @@ class _RecoverButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final canRecover = context.select((KeychainCubit x) => x.state.canRecover);
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 300),
-      child: Column(
-        children: [
+    return BlocSelector<KeychainCubit, KeychainState, bool>(
+      selector: (state) => state.canRecoverKey,
+      builder: (context, canRecoverKey) {
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: Column(
+            children: [
+              _buildInputTypeSwitch(context),
+              const Gap(8),
+              _buildRecoverButton(context, canRecoverKey),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildInputTypeSwitch(BuildContext context) {
+    return Column(
+      children: [
+        // Switch between PIN and Password
+        InkWell(
+          onTap: () => _switchInputType(context),
+          child: BBText.bodySmall(
+            _getSwitchButtonText(),
+            isBold: true,
+          ),
+        ),
+        // Show backup key option only when not in backup key mode
+        if (inputType != KeyChainInputType.backupKey) ...[
+          const Gap(8),
           InkWell(
-            onTap: () {
-              final cubit = context.read<KeychainCubit>();
-              if (inputType == KeyChainInputType.pin) {
-                cubit.updatePageState(
-                  KeyChainInputType.password,
-                  KeyChainPageState.recovery,
-                );
-              } else {
-                cubit.updatePageState(
-                  KeyChainInputType.pin,
-                  KeyChainPageState.recovery,
-                );
-              }
-            },
-            child: BBText.bodySmall(
-              inputType == KeyChainInputType.pin
-                  ? 'Use a password instead of a pin'
-                  : 'Use a PIN instead of a password',
+            onTap: () => _switchToBackupKey(context),
+            child: const BBText.bodySmall(
+              'Recover with backup key',
+              isBold: true,
             ),
           ),
-          const Gap(5),
-          FilledButton(
-            onPressed: () {
-              if (canRecover) context.read<KeychainCubit>().clickRecoverKey();
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor:
-                  canRecover ? context.colour.shadow : context.colour.surface,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildRecoverButton(BuildContext context, bool canRecoverKey) {
+    return FilledButton(
+      onPressed: canRecoverKey
+          ? () => context.read<KeychainCubit>().clickRecover()
+          : null,
+      style: FilledButton.styleFrom(
+        backgroundColor: _getButtonColor(context, canRecoverKey),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Recover with ${_getInputTypeText()}',
+            style: context.font.bodyMedium!.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Recover with ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}',
-                  style: context.font.bodyMedium!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Icon(
-                  Icons.arrow_forward,
-                  color: Colors.white,
-                  size: 16,
-                ),
-              ],
-            ),
+          ),
+          const SizedBox(width: 8),
+          const Icon(
+            Icons.arrow_forward,
+            color: Colors.white,
+            size: 16,
           ),
         ],
       ),
     );
+  }
+
+  void _switchInputType(BuildContext context) {
+    final cubit = context.read<KeychainCubit>();
+    final newType = inputType == KeyChainInputType.pin
+        ? KeyChainInputType.password
+        : KeyChainInputType.pin;
+    cubit.updatePageState(newType, KeyChainPageState.recovery);
+  }
+
+  void _switchToBackupKey(BuildContext context) {
+    context.read<KeychainCubit>().updatePageState(
+          KeyChainInputType.backupKey,
+          KeyChainPageState.recovery,
+        );
+  }
+
+  Color _getButtonColor(BuildContext context, bool canRecoverKey) {
+    if (inputType == KeyChainInputType.backupKey || canRecoverKey) {
+      return context.colour.shadow;
+    }
+    return context.colour.surface;
+  }
+
+  String _getSwitchButtonText() {
+    switch (inputType) {
+      case KeyChainInputType.pin:
+        return 'Use a password instead of a PIN';
+      case KeyChainInputType.password:
+        return 'Use a PIN instead of a password';
+      case KeyChainInputType.backupKey:
+        return 'Use a PIN instead of a backup key';
+    }
+  }
+
+  String _getInputTypeText() {
+    switch (inputType) {
+      case KeyChainInputType.pin:
+        return 'PIN';
+      case KeyChainInputType.password:
+        return 'password';
+      case KeyChainInputType.backupKey:
+        return 'backup key';
+    }
   }
 }
 
