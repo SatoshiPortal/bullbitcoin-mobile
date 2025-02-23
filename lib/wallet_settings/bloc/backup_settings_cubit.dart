@@ -95,198 +95,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     await super.close();
   }
 
-  Future<(Seed?, Err?)> _loadWalletSeed(Wallet wallet) async {
-    final (seed, err) = await _walletSensRepository.readSeed(
-      fingerprintIndex: wallet.getRelatedSeedStorageString(),
-    );
-    return (seed, err);
-  }
-
-  // physical backup & verification methods
-
-  void _emitBackupState(Seed seed) {
-    if (_currentWallet == null) {
-      emit(
-        state.copyWith(
-          errorLoadingBackups: 'No active wallet selected',
-          loadingBackups: false,
-        ),
-      );
-      return;
-    }
-
-    final words = seed.mnemonic.split(' ');
-    final shuffled = words.toList()..shuffle();
-
-    emit(
-      state.copyWith(
-        testMnemonicOrder: [],
-        mnemonic: words,
-        errTestingBackup: '',
-        password: seed
-            .getPassphraseFromIndex(_currentWallet!.sourceFingerprint)
-            .passphrase,
-        shuffledMnemonic: shuffled,
-        loadingBackups: false,
-      ),
-    );
-  }
-
-  void _emitBackupTestSuccessState() {
-    emit(
-      state.copyWith(
-        backupTested: true,
-        testingBackup: false,
-      ),
-    );
-    clearSensitive();
-  }
-
-  Future<void> loadBackupForVerification() async {
-    if (_currentWallet == null) {
-      emit(
-        state.copyWith(
-          errorLoadingBackups: 'No wallet selected for verification',
-          loadingBackups: false,
-        ),
-      );
-      return;
-    }
-
-    emit(state.copyWith(loadingBackups: true));
-    final (seed, error) = await _loadWalletSeed(_currentWallet!);
-    if (error != null || seed == null) {
-      emit(
-        state.copyWith(
-          errTestingBackup: error?.toString() ?? 'Seed data not found',
-          loadingBackups: false,
-        ),
-      );
-      return;
-    }
-
-    _emitBackupState(seed);
-  }
-
-  Future<void> testBackupClicked() async {
-    emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
-
-    final words = state.testMneString();
-    final password = state.testBackupPassword;
-    final seed = await _loadSeedData(_currentWallet!);
-
-    if (seed == null) {
-      emit(
-        state.copyWith(
-          errTestingBackup: 'Unable to load wallet data',
-          testingBackup: false,
-        ),
-      );
-      return;
-    }
-
-    if (!_verifyWords(seed.mnemonic, words)) {
-      emit(
-        state.copyWith(
-          errTestingBackup: 'Invalid seed words',
-          testingBackup: false,
-        ),
-      );
-      return;
-    }
-
-    if (!_verifyPassphrase(seed, password)) {
-      emit(
-        state.copyWith(
-          errTestingBackup: 'Invalid passphrase',
-          testingBackup: false,
-        ),
-      );
-      return;
-    }
-
-    await _updateWalletBackupStatus(
-      _currentWallet!.copyWith(
-        physicalBackupTested: true,
-        lastPhysicalBackupTested: DateTime.now(),
-      ),
-    );
-    _emitBackupTestSuccessState();
-  }
-
-  bool _verifyWords(String seedMnemonic, String testWords) =>
-      seedMnemonic == testWords;
-
-  bool _verifyPassphrase(Seed seed, String password) {
-    final storedPassphrase = seed
-        .getPassphraseFromIndex(_currentWallet!.sourceFingerprint)
-        .passphrase;
-    return storedPassphrase == password;
-  }
-
-  Future<Seed?> _loadSeedData(Wallet wallet) async {
-    final (seed, err) = await _walletSensRepository.readSeed(
-      fingerprintIndex: wallet.getRelatedSeedStorageString(),
-    );
-    if (err != null) {
-      emit(state.copyWith(errTestingBackup: err.toString()));
-      return null;
-    }
-    return seed;
-  }
-
-  Future<void> _updateWalletBackupStatus(Wallet updatedWallet) async {
-    final service =
-        _appWalletsRepository.getWalletServiceById(updatedWallet.id);
-    if (service != null) {
-      await service.updateWallet(
-        updatedWallet,
-        updateTypes: [UpdateWalletTypes.settings],
-      );
-      _currentWallet = updatedWallet;
-    }
-  }
-
-  void word24Clicked(int shuffledIdx) {
-    emit(state.copyWith(errTestingBackup: ''));
-    final testMnemonic = state.testMnemonicOrder.toList();
-    if (testMnemonic.length == 24) return;
-
-    final (word, isSelected, actualIdx) = state.shuffleElementAt(shuffledIdx);
-    if (isSelected) return;
-    if (actualIdx != testMnemonic.length) {
-      invalidTestOrderClicked();
-      return;
-    }
-
-    testMnemonic.add(
-      (
-        word: word,
-        shuffleIdx: shuffledIdx,
-        selectedActualIdx: actualIdx,
-      ),
-    );
-
-    emit(state.copyWith(testMnemonicOrder: testMnemonic));
-  }
-
-  Future<void> invalidTestOrderClicked() async {
-    emit(
-      state.copyWith(
-        testMnemonicOrder: [],
-        errTestingBackup: 'Invalid mnemonic order',
-      ),
-    );
-    await Future.delayed(_kShuffleDelay);
-    final shuffled = state.mnemonic.toList()..shuffle();
-    emit(
-      state.copyWith(
-        shuffledMnemonic: shuffled,
-        errTestingBackup: '',
-      ),
-    );
-  }
-
+  // Public Methods (alphabetically)
   void changePassword(String password) {
     emit(
       state.copyWith(
@@ -296,33 +105,13 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
   }
 
-  void wordClicked(int shuffledIdx) {
-    emit(state.copyWith(errTestingBackup: ''));
-    final testMnemonic = state.testMnemonicOrder.toList();
-    if (testMnemonic.length == 12) return;
-
-    final (word, isSelected, actualIdx) = state.shuffleElementAt(shuffledIdx);
-    if (isSelected) return;
-    if (actualIdx != testMnemonic.length) {
-      invalidTestOrderClicked();
-      return;
-    }
-
-    testMnemonic.add(
-      (
-        word: word,
-        shuffleIdx: shuffledIdx,
-        selectedActualIdx: actualIdx,
-      ),
-    );
-
-    emit(state.copyWith(testMnemonicOrder: testMnemonic));
-  }
-
-  Future<void> resetBackupTested() async {
-    await Future.delayed(_kDelayDuration);
-    emit(state.copyWith(backupTested: false));
-  }
+  void clearError() => emit(
+        state.copyWith(
+          errTestingBackup: '',
+          errorLoadingBackups: '',
+          errorSavingBackups: '',
+        ),
+      );
 
   void clearMnemonic() {
     emit(
@@ -345,313 +134,23 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
   }
 
-  // encrypted vault backup methods
-  void _emitBackupError(String message) {
-    emit(
-      state.copyWith(
-        savingBackups: false,
-        errorSavingBackups: message,
-      ),
-    );
-  }
-
-  bool _canStartBackup() {
-    final lastAttempt = state.lastBackupAttempt;
-    if (lastAttempt != null) {
-      final timeSinceLastBackup = DateTime.now().difference(lastAttempt);
-      if (timeSinceLastBackup < _kMinBackupInterval) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  Future<void> saveFileSystemBackup() async {
-    if (!_canStartBackup()) {
-      _handleSaveError('Please wait before attempting another backup');
-      return;
-    }
-
-    _emitSafe(state.copyWith(savingBackups: true, errorSavingBackups: ''));
-    if (_wallets.isEmpty) {
-      _handleLoadError('No wallets available for backup');
-      return;
-    }
-    final backups = await _createBackupsForAllWallets();
-    if (backups.isEmpty) {
-      _handleSaveError('Failed to create backups');
-      return;
-    }
-
-    final (encryptedData, err) = await _encryptBackups(backups);
-    if (err != null || encryptedData == null) {
-      _handleSaveError(err?.message ?? 'Encryption failed');
-      return;
-    }
-
-    final (savePath, pickErr) = await _filePicker?.getDirectoryPath() ??
-        (null, Err('File picker not initialized'));
-    if (pickErr != null) {
-      _handleSaveError('Failed to select backup location: ${pickErr.message}');
-      return;
-    }
-
-    if (savePath == null || savePath.isEmpty) {
-      _handleSaveError('No location selected for backup');
-      return;
-    }
-
-    final (filePath, saveErr) = await _manager.saveEncryptedBackup(
-      encrypted: encryptedData.$2,
-      backupFolder: savePath,
-    );
-
-    if (saveErr != null) {
-      _handleSaveError('Save failed: ${saveErr.message}');
-      return;
-    }
-
-    final fileName = filePath?.split('/').last;
-    final backupId = fileName?.split('_').last.split('.').first;
-    if (backupId == null) {
-      _handleSaveError('Failed to extract backup ID');
-      return;
-    }
-
-    final backupSalt = _extractBackupSalt(encryptedData.$2);
-    if (backupSalt == null) {
-      _handleSaveError('Failed to extract backup salt');
-      return;
-    }
-    _emitSafe(
-      state.copyWith(
-        backupId: backupId,
-        backupKey: encryptedData.$1,
-        backupFolderPath: filePath ?? '',
-        backupSalt: backupSalt,
-        savingBackups: false,
-        lastBackupAttempt: DateTime.now(),
-      ),
-    );
-  }
-
-  String? _extractBackupSalt(String encrypted) {
-    try {
-      final data = jsonDecode(encrypted) as Map<String, dynamic>;
-      final encryptedData =
-          jsonDecode(data['encrypted'] as String) as Map<String, dynamic>;
-      return encryptedData['salt'] as String?;
-    } catch (e) {
-      debugPrint('Failed to extract salt: $e');
-      return null;
-    }
-  }
-
-  Future<void> saveGoogleDriveBackup() async {
-    if (!_canStartBackup()) {
-      _handleSaveError('Please wait before attempting another backup');
-      return;
-    }
-
-    _emitSafe(
-      state.copyWith(
-        savingBackups: true,
-        errorSavingBackups: '',
-      ),
-    );
-
-    if (_wallets.isEmpty) {
-      _handleLoadError('No wallets available for backup');
-      return;
-    }
-
-    final (api, connectErr) = await _driveManager.connect();
-    if (connectErr != null) {
-      _handleSaveError(connectErr.message);
-      return;
-    }
-
-    final backups = await _createBackupsForAllWallets();
-    if (backups.isEmpty) {
-      _handleSaveError('Failed to create backups');
-      return;
-    }
-
-    final (encryptedData, encryptErr) = await _encryptBackups(backups);
-    if (encryptErr != null || encryptedData == null) {
-      _handleSaveError(encryptErr?.message ?? 'Encryption failed');
-      return;
-    }
-    final backupSalt = _extractBackupSalt(encryptedData.$2);
-    if (backupSalt == null) {
-      _handleSaveError('Failed to extract backup salt');
-      return;
-    }
-
-    final (filePath, saveErr) = await _driveManager.saveEncryptedBackup(
-      encrypted: encryptedData.$2,
-      backupFolder: '', // No longer needed
-    );
-
-    if (saveErr != null) {
-      _handleSaveError('Failed to save to Google Drive: ${saveErr.message}');
-      return;
-    }
-
-    final fileName = filePath?.split('/').last;
-    final backupId = fileName?.split('_').last.split('.').first;
-    if (backupId == null || fileName == null) {
-      _handleSaveError('Failed to extract backup information');
-      return;
-    }
-
-    _emitSafe(
-      state.copyWith(
-        backupId: backupId,
-        backupKey: encryptedData.$1,
-        backupFolderPath: fileName,
-        backupSalt: backupSalt,
-        savingBackups: false,
-        lastBackupAttempt: DateTime.now(),
-      ),
-    );
-  }
-
-  Future<(Seed?, Err?)> _fetchMainSeed() async {
-    final mainWallet = _wallets.firstWhere(
-      (wallet) =>
-          wallet.mainWallet &&
-          wallet.type == BBWalletType.main &&
-          wallet.baseWalletType == BaseWalletType.Bitcoin &&
-          wallet.network == BBNetwork.Mainnet,
-      orElse: () => _wallets.firstWhere(
-        (wallet) =>
-            wallet.mainWallet &&
-            wallet.type == BBWalletType.main &&
-            wallet.baseWalletType == BaseWalletType.Bitcoin &&
-            wallet.network == BBNetwork.Testnet,
-        orElse: () => _wallets.first,
-      ),
-    );
-
-    return await _loadWalletSeed(mainWallet);
-  }
-
-  Future<((String, String)?, Err?)> _encryptBackups(
-    List<Backup> backups,
-  ) async {
-    try {
-      final (mainSeed, fetchMainMnemonicErr) = await _fetchMainSeed();
-      if (fetchMainMnemonicErr != null || mainSeed == null) {
-        return (null, fetchMainMnemonicErr);
-      }
-      final (encData, err) = await _manager.encryptBackups(
-        backups: backups,
-        mnemonic: mainSeed.mnemonic.split(' '),
-        network: mainSeed.network.toString().toLowerCase(),
-      );
-
-      if (err != null || encData == null) {
-        return (null, err);
-      }
-
-      return (encData, null);
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
-  }
-
   Future<void> connectToGoogleDrive() async {
     try {
       final (api, err) = await _driveManager.connect();
       if (err != null) {
         _emitBackupError('Failed to connect to Google Drive: ${err.message}');
-
         return;
       }
-
-      _emitSafe(
-        state.copyWith(
-          errorSavingBackups: '',
-        ),
-      );
+      _emitSafe(state.copyWith(errorSavingBackups: ''));
     } catch (e) {
       _emitBackupError('Google Drive connection error: $e');
     }
   }
 
-  Future<List<Backup>> _createBackupsForAllWallets() async {
-    final backups = <Backup>[];
-
-    try {
-      for (final wallet in _wallets) {
-        final backup = await _createBackupForWallet(wallet);
-        if (backup != null) backups.add(backup);
-      }
-      return backups;
-    } catch (e) {
-      debugPrint('Error creating backups: $e');
-      _emitBackupError('Failed to create backups');
-      return [];
-    }
-  }
-
-  Future<Backup?> _createBackupForWallet(Wallet wallet) async {
-    try {
-      final (seed, err) = await _loadWalletSeed(wallet);
-      if (err != null || seed == null) {
-        debugPrint('Failed to read wallet ${wallet.name}: $err');
-        _emitBackupError('Failed to read wallet ${wallet.name}');
-        return null;
-      }
-
-      final backup = Backup(
-        name: wallet.name ?? '',
-        network: wallet.network.name,
-        layer: wallet.baseWalletType.name,
-        script: wallet.scriptType.name,
-        type: wallet.type.name,
-        publicDescriptors: [
-          wallet.externalPublicDescriptor,
-          wallet.internalPublicDescriptor,
-        ].join(','),
-      );
-
-      if (!wallet.hasPassphrase()) {
-        return backup.copyWith(
-          mnemonic: seed.mnemonic.split(' '),
-          passphrase: '',
-        );
-      }
-
-      final passphrases = seed.passphrases
-          .where((e) => e.sourceFingerprint == wallet.sourceFingerprint);
-
-      if (passphrases.isEmpty) {
-        _emitBackupError('No passphrase found for wallet ${wallet.name}');
-        return backup;
-      }
-
-      return backup.copyWith(
-        mnemonic: seed.mnemonic.split(' '),
-        passphrase: passphrases.first.passphrase,
-      );
-    } catch (e) {
-      _emitBackupError('Error creating backup for ${wallet.name}: $e');
-      return null;
-    }
-  }
-
   void disconnectGoogleDrive() {
     _driveManager.disconnect();
-    emit(
-      state.copyWith(
-        backupFolderPath: '',
-      ),
-    );
+    emit(state.copyWith(backupFolderPath: ''));
   }
-
-// encrypted vault backup methods
 
   Future<void> fetchLatestBacup({bool forceRefresh = false}) async {
     try {
@@ -733,53 +232,30 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
-  Future<void> refreshBackups() => fetchLatestBacup(forceRefresh: true);
-
-  void clearError() => emit(
-        state.copyWith(
-          errTestingBackup: '',
-          errorLoadingBackups: '',
-          errorSavingBackups: '',
-        ),
-      );
-
-  Future<void> recoverFromFs() async {
-    if (_filePicker == null) {
-      return;
-    }
-    final (file, error) = await _filePicker.pickFile();
-
-    if (error != null) {
-      emit(state.copyWith(errorLoadingBackups: "Error picking file"));
-      return;
-    }
-
-    if (file == null || file.isEmpty) {
-      emit(state.copyWith(errorLoadingBackups: 'Corrupted backup file'));
-      return;
-    }
-    final (loadedBackup, err) = await _manager.loadEncryptedBackup(
-      encrypted: file,
-    );
-    if (loadedBackup != null) {
+  Future<void> loadBackupForVerification() async {
+    if (_currentWallet == null) {
       emit(
         state.copyWith(
+          errorLoadingBackups: 'No wallet selected for verification',
           loadingBackups: false,
-          latestRecoveredBackup: loadedBackup,
-          lastBackupAttempt: DateTime.now(),
-        ),
-      );
-      return;
-    } else if ((err != null) || loadedBackup?["id"] == null) {
-      debugPrint('Error loading backups: ${err?.message}');
-      emit(
-        state.copyWith(
-          loadingBackups: false,
-          errorLoadingBackups: "Corrupted backup file",
         ),
       );
       return;
     }
+
+    emit(state.copyWith(loadingBackups: true));
+    final (seed, error) = await _loadWalletSeed(_currentWallet!);
+    if (error != null || seed == null) {
+      emit(
+        state.copyWith(
+          errTestingBackup: error?.toString() ?? 'Seed data not found',
+          loadingBackups: false,
+        ),
+      );
+      return;
+    }
+
+    _emitBackupState(seed);
   }
 
   Future<void> recoverBackup(String encrypted, String backupKey) async {
@@ -878,58 +354,284 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
-  Future<Err?> _processBackupRecovery(Backup backup) async {
-    final network = BBNetwork.fromString(backup.network);
-    final layer = _getLayer(backup.layer);
-    final script = _getScript(backup.script);
-    final type = _getWalletType(backup.type);
+  Future<void> recoverFromFs() async {
+    if (_filePicker == null) {
+      return;
+    }
+    final (file, error) = await _filePicker.pickFile();
 
-    if (layer == null || script == null || type == null) {
-      return Err('Invalid backup configuration for ${backup.network}');
+    if (error != null) {
+      emit(state.copyWith(errorLoadingBackups: "Error picking file"));
+      return;
     }
 
-    final (savedWallet, err) = await _addOrUpdateWallet(
-      network,
-      layer,
-      script,
-      type,
-      backup.mnemonic.join(' '),
-      backup.passphrase,
-      backup.publicDescriptors,
+    if (file == null || file.isEmpty) {
+      emit(state.copyWith(errorLoadingBackups: 'Corrupted backup file'));
+      return;
+    }
+    final (loadedBackup, err) = await _manager.loadEncryptedBackup(
+      encrypted: file,
     );
-    if (savedWallet != null) {
-      await _updateWalletBackupStatus(
-        savedWallet.copyWith(
-          vaultBackupTested: true,
-          lastVaultBackupTested: DateTime.now(),
+    if (loadedBackup != null) {
+      emit(
+        state.copyWith(
+          loadingBackups: false,
+          latestRecoveredBackup: loadedBackup,
+          lastBackupAttempt: DateTime.now(),
         ),
       );
+      return;
+    } else if ((err != null) || loadedBackup?["id"] == null) {
+      debugPrint('Error loading backups: ${err?.message}');
+      emit(
+        state.copyWith(
+          loadingBackups: false,
+          errorLoadingBackups: "Corrupted backup file",
+        ),
+      );
+      return;
     }
-    return err;
   }
 
-  BaseWalletType? _getLayer(String layer) => switch (layer.toLowerCase()) {
-        'bitcoin' => BaseWalletType.Bitcoin,
-        'liquid' => BaseWalletType.Liquid,
-        _ => null
-      };
+  Future<void> refreshBackups() => fetchLatestBacup(forceRefresh: true);
 
-  ScriptType? _getScript(String script) => switch (script.toLowerCase()) {
-        'bip44' => ScriptType.bip44,
-        'bip49' => ScriptType.bip49,
-        'bip84' => ScriptType.bip84,
-        _ => null
-      };
+  Future<void> resetBackupTested() async {
+    await Future.delayed(_kDelayDuration);
+    emit(state.copyWith(backupTested: false));
+  }
 
-  BBWalletType? _getWalletType(String type) => switch (type.toLowerCase()) {
-        'main' => BBWalletType.main,
-        'xpub' => BBWalletType.xpub,
-        'words' => BBWalletType.words,
-        'descriptors' => BBWalletType.descriptors,
-        'coldcard' => BBWalletType.coldcard,
-        _ => null
-      };
+  Future<void> saveFileSystemBackup() async {
+    if (!_canStartBackup()) {
+      _handleSaveError('Please wait before attempting another backup');
+      return;
+    }
 
+    _emitSafe(state.copyWith(savingBackups: true, errorSavingBackups: ''));
+    if (_wallets.isEmpty) {
+      _handleLoadError('No wallets available for backup');
+      return;
+    }
+    final backups = await _createBackupsForAllWallets();
+    if (backups.isEmpty) {
+      _handleSaveError('Failed to create backups');
+      return;
+    }
+
+    final (encryptedData, err) = await _encryptBackups(backups);
+    if (err != null || encryptedData == null) {
+      _handleSaveError(err?.message ?? 'Encryption failed');
+      return;
+    }
+
+    final (savePath, pickErr) = await _filePicker?.getDirectoryPath() ??
+        (null, Err('File picker not initialized'));
+    if (pickErr != null) {
+      _handleSaveError('Failed to select backup location: ${pickErr.message}');
+      return;
+    }
+
+    if (savePath == null || savePath.isEmpty) {
+      _handleSaveError('No location selected for backup');
+      return;
+    }
+
+    final (filePath, saveErr) = await _manager.saveEncryptedBackup(
+      encrypted: encryptedData.$2,
+      backupFolder: savePath,
+    );
+
+    if (saveErr != null) {
+      _handleSaveError('Save failed: ${saveErr.message}');
+      return;
+    }
+
+    final fileName = filePath?.split('/').last;
+    final backupId = fileName?.split('_').last.split('.').first;
+    if (backupId == null) {
+      _handleSaveError('Failed to extract backup ID');
+      return;
+    }
+
+    final backupSalt = _extractBackupSalt(encryptedData.$2);
+    if (backupSalt == null) {
+      _handleSaveError('Failed to extract backup salt');
+      return;
+    }
+    _emitSafe(
+      state.copyWith(
+        backupId: backupId,
+        backupKey: encryptedData.$1,
+        backupFolderPath: filePath ?? '',
+        backupSalt: backupSalt,
+        savingBackups: false,
+        lastBackupAttempt: DateTime.now(),
+      ),
+    );
+  }
+
+  Future<void> saveGoogleDriveBackup() async {
+    if (!_canStartBackup()) {
+      _handleSaveError('Please wait before attempting another backup');
+      return;
+    }
+
+    _emitSafe(
+      state.copyWith(
+        savingBackups: true,
+        errorSavingBackups: '',
+      ),
+    );
+
+    if (_wallets.isEmpty) {
+      _handleLoadError('No wallets available for backup');
+      return;
+    }
+
+    final (api, connectErr) = await _driveManager.connect();
+    if (connectErr != null) {
+      _handleSaveError(connectErr.message);
+      return;
+    }
+
+    final backups = await _createBackupsForAllWallets();
+    if (backups.isEmpty) {
+      _handleSaveError('Failed to create backups');
+      return;
+    }
+
+    final (encryptedData, encryptErr) = await _encryptBackups(backups);
+    if (encryptErr != null || encryptedData == null) {
+      _handleSaveError(encryptErr?.message ?? 'Encryption failed');
+      return;
+    }
+    final backupSalt = _extractBackupSalt(encryptedData.$2);
+    if (backupSalt == null) {
+      _handleSaveError('Failed to extract backup salt');
+      return;
+    }
+
+    final (filePath, saveErr) = await _driveManager.saveEncryptedBackup(
+      encrypted: encryptedData.$2,
+      backupFolder: '', // No longer needed
+    );
+
+    if (saveErr != null) {
+      _handleSaveError('Failed to save to Google Drive: ${saveErr.message}');
+      return;
+    }
+
+    final fileName = filePath?.split('/').last;
+    final backupId = fileName?.split('_').last.split('.').first;
+    if (backupId == null || fileName == null) {
+      _handleSaveError('Failed to extract backup information');
+      return;
+    }
+
+    _emitSafe(
+      state.copyWith(
+        backupId: backupId,
+        backupKey: encryptedData.$1,
+        backupFolderPath: fileName,
+        backupSalt: backupSalt,
+        savingBackups: false,
+        lastBackupAttempt: DateTime.now(),
+      ),
+    );
+  }
+
+  Future<void> testBackupClicked() async {
+    emit(state.copyWith(testingBackup: true, errTestingBackup: ''));
+
+    final words = state.testMneString();
+    final password = state.testBackupPassword;
+    final seed = await _loadSeedData(_currentWallet!);
+
+    if (seed == null) {
+      emit(
+        state.copyWith(
+          errTestingBackup: 'Unable to load wallet data',
+          testingBackup: false,
+        ),
+      );
+      return;
+    }
+
+    if (!_verifyWords(seed.mnemonic, words)) {
+      emit(
+        state.copyWith(
+          errTestingBackup: 'Invalid seed words',
+          testingBackup: false,
+        ),
+      );
+      return;
+    }
+
+    if (!_verifyPassphrase(seed, password)) {
+      emit(
+        state.copyWith(
+          errTestingBackup: 'Invalid passphrase',
+          testingBackup: false,
+        ),
+      );
+      return;
+    }
+
+    await _updateWalletBackupStatus(
+      _currentWallet!.copyWith(
+        physicalBackupTested: true,
+        lastPhysicalBackupTested: DateTime.now(),
+      ),
+    );
+    _emitBackupTestSuccessState();
+  }
+
+  void word24Clicked(int shuffledIdx) {
+    emit(state.copyWith(errTestingBackup: ''));
+    final testMnemonic = state.testMnemonicOrder.toList();
+    if (testMnemonic.length == 24) return;
+
+    final (word, isSelected, actualIdx) = state.shuffleElementAt(shuffledIdx);
+    if (isSelected) return;
+    if (actualIdx != testMnemonic.length) {
+      invalidTestOrderClicked();
+      return;
+    }
+
+    testMnemonic.add(
+      (
+        word: word,
+        shuffleIdx: shuffledIdx,
+        selectedActualIdx: actualIdx,
+      ),
+    );
+
+    emit(state.copyWith(testMnemonicOrder: testMnemonic));
+  }
+
+  void wordClicked(int shuffledIdx) {
+    emit(state.copyWith(errTestingBackup: ''));
+    final testMnemonic = state.testMnemonicOrder.toList();
+    if (testMnemonic.length == 12) return;
+
+    final (word, isSelected, actualIdx) = state.shuffleElementAt(shuffledIdx);
+    if (isSelected) return;
+    if (actualIdx != testMnemonic.length) {
+      invalidTestOrderClicked();
+      return;
+    }
+
+    testMnemonic.add(
+      (
+        word: word,
+        shuffleIdx: shuffledIdx,
+        selectedActualIdx: actualIdx,
+      ),
+    );
+
+    emit(state.copyWith(testMnemonicOrder: testMnemonic));
+  }
+
+  // Private Helper Methods (alphabetically)
   Future<(Wallet?, Err?)> _addOrUpdateWallet(
     BBNetwork network,
     BaseWalletType layer,
@@ -977,6 +679,17 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
+  bool _canStartBackup() {
+    final lastAttempt = state.lastBackupAttempt;
+    if (lastAttempt != null) {
+      final timeSinceLastBackup = DateTime.now().difference(lastAttempt);
+      if (timeSinceLastBackup < _kMinBackupInterval) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<Wallet?> _createWalletFromSeed(
     BaseWalletType layer,
     Seed seed,
@@ -1011,12 +724,196 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
-  // Helper method for safe state emission
+  Future<List<Backup>> _createBackupsForAllWallets() async {
+    final backups = <Backup>[];
+
+    try {
+      for (final wallet in _wallets) {
+        final backup = await _createBackupForWallet(wallet);
+        if (backup != null) backups.add(backup);
+      }
+      return backups;
+    } catch (e) {
+      debugPrint('Error creating backups: $e');
+      _emitBackupError('Failed to create backups');
+      return [];
+    }
+  }
+
+  Future<Backup?> _createBackupForWallet(Wallet wallet) async {
+    try {
+      final (seed, err) = await _loadWalletSeed(wallet);
+      if (err != null || seed == null) {
+        debugPrint('Failed to read wallet ${wallet.name}: $err');
+        _emitBackupError('Failed to read wallet ${wallet.name}');
+        return null;
+      }
+
+      final backup = Backup(
+        name: wallet.name ?? '',
+        network: wallet.network.name,
+        layer: wallet.baseWalletType.name,
+        script: wallet.scriptType.name,
+        type: wallet.type.name,
+        publicDescriptors: [
+          wallet.externalPublicDescriptor,
+          wallet.internalPublicDescriptor,
+        ].join(','),
+      );
+
+      if (!wallet.hasPassphrase()) {
+        return backup.copyWith(
+          mnemonic: seed.mnemonic.split(' '),
+          passphrase: '',
+        );
+      }
+
+      final passphrases = seed.passphrases
+          .where((e) => e.sourceFingerprint == wallet.sourceFingerprint);
+
+      if (passphrases.isEmpty) {
+        _emitBackupError('No passphrase found for wallet ${wallet.name}');
+        return backup;
+      }
+
+      return backup.copyWith(
+        mnemonic: seed.mnemonic.split(' '),
+        passphrase: passphrases.first.passphrase,
+      );
+    } catch (e) {
+      _emitBackupError('Error creating backup for ${wallet.name}: $e');
+      return null;
+    }
+  }
+
+  void _emitBackupError(String message) {
+    emit(
+      state.copyWith(
+        savingBackups: false,
+        errorSavingBackups: message,
+      ),
+    );
+  }
+
+  void _emitBackupState(Seed seed) {
+    if (_currentWallet == null) {
+      emit(
+        state.copyWith(
+          errorLoadingBackups: 'No active wallet selected',
+          loadingBackups: false,
+        ),
+      );
+      return;
+    }
+
+    final words = seed.mnemonic.split(' ');
+    final shuffled = words.toList()..shuffle();
+
+    emit(
+      state.copyWith(
+        testMnemonicOrder: [],
+        mnemonic: words,
+        errTestingBackup: '',
+        password: seed
+            .getPassphraseFromIndex(_currentWallet!.sourceFingerprint)
+            .passphrase,
+        shuffledMnemonic: shuffled,
+        loadingBackups: false,
+      ),
+    );
+  }
+
+  void _emitBackupTestSuccessState() {
+    emit(
+      state.copyWith(
+        backupTested: true,
+        testingBackup: false,
+      ),
+    );
+    clearSensitive();
+  }
+
   void _emitSafe(BackupSettingsState newState) {
     if (!isClosed) emit(newState);
   }
 
-  // Separate error handling methods for loading and saving
+  Future<((String, String)?, Err?)> _encryptBackups(
+      List<Backup> backups) async {
+    try {
+      final (mainSeed, fetchMainMnemonicErr) = await _fetchMainSeed();
+      if (fetchMainMnemonicErr != null || mainSeed == null) {
+        return (null, fetchMainMnemonicErr);
+      }
+      final (encData, err) = await _manager.encryptBackups(
+        backups: backups,
+        mnemonic: mainSeed.mnemonic.split(' '),
+        network: mainSeed.network.toString().toLowerCase(),
+      );
+
+      if (err != null || encData == null) {
+        return (null, err);
+      }
+
+      return (encData, null);
+    } catch (e) {
+      return (null, Err(e.toString()));
+    }
+  }
+
+  String? _extractBackupSalt(String encrypted) {
+    try {
+      final data = jsonDecode(encrypted) as Map<String, dynamic>;
+      final encryptedData =
+          jsonDecode(data['encrypted'] as String) as Map<String, dynamic>;
+      return encryptedData['salt'] as String?;
+    } catch (e) {
+      debugPrint('Failed to extract salt: $e');
+      return null;
+    }
+  }
+
+  Future<(Seed?, Err?)> _fetchMainSeed() async {
+    final mainWallet = _wallets.firstWhere(
+      (wallet) =>
+          wallet.mainWallet &&
+          wallet.type == BBWalletType.main &&
+          wallet.baseWalletType == BaseWalletType.Bitcoin &&
+          wallet.network == BBNetwork.Mainnet,
+      orElse: () => _wallets.firstWhere(
+        (wallet) =>
+            wallet.mainWallet &&
+            wallet.type == BBWalletType.main &&
+            wallet.baseWalletType == BaseWalletType.Bitcoin &&
+            wallet.network == BBNetwork.Testnet,
+        orElse: () => _wallets.first,
+      ),
+    );
+
+    return await _loadWalletSeed(mainWallet);
+  }
+
+  BaseWalletType? _getLayer(String layer) => switch (layer.toLowerCase()) {
+        'bitcoin' => BaseWalletType.Bitcoin,
+        'liquid' => BaseWalletType.Liquid,
+        _ => null
+      };
+
+  ScriptType? _getScript(String script) => switch (script.toLowerCase()) {
+        'bip44' => ScriptType.bip44,
+        'bip49' => ScriptType.bip49,
+        'bip84' => ScriptType.bip84,
+        _ => null
+      };
+
+  BBWalletType? _getWalletType(String type) => switch (type.toLowerCase()) {
+        'main' => BBWalletType.main,
+        'xpub' => BBWalletType.xpub,
+        'words' => BBWalletType.words,
+        'descriptors' => BBWalletType.descriptors,
+        'coldcard' => BBWalletType.coldcard,
+        _ => null
+      };
+
   void _handleLoadError(String message, {bool loading = false}) {
     _emitSafe(
       state.copyWith(
@@ -1034,4 +931,80 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       ),
     );
   }
+
+  Future<void> invalidTestOrderClicked() async {
+    emit(
+      state.copyWith(
+        testMnemonicOrder: [],
+        errTestingBackup: 'Invalid mnemonic order',
+      ),
+    );
+    await Future.delayed(_kShuffleDelay);
+    final shuffled = state.mnemonic.toList()..shuffle();
+    emit(
+      state.copyWith(
+        shuffledMnemonic: shuffled,
+        errTestingBackup: '',
+      ),
+    );
+  }
+
+  Future<(Seed?, Err?)> _loadWalletSeed(Wallet wallet) async {
+    final (seed, err) = await _walletSensRepository.readSeed(
+      fingerprintIndex: wallet.getRelatedSeedStorageString(),
+    );
+    return (seed, err);
+  }
+
+  Future<Err?> _processBackupRecovery(Backup backup) async {
+    final network = BBNetwork.fromString(backup.network);
+    final layer = _getLayer(backup.layer);
+    final script = _getScript(backup.script);
+    final type = _getWalletType(backup.type);
+
+    if (layer == null || script == null || type == null) {
+      return Err('Invalid backup configuration for ${backup.network}');
+    }
+
+    final (savedWallet, err) = await _addOrUpdateWallet(
+      network,
+      layer,
+      script,
+      type,
+      backup.mnemonic.join(' '),
+      backup.passphrase,
+      backup.publicDescriptors,
+    );
+    if (savedWallet != null) {
+      await _updateWalletBackupStatus(
+        savedWallet.copyWith(
+          vaultBackupTested: true,
+          lastVaultBackupTested: DateTime.now(),
+        ),
+      );
+    }
+    return err;
+  }
+
+  Future<void> _updateWalletBackupStatus(Wallet updatedWallet) async {
+    final service =
+        _appWalletsRepository.getWalletServiceById(updatedWallet.id);
+    if (service != null) {
+      await service.updateWallet(
+        updatedWallet,
+        updateTypes: [UpdateWalletTypes.settings],
+      );
+      _currentWallet = updatedWallet;
+    }
+  }
+
+  bool _verifyPassphrase(Seed seed, String password) {
+    final storedPassphrase = seed
+        .getPassphraseFromIndex(_currentWallet!.sourceFingerprint)
+        .passphrase;
+    return storedPassphrase == password;
+  }
+
+  bool _verifyWords(String seedMnemonic, String testWords) =>
+      seedMnemonic == testWords;
 }
