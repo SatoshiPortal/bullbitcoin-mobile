@@ -95,7 +95,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     await super.close();
   }
 
-  // Public Methods (alphabetically)
   void changePassword(String password) {
     emit(
       state.copyWith(
@@ -677,7 +676,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     emit(state.copyWith(testMnemonicOrder: testMnemonic));
   }
 
-  // Private Helper Methods (alphabetically)
   Future<(Wallet?, Err?)> _addOrUpdateWallet(
     BBNetwork network,
     BaseWalletType layer,
