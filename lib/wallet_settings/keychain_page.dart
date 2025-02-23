@@ -148,13 +148,13 @@ class _Screen extends StatelessWidget {
 
             if (state.keySecretState == KeySecretState.recovered &&
                 !state.loading &&
-                !state.hasError) {
-              if (encryptedBackup.isNotEmpty) {
-                context.read<BackupSettingsCubit>().recoverWithKeyServer(
-                      jsonEncode(encryptedBackup),
-                      state.backupKey,
-                    );
-              }
+                !state.hasError &&
+                encryptedBackup.isNotEmpty &&
+                state.backupKey.isNotEmpty) {
+              context.read<BackupSettingsCubit>().recoverBackup(
+                    jsonEncode(encryptedBackup),
+                    state.backupKey,
+                  );
             }
 
             if (state.hasError) {
