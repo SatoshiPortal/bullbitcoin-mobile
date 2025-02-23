@@ -311,13 +311,13 @@ class _RecoveryPage extends StatelessWidget {
           children: [
             const Gap(50),
             BBText.titleLarge(
-              'Enter Recovery ${inputType == KeyChainInputType.pin ? 'PIN' : 'Password'}',
+              'Enter Recovery ${inputType == KeyChainInputType.pin ? 'PIN' : inputType == KeyChainInputType.password ? 'Password' : 'Key'}',
               textAlign: TextAlign.center,
               isBold: true,
             ),
             const Gap(8),
             BBText.bodySmall(
-              'Enter the ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} you used to backup your keychain',
+              'Enter the ${inputType == KeyChainInputType.pin ? 'PIN' : inputType == KeyChainInputType.password ? 'password' : 'backup key'} you used to backup your keychain',
               textAlign: TextAlign.center,
             ),
             const Gap(50),
