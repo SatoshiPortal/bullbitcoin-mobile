@@ -64,8 +64,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         _appWalletsRepository = appWalletsRepository,
         _wallets = wallets,
         _currentWallet = currentWallet,
-        _manager = manager,
-        _driveManager = driveManager,
+        _fileSystemBackupManager = manager,
+        _googleDriveBackupManager = driveManager,
         _filePicker = locator<FilePick>(),
         _walletSensitiveCreate = walletSensitiveCreate,
         _bdkSensitiveCreate = bdkSensitiveCreate,
@@ -83,8 +83,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   final LWKSensitiveCreate _lwkSensitiveCreate;
   Wallet? _currentWallet;
   final List<Wallet> _wallets;
-  final FileSystemBackupManager _manager;
-  final GoogleDriveBackupManager _driveManager;
+  final FileSystemBackupManager _fileSystemBackupManager;
+  final GoogleDriveBackupManager _googleDriveBackupManager;
   final FilePick? _filePicker;
   static const _kDelayDuration = Duration(milliseconds: 800);
   static const _kShuffleDelay = Duration(milliseconds: 500);
@@ -136,7 +136,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
   Future<void> connectToGoogleDrive() async {
     try {
-      final (api, err) = await _driveManager.connect();
+      final (api, err) = await _googleDriveBackupManager.connect();
       if (err != null) {
         _emitBackupError('Failed to connect to Google Drive: ${err.message}');
         return;
@@ -148,11 +148,88 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   void disconnectGoogleDrive() {
-    _driveManager.disconnect();
+    _googleDriveBackupManager.disconnect();
     emit(state.copyWith(backupFolderPath: ''));
   }
 
-  Future<void> fetchLatestBacup({bool forceRefresh = false}) async {
+  Future<void> deleteFsBackup(String backupName) async {
+    if (state.backupFolderPath.isEmpty) {
+      emit(state.copyWith(errorSavingBackups: 'No backup to delete'));
+      return;
+    }
+
+    final (deleted, err) = await _fileSystemBackupManager.removeEncryptedBackup(
+      backupName: backupName,
+    );
+
+    if (err != null) {
+      emit(state.copyWith(errorSavingBackups: 'Failed to delete backup'));
+      return;
+    }
+
+    emit(state.copyWith(backupFolderPath: ''));
+  }
+
+  Future<void> deleteGoogleDriveBackup(String backupName) async {
+    if (state.backupFolderPath.isEmpty) {
+      emit(state.copyWith(errorSavingBackups: 'No backup to delete'));
+      return;
+    }
+
+    final (deleted, err) =
+        await _googleDriveBackupManager.removeEncryptedBackup(
+      backupName: backupName,
+    );
+
+    if (err != null) {
+      emit(state.copyWith(errorSavingBackups: 'Failed to delete backup'));
+      return;
+    }
+
+    emit(state.copyWith(backupFolderPath: ''));
+  }
+
+  Future<void> fetchFsBackup() async {
+    if (_filePicker == null) {
+      return;
+    }
+    final (file, error) = await _filePicker.pickFile();
+
+    if (error != null) {
+      emit(state.copyWith(errorLoadingBackups: "Error picking file"));
+      return;
+    }
+
+    if (file == null || file.isEmpty) {
+      emit(state.copyWith(errorLoadingBackups: 'Corrupted backup file'));
+      return;
+    }
+    final (loadedBackup, err) =
+        await _fileSystemBackupManager.loadEncryptedBackup(
+      encrypted: file,
+    );
+    if (loadedBackup != null) {
+      emit(
+        state.copyWith(
+          loadingBackups: false,
+          latestRecoveredBackup: loadedBackup,
+          lastBackupAttempt: DateTime.now(),
+        ),
+      );
+      return;
+    } else if ((err != null) || loadedBackup?["id"] == null) {
+      debugPrint('Error loading backups: ${err?.message}');
+      emit(
+        state.copyWith(
+          loadingBackups: false,
+          errorLoadingBackups: "Corrupted backup file",
+        ),
+      );
+      return;
+    }
+  }
+
+  Future<void> fetchGoogleDriveBackup({bool forceRefresh = false}) async {
     try {
       if (!forceRefresh && state.loadedBackups.isNotEmpty) {
         emit(state.copyWith(loadingBackups: false));
@@ -165,7 +242,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         ),
       );
 
-      final (api, connectErr) = await _driveManager.connect();
+      final (api, connectErr) = await _googleDriveBackupManager.connect();
       if (connectErr != null) {
         _handleLoadError(connectErr.message);
 
@@ -173,7 +250,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       }
 
       final (availableBackups, err) =
-          await _driveManager.loadAllEncryptedBackupFiles(
+          await _googleDriveBackupManager.loadAllEncryptedBackupFiles(
         backupFolder: '', // No longer needed
       );
 
@@ -197,7 +274,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           return;
         }
         final (loadedBackupMetaData, mediaErr) =
-            await _driveManager.fetchMediaStream(
+            await _googleDriveBackupManager.fetchMediaStream(
           file: latestBackup,
         );
 
@@ -207,7 +284,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           return;
         }
 
-        final (loadedBackup, err) = await _driveManager.loadEncryptedBackup(
+        final (loadedBackup, err) =
+            await _googleDriveBackupManager.loadEncryptedBackup(
           encrypted: utf8.decode(loadedBackupMetaData),
         );
         if (loadedBackup != null) {
@@ -280,7 +358,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final (backups, decryptErr) = await _manager.decryptBackups(
+    final (backups, decryptErr) = await _fileSystemBackupManager.decryptBackups(
       encrypted: encrypted,
       backupKey: HEX.decode(backupKey),
     );
@@ -331,7 +409,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         return;
       }
 
-      final (backupKey, deriveErr) = await _manager.deriveBackupKey(
+      final (backupKey, deriveErr) =
+          await _fileSystemBackupManager.deriveBackupKey(
         mainSeed.mnemonic.split(' '),
         mainSeed.network.toString(),
         backupKeyIndex,
@@ -354,46 +433,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
-  Future<void> recoverFromFs() async {
-    if (_filePicker == null) {
-      return;
-    }
-    final (file, error) = await _filePicker.pickFile();
-
-    if (error != null) {
-      emit(state.copyWith(errorLoadingBackups: "Error picking file"));
-      return;
-    }
-
-    if (file == null || file.isEmpty) {
-      emit(state.copyWith(errorLoadingBackups: 'Corrupted backup file'));
-      return;
-    }
-    final (loadedBackup, err) = await _manager.loadEncryptedBackup(
-      encrypted: file,
-    );
-    if (loadedBackup != null) {
-      emit(
-        state.copyWith(
-          loadingBackups: false,
-          latestRecoveredBackup: loadedBackup,
-          lastBackupAttempt: DateTime.now(),
-        ),
-      );
-      return;
-    } else if ((err != null) || loadedBackup?["id"] == null) {
-      debugPrint('Error loading backups: ${err?.message}');
-      emit(
-        state.copyWith(
-          loadingBackups: false,
-          errorLoadingBackups: "Corrupted backup file",
-        ),
-      );
-      return;
-    }
-  }
-
-  Future<void> refreshBackups() => fetchLatestBacup(forceRefresh: true);
+  Future<void> refreshGoogleDriveBackups() =>
+      fetchGoogleDriveBackup(forceRefresh: true);
 
   Future<void> resetBackupTested() async {
     await Future.delayed(_kDelayDuration);
@@ -435,7 +476,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final (filePath, saveErr) = await _manager.saveEncryptedBackup(
+    final (filePath, saveErr) =
+        await _fileSystemBackupManager.saveEncryptedBackup(
       encrypted: encryptedData.$2,
       backupFolder: savePath,
     );
@@ -487,7 +529,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final (api, connectErr) = await _driveManager.connect();
+    final (api, connectErr) = await _googleDriveBackupManager.connect();
     if (connectErr != null) {
       _handleSaveError(connectErr.message);
       return;
@@ -510,7 +552,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final (filePath, saveErr) = await _driveManager.saveEncryptedBackup(
+    final (filePath, saveErr) =
+        await _googleDriveBackupManager.saveEncryptedBackup(
       encrypted: encryptedData.$2,
       backupFolder: '', // No longer needed
     );
@@ -848,7 +891,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       if (fetchMainMnemonicErr != null || mainSeed == null) {
         return (null, fetchMainMnemonicErr);
       }
-      final (encData, err) = await _manager.encryptBackups(
+      final (encData, err) = await _fileSystemBackupManager.encryptBackups(
         backups: backups,
         mnemonic: mainSeed.mnemonic.split(' '),
         network: mainSeed.network.toString().toLowerCase(),
