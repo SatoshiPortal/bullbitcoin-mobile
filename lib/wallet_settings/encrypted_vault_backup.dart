@@ -7,6 +7,7 @@ import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet_settings/bloc/backup_settings_cubit.dart';
 import 'package:bb_mobile/wallet_settings/bloc/backup_settings_state.dart';
+import 'package:bb_mobile/wallet_settings/bloc/keychain_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -299,11 +300,11 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
   ) async {
     switch (provider) {
       case BackupProvider.googleDrive:
-        await _cubit.fetchLatestBacup();
+        await _cubit.fetchGoogleDriveBackup();
       case BackupProvider.iCloud:
         debugPrint('iCloud backup');
       case BackupProvider.custom:
-        _cubit.recoverFromFs();
+        _cubit.fetchFsBackup();
     }
   }
 
@@ -666,6 +667,23 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                     child: const BBText.bodySmall(
                       'Forgot your secret? Click to recover',
                       textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const Gap(10),
+                  IconButton(
+                    onPressed: () {
+                      context.push(
+                        '/wallet-settings/backup-settings/keychain',
+                        extra: (
+                          '',
+                          widget.recoveredBackup,
+                          KeyChainPageState.delete.name.toLowerCase()
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.black,
                     ),
                   ),
                 ],
