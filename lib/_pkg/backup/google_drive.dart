@@ -23,18 +23,21 @@ class GoogleDriveBackupManager extends IBackupManager {
   DriveApi? _api;
 
   Future<(DriveApi?, Err?)> connect() async {
+    GoogleSignInAccount? account;
     try {
-      // Try silent sign in first
-      var account = await _google.signInSilently();
-      // If failed, try interactive sign in
-      if (account == null) {
-        account = await _google.signIn();
-        if (account == null) return (null, Err(_errorMessages['connection']!));
-      }
+      account = await _google.signInSilently();
+    } catch (e) {
+      debugPrint('Silent sign-in failed, trying interactive sign-in: $e');
+      account = await _google.signIn();
+    }
+    // If we still don't have an account after both attempts
+    if (account == null) {
+      return (null, Err(_errorMessages['connection']!));
+    }
 
+    try {
       final client = await _google.authenticatedClient();
       if (client == null) return (null, Err(_errorMessages['auth']!));
-
       _api = DriveApi(client);
       return (_api, null);
     } catch (e) {
