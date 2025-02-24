@@ -4,14 +4,14 @@ import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/domain/services/mnemonic_seed_factory.dart';
-import 'package:bb_mobile/core/domain/services/wallet_metadata_derivation_service.dart';
+import 'package:bb_mobile/core/domain/services/wallet_metadata_derivator.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 
 class RecoverWalletUseCase {
   final SettingsRepository _settingsRepository;
   final MnemonicSeedFactory _mnemonicSeedFactory;
   final SeedRepository _seedRepository;
-  final WalletMetadataDerivationService _walletMetadataDerivationService;
+  final WalletMetadataDerivator _walletMetadataDerivator;
   final WalletMetadataRepository _walletMetadataRepository;
   final WalletRepositoryManager _walletRepositoryManager;
 
@@ -19,13 +19,13 @@ class RecoverWalletUseCase {
     required SettingsRepository settingsRepository,
     required MnemonicSeedFactory mnemonicSeedFactory,
     required SeedRepository seedRepository,
-    required WalletMetadataDerivationService walletMetadataDerivationService,
+    required WalletMetadataDerivator walletMetadataDerivator,
     required WalletMetadataRepository walletMetadataRepository,
     required WalletRepositoryManager walletRepositoryManager,
   })  : _settingsRepository = settingsRepository,
         _mnemonicSeedFactory = mnemonicSeedFactory,
         _seedRepository = seedRepository,
-        _walletMetadataDerivationService = walletMetadataDerivationService,
+        _walletMetadataDerivator = walletMetadataDerivator,
         _walletMetadataRepository = walletMetadataRepository,
         _walletRepositoryManager = walletRepositoryManager;
 
@@ -42,7 +42,7 @@ class RecoverWalletUseCase {
       passphrase: passphrase,
     );
 
-    final walletMetadata = await _walletMetadataDerivationService.fromSeed(
+    final walletMetadata = await _walletMetadataDerivator.fromSeed(
       seed: mnemonicSeed,
       network: environment == Environment.mainnet
           ? Network.bitcoinMainnet

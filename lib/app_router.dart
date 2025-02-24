@@ -1,14 +1,14 @@
-import 'package:bb_mobile/core/presentation/screens/route_error_screen.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/features/app_unlock/presentation/screens/pin_code_unlock_screen.dart';
-import 'package:bb_mobile/features/home/presentation/home_screen.dart';
-import 'package:bb_mobile/features/onboarding/presentation/onboarding_screen.dart';
-import 'package:bb_mobile/features/pin_code/presentation/pin_code_setting_flow.dart';
-import 'package:bb_mobile/features/receive/presentation/widgets/receive_scaffold.dart';
-import 'package:bb_mobile/features/receive/receive_router.dart';
-import 'package:bb_mobile/features/recover_wallet/presentation/flow/recover_wallet_flow.dart';
-import 'package:bb_mobile/features/settings/presentation/screens/language_settings_screen.dart';
-import 'package:bb_mobile/features/settings/presentation/screens/settings_screen.dart';
+import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
+import 'package:bb_mobile/features/home/ui/home_screen.dart';
+import 'package:bb_mobile/features/onboarding/ui/onboarding_screen.dart';
+import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
+import 'package:bb_mobile/features/receive/ui/receive_router.dart';
+import 'package:bb_mobile/features/recover_wallet/ui/recover_wallet_flow.dart';
+import 'package:bb_mobile/features/settings/ui/screens/language_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/ui/screens/route_error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -20,9 +20,6 @@ enum AppRoute {
   home('/'),
   appUnlock('/app-unlock'),
   recoverWallet('/recover-wallet'),
-  pinCode('/pin-code'),
-  // Todo: check if the language feature is better moved to settings subroutes (as well as the whole feature)
-  language('/language'),
   settings('/settings'),
   receiveBitcoin('/receive-bitcoin'),
   receiveLightning('/receive-lightning'),
@@ -85,16 +82,7 @@ class AppRouter {
         name: AppRoute.settings.name,
         path: AppRoute.settings.path,
         builder: (context, state) => const SettingsScreen(),
-      ),
-      GoRoute(
-        name: AppRoute.pinCode.name,
-        path: AppRoute.pinCode.path,
-        builder: (context, state) => const PinCodeSettingFlow(),
-      ),
-      GoRoute(
-        name: AppRoute.language.name,
-        path: AppRoute.language.path,
-        builder: (context, state) => const LanguageSettingsScreen(),
+        routes: SettingsRouter.routes,
       ),
       ReceiveRouter.route,
     ],

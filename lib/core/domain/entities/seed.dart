@@ -1,3 +1,4 @@
+import 'package:bb_mobile/utils/uint_8_list_x.dart';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:flutter/foundation.dart';
@@ -25,14 +26,13 @@ sealed class Seed with _$Seed {
   }
 
   String get seedHex {
-    return seedBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    return seedBytes.toHexString();
   }
 
   String get masterFingerprint {
     final root = bip32.BIP32.fromSeed(seedBytes);
     final fingerprintBytes = root.fingerprint;
-    final fingerprintHex =
-        fingerprintBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    final fingerprintHex = fingerprintBytes.toHexString();
     return fingerprintHex;
   }
 }

@@ -2,22 +2,22 @@ import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/core/domain/services/wallet_metadata_derivation_service.dart';
+import 'package:bb_mobile/core/domain/services/wallet_metadata_derivator.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 
 class ImportXpubUseCase {
   final SettingsRepository _settingsRepository;
-  final WalletMetadataDerivationService _walletMetadataDerivationService;
+  final WalletMetadataDerivator _walletMetadataDerivator;
   final WalletMetadataRepository _walletMetadataRepository;
   final WalletRepositoryManager _walletRepositoryManager;
 
   ImportXpubUseCase({
     required SettingsRepository settingsRepository,
-    required WalletMetadataDerivationService walletMetadataDerivationService,
+    required WalletMetadataDerivator walletMetadataDerivator,
     required WalletMetadataRepository walletMetadataRepository,
     required WalletRepositoryManager walletRepositoryManager,
   })  : _settingsRepository = settingsRepository,
-        _walletMetadataDerivationService = walletMetadataDerivationService,
+        _walletMetadataDerivator = walletMetadataDerivator,
         _walletMetadataRepository = walletMetadataRepository,
         _walletRepositoryManager = walletRepositoryManager;
 
@@ -28,7 +28,7 @@ class ImportXpubUseCase {
   }) async {
     final environment = await _settingsRepository.getEnvironment();
 
-    final walletMetadata = await _walletMetadataDerivationService.fromXpub(
+    final walletMetadata = await _walletMetadataDerivator.fromXpub(
       xpub: xpub,
       network: environment == Environment.mainnet
           ? Network.bitcoinMainnet

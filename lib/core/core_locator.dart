@@ -13,7 +13,7 @@ import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/word_list_repository.dart';
 import 'package:bb_mobile/core/domain/services/mnemonic_seed_factory.dart';
-import 'package:bb_mobile/core/domain/services/wallet_metadata_derivation_service.dart';
+import 'package:bb_mobile/core/domain/services/wallet_metadata_derivator.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 import 'package:bb_mobile/core/domain/usecases/find_mnemonic_words_use_case.dart';
 import 'package:bb_mobile/core/domain/usecases/get_bitcoin_unit_usecase.dart';
@@ -87,8 +87,8 @@ class CoreLocator {
     );
 
     // Managers or services responsible for handling specific logic
-    locator.registerLazySingleton<WalletMetadataDerivationService>(
-      () => const WalletMetadataDerivationServiceImpl(),
+    locator.registerLazySingleton<WalletMetadataDerivator>(
+      () => const WalletMetadataDerivatorImpl(),
     );
     locator.registerLazySingleton<WalletRepositoryManager>(
       () => WalletRepositoryManagerImpl(),

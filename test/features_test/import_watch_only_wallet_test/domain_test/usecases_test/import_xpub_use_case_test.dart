@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/core/domain/services/wallet_metadata_derivation_service.dart';
+import 'package:bb_mobile/core/domain/services/wallet_metadata_derivator.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/usecases/import_xpub_use_case.dart';
 import 'package:mocktail/mocktail.dart';
@@ -10,8 +10,8 @@ import 'package:test/test.dart';
 
 class MockSettingsRepository extends Mock implements SettingsRepository {}
 
-class MockWalletMetadataDerivationService extends Mock
-    implements WalletMetadataDerivationService {}
+class MockWalletMetadataDerivator extends Mock
+    implements WalletMetadataDerivator {}
 
 class MockWalletMetadataRepository extends Mock
     implements WalletMetadataRepository {}
@@ -22,19 +22,19 @@ class MockWalletRepositoryManager extends Mock
 void main() {
   late ImportXpubUseCase useCase;
   late MockSettingsRepository mockSettingsRepository;
-  late MockWalletMetadataDerivationService mockWalletMetadataDerivationService;
+  late MockWalletMetadataDerivator mockWalletMetadataDerivator;
   late MockWalletMetadataRepository mockWalletMetadataRepository;
   late MockWalletRepositoryManager mockWalletRepositoryManager;
 
   setUp(() {
     mockSettingsRepository = MockSettingsRepository();
-    mockWalletMetadataDerivationService = MockWalletMetadataDerivationService();
+    mockWalletMetadataDerivator = MockWalletMetadataDerivator();
     mockWalletMetadataRepository = MockWalletMetadataRepository();
     mockWalletRepositoryManager = MockWalletRepositoryManager();
 
     useCase = ImportXpubUseCase(
       settingsRepository: mockSettingsRepository,
-      walletMetadataDerivationService: mockWalletMetadataDerivationService,
+      walletMetadataDerivator: mockWalletMetadataDerivator,
       walletMetadataRepository: mockWalletMetadataRepository,
       walletRepositoryManager: mockWalletRepositoryManager,
     );
@@ -62,7 +62,7 @@ void main() {
       when(() => mockSettingsRepository.getEnvironment())
           .thenAnswer((_) async => Environment.mainnet);
 
-      when(() => mockWalletMetadataDerivationService.fromXpub(
+      when(() => mockWalletMetadataDerivator.fromXpub(
             xpub: testXpub,
             network: Network.bitcoinMainnet,
             scriptType: testScriptType,
@@ -84,7 +84,7 @@ void main() {
 
       // Assert
       verify(() => mockSettingsRepository.getEnvironment()).called(1);
-      verify(() => mockWalletMetadataDerivationService.fromXpub(
+      verify(() => mockWalletMetadataDerivator.fromXpub(
             xpub: testXpub,
             network: Network.bitcoinMainnet,
             scriptType: testScriptType,
@@ -105,7 +105,7 @@ void main() {
       final testMetadataTestnet =
           testMetadata.copyWith(network: Network.bitcoinTestnet);
 
-      when(() => mockWalletMetadataDerivationService.fromXpub(
+      when(() => mockWalletMetadataDerivator.fromXpub(
             xpub: testXpub,
             network: Network.bitcoinTestnet,
             scriptType: testScriptType,
@@ -128,7 +128,7 @@ void main() {
 
       // Assert
       verify(() => mockSettingsRepository.getEnvironment()).called(1);
-      verify(() => mockWalletMetadataDerivationService.fromXpub(
+      verify(() => mockWalletMetadataDerivator.fromXpub(
             xpub: testXpub,
             network: Network.bitcoinTestnet,
             scriptType: testScriptType,
