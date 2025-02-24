@@ -208,6 +208,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       encrypted: fileContent,
     );
     if (loadedBackup != null) {
+      loadedBackup.addAll({
+        'source': 'fs',
+      });
       emit(
         state.copyWith(
           loadingBackups: false,
@@ -288,6 +291,10 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           encrypted: utf8.decode(loadedBackupMetaData),
         );
         if (loadedBackup != null) {
+          loadedBackup.addAll({
+            'source': 'drive',
+            'filename': latestBackup.name,
+          });
           emit(
             state.copyWith(
               loadingBackups: false,
