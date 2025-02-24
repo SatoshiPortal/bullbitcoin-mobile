@@ -1,4 +1,5 @@
-const List<String> passwordBlacklist = [
+// https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/10-million-password-list-top-1000.txt
+const Set<String> commonPasswordsTop1000 = {
   "123456",
   "password",
   "12345678",
@@ -999,4 +1000,4 @@ const List<String> passwordBlacklist = [
   "wildcat",
   "polina",
   "freepass",
-];
+};

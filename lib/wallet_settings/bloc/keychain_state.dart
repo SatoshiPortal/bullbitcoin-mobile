@@ -69,7 +69,7 @@ class KeychainState with _$KeychainState {
       return 'Password must contain at least 2 numbers';
     }
     return validateSecret(secret)
-        ? 'Password contains a common word or pattern'
+        ? 'The password is among the top 1000 most common'
         : null;
   }
 
@@ -79,13 +79,5 @@ class KeychainState with _$KeychainState {
   bool get isRecovering => pageState == KeyChainPageState.recovery;
   bool get canRecoverKey => backupId.isNotEmpty && isValid && !loading;
 
-  // Cache the compiled regex patterns
-  static final _blacklistPattern = RegExp(
-    r'\b(' +
-        passwordBlacklist.map((word) => RegExp.escape(word)).join('|') +
-        r')\b',
-    caseSensitive: false,
-  );
-
-  bool validateSecret(String secret) => _blacklistPattern.hasMatch(secret);
+  bool validateSecret(String secret) => commonPasswordsTop1000.contains(secret);
 }
