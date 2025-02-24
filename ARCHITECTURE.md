@@ -42,25 +42,25 @@ The classes that represent business data and rules, independent of any specific 
 
 If the domain data consists of native Dart types or simple value objects, you might not need an entity for it.
 
-E.g. [`WalletMetadata`](lib/features/wallet/domain/entities/wallet_metadata.dart), [UnlockAttempt](lib/features/pin_code/domain/entities/unlock_attempt.dart).
+E.g. [`WalletMetadata`](lib/features/wallet/domain/entities/wallet_metadata.dart), [`UnlockAttempt`](lib/features/pin_code/domain/entities/unlock_attempt.dart).
 
 #### Repository interfaces or contracts
 
 The interfaces (abstract classes) that define the methods the business logic needs to retrieve and/or store entity data. Repositories in the [data layer]() have to implement these interfaces. They effectively decouple the domain layer from the data layer, making it possible to switch the data source or concrete repository implementation without changing the domain layer.
 
-E.g. [PinCodeRepository](lib/features/pin_code/domain/repositories/pin_code_repository.dart), [`WalletRepository`](lib/features/wallet/domain/repositories/wallet_repository.dart).
+E.g. [`PinCodeRepository`](lib/features/pin_code/domain/repositories/pin_code_repository.dart), [`WalletRepository`](lib/features/wallet/domain/repositories/wallet_repository.dart).
 
 #### Services
 
 Services can be created to make some logic that combines different repositories reusable, as well as for logic that is not directly related to retrieving or storing data, but more about generating, deriving or calculating themselves. They generally have things like `Manager`, `Factory` or `Calculator` in their class name.
 
-E.g. [`WalletRepositoryManager`](lib/core/domain/services/wallet_repository_manager.dart), [WalletMetadataDerivator](lib/core/domain/services/wallet_metadata_derivation_service.dart), [`MnemonicSeedFactory`](lib/core/domain/services/mnemonic_seed_factory.dart) [`TimeoutCalculator`](lib/features/pin_code/domain/services/timeout_calculator.dart).
+E.g. [`WalletRepositoryManager`](lib/core/domain/services/wallet_repository_manager.dart), [`WalletMetadataDerivator`](lib/core/domain/services/wallet_metadata_derivation_service.dart), [`MnemonicSeedFactory`](lib/core/domain/services/mnemonic_seed_factory.dart), [`TimeoutCalculator`](lib/features/pin_code/domain/services/timeout_calculator.dart).
 
 #### Use cases
 
 They contain business logic and are responsible for orchestrating data flow from and to the entities by using the repository contracts and services. They essentially represent the actions that can be performed within the application.
 
-E.g. [`CreateDefaultWalletsUseCase](lib/features/onboarding/domain/usecases/create_default_wallets_usecase.dart), [`AttemptUnlockWithPinCodeUseCase`](lib/features/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart).
+E.g. [`CreateDefaultWalletsUseCase`](lib/features/onboarding/domain/usecases/create_default_wallets_usecase.dart), [`AttemptUnlockWithPinCodeUseCase`](lib/features/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart).
 
 ### Data Layer
 
@@ -70,7 +70,7 @@ The data layer is responsible for retrieving and storing data from and to differ
 
 Classes responsible for the actual retrieving or storing of the data, like APIs, databases, or local storage.
 
-E.g. [ExchangeDataSource](lib/core/data/datasources/exchange_data_source.dart), [`Bip39WordListDataSource`](lib/features/recover_wallet/data/datasources/bip39_word_list_data_source.dart).
+E.g. [`ExchangeDataSource`](lib/core/data/datasources/exchange_data_source.dart), [`Bip39WordListDataSource`](lib/features/recover_wallet/data/datasources/bip39_word_list_data_source.dart).
 
 #### Models
 
@@ -98,7 +98,7 @@ The following rules of thumb can be helpful and can be an alert to revisit the a
 - Dependency injection flow should be unidirectional: datasources -> repository implementations -> use cases -> blocs/cubits
   - Data sources are injected into repository implementations and not used directly in the use cases or anywhere else.
   - Repository implementations are injected into use cases and not used directly in the presentation layer or anywhere else.
-  - Use cases are injected into blocs/cubits and not used directly in the presentation layer or anywhere else.
+  - Use cases are injected into blocs/cubits or used in the presentation layer and nowhere else.
 - The only classes that should use models are the data layer classes. The domain layer should only use entities as data classes, not models.
 
 ### Further reading
