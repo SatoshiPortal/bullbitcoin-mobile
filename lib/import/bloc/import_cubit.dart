@@ -350,7 +350,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       ),
     );
     final (file, err) = await _filePicker.pickFile();
-    if (err != null) {
+    if (err != null || file == null) {
       emit(
         state.copyWith(
           importStep: ImportSteps.importXpub,
@@ -361,7 +361,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       return;
     }
 
-    final ccObj = jsonDecode(file!) as Map<String, dynamic>;
+    final ccObj = jsonDecode(await file.readAsString()) as Map<String, dynamic>;
 
     final coldcard = ColdCard.fromJson(ccObj);
 

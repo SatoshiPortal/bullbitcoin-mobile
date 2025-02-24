@@ -4,7 +4,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:file_picker/file_picker.dart';
 
 class FilePick {
-  Future<(String?, Err?)> pickFile() async {
+  Future<(File?, Err?)> pickFile() async {
     try {
       final result = await FilePicker.platform.pickFiles();
       if (result == null) throw 'No file selected';
@@ -13,12 +13,8 @@ class FilePick {
       if (path == null) throw 'No data selected';
 
       final file = File(path);
-      final dataStr = await file.readAsString();
 
-      // final bytes = result.files.first.bytes;
-      // final dataStr = utf8.decode(bytes);
-
-      return (dataStr, null);
+      return (file, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }

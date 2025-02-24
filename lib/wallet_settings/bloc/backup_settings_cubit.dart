@@ -198,14 +198,14 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       emit(state.copyWith(errorLoadingBackups: "Error picking file"));
       return;
     }
-
-    if (file == null || file.isEmpty) {
+    final fileContent = await file?.readAsString();
+    if (file == null || fileContent == null) {
       emit(state.copyWith(errorLoadingBackups: 'Corrupted backup file'));
       return;
     }
     final (loadedBackup, err) =
         await _fileSystemBackupManager.loadEncryptedBackup(
-      encrypted: file,
+      encrypted: fileContent,
     );
     if (loadedBackup != null) {
       emit(
