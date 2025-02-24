@@ -943,7 +943,7 @@ class _SuccessDialog extends StatelessWidget {
     if (isDelete) {
       title = 'Backup Deleted';
       message = 'Your backup has been permanently deleted';
-      route = '/wallet-settings';
+      route = '/home';
     } else if (isRecovery) {
       title = 'Recovery Successful';
       message = 'Your wallet has been recovered successfully';
