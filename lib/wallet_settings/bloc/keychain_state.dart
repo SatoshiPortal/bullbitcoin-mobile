@@ -43,31 +43,17 @@ class KeychainState with _$KeychainState {
 
   String displayPin() => 'x' * secret.length;
 
-  static final _pinRegex = RegExp(r'^[0-9]{6,7}$');
-  static final _uppercaseRegex = RegExp(r'(?=(?:.*[A-Z]){2})');
-  static final _numbersRegex = RegExp(r'(?=(?:.*\d){2})');
-
   String? getValidationError() {
     if (secret.isEmpty) return null;
 
     if (inputType == KeyChainInputType.pin) {
-      if (!_pinRegex.hasMatch(secret)) {
+      if (!RegExp(r'^[0-9]{6,7}$').hasMatch(secret)) {
         return secret.length < 6
             ? 'PIN must be at least 6 digits long'
             : 'PIN must be less than 8 digits';
       }
-      return validateSecret(secret) ? 'PIN contains a common pattern' : null;
     }
 
-    if (secret.length < 7) {
-      return 'Password must be at greater than 6 characters long';
-    }
-    if (!_uppercaseRegex.hasMatch(secret)) {
-      return 'Password must contain at least 2 uppercase letters';
-    }
-    if (!_numbersRegex.hasMatch(secret)) {
-      return 'Password must contain at least 2 numbers';
-    }
     return validateSecret(secret)
         ? 'The password is among the top 1000 most common'
         : null;
