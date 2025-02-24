@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_pkg/consts/configs.dart';
-import 'package:bb_mobile/wallet_settings/bloc/keychain_state.dart';
+import 'package:bb_mobile/recoverbull/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';

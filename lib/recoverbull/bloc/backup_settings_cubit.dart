@@ -19,7 +19,7 @@ import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/wallet_settings/bloc/backup_settings_state.dart';
+import 'package:bb_mobile/recoverbull/bloc/backup_settings_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
