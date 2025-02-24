@@ -151,14 +151,24 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     emit(state.copyWith(backupFolderPath: ''));
   }
 
-  Future<void> deleteFsBackup(String backupName) async {
-    if (state.backupFolderPath.isEmpty) {
-      emit(state.copyWith(errorSavingBackups: 'No backup to delete'));
+  Future<void> deleteFsBackup() async {
+    if (_filePicker == null) {
+      return;
+    }
+    final (file, error) = await _filePicker.pickFile();
+
+    if (error != null) {
+      debugPrint('Error picking the file: ${error.message}');
+      emit(state.copyWith(errorLoadingBackups: "Error picking file"));
+      return;
+    }
+    if (file == null) {
+      emit(state.copyWith(errorLoadingBackups: 'Corrupted backup file'));
       return;
     }
 
     final (deleted, err) = await _fileSystemBackupManager.removeEncryptedBackup(
-      backupName: backupName,
+      path: file.path,
     );
 
     if (err != null) {
@@ -169,7 +179,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     emit(state.copyWith(backupFolderPath: ''));
   }
 
-  Future<void> deleteGoogleDriveBackup(String backupName) async {
+  Future<void> deleteGoogleDriveBackup(String path) async {
     if (state.backupFolderPath.isEmpty) {
       emit(state.copyWith(errorSavingBackups: 'No backup to delete'));
       return;
@@ -177,7 +187,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     final (deleted, err) =
         await _googleDriveBackupManager.removeEncryptedBackup(
-      backupName: backupName,
+      path: path,
     );
 
     if (err != null) {
