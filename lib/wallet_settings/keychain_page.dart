@@ -337,6 +337,46 @@ class _RecoveryPage extends StatelessWidget {
   }
 }
 
+class _DeletePage extends StatelessWidget {
+  const _DeletePage({super.key, required this.inputType});
+  final KeyChainInputType inputType;
+
+  @override
+  Widget build(BuildContext context) {
+    return StackedPage(
+      bottomChildHeight: MediaQuery.of(context).size.height * 0.15,
+      bottomChild: _DeleteButton(inputType: inputType),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Gap(50),
+            const BBText.titleLarge(
+              'Delete Backup',
+              textAlign: TextAlign.center,
+              isBold: true,
+            ),
+            const Gap(8),
+            BBText.bodySmall(
+              'Enter your ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to delete this backup',
+              textAlign: TextAlign.center,
+            ),
+            const Gap(50),
+            if (inputType == KeyChainInputType.pin) ...[
+              _PinField(),
+              const KeyPad(),
+            ] else
+              _PasswordField(),
+            const Gap(30),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Input Widgets
 class _PinField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
