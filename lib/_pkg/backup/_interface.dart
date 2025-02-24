@@ -119,7 +119,6 @@ abstract class IBackupManager {
   });
 
   Future<(String?, Err?)> removeEncryptedBackup({
-    required String backupName,
-    String backupFolder = defaultBackupPath,
+    required String path,
   });
 }

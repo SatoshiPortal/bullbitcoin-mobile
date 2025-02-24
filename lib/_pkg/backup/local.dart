@@ -17,11 +17,10 @@ class FileSystemBackupManager extends IBackupManager {
   /// Returns the path to the deleted backup or an error message.
   @override
   Future<(String?, Err?)> removeEncryptedBackup({
-    required String backupName,
-    String backupFolder = defaultBackupPath,
+    required String path,
   }) async {
     try {
-      final result = await fileStorage.deleteFile(backupName);
+      final result = await fileStorage.deleteFile(path);
       if (result == null) return (null, Err('Failed to delete file.'));
       return (result.message, null);
     } catch (e) {

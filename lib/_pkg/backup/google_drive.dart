@@ -142,7 +142,7 @@ class GoogleDriveBackupManager extends IBackupManager {
       try {
         final response = await api.files.list(
           spaces: 'appDataFolder',
-          q: "mimeType='application/json' and trashed=false", // Add MIME type filter
+          q: "mimeType='application/json' and trashed=false",
           $fields: 'files(id, name, createdTime)',
           orderBy: 'createdTime desc',
         );
@@ -161,16 +161,14 @@ class GoogleDriveBackupManager extends IBackupManager {
 
   @override
   Future<(String?, Err?)> removeEncryptedBackup({
-    required String backupName,
-    String backupFolder =
-        defaultBackupPath, // backupFolder is now ignored, always operates in appDataFolder
+    required String path,
   }) async {
     return _withConnection((api) async {
       try {
         // Find files in appDataFolder using spaces: 'appDataFolder' and query by name
         final files = await api.files.list(
           spaces: 'appDataFolder',
-          q: "name = '$backupName' and trashed = false",
+          q: "name = '$path' and trashed = false",
           $fields: 'files(id)',
         );
 
@@ -183,7 +181,7 @@ class GoogleDriveBackupManager extends IBackupManager {
           File()..trashed = true, // Set trashed to true to move to trash
           firstFile.id!,
         );
-        return (backupName, null);
+        return (path, null);
       } catch (e) {
         return (null, Err('Failed to remove backup: $e'));
       }
