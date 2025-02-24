@@ -3,7 +3,19 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'keychain_state.freezed.dart';
 
-enum KeyChainPageState { enter, confirm, recovery, delete }
+enum KeyChainPageState {
+  enter,
+  confirm,
+  recovery,
+  delete;
+
+  static KeyChainPageState fromString(String value) {
+    return KeyChainPageState.values.firstWhere(
+      (element) => element.name.toLowerCase() == value.toLowerCase(),
+      orElse: () => KeyChainPageState.enter,
+    );
+  }
+}
 
 enum KeyChainInputType { pin, password, backupKey }
 
