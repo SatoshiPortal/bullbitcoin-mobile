@@ -100,7 +100,8 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
               '/wallet-settings/backup-settings/keychain',
               extra: (
                 state.backupKey,
-                {'id': state.backupId, 'salt': state.backupSalt}
+                {'id': state.backupId, 'salt': state.backupSalt},
+                KeyChainPageState.enter.name.toLowerCase()
               ),
             );
             _cubit.clearError();
@@ -621,7 +622,11 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                     onPressed: () => {
                       context.push(
                         '/wallet-settings/backup-settings/keychain',
-                        extra: ('', widget.recoveredBackup),
+                        extra: (
+                          '',
+                          widget.recoveredBackup,
+                          KeyChainPageState.recovery.name.toLowerCase()
+                        ),
                       ),
                     },
                     style: FilledButton.styleFrom(

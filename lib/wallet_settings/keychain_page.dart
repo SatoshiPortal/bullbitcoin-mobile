@@ -18,14 +18,17 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class KeychainBackupPage extends StatelessWidget {
-  const KeychainBackupPage({
+  KeychainBackupPage({
     super.key,
     this.backupKey,
+    required String pState,
     required this.backup,
-  });
+  }) : _pState = KeyChainPageState.fromString(pState);
 
   final String? backupKey;
+  final KeyChainPageState _pState;
   final Map<String, dynamic> backup;
+
   @override
   Widget build(BuildContext context) {
     String? backupId;

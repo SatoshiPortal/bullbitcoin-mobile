@@ -266,11 +266,13 @@ GoRouter setupRouter() => GoRouter(
                 GoRoute(
                   path: 'keychain',
                   builder: (context, state) {
-                    final (backupKey, backup) =
-                        state.extra! as (String?, Map<String, dynamic>);
+                    final (backupKey, backup, pState) =
+                        state.extra! as (String?, Map<String, dynamic>, String);
+
                     return KeychainBackupPage(
                       backupKey: backupKey,
                       backup: backup,
+                      pState: pState,
                     );
                   },
                 ),
