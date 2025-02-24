@@ -109,6 +109,8 @@ dev_dependencies:
   bloc_test: ^9.1.7
   mocktail: ^1.0.1
   flutter_launcher_icons: ^0.13.1
+  mockito: ^5.4.5
+  test: ^1.25.8
 
 flutter:
   generate: true # Needed for code generation, for example for internationalization

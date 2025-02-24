@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.da
 import 'package:bb_mobile/core/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/core/domain/services/wallet_metadata_derivation_service.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
+import 'package:flutter/material.dart';
 
 class CreateDefaultWalletsUseCase {
   final SettingsRepository _settingsRepository;
@@ -74,5 +75,6 @@ class CreateDefaultWalletsUseCase {
       _walletRepositoryManager.registerWallet(defaultWalletsMetadata[0]),
       _walletRepositoryManager.registerWallet(defaultWalletsMetadata[1]),
     ]);
+    debugPrint('Default wallets created');
   }
 }

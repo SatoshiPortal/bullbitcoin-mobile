@@ -1,15 +1,13 @@
-import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/core/presentation/screens/route_error_screen.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/screens/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/features/home/presentation/home_screen.dart';
-import 'package:bb_mobile/features/settings/presentation/screens/language_settings_screen.dart';
 import 'package:bb_mobile/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:bb_mobile/features/pin_code/presentation/pin_code_setting_flow.dart';
-import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/presentation/screens/receive_initial_screen.dart';
+import 'package:bb_mobile/features/receive/presentation/widgets/receive_scaffold.dart';
 import 'package:bb_mobile/features/receive/receive_router.dart';
 import 'package:bb_mobile/features/recover_wallet/presentation/flow/recover_wallet_flow.dart';
+import 'package:bb_mobile/features/settings/presentation/screens/language_settings_screen.dart';
 import 'package:bb_mobile/features/settings/presentation/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +24,9 @@ enum AppRoute {
   // Todo: check if the language feature is better moved to settings subroutes (as well as the whole feature)
   language('/language'),
   settings('/settings'),
-  receive('/receive');
+  receiveBitcoin('/receive-bitcoin'),
+  receiveLightning('/receive-lightning'),
+  receiveLiquid('/receive-liquid');
 
   final String path;
 
@@ -96,22 +96,7 @@ class AppRouter {
         path: AppRoute.language.path,
         builder: (context, state) => const LanguageSettingsScreen(),
       ),
-      ShellRoute(
-        builder: (context, state, child) {
-          return BlocProvider<ReceiveBloc>(
-            create: (context) => locator<ReceiveBloc>(),
-            child: child,
-          );
-        },
-        routes: [
-          GoRoute(
-            name: AppRoute.receive.name,
-            path: AppRoute.receive.path,
-            builder: (context, state) => const ReceiveScreen(),
-            routes: ReceiveRouter.routes,
-          ),
-        ],
-      )
+      ReceiveRouter.route,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
   );

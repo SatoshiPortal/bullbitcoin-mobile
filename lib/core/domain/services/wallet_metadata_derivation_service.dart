@@ -122,7 +122,7 @@ class WalletMetadataDerivationServiceImpl
       );
     }
 
-    final bip32Xpub = bip32.BIP32.fromBase58(xpub);
+    final bip32Xpub = _getBip32Xpub(xpub);
 
     final descriptor = await _deriveDescriptorFromXpub(
       bip32Xpub,
@@ -166,17 +166,18 @@ class WalletMetadataDerivationServiceImpl
   Future<String> _derivePublicDescriptorFromSeed(
     Seed seed, {
     required ScriptType scriptType,
-    Network network = Network.bitcoinMainnet,
+    required Network network,
     bool isInternalKeychain = false,
   }) async {
+    // TODO: check if this check and throw are needed, since the descriptor returned by lwk includes both external and internal chains
     if (network.isLiquid && isInternalKeychain) {
       throw UnimplementedError(
-        'No internal chain support in lwk for Liquid network',
+        'No separate internal chain support in lwk for Liquid network.',
       );
     }
 
     if (network.isBitcoin) {
-      final xprv = _getXprvFromSeed(seed);
+      final xprv = _getXprvFromSeed(seed, network);
       final secretKey = await bdk.DescriptorSecretKey.fromString(xprv);
       final bdkNetwork = network.bdkNetwork;
       final keychain = isInternalKeychain
@@ -275,9 +276,24 @@ class WalletMetadataDerivationServiceImpl
     return descriptor.asString();
   }
 
-  String _getXprvFromSeed(Seed seed) {
-    final root = bip32.BIP32.fromSeed(seed.seedBytes);
+  String _getXprvFromSeed(Seed seed, Network network) {
+    final nw = network == Network.bitcoinTestnet
+        ? bip32.NetworkType(
+            wif: 0x80,
+            bip32: bip32.Bip32Type(public: 0x043587CF, private: 0x04358394),
+          )
+        : null;
+    final root = bip32.BIP32.fromSeed(seed.seedBytes, nw);
     return root.toBase58();
+  }
+
+  bip32.BIP32 _getBip32Xpub(String xpub) {
+    final decoded = base58.decode(xpub);
+    final keyBytes = decoded.sublist(4); // Remove xpub version bytes
+    // Add xpub version bytes, since the bip32 library expects them like that
+    final xpubBytes =
+        Uint8List.fromList([...XpubType.xpub.versionBytes, ...keyBytes]);
+    return bip32.BIP32.fromBase58(base58.encode(xpubBytes));
   }
 }
 

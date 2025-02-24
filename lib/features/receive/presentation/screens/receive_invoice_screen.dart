@@ -5,17 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class ReceiveAmountScreen extends StatelessWidget {
-  const ReceiveAmountScreen({super.key});
+class ReceiveInvoiceScreen extends StatelessWidget {
+  const ReceiveInvoiceScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         children: [
-          Text('Receive Amount Screen'),
-          FilledButton(
-            onPressed: () {
+          const Text('Receive Invoice Screen'),
+          ListTile(
+            title: const Text('Amount'),
+            trailing: const Icon(Icons.edit),
+            onTap: () {
               final state = context.read<ReceiveBloc>().state;
               final baseRoute = state is ReceiveLightning
                   ? AppRoute.receiveLightning
@@ -23,10 +25,9 @@ class ReceiveAmountScreen extends StatelessWidget {
                       ? AppRoute.receiveLiquid
                       : AppRoute.receiveBitcoin;
               context.replace(
-                '${baseRoute.path}/${ReceiveSubroute.invoice.path}',
+                '${baseRoute.path}/${ReceiveSubroute.amount.path}',
               );
             },
-            child: const Text('Continue'),
           ),
         ],
       ),

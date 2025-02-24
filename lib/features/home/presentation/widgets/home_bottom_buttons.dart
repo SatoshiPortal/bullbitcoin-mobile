@@ -1,9 +1,11 @@
+import 'package:bb_mobile/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeBottomButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Align(
+    return Align(
       alignment: Alignment.bottomCenter,
       child: SizedBox(
         height: 128,
@@ -17,11 +19,12 @@ class HomeBottomButtons extends StatelessWidget {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: null,
-                        child: Text('Receive'),
+                        onPressed: () =>
+                            context.pushNamed(AppRoute.receiveBitcoin.name),
+                        child: const Text('Receive'),
                       ),
                     ),
-                    Expanded(
+                    const Expanded(
                       child: ElevatedButton(
                         onPressed: null,
                         child: Text('Send'),
@@ -29,7 +32,7 @@ class HomeBottomButtons extends StatelessWidget {
                     ),
                   ],
                 ),
-                Row(
+                const Row(
                   children: [
                     Expanded(
                       child:
@@ -43,7 +46,7 @@ class HomeBottomButtons extends StatelessWidget {
                 ),
               ],
             ),
-            ElevatedButton(
+            const ElevatedButton(
               onPressed: null,
               child: Icon(Icons.qr_code_scanner),
             ),

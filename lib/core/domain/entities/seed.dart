@@ -24,6 +24,10 @@ sealed class Seed with _$Seed {
     );
   }
 
+  String get seedHex {
+    return seedBytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+  }
+
   String get masterFingerprint {
     final root = bip32.BIP32.fromSeed(seedBytes);
     final fingerprintBytes = root.fingerprint;

@@ -103,10 +103,15 @@ class WalletMetadata with _$WalletMetadata {
   factory WalletMetadata.fromJson(Map<String, dynamic> json) =>
       _$WalletMetadataFromJson(json);
 
-  String get id => '$xpubFingerprint-${scriptType.name}-${network.name}';
+  // The network name is important since the same coin type and script types
+  //  are used in for example bitcoin and liquid testnet, so we need to include
+  //  the network name in the id to differentiate wallets from different
+  //  networks with the same xpub/seed.
+  String get id => '$xpubFingerprint:${network.name}';
 
-  String get name => label.isEmpty ? _defaultName : label!;
-
+  // TODO: Add the 'Secure Bitcoin Wallet' and 'Instant Payments Wallet' strings to the localization file
+  // and use them in the UI if no label is provided for a mnemonic wallet.
+  String get name => label.isEmpty ? _defaultName : label;
   String get _defaultName {
     switch (source) {
       case WalletSource.mnemonic:
