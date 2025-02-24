@@ -128,6 +128,7 @@ class KeychainCubit extends Cubit<KeychainState> {
 
   Future<void> deleteBackupKey() async {
     try {
+      emit(state.copyWith(loading: true, error: ''));
       final isServerReady = await serverInfo();
       if (!isServerReady) return;
 
