@@ -138,9 +138,7 @@ class GoogleDriveBackupManager extends IBackupManager {
     }
   }
 
-  Future<(List<File>?, Err?)> loadAllEncryptedBackupFiles({
-    required String backupFolder,
-  }) async {
+  Future<(List<File>?, Err?)> loadAllEncryptedBackupFiles() async {
     return _withConnection((api) async {
       try {
         final response = await api.files.list(

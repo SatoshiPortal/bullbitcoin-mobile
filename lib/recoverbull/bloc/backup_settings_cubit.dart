@@ -90,11 +90,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   static const _kShuffleDelay = Duration(milliseconds: 500);
   static const _kMinBackupInterval = Duration(seconds: 5);
 
-  @override
-  Future<void> close() async {
-    await super.close();
-  }
-
   void changePassword(String password) {
     emit(
       state.copyWith(
@@ -262,9 +257,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       }
 
       final (availableBackups, err) =
-          await _googleDriveBackupManager.loadAllEncryptedBackupFiles(
-        backupFolder: '', // No longer needed
-      );
+          await _googleDriveBackupManager.loadAllEncryptedBackupFiles();
 
       if (err != null) {
         debugPrint('Error loading backups: ${err.message}');
@@ -448,9 +441,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       _handleLoadError('Recovery failed: $e');
     }
   }
-
-  Future<void> refreshGoogleDriveBackups() =>
-      fetchGoogleDriveBackup(forceRefresh: true);
 
   Future<void> resetBackupTested() async {
     await Future.delayed(_kDelayDuration);
