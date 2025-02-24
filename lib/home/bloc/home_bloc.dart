@@ -1,10 +1,14 @@
 import 'dart:async';
 
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/event.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -62,7 +66,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     WalletServicesUpdated event,
     Emitter<HomeState> emit,
   ) async {
-    debugPrint('wallet services updated: ${event.walletServices.length}');
     final walletServicesData = event.walletServices
         .map((_) => WalletServiceData(wallet: _.wallet))
         .toList();
@@ -117,8 +120,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     emit(state.copyWith(loadingWallets: true));
+
     await _appWalletsRepository.getWalletsFromStorage();
     final wallets = _appWalletsRepository.allWallets;
+
+    // Check if any wallet is testnet and switch network if needed
+    if (wallets.isNotEmpty) {
+      final hasTestnetWallet = wallets.any((w) => w.isTestnet());
+      final currentNetwork = locator<NetworkBloc>().state.getBBNetwork();
+
+      if (hasTestnetWallet && currentNetwork != BBNetwork.Testnet) {
+        locator<NetworkBloc>().add(ToggleTestnet());
+      }
+    }
     emit(
       state.copyWith(
         wallets: wallets.map((_) => WalletServiceData(wallet: _)).toList(),

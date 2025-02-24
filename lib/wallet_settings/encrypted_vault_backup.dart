@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bb_mobile/_ui/app_bar.dart';
@@ -6,9 +7,11 @@ import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet_settings/bloc/backup_settings_cubit.dart';
 import 'package:bb_mobile/wallet_settings/bloc/backup_settings_state.dart';
+import 'package:bb_mobile/wallet_settings/bloc/keychain_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -98,7 +101,8 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
               '/wallet-settings/backup-settings/keychain',
               extra: (
                 state.backupKey,
-                {'id': state.backupId, 'salt': state.backupSalt}
+                {'id': state.backupId, 'salt': state.backupSalt},
+                KeyChainPageState.enter.name.toLowerCase()
               ),
             );
             _cubit.clearError();
@@ -267,8 +271,8 @@ class _StorageOptionCard extends StatelessWidget {
 }
 
 class EncryptedVaultRecoverPage extends StatefulWidget {
-  const EncryptedVaultRecoverPage({super.key, required this.wallet});
-  final String wallet;
+  const EncryptedVaultRecoverPage({super.key, this.wallet});
+  final String? wallet;
 
   @override
   State<EncryptedVaultRecoverPage> createState() =>
@@ -296,11 +300,11 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
   ) async {
     switch (provider) {
       case BackupProvider.googleDrive:
-        await _cubit.fetchLatestBacup();
+        await _cubit.fetchGoogleDriveBackup();
       case BackupProvider.iCloud:
         debugPrint('iCloud backup');
       case BackupProvider.custom:
-        _cubit.recoverFromFs();
+        _cubit.fetchFsBackup();
     }
   }
 
@@ -348,7 +352,7 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
           }
           if (state.latestRecoveredBackup.isNotEmpty) {
             context.push(
-              '/wallet-settings/backup-settings/recover-encrypted/info',
+              '/wallet-settings/backup-settings/recover-options/encrypted/info',
               extra: state.latestRecoveredBackup,
             );
             _cubit.clearError();
@@ -377,13 +381,33 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
   }
 }
 
-class RecoveredBackupInfoPage extends StatelessWidget {
+class RecoveredBackupInfoPage extends StatefulWidget {
   const RecoveredBackupInfoPage({
     super.key,
     required this.recoveredBackup,
   });
 
   final Map<String, dynamic> recoveredBackup;
+
+  @override
+  State<RecoveredBackupInfoPage> createState() =>
+      _RecoveredBackupInfoPageState();
+}
+
+class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
+  late final BackupSettingsCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = createBackupSettingsCubit();
+  }
+
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
 
   Widget _buildErrorView(BuildContext context) {
     return Center(
@@ -440,7 +464,7 @@ class RecoveredBackupInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (recoveredBackup.isEmpty) {
+    if (widget.recoveredBackup.isEmpty) {
       return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -450,8 +474,8 @@ class RecoveredBackupInfoPage extends StatelessWidget {
         ),
         body: _buildErrorView(context),
       );
-    } else if (recoveredBackup['id'] == null ||
-        recoveredBackup['createdAt'] == null) {
+    } else if (widget.recoveredBackup['index'] == null ||
+        widget.recoveredBackup['encrypted'] == null) {
       return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -463,111 +487,210 @@ class RecoveredBackupInfoPage extends StatelessWidget {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        flexibleSpace: BBAppBar(text: '', onBack: () => context.pop()),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'We have your file',
-              style: context.font.titleLarge!.copyWith(
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            const Gap(20),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Backup ID:',
-                    style: context.font.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '${recoveredBackup['id']}',
-                    style: context.font.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Gap(8),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Created at:',
-                    style: context.font.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  TextSpan(
-                    text:
-                        ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(recoveredBackup['createdAt'] as int).toLocal())}',
-                    style: context.font.bodyMedium!.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Gap(16),
-            Text(
-              "Now let's decrypt",
-              textAlign: TextAlign.center,
-              style: context.font.bodyMedium!.copyWith(
-                fontWeight: FontWeight.bold,
-                color: NewColours.lightGray,
-              ),
-            ),
-            const Gap(20),
-            FilledButton(
-              onPressed: () => context.push(
-                '/wallet-settings/backup-settings/keychain',
-                extra: ('', recoveredBackup),
-              ),
-              style: FilledButton.styleFrom(
-                backgroundColor: context.colour.shadow,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
+    return BlocProvider.value(
+      value: _cubit,
+      child: BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
+        listenWhen: (previous, current) =>
+            previous.errorLoadingBackups != current.errorLoadingBackups ||
+            previous.loadingBackups != current.loadingBackups ||
+            previous.loadedBackups != current.loadedBackups ||
+            previous.backupKey != current.backupKey,
+        listener: (context, state) {
+          if (state.errorLoadingBackups.isNotEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              context.showToast(state.errorLoadingBackups),
+            );
+            _cubit.clearError();
+            return;
+          }
+          if (!state.errorLoadingBackups.isNotEmpty &&
+              !state.loadingBackups &&
+              state.backupKey.isNotEmpty) {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: BBText.titleLarge(
+                  'Secret key',
+                  isBold: true,
                 ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                content: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        state.backupKey,
+                        style: context.font.bodySmall!.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        Clipboard.setData(
+                          ClipboardData(text: state.backupKey),
+                        );
+                        Navigator.of(context).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          context.showToast('Copied to clipboard'),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.copy,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: Row(
+            );
+            _cubit.clearError();
+            return;
+          }
+        },
+        builder: (context, state) {
+          final recoveredBackupEncrypted =
+              jsonDecode(widget.recoveredBackup["encrypted"] as String)
+                  as Map<String, dynamic>;
+          return Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              centerTitle: true,
+              flexibleSpace: BBAppBar(text: '', onBack: () => context.pop()),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Decrypt Backup',
-                    style: context.font.bodyMedium!.copyWith(
-                      color: Colors.white,
+                    'We have your file',
+                    style: context.font.titleLarge!.copyWith(
                       fontWeight: FontWeight.w900,
                     ),
                   ),
+                  const Gap(20),
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Backup ID:',
+                          style: context.font.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '${recoveredBackupEncrypted['id']}',
+                          style: context.font.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const Gap(8),
-                  const Icon(
-                    Icons.arrow_forward,
-                    color: Colors.white,
-                    size: 20,
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Created at:',
+                          style: context.font.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(recoveredBackupEncrypted['createdAt'] as int).toLocal())}',
+                          style: context.font.bodyMedium!.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Gap(16),
+                  Text(
+                    "Now let's decrypt",
+                    textAlign: TextAlign.center,
+                    style: context.font.bodyMedium!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: NewColours.lightGray,
+                    ),
+                  ),
+                  const Gap(20),
+                  FilledButton(
+                    onPressed: () => {
+                      context.push(
+                        '/wallet-settings/backup-settings/keychain',
+                        extra: (
+                          '',
+                          widget.recoveredBackup,
+                          KeyChainPageState.recovery.name.toLowerCase()
+                        ),
+                      ),
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: context.colour.shadow,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Decrypt Backup',
+                          style: context.font.bodyMedium!.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const Gap(8),
+                        const Icon(
+                          Icons.arrow_forward,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Gap(10),
+                  InkWell(
+                    onTap: () => _cubit.recoverBackupKeyFromMnemonic(
+                      widget.recoveredBackup['index'] as int?,
+                    ),
+                    child: const BBText.bodySmall(
+                      'Forgot your secret? Click to recover',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const Gap(10),
+                  IconButton(
+                    onPressed: () {
+                      context.push(
+                        '/wallet-settings/backup-settings/keychain',
+                        extra: (
+                          '',
+                          widget.recoveredBackup,
+                          KeyChainPageState.delete.name.toLowerCase()
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.black,
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

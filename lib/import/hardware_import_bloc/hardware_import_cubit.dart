@@ -61,12 +61,12 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
 
   Future<void> selectFile() async {
     final (file, err) = await _filePicker.pickFile();
-    if (err != null) {
+    if (err != null || file == null) {
       emit(state.copyWith(errScanningInput: err.toString()));
       return;
     }
 
-    emit(state.copyWith(inputText: file!));
+    emit(state.copyWith(inputText: await file.readAsString()));
     _processInput();
   }
 

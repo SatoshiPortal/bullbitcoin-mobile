@@ -102,20 +102,20 @@ class _ScreenState extends State<_Screen> {
       (HomeBloc x) => x.state.loadingWallets,
     );
     final network = context.select((NetworkBloc x) => x.state.getBBNetwork());
-
     final wallets = context.select(
       (HomeBloc x) => x.state.walletsFromNetwork(network),
     );
 
     // final hasWallets = context.select((HomeBloc x) => x.state.hasWallets());
-    final hasMainWallets = context.select(
-      (HomeBloc x) => x.state.hasMainWallets(),
-    );
+    // final hasMainWallets = context.select(
+    //   (HomeBloc x) => x.state.hasMainWallets(),
+    // );
 
     // final walletBlocsLen =
     //     context.select((HomeBloc x) => x.state.lenWalletsFromNetwork(network));
 
-    if (!loading && (wallets.isEmpty || !hasMainWallets)) {
+    // Question: Do we need to check for mainWallets? since the recoverd wallet are not main wallets by default
+    if (!loading && (wallets.isEmpty)) {
       final isTestnet = network == BBNetwork.Testnet;
 
       Widget widget = Scaffold(
@@ -1029,7 +1029,9 @@ class HomeNoWalletsWithCreation extends StatelessWidget {
               label: 'Recover wallet backup',
               centered: true,
               onPressed: () {
-                context1.push('/import-main');
+                context1.push(
+                  '/wallet-settings/backup-settings/recover-options/encrypted',
+                );
               },
             ),
           ],
@@ -1064,10 +1066,8 @@ class HomeNoWalletsView extends StatelessWidget {
       listener: (context3, state) async {
         if (state.saved) {
           if (state.savedWallets == null) return;
-          //if (state.mainWallet)
           await locator<WalletsStorageRepository>().sortWallets();
-          locator<HomeBloc>()
-              .add(LoadWalletsFromStorage()); //getWalletsFromStorage();
+          locator<HomeBloc>().add(LoadWalletsFromStorage());
           if (!context.mounted) return;
           context3.go('/home');
         }
@@ -1126,7 +1126,9 @@ class HomeNoWalletsView extends StatelessWidget {
                   isBlue: false,
                   fontSize: 11,
                   onPressed: () {
-                    context.push('/import-main');
+                    context.push(
+                      '/wallet-settings/backup-settings/recover-options/encrypted',
+                    );
                   },
                 ),
               ],
@@ -1147,14 +1149,13 @@ class HomeWarnings extends StatelessWidget {
     final network = context.select((NetworkBloc _) => _.state.getBBNetwork());
     final warnings =
         context.select((HomeBloc _) => _.state.homeWarnings(network));
-
     return Column(
       children: [
         for (final w in warnings)
           WarningBanner(
             onTap: () {
               context.push(
-                '/wallet-settings/open-backup',
+                w.route ?? '/home',
                 extra: w.walletBloc.id,
               );
             },

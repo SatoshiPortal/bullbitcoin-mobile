@@ -207,72 +207,78 @@ GoRouter setupRouter() => GoRouter(
                   builder: (context, state) => BackupOptionsScreen(
                     wallet: state.extra! as String,
                   ),
-                ),
-                GoRoute(
-                  path: 'physical',
-                  builder: (context, state) => PhysicalBackupPage(
-                    wallet: state.extra! as String,
-                  ),
                   routes: [
                     GoRoute(
-                      path: 'test-backup',
-                      builder: (context, state) {
-                        final wallet = state.extra! as String;
-                        return TestBackupPage(
-                          wallet: wallet,
-                          // walletSettings: blocs.$2,
-                        );
-                        // const WalletSettingsPage(openTestBackup: true);
-                      },
+                      path: 'physical',
+                      builder: (context, state) => PhysicalBackupPage(
+                        wallet: state.extra! as String,
+                      ),
+                      routes: [
+                        GoRoute(
+                          path: 'test-backup',
+                          builder: (context, state) {
+                            final wallet = state.extra! as String;
+                            return TestBackupPage(
+                              wallet: wallet,
+                              // walletSettings: blocs.$2,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    GoRoute(
+                      path: 'encrypted',
+                      builder: (context, state) => EncryptedVaultBackupPage(
+                        wallet: state.extra! as String,
+                      ),
                     ),
                   ],
                 ),
                 GoRoute(
-                  path: 'encrypted',
-                  builder: (context, state) => EncryptedVaultBackupPage(
-                    wallet: state.extra! as String,
-                  ),
-                ),
-                GoRoute(
-                  path: 'recover-encrypted',
-                  builder: (context, state) => EncryptedVaultRecoverPage(
-                    wallet: state.extra! as String,
-                  ),
+                  path: 'recover-options',
+                  builder: (context, state) => const RecoverOptionsScreen(),
                   routes: [
                     GoRoute(
-                      path: 'info',
-                      builder: (context, state) {
-                        final recoveredBackup =
-                            state.extra! as Map<String, dynamic>;
-                        return RecoveredBackupInfoPage(
-                          recoveredBackup: recoveredBackup,
-                        );
-                      },
+                      path: 'physical',
+                      builder: (context, state) =>
+                          const ImportWalletPage(isRecovery: true),
+                    ),
+                    GoRoute(
+                      path: 'encrypted',
+                      builder: (context, state) => EncryptedVaultRecoverPage(
+                        wallet: state.extra as String?,
+                      ),
+                      routes: [
+                        GoRoute(
+                          path: 'info',
+                          builder: (context, state) {
+                            final recoveredBackup =
+                                state.extra! as Map<String, dynamic>;
+                            return RecoveredBackupInfoPage(
+                              recoveredBackup: recoveredBackup,
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
                 GoRoute(
                   path: 'keychain',
                   builder: (context, state) {
-                    final (backupKey, backup) =
-                        state.extra! as (String?, Map<String, dynamic>);
+                    final (backupKey, backup, pState) =
+                        state.extra! as (String?, Map<String, dynamic>, String);
+
                     return KeychainBackupPage(
                       backupKey: backupKey,
                       backup: backup,
+                      pState: pState,
                     );
                   },
                 ),
               ],
             ),
           ],
-        ),
-        //TODO: refactor route
-        GoRoute(
-          path: '/wallet-settings/open-backup',
-          builder: (context, state) {
-            final wallet = state.extra! as String;
-            return WalletSettingsPage(openBackup: true, wallet: wallet);
-          },
         ),
 
         GoRoute(

@@ -267,7 +267,11 @@ class WalletService {
               physicalBackupTested: wallet.physicalBackupTested,
             );
           }
-
+          if (wallet.vaultBackupTested != storageWallet.vaultBackupTested) {
+            storageWallet = storageWallet.copyWith(
+              vaultBackupTested: wallet.vaultBackupTested,
+            );
+          }
           if (wallet.name != storageWallet.name) {
             storageWallet = storageWallet.copyWith(
               name: wallet.name,
@@ -279,6 +283,13 @@ class WalletService {
                   storageWallet.lastPhysicalBackupTested) {
             storageWallet = storageWallet.copyWith(
               lastPhysicalBackupTested: wallet.lastPhysicalBackupTested,
+            );
+          }
+          if (wallet.lastVaultBackupTested != null &&
+              wallet.lastVaultBackupTested !=
+                  storageWallet.lastVaultBackupTested) {
+            storageWallet = storageWallet.copyWith(
+              lastVaultBackupTested: wallet.lastVaultBackupTested,
             );
           }
       }

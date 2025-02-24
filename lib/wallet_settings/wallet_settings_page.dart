@@ -25,9 +25,7 @@ class WalletSettingsPage extends StatelessWidget {
   const WalletSettingsPage({
     super.key,
     required this.wallet,
-    this.openBackup = false,
   });
-  final bool openBackup;
   final String wallet;
 
   @override
@@ -54,20 +52,15 @@ class WalletSettingsPage extends StatelessWidget {
           create: (BuildContext context) => createWalletSettingsCubit(wallet),
         ),
       ],
-      child: WalletSettingsListeners(
-        child: _Screen(
-          openBackup: openBackup,
-        ),
+      child: const WalletSettingsListeners(
+        child: _Screen(),
       ),
     );
   }
 }
 
 class _Screen extends StatefulWidget {
-  const _Screen({required this.openBackup});
-
-  // final bool openTestBackup;
-  final bool openBackup;
+  const _Screen();
 
   @override
   State<_Screen> createState() => _ScreenState();
@@ -76,26 +69,7 @@ class _Screen extends StatefulWidget {
 class _ScreenState extends State<_Screen> {
   @override
   void initState() {
-    _init();
     super.initState();
-  }
-
-  void _init() {
-    scheduleMicrotask(() async {
-      if (widget.openBackup) {
-        // await Future.delayed(const Duration(milliseconds: 300));
-        await context.push(
-          '/wallet-settings/backup-settings/physical',
-          extra: context.read<WalletBloc>().state.wallet.id,
-          // (
-          //   context.read<WalletBloc>(),
-          //   context.read<WalletSettingsCubit>(),
-          // ),
-        );
-      } else {
-        // showPage = true;
-      }
-    });
   }
 
   @override

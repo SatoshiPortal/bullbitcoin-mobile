@@ -10,7 +10,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart';
 
 class GoogleDriveBackupManager extends IBackupManager {
-  static final _google = GoogleSignIn(scopes: [DriveApi.driveFileScope]);
+  static final _google = GoogleSignIn(
+    scopes: ['https://www.googleapis.com/auth/drive.appdata'],
+  );
   static const _errorMessages = {
     'connection': 'Google Sign-In was cancelled or failed. Please try again.',
     'auth': 'Failed to authenticate with Google.',
@@ -19,21 +21,24 @@ class GoogleDriveBackupManager extends IBackupManager {
   };
 
   DriveApi? _api;
-  GoogleSignInAccount? _account;
 
-  Future<(String?, Err?)> connect() async {
+  Future<(DriveApi?, Err?)> connect() async {
     try {
-      final account = await _google.signIn();
-      if (account == null) return (null, Err(_errorMessages['connection']!));
+      // Try silent sign in first
+      var account = await _google.signInSilently();
+      // If failed, try interactive sign in
+      if (account == null) {
+        account = await _google.signIn();
+        if (account == null) return (null, Err(_errorMessages['connection']!));
+      }
 
       final client = await _google.authenticatedClient();
       if (client == null) return (null, Err(_errorMessages['auth']!));
 
       _api = DriveApi(client);
-      _account = account;
-
-      return await _setupBackupFolder();
+      return (_api, null);
     } catch (e) {
+      debugPrint('Connection error: $e');
       await disconnect();
       return (null, Err('Connection error: $e'));
     }
@@ -42,25 +47,42 @@ class GoogleDriveBackupManager extends IBackupManager {
   Future<void> disconnect() async {
     await _google.disconnect();
     _api = null;
-    _account = null;
   }
 
-  Future<void> dispose() async {
-    await disconnect();
+  // Helper method to check connection and reconnect if needed
+  Future<(DriveApi?, Err?)> _getApi() async {
+    if (_api == null) {
+      final (api, err) = await connect();
+      if (err != null) return (null, err);
+    }
+    return (_api, null);
   }
 
-  // Helper method to ensure connection
+  // Update _withConnection to use _getApi
   Future<(T?, Err?)> _withConnection<T>(
     Future<(T?, Err?)> Function(DriveApi api) operation,
   ) async {
-    if (_api == null) return (null, Err('Not connected'));
+    final (api, err) = await _getApi();
+    if (err != null) return (null, err);
+    if (api == null) return (null, Err('Not connected'));
 
     try {
-      return await operation(_api!);
+      return await operation(api);
     } catch (e) {
-      await disconnect();
+      // Only disconnect on auth errors
+      if (_isAuthError(e)) {
+        await disconnect();
+      }
       return (null, Err('Operation failed: $e'));
     }
+  }
+
+  bool _isAuthError(dynamic error) {
+    // Add logic to detect auth-related errors
+    final errorStr = error.toString().toLowerCase();
+    return errorStr.contains('unauthorized') ||
+        errorStr.contains('unauthenticated') ||
+        errorStr.contains('invalid credentials');
   }
 
   @override
@@ -71,19 +93,26 @@ class GoogleDriveBackupManager extends IBackupManager {
     return _withConnection((api) async {
       try {
         final data = jsonDecode(encrypted) as Map<String, dynamic>;
-        final backupId = data['id']?.toString();
+        final encryptedData = data['encrypted'] as String;
+        final decodedEncrypted =
+            jsonDecode(encryptedData) as Map<String, dynamic>;
+        final backupId = decodedEncrypted['id']?.toString();
+
         if (backupId == null) return (null, Err('Invalid backup data'));
 
         final filename =
             '${DateTime.now().millisecondsSinceEpoch}_$backupId.json';
         final file = File()
           ..name = filename
-          ..parents = [backupFolder];
+          ..mimeType = 'application/json'
+          ..parents = ['appDataFolder'];
 
         await api.files.create(
           file,
-          uploadMedia:
-              Media(Stream.value(utf8.encode(encrypted)), encrypted.length),
+          uploadMedia: Media(
+            Stream.value(utf8.encode(encrypted)),
+            encrypted.length,
+          ),
         );
 
         return (filename, null);
@@ -91,52 +120,6 @@ class GoogleDriveBackupManager extends IBackupManager {
         return (null, Err('Save failed: $e'));
       }
     });
-  }
-
-  Future<(String?, Err?)> _setupBackupFolder() async {
-    try {
-      const folderName = '.$defaultBackupPath';
-      final existing = await _api!.files.list(
-        q: "name = '$folderName' and mimeType = 'application/vnd.google-apps.folder' and trashed = false",
-        spaces: 'drive',
-        $fields: 'files(id)',
-      );
-      if (existing.files?.isNotEmpty == true) {
-        final backupFolderId = existing.files!.first.id;
-        return (backupFolderId, null);
-      }
-
-      final folderMetadata = File()
-        ..name = folderName
-        ..mimeType = 'application/vnd.google-apps.folder'
-        ..appProperties = {'created': DateTime.now().toIso8601String()};
-      final folder = await _api!.files.create(folderMetadata);
-
-      final (success, err) = await _applyFolderPermissions(folder.id!);
-      if (!success) {
-        return (null, err);
-      }
-
-      return (folder.id, null);
-    } catch (e) {
-      return (null, Err('Failed to initialize backup folder: $e'));
-    }
-  }
-
-  Future<(bool, Err?)> _applyFolderPermissions(String folderId) async {
-    try {
-      await _api!.permissions.create(
-        Permission()
-          ..role = 'owner'
-          ..type = 'user'
-          ..emailAddress = _account!.email,
-        folderId,
-        transferOwnership: true,
-      );
-      return (true, null);
-    } catch (e) {
-      return (false, Err('Failed to set folder permissions: $e'));
-    }
   }
 
   @override
@@ -158,8 +141,8 @@ class GoogleDriveBackupManager extends IBackupManager {
     return _withConnection((api) async {
       try {
         final response = await api.files.list(
-          q: "'$backupFolder' in parents and trashed = false",
-          spaces: 'drive',
+          spaces: 'appDataFolder',
+          q: "mimeType='application/json' and trashed=false",
           $fields: 'files(id, name, createdTime)',
           orderBy: 'createdTime desc',
         );
@@ -178,14 +161,14 @@ class GoogleDriveBackupManager extends IBackupManager {
 
   @override
   Future<(String?, Err?)> removeEncryptedBackup({
-    required String backupName,
-    String backupFolder = defaultBackupPath,
+    required String path,
   }) async {
     return _withConnection((api) async {
       try {
+        // Find files in appDataFolder using spaces: 'appDataFolder' and query by name
         final files = await api.files.list(
-          q: "'$backupFolder' in parents and name = '$backupName' and trashed = false",
-          spaces: 'drive',
+          spaces: 'appDataFolder',
+          q: "name = '$path' and trashed = false",
           $fields: 'files(id)',
         );
 
@@ -194,8 +177,11 @@ class GoogleDriveBackupManager extends IBackupManager {
           return (null, Err('Backup not found'));
         }
 
-        await api.files.delete(firstFile.id!);
-        return (backupName, null);
+        await api.files.update(
+          File()..trashed = true, // Set trashed to true to move to trash
+          firstFile.id!,
+        );
+        return (path, null);
       } catch (e) {
         return (null, Err('Failed to remove backup: $e'));
       }
@@ -203,22 +189,22 @@ class GoogleDriveBackupManager extends IBackupManager {
   }
 
   Future<(List<int>?, Err?)> fetchMediaStream({required File file}) async {
-    if (_api == null) return (null, Err(_errorMessages['notConnected']!));
+    return _withConnection((api) async {
+      try {
+        final media = await api.files.get(
+          file.id!,
+          downloadOptions: DownloadOptions.fullMedia,
+        ) as Media;
 
-    try {
-      final media = await _api!.files.get(
-        file.id!,
-        downloadOptions: DownloadOptions.fullMedia,
-      ) as Media;
+        final bytes = await media.stream.fold<List<int>>(
+          <int>[],
+          (previous, element) => previous..addAll(element),
+        );
 
-      final bytes = await media.stream.fold<List<int>>(
-        <int>[],
-        (previous, element) => previous..addAll(element),
-      );
-
-      return (bytes, null);
-    } catch (e) {
-      return (null, Err('Failed to fetch backup data: $e'));
-    }
+        return (bytes, null);
+      } catch (e) {
+        return (null, Err('Failed to fetch backup data: $e'));
+      }
+    });
   }
 }

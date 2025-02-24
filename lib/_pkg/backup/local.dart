@@ -17,11 +17,10 @@ class FileSystemBackupManager extends IBackupManager {
   /// Returns the path to the deleted backup or an error message.
   @override
   Future<(String?, Err?)> removeEncryptedBackup({
-    required String backupName,
-    String backupFolder = defaultBackupPath,
+    required String path,
   }) async {
     try {
-      final result = await fileStorage.deleteFile(backupName);
+      final result = await fileStorage.deleteFile(path);
       if (result == null) return (null, Err('Failed to delete file.'));
       return (result.message, null);
     } catch (e) {
@@ -38,10 +37,6 @@ class FileSystemBackupManager extends IBackupManager {
     try {
       final decodeEncryptedFile = jsonDecode(utf8.decode(HEX.decode(encrypted)))
           as Map<String, dynamic>;
-      final id = decodeEncryptedFile['id']?.toString() ?? '';
-      if (id.isEmpty) {
-        return (null, Err("Corrupted backup file"));
-      }
       return (decodeEncryptedFile, null);
     } catch (e) {
       return (null, Err('Failed to read encrypted backup: $e'));
@@ -56,8 +51,9 @@ class FileSystemBackupManager extends IBackupManager {
     String backupFolder = defaultBackupPath,
   }) async {
     try {
-      final decodeEncryptedFile = jsonDecode(encrypted) as Map<String, dynamic>;
-      final backupId = decodeEncryptedFile['id']?.toString() ?? '';
+      final decodeEncryptedFile = (jsonDecode(encrypted)
+          as Map<String, dynamic>)["encrypted"] as String;
+      final backupId = jsonDecode(decodeEncryptedFile)['id'] as String;
       final now = DateTime.now();
       final formattedDate = now.millisecondsSinceEpoch;
       final filename = '${formattedDate}_$backupId.json';

@@ -8,55 +8,17 @@ import 'package:recoverbull/recoverbull.dart';
 class KeychainCubit extends Cubit<KeychainState> {
   KeychainCubit() : super(const KeychainState()) {
     shuffleAndEmit();
-  }
-
-  void shuffleAndEmit() {
-    final shuffledList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]..shuffle();
-    emit(state.copyWith(shuffledNumbers: shuffledList));
-  }
-
-  void clickObscure() {
-    emit(
-      state.copyWith(obscure: !state.obscure),
+    if (keyServerUrl.isEmpty) {
+      emit(state.copyWith(error: 'keychain api is not set'));
+      return;
+    }
+    _keyService = KeyService(
+      keyServer: Uri.parse(keyServerUrl),
+      keyServerPublicKey: keyServerPublicKey,
     );
   }
 
-  void setChainState(
-    KeyChainPageState keyChainPageState,
-    String backupId,
-    String? backupKey,
-    String backupSalt,
-  ) {
-    emit(
-      state.copyWith(
-        pageState: keyChainPageState,
-        backupKey: backupKey ?? '',
-        backupId: backupId,
-        backupSalt: HEX.decode(backupSalt),
-      ),
-    );
-  }
-
-  void updatePageState(
-    KeyChainInputType keyChainInputType,
-    KeyChainPageState keyChainPageState,
-  ) {
-    emit(
-      state.copyWith(
-        inputType: keyChainInputType,
-        pageState: keyChainPageState,
-        error: '',
-        secret: '',
-        tempSecret: '',
-        isSecretConfirmed: false,
-      ),
-    );
-  }
-
-  void updateInput(String value) {
-    if (state.inputType == KeyChainInputType.pin && value.length > 6) return;
-    emit(state.copyWith(secret: value, error: ''));
-  }
+  late final KeyService _keyService;
 
   void backspacePressed() {
     if (state.secret.isEmpty) return;
@@ -68,14 +30,71 @@ class KeychainCubit extends Cubit<KeychainState> {
     );
   }
 
-  void keyPressed(String key) {
-    if (state.secret.length >= 6) return;
+  void clearSensitive() {
     emit(
       state.copyWith(
-        secret: state.secret + key,
+        secret: '',
+        tempSecret: '',
+        isSecretConfirmed: false,
         error: '',
       ),
     );
+  }
+
+  void clickObscure() {
+    emit(
+      state.copyWith(obscure: !state.obscure),
+    );
+  }
+
+  Future<void> clickRecover() async {
+    if (state.backupKey.isNotEmpty) {
+      emit(
+        state.copyWith(
+          loading: false,
+          keySecretState: KeySecretState.recovered,
+        ),
+      );
+      return;
+    }
+    final isServerReady = await serverInfo();
+    if (!isServerReady) return;
+    if (state.secret.length < 6) {
+      state.inputType == KeyChainInputType.pin
+          ? emit(state.copyWith(error: 'pin should be atleast 6 digits long'))
+          : emit(
+              state.copyWith(
+                error: 'password should be atleast 6 characters long',
+              ),
+            );
+      return;
+    }
+
+    try {
+      emit(state.copyWith(loading: true, error: ''));
+
+      final backupKey = await _keyService.fetchBackupKey(
+        backupId: state.backupId,
+        password: state.secret,
+        salt: state.backupSalt,
+      );
+
+      emit(
+        state.copyWith(
+          backupKey: HEX.encode(backupKey),
+          loading: false,
+          keySecretState: KeySecretState.recovered,
+        ),
+      );
+    } catch (e) {
+      debugPrint("Failed to recover backup key: $e");
+      emit(
+        state.copyWith(
+          loading: false,
+          error: "Failed to recover backup key",
+        ),
+      );
+    }
   }
 
   void confirmPressed() {
@@ -107,10 +126,50 @@ class KeychainCubit extends Cubit<KeychainState> {
     emit(state.copyWith(isSecretConfirmed: true));
   }
 
-  Future<void> secureKey() async {
+  Future<void> deleteBackupKey() async {
     try {
       emit(state.copyWith(loading: true, error: ''));
-      await KeyService(keyServer: Uri.parse(keyServerUrl)).storeBackupKey(
+      final isServerReady = await serverInfo();
+      if (!isServerReady) return;
+
+      await _keyService.trashBackupKey(
+        backupId: state.backupId,
+        password: state.secret,
+        salt: state.backupSalt,
+      );
+      emit(
+        state.copyWith(
+          loading: false,
+          keySecretState: KeySecretState.deleted,
+        ),
+      );
+    } catch (e) {
+      debugPrint('Failed to delete backup key: $e');
+      emit(
+        state.copyWith(
+          loading: false,
+          error: 'Failed to delete backup key',
+        ),
+      );
+    }
+  }
+
+  void keyPressed(String key) {
+    if (state.secret.length >= 7) return;
+    emit(
+      state.copyWith(
+        secret: state.secret + key,
+        error: '',
+      ),
+    );
+  }
+
+  Future<void> secureKey() async {
+    try {
+      final isServerReady = await serverInfo();
+      if (!isServerReady) return;
+
+      await _keyService.storeBackupKey(
         backupId: state.backupId,
         password: state.tempSecret,
         backupKey: HEX.decode(state.backupKey),
@@ -130,61 +189,84 @@ class KeychainCubit extends Cubit<KeychainState> {
     }
   }
 
-  void clearSensitive() {
+  void setBackupId(String id) {
+    emit(state.copyWith(backupId: id));
+  }
+
+  void setChainState(
+    KeyChainPageState keyChainPageState,
+    String backupId,
+    String? backupKey,
+    String backupSalt,
+  ) {
     emit(
       state.copyWith(
-        secret: '',
-        tempSecret: '',
-        isSecretConfirmed: false,
+        pageState: keyChainPageState,
+        backupKey: backupKey ?? '',
+        backupId: backupId,
+        backupSalt: HEX.decode(backupSalt),
+      ),
+    );
+  }
+
+  void shuffleAndEmit() {
+    final shuffledList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]..shuffle();
+    emit(state.copyWith(shuffledNumbers: shuffledList));
+  }
+
+  void updateBackupKey(String value) {
+    emit(
+      state.copyWith(
+        backupKey: value,
         error: '',
       ),
     );
   }
 
-  void setBackupId(String id) {
-    emit(state.copyWith(backupId: id));
+  void updateInput(String value) {
+    if (state.inputType == KeyChainInputType.pin && value.length > 6) return;
+    emit(state.copyWith(secret: value, error: ''));
   }
 
-  Future<void> clickRecoverKey() async {
-    if (state.secret.length < 6) {
-      state.inputType == KeyChainInputType.pin
-          ? emit(state.copyWith(error: 'pin should be atleast 6 digits long'))
-          : emit(
-              state.copyWith(
-                error: 'password should be atleast 6 characters long',
-              ),
-            );
-      return;
-    }
+  void updatePageState(
+    KeyChainInputType keyChainInputType,
+    KeyChainPageState keyChainPageState,
+  ) {
+    emit(
+      state.copyWith(
+        inputType: keyChainInputType,
+        pageState: keyChainPageState,
+        error: '',
+        secret: '',
+        tempSecret: '',
+        isSecretConfirmed: false,
+      ),
+    );
+  }
 
+  Future<bool> serverInfo() async {
+    emit(state.copyWith(loading: true));
     try {
-      emit(state.copyWith(loading: true, error: ''));
-
-      if (keyServerUrl.isEmpty) {
-        emit(state.copyWith(loading: false, error: 'keychain api is not set'));
-        return;
+      final info = await _keyService.serverInfo();
+      if (info.cooldown > 1) {
+        emit(state.copyWith(loading: false, error: 'Server is on cooldown'));
+        return false;
       }
-      final backupKey =
-          await KeyService(keyServer: Uri.parse(keyServerUrl)).recoverBackupKey(
-        backupId: state.backupId,
-        password: state.secret,
-        salt: state.backupSalt,
-      );
-      emit(
-        state.copyWith(
-          backupKey: HEX.encode(backupKey),
-          loading: false,
-          keySecretState: KeySecretState.recovered,
-        ),
-      );
+      if (state.tempSecret.length > info.secretMaxLength ||
+          state.secret.length > info.secretMaxLength) {
+        emit(state.copyWith(loading: false, error: 'Secret is too long'));
+        return false;
+      }
+      return true;
     } catch (e) {
-      debugPrint("Failed to recover backup key: $e");
+      debugPrint('Failed to get server info: $e');
       emit(
         state.copyWith(
           loading: false,
-          error: "Failed to recover backup key",
+          error: 'Key server is not reachable! Please try again later',
         ),
       );
+      return false;
     }
   }
 }

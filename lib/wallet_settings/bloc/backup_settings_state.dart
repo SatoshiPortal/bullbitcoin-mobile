@@ -23,7 +23,6 @@ class BackupSettingsState with _$BackupSettingsState {
     @Default('') String errorSavingBackups,
     @Default('') String backupId,
     @Default('') String backupFolderPath,
-    @Default('') String backupFolderId,
     @Default('') String backupSalt,
     @Default('') String backupKey,
     @Default({}) Map<String, dynamic> latestRecoveredBackup,

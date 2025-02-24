@@ -402,33 +402,55 @@ class HomeState with _$HomeState {
         : walletsWithEnoughBalance;
   }
 
-  Set<({String info, Wallet walletBloc})> homeWarnings(BBNetwork network) {
+  Set<({String info, Wallet walletBloc, String? route})> homeWarnings(
+    BBNetwork network,
+  ) {
     bool instantBalWarning(Wallet wb) {
       if (wb.isInstant() == false) return false;
       return wb.balanceSats() > 100000000;
     }
 
-    bool backupWarning(Wallet wb) => !wb.physicalBackupTested;
+    bool needsBackupWarning(Wallet wb) =>
+        !wb.physicalBackupTested || !wb.vaultBackupTested;
 
-    final warnings = <({String info, Wallet walletBloc})>{};
-    final List<String> backupWalletFngrforBackupWarning = [];
+    final warnings = <({String info, Wallet walletBloc, String? route})>{};
+    final List<String> backupWalletFngrForBackupWarning = [];
 
     for (final walletBloc in walletsFromNetwork(network)) {
       if (instantBalWarning(walletBloc)) {
         warnings.add(
-          (info: 'Instant wallet balance is high', walletBloc: walletBloc),
-        );
-      }
-      if (backupWarning(walletBloc)) {
-        final fngr = walletBloc.sourceFingerprint;
-        if (backupWalletFngrforBackupWarning.contains(fngr)) continue;
-        warnings.add(
           (
-            info: 'Back up your wallet! Tap to test backup.',
-            walletBloc: walletBloc
+            info: 'Instant wallet balance is high',
+            walletBloc: walletBloc,
+            route: null
           ),
         );
-        backupWalletFngrforBackupWarning.add(fngr);
+      }
+
+      if (needsBackupWarning(walletBloc)) {
+        final fngr = walletBloc.sourceFingerprint;
+        if (backupWalletFngrForBackupWarning.contains(fngr)) continue;
+
+        if (!walletBloc.physicalBackupTested) {
+          warnings.add(
+            (
+              info: 'Physical backup needed! Tap to test backup.',
+              walletBloc: walletBloc,
+              route: '/wallet-settings/backup-settings/backup-options/physical'
+            ),
+          );
+        }
+        if (!walletBloc.vaultBackupTested) {
+          warnings.add(
+            (
+              info: 'Encrypted backup needed! Tap to test backup.',
+              walletBloc: walletBloc,
+              route: '/wallet-settings/backup-settings/backup-options/encrypted'
+            ),
+          );
+        }
+
+        backupWalletFngrForBackupWarning.add(fngr);
       }
     }
 
