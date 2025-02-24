@@ -31,52 +31,47 @@ class KeychainBackupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String? backupId;
-    String? backupSalt;
-
-    if (backupKey != null && backupKey!.isNotEmpty) {
-      backupId = backup['id']?.toString();
-      backupSalt = backup['salt']?.toString();
-    } else {
-      final encryptedData =
-          jsonDecode(backup["encrypted"] as String) as Map<String, dynamic>;
-      backupId = encryptedData["id"]?.toString();
-      backupSalt = encryptedData["salt"] as String?;
-    }
+    // Extract backup data
+    final backupData = _extractBackupData();
 
     return MultiBlocProvider(
       providers: [
         BlocProvider<KeychainCubit>(
           create: (context) => KeychainCubit()
             ..setChainState(
-              (backupKey == null || backupKey!.isEmpty)
-                  ? KeyChainPageState.recovery
-                  : KeyChainPageState.enter,
-              backupId ?? '',
+              _pState, // Use the provided state directly instead of determining it
+              backupData.$1 ?? '',
               backupKey,
-              backupSalt ?? '',
+              backupData.$2 ?? '',
             ),
         ),
-        BlocProvider.value(
-          value: createBackupSettingsCubit(),
-        ),
+        BlocProvider.value(value: createBackupSettingsCubit()),
       ],
-      child: _Screen(
-        backupKey: backupKey,
-        encryptedBackup: backup,
-      ),
+      child: _Screen(backupKey: backupKey, backup: backup),
     );
+  }
+
+  (String?, String?) _extractBackupData() {
+    if (backupKey?.isNotEmpty ?? false) {
+      return (backup['id']?.toString(), backup['salt']?.toString());
+    }
+
+    final encryptedData = backup["encrypted"] is String
+        ? jsonDecode(backup["encrypted"] as String) as Map<String, dynamic>
+        : <String, dynamic>{};
+
+    return (encryptedData["id"]?.toString(), encryptedData["salt"] as String?);
   }
 }
 
 class _Screen extends StatelessWidget {
   const _Screen({
     this.backupKey,
-    required this.encryptedBackup,
+    required this.backup,
   });
 
   final String? backupKey;
-  final Map<String, dynamic> encryptedBackup;
+  final Map<String, dynamic> backup;
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -131,6 +126,34 @@ class _Screen extends StatelessWidget {
               previous.keySecretState != current.keySecretState ||
               previous.error != current.error,
           listener: (context, state) {
+            // Handle delete state
+            if (state.pageState == KeyChainPageState.delete &&
+                state.keySecretState == KeySecretState.deleted &&
+                !state.loading &&
+                !state.hasError) {
+              context.read<KeychainCubit>().clearSensitive();
+              final source = backup['source'] as String?;
+              final fileName = backup['filename'] as String?;
+              if (source != null) {
+                if (source == 'drive' && fileName != null) {
+                  context
+                      .read<BackupSettingsCubit>()
+                      .deleteGoogleDriveBackup(fileName);
+                }
+                if (source == 'fs') {
+                  context.read<BackupSettingsCubit>().deleteFsBackup();
+                }
+              }
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const _SuccessDialog(
+                  isRecovery: false,
+                  isDelete: true,
+                ),
+              );
+            }
+
             if (state.isSecretConfirmed &&
                 !state.loading &&
                 !state.hasError &&
@@ -152,10 +175,10 @@ class _Screen extends StatelessWidget {
             if (state.keySecretState == KeySecretState.recovered &&
                 !state.loading &&
                 !state.hasError &&
-                encryptedBackup.isNotEmpty &&
+                backup.isNotEmpty &&
                 state.backupKey.isNotEmpty) {
               context.read<BackupSettingsCubit>().recoverBackup(
-                    jsonEncode(encryptedBackup),
+                    jsonEncode(backup),
                     state.backupKey,
                   );
             }
@@ -194,41 +217,41 @@ class _Screen extends StatelessWidget {
             ),
             body: AnimatedSwitcher(
               duration: 300.ms,
-              child: state.pageState == KeyChainPageState.recovery
-                  ? _RecoveryPage(
-                      key: const ValueKey('recovery'),
-                      inputType: state.inputType,
-                    )
-                  : state.pageState == KeyChainPageState.enter
-                      ? _EnterPage(
-                          key: const ValueKey('enter'),
-                          inputType: state.inputType,
-                        )
-                      : _ConfirmPage(
-                          key: const ValueKey('confirm'),
-                          inputType: state.inputType,
-                        ),
+              child: _buildPageContent(state),
             ),
           );
         },
       ),
     );
   }
-}
 
-class _LoadingView extends StatelessWidget {
-  const _LoadingView();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(color: context.colour.primary),
-      ),
-    );
+  Widget _buildPageContent(KeychainState state) {
+    switch (state.pageState) {
+      case KeyChainPageState.recovery:
+        return _RecoveryPage(
+          key: const ValueKey('recovery'),
+          inputType: state.inputType,
+        );
+      case KeyChainPageState.enter:
+        return _EnterPage(
+          key: const ValueKey('enter'),
+          inputType: state.inputType,
+        );
+      case KeyChainPageState.confirm:
+        return _ConfirmPage(
+          key: const ValueKey('confirm'),
+          inputType: state.inputType,
+        );
+      case KeyChainPageState.delete:
+        return _DeletePage(
+          key: const ValueKey('delete'),
+          inputType: state.inputType,
+        );
+    }
   }
 }
 
+/// Page Type Widgets
 class _EnterPage extends StatelessWidget {
   const _EnterPage({super.key, required this.inputType});
   final KeyChainInputType inputType;
@@ -472,70 +495,107 @@ class _PasswordField extends StatelessWidget {
   }
 }
 
-class _TitleText extends StatelessWidget {
-  const _TitleText();
+class KeyPad extends StatelessWidget {
+  const KeyPad({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final (inputState, type) = context
-        .select((KeychainCubit x) => (x.state.pageState, x.state.inputType));
-    final text = inputState == KeyChainPageState.enter
-        ? 'Choose a backup ${type == KeyChainInputType.pin ? 'PIN' : 'password'}'
-        : 'Confirm backup ${type == KeyChainInputType.pin ? 'PIN' : 'password'}';
-    return BBText.titleLarge(
-      textAlign: TextAlign.center,
-      text,
-      isBold: true,
+    final shuffledNumbers =
+        context.select((KeychainCubit x) => x.state.shuffledNumbers);
+    final shuffledNumberButtonList = [
+      for (final i in shuffledNumbers) NumberButton(text: i.toString()),
+    ];
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+      ),
+      child: GridView(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+        ),
+        children: [
+          for (var i = 0; i < 9; i = i + 1) shuffledNumberButtonList[i],
+          Container(),
+          shuffledNumberButtonList[9],
+        ],
+      ),
     );
   }
 }
 
-class _ConfirmTitleText extends StatelessWidget {
-  const _ConfirmTitleText();
+class NumberButton extends StatefulWidget {
+  const NumberButton({super.key, required this.text});
+
+  final String text;
+
+  @override
+  State<NumberButton> createState() => _NumberButtonState();
+}
+
+class _NumberButtonState extends State<NumberButton> {
+  bool isRed = false;
 
   @override
   Widget build(BuildContext context) {
-    final (pageState, inputType) = context
-        .select((KeychainCubit x) => (x.state.pageState, x.state.inputType));
-    final text =
-        'Confirm backup ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}';
+    OutlinedButton.styleFrom(
+      shape: const CircleBorder(),
+      backgroundColor: context.colour.onPrimaryContainer,
+      foregroundColor: context.colour.primary,
+    );
 
-    return BBText.titleLarge(
-      textAlign: TextAlign.center,
-      text,
-      isBold: true,
+    OutlinedButton.styleFrom(
+      shape: const CircleBorder(),
+      backgroundColor: context.colour.primary,
+      foregroundColor: context.colour.primaryContainer,
+    );
+
+    return Center(
+      child: SizedBox(
+        height: 80,
+        width: 80,
+        child: GestureDetector(
+          onTapUp: (e) {
+            setState(() {
+              isRed = false;
+            });
+          },
+          onTapDown: (e) {
+            setState(() {
+              isRed = true;
+            });
+          },
+          onTapCancel: () {
+            setState(() {
+              isRed = false;
+            });
+          },
+          child: OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              splashFactory: NoSplash.splashFactory,
+            ),
+            onPressed: () {
+              SystemSound.play(SystemSoundType.click);
+              HapticFeedback.mediumImpact();
+
+              context.read<KeychainCubit>().keyPressed(widget.text);
+            },
+            child: BBText.titleLarge(
+              widget.text,
+              isBold: true,
+            ),
+          ).animate().blur(
+                begin: const Offset(1, 1),
+                end: isRed ? const Offset(2, 2) : Offset.zero,
+              ),
+        ),
+      ),
     );
   }
 }
 
-class _ConfirmSubtitleText extends StatelessWidget {
-  const _ConfirmSubtitleText();
-
-  @override
-  Widget build(BuildContext context) {
-    final inputType = context.select((KeychainCubit x) => x.state.inputType);
-    return BBText.bodySmall(
-      textAlign: TextAlign.center,
-      'Enter the ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} again to confirm',
-    );
-  }
-}
-
-class _SubtitleText extends StatelessWidget {
-  const _SubtitleText();
-
-  @override
-  Widget build(BuildContext context) {
-    final inputType = context.select((KeychainCubit x) => x.state.inputType);
-    final text =
-        'You must memorize this ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to recover access to your wallet. It must be at least 6 digits.';
-    return BBText.bodySmall(
-      textAlign: TextAlign.center,
-      text,
-    );
-  }
-}
-
+/// Action Buttons
 class _SetButton extends StatelessWidget {
   final KeyChainInputType inputType;
   const _SetButton({required this.inputType});
@@ -706,7 +766,7 @@ class _RecoverButton extends StatelessWidget {
     return FilledButton(
       onPressed: canRecoverKey
           ? () => context.read<KeychainCubit>().clickRecover()
-          : null,
+          : () => context.read<KeychainCubit>().clickRecover(),
       style: FilledButton.styleFrom(
         backgroundColor: _getButtonColor(context, canRecoverKey),
         shape: RoundedRectangleBorder(
@@ -779,112 +839,122 @@ class _RecoverButton extends StatelessWidget {
   }
 }
 
-class NumberButton extends StatefulWidget {
-  const NumberButton({super.key, required this.text});
-
-  final String text;
-
-  @override
-  State<NumberButton> createState() => _NumberButtonState();
-}
-
-class _NumberButtonState extends State<NumberButton> {
-  bool isRed = false;
+class _DeleteButton extends StatelessWidget {
+  const _DeleteButton({required this.inputType});
+  final KeyChainInputType inputType;
 
   @override
   Widget build(BuildContext context) {
-    OutlinedButton.styleFrom(
-      shape: const CircleBorder(),
-      backgroundColor: context.colour.onPrimaryContainer,
-      foregroundColor: context.colour.primary,
-    );
+    final state = context.select((KeychainCubit x) => x.state);
+    final showButton = state.showButton;
 
-    OutlinedButton.styleFrom(
-      shape: const CircleBorder(),
-      backgroundColor: context.colour.primary,
-      foregroundColor: context.colour.primaryContainer,
-    );
-
-    return Center(
-      child: SizedBox(
-        height: 80,
-        width: 80,
-        child: GestureDetector(
-          onTapUp: (e) {
-            setState(() {
-              isRed = false;
-            });
-          },
-          onTapDown: (e) {
-            setState(() {
-              isRed = true;
-            });
-          },
-          onTapCancel: () {
-            setState(() {
-              isRed = false;
-            });
-          },
-          child: OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              splashFactory: NoSplash.splashFactory,
-            ),
-            onPressed: () {
-              SystemSound.play(SystemSoundType.click);
-              HapticFeedback.mediumImpact();
-
-              context.read<KeychainCubit>().keyPressed(widget.text);
-            },
-            child: BBText.titleLarge(
-              widget.text,
-              isBold: true,
-            ),
-          ).animate().blur(
-                begin: const Offset(1, 1),
-                end: isRed ? const Offset(2, 2) : Offset.zero,
-              ),
+    return FilledButton(
+      onPressed: showButton ? () => _showDeleteConfirmation(context) : null,
+      style: FilledButton.styleFrom(
+        backgroundColor: context.colour.shadow,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
         ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Delete Backup',
+            style: context.font.bodyMedium!.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Icon(
+            Icons.delete_forever,
+            color: Colors.white,
+            size: 20,
+          ),
+        ],
       ),
     );
   }
-}
 
-class KeyPad extends StatelessWidget {
-  const KeyPad({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final shuffledNumbers =
-        context.select((KeychainCubit x) => x.state.shuffledNumbers);
-    final shuffledNumberButtonList = [
-      for (final i in shuffledNumbers) NumberButton(text: i.toString()),
-    ];
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ),
-      child: GridView(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const BBText.title(
+          'Delete Backup?',
+          isBold: true,
         ),
-        children: [
-          for (var i = 0; i < 9; i = i + 1) shuffledNumberButtonList[i],
-          Container(),
-          shuffledNumberButtonList[9],
+        content: const BBText.bodySmall(
+          'This action cannot be undone. Are you sure you want to delete this backup?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              // First close the dialog
+              Navigator.of(dialogContext).pop();
+              // Then trigger the delete action using the original context
+              context.read<KeychainCubit>().deleteBackupKey();
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: context.colour.error,
+            ),
+            child: const Text('Delete'),
+          ),
         ],
       ),
     );
   }
 }
 
-class _SuccessDialog extends StatelessWidget {
-  const _SuccessDialog({required this.isRecovery});
-  final bool isRecovery;
+/// Dialog Widgets
+class _LoadingView extends StatelessWidget {
+  const _LoadingView();
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(color: context.colour.primary),
+      ),
+    );
+  }
+}
+
+class _SuccessDialog extends StatelessWidget {
+  const _SuccessDialog({
+    required this.isRecovery,
+    this.isDelete = false,
+  });
+
+  final bool isRecovery;
+  final bool isDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    String title;
+    String message;
+    String route;
+
+    if (isDelete) {
+      title = 'Backup Deleted';
+      message = 'Your backup has been permanently deleted';
+      route = '/wallet-settings';
+    } else if (isRecovery) {
+      title = 'Recovery Successful';
+      message = 'Your wallet has been recovered successfully';
+      route = '/home';
+    } else {
+      title = 'Backup Successful';
+      message =
+          'Your wallet has been backed up successfully \n Please test your backup';
+      route = '/wallet-settings/backup-settings/recover-options/encrypted';
+    }
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
@@ -899,26 +969,20 @@ class _SuccessDialog extends StatelessWidget {
             ),
             const Gap(16),
             BBText.title(
-              isRecovery ? 'Recovery Successful' : 'Backup Successful',
+              title,
               textAlign: TextAlign.center,
               isBold: true,
             ),
             const Gap(8),
             BBText.bodySmall(
-              isRecovery
-                  ? 'Your wallet has been recovered successfully'
-                  : 'Your wallet has been backed up successfully \n Please test your backup',
+              message,
               textAlign: TextAlign.center,
             ),
             const Gap(24),
             FilledButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                context.go(
-                  isRecovery
-                      ? '/home'
-                      : '/wallet-settings/backup-settings/recover-options/encrypted',
-                );
+                context.go(route);
               },
               style: FilledButton.styleFrom(
                 backgroundColor: context.colour.shadow,
@@ -984,6 +1048,71 @@ class _ErrorDialog extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Text Widgets
+class _TitleText extends StatelessWidget {
+  const _TitleText();
+
+  @override
+  Widget build(BuildContext context) {
+    final (inputState, type) = context
+        .select((KeychainCubit x) => (x.state.pageState, x.state.inputType));
+    final text = inputState == KeyChainPageState.enter
+        ? 'Choose a backup ${type == KeyChainInputType.pin ? 'PIN' : 'password'}'
+        : 'Confirm backup ${type == KeyChainInputType.pin ? 'PIN' : 'password'}';
+    return BBText.titleLarge(
+      textAlign: TextAlign.center,
+      text,
+      isBold: true,
+    );
+  }
+}
+
+class _ConfirmTitleText extends StatelessWidget {
+  const _ConfirmTitleText();
+
+  @override
+  Widget build(BuildContext context) {
+    final (pageState, inputType) = context
+        .select((KeychainCubit x) => (x.state.pageState, x.state.inputType));
+    final text =
+        'Confirm backup ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}';
+
+    return BBText.titleLarge(
+      textAlign: TextAlign.center,
+      text,
+      isBold: true,
+    );
+  }
+}
+
+class _ConfirmSubtitleText extends StatelessWidget {
+  const _ConfirmSubtitleText();
+
+  @override
+  Widget build(BuildContext context) {
+    final inputType = context.select((KeychainCubit x) => x.state.inputType);
+    return BBText.bodySmall(
+      textAlign: TextAlign.center,
+      'Enter the ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} again to confirm',
+    );
+  }
+}
+
+class _SubtitleText extends StatelessWidget {
+  const _SubtitleText();
+
+  @override
+  Widget build(BuildContext context) {
+    final inputType = context.select((KeychainCubit x) => x.state.inputType);
+    final text =
+        'You must memorize this ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to recover access to your wallet. It must be at least 6 digits.';
+    return BBText.bodySmall(
+      textAlign: TextAlign.center,
+      text,
     );
   }
 }
