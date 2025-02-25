@@ -40,8 +40,8 @@ class KeychainBackupPage extends StatelessWidget {
         BlocProvider<KeychainCubit>(
           create: (context) => KeychainCubit()
             ..setChainState(
-              _pState, // Use the provided state directly instead of determining it
-              backupId ?? '',
+              _pState,
+              backupData.$1 ?? '',
               backupKey,
               backupSalt ?? '',
             ),
@@ -118,18 +118,7 @@ class _Screen extends StatelessWidget {
                 !state.loading &&
                 !state.hasError) {
               context.read<KeychainCubit>().clearSensitive();
-              final source = backup['source'] as String?;
-              final fileName = backup['filename'] as String?;
-              if (source != null) {
-                if (source == 'drive' && fileName != null) {
-                  context
-                      .read<BackupSettingsCubit>()
-                      .deleteGoogleDriveBackup(fileName);
-                }
-                if (source == 'fs') {
-                  context.read<BackupSettingsCubit>().deleteFsBackup();
-                }
-              }
+
               showDialog(
                 context: context,
                 barrierDismissible: false,
