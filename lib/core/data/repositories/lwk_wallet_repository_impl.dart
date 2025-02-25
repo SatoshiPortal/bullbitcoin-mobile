@@ -54,6 +54,22 @@ class LwkWalletRepositoryImpl
   }
 
   @override
+  Future<Address> getNewAddress() async {
+    final lastUnusedAddressInfo = await _publicWallet.addressLastUnused();
+    final newIndex = lastUnusedAddressInfo.index + 1;
+    final addressInfo = await _publicWallet.address(index: newIndex);
+
+    final address = Address.liquid(
+      index: addressInfo.index,
+      address: addressInfo.confidential,
+      kind: AddressKind.external,
+      state: AddressStatus.unused,
+    );
+
+    return address;
+  }
+
+  @override
   Future<Address> getAddressByIndex(int index) async {
     final addressInfo = await _publicWallet.address(index: index);
 

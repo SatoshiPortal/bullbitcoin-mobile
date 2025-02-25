@@ -8,4 +8,5 @@ abstract class WalletRepository {
   Future<Balance> getBalance();
   Future<Address> getAddressByIndex(int index);
   Future<Address> getLastUnusedAddress();
+  Future<Address> getNewAddress();
 }
