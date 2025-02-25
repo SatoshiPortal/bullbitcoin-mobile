@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/app_startup/app_router.dart';
+import 'package:bb_mobile/app_router.dart';
 import 'package:bb_mobile/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

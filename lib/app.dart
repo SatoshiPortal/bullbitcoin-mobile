@@ -1,6 +1,6 @@
+import 'package:bb_mobile/app_locator.dart';
+import 'package:bb_mobile/app_router.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
-import 'package:bb_mobile/features/app_startup/app_locator.dart';
-import 'package:bb_mobile/features/app_startup/app_router.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/core/data/datasources/bip39_word_list_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/exchange_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
@@ -20,7 +21,6 @@ import 'package:bb_mobile/core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_wallet_balance_sat_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/app_startup/app_locator.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 
