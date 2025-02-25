@@ -567,7 +567,8 @@ class _SetButton extends StatelessWidget {
   const _SetButton({required this.inputType});
   @override
   Widget build(BuildContext context) {
-    final showButton = context.select((KeychainCubit x) => x.state.showButton);
+    final canStoreKey =
+        context.select((KeychainCubit x) => x.state.canStoreKey);
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       child: Column(
@@ -597,11 +598,13 @@ class _SetButton extends StatelessWidget {
           const Gap(5),
           FilledButton(
             onPressed: () {
-              if (showButton) context.read<KeychainCubit>().confirmPressed();
+              context.read<KeychainCubit>().keyServerStatus();
+              if (canStoreKey) context.read<KeychainCubit>().confirmPressed();
             },
             style: FilledButton.styleFrom(
-              backgroundColor:
-                  showButton ? context.colour.shadow : context.colour.surface,
+              backgroundColor: canStoreKey
+                  ? context.colour.shadow
+                  : context.colour.surfaceBright,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -632,7 +635,8 @@ class _ConfirmButton extends StatelessWidget {
   final KeyChainInputType inputType;
   @override
   Widget build(BuildContext context) {
-    final showButton = context.select((KeychainCubit x) => x.state.showButton);
+    final canStoreKey =
+        context.select((KeychainCubit x) => x.state.canStoreKey);
     final err = context.select((KeychainCubit x) => x.state.error);
 
     if (err.isNotEmpty && inputType == KeyChainInputType.password) {
@@ -640,11 +644,12 @@ class _ConfirmButton extends StatelessWidget {
     }
     return FilledButton(
       onPressed: () {
-        if (showButton) context.read<KeychainCubit>().confirmPressed();
+        context.read<KeychainCubit>().keyServerStatus();
+        if (canStoreKey) context.read<KeychainCubit>().confirmPressed();
       },
       style: FilledButton.styleFrom(
         backgroundColor:
-            showButton ? context.colour.shadow : context.colour.surface,
+            canStoreKey ? context.colour.shadow : context.colour.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
