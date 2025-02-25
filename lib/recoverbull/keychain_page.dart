@@ -811,11 +811,10 @@ class _DeleteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.select((KeychainCubit x) => x.state);
-    final showButton = state.showButton;
-
+    final canDeleteKey =
+        context.select((KeychainCubit x) => x.state.canDeleteKey);
     return FilledButton(
-      onPressed: showButton ? () => _showDeleteConfirmation(context) : null,
+      onPressed: () => canDeleteKey ? _showDeleteConfirmation(context) : null,
       style: FilledButton.styleFrom(
         backgroundColor: context.colour.shadow,
         shape: RoundedRectangleBorder(
