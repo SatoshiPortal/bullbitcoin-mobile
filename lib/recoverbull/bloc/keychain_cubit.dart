@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
@@ -271,31 +273,5 @@ class KeychainCubit extends Cubit<KeychainState> {
         isSecretConfirmed: false,
       ),
     );
-  }
-
-  Future<bool> serverInfo() async {
-    emit(state.copyWith(loading: true));
-    try {
-      final info = await _keyService.serverInfo();
-      if (info.cooldown > 1) {
-        emit(state.copyWith(loading: false, error: 'Server is on cooldown'));
-        return false;
-      }
-      if (state.tempSecret.length > info.secretMaxLength ||
-          state.secret.length > info.secretMaxLength) {
-        emit(state.copyWith(loading: false, error: 'Secret is too long'));
-        return false;
-      }
-      return true;
-    } catch (e) {
-      debugPrint('Failed to get server info: $e');
-      emit(
-        state.copyWith(
-          loading: false,
-          error: 'Key server is not reachable! Please try again later',
-        ),
-      );
-      return false;
-    }
   }
 }
