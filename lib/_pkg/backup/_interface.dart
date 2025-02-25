@@ -30,15 +30,15 @@ abstract class IBackupManager {
         debugPrint(err.toString());
         return (null, Err('Failed to derive backup key'));
       }
-      final encrypted = recoverbull.BackupService.createBackup(
+      final jsonBackup = recoverbull.BackupService.createBackup(
         secret: utf8.encode(plaintext),
         backupKey: derived,
       );
-      final encoded = jsonEncode({
-        'index': randomIndex,
-        'encrypted': encrypted,
-      });
-      return ((key: HEX.encode(derived), file: encoded), null);
+
+      final backup = jsonDecode(jsonBackup);
+      backup['index'] = randomIndex;
+
+      return ((key: HEX.encode(derived), file: jsonEncode(backup)), null);
     } catch (e) {
       return (null, Err('Encryption failed: $e'));
     }
@@ -50,13 +50,8 @@ abstract class IBackupManager {
     required List<int> backupKey,
   }) async {
     try {
-      final decodedBackup = jsonDecode(encrypted) as Map<String, dynamic>;
-      if (!decodedBackup.containsKey("encrypted")) {
-        return (null, Err('Invalid backup format'));
-      }
-
       final plaintext = recoverbull.BackupService.restoreBackup(
-        backup: decodedBackup['encrypted'] as String,
+        backup: encrypted,
         backupKey: backupKey,
       );
 

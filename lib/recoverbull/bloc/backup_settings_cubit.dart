@@ -350,9 +350,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       _handleLoadError('Backup key is missing');
       return;
     }
-    final decoded = jsonDecode(encrypted) as Map<String, dynamic>;
-    final backupId =
-        jsonDecode(decoded['encrypted'] as String)['id'] as String?;
+
+    final backupId = jsonDecode(encrypted)['id'] as String?;
 
     if (backupId == null) {
       _handleLoadError('Invalid backup format');
@@ -481,18 +480,14 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final fileName = filePath?.split('/').last;
-    final backupId = fileName?.split('_').last.split('.').first;
-    if (backupId == null) {
-      _handleSaveError('Failed to extract backup ID');
+    final theBackup = json.decode(backup.file);
+    final backupId = theBackup['id'] as String?;
+    final backupSalt = theBackup['salt'] as String?;
+    if (backupId == null || backupSalt == null) {
+      _handleSaveError('Failed to extract backup metadata');
       return;
     }
 
-    final backupSalt = _extractBackupSalt(backup.file);
-    if (backupSalt == null) {
-      _handleSaveError('Failed to extract backup salt');
-      return;
-    }
     _emitSafe(
       state.copyWith(
         backupId: backupId,
@@ -535,11 +530,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       _handleSaveError(encryptErr?.message ?? 'Encryption failed');
       return;
     }
-    final backupSalt = _extractBackupSalt(backup.file);
-    if (backupSalt == null) {
-      _handleSaveError('Failed to extract backup salt');
-      return;
-    }
 
     final (filePath, saveErr) =
         await _googleDriveBackupManager.saveEncryptedBackup(
@@ -552,9 +542,11 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final fileName = filePath?.split('/').last;
-    final backupId = fileName?.split('_').last.split('.').first;
-    if (backupId == null || fileName == null) {
+    final theBackup = json.decode(backup.file);
+    final backupId = theBackup['id'] as String?;
+    final backupSalt = theBackup['salt'] as String?;
+    final filename = filePath?.split('/').last;
+    if (backupId == null || filename == null || backupSalt == null) {
       _handleSaveError('Failed to extract backup information');
       return;
     }
@@ -563,7 +555,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       state.copyWith(
         backupId: backupId,
         backupKey: backup.key,
-        backupFolderPath: fileName,
+        backupFolderPath: filename,
         backupSalt: backupSalt,
         savingBackups: false,
         lastBackupAttempt: DateTime.now(),
@@ -883,18 +875,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return (backup, null);
     } catch (e) {
       return (null, Err(e.toString()));
-    }
-  }
-
-  String? _extractBackupSalt(String encrypted) {
-    try {
-      final data = jsonDecode(encrypted) as Map<String, dynamic>;
-      final encryptedData =
-          jsonDecode(data['encrypted'] as String) as Map<String, dynamic>;
-      return encryptedData['salt'] as String?;
-    } catch (e) {
-      debugPrint('Failed to extract salt: $e');
-      return null;
     }
   }
 

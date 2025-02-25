@@ -449,7 +449,8 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.recoveredBackup.isEmpty) {
+    final recoveryFile = widget.recoveredBackup;
+    if (recoveryFile.isEmpty) {
       return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -459,8 +460,9 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
         ),
         body: _buildErrorView(context),
       );
-    } else if (widget.recoveredBackup['index'] == null ||
-        widget.recoveredBackup['encrypted'] == null) {
+    } else if (recoveryFile['id'] == null ||
+        recoveryFile['ciphertext'] == null ||
+        recoveryFile['salt'] == null) {
       return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -523,9 +525,6 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
           }
         },
         builder: (context, state) {
-          final recoveredBackupEncrypted =
-              jsonDecode(widget.recoveredBackup["encrypted"] as String)
-                  as Map<String, dynamic>;
           return Scaffold(
             appBar: AppBar(
               elevation: 0,
@@ -551,15 +550,13 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                       children: [
                         TextSpan(
                           text: 'Backup ID:',
-                          style: context.font.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: context.font.bodyMedium!
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
                         TextSpan(
-                          text: '${recoveredBackupEncrypted['id']}',
-                          style: context.font.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          text: '${recoveryFile['id']}',
+                          style: context.font.bodyMedium!
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -571,16 +568,14 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                       children: [
                         TextSpan(
                           text: 'Created at:',
-                          style: context.font.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: context.font.bodyMedium!
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
                         TextSpan(
                           text:
-                              ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(recoveredBackupEncrypted['createdAt'] as int).toLocal())}',
-                          style: context.font.bodyMedium!.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                              ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(recoveryFile['createdAt'] as int).toLocal())}',
+                          style: context.font.bodyMedium!
+                              .copyWith(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),

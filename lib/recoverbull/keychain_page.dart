@@ -32,7 +32,8 @@ class KeychainBackupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Extract backup data
-    final backupData = _extractBackupData();
+    final backupId = backup['id'] as String?;
+    final backupSalt = backup['salt'] as String?;
 
     return MultiBlocProvider(
       providers: [
@@ -40,27 +41,15 @@ class KeychainBackupPage extends StatelessWidget {
           create: (context) => KeychainCubit()
             ..setChainState(
               _pState, // Use the provided state directly instead of determining it
-              backupData.$1 ?? '',
+              backupId ?? '',
               backupKey,
-              backupData.$2 ?? '',
+              backupSalt ?? '',
             ),
         ),
         BlocProvider.value(value: createBackupSettingsCubit()),
       ],
       child: _Screen(backupKey: backupKey, backup: backup),
     );
-  }
-
-  (String?, String?) _extractBackupData() {
-    if (backupKey?.isNotEmpty ?? false) {
-      return (backup['id']?.toString(), backup['salt']?.toString());
-    }
-
-    final encryptedData = backup["encrypted"] is String
-        ? jsonDecode(backup["encrypted"] as String) as Map<String, dynamic>
-        : <String, dynamic>{};
-
-    return (encryptedData["id"]?.toString(), encryptedData["salt"] as String?);
   }
 }
 

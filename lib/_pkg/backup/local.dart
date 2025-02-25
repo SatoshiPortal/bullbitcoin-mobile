@@ -6,7 +6,6 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:hex/hex.dart';
 
 class FileSystemBackupManager extends IBackupManager {
   final FileStorage fileStorage = locator<FileStorage>();
@@ -50,9 +49,7 @@ class FileSystemBackupManager extends IBackupManager {
     String backupFolder = defaultBackupPath,
   }) async {
     try {
-      final decodeEncryptedFile = (jsonDecode(encrypted)
-          as Map<String, dynamic>)["encrypted"] as String;
-      final backupId = jsonDecode(decodeEncryptedFile)['id'] as String;
+      final backupId = jsonDecode(encrypted)['id'] as String;
       final now = DateTime.now();
       final formattedDate = now.millisecondsSinceEpoch;
       final filename = '${formattedDate}_$backupId.json';
@@ -66,9 +63,8 @@ class FileSystemBackupManager extends IBackupManager {
       final file = File('${backupDir.path}/$filename');
 
       final (f, errSave) = await fileStorage.saveToFile(file, encrypted);
-      if (errSave != null) {
-        return (null, Err(errSave.message));
-      }
+      if (errSave != null) return (null, Err(errSave.message));
+
       return (file.path, null);
     } catch (e) {
       return (null, Err('Failed to write encrypted backup: $e'));

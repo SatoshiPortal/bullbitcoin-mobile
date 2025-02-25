@@ -56,18 +56,19 @@ class KeychainCubit extends Cubit<KeychainState> {
       );
       return;
     }
+
     final isServerReady = await serverInfo();
     if (!isServerReady) return;
     if (state.secret.length < pinMin) {
       state.inputType == KeyChainInputType.pin
           ? emit(
               state.copyWith(
-                error: 'pin should be atleast $pinMin digits long',
+                error: 'pin should be at least $pinMin digits long',
               ),
             )
           : emit(
               state.copyWith(
-                error: 'password should be atleast $pinMin characters long',
+                error: 'password should be at least $pinMin characters long',
               ),
             );
       return;
