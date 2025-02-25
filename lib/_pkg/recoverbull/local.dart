@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/_pkg/backup/_interface.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
+import 'package:bb_mobile/_pkg/recoverbull/_interface.dart';
 import 'package:bb_mobile/locator.dart';
 
 class FileSystemBackupManager extends IBackupManager {
