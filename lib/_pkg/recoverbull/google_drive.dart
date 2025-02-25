@@ -90,12 +90,12 @@ class GoogleDriveBackupManager extends IRecoverbullManager {
 
   @override
   Future<(String?, Err?)> saveEncryptedBackup({
-    required String encrypted,
+    required String backup,
     String backupFolder = defaultBackupPath,
   }) async {
     return _withConnection((api) async {
       try {
-        final data = jsonDecode(encrypted) as Map<String, dynamic>;
+        final data = jsonDecode(backup) as Map<String, dynamic>;
         final encryptedData = data['encrypted'] as String;
         final decodedEncrypted =
             jsonDecode(encryptedData) as Map<String, dynamic>;
@@ -113,8 +113,8 @@ class GoogleDriveBackupManager extends IRecoverbullManager {
         await api.files.create(
           file,
           uploadMedia: Media(
-            Stream.value(utf8.encode(encrypted)),
-            encrypted.length,
+            Stream.value(utf8.encode(backup)),
+            backup.length,
           ),
         );
 
@@ -127,10 +127,10 @@ class GoogleDriveBackupManager extends IRecoverbullManager {
 
   @override
   Future<(Map<String, dynamic>?, Err?)> loadEncryptedBackup({
-    required String encrypted,
+    required String backup,
   }) async {
     try {
-      final decodeEncryptedFile = jsonDecode(encrypted) as Map<String, dynamic>;
+      final decodeEncryptedFile = jsonDecode(backup) as Map<String, dynamic>;
       return (decodeEncryptedFile, null);
     } catch (e) {
       debugPrint('Failed to decode backup: $e');

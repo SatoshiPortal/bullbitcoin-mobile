@@ -14,22 +14,23 @@ import 'package:recoverbull/recoverbull.dart' as recoverbull;
 abstract class IRecoverbullManager {
   /// Encrypts a list of backups using BIP85 derivation
   Future<(({String key, String file})?, Err?)> createEncryptedBackup({
-    required List<WalletSensitiveData> backups,
+    required List<WalletSensitiveData> wallets,
     required List<String> mnemonic,
     required String network,
   }) async {
-    if (backups.isEmpty) return (null, Err('No backups provided'));
+    if (wallets.isEmpty) return (null, Err('No backups provided'));
 
     try {
+      final plaintext = json.encode(wallets.map((i) => i.toJson()).toList());
+
       final randomIndex = _deriveRandomIndex();
       final (derived, err) =
           await deriveBackupKey(mnemonic, network, randomIndex);
-      final plaintext = json.encode(backups.map((i) => i.toJson()).toList());
-
       if (derived == null) {
         debugPrint(err.toString());
         return (null, Err('Failed to derive backup key'));
       }
+
       final jsonBackup = recoverbull.BackupService.createBackup(
         secret: utf8.encode(plaintext),
         backupKey: derived,
@@ -46,12 +47,12 @@ abstract class IRecoverbullManager {
 
   /// Decrypts an encrypted backup using the provided key
   Future<(List<WalletSensitiveData>?, Err?)> restoreEncryptedBackup({
-    required String encrypted,
+    required String backup,
     required List<int> backupKey,
   }) async {
     try {
       final plaintext = recoverbull.BackupService.restoreBackup(
-        backup: encrypted,
+        backup: backup,
         backupKey: backupKey,
       );
 
@@ -104,12 +105,12 @@ abstract class IRecoverbullManager {
 
   // Abstract methods to be implemented by concrete classes
   Future<(String?, Err?)> saveEncryptedBackup({
-    required String encrypted,
+    required String backup,
     String backupFolder = defaultBackupPath,
   });
 
   Future<(Map<String, dynamic>?, Err?)> loadEncryptedBackup({
-    required String encrypted,
+    required String backup,
   });
 
   Future<(String?, Err?)> removeEncryptedBackup({required String path});

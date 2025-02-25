@@ -205,9 +205,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
     final (loadedBackup, err) =
-        await _fileSystemBackupManager.loadEncryptedBackup(
-      encrypted: fileContent,
-    );
+        await _fileSystemBackupManager.loadEncryptedBackup(backup: fileContent);
     if (loadedBackup != null) {
       loadedBackup.addAll({'source': 'fs'});
       emit(
@@ -282,7 +280,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
         final (loadedBackup, err) =
             await _googleDriveBackupManager.loadEncryptedBackup(
-          encrypted: utf8.decode(loadedBackupMetaData),
+          backup: utf8.decode(loadedBackupMetaData),
         );
         if (loadedBackup != null) {
           loadedBackup.addAll({
@@ -360,7 +358,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     final (backups, decryptErr) =
         await _fileSystemBackupManager.restoreEncryptedBackup(
-      encrypted: encrypted,
+      backup: encrypted,
       backupKey: HEX.decode(backupKey),
     );
 
@@ -471,7 +469,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     final (filePath, saveErr) =
         await _fileSystemBackupManager.saveEncryptedBackup(
-      encrypted: backup.file,
+      backup: backup.file,
       backupFolder: savePath,
     );
 
@@ -531,11 +529,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final (filePath, saveErr) =
-        await _googleDriveBackupManager.saveEncryptedBackup(
-      encrypted: backup.file,
-      backupFolder: '', // No longer needed
-    );
+    final (filePath, saveErr) = await _googleDriveBackupManager
+        .saveEncryptedBackup(backup: backup.file);
 
     if (saveErr != null) {
       _handleSaveError('Failed to save to Google Drive: ${saveErr.message}');
@@ -854,7 +849,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   Future<(({String key, String file})?, Err?)> _createBackup(
-    List<WalletSensitiveData> backups,
+    List<WalletSensitiveData> wallets,
   ) async {
     try {
       final (mainSeed, fetchMainMnemonicErr) = await _fetchMainSeed();
@@ -863,7 +858,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       }
       final (backup, err) =
           await _fileSystemBackupManager.createEncryptedBackup(
-        backups: backups,
+        wallets: wallets,
         mnemonic: mainSeed.mnemonic.split(' '),
         network: mainSeed.network.toString().toLowerCase(),
       );

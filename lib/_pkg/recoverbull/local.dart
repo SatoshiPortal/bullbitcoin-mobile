@@ -31,10 +31,10 @@ class FileSystemBackupManager extends IRecoverbullManager {
   /// Returns a map containing the backup data and the backup ID, or an error message.
   @override
   Future<(Map<String, dynamic>?, Err?)> loadEncryptedBackup({
-    required String encrypted,
+    required String backup,
   }) async {
     try {
-      final decodeEncryptedFile = jsonDecode(encrypted) as Map<String, dynamic>;
+      final decodeEncryptedFile = jsonDecode(backup) as Map<String, dynamic>;
       return (decodeEncryptedFile, null);
     } catch (e) {
       return (null, Err('Failed to read encrypted backup: $e'));
@@ -45,11 +45,11 @@ class FileSystemBackupManager extends IRecoverbullManager {
   /// Returns the path to the written backup or an error message.
   @override
   Future<(String?, Err?)> saveEncryptedBackup({
-    required String encrypted,
+    required String backup,
     String backupFolder = defaultBackupPath,
   }) async {
     try {
-      final backupId = jsonDecode(encrypted)['id'] as String;
+      final backupId = jsonDecode(backup)['id'] as String;
       final now = DateTime.now();
       final formattedDate = now.millisecondsSinceEpoch;
       final filename = '${formattedDate}_$backupId.json';
@@ -62,7 +62,7 @@ class FileSystemBackupManager extends IRecoverbullManager {
       final backupDir = await Directory(backupFolder).create(recursive: true);
       final file = File('${backupDir.path}/$filename');
 
-      final (f, errSave) = await fileStorage.saveToFile(file, encrypted);
+      final (f, errSave) = await fileStorage.saveToFile(file, backup);
       if (errSave != null) return (null, Err(errSave.message));
 
       return (file.path, null);
