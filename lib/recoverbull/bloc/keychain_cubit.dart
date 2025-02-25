@@ -95,8 +95,7 @@ class KeychainCubit extends Cubit<KeychainState> {
       return;
     }
 
-    final isServerReady = await serverInfo();
-    if (!isServerReady) return;
+    if (!await _ensureServerStatus()) return;
     if (state.secret.length < pinMin) {
       state.inputType == KeyChainInputType.pin
           ? emit(
