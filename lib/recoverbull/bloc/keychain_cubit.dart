@@ -134,9 +134,9 @@ class KeychainCubit extends Cubit<KeychainState> {
     }
   }
 
-  void confirmPressed() {
-    if (!state.showButton) return;
-
+  Future confirmPressed() async {
+    if (!await _ensureServerStatus()) return;
+    if (!state.canStoreKey) return;
     if (state.pageState == KeyChainPageState.enter) {
       emit(
         state.copyWith(
@@ -164,6 +164,8 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   Future<void> deleteBackupKey() async {
+    if (!await _ensureServerStatus()) return;
+    if (!state.canDeleteKey) return;
     try {
       emit(state.copyWith(loading: true, error: ''));
       final isServerReady = await serverInfo();
@@ -197,6 +199,7 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   Future<void> secureKey() async {
+    if (!await _ensureServerStatus()) return;
     try {
       final isServerReady = await serverInfo();
       if (!isServerReady) return;
