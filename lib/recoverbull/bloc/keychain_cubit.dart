@@ -6,6 +6,9 @@ import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 class KeychainCubit extends Cubit<KeychainState> {
+  static const pinMin = 6;
+  static const pinMax = 8;
+
   KeychainCubit() : super(const KeychainState()) {
     shuffleAndEmit();
     if (keyServerUrl.isEmpty) {
@@ -41,11 +44,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     );
   }
 
-  void clickObscure() {
-    emit(
-      state.copyWith(obscure: !state.obscure),
-    );
-  }
+  void clickObscure() => emit(state.copyWith(obscure: !state.obscure));
 
   Future<void> clickRecover() async {
     if (state.backupKey.isNotEmpty) {
@@ -59,12 +58,16 @@ class KeychainCubit extends Cubit<KeychainState> {
     }
     final isServerReady = await serverInfo();
     if (!isServerReady) return;
-    if (state.secret.length < 6) {
+    if (state.secret.length < pinMin) {
       state.inputType == KeyChainInputType.pin
-          ? emit(state.copyWith(error: 'pin should be atleast 6 digits long'))
+          ? emit(
+              state.copyWith(
+                error: 'pin should be atleast $pinMin digits long',
+              ),
+            )
           : emit(
               state.copyWith(
-                error: 'password should be atleast 6 characters long',
+                error: 'password should be atleast $pinMin characters long',
               ),
             );
       return;
@@ -89,10 +92,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     } catch (e) {
       debugPrint("Failed to recover backup key: $e");
       emit(
-        state.copyWith(
-          loading: false,
-          error: "Failed to recover backup key",
-        ),
+        state.copyWith(loading: false, error: "Failed to recover backup key"),
       );
     }
   }
@@ -155,13 +155,8 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   void keyPressed(String key) {
-    if (state.secret.length >= 7) return;
-    emit(
-      state.copyWith(
-        secret: state.secret + key,
-        error: '',
-      ),
-    );
+    if (state.secret.length >= pinMax) return;
+    emit(state.copyWith(secret: state.secret + key, error: ''));
   }
 
   Future<void> secureKey() async {

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_pkg/consts/passwords.dart';
+import 'package:bb_mobile/recoverbull/bloc/keychain_cubit.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'keychain_state.freezed.dart';
@@ -47,10 +48,13 @@ class KeychainState with _$KeychainState {
     if (secret.isEmpty) return null;
 
     if (inputType == KeyChainInputType.pin) {
-      if (!RegExp(r'^[0-9]{6,7}$').hasMatch(secret)) {
-        return secret.length < 6
-            ? 'PIN must be at least 6 digits long'
-            : 'PIN must be less than 8 digits';
+      const pinMin = KeychainCubit.pinMin;
+      const pinMax = KeychainCubit.pinMax;
+
+      if (!RegExp('^[0-9]{$pinMin,$pinMax}\$').hasMatch(secret)) {
+        return secret.length < pinMin
+            ? 'PIN must be at least $pinMin digits long'
+            : 'Switch to password if you want more than $pinMax digits';
       }
     }
 

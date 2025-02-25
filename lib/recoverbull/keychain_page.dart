@@ -416,10 +416,7 @@ class _PinField extends StatelessWidget {
               const SizedBox(width: 40),
               Expanded(
                 child: Center(
-                  child: BBText.titleLarge(
-                    state.displayPin(),
-                    isBold: true,
-                  ),
+                  child: BBText.titleLarge(state.displayPin(), isBold: true),
                 ),
               ),
               SizedBox(
@@ -506,15 +503,12 @@ class KeyPad extends StatelessWidget {
       for (final i in shuffledNumbers) NumberButton(text: i.toString()),
     ];
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GridView(
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-        ),
+        gridDelegate:
+            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
         children: [
           for (var i = 0; i < 9; i = i + 1) shuffledNumberButtonList[i],
           Container(),
@@ -651,11 +645,7 @@ class _SetButton extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Icon(
-                  Icons.arrow_forward,
-                  color: Colors.white,
-                  size: 16,
-                ),
+                const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
               ],
             ),
           ),
@@ -674,11 +664,7 @@ class _ConfirmButton extends StatelessWidget {
     final err = context.select((KeychainCubit x) => x.state.error);
 
     if (err.isNotEmpty && inputType == KeyChainInputType.password) {
-      return Center(
-        child: BBText.errorSmall(
-          err,
-        ),
-      );
+      return Center(child: BBText.errorSmall(err));
     }
     return FilledButton(
       onPressed: () {
@@ -742,20 +728,15 @@ class _RecoverButton extends StatelessWidget {
         // Switch between PIN and Password
         InkWell(
           onTap: () => _switchInputType(context),
-          child: BBText.bodySmall(
-            _getSwitchButtonText(),
-            isBold: true,
-          ),
+          child: BBText.bodySmall(_getSwitchButtonText(), isBold: true),
         ),
         // Show backup key option only when not in backup key mode
         if (inputType != KeyChainInputType.backupKey) ...[
           const Gap(8),
           InkWell(
             onTap: () => _switchToBackupKey(context),
-            child: const BBText.bodySmall(
-              'Recover with backup key',
-              isBold: true,
-            ),
+            child:
+                const BBText.bodySmall('Recover with backup key', isBold: true),
           ),
         ],
       ],
@@ -769,9 +750,7 @@ class _RecoverButton extends StatelessWidget {
           : () => context.read<KeychainCubit>().clickRecover(),
       style: FilledButton.styleFrom(
         backgroundColor: _getButtonColor(context, canRecoverKey),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -1109,10 +1088,7 @@ class _SubtitleText extends StatelessWidget {
   Widget build(BuildContext context) {
     final inputType = context.select((KeychainCubit x) => x.state.inputType);
     final text =
-        'You must memorize this ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to recover access to your wallet. It must be at least 6 digits.';
-    return BBText.bodySmall(
-      textAlign: TextAlign.center,
-      text,
-    );
+        'You must memorize this ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to recover access to your wallet. It must be at least ${KeychainCubit.pinMin} digits.';
+    return BBText.bodySmall(textAlign: TextAlign.center, text);
   }
 }
