@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/recoverbull/bloc/backup_settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:bb_mobile/recoverbull/bloc/backup_settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -26,9 +26,7 @@ class _BackupSettingsState extends State<BackupSettings> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(
-          value: createOrRetreiveWalletBloc(widget.wallet),
-        ),
+        BlocProvider.value(value: createOrRetreiveWalletBloc(widget.wallet)),
         BlocProvider(
           create: (BuildContext context) =>
               createBackupSettingsCubit(walletId: widget.wallet),
@@ -40,9 +38,7 @@ class _BackupSettingsState extends State<BackupSettings> {
           elevation: 0,
           automaticallyImplyLeading: false,
           flexibleSpace: BBAppBar(
-            onBack: () {
-              context.pop();
-            },
+            onBack: () => context.pop(),
             text: 'Backup settings',
           ),
         ),
@@ -89,10 +85,7 @@ class _Screen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const BBText.titleLarge(
-            "Backup settings",
-            isBold: true,
-          ),
+          const BBText.titleLarge("Backup settings", isBold: true),
           const Gap(10),
           if (!watchOnly) ...[
             BBButton.textWithStatus(
@@ -247,24 +240,13 @@ class BackupOptionsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText.title(
-                    title,
-                    isBold: true,
-                  ),
+                  BBText.title(title, isBold: true),
                   const Gap(4),
-                  BBText.bodySmall(
-                    description,
-                    removeColourOpacity: true,
-                  ),
+                  BBText.bodySmall(description, removeColourOpacity: true),
                 ],
               ),
             ),
-            const Expanded(
-              child: Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-              ),
-            ),
+            const Expanded(child: Icon(Icons.arrow_forward_ios, size: 16)),
           ],
         ),
       ),
@@ -303,9 +285,7 @@ class RecoverOptionsScreen extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: 'Testing your backup is ',
-                    style: context.font.bodySmall!.copyWith(
-                      fontSize: 12,
-                    ),
+                    style: context.font.bodySmall!.copyWith(fontSize: 12),
                   ),
                   TextSpan(
                     text: 'critically important ',
@@ -317,9 +297,7 @@ class RecoverOptionsScreen extends StatelessWidget {
                   TextSpan(
                     text:
                         'to ensure you can recover your wallet if needed. Choose your recovery method below.',
-                    style: context.font.bodySmall!.copyWith(
-                      fontSize: 12,
-                    ),
+                    style: context.font.bodySmall!.copyWith(fontSize: 12),
                   ),
                 ],
               ),
@@ -377,24 +355,13 @@ class RecoverOptionsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText.title(
-                    title,
-                    isBold: true,
-                  ),
+                  BBText.title(title, isBold: true),
                   const Gap(4),
-                  BBText.bodySmall(
-                    description,
-                    removeColourOpacity: true,
-                  ),
+                  BBText.bodySmall(description, removeColourOpacity: true),
                 ],
               ),
             ),
-            const Expanded(
-              child: Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-              ),
-            ),
+            const Expanded(child: Icon(Icons.arrow_forward_ios, size: 16)),
           ],
         ),
       ),

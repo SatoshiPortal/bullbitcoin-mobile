@@ -147,9 +147,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   Future<void> deleteFsBackup() async {
-    if (_filePicker == null) {
-      return;
-    }
+    if (_filePicker == null) return;
+
     final (file, error) = await _filePicker.pickFile();
 
     if (error != null) {
@@ -181,9 +180,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
 
     final (deleted, err) =
-        await _googleDriveBackupManager.removeEncryptedBackup(
-      path: path,
-    );
+        await _googleDriveBackupManager.removeEncryptedBackup(path: path);
 
     if (err != null) {
       emit(state.copyWith(errorSavingBackups: 'Failed to delete backup'));
@@ -194,9 +191,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   Future<void> fetchFsBackup() async {
-    if (_filePicker == null) {
-      return;
-    }
+    if (_filePicker == null) return;
+
     final (file, error) = await _filePicker.pickFile();
 
     if (error != null) {
@@ -213,9 +209,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       encrypted: fileContent,
     );
     if (loadedBackup != null) {
-      loadedBackup.addAll({
-        'source': 'fs',
-      });
+      loadedBackup.addAll({'source': 'fs'});
       emit(
         state.copyWith(
           loadingBackups: false,
@@ -243,16 +237,11 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         return;
       }
 
-      _emitSafe(
-        state.copyWith(
-          loadingBackups: true,
-        ),
-      );
+      _emitSafe(state.copyWith(loadingBackups: true));
 
       final (api, connectErr) = await _googleDriveBackupManager.connect();
       if (connectErr != null) {
         _handleLoadError(connectErr.message);
-
         return;
       }
 
@@ -273,11 +262,13 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           if (bTime == null) return a;
           return aTime.compareTo(bTime) > 0 ? a : b;
         });
+
         final backupId = latestBackup.name?.split('_').last.split('.').first;
         if (backupId == null) {
           _handleLoadError("Corrupted backup file");
           return;
         }
+
         final (loadedBackupMetaData, mediaErr) =
             await _googleDriveBackupManager.fetchMediaStream(
           file: latestBackup,
@@ -298,6 +289,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
             'source': 'drive',
             'filename': latestBackup.name,
           });
+
           emit(
             state.copyWith(
               loadingBackups: false,
@@ -399,12 +391,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   Future<void> recoverBackupKeyFromMnemonic(int? backupKeyIndex) async {
-    _emitSafe(
-      state.copyWith(
-        loadingBackups: true,
-        errorLoadingBackups: '',
-      ),
-    );
+    _emitSafe(state.copyWith(loadingBackups: true, errorLoadingBackups: ''));
 
     try {
       if (backupKeyIndex == null) {
@@ -523,12 +510,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    _emitSafe(
-      state.copyWith(
-        savingBackups: true,
-        errorSavingBackups: '',
-      ),
-    );
+    _emitSafe(state.copyWith(savingBackups: true, errorSavingBackups: ''));
 
     if (_wallets.isEmpty) {
       _handleLoadError('No wallets available for backup');
@@ -838,12 +820,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   void _emitBackupError(String message) {
-    emit(
-      state.copyWith(
-        savingBackups: false,
-        errorSavingBackups: message,
-      ),
-    );
+    emit(state.copyWith(savingBackups: false, errorSavingBackups: message));
   }
 
   void _emitBackupState(Seed seed) {
@@ -875,12 +852,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   void _emitBackupTestSuccessState() {
-    emit(
-      state.copyWith(
-        backupTested: true,
-        testingBackup: false,
-      ),
-    );
+    emit(state.copyWith(backupTested: true, testingBackup: false));
     clearSensitive();
   }
 

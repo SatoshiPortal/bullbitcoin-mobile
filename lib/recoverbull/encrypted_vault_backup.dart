@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/toast.dart';
-import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/recoverbull/bloc/backup_settings_cubit.dart';
 import 'package:bb_mobile/recoverbull/bloc/backup_settings_state.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_state.dart';
+import 'package:bb_mobile/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -313,10 +313,7 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          const BBText.titleLarge(
-            'Where is your backup?',
-            isBold: true,
-          ),
+          const BBText.titleLarge('Where is your backup?', isBold: true),
           const Gap(20),
           ...BackupProvider.values.map(
             (provider) => Padding(
@@ -370,9 +367,7 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
               ),
             ),
             body: state.loadingBackups
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
+                ? const Center(child: CircularProgressIndicator())
                 : _buildContent(context, state),
           );
         },
@@ -421,19 +416,13 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
             ),
           ),
           const Gap(16),
-          const BBText.title(
-            'This is not a backup file',
-            isBold: true,
-          ),
+          const BBText.title('This is not a backup file', isBold: true),
           const Gap(24),
           FilledButton(
             onPressed: () => context.pop(),
             style: FilledButton.styleFrom(
               backgroundColor: context.colour.shadow,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 24,
-                vertical: 16,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -449,11 +438,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                   ),
                 ),
                 const Gap(8),
-                const Icon(
-                  Icons.arrow_forward,
-                  color: Colors.white,
-                  size: 20,
-                ),
+                const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
               ],
             ),
           ),
@@ -509,34 +494,25 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                title: BBText.titleLarge(
-                  'Secret key',
-                  isBold: true,
-                ),
+                title: const BBText.titleLarge('Secret key', isBold: true),
                 content: Row(
                   children: [
                     Expanded(
                       child: Text(
                         state.backupKey,
-                        style: context.font.bodySmall!.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: context.font.bodySmall!
+                            .copyWith(fontWeight: FontWeight.bold),
                       ),
                     ),
                     IconButton(
                       onPressed: () {
-                        Clipboard.setData(
-                          ClipboardData(text: state.backupKey),
-                        );
+                        Clipboard.setData(ClipboardData(text: state.backupKey));
                         Navigator.of(context).pop();
                         ScaffoldMessenger.of(context).showSnackBar(
                           context.showToast('Copied to clipboard'),
                         );
                       },
-                      icon: const Icon(
-                        Icons.copy,
-                        color: Colors.black,
-                      ),
+                      icon: const Icon(Icons.copy, color: Colors.black),
                     ),
                   ],
                 ),
@@ -681,10 +657,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                         ),
                       );
                     },
-                    icon: const Icon(
-                      Icons.delete,
-                      color: Colors.black,
-                    ),
+                    icon: const Icon(Icons.delete, color: Colors.black),
                   ),
                 ],
               ),

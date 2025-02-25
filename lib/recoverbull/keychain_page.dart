@@ -65,10 +65,7 @@ class KeychainBackupPage extends StatelessWidget {
 }
 
 class _Screen extends StatelessWidget {
-  const _Screen({
-    this.backupKey,
-    required this.backup,
-  });
+  const _Screen({this.backupKey, required this.backup});
 
   final String? backupKey;
   final Map<String, dynamic> backup;
@@ -198,9 +195,7 @@ class _Screen extends StatelessWidget {
       ],
       child: BlocBuilder<KeychainCubit, KeychainState>(
         builder: (context, state) {
-          if (state.loading) {
-            return const _LoadingView();
-          }
+          if (state.loading) return const _LoadingView();
 
           return Scaffold(
             appBar: AppBar(
@@ -441,9 +436,7 @@ class _PinField extends StatelessWidget {
         if (error != null)
           Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Center(
-              child: BBText.errorSmall(error),
-            ),
+            child: Center(child: BBText.errorSmall(error)),
           ),
       ],
     );
@@ -550,35 +543,18 @@ class _NumberButtonState extends State<NumberButton> {
         height: 80,
         width: 80,
         child: GestureDetector(
-          onTapUp: (e) {
-            setState(() {
-              isRed = false;
-            });
-          },
-          onTapDown: (e) {
-            setState(() {
-              isRed = true;
-            });
-          },
-          onTapCancel: () {
-            setState(() {
-              isRed = false;
-            });
-          },
+          onTapUp: (e) => setState(() => isRed = false),
+          onTapDown: (e) => setState(() => isRed = true),
+          onTapCancel: () => setState(() => isRed = false),
           child: OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              splashFactory: NoSplash.splashFactory,
-            ),
+            style:
+                OutlinedButton.styleFrom(splashFactory: NoSplash.splashFactory),
             onPressed: () {
               SystemSound.play(SystemSoundType.click);
               HapticFeedback.mediumImpact();
-
               context.read<KeychainCubit>().keyPressed(widget.text);
             },
-            child: BBText.titleLarge(
-              widget.text,
-              isBold: true,
-            ),
+            child: BBText.titleLarge(widget.text, isBold: true),
           ).animate().blur(
                 begin: const Offset(1, 1),
                 end: isRed ? const Offset(2, 2) : Offset.zero,
@@ -688,11 +664,7 @@ class _ConfirmButton extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(
-            Icons.arrow_forward,
-            color: Colors.white,
-            size: 16,
-          ),
+          const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
         ],
       ),
     );
@@ -763,11 +735,7 @@ class _RecoverButton extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(
-            Icons.arrow_forward,
-            color: Colors.white,
-            size: 16,
-          ),
+          const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
         ],
       ),
     );
@@ -846,11 +814,7 @@ class _DeleteButton extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(
-            Icons.delete_forever,
-            color: Colors.white,
-            size: 20,
-          ),
+          const Icon(Icons.delete_forever, color: Colors.white, size: 20),
         ],
       ),
     );
@@ -860,10 +824,7 @@ class _DeleteButton extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const BBText.title(
-          'Delete Backup?',
-          isBold: true,
-        ),
+        title: const BBText.title('Delete Backup?', isBold: true),
         content: const BBText.bodySmall(
           'This action cannot be undone. Are you sure you want to delete this backup?',
         ),
@@ -879,9 +840,8 @@ class _DeleteButton extends StatelessWidget {
               // Then trigger the delete action using the original context
               context.read<KeychainCubit>().deleteBackupKey();
             },
-            style: FilledButton.styleFrom(
-              backgroundColor: context.colour.error,
-            ),
+            style:
+                FilledButton.styleFrom(backgroundColor: context.colour.error),
             child: const Text('Delete'),
           ),
         ],
@@ -947,16 +907,9 @@ class _SuccessDialog extends StatelessWidget {
               size: 48,
             ),
             const Gap(16),
-            BBText.title(
-              title,
-              textAlign: TextAlign.center,
-              isBold: true,
-            ),
+            BBText.title(title, textAlign: TextAlign.center, isBold: true),
             const Gap(8),
-            BBText.bodySmall(
-              message,
-              textAlign: TextAlign.center,
-            ),
+            BBText.bodySmall(message, textAlign: TextAlign.center),
             const Gap(24),
             FilledButton(
               onPressed: () {
@@ -1003,10 +956,7 @@ class _ErrorDialog extends StatelessWidget {
               isBold: true,
             ),
             const Gap(8),
-            BBText.bodySmall(
-              error,
-              textAlign: TextAlign.center,
-            ),
+            BBText.bodySmall(error, textAlign: TextAlign.center),
             const Gap(24),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(),
@@ -1042,11 +992,7 @@ class _TitleText extends StatelessWidget {
     final text = inputState == KeyChainPageState.enter
         ? 'Choose a backup ${type == KeyChainInputType.pin ? 'PIN' : 'password'}'
         : 'Confirm backup ${type == KeyChainInputType.pin ? 'PIN' : 'password'}';
-    return BBText.titleLarge(
-      textAlign: TextAlign.center,
-      text,
-      isBold: true,
-    );
+    return BBText.titleLarge(textAlign: TextAlign.center, text, isBold: true);
   }
 }
 
@@ -1060,11 +1006,7 @@ class _ConfirmTitleText extends StatelessWidget {
     final text =
         'Confirm backup ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}';
 
-    return BBText.titleLarge(
-      textAlign: TextAlign.center,
-      text,
-      isBold: true,
-    );
+    return BBText.titleLarge(textAlign: TextAlign.center, text, isBold: true);
   }
 }
 
