@@ -572,7 +572,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                         ),
                         TextSpan(
                           text:
-                              ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(recoveryFile['createdAt'] as int).toLocal())}',
+                              ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(recoveryFile['created_at'] as int).toLocal())}',
                           style: context.font.bodyMedium!
                               .copyWith(fontWeight: FontWeight.bold),
                         ),

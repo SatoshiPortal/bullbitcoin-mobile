@@ -9,11 +9,11 @@ import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:bip85/bip85.dart' as bip85;
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
-import 'package:recoverbull/recoverbull.dart' as recoverbull;
+import 'package:recoverbull/recoverbull.dart';
 
 abstract class IRecoverbullManager {
   /// Encrypts a list of backups using BIP85 derivation
-  Future<(({String key, String file})?, Err?)> createEncryptedBackup({
+  Future<(({String key, BullBackup backup})?, Err?)> createEncryptedBackup({
     required List<WalletSensitiveData> wallets,
     required List<String> mnemonic,
     required String network,
@@ -33,15 +33,17 @@ abstract class IRecoverbullManager {
         return (null, Err('Failed to derive backup key'));
       }
 
-      final jsonBackup = recoverbull.BackupService.createBackup(
+      final backup = BackupService.createBackup(
         secret: utf8.encode(plaintext),
         backupKey: derived,
       );
 
-      final backup = jsonDecode(jsonBackup);
-      backup['path'] = derivationPath;
+      final mapBackup = backup.toMap();
+      mapBackup['path'] = derivationPath;
 
-      return ((key: HEX.encode(derived), file: jsonEncode(backup)), null);
+      final backupWithPath = BullBackup.fromMap(mapBackup);
+
+      return ((key: HEX.encode(derived), backup: backupWithPath), null);
     } catch (e) {
       return (null, Err('Encryption failed: $e'));
     }
@@ -49,19 +51,21 @@ abstract class IRecoverbullManager {
 
   /// Decrypts an encrypted backup using the provided key
   Future<(List<WalletSensitiveData>?, Err?)> restoreEncryptedBackup({
-    required String backup,
+    required BullBackup backup,
     required List<int> backupKey,
   }) async {
     try {
-      final plaintext = recoverbull.BackupService.restoreBackup(
+      final plaintext = BackupService.restoreBackup(
         backup: backup,
         backupKey: backupKey,
       );
 
       final decodedJson = jsonDecode(plaintext) as List;
       final backups = decodedJson
-          .map((item) =>
-              WalletSensitiveData.fromJson(item as Map<String, dynamic>))
+          .map(
+            (item) =>
+                WalletSensitiveData.fromJson(item as Map<String, dynamic>),
+          )
           .toList();
 
       return (backups, null);
@@ -107,13 +111,19 @@ abstract class IRecoverbullManager {
 
   // Abstract methods to be implemented by concrete classes
   Future<(String?, Err?)> saveEncryptedBackup({
-    required String backup,
+    required BullBackup backup,
     String backupFolder = defaultBackupPath,
   });
 
-  Future<(Map<String, dynamic>?, Err?)> loadEncryptedBackup({
-    required String backup,
-  });
+  (BullBackup?, Err?) loadEncryptedBackup({required String file}) {
+    try {
+      final backup = BullBackup.fromJson(file);
+      return (backup, null);
+    } catch (e) {
+      debugPrint('Failed to decode backup: $e');
+      return (null, Err('Failed to decode backup'));
+    }
+  }
 
   Future<(String?, Err?)> removeEncryptedBackup({required String path});
 }

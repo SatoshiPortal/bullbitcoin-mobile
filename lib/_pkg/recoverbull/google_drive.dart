@@ -8,6 +8,7 @@ import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sig
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart';
+import 'package:recoverbull/recoverbull.dart';
 
 class GoogleDriveBackupManager extends IRecoverbullManager {
   static final _google = GoogleSignIn(
@@ -90,31 +91,26 @@ class GoogleDriveBackupManager extends IRecoverbullManager {
 
   @override
   Future<(String?, Err?)> saveEncryptedBackup({
-    required String backup,
+    required BullBackup backup,
     String backupFolder = defaultBackupPath,
   }) async {
     return _withConnection((api) async {
       try {
-        final data = jsonDecode(backup) as Map<String, dynamic>;
-        final encryptedData = data['encrypted'] as String;
-        final decodedEncrypted =
-            jsonDecode(encryptedData) as Map<String, dynamic>;
-        final backupId = decodedEncrypted['id']?.toString();
-
-        if (backupId == null) return (null, Err('Invalid backup data'));
-
         final filename =
-            '${DateTime.now().millisecondsSinceEpoch}_$backupId.json';
+            '${DateTime.now().millisecondsSinceEpoch}_${backup.id}.json';
+
         final file = File()
           ..name = filename
           ..mimeType = 'application/json'
           ..parents = ['appDataFolder'];
 
+        final jsonBackup = backup.toJson();
+
         await api.files.create(
           file,
           uploadMedia: Media(
-            Stream.value(utf8.encode(backup)),
-            backup.length,
+            Stream.value(utf8.encode(jsonBackup)),
+            jsonBackup.length,
           ),
         );
 
@@ -123,19 +119,6 @@ class GoogleDriveBackupManager extends IRecoverbullManager {
         return (null, Err('Save failed: $e'));
       }
     });
-  }
-
-  @override
-  Future<(Map<String, dynamic>?, Err?)> loadEncryptedBackup({
-    required String backup,
-  }) async {
-    try {
-      final decodeEncryptedFile = jsonDecode(backup) as Map<String, dynamic>;
-      return (decodeEncryptedFile, null);
-    } catch (e) {
-      debugPrint('Failed to decode backup: $e');
-      return (null, Err('Failed to decode backup'));
-    }
   }
 
   Future<(List<File>?, Err?)> loadAllEncryptedBackupFiles() async {

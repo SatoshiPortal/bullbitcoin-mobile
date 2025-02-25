@@ -23,6 +23,7 @@ import 'package:bb_mobile/recoverbull/bloc/backup_settings_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hex/hex.dart';
+import 'package:recoverbull/recoverbull.dart';
 
 BackupSettingsCubit createBackupSettingsCubit({String? walletId}) {
   final appWalletsRepo = locator<AppWalletsRepository>();
@@ -205,19 +206,18 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
     final (loadedBackup, err) =
-        await _fileSystemBackupManager.loadEncryptedBackup(backup: fileContent);
+        _fileSystemBackupManager.loadEncryptedBackup(file: fileContent);
     if (loadedBackup != null) {
-      loadedBackup.addAll({'source': 'fs'});
       emit(
         state.copyWith(
           loadingBackups: false,
-          latestRecoveredBackup: loadedBackup,
+          latestRecoveredBackup: loadedBackup.toMap(),
           lastBackupAttempt: DateTime.now(),
         ),
       );
       return;
-    } else if ((err != null) || loadedBackup?["id"] == null) {
-      debugPrint('Error loading backups: ${err?.message}');
+    } else if (err != null) {
+      debugPrint('Error loading backups: ${err.message}');
       emit(
         state.copyWith(
           loadingBackups: false,
@@ -278,12 +278,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           return;
         }
 
-        final (loadedBackup, err) =
-            await _googleDriveBackupManager.loadEncryptedBackup(
-          backup: utf8.decode(loadedBackupMetaData),
+        final (backup, err) = _googleDriveBackupManager.loadEncryptedBackup(
+          file: utf8.decode(loadedBackupMetaData),
         );
-        if (loadedBackup != null) {
-          loadedBackup.addAll({
+        if (backup != null) {
+          final backupMap = backup.toMap();
+          backupMap.addAll({
             'source': 'drive',
             'filename': latestBackup.name,
           });
@@ -291,13 +291,13 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           emit(
             state.copyWith(
               loadingBackups: false,
-              latestRecoveredBackup: loadedBackup,
+              latestRecoveredBackup: backupMap,
               lastBackupAttempt: DateTime.now(),
             ),
           );
           return;
-        } else if ((err != null) || loadedBackup?["id"] == null) {
-          debugPrint('Error loading backups: ${err?.message}');
+        } else if (err != null) {
+          debugPrint('Error loading backups: ${err.message}');
           _handleLoadError("Corrupted backup file");
           return;
         }
@@ -345,20 +345,20 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
 
     if (backupKey.isEmpty) {
-      _handleLoadError('WalletSensitiveData key is missing');
+      _handleLoadError('Backup key is missing');
       return;
     }
 
-    final backupId = jsonDecode(encrypted)['id'] as String?;
-
-    if (backupId == null) {
+    if (!BullBackup.isValid(encrypted)) {
       _handleLoadError('Invalid backup format');
       return;
     }
 
+    final backup = BullBackup.fromJson(encrypted);
+
     final (backups, decryptErr) =
         await _fileSystemBackupManager.restoreEncryptedBackup(
-      backup: encrypted,
+      backup: backup,
       backupKey: HEX.decode(backupKey),
     );
 
@@ -449,11 +449,14 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final (backup, err) = await _createBackup(backups);
-    if (err != null || backup == null) {
+    final (result, err) = await _createBackup(backups);
+    if (err != null || result == null) {
       _handleSaveError(err?.message ?? 'Encryption failed');
       return;
     }
+
+    final backup = result.backup;
+    final backupKey = result.key;
 
     final (savePath, pickErr) = await _filePicker?.getDirectoryPath() ??
         (null, Err('File picker not initialized'));
@@ -469,7 +472,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     final (filePath, saveErr) =
         await _fileSystemBackupManager.saveEncryptedBackup(
-      backup: backup.file,
+      backup: backup,
       backupFolder: savePath,
     );
 
@@ -478,20 +481,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final theBackup = json.decode(backup.file);
-    final backupId = theBackup['id'] as String?;
-    final backupSalt = theBackup['salt'] as String?;
-    if (backupId == null || backupSalt == null) {
-      _handleSaveError('Failed to extract backup metadata');
-      return;
-    }
-
     _emitSafe(
       state.copyWith(
-        backupId: backupId,
-        backupKey: backup.key,
+        backupId: backup.id,
+        backupKey: backupKey,
         backupFolderPath: filePath ?? '',
-        backupSalt: backupSalt,
+        backupSalt: backup.salt,
         savingBackups: false,
         lastBackupAttempt: DateTime.now(),
       ),
@@ -523,35 +518,35 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final (backup, encryptErr) = await _createBackup(backups);
-    if (encryptErr != null || backup == null) {
+    final (result, encryptErr) = await _createBackup(backups);
+    if (encryptErr != null || result == null) {
       _handleSaveError(encryptErr?.message ?? 'Encryption failed');
       return;
     }
 
-    final (filePath, saveErr) = await _googleDriveBackupManager
-        .saveEncryptedBackup(backup: backup.file);
+    final backupKey = result.key;
+    final backup = result.backup;
+
+    final (filePath, saveErr) =
+        await _googleDriveBackupManager.saveEncryptedBackup(backup: backup);
 
     if (saveErr != null) {
       _handleSaveError('Failed to save to Google Drive: ${saveErr.message}');
       return;
     }
 
-    final theBackup = json.decode(backup.file);
-    final backupId = theBackup['id'] as String?;
-    final backupSalt = theBackup['salt'] as String?;
     final filename = filePath?.split('/').last;
-    if (backupId == null || filename == null || backupSalt == null) {
-      _handleSaveError('Failed to extract backup information');
+    if (filename == null) {
+      _handleSaveError('filename is null');
       return;
     }
 
     _emitSafe(
       state.copyWith(
-        backupId: backupId,
-        backupKey: backup.key,
+        backupId: backup.id,
+        backupKey: backupKey,
         backupFolderPath: filename,
-        backupSalt: backupSalt,
+        backupSalt: backup.salt,
         savingBackups: false,
         lastBackupAttempt: DateTime.now(),
       ),
@@ -848,7 +843,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     if (!isClosed) emit(newState);
   }
 
-  Future<(({String key, String file})?, Err?)> _createBackup(
+  Future<(({String key, BullBackup backup})?, Err?)> _createBackup(
     List<WalletSensitiveData> wallets,
   ) async {
     try {
