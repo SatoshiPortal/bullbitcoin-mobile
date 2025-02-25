@@ -6,7 +6,7 @@ This project follows a **feature-based** and **layered architecture** to ensure 
 
 The lib/ directory is organized into the following main sections:
 
-- [Core](lib/core/): Contains fundamental **UI-independent** components that are used across multiple features. It has its own set of layers and a dependency locator:
+- [Core](lib/core/): Contains fundamental **UI-independent** components that are **used across multiple features**. It has its own set of layers and a dependency locator:
   - [Data](lib/core/data/): Contains **data sources**, **models**, and concrete **repository implementations** that are shared across multiple features.
   - [Domain](lib/core/domain/): Contains **entities**, abstract **repository contracts**, **services**, and **use cases** that are shared across multiple features.
   - [Presentation](lib/core/presentation/): Contains **BLoCs** that are used in multiple features.
