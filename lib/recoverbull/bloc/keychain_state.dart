@@ -26,6 +26,7 @@ enum KeySecretState { none, saved, recovered, deleted }
 class KeychainState with _$KeychainState {
   const factory KeychainState({
     @Default(false) bool loading,
+    @Default(true) bool keyServerUp,
     @Default(KeyChainPageState.enter) KeyChainPageState pageState,
     @Default(KeyChainInputType.pin) KeyChainInputType inputType,
     @Default(KeySecretState.none) KeySecretState keySecretState,
@@ -45,8 +46,6 @@ class KeychainState with _$KeychainState {
   String displayPin() => 'x' * secret.length;
 
   String? getValidationError() {
-    if (secret.isEmpty) return null;
-
     if (inputType == KeyChainInputType.pin) {
       const pinMin = KeychainCubit.pinMin;
       const pinMax = KeychainCubit.pinMax;
@@ -58,16 +57,22 @@ class KeychainState with _$KeychainState {
       }
     }
 
-    return validateSecret(secret)
-        ? 'The password is among the top 1000 most common'
-        : null;
+    if (validateSecret(secret) &&
+        (inputType == KeyChainInputType.password ||
+            inputType == KeyChainInputType.backupKey)) {
+      return 'The password is among the top 1000 most common';
+    }
+
+    return null;
   }
 
   bool get isValid => getValidationError() == null;
-  bool get showButton => isValid;
+
   bool get hasError => error.isNotEmpty;
   bool get isRecovering => pageState == KeyChainPageState.recovery;
-  bool get canRecoverKey => backupId.isNotEmpty && isValid && !loading;
-
+  bool get canStoreKey => isValid && keyServerUp && !loading;
+  bool get canRecoverKey => backupId.isNotEmpty && keyServerUp && !loading;
+  bool get canRecoverWithBckupKey => backupId.isNotEmpty && !loading;
+  bool get canDeleteKey => backupId.isNotEmpty && keyServerUp && !loading;
   bool validateSecret(String secret) => commonPasswordsTop1000.contains(secret);
 }
