@@ -11,7 +11,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
-abstract class IBackupManager {
+abstract class IRecoverbullManager {
   /// Encrypts a list of backups using BIP85 derivation
   Future<(({String key, String file})?, Err?)> createEncryptedBackup({
     required List<WalletSensitiveData> backups,

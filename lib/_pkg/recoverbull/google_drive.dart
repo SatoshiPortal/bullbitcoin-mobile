@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart';
 
-class GoogleDriveBackupManager extends IBackupManager {
+class GoogleDriveBackupManager extends IRecoverbullManager {
   static final _google = GoogleSignIn(
     scopes: ['https://www.googleapis.com/auth/drive.appdata'],
   );

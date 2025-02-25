@@ -7,7 +7,7 @@ import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/recoverbull/_interface.dart';
 import 'package:bb_mobile/locator.dart';
 
-class FileSystemBackupManager extends IBackupManager {
+class FileSystemBackupManager extends IRecoverbullManager {
   final FileStorage fileStorage = locator<FileStorage>();
 
   FileSystemBackupManager();
