@@ -46,7 +46,7 @@ E.g. [`WalletMetadata`](lib/features/wallet/domain/entities/wallet_metadata.dart
 
 #### Repository interfaces or contracts
 
-The interfaces (abstract classes) that define the methods the business logic needs to retrieve and/or store entity data. Repositories in the [data layer]() have to implement these interfaces. They effectively decouple the domain layer from the data layer, making it possible to switch the data source or concrete repository implementation without changing the domain layer.
+The interfaces (abstract classes) that define the methods the business logic needs to retrieve and/or store entity data. Repositories in the [data layer](#data-layer) have to implement these interfaces. They effectively decouple the domain layer from the data layer, making it possible to switch the data source or concrete repository implementation without changing the domain layer.
 
 E.g. [`PinCodeRepository`](lib/features/pin_code/domain/repositories/pin_code_repository.dart), [`WalletRepository`](lib/features/wallet/domain/repositories/wallet_repository.dart).
 
