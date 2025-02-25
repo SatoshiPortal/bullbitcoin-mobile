@@ -1,0 +1,43 @@
+{
+  "@@locale": "en",
+  "onboardingScreenTitle": "Welcome",
+  "@onboardingScreenTitle": {
+    "description": "The title of the onboarding screen"
+  },
+  "onboardingCreateWalletButtonLabel": "Create wallet",
+  "@onboardingCreateWalletButtonLabel": {
+    "description": "The label for the button to create a wallet from the onboarding screen"
+  },
+  "onboardingRecoverWalletButtonLabel": "Recover wallet",
+  "@onboardingRecoverWalletButtonLabel": {
+    "description": "The label for the button to recover a wallet from the onboarding screen"
+  },
+  "settingsScreenTitle": "Settings",
+  "@settingsScreenTitle": {
+    "description": "The title of the settings screen"
+  },
+  "testnetModeSettingsLabel": "Testnet mode",
+  "@testnetModeSettingsLabel": {
+    "description": "The label for the testnet mode settings"
+  },
+  "satsBitcoinUnitSettingsLabel": "Display unit in sats",
+  "@satsBitcoinUnitSettingsLabel": {
+    "description": "The label to switch the Bitcoin unit to sats in settings"
+  },
+  "pinCodeSettingsLabel": "PIN code",
+  "@pinCodeSettingsLabel": {
+    "description": "The label for the button to access the PIN code settings"
+  },
+  "languageSettingsLabel": "Language",
+  "@languageSettingsLabel": {
+    "description": "The label for the button to access the language settings"
+  },
+  "fiatCurrencySettingsLabel": "Fiat currency",
+  "@fiatCurrencySettingsLabel": {
+    "description": "The label for the button to access the fiat currency settings"
+  },
+  "languageSettingsScreenTitle": "Language",
+  "@languageSettingsScreenTitle": {
+    "description": "The title of the language settings screen"
+  }
+}
