@@ -678,18 +678,41 @@ class _RecoverButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<KeychainCubit, KeychainState, bool>(
-      selector: (state) => state.canRecoverKey,
-      builder: (context, canRecoverKey) {
-        return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: Column(
-            children: [
-              _buildInputTypeSwitch(context),
-              const Gap(8),
-              _buildRecoverButton(context, canRecoverKey),
-            ],
-          ),
+    return BlocBuilder<KeychainCubit, KeychainState>(
+      buildWhen: (previous, current) =>
+          previous.canRecoverKey != current.canRecoverKey ||
+          previous.loading != current.loading,
+      builder: (context, state) {
+        final canRecover = inputType == KeyChainInputType.backupKey
+            ? state.canRecoverWithBckupKey
+            : state.canRecoverKey;
+
+        return Column(
+          children: [
+            _buildInputTypeSwitch(context),
+            const Gap(8),
+            FilledButton(
+              onPressed: state.loading
+                  ? null
+                  : () => context.read<KeychainCubit>().clickRecover(),
+              style: FilledButton.styleFrom(
+                backgroundColor: _getButtonColor(context, canRecover),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: state.loading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ),
+                    )
+                  : _buildButtonContent(context),
+            ),
+          ],
         );
       },
     );
@@ -716,29 +739,24 @@ class _RecoverButton extends StatelessWidget {
     );
   }
 
-  Widget _buildRecoverButton(BuildContext context, bool canRecoverKey) {
-    return FilledButton(
-      onPressed: canRecoverKey
-          ? () => context.read<KeychainCubit>().clickRecover()
-          : () => context.read<KeychainCubit>().clickRecover(),
-      style: FilledButton.styleFrom(
-        backgroundColor: _getButtonColor(context, canRecoverKey),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Recover with ${_getInputTypeText()}',
-            style: context.font.bodyMedium!.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w900,
-            ),
+  Widget _buildButtonContent(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Recover with ${_getInputTypeText()}',
+          style: context.font.bodyMedium!.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
           ),
-          const SizedBox(width: 8),
-          const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
-        ],
-      ),
+        ),
+        const SizedBox(width: 8),
+        const Icon(
+          Icons.arrow_forward,
+          color: Colors.white,
+          size: 16,
+        ),
+      ],
     );
   }
 
@@ -757,8 +775,8 @@ class _RecoverButton extends StatelessWidget {
         );
   }
 
-  Color _getButtonColor(BuildContext context, bool canRecoverKey) {
-    if (inputType == KeyChainInputType.backupKey || canRecoverKey) {
+  Color _getButtonColor(BuildContext context, bool canRecover) {
+    if (inputType == KeyChainInputType.backupKey || canRecover) {
       return context.colour.shadow;
     }
     return context.colour.surface;
