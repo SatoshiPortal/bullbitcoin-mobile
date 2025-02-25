@@ -90,14 +90,14 @@ The presentation layer is responsible for managing the state for the user interf
 
 ### Rules of thumb
 
-The following rules of thumb can be helpful and can be an alert to revisit the architecture or approach in case they are not complied with:
+> 💡 **Tip:** These rules of thumb help resolve doubts, validate code, and ensure the architecture is on the right track. 👍
 
 - The domain layer should be completely independent of the data and presentation layer. It should not import any classes from the data or presentation layer.
 - The data layer should only import the repository contract abstract classes and entity classes from the domain layer, it should never import anything from the presentation layer.
 - The presentation layer should only import the use cases and entities from the domain layer, it should never import anything from the data layer directly.
-- Dependency injection flow should be unidirectional: datasources -> repository implementations -> use cases -> blocs/cubits
+- Dependency injection flow should be unidirectional: datasources -> repositories -> use cases -> blocs/cubits
   - Data sources are injected into repository implementations and not used directly in the use cases or anywhere else.
-  - Repository implementations are injected into use cases and not used directly in the presentation layer or anywhere else.
+  - Repositories are injected into use cases and not used directly in the presentation layer or anywhere else.
   - Use cases are injected into blocs/cubits or used in the presentation layer and nowhere else.
 - The only classes that should use models are the data layer classes. The domain layer should only use entities as data classes, not models.
 
