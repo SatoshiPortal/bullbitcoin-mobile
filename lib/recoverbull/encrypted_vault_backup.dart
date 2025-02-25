@@ -5,6 +5,7 @@ import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/recoverbull/bloc/backup_settings_cubit.dart';
 import 'package:bb_mobile/recoverbull/bloc/backup_settings_state.dart';
+import 'package:bb_mobile/recoverbull/bloc/keychain_cubit.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_state.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,16 +42,19 @@ class EncryptedVaultBackupPage extends StatefulWidget {
 
 class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
   late final BackupSettingsCubit _cubit;
+  late final KeychainCubit _keychainCubit;
 
   @override
   void initState() {
     super.initState();
     _cubit = createBackupSettingsCubit(walletId: widget.wallet);
+    _keychainCubit = KeychainCubit();
   }
 
   @override
   void dispose() {
     _cubit.close();
+    _keychainCubit.close();
     super.dispose();
   }
 
@@ -58,20 +62,35 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
     BuildContext context,
     BackupProvider provider,
   ) async {
-    switch (provider) {
-      case BackupProvider.googleDrive:
-        await _cubit.saveGoogleDriveBackup();
-      case BackupProvider.iCloud:
-        debugPrint('iCloud backup');
-      case BackupProvider.custom:
-        _cubit.saveFileSystemBackup();
+    await _keychainCubit.keyServerStatus();
+
+    final keyServerUp = _keychainCubit.state.keyServerUp;
+
+    if (keyServerUp) {
+      switch (provider) {
+        case BackupProvider.googleDrive:
+          await _cubit.saveGoogleDriveBackup();
+        case BackupProvider.iCloud:
+          debugPrint('iCloud backup');
+        case BackupProvider.custom:
+          _cubit.saveFileSystemBackup();
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        context.showToast(
+          'Key server is down. Please try backing up again later',
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _cubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _cubit),
+        BlocProvider.value(value: _keychainCubit),
+      ],
       child: BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
         listenWhen: (previous, current) =>
             previous.errorSavingBackups != current.errorSavingBackups ||
@@ -135,7 +154,8 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
                               title: provider.title,
                               description: provider.description,
                               icon: Icon(provider.icon, size: 40),
-                              onTap: () => _handleBackup(context, provider),
+                              onTap: () async =>
+                                  await _handleBackup(context, provider),
                             ),
                           ),
                         ),
