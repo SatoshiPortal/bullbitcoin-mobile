@@ -225,6 +225,7 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   void setBackupId(String id) {
+    if (id == state.backupId) return; // Avoid duplicate state
     emit(state.copyWith(backupId: id));
   }
 
