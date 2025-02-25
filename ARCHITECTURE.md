@@ -120,8 +120,8 @@ In this project, BLoCs/Cubits are used for state management, but other solutions
 
 ✅ Entity vs Model:
 
-- The **domain layer should use entities**, not models.
-- Only the **data layer should use models**.
+- The **domain and presentation layer should use entities**, not models.
+- Only the **data layer should use models**, and use entities as well.
 
 ### Further reading
 
