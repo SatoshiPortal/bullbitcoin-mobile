@@ -13,14 +13,12 @@ import 'package:recoverbull/recoverbull.dart' as recoverbull;
 
 abstract class IBackupManager {
   /// Encrypts a list of backups using BIP85 derivation
-  Future<((String, String)?, Err?)> encryptBackups({
+  Future<(({String key, String file})?, Err?)> createEncryptedBackup({
     required List<Backup> backups,
     required List<String> mnemonic,
     required String network,
   }) async {
-    if (backups.isEmpty) {
-      return (null, Err('No backups provided'));
-    }
+    if (backups.isEmpty) return (null, Err('No backups provided'));
 
     try {
       final randomIndex = _deriveRandomIndex();
@@ -40,14 +38,14 @@ abstract class IBackupManager {
         'index': randomIndex,
         'encrypted': encrypted,
       });
-      return ((HEX.encode(derived), encoded), null);
+      return ((key: HEX.encode(derived), file: encoded), null);
     } catch (e) {
       return (null, Err('Encryption failed: $e'));
     }
   }
 
   /// Decrypts an encrypted backup using the provided key
-  Future<(List<Backup>?, Err?)> decryptBackups({
+  Future<(List<Backup>?, Err?)> restoreEncryptedBackup({
     required String encrypted,
     required List<int> backupKey,
   }) async {
@@ -118,7 +116,5 @@ abstract class IBackupManager {
     required String encrypted,
   });
 
-  Future<(String?, Err?)> removeEncryptedBackup({
-    required String path,
-  });
+  Future<(String?, Err?)> removeEncryptedBackup({required String path});
 }

@@ -359,7 +359,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final (backups, decryptErr) = await _fileSystemBackupManager.decryptBackups(
+    final (backups, decryptErr) =
+        await _fileSystemBackupManager.restoreEncryptedBackup(
       encrypted: encrypted,
       backupKey: HEX.decode(backupKey),
     );
@@ -451,8 +452,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final (encryptedData, err) = await _encryptBackups(backups);
-    if (err != null || encryptedData == null) {
+    final (backup, err) = await _createBackup(backups);
+    if (err != null || backup == null) {
       _handleSaveError(err?.message ?? 'Encryption failed');
       return;
     }
@@ -471,7 +472,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     final (filePath, saveErr) =
         await _fileSystemBackupManager.saveEncryptedBackup(
-      encrypted: encryptedData.$2,
+      encrypted: backup.file,
       backupFolder: savePath,
     );
 
@@ -487,7 +488,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final backupSalt = _extractBackupSalt(encryptedData.$2);
+    final backupSalt = _extractBackupSalt(backup.file);
     if (backupSalt == null) {
       _handleSaveError('Failed to extract backup salt');
       return;
@@ -495,7 +496,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     _emitSafe(
       state.copyWith(
         backupId: backupId,
-        backupKey: encryptedData.$1,
+        backupKey: backup.key,
         backupFolderPath: filePath ?? '',
         backupSalt: backupSalt,
         savingBackups: false,
@@ -529,12 +530,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final (encryptedData, encryptErr) = await _encryptBackups(backups);
-    if (encryptErr != null || encryptedData == null) {
+    final (backup, encryptErr) = await _createBackup(backups);
+    if (encryptErr != null || backup == null) {
       _handleSaveError(encryptErr?.message ?? 'Encryption failed');
       return;
     }
-    final backupSalt = _extractBackupSalt(encryptedData.$2);
+    final backupSalt = _extractBackupSalt(backup.file);
     if (backupSalt == null) {
       _handleSaveError('Failed to extract backup salt');
       return;
@@ -542,7 +543,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     final (filePath, saveErr) =
         await _googleDriveBackupManager.saveEncryptedBackup(
-      encrypted: encryptedData.$2,
+      encrypted: backup.file,
       backupFolder: '', // No longer needed
     );
 
@@ -561,7 +562,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     _emitSafe(
       state.copyWith(
         backupId: backupId,
-        backupKey: encryptedData.$1,
+        backupKey: backup.key,
         backupFolderPath: fileName,
         backupSalt: backupSalt,
         savingBackups: false,
@@ -860,7 +861,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     if (!isClosed) emit(newState);
   }
 
-  Future<((String, String)?, Err?)> _encryptBackups(
+  Future<(({String key, String file})?, Err?)> _createBackup(
     List<Backup> backups,
   ) async {
     try {
@@ -868,17 +869,18 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       if (fetchMainMnemonicErr != null || mainSeed == null) {
         return (null, fetchMainMnemonicErr);
       }
-      final (encData, err) = await _fileSystemBackupManager.encryptBackups(
+      final (backup, err) =
+          await _fileSystemBackupManager.createEncryptedBackup(
         backups: backups,
         mnemonic: mainSeed.mnemonic.split(' '),
         network: mainSeed.network.toString().toLowerCase(),
       );
 
-      if (err != null || encData == null) {
+      if (err != null || backup == null) {
         return (null, err);
       }
 
-      return (encData, null);
+      return (backup, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
