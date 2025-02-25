@@ -1,15 +1,18 @@
 import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/core/data/datasources/bip39_word_list_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/boltz_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/exchange_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/core/data/repositories/boltz_swap_repository_impl.dart';
+import 'package:bb_mobile/core/data/repositories/hive_wallet_metadata_repository_impl.dart';
 import 'package:bb_mobile/core/data/repositories/seed_repository_impl.dart';
 import 'package:bb_mobile/core/data/repositories/settings_repository_impl.dart';
-import 'package:bb_mobile/core/data/repositories/hive_wallet_metadata_repository_impl.dart';
 import 'package:bb_mobile/core/data/repositories/word_list_repository_impl.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/word_list_repository.dart';
 import 'package:bb_mobile/core/domain/services/mnemonic_seed_factory.dart';
@@ -31,6 +34,11 @@ class CoreLocator {
   static const String bullBitcoinExchangeInstanceName = 'bullBitcoinExchange';
   static const String hiveWalletsBoxName = 'wallets';
   static const String walletsStorageInstanceName = 'walletsStorage';
+  static const String boltzInstanceName = 'boltz';
+  static const String boltzTestnetInstanceName = 'boltzTestnet';
+  static const String boltzSwapRepositoryInstanceName = 'boltzSwapRepository';
+  static const String boltzSwapRepositoryTestnetInstanceName =
+      'boltzSwapRepositoryTestnet';
 
   static Future<void> setup() async {
     // Data sources
@@ -56,6 +64,14 @@ class CoreLocator {
     );
     locator.registerLazySingleton<Bip39WordListDataSource>(
       () => Bip39EnglishWordListDataSourceImpl(),
+    );
+    locator.registerLazySingleton<BoltzDataSource>(
+      () => BoltzDataSourceImpl(),
+      instanceName: boltzInstanceName,
+    );
+    locator.registerLazySingleton<BoltzDataSource>(
+      () => BoltzDataSourceImpl(url: 'api.testnet.boltz.exchange/v2'),
+      instanceName: boltzTestnetInstanceName,
     );
 
     // Repositories
@@ -84,6 +100,24 @@ class CoreLocator {
       () => WordListRepositoryImpl(
         dataSource: locator<Bip39WordListDataSource>(),
       ),
+    );
+    locator.registerLazySingleton<SwapRepository>(
+      () => BoltzSwapRepositoryImpl(
+        boltz: locator<BoltzDataSource>(instanceName: boltzInstanceName),
+        localStorage: locator<KeyValueStorageDataSource<String>>(
+          instanceName: secureStorageInstanceName,
+        ),
+      ),
+      instanceName: boltzSwapRepositoryInstanceName,
+    );
+    locator.registerLazySingleton<SwapRepository>(
+      () => BoltzSwapRepositoryImpl(
+        boltz: locator<BoltzDataSource>(instanceName: boltzTestnetInstanceName),
+        localStorage: locator<KeyValueStorageDataSource<String>>(
+          instanceName: secureStorageInstanceName,
+        ),
+      ),
+      instanceName: boltzSwapRepositoryTestnetInstanceName,
     );
 
     // Managers or services responsible for handling specific logic

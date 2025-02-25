@@ -29,17 +29,11 @@ class LwkWalletRepositoryImpl
   Future<Balance> getBalance() async {
     final balances = await _publicWallet.balances();
 
-    final lBtcAssetBalance = balances
-        .firstWhere(
-          (balance) =>
-              network == Network.liquidMainnet &&
-                  balance.assetId ==
-                      '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d' ||
-              network == Network.liquidTestnet &&
-                  balance.assetId ==
-                      '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49',
-        )
-        .value;
+    final lBtcAssetBalance = balances.firstWhere((balance) {
+      final lBtcAssetId =
+          network == Network.liquidTestnet ? lwk.lTestAssetId : lwk.lBtcAssetId;
+      return balance.assetId == lBtcAssetId;
+    }).value;
 
     final balance = Balance(
       confirmedSat: BigInt.from(lBtcAssetBalance),
