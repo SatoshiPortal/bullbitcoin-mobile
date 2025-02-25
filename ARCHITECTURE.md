@@ -100,25 +100,28 @@ In this project, BLoCs/Cubits are used for state management, but other solutions
 
 ### Rules of Thumb
 
-> 💡 **Tip:** These rules of thumb can help validate code structure and ensure Clean Architecture principles are followed.
+> [!TIP]
+> Use these rules of thumb to validate your code and ensure Clean Architecture principles are followed.
 
-👍 Layer dependencies:
+✅ Layer dependencies:
 
 - The **domain layer** should be **completely independent** of the **data or presentation layer**. It should not import any classes from the data or presentation layer.
 - The **data layer** should **only depend on the domain layer**, never on the presentation layer. From the domain layer it should only import the repository contract abstract classes and entity classes, it should never import anything from the presentation layer.
 - The **presentation layer** should **only depend on the domain layer**, never on the data layer. From the domain layer it should only import the use cases and entities, it should never import anything from the data layer directly.
 
-👍 Dependency Injection flow:
+✅ Dependency Injection flow:
 
 **Dependency injection** flow should be **unidirectional** from the **data layer to the domain layer to the presentation layer** as follows:
 
 1. **Data Sources** → Injected into **Repository Implementations** only, not used directly in use cases or anywhere else.
-2. **Repositories** → Injected into **Use Cases or Services** only, not used directly in the presentation layer or anywhere else. Services themselves may also be injected into use cases just like repositories.
+2. **Repositories** → Injected into **Use Cases or Services** only, not used directly in the presentation layer or anywhere else.
+   _(Services themselves may also be injected into use cases just like repositories.)_
 3. **Use Cases** → Injected into **Blocs/Cubits** or used in the presentation layer only, not in other layers.
 
-👍 Only the data layer should use models.
+✅ Entity vs Model:
 
-- The domain layer should use entities, not models.
+- The **domain layer should use entities**, not models.
+- Only the **data layer should use models**.
 
 ### Further reading
 
