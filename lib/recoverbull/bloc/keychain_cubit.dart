@@ -168,8 +168,6 @@ class KeychainCubit extends Cubit<KeychainState> {
     if (!state.canDeleteKey) return;
     try {
       emit(state.copyWith(loading: true, error: ''));
-      final isServerReady = await serverInfo();
-      if (!isServerReady) return;
 
       await _keyService.trashBackupKey(
         backupId: state.backupId,
@@ -201,9 +199,6 @@ class KeychainCubit extends Cubit<KeychainState> {
   Future<void> secureKey() async {
     if (!await _ensureServerStatus()) return;
     try {
-      final isServerReady = await serverInfo();
-      if (!isServerReady) return;
-
       await _keyService.storeBackupKey(
         backupId: state.backupId,
         password: state.tempSecret,
