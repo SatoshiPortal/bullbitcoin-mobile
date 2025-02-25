@@ -24,8 +24,10 @@ abstract class IRecoverbullManager {
       final plaintext = json.encode(wallets.map((i) => i.toJson()).toList());
 
       final randomIndex = _deriveRandomIndex();
+      final derivationPath = "m/1608'/0'/$randomIndex";
+
       final (derived, err) =
-          await deriveBackupKey(mnemonic, network, randomIndex);
+          await deriveBackupKey(mnemonic, network, derivationPath);
       if (derived == null) {
         debugPrint(err.toString());
         return (null, Err('Failed to derive backup key'));
@@ -37,7 +39,7 @@ abstract class IRecoverbullManager {
       );
 
       final backup = jsonDecode(jsonBackup);
-      backup['index'] = randomIndex;
+      backup['path'] = derivationPath;
 
       return ((key: HEX.encode(derived), file: jsonEncode(backup)), null);
     } catch (e) {
@@ -83,7 +85,7 @@ abstract class IRecoverbullManager {
   Future<(List<int>?, Err?)> deriveBackupKey(
     List<String> mnemonic,
     String network,
-    int keyPathIndex,
+    String derivationPath,
   ) async {
     try {
       final descriptorSecretKey = await DescriptorSecretKey.create(
@@ -94,7 +96,7 @@ abstract class IRecoverbullManager {
       final key = bip85
           .derive(
             xprv: descriptorSecretKey.toString().split('/*').first,
-            path: "m/1608'/0'/$keyPathIndex",
+            path: derivationPath,
           )
           .sublist(0, 32);
       return (key, null);

@@ -388,12 +388,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
   }
 
-  Future<void> recoverBackupKeyFromMnemonic(int? backupKeyIndex) async {
+  Future<void> recoverBackupKeyFromMnemonic(String? derivationPath) async {
     _emitSafe(state.copyWith(loadingBackups: true, errorLoadingBackups: ''));
 
     try {
-      if (backupKeyIndex == null) {
-        _handleLoadError('Invalid backup format - missing index');
+      if (derivationPath == null) {
+        _handleLoadError('Invalid backup format - missing derivation path');
         return;
       }
 
@@ -407,7 +407,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           await _fileSystemBackupManager.deriveBackupKey(
         mainSeed.mnemonic.split(' '),
         mainSeed.network.toString(),
-        backupKeyIndex,
+        derivationPath,
       );
 
       if (backupKey == null) {

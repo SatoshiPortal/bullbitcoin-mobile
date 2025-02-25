@@ -632,7 +632,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                   const Gap(10),
                   InkWell(
                     onTap: () => _cubit.recoverBackupKeyFromMnemonic(
-                      widget.recoveredBackup['index'] as int?,
+                      widget.recoveredBackup['path'] as String?,
                     ),
                     child: const BBText.bodySmall(
                       'Forgot your secret? Click to recover',
