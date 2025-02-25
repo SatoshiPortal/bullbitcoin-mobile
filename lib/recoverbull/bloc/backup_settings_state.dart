@@ -1,4 +1,4 @@
-import 'package:bb_mobile/_model/backup.dart';
+import 'package:bb_mobile/_model/wallet_sensitive_data.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 part 'backup_settings_state.freezed.dart';
 
@@ -17,7 +17,7 @@ class BackupSettingsState with _$BackupSettingsState {
     @Default('') String errTestingBackup,
     @Default(false) bool backupTested,
     @Default(false) bool loadingBackups,
-    @Default([]) List<Backup> loadedBackups,
+    @Default([]) List<WalletSensitiveData> loadedBackups,
     @Default('') String errorLoadingBackups,
     @Default(false) bool savingBackups,
     @Default('') String errorSavingBackups,

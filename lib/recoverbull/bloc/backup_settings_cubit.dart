@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:bb_mobile/_model/backup.dart';
 import 'package:bb_mobile/_model/seed.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_model/wallet_sensitive_data.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/file_picker.dart';
 import 'package:bb_mobile/_pkg/recoverbull/google_drive.dart';
@@ -347,7 +347,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
 
     if (backupKey.isEmpty) {
-      _handleLoadError('Backup key is missing');
+      _handleLoadError('WalletSensitiveData key is missing');
       return;
     }
 
@@ -750,8 +750,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
-  Future<List<Backup>> _createBackupsForAllWallets() async {
-    final backups = <Backup>[];
+  Future<List<WalletSensitiveData>> _createBackupsForAllWallets() async {
+    final backups = <WalletSensitiveData>[];
 
     try {
       for (final wallet in _wallets) {
@@ -766,7 +766,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
-  Future<Backup?> _createBackupForWallet(Wallet wallet) async {
+  Future<WalletSensitiveData?> _createBackupForWallet(Wallet wallet) async {
     try {
       final (seed, err) = await _loadWalletSeed(wallet);
       if (err != null || seed == null) {
@@ -775,7 +775,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         return null;
       }
 
-      final backup = Backup(
+      final backup = WalletSensitiveData(
         name: wallet.name ?? '',
         network: wallet.network.name,
         layer: wallet.baseWalletType.name,
@@ -854,7 +854,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   }
 
   Future<(({String key, String file})?, Err?)> _createBackup(
-    List<Backup> backups,
+    List<WalletSensitiveData> backups,
   ) async {
     try {
       final (mainSeed, fetchMainMnemonicErr) = await _fetchMainSeed();
@@ -962,7 +962,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     return (seed, err);
   }
 
-  Future<Err?> _processBackupRecovery(Backup backup) async {
+  Future<Err?> _processBackupRecovery(WalletSensitiveData backup) async {
     final network = BBNetwork.fromString(backup.network);
     final layer = _getLayer(backup.layer);
     final script = _getScript(backup.script);

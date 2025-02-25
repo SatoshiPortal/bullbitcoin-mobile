@@ -1,11 +1,11 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'backup.freezed.dart';
-part 'backup.g.dart';
+part 'wallet_sensitive_data.freezed.dart';
+part 'wallet_sensitive_data.g.dart';
 
 @freezed
-class Backup with _$Backup {
-  const factory Backup({
+class WalletSensitiveData with _$WalletSensitiveData {
+  const factory WalletSensitiveData({
     @Default(1) int version,
     @Default('') String name,
     @Default(<String>[]) List<String> mnemonic,
@@ -15,11 +15,12 @@ class Backup with _$Backup {
     @Default('') String type,
     @Default('') String script,
     @Default('') String publicDescriptors,
-  }) = _Backup;
+  }) = _WalletSensitiveData;
 
-  factory Backup.fromJson(Map<String, dynamic> json) => _$BackupFromJson(json);
+  factory WalletSensitiveData.fromJson(Map<String, dynamic> json) =>
+      _$WalletSensitiveDataFromJson(json);
 
-  const Backup._();
+  const WalletSensitiveData._();
 
   bool get isEmpty => mnemonic.isEmpty && passphrase.isEmpty;
 }

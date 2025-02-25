@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:bb_mobile/_model/backup.dart';
 import 'package:bb_mobile/_model/wallet.dart';
+import 'package:bb_mobile/_model/wallet_sensitive_data.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bdk_flutter/bdk_flutter.dart';
@@ -14,7 +14,7 @@ import 'package:recoverbull/recoverbull.dart' as recoverbull;
 abstract class IBackupManager {
   /// Encrypts a list of backups using BIP85 derivation
   Future<(({String key, String file})?, Err?)> createEncryptedBackup({
-    required List<Backup> backups,
+    required List<WalletSensitiveData> backups,
     required List<String> mnemonic,
     required String network,
   }) async {
@@ -45,7 +45,7 @@ abstract class IBackupManager {
   }
 
   /// Decrypts an encrypted backup using the provided key
-  Future<(List<Backup>?, Err?)> restoreEncryptedBackup({
+  Future<(List<WalletSensitiveData>?, Err?)> restoreEncryptedBackup({
     required String encrypted,
     required List<int> backupKey,
   }) async {
@@ -57,7 +57,8 @@ abstract class IBackupManager {
 
       final decodedJson = jsonDecode(plaintext) as List;
       final backups = decodedJson
-          .map((item) => Backup.fromJson(item as Map<String, dynamic>))
+          .map((item) =>
+              WalletSensitiveData.fromJson(item as Map<String, dynamic>))
           .toList();
 
       return (backups, null);
