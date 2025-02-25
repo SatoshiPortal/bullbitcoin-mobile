@@ -42,10 +42,10 @@ class BdkWalletRepositoryImpl
   Future<void> sync({
     required String blockchainUrl,
     String? socks5,
-    required int retry,
+    int retry = 5,
     int? timeout,
     required BigInt stopGap,
-    required bool validateDomain,
+    bool validateDomain = true,
   }) async {
     final blockchain = await _createBlockchain(
       url: blockchainUrl,

@@ -96,7 +96,11 @@ class LwkWalletRepositoryImpl
   @override
   Future<void> sync({
     required String blockchainUrl,
-    required bool validateDomain,
+    String? socks5,
+    int retry = 5,
+    int? timeout,
+    required BigInt stopGap,
+    bool validateDomain = true,
   }) async {
     await _publicWallet.sync(
       electrumUrl: blockchainUrl,
