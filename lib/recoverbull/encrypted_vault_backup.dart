@@ -299,17 +299,17 @@ class EncryptedVaultRecoverPage extends StatefulWidget {
 }
 
 class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
-  late final BackupSettingsCubit _cubit;
+  late final BackupSettingsCubit _backupSettingsCubit;
 
   @override
   void initState() {
     super.initState();
-    _cubit = createBackupSettingsCubit(walletId: widget.wallet);
+    _backupSettingsCubit = createBackupSettingsCubit(walletId: widget.wallet);
   }
 
   @override
   void dispose() {
-    _cubit.close();
+    _backupSettingsCubit.close();
     super.dispose();
   }
 
@@ -319,11 +319,11 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
   ) async {
     switch (provider) {
       case BackupProvider.googleDrive:
-        await _cubit.fetchGoogleDriveBackup();
+        await _backupSettingsCubit.fetchGoogleDriveBackup();
       case BackupProvider.iCloud:
         debugPrint('iCloud backup');
       case BackupProvider.custom:
-        _cubit.fetchFsBackup();
+        _backupSettingsCubit.fetchFsBackup();
     }
   }
 
@@ -353,7 +353,7 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: _cubit,
+      value: _backupSettingsCubit,
       child: BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
         listenWhen: (previous, current) =>
             previous.errorLoadingBackups != current.errorLoadingBackups ||
@@ -363,7 +363,7 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               context.showToast(state.errorLoadingBackups),
             );
-            _cubit.clearError();
+            _backupSettingsCubit.clearError();
             return;
           }
           if (state.latestRecoveredBackup.isNotEmpty) {
@@ -371,7 +371,7 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
               '/wallet-settings/backup-settings/recover-options/encrypted/info',
               extra: state.latestRecoveredBackup,
             );
-            _cubit.clearError();
+            _backupSettingsCubit.clearError();
           }
         },
         builder: (context, state) {
