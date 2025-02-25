@@ -40,17 +40,19 @@ With that in mind, create a comment on the issue of the feature you want to impl
 
 Some remarks on the example above:
 
-- The above example is just an example and might not be complete or correct or the implementation might change later.
-- The example specifies a lot of things that are already implemented in the core of the app. If they exist already, you should not specify them for your feature. You can just clarify in the comment that you will use the existing implementations of certain repositories or services in the feature's use cases.
-- Not every feature will require all layers, and it's important to consider which ones are necessary and why. For example, a simple data source might not need a model, and a single-screen feature might not require a Bloc—sometimes a Cubit is sufficient. Software development is not an exact science, and this step is about understanding the feature better and getting feedback on your approach. Don’t worry if you're unsure about all the layers initially or need to adjust them later; the goal is to have a starting point for discussion and refinement.
+- The above example is just an example and might not be complete or the same as the real current implementation.
+- The example specifies a lot of things that were implemented in the `core` folder of the app. If classes exist already, you should not specify them. You can just clarify in the comment that you will use the existing implementations of certain repositories or services in the feature's use cases.
+- Not every feature will require all layers, and it's important to consider which ones are necessary and why. For example, a simple data source might not need a model, and a simple single-screen feature might not require a Bloc.
+
+Software development is not an exact science, and this step is about understanding the feature better and getting feedback on your approach. Don’t worry if you're unsure about all the layers initially or need to adjust them later; the goal is to have a starting point for discussion and refinement.
 
 ### Step 2: Implement the feature
 
 - Add a new folder for the feature
 - Implement the different layers of the feature as defined and signed-off on in the issue
-- In case your feature requires some initialization or checks before the app starts, for initial routing or just initial setup, please create a use case for it and execute it in the `AppStartupBloc`'s `_onStarted` method. You can look at the existing use cases in the [AppStartupBloc](lib/features/app_startup/presentation/bloc/app_startup_bloc.dart) for reference.
-- Use `GetIt` to register datasources, repositories, services, usecases and blocs. Generally, datasources, repositories and services should be registered as singletons, and usecases and blocs as a factory. You can create a `<feature>_locator.dart` file in the root of the feature's folder with a class with a `setup` function in which of the feature easily. E.g. [HomeLocator](lib/features/home/home_locator.dart). Make sure to then call the `setup` function in the [AppLocator](lib/app_locator.dart) so it gets registered at app startup.
-- If the feature has subroutes, you can define a `<feature>_router.dart` file in the ui folder of the feature with a class that defines the subroutes. E.g. [ReceiveRouter](lib/features/receive/ui/receive_router.dart). Make sure to add the top-level routes to the [AppRouter](lib/app_router.dart) as well.
+- In case your feature requires some initialization or checks before the app starts, for initial routing or just initial setup, please create a use case for it and execute it in the `AppStartupBloc`'s `_onStarted` method. You can look at the existing use cases in the [`AppStartupBloc`](lib/features/app_startup/presentation/bloc/app_startup_bloc.dart) for reference.
+- Use `GetIt` to register datasources, repositories, services, usecases and blocs. Generally, datasources, repositories and services should be registered as singletons, and usecases and blocs as a factory. You can create a `<feature>_locator.dart` file in the root of the feature's folder with a class with a `setup` function in which of the feature easily. E.g. [`HomeLocator`](lib/features/home/home_locator.dart). Make sure to then call the `setup` function in the [`AppLocator`](lib/app_locator.dart) so it gets registered at app startup.
+- If the feature has subroutes, you can define a `<feature>_router.dart` file in the ui folder of the feature with a class that defines the subroutes. E.g. [`ReceiveRouter`](lib/features/receive/ui/receive_router.dart). Make sure to add the top-level routes to the [`AppRouter`](lib/app_router.dart) as well.
 
 ### Step 3: Write tests
 

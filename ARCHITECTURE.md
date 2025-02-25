@@ -13,11 +13,11 @@ The lib/ directory is organized into the following main sections:
   - [Core Locator](lib/core/): Contains the locator (dependency injection) setup for the core layer.
 - [UI](lib/ui/): Contains shared UI components, widgets, and themes that are used across multiple features.
 - [Features](lib/features/): Each feature is self-contained and consists of its own set of layers, locator, and routes:
-  - Data (lib/features/<feature>/data/): Contains data sources, models, and repository implementations specific to the feature.
-  - Domain (lib/features/<feature>/domain/): Contains entities, repository contracts, services, and use cases specific to the feature.
-  - Presentation (lib/features/<feature>/presentation/): Contains blocs, view models, and other ui-independendent components specific to the feature.
-  - UI (lib/features/<feature>/ui/): Contains the UI components, screens, widgets, themes and routes specific to the feature.
-  - Locator (lib/features/<feature>/): Contains the locator (dependency injection) setup for the feature.
+  - Data (lib/features/`<feature>`/data/): Contains data sources, models, and repository implementations specific to the feature.
+  - Domain (lib/features/`<feature>`/domain/): Contains entities, repository contracts, services, and use cases specific to the feature.
+  - Presentation (lib/features/`<feature>`/presentation/): Contains blocs, view models, and other ui-independendent components specific to the feature.
+  - UI (lib/features/`<feature>`/ui/): Contains the UI components, screens, widgets, themes and routes specific to the feature.
+  - Locator (lib/features/`<feature>`/): Contains the locator (dependency injection) setup for the feature.
 - [Localization](lib/l10n/): Contains localization files with translations for different languages.
 - [Utils](lib/utils/): Contains small utility functions and extensions used throughout the app.
 - App-Level Configuration in the root directory [lib/](lib/): Contains the main app entry point, configuration, and global utilities.
