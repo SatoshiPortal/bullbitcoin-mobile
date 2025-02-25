@@ -35,8 +35,7 @@ class FileSystemBackupManager extends IBackupManager {
     required String encrypted,
   }) async {
     try {
-      final decodeEncryptedFile = jsonDecode(utf8.decode(HEX.decode(encrypted)))
-          as Map<String, dynamic>;
+      final decodeEncryptedFile = jsonDecode(encrypted) as Map<String, dynamic>;
       return (decodeEncryptedFile, null);
     } catch (e) {
       return (null, Err('Failed to read encrypted backup: $e'));
@@ -66,10 +65,7 @@ class FileSystemBackupManager extends IBackupManager {
       final backupDir = await Directory(backupFolder).create(recursive: true);
       final file = File('${backupDir.path}/$filename');
 
-      final (f, errSave) = await fileStorage.saveToFile(
-        file,
-        HEX.encode(utf8.encode(encrypted)),
-      );
+      final (f, errSave) = await fileStorage.saveToFile(file, encrypted);
       if (errSave != null) {
         return (null, Err(errSave.message));
       }
