@@ -310,13 +310,13 @@ class _RecoveryPage extends StatelessWidget {
           children: [
             const Gap(50),
             BBText.titleLarge(
-              'Enter Recovery ${inputType == KeyChainInputType.pin ? 'PIN' : inputType == KeyChainInputType.password ? 'Password' : 'Key'}',
+              'Enter Recovery ${_getInputTypeText(inputType)}',
               textAlign: TextAlign.center,
               isBold: true,
             ),
             const Gap(8),
             BBText.bodySmall(
-              'Enter the ${inputType == KeyChainInputType.pin ? 'PIN' : inputType == KeyChainInputType.password ? 'password' : 'backup key'} you used to backup your keychain',
+              'Enter the ${_getInputTypeText(inputType).toLowerCase()} you used to backup your keychain',
               textAlign: TextAlign.center,
             ),
             const Gap(50),
@@ -330,6 +330,17 @@ class _RecoveryPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getInputTypeText(KeyChainInputType type) {
+    switch (type) {
+      case KeyChainInputType.pin:
+        return 'PIN';
+      case KeyChainInputType.password:
+        return 'Password';
+      case KeyChainInputType.backupKey:
+        return 'Key';
+    }
   }
 }
 
