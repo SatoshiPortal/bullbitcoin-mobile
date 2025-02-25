@@ -10,18 +10,54 @@ class KeychainCubit extends Cubit<KeychainState> {
   static const pinMax = 8;
 
   KeychainCubit() : super(const KeychainState()) {
+    _initialize();
+  }
+
+  late final KeyService _keyService;
+
+  void _initialize() {
     shuffleAndEmit();
     if (keyServerUrl.isEmpty) {
-      emit(state.copyWith(error: 'keychain api is not set'));
+      emit(
+        state.copyWith(
+          error: 'keychain api is not set',
+          keyServerUp: false,
+        ),
+      );
       return;
     }
+
     _keyService = KeyService(
       keyServer: Uri.parse(keyServerUrl),
       keyServerPublicKey: keyServerPublicKey,
     );
+
+    // Initial status check
+    keyServerStatus();
   }
 
-  late final KeyService _keyService;
+  Future<void> keyServerStatus() async {
+    if (!isClosed) {
+      try {
+        final info = await _keyService.serverInfo();
+        final isUp = info.cooldown <= 1;
+
+        if (isUp != state.keyServerUp) {
+          emit(state.copyWith(keyServerUp: isUp));
+        }
+      } catch (e) {
+        debugPrint('Server status check failed: $e');
+        if (state.keyServerUp) {
+          emit(state.copyWith(keyServerUp: false));
+        }
+      }
+    }
+  }
+
+  Future<bool> _ensureServerStatus() async {
+    await keyServerStatus();
+    return state.keyServerUp;
+  }
 
   void backspacePressed() {
     if (state.secret.isEmpty) return;
