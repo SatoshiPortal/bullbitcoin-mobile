@@ -435,41 +435,48 @@ class _PinField extends StatelessWidget {
 class _PasswordField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final state = context.select(
-      (KeychainCubit x) => (
-        x.state.secret,
-        x.state.obscure,
-        x.state.inputType,
-        x.state.backupKey,
-        x.state.getValidationError()
-      ),
-    );
-    final (secret, obscure, inputType, backupKey, error) = state;
+    return BlocBuilder<KeychainCubit, KeychainState>(
+      buildWhen: (previous, current) =>
+          previous.secret != current.secret ||
+          previous.obscure != current.obscure ||
+          previous.inputType != current.inputType ||
+          previous.backupKey != current.backupKey ||
+          previous.error != current.error,
+      builder: (context, state) {
+        final isBackupKeyMode = state.inputType == KeyChainInputType.backupKey;
+        final value = isBackupKeyMode ? state.backupKey : state.secret;
+        final error = state.getValidationError();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        BBTextInput.bigWithIcon(
-          value: inputType == KeyChainInputType.backupKey ? backupKey : secret,
-          onChanged: (value) => inputType == KeyChainInputType.backupKey
-              ? context.read<KeychainCubit>().updateBackupKey(value)
-              : context.read<KeychainCubit>().updateInput(value),
-          obscure: obscure,
-          hint: inputType == KeyChainInputType.backupKey
-              ? 'Enter your backup key'
-              : 'Enter your password',
-          rightIcon: Icon(
-            obscure ? Icons.visibility_off : Icons.visibility,
-            color: context.colour.onPrimaryContainer,
-          ),
-          onRightTap: () => context.read<KeychainCubit>().clickObscure(),
-        ),
-        if (error != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8, left: 8),
-            child: BBText.errorSmall(error),
-          ),
-      ],
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BBTextInput.bigWithIcon(
+              value: value,
+              onChanged: (value) => isBackupKeyMode
+                  ? context.read<KeychainCubit>().updateBackupKey(value)
+                  : context.read<KeychainCubit>().updateInput(value),
+              obscure: !isBackupKeyMode && state.obscure,
+              hint: isBackupKeyMode
+                  ? 'Enter your backup key'
+                  : 'Enter your password',
+              rightIcon: isBackupKeyMode
+                  ? null
+                  : Icon(
+                      state.obscure ? Icons.visibility_off : Icons.visibility,
+                      color: context.colour.onPrimaryContainer,
+                    ),
+              onRightTap: isBackupKeyMode
+                  ? null
+                  : () => context.read<KeychainCubit>().clickObscure(),
+            ),
+            if (error != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8, left: 8),
+                child: BBText.errorSmall(error),
+              ),
+          ],
+        );
+      },
     );
   }
 }
