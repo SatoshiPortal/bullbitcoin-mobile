@@ -246,16 +246,14 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   void updateBackupKey(String value) {
-    emit(
-      state.copyWith(
-        backupKey: value,
-        error: '',
-      ),
-    );
+    if (value == state.backupKey) return; // Avoid duplicate state
+    emit(state.copyWith(backupKey: value, error: ''));
   }
 
   void updateInput(String value) {
     if (state.inputType == KeyChainInputType.pin && value.length > 6) return;
+    if (value == state.secret) return; // Avoid duplicate state
+
     emit(state.copyWith(secret: value, error: ''));
   }
 
