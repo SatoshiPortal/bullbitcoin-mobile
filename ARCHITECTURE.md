@@ -30,7 +30,7 @@ The lib/ directory is organized into the following main sections:
 
 ## ✨ Clean Architecture
 
-Clean Architecture is a software design philosophy that separates the software into three layers: data, domain and presentation layer. Each layer has a specific responsibility and is built around the business domain. This separation ensures that the data and presentation layers can be changed or replaced without affecting the core business logic. It also improves testability, maintainability, and scalability of the software. It might be intimidating and look like it adds a lot of boilerplate code at first, but it pays off in the long run, especially in larger or more complex projects and bigger teams.
+Clean Architecture is a software design philosophy that separates software into three layers: data, domain, and presentation. Each layer has a specific responsibility and is built around the business domain. The separation of concerns and predictable data flow between the layers ensures that the data and presentation layers can be changed or replaced without affecting the core business logic. This also enhances testability, maintainability, and scalability. While it may seem intimidating at first and introduce some boilerplate code, it pays off in the long run—especially in larger projects, more complex systems, and bigger teams.
 
 ### Domain Layer
 
