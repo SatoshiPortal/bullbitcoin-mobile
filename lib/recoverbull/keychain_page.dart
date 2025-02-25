@@ -41,7 +41,7 @@ class KeychainBackupPage extends StatelessWidget {
           create: (context) => KeychainCubit()
             ..setChainState(
               _pState,
-              backupData.$1 ?? '',
+              backupId ?? '',
               backupKey,
               backupSalt ?? '',
             ),
