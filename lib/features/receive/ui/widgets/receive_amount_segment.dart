@@ -13,7 +13,7 @@ class ReceiveAmountSegment extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          Text('Receive Amount Segment'),
+          const Text('Receive Amount Segment'),
           FilledButton(
             onPressed: () {
               final state = context.read<ReceiveBloc>().state;

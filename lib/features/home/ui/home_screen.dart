@@ -5,7 +5,6 @@ import 'package:bb_mobile/features/home/ui/widgets/home_app_bar.dart';
 import 'package:bb_mobile/features/home/ui/widgets/home_bottom_buttons.dart';
 import 'package:bb_mobile/features/home/ui/widgets/wallet_card.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
