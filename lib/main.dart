@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:bb_mobile/app.dart';
-import 'package:bb_mobile/app_bloc_observer.dart';
-import 'package:bb_mobile/app_locator.dart';
+import 'package:bb_mobile/features/app_startup/app.dart';
+import 'package:bb_mobile/features/app_startup/app_bloc_observer.dart';
+import 'package:bb_mobile/features/app_startup/app_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/app_router.dart';
+import 'package:bb_mobile/features/app_startup/app_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

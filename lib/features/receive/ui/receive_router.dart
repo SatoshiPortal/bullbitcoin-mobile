@@ -1,5 +1,5 @@
-import 'package:bb_mobile/app_locator.dart';
-import 'package:bb_mobile/app_router.dart';
+import 'package:bb_mobile/features/app_startup/app_locator.dart';
+import 'package:bb_mobile/features/app_startup/app_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_amount_segment.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_invoice_segment.dart';

@@ -1,5 +1,5 @@
-import 'package:bb_mobile/app_locator.dart';
-import 'package:bb_mobile/app_router.dart';
+import 'package:bb_mobile/features/app_startup/app_locator.dart';
+import 'package:bb_mobile/features/app_startup/app_router.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/pin_code/ui/widgets/numeric_keyboard.dart';
 import 'package:bb_mobile/features/pin_code/ui/widgets/pin_code_display.dart';

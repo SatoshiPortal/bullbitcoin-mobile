@@ -1,4 +1,4 @@
-import 'package:bb_mobile/app_router.dart';
+import 'package:bb_mobile/features/app_startup/app_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ class ReceiveAmountSegment extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          Text('Receive Amount Segment'),
+          const Text('Receive Amount Segment'),
           FilledButton(
             onPressed: () {
               final state = context.read<ReceiveBloc>().state;

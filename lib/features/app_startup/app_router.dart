@@ -2,10 +2,8 @@ import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_blo
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/features/home/ui/home_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_screen.dart';
-import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/recover_wallet/ui/recover_wallet_flow.dart';
-import 'package:bb_mobile/features/settings/ui/screens/language_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/ui/screens/route_error_screen.dart';

@@ -1,6 +1,6 @@
-import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/features/app_startup/app_locator.dart';
 import 'package:bb_mobile/features/app_unlock/data/repositories/failed_unlock_attempts_repository_impl.dart';
 import 'package:bb_mobile/features/app_unlock/domain/repositories/failed_unlock_attempts_repository.dart';
 import 'package:bb_mobile/features/app_unlock/domain/services/timeout_calculator.dart';

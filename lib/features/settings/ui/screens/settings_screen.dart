@@ -1,8 +1,7 @@
-import 'package:bb_mobile/app_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/sats_bitcoin_unit_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
+import 'package:bb_mobile/utils/build_context_x.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
