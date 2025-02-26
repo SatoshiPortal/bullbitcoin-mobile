@@ -11,7 +11,6 @@ import 'package:bb_mobile/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -150,7 +149,7 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
                         ...BackupProvider.values.map(
                           (provider) => Padding(
                             padding: const EdgeInsets.only(bottom: 10),
-                            child: _StorageOptionCard(
+                            child: StorageOptionCard(
                               title: provider.title,
                               description: provider.description,
                               icon: Icon(provider.icon, size: 40),
@@ -219,13 +218,13 @@ class _InfoSection extends StatelessWidget {
   }
 }
 
-class _StorageOptionCard extends StatelessWidget {
+class StorageOptionCard extends StatelessWidget {
   final String title;
   final String description;
   final Widget icon;
   final VoidCallback onTap;
 
-  const _StorageOptionCard({
+  const StorageOptionCard({
     required this.title,
     required this.description,
     required this.icon,
@@ -337,7 +336,7 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
           ...BackupProvider.values.map(
             (provider) => Padding(
               padding: const EdgeInsets.only(bottom: 10),
-              child: _StorageOptionCard(
+              child: StorageOptionCard(
                 title: provider.title,
                 description: provider.description,
                 icon: Icon(provider.icon, size: 40),
@@ -499,45 +498,11 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
         listenWhen: (previous, current) =>
             previous.errorLoadingBackups != current.errorLoadingBackups ||
             previous.loadingBackups != current.loadingBackups ||
-            previous.loadedBackups != current.loadedBackups ||
-            previous.backupKey != current.backupKey,
+            previous.loadedBackups != current.loadedBackups,
         listener: (context, state) {
           if (state.errorLoadingBackups.isNotEmpty) {
             ScaffoldMessenger.of(context).showSnackBar(
               context.showToast(state.errorLoadingBackups),
-            );
-            _cubit.clearError();
-            return;
-          }
-          if (!state.errorLoadingBackups.isNotEmpty &&
-              !state.loadingBackups &&
-              state.backupKey.isNotEmpty) {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const BBText.titleLarge('Secret key', isBold: true),
-                content: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        state.backupKey,
-                        style: context.font.bodySmall!
-                            .copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: state.backupKey));
-                        Navigator.of(context).pop();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          context.showToast('Copied to clipboard'),
-                        );
-                      },
-                      icon: const Icon(Icons.copy, color: Colors.black),
-                    ),
-                  ],
-                ),
-              ),
             );
             _cubit.clearError();
             return;
@@ -648,30 +613,6 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                         ),
                       ],
                     ),
-                  ),
-                  const Gap(10),
-                  InkWell(
-                    onTap: () => _cubit.recoverBackupKeyFromMnemonic(
-                      widget.recoveredBackup['path'] as String?,
-                    ),
-                    child: const BBText.bodySmall(
-                      'Forgot your secret? Click to recover',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const Gap(10),
-                  IconButton(
-                    onPressed: () {
-                      context.push(
-                        '/wallet-settings/backup-settings/keychain',
-                        extra: (
-                          '',
-                          widget.recoveredBackup,
-                          KeyChainPageState.delete.name.toLowerCase()
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.delete, color: Colors.black),
                   ),
                 ],
               ),
