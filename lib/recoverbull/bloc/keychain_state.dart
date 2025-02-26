@@ -38,7 +38,6 @@ class KeychainState with _$KeychainState {
     @Default('') String backupKey,
     @Default([]) List<int> backupSalt,
     @Default(false) bool isSecretConfirmed,
-    @Default([]) List<int> shuffledNumbers,
     @Default('') String error,
     @Default(KeyChainPageState.enter) KeyChainPageState originalPageState,
     DateTime? lastRequestTime,
