@@ -1183,10 +1183,7 @@ class HomeWarnings extends StatelessWidget {
             info: w.info,
           ),
         if (!keyServerUp)
-          WarningBanner(
-            onTap: () {},
-            info: 'Key server is down. Backup key is unavailable.',
-          ),
+          WarningBanner(onTap: () {}, info: 'Key server is down'),
       ],
     );
   }
