@@ -252,7 +252,10 @@ class BackupOptionsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  BBText.title(title, isBold: true),
+                  BBText.title(
+                    title,
+                    isBold: true,
+                  ),
                   const Gap(4),
                   BBText.bodySmall(description, removeColourOpacity: true),
                 ],
