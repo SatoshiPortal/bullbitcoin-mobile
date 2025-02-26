@@ -104,7 +104,7 @@ class _Screen extends StatelessWidget {
             isRed: !isVaultBackupTested,
           ),
           BBButton.withColour(
-            label: "Start backup",
+            label: "Start Backup",
             onPressed: () => {
               context.push(
                 '/wallet-settings/backup-settings/backup-options',
@@ -116,12 +116,24 @@ class _Screen extends StatelessWidget {
           ),
           const Gap(20),
           BBButton.withColour(
-            label: "Recover or test backup",
+            label: "Recover/Test Backup",
             onPressed: () {
               context.push(
                 '/wallet-settings/backup-settings/recover-options',
                 extra: context.read<WalletBloc>().state.wallet.id,
               );
+            },
+            fillWidth: true,
+            center: true,
+          ),
+          const Gap(20),
+          BBButton.withColour(
+            label: "View/Delete Backup Key",
+            onPressed: () => {
+              context.push(
+                '/wallet-settings/backup-settings/backup-key',
+                extra: context.read<WalletBloc>().state.wallet.id,
+              ),
             },
             fillWidth: true,
             center: true,
@@ -200,7 +212,7 @@ class BackupOptionsScreen extends StatelessWidget {
               title: 'Physical backup (take your time)',
               description:
                   'You have to write down 12 words on a piece of paper or engrave it in metal. Make sure not to lose it. If anybody ever finds those 12 words, they can steal your Bitcoin.',
-              onTap: () async => context.push(
+              onTap: () => context.push(
                 '/wallet-settings/backup-settings/backup-options/physical',
                 extra: wallet,
               ),
@@ -316,7 +328,7 @@ class RecoverOptionsScreen extends StatelessWidget {
               title: 'Physical backup',
               description:
                   "Restore your wallet by entering the 12 words from your physical backup.",
-              onTap: () async => context.push(
+              onTap: () => context.push(
                 '/wallet-settings/backup-settings/recover-options/physical',
               ),
             ),
