@@ -1034,8 +1034,19 @@ class HomeNoWalletsWithCreation extends StatelessWidget {
             ),
             const Gap(16),
             BBButton.text(
-              label: 'Recover wallet backup',
+              label: 'Recover wallet from Physical Backup',
               centered: true,
+              onSurface: true,
+              isBlue: false,
+              fontSize: 11,
+              onPressed: () => context1.push('/import-main'),
+            ),
+            BBButton.text(
+              label: 'Recover wallet from Encrypted Vault',
+              centered: true,
+              onSurface: true,
+              isBlue: false,
+              fontSize: 11,
               onPressed: () {
                 context1.push(
                   '/wallet-settings/backup-settings/recover-options/encrypted',
@@ -1103,10 +1114,7 @@ class HomeNoWalletsView extends StatelessWidget {
                 ),
                 Text(
                   'OWN YOUR MONEY',
-                  style: font.copyWith(
-                    fontSize: 59,
-                    height: 0.8,
-                  ),
+                  style: font.copyWith(fontSize: 59, height: 0.8),
                 ),
                 const Gap(8),
                 SizedBox(
@@ -1127,8 +1135,17 @@ class HomeNoWalletsView extends StatelessWidget {
                     },
                   ),
                 ),
+                const Gap(20),
                 BBButton.text(
-                  label: 'Recover wallet backup',
+                  label: 'Recover wallet from Physical Backup',
+                  centered: true,
+                  onSurface: true,
+                  isBlue: false,
+                  fontSize: 11,
+                  onPressed: () => context.push('/import-main'),
+                ),
+                BBButton.text(
+                  label: 'Recover wallet from Encrypted Vault',
                   centered: true,
                   onSurface: true,
                   isBlue: false,
