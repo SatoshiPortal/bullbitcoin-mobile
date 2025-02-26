@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/components/text_input.dart';
 import 'package:bb_mobile/_ui/page_template.dart';
@@ -319,7 +320,7 @@ class _RecoveryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StackedPage(
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.15,
+      bottomChildHeight: MediaQuery.of(context).size.height * 0.18,
       bottomChild: _RecoverButton(inputType: inputType),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -614,33 +615,15 @@ class _SetButton extends StatelessWidget {
             ),
           ),
           const Gap(5),
-          FilledButton(
+          BBButton.withColour(
+            fillWidth: true,
+            label:
+                'Set ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}',
+            disabled: !canStoreKey,
             onPressed: () {
               context.read<KeychainCubit>().keyServerStatus();
               if (canStoreKey) context.read<KeychainCubit>().confirmPressed();
             },
-            style: FilledButton.styleFrom(
-              backgroundColor: canStoreKey
-                  ? context.colour.shadow
-                  : context.colour.surfaceBright,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Set ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}',
-                  style: context.font.bodyMedium!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
-              ],
-            ),
           ),
         ],
       ),
@@ -660,32 +643,16 @@ class _ConfirmButton extends StatelessWidget {
     if (err.isNotEmpty && inputType == KeyChainInputType.password) {
       return Center(child: BBText.errorSmall(err));
     }
-    return FilledButton(
+    return BBButton.withColour(
+      fillWidth: true,
       onPressed: () {
         context.read<KeychainCubit>().keyServerStatus();
         if (canStoreKey) context.read<KeychainCubit>().confirmPressed();
       },
-      style: FilledButton.styleFrom(
-        backgroundColor:
-            canStoreKey ? context.colour.shadow : context.colour.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Confirm ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}',
-            style: context.font.bodyMedium!.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          const SizedBox(width: 8),
-          const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
-        ],
-      ),
+      leftIcon: Icons.arrow_forward,
+      label:
+          'Confirm ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}',
+      disabled: !canStoreKey,
     );
   }
 }
@@ -712,15 +679,15 @@ class _RecoverButton extends StatelessWidget {
 
         return Column(
           children: [
+            const Gap(10),
             // Always show PIN/password switch
             InkWell(
               onTap: () => _switchInputType(context),
               child: BBText.bodySmall(_getSwitchButtonText(), isBold: true),
             ),
-            // Only show backup key option if not in download flow and not in backup key mode
             if (!isDownloadFlow &&
                 inputType != KeyChainInputType.backupKey) ...[
-              const Gap(8),
+              const Gap(10),
               InkWell(
                 onTap: () => _switchToBackupKey(context),
                 child: const BBText.bodySmall(
@@ -941,6 +908,7 @@ class _SuccessDialog extends StatelessWidget {
     }
 
     return Dialog(
+      backgroundColor: context.colour.primaryContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -949,7 +917,7 @@ class _SuccessDialog extends StatelessWidget {
           children: [
             Icon(
               Icons.check_circle_outline,
-              color: context.colour.shadow,
+              color: context.colour.primary,
               size: 48,
             ),
             const Gap(16),
@@ -957,25 +925,13 @@ class _SuccessDialog extends StatelessWidget {
             const Gap(8),
             BBText.bodySmall(message, textAlign: TextAlign.center),
             const Gap(24),
-            FilledButton(
+            BBButton.big(
+              label: 'Continue',
               onPressed: () {
                 Navigator.of(context).pop();
                 context.go(route);
               },
-              style: FilledButton.styleFrom(
-                backgroundColor: context.colour.shadow,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'Continue',
-                style: context.font.bodyMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ),
+            )
           ],
         ),
       ),
