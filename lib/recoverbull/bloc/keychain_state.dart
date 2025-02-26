@@ -48,6 +48,13 @@ class KeychainState with _$KeychainState {
   String displayPin() => 'x' * secret.length;
 
   String? getValidationError() {
+    // Skip validation during recovery, delete or download
+    if (pageState == KeyChainPageState.recovery ||
+        pageState == KeyChainPageState.download ||
+        pageState == KeyChainPageState.delete) {
+      return null;
+    }
+
     if (secret.isEmpty) return null;
 
     if (inputType == KeyChainInputType.pin) {
