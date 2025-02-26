@@ -8,6 +8,7 @@ enum KeyChainPageState {
   enter,
   confirm,
   recovery,
+  download,
   delete;
 
   static KeyChainPageState fromString(String value) {
@@ -26,6 +27,7 @@ enum KeySecretState { none, saved, recovered, deleted }
 class KeychainState with _$KeychainState {
   const factory KeychainState({
     @Default(false) bool loading,
+    @Default(true) bool keyServerUp,
     @Default(KeyChainPageState.enter) KeyChainPageState pageState,
     @Default(KeyChainInputType.pin) KeyChainInputType inputType,
     @Default(KeySecretState.none) KeySecretState keySecretState,
@@ -38,6 +40,7 @@ class KeychainState with _$KeychainState {
     @Default(false) bool isSecretConfirmed,
     @Default([]) List<int> shuffledNumbers,
     @Default('') String error,
+    @Default(KeyChainPageState.enter) KeyChainPageState originalPageState,
   }) = _KeychainState;
 
   const KeychainState._();
@@ -64,10 +67,12 @@ class KeychainState with _$KeychainState {
   }
 
   bool get isValid => getValidationError() == null;
-  bool get showButton => isValid;
+
   bool get hasError => error.isNotEmpty;
   bool get isRecovering => pageState == KeyChainPageState.recovery;
-  bool get canRecoverKey => backupId.isNotEmpty && isValid && !loading;
-
+  bool get canStoreKey => isValid && keyServerUp && !loading;
+  bool get canRecoverKey => backupId.isNotEmpty && keyServerUp && !loading;
+  bool get canRecoverWithBckupKey => backupId.isNotEmpty && !loading;
+  bool get canDeleteKey => backupId.isNotEmpty && keyServerUp && !loading;
   bool validateSecret(String secret) => commonPasswordsTop1000.contains(secret);
 }

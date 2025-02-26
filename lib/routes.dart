@@ -12,9 +12,12 @@ import 'package:bb_mobile/import/hardware_page.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
+import 'package:bb_mobile/recoverbull/backup_key.dart';
 import 'package:bb_mobile/recoverbull/backup_settings.dart';
 import 'package:bb_mobile/recoverbull/encrypted_vault_backup.dart';
 import 'package:bb_mobile/recoverbull/keychain_page.dart';
+import 'package:bb_mobile/recoverbull/physical_backup.dart';
+import 'package:bb_mobile/recoverbull/test_backup.dart';
 import 'package:bb_mobile/send/bloc/send_cubit.dart';
 import 'package:bb_mobile/send/send_page.dart';
 import 'package:bb_mobile/settings/application_settings_page.dart';
@@ -35,8 +38,6 @@ import 'package:bb_mobile/wallet/details.dart';
 import 'package:bb_mobile/wallet/information_page.dart';
 import 'package:bb_mobile/wallet/wallet_page.dart';
 import 'package:bb_mobile/wallet_settings/accounting.dart';
-import 'package:bb_mobile/wallet_settings/physical_backup.dart';
-import 'package:bb_mobile/wallet_settings/test_backup.dart';
 import 'package:bb_mobile/wallet_settings/wallet_settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -276,6 +277,25 @@ GoRouter setupRouter() => GoRouter(
                     );
                   },
                 ),
+                GoRoute(
+                    path: 'backup-key',
+                    builder: (context, state) {
+                      return BackupKeyPage(
+                        wallet: state.extra! as String,
+                      );
+                    },
+                    routes: [
+                      GoRoute(
+                          path: 'options',
+                          builder: (context, state) {
+                            final (backupKey, recoveredBackup) =
+                                state.extra! as (String, Map<String, dynamic>);
+                            return BackupKeyOptionsPage(
+                              recoveredBackup: recoveredBackup,
+                              backupKey: backupKey,
+                            );
+                          })
+                    ]),
               ],
             ),
           ],

@@ -40,7 +40,7 @@ class KeychainBackupPage extends StatelessWidget {
         BlocProvider<KeychainCubit>(
           create: (context) => KeychainCubit()
             ..setChainState(
-              _pState, // Use the provided state directly instead of determining it
+              _pState,
               backupId ?? '',
               backupKey,
               backupSalt ?? '',
@@ -48,16 +48,21 @@ class KeychainBackupPage extends StatelessWidget {
         ),
         BlocProvider.value(value: createBackupSettingsCubit()),
       ],
-      child: _Screen(backupKey: backupKey, backup: backup),
+      child: _Screen(
+        backupKey: backupKey,
+        backup: backup,
+        pState: _pState,
+      ),
     );
   }
 }
 
 class _Screen extends StatelessWidget {
-  const _Screen({this.backupKey, required this.backup});
+  const _Screen({this.backupKey, required this.backup, required this.pState});
 
   final String? backupKey;
   final Map<String, dynamic> backup;
+  final KeyChainPageState pState;
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -101,7 +106,9 @@ class _Screen extends StatelessWidget {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) => const _SuccessDialog(isRecovery: true),
+                builder: (context) => _SuccessDialog(
+                  pageState: pState,
+                ),
               );
             }
           },
@@ -112,30 +119,17 @@ class _Screen extends StatelessWidget {
               previous.keySecretState != current.keySecretState ||
               previous.error != current.error,
           listener: (context, state) {
-            // Handle delete state
             if (state.pageState == KeyChainPageState.delete &&
                 state.keySecretState == KeySecretState.deleted &&
                 !state.loading &&
                 !state.hasError) {
               context.read<KeychainCubit>().clearSensitive();
-              final source = backup['source'] as String?;
-              final fileName = backup['filename'] as String?;
-              if (source != null) {
-                if (source == 'drive' && fileName != null) {
-                  context
-                      .read<BackupSettingsCubit>()
-                      .deleteGoogleDriveBackup(fileName);
-                }
-                if (source == 'fs') {
-                  context.read<BackupSettingsCubit>().deleteFsBackup();
-                }
-              }
+
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) => const _SuccessDialog(
-                  isRecovery: false,
-                  isDelete: true,
+                builder: (context) => _SuccessDialog(
+                  pageState: pState,
                 ),
               );
             }
@@ -154,19 +148,27 @@ class _Screen extends StatelessWidget {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) => const _SuccessDialog(isRecovery: false),
+                builder: (context) => _SuccessDialog(
+                  pageState: pState,
+                ),
               );
             }
-
             if (state.keySecretState == KeySecretState.recovered &&
                 !state.loading &&
                 !state.hasError &&
                 backup.isNotEmpty &&
                 state.backupKey.isNotEmpty) {
-              context.read<BackupSettingsCubit>().recoverBackup(
-                    jsonEncode(backup),
-                    state.backupKey,
-                  );
+              if (state.pageState == KeyChainPageState.download) {
+                context.push(
+                  '/wallet-settings/backup-settings/backup-key/options',
+                  extra: (state.backupKey, backup),
+                );
+              } else {
+                context.read<BackupSettingsCubit>().recoverBackup(
+                      jsonEncode(backup),
+                      state.backupKey,
+                    );
+              }
             }
 
             if (state.hasError) {
@@ -229,6 +231,11 @@ class _Screen extends StatelessWidget {
       case KeyChainPageState.delete:
         return _DeletePage(
           key: const ValueKey('delete'),
+          inputType: state.inputType,
+        );
+      case KeyChainPageState.download:
+        return _RecoveryPage(
+          key: const ValueKey('view'),
           inputType: state.inputType,
         );
     }
@@ -321,13 +328,13 @@ class _RecoveryPage extends StatelessWidget {
           children: [
             const Gap(50),
             BBText.titleLarge(
-              'Enter Recovery ${inputType == KeyChainInputType.pin ? 'PIN' : inputType == KeyChainInputType.password ? 'Password' : 'Key'}',
+              'Enter Recovery ${_getInputTypeText(inputType)}',
               textAlign: TextAlign.center,
               isBold: true,
             ),
             const Gap(8),
             BBText.bodySmall(
-              'Enter the ${inputType == KeyChainInputType.pin ? 'PIN' : inputType == KeyChainInputType.password ? 'password' : 'backup key'} you used to backup your keychain',
+              'Enter the ${_getInputTypeText(inputType).toLowerCase()} you used to backup your keychain',
               textAlign: TextAlign.center,
             ),
             const Gap(50),
@@ -341,6 +348,17 @@ class _RecoveryPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getInputTypeText(KeyChainInputType type) {
+    switch (type) {
+      case KeyChainInputType.pin:
+        return 'PIN';
+      case KeyChainInputType.password:
+        return 'Password';
+      case KeyChainInputType.backupKey:
+        return 'Key';
+    }
   }
 }
 
@@ -360,13 +378,13 @@ class _DeletePage extends StatelessWidget {
           children: [
             const Gap(50),
             const BBText.titleLarge(
-              'Delete Backup',
+              'Delete Backup Key',
               textAlign: TextAlign.center,
               isBold: true,
             ),
             const Gap(8),
             BBText.bodySmall(
-              'Enter your ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to delete this backup',
+              'Enter your ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to delete this backup key',
               textAlign: TextAlign.center,
             ),
             const Gap(50),
@@ -435,41 +453,48 @@ class _PinField extends StatelessWidget {
 class _PasswordField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final state = context.select(
-      (KeychainCubit x) => (
-        x.state.secret,
-        x.state.obscure,
-        x.state.inputType,
-        x.state.backupKey,
-        x.state.getValidationError()
-      ),
-    );
-    final (secret, obscure, inputType, backupKey, error) = state;
+    return BlocBuilder<KeychainCubit, KeychainState>(
+      buildWhen: (previous, current) =>
+          previous.secret != current.secret ||
+          previous.obscure != current.obscure ||
+          previous.inputType != current.inputType ||
+          previous.backupKey != current.backupKey ||
+          previous.error != current.error,
+      builder: (context, state) {
+        final isBackupKeyMode = state.inputType == KeyChainInputType.backupKey;
+        final value = isBackupKeyMode ? state.backupKey : state.secret;
+        final error = state.getValidationError();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        BBTextInput.bigWithIcon(
-          value: inputType == KeyChainInputType.backupKey ? backupKey : secret,
-          onChanged: (value) => inputType == KeyChainInputType.backupKey
-              ? context.read<KeychainCubit>().updateBackupKey(value)
-              : context.read<KeychainCubit>().updateInput(value),
-          obscure: obscure,
-          hint: inputType == KeyChainInputType.backupKey
-              ? 'Enter your backup key'
-              : 'Enter your password',
-          rightIcon: Icon(
-            obscure ? Icons.visibility_off : Icons.visibility,
-            color: context.colour.onPrimaryContainer,
-          ),
-          onRightTap: () => context.read<KeychainCubit>().clickObscure(),
-        ),
-        if (error != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 8, left: 8),
-            child: BBText.errorSmall(error),
-          ),
-      ],
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BBTextInput.bigWithIcon(
+              value: value,
+              onChanged: (value) => isBackupKeyMode
+                  ? context.read<KeychainCubit>().updateBackupKey(value)
+                  : context.read<KeychainCubit>().updateInput(value),
+              obscure: !isBackupKeyMode && state.obscure,
+              hint: isBackupKeyMode
+                  ? 'Enter your backup key'
+                  : 'Enter your password',
+              rightIcon: isBackupKeyMode
+                  ? null
+                  : Icon(
+                      state.obscure ? Icons.visibility_off : Icons.visibility,
+                      color: context.colour.onPrimaryContainer,
+                    ),
+              onRightTap: isBackupKeyMode
+                  ? null
+                  : () => context.read<KeychainCubit>().clickObscure(),
+            ),
+            if (error != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8, left: 8),
+                child: BBText.errorSmall(error),
+              ),
+          ],
+        );
+      },
     );
   }
 }
@@ -560,7 +585,8 @@ class _SetButton extends StatelessWidget {
   const _SetButton({required this.inputType});
   @override
   Widget build(BuildContext context) {
-    final showButton = context.select((KeychainCubit x) => x.state.showButton);
+    final canStoreKey =
+        context.select((KeychainCubit x) => x.state.canStoreKey);
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       child: Column(
@@ -590,11 +616,13 @@ class _SetButton extends StatelessWidget {
           const Gap(5),
           FilledButton(
             onPressed: () {
-              if (showButton) context.read<KeychainCubit>().confirmPressed();
+              context.read<KeychainCubit>().keyServerStatus();
+              if (canStoreKey) context.read<KeychainCubit>().confirmPressed();
             },
             style: FilledButton.styleFrom(
-              backgroundColor:
-                  showButton ? context.colour.shadow : context.colour.surface,
+              backgroundColor: canStoreKey
+                  ? context.colour.shadow
+                  : context.colour.surfaceBright,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -625,7 +653,8 @@ class _ConfirmButton extends StatelessWidget {
   final KeyChainInputType inputType;
   @override
   Widget build(BuildContext context) {
-    final showButton = context.select((KeychainCubit x) => x.state.showButton);
+    final canStoreKey =
+        context.select((KeychainCubit x) => x.state.canStoreKey);
     final err = context.select((KeychainCubit x) => x.state.error);
 
     if (err.isNotEmpty && inputType == KeyChainInputType.password) {
@@ -633,11 +662,12 @@ class _ConfirmButton extends StatelessWidget {
     }
     return FilledButton(
       onPressed: () {
-        if (showButton) context.read<KeychainCubit>().confirmPressed();
+        context.read<KeychainCubit>().keyServerStatus();
+        if (canStoreKey) context.read<KeychainCubit>().confirmPressed();
       },
       style: FilledButton.styleFrom(
         backgroundColor:
-            showButton ? context.colour.shadow : context.colour.surface,
+            canStoreKey ? context.colour.shadow : context.colour.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -666,67 +696,85 @@ class _RecoverButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<KeychainCubit, KeychainState, bool>(
-      selector: (state) => state.canRecoverKey,
-      builder: (context, canRecoverKey) {
-        return AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          child: Column(
-            children: [
-              _buildInputTypeSwitch(context),
+    return BlocBuilder<KeychainCubit, KeychainState>(
+      buildWhen: (previous, current) =>
+          previous.canRecoverKey != current.canRecoverKey ||
+          previous.loading != current.loading ||
+          previous.pageState != current.pageState,
+      builder: (context, state) {
+        final canRecover = inputType == KeyChainInputType.backupKey
+            ? state.canRecoverWithBckupKey
+            : state.canRecoverKey;
+
+        // Check if we're in the download flow by checking original state
+        final isDownloadFlow = state.pageState == KeyChainPageState.download ||
+            state.originalPageState == KeyChainPageState.download;
+
+        return Column(
+          children: [
+            // Always show PIN/password switch
+            InkWell(
+              onTap: () => _switchInputType(context),
+              child: BBText.bodySmall(_getSwitchButtonText(), isBold: true),
+            ),
+            // Only show backup key option if not in download flow and not in backup key mode
+            if (!isDownloadFlow &&
+                inputType != KeyChainInputType.backupKey) ...[
               const Gap(8),
-              _buildRecoverButton(context, canRecoverKey),
+              InkWell(
+                onTap: () => _switchToBackupKey(context),
+                child: const BBText.bodySmall(
+                  'Recover with backup key',
+                  isBold: true,
+                ),
+              ),
             ],
-          ),
+            const Gap(8),
+            FilledButton(
+              onPressed: state.loading
+                  ? null
+                  : () => context.read<KeychainCubit>().clickRecover(),
+              style: FilledButton.styleFrom(
+                backgroundColor: _getButtonColor(context, canRecover),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: state.loading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation(Colors.white),
+                      ),
+                    )
+                  : _buildButtonContent(context),
+            ),
+          ],
         );
       },
     );
   }
 
-  Widget _buildInputTypeSwitch(BuildContext context) {
-    return Column(
+  Widget _buildButtonContent(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Switch between PIN and Password
-        InkWell(
-          onTap: () => _switchInputType(context),
-          child: BBText.bodySmall(_getSwitchButtonText(), isBold: true),
+        Text(
+          'Recover with ${_getInputTypeText()}',
+          style: context.font.bodyMedium!.copyWith(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+          ),
         ),
-        // Show backup key option only when not in backup key mode
-        if (inputType != KeyChainInputType.backupKey) ...[
-          const Gap(8),
-          InkWell(
-            onTap: () => _switchToBackupKey(context),
-            child:
-                const BBText.bodySmall('Recover with backup key', isBold: true),
-          ),
-        ],
+        const SizedBox(width: 8),
+        const Icon(
+          Icons.arrow_forward,
+          color: Colors.white,
+          size: 16,
+        ),
       ],
-    );
-  }
-
-  Widget _buildRecoverButton(BuildContext context, bool canRecoverKey) {
-    return FilledButton(
-      onPressed: canRecoverKey
-          ? () => context.read<KeychainCubit>().clickRecover()
-          : () => context.read<KeychainCubit>().clickRecover(),
-      style: FilledButton.styleFrom(
-        backgroundColor: _getButtonColor(context, canRecoverKey),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Recover with ${_getInputTypeText()}',
-            style: context.font.bodyMedium!.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          const SizedBox(width: 8),
-          const Icon(Icons.arrow_forward, color: Colors.white, size: 16),
-        ],
-      ),
     );
   }
 
@@ -745,8 +793,8 @@ class _RecoverButton extends StatelessWidget {
         );
   }
 
-  Color _getButtonColor(BuildContext context, bool canRecoverKey) {
-    if (inputType == KeyChainInputType.backupKey || canRecoverKey) {
+  Color _getButtonColor(BuildContext context, bool canRecover) {
+    if (inputType == KeyChainInputType.backupKey || canRecover) {
       return context.colour.shadow;
     }
     return context.colour.surface;
@@ -781,11 +829,10 @@ class _DeleteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = context.select((KeychainCubit x) => x.state);
-    final showButton = state.showButton;
-
+    final canDeleteKey =
+        context.select((KeychainCubit x) => x.state.canDeleteKey);
     return FilledButton(
-      onPressed: showButton ? () => _showDeleteConfirmation(context) : null,
+      onPressed: () => canDeleteKey ? _showDeleteConfirmation(context) : null,
       style: FilledButton.styleFrom(
         backgroundColor: context.colour.shadow,
         shape: RoundedRectangleBorder(
@@ -796,7 +843,7 @@ class _DeleteButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Delete Backup',
+            'Delete Backup Key',
             style: context.font.bodyMedium!.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w900,
@@ -813,25 +860,36 @@ class _DeleteButton extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const BBText.title('Delete Backup?', isBold: true),
+        title: const BBText.title('Delete Backup Key?', isBold: true),
         content: const BBText.bodySmall(
-          'This action cannot be undone. Are you sure you want to delete this backup?',
+          'This action cannot be undone. Are you sure you want to delete this backup key?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: context.font.bodyMedium,
+            ),
           ),
           FilledButton(
-            onPressed: () async {
+            onPressed: () {
               // First close the dialog
               Navigator.of(dialogContext).pop();
               // Then trigger the delete action using the original context
               context.read<KeychainCubit>().deleteBackupKey();
             },
-            style:
-                FilledButton.styleFrom(backgroundColor: context.colour.error),
-            child: const Text('Delete'),
+            style: FilledButton.styleFrom(
+              backgroundColor: context.colour.shadow,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text('Delete',
+                style: context.font.bodyMedium!.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                )),
           ),
         ],
       ),
@@ -854,33 +912,32 @@ class _LoadingView extends StatelessWidget {
 }
 
 class _SuccessDialog extends StatelessWidget {
-  const _SuccessDialog({
-    required this.isRecovery,
-    this.isDelete = false,
-  });
+  const _SuccessDialog({required this.pageState});
 
-  final bool isRecovery;
-  final bool isDelete;
+  final KeyChainPageState pageState;
 
   @override
   Widget build(BuildContext context) {
     String title;
     String message;
     String route;
-
-    if (isDelete) {
-      title = 'Backup Deleted';
-      message = 'Your backup has been permanently deleted';
-      route = '/home';
-    } else if (isRecovery) {
+    if (pageState == KeyChainPageState.recovery) {
       title = 'Recovery Successful';
       message = 'Your wallet has been recovered successfully';
       route = '/home';
-    } else {
+    } else if (pageState == KeyChainPageState.enter) {
       title = 'Backup Successful';
       message =
           'Your wallet has been backed up successfully \n Please test your backup';
       route = '/wallet-settings/backup-settings/recover-options/encrypted';
+    } else if (pageState == KeyChainPageState.delete) {
+      title = 'Backup Key Deleted';
+      message = 'Your backup key has been permanently deleted';
+      route = '/home';
+    } else {
+      title = 'Backup Downloaded';
+      message = 'Your backup has been downloaded successfully';
+      route = '/home';
     }
 
     return Dialog(
@@ -911,7 +968,13 @@ class _SuccessDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Continue'),
+              child: Text(
+                'Continue',
+                style: context.font.bodyMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ),
           ],
         ),

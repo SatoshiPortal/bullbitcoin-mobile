@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
@@ -10,18 +12,54 @@ class KeychainCubit extends Cubit<KeychainState> {
   static const pinMax = 8;
 
   KeychainCubit() : super(const KeychainState()) {
+    _initialize();
+  }
+
+  late final KeyService _keyService;
+
+  void _initialize() {
     shuffleAndEmit();
     if (keyServerUrl.isEmpty) {
-      emit(state.copyWith(error: 'keychain api is not set'));
+      emit(
+        state.copyWith(
+          error: 'keychain api is not set',
+          keyServerUp: false,
+        ),
+      );
       return;
     }
+
     _keyService = KeyService(
       keyServer: Uri.parse(keyServerUrl),
       keyServerPublicKey: keyServerPublicKey,
     );
+
+    // Initial status check
+    keyServerStatus();
   }
 
-  late final KeyService _keyService;
+  Future<void> keyServerStatus() async {
+    if (!isClosed) {
+      try {
+        final info = await _keyService.serverInfo();
+        final isUp = info.cooldown <= 1;
+
+        if (isUp != state.keyServerUp) {
+          emit(state.copyWith(keyServerUp: isUp));
+        }
+      } catch (e) {
+        debugPrint('Server status check failed: $e');
+        if (state.keyServerUp) {
+          emit(state.copyWith(keyServerUp: false));
+        }
+      }
+    }
+  }
+
+  Future<bool> _ensureServerStatus() async {
+    await keyServerStatus();
+    return state.keyServerUp;
+  }
 
   void backspacePressed() {
     if (state.secret.isEmpty) return;
@@ -57,8 +95,7 @@ class KeychainCubit extends Cubit<KeychainState> {
       return;
     }
 
-    final isServerReady = await serverInfo();
-    if (!isServerReady) return;
+    if (!await _ensureServerStatus()) return;
     if (state.secret.length < pinMin) {
       state.inputType == KeyChainInputType.pin
           ? emit(
@@ -98,9 +135,9 @@ class KeychainCubit extends Cubit<KeychainState> {
     }
   }
 
-  void confirmPressed() {
-    if (!state.showButton) return;
-
+  Future confirmPressed() async {
+    if (!await _ensureServerStatus()) return;
+    if (!state.canStoreKey) return;
     if (state.pageState == KeyChainPageState.enter) {
       emit(
         state.copyWith(
@@ -128,10 +165,10 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   Future<void> deleteBackupKey() async {
+    if (!await _ensureServerStatus()) return;
+    if (!state.canDeleteKey) return;
     try {
       emit(state.copyWith(loading: true, error: ''));
-      final isServerReady = await serverInfo();
-      if (!isServerReady) return;
 
       await _keyService.trashBackupKey(
         backupId: state.backupId,
@@ -161,10 +198,8 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   Future<void> secureKey() async {
+    if (!await _ensureServerStatus()) return;
     try {
-      final isServerReady = await serverInfo();
-      if (!isServerReady) return;
-
       await _keyService.storeBackupKey(
         backupId: state.backupId,
         password: state.tempSecret,
@@ -186,6 +221,7 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   void setBackupId(String id) {
+    if (id == state.backupId) return; // Avoid duplicate state
     emit(state.copyWith(backupId: id));
   }
 
@@ -198,6 +234,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     emit(
       state.copyWith(
         pageState: keyChainPageState,
+        originalPageState: keyChainPageState, // Store original state
         backupKey: backupKey ?? '',
         backupId: backupId,
         backupSalt: HEX.decode(backupSalt),
@@ -211,16 +248,14 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   void updateBackupKey(String value) {
-    emit(
-      state.copyWith(
-        backupKey: value,
-        error: '',
-      ),
-    );
+    if (value == state.backupKey) return; // Avoid duplicate state
+    emit(state.copyWith(backupKey: value, error: ''));
   }
 
   void updateInput(String value) {
     if (state.inputType == KeyChainInputType.pin && value.length > 6) return;
+    if (value == state.secret) return; // Avoid duplicate state
+
     emit(state.copyWith(secret: value, error: ''));
   }
 
@@ -238,31 +273,5 @@ class KeychainCubit extends Cubit<KeychainState> {
         isSecretConfirmed: false,
       ),
     );
-  }
-
-  Future<bool> serverInfo() async {
-    emit(state.copyWith(loading: true));
-    try {
-      final info = await _keyService.serverInfo();
-      if (info.cooldown > 1) {
-        emit(state.copyWith(loading: false, error: 'Server is on cooldown'));
-        return false;
-      }
-      if (state.tempSecret.length > info.secretMaxLength ||
-          state.secret.length > info.secretMaxLength) {
-        emit(state.copyWith(loading: false, error: 'Secret is too long'));
-        return false;
-      }
-      return true;
-    } catch (e) {
-      debugPrint('Failed to get server info: $e');
-      emit(
-        state.copyWith(
-          loading: false,
-          error: 'Key server is not reachable! Please try again later',
-        ),
-      );
-      return false;
-    }
   }
 }

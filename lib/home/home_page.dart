@@ -22,6 +22,7 @@ import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_bloc.dart';
+import 'package:bb_mobile/recoverbull/bloc/keychain_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -132,9 +133,11 @@ class _ScreenState extends State<_Screen> {
       return widget;
     }
 
-    final warningsSize =
-        context.select((HomeBloc x) => x.state.homeWarnings(network)).length *
-            40.0;
+    final keyServerUp = context.watch<KeychainCubit>().state.keyServerUp;
+    final warningBannerCount =
+        context.select((HomeBloc x) => x.state.homeWarnings(network)).length +
+            (!keyServerUp ? 1 : 0);
+    final warningsSize = warningBannerCount * 40.0;
 
     final h = _calculateHeight(wallets.length);
 
@@ -1149,6 +1152,7 @@ class HomeWarnings extends StatelessWidget {
     final network = context.select((NetworkBloc _) => _.state.getBBNetwork());
     final warnings =
         context.select((HomeBloc _) => _.state.homeWarnings(network));
+    final keyServerUp = context.watch<KeychainCubit>().state.keyServerUp;
     return Column(
       children: [
         for (final w in warnings)
@@ -1160,6 +1164,11 @@ class HomeWarnings extends StatelessWidget {
               );
             },
             info: w.info,
+          ),
+        if (!keyServerUp)
+          WarningBanner(
+            onTap: () {},
+            info: 'Key server is down. Backup key is unavailable.',
           ),
       ],
     );
