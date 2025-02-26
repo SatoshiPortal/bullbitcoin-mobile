@@ -1,6 +1,6 @@
+import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
-import 'package:bb_mobile/features/app_startup/app_locator.dart';
 import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository_impl.dart';
 import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_repository.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';

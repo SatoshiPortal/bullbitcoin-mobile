@@ -60,6 +60,22 @@ class BdkWalletRepositoryImpl
   }
 
   @override
+  Future<Address> getNewAddress() async {
+    final addressInfo = _publicWallet.getAddress(
+      addressIndex: const bdk.AddressIndex.increase(),
+    );
+
+    final address = Address.bitcoin(
+      address: addressInfo.address.asString(),
+      index: addressInfo.index,
+      kind: AddressKind.external,
+      state: AddressStatus.unused,
+    );
+
+    return address;
+  }
+
+  @override
   Future<Address> getAddressByIndex(int index) async {
     final addressInfo = _publicWallet.getAddress(
       addressIndex: bdk.AddressIndex.peek(index: index),

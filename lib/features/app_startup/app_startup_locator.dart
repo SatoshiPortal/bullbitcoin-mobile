@@ -1,7 +1,7 @@
+import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
-import 'package:bb_mobile/features/app_startup/app_locator.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/get_wallets_metadata_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/init_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';

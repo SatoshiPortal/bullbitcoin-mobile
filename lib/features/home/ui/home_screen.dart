@@ -1,5 +1,5 @@
+import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
-import 'package:bb_mobile/features/app_startup/app_locator.dart';
 import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bb_mobile/features/home/ui/widgets/home_app_bar.dart';
 import 'package:bb_mobile/features/home/ui/widgets/home_bottom_buttons.dart';

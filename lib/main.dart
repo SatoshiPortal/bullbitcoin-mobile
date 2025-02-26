@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:bb_mobile/features/app_startup/app.dart';
-import 'package:bb_mobile/features/app_startup/app_bloc_observer.dart';
-import 'package:bb_mobile/features/app_startup/app_locator.dart';
+import 'package:bb_mobile/app.dart';
+import 'package:bb_mobile/app_bloc_observer.dart';
+import 'package:bb_mobile/app_locator.dart';
+import 'package:boltz/boltz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -13,8 +14,14 @@ Future main() async {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    await Hive.initFlutter();
-    await LibLwk.init();
+    await Future.wait([
+      Hive.initFlutter(),
+      LibLwk.init(),
+      BoltzCore.init(),
+    ]);
+
+    // The Locator setup might depend on the initialization of the libraries above
+    //  so it's important to call it after the initialization
     await AppLocator.setup();
 
     Bloc.observer = const AppBlocObserver();

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/app_startup/app_locator.dart';
+import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/choose_pin_code_screen.dart';
