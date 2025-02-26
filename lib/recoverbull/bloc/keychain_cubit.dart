@@ -94,22 +94,21 @@ class KeychainCubit extends Cubit<KeychainState> {
       );
       return;
     }
-
     if (!await _ensureServerStatus()) return;
-    if (state.secret.length < pinMin) {
-      state.inputType == KeyChainInputType.pin
-          ? emit(
-              state.copyWith(
-                error: 'pin should be at least $pinMin digits long',
-              ),
-            )
-          : emit(
-              state.copyWith(
-                error: 'password should be at least $pinMin characters long',
-              ),
-            );
-      return;
-    }
+    // if (state.secret.length < pinMin) {
+    //   state.inputType == KeyChainInputType.pin
+    //       ? emit(
+    //           state.copyWith(
+    //             error: 'pin should be at least $pinMin digits long',
+    //           ),
+    //         )
+    //       : emit(
+    //           state.copyWith(
+    //             error: 'password should be at least $pinMin characters long',
+    //           ),
+    //         );
+    //   return;
+    // }
 
     try {
       emit(state.copyWith(loading: true, error: ''));
