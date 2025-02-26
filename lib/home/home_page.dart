@@ -1150,6 +1150,14 @@ class HomeNoWalletsView extends StatelessWidget {
                   onSurface: true,
                   isBlue: false,
                   fontSize: 11,
+                  onPressed: () => context.push('/import-main'),
+                ),
+                BBButton.text(
+                  label: 'Recover wallet from Encrypted Vault',
+                  centered: true,
+                  onSurface: true,
+                  isBlue: false,
+                  fontSize: 11,
                   onPressed: () => context
                       .push('/wallet-settings/backup-settings/recover-options'),
                 ),
