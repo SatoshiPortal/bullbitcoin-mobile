@@ -18,13 +18,9 @@ class KeychainCubit extends Cubit<KeychainState> {
   late final KeyService _keyService;
 
   void _initialize() {
-    shuffleAndEmit();
     if (keyServerUrl.isEmpty) {
       emit(
-        state.copyWith(
-          error: 'keychain api is not set',
-          keyServerUp: false,
-        ),
+        state.copyWith(error: 'keychain api is not set', keyServerUp: false),
       );
       return;
     }
@@ -234,11 +230,6 @@ class KeychainCubit extends Cubit<KeychainState> {
         backupSalt: HEX.decode(backupSalt),
       ),
     );
-  }
-
-  void shuffleAndEmit() {
-    final shuffledList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]..shuffle();
-    emit(state.copyWith(shuffledNumbers: shuffledList));
   }
 
   void updateBackupKey(String value) {

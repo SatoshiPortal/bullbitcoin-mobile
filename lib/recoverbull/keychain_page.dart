@@ -504,11 +504,6 @@ class KeyPad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final shuffledNumbers =
-        context.select((KeychainCubit x) => x.state.shuffledNumbers);
-    final shuffledNumberButtonList = [
-      for (final i in shuffledNumbers) NumberButton(text: i.toString()),
-    ];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GridView(
@@ -517,9 +512,7 @@ class KeyPad extends StatelessWidget {
         gridDelegate:
             const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
         children: [
-          for (var i = 0; i < 9; i = i + 1) shuffledNumberButtonList[i],
-          Container(),
-          shuffledNumberButtonList[9],
+          for (var i = 0; i < 9; i = i + 1) NumberButton(text: i.toString()),
         ],
       ),
     );
