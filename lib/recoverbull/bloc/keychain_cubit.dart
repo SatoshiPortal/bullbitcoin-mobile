@@ -41,17 +41,11 @@ class KeychainCubit extends Cubit<KeychainState> {
   Future<void> keyServerStatus() async {
     if (!isClosed) {
       try {
-        final info = await _keyService.serverInfo();
-        final isUp = info.cooldown <= 1;
-
-        if (isUp != state.keyServerUp) {
-          emit(state.copyWith(keyServerUp: isUp));
-        }
+        await _keyService.serverInfo();
+        emit(state.copyWith(keyServerUp: true));
       } catch (e) {
         debugPrint('Server status check failed: $e');
-        if (state.keyServerUp) {
-          emit(state.copyWith(keyServerUp: false));
-        }
+        emit(state.copyWith(keyServerUp: false));
       }
     }
   }
