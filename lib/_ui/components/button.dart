@@ -453,6 +453,7 @@ class BBButton extends StatelessWidget {
           surfaceTintColor:
               darkMode ? context.colour.primaryContainer : NewColours.lightGray,
           // shadowColor: Colors.transparent,
+          side: const BorderSide(color: Colors.white),
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 8),
 
