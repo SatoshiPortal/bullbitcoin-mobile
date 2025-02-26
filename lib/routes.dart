@@ -12,6 +12,7 @@ import 'package:bb_mobile/import/hardware_page.dart';
 import 'package:bb_mobile/import/page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/receive_page.dart';
+import 'package:bb_mobile/recoverbull/backup_key.dart';
 import 'package:bb_mobile/recoverbull/backup_settings.dart';
 import 'package:bb_mobile/recoverbull/encrypted_vault_backup.dart';
 import 'package:bb_mobile/recoverbull/keychain_page.dart';
@@ -276,6 +277,25 @@ GoRouter setupRouter() => GoRouter(
                     );
                   },
                 ),
+                GoRoute(
+                    path: 'backup-key',
+                    builder: (context, state) {
+                      return BackupKeyPage(
+                        wallet: state.extra! as String,
+                      );
+                    },
+                    routes: [
+                      GoRoute(
+                          path: 'options',
+                          builder: (context, state) {
+                            final (backupKey, recoveredBackup) =
+                                state.extra! as (String, Map<String, dynamic>);
+                            return BackupKeyOptionsPage(
+                              recoveredBackup: recoveredBackup,
+                              backupKey: backupKey,
+                            );
+                          })
+                    ]),
               ],
             ),
           ],
