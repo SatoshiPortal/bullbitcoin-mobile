@@ -48,16 +48,21 @@ class KeychainBackupPage extends StatelessWidget {
         ),
         BlocProvider.value(value: createBackupSettingsCubit()),
       ],
-      child: _Screen(backupKey: backupKey, backup: backup),
+      child: _Screen(
+        backupKey: backupKey,
+        backup: backup,
+        pState: _pState,
+      ),
     );
   }
 }
 
 class _Screen extends StatelessWidget {
-  const _Screen({this.backupKey, required this.backup});
+  const _Screen({this.backupKey, required this.backup, required this.pState});
 
   final String? backupKey;
   final Map<String, dynamic> backup;
+  final KeyChainPageState pState;
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -101,7 +106,9 @@ class _Screen extends StatelessWidget {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) => const _SuccessDialog(isRecovery: true),
+                builder: (context) => _SuccessDialog(
+                  pageState: pState,
+                ),
               );
             }
           },
@@ -122,9 +129,8 @@ class _Screen extends StatelessWidget {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) => const _SuccessDialog(
-                  isRecovery: false,
-                  isDelete: true,
+                builder: (context) => _SuccessDialog(
+                  pageState: pState,
                 ),
               );
             }
@@ -143,7 +149,9 @@ class _Screen extends StatelessWidget {
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) => const _SuccessDialog(isRecovery: false),
+                builder: (context) => _SuccessDialog(
+                  pageState: pState,
+                ),
               );
             }
 
@@ -152,10 +160,17 @@ class _Screen extends StatelessWidget {
                 !state.hasError &&
                 backup.isNotEmpty &&
                 state.backupKey.isNotEmpty) {
-              context.read<BackupSettingsCubit>().recoverBackup(
-                    jsonEncode(backup),
-                    state.backupKey,
-                  );
+              if (state.pageState == KeyChainPageState.download) {
+                context.push(
+                  '/wallet-settings/backup-settings/backup-key/options',
+                  extra: (state.backupKey, backup),
+                );
+              } else {
+                context.read<BackupSettingsCubit>().recoverBackup(
+                      jsonEncode(backup),
+                      state.backupKey,
+                    );
+              }
             }
 
             if (state.hasError) {
