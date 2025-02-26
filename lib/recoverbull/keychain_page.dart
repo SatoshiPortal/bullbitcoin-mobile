@@ -119,7 +119,6 @@ class _Screen extends StatelessWidget {
               previous.keySecretState != current.keySecretState ||
               previous.error != current.error,
           listener: (context, state) {
-            // Handle delete state
             if (state.pageState == KeyChainPageState.delete &&
                 state.keySecretState == KeySecretState.deleted &&
                 !state.loading &&
@@ -154,7 +153,6 @@ class _Screen extends StatelessWidget {
                 ),
               );
             }
-
             if (state.keySecretState == KeySecretState.recovered &&
                 !state.loading &&
                 !state.hasError &&
@@ -233,6 +231,11 @@ class _Screen extends StatelessWidget {
       case KeyChainPageState.delete:
         return _DeletePage(
           key: const ValueKey('delete'),
+          inputType: state.inputType,
+        );
+      case KeyChainPageState.download:
+        return _RecoveryPage(
+          key: const ValueKey('view'),
           inputType: state.inputType,
         );
     }
@@ -375,13 +378,13 @@ class _DeletePage extends StatelessWidget {
           children: [
             const Gap(50),
             const BBText.titleLarge(
-              'Delete Backup',
+              'Delete Backup Key',
               textAlign: TextAlign.center,
               isBold: true,
             ),
             const Gap(8),
             BBText.bodySmall(
-              'Enter your ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to delete this backup',
+              'Enter your ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to delete this backup key',
               textAlign: TextAlign.center,
             ),
             const Gap(50),
@@ -696,15 +699,36 @@ class _RecoverButton extends StatelessWidget {
     return BlocBuilder<KeychainCubit, KeychainState>(
       buildWhen: (previous, current) =>
           previous.canRecoverKey != current.canRecoverKey ||
-          previous.loading != current.loading,
+          previous.loading != current.loading ||
+          previous.pageState != current.pageState,
       builder: (context, state) {
         final canRecover = inputType == KeyChainInputType.backupKey
             ? state.canRecoverWithBckupKey
             : state.canRecoverKey;
 
+        // Check if we're in the download flow by checking original state
+        final isDownloadFlow = state.pageState == KeyChainPageState.download ||
+            state.originalPageState == KeyChainPageState.download;
+
         return Column(
           children: [
-            _buildInputTypeSwitch(context),
+            // Always show PIN/password switch
+            InkWell(
+              onTap: () => _switchInputType(context),
+              child: BBText.bodySmall(_getSwitchButtonText(), isBold: true),
+            ),
+            // Only show backup key option if not in download flow and not in backup key mode
+            if (!isDownloadFlow &&
+                inputType != KeyChainInputType.backupKey) ...[
+              const Gap(8),
+              InkWell(
+                onTap: () => _switchToBackupKey(context),
+                child: const BBText.bodySmall(
+                  'Recover with backup key',
+                  isBold: true,
+                ),
+              ),
+            ],
             const Gap(8),
             FilledButton(
               onPressed: state.loading
@@ -730,27 +754,6 @@ class _RecoverButton extends StatelessWidget {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildInputTypeSwitch(BuildContext context) {
-    return Column(
-      children: [
-        // Switch between PIN and Password
-        InkWell(
-          onTap: () => _switchInputType(context),
-          child: BBText.bodySmall(_getSwitchButtonText(), isBold: true),
-        ),
-        // Show backup key option only when not in backup key mode
-        if (inputType != KeyChainInputType.backupKey) ...[
-          const Gap(8),
-          InkWell(
-            onTap: () => _switchToBackupKey(context),
-            child:
-                const BBText.bodySmall('Recover with backup key', isBold: true),
-          ),
-        ],
-      ],
     );
   }
 
@@ -840,7 +843,7 @@ class _DeleteButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'Delete Backup',
+            'Delete Backup Key',
             style: context.font.bodyMedium!.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w900,
@@ -857,25 +860,36 @@ class _DeleteButton extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const BBText.title('Delete Backup?', isBold: true),
+        title: const BBText.title('Delete Backup Key?', isBold: true),
         content: const BBText.bodySmall(
-          'This action cannot be undone. Are you sure you want to delete this backup?',
+          'This action cannot be undone. Are you sure you want to delete this backup key?',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: context.font.bodyMedium,
+            ),
           ),
           FilledButton(
-            onPressed: () async {
+            onPressed: () {
               // First close the dialog
               Navigator.of(dialogContext).pop();
               // Then trigger the delete action using the original context
               context.read<KeychainCubit>().deleteBackupKey();
             },
-            style:
-                FilledButton.styleFrom(backgroundColor: context.colour.error),
-            child: const Text('Delete'),
+            style: FilledButton.styleFrom(
+              backgroundColor: context.colour.shadow,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text('Delete',
+                style: context.font.bodyMedium!.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                )),
           ),
         ],
       ),
@@ -898,33 +912,32 @@ class _LoadingView extends StatelessWidget {
 }
 
 class _SuccessDialog extends StatelessWidget {
-  const _SuccessDialog({
-    required this.isRecovery,
-    this.isDelete = false,
-  });
+  const _SuccessDialog({required this.pageState});
 
-  final bool isRecovery;
-  final bool isDelete;
+  final KeyChainPageState pageState;
 
   @override
   Widget build(BuildContext context) {
     String title;
     String message;
     String route;
-
-    if (isDelete) {
-      title = 'Backup Deleted';
-      message = 'Your backup has been permanently deleted';
-      route = '/home';
-    } else if (isRecovery) {
+    if (pageState == KeyChainPageState.recovery) {
       title = 'Recovery Successful';
       message = 'Your wallet has been recovered successfully';
       route = '/home';
-    } else {
+    } else if (pageState == KeyChainPageState.enter) {
       title = 'Backup Successful';
       message =
           'Your wallet has been backed up successfully \n Please test your backup';
       route = '/wallet-settings/backup-settings/recover-options/encrypted';
+    } else if (pageState == KeyChainPageState.delete) {
+      title = 'Backup Key Deleted';
+      message = 'Your backup key has been permanently deleted';
+      route = '/home';
+    } else {
+      title = 'Backup Downloaded';
+      message = 'Your backup has been downloaded successfully';
+      route = '/home';
     }
 
     return Dialog(
@@ -955,7 +968,13 @@ class _SuccessDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Continue'),
+              child: Text(
+                'Continue',
+                style: context.font.bodyMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ),
           ],
         ),
