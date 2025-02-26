@@ -234,6 +234,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     emit(
       state.copyWith(
         pageState: keyChainPageState,
+        originalPageState: keyChainPageState, // Store original state
         backupKey: backupKey ?? '',
         backupId: backupId,
         backupSalt: HEX.decode(backupSalt),

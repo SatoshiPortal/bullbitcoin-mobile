@@ -8,6 +8,7 @@ enum KeyChainPageState {
   enter,
   confirm,
   recovery,
+  download,
   delete;
 
   static KeyChainPageState fromString(String value) {
@@ -39,6 +40,7 @@ class KeychainState with _$KeychainState {
     @Default(false) bool isSecretConfirmed,
     @Default([]) List<int> shuffledNumbers,
     @Default('') String error,
+    @Default(KeyChainPageState.enter) KeyChainPageState originalPageState,
   }) = _KeychainState;
 
   const KeychainState._();
@@ -46,6 +48,8 @@ class KeychainState with _$KeychainState {
   String displayPin() => 'x' * secret.length;
 
   String? getValidationError() {
+    if (secret.isEmpty) return null;
+
     if (inputType == KeyChainInputType.pin) {
       const pinMin = KeychainCubit.pinMin;
       const pinMax = KeychainCubit.pinMax;
@@ -57,13 +61,9 @@ class KeychainState with _$KeychainState {
       }
     }
 
-    if (validateSecret(secret) &&
-        (inputType == KeyChainInputType.password ||
-            inputType == KeyChainInputType.backupKey)) {
-      return 'The password is among the top 1000 most common';
-    }
-
-    return null;
+    return validateSecret(secret)
+        ? 'The password is among the top 1000 most common'
+        : null;
   }
 
   bool get isValid => getValidationError() == null;
