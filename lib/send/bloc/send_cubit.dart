@@ -9,7 +9,6 @@ import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/file_storage.dart';
 import 'package:bb_mobile/_pkg/payjoin/event.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
-import 'package:bb_mobile/_pkg/wallet/bip21.dart';
 import 'package:bb_mobile/_pkg/wallet/transaction.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
@@ -23,6 +22,7 @@ import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:payjoin_flutter/uri.dart' as pj_uri;
 
 class SendCubit extends Cubit<SendState> {
   SendCubit({
@@ -69,7 +69,7 @@ class SendCubit extends Cubit<SendState> {
     // Subscribe to payjoin events to update the send state
     _pjEventSubscription = PayjoinEventBus().stream.listen((event) {
       if (event is PayjoinSenderPostMessageASuccessEvent) {
-        if (event.pjUri != state.payjoinEndpoint.toString()) return;
+        if (event.pjUri != state.payjoinEndpoint) return;
         emit(
           state.copyWith(
             isPayjoinPostSuccess: true,
@@ -78,7 +78,7 @@ class SendCubit extends Cubit<SendState> {
       } else if (event is PayjoinBroadcastEvent) {
         state.selectedWalletBloc!.add(SyncWallet());
       } else if (event is PayjoinSendFailureEvent &&
-          event.pjUri == state.payjoinEndpoint.toString()) {
+          event.pjUri == state.payjoinEndpoint) {
         emit(
           state.copyWith(
             errSending: event.error.toString(),
@@ -159,50 +159,54 @@ class SendCubit extends Cubit<SendState> {
 
     switch (paymentNetwork) {
       case AddressNetwork.bip21Bitcoin:
-        final bip21Obj = bip21.decode(address);
-        final newAddress = bip21Obj.address;
+        final bitcoinUri = await pj_uri.Uri.fromStr(address);
+        final newAddress = bitcoinUri.address();
         emit(state.copyWith(address: newAddress));
-        final amount = bip21Obj.options['amount'] as num?;
-        if (amount != null) {
-          _currencyCubit.btcToCurrentTempAmount(amount.toDouble());
-          final amountInSats = (amount * 100000000).toInt();
-          _currencyCubit.updateAmountDirect(amountInSats);
-          emit(state.copyWith(tempAmt: amountInSats));
+
+        try {
+          final amountInSats = bitcoinUri.amountSats();
+          print("amountInSats: $amountInSats");
+          // not updating amount field for some reason
+          final amountInBtc = amountInSats!.toDouble() / 100000000;
+          _currencyCubit.btcToCurrentTempAmount(amountInBtc);
+
+          _currencyCubit.updateAmountDirect(amountInSats.toInt());
+          emit(state.copyWith(tempAmt: amountInSats.toInt()));
+        } catch (e) {
+          print("error: $e");
         }
-        final label = bip21Obj.options['label'] as String?;
-        if (label != null) {
-          emit(state.copyWith(note: label));
-        }
-        final pjParam = bip21Obj.options['pj'] as String?;
-        if (pjParam != null) {
-          // FIXME: this is an ugly hack because of ugliness in the bip21 module.
-          // Dart's URI encoding is not the same as the one used by the bip21 module.
-          final parsedPjParam = Uri.parse(pjParam);
-          final partialEncodedPjParam =
-              parsedPjParam.toString().replaceAll('#', '%23');
-          final encodedPjParam = partialEncodedPjParam.replaceAll('%20', '+');
-          emit(state.copyWith(payjoinEndpoint: Uri.parse(encodedPjParam)));
+
+        final label = 'todo'; // bitcoinUri.label();// not implemented in pj_uri
+        emit(state.copyWith(note: label));
+
+        try {
+          final pjUri = bitcoinUri.checkPjSupported();
+          emit(state.copyWith(payjoinEndpoint: pjUri.pjEndpoint()));
+        } catch (e) {
+          print("error: $e");
         }
       case AddressNetwork.bip21Liquid:
-        final bip21Obj = bip21.decode(
+        final bitcoinUri = await pj_uri.Uri.fromStr(
           address.startsWith('liquidnetwork:')
               ? address.replaceFirst('liquidnetwork:', 'bitcoin:')
               : address.replaceFirst('liquidtestnet:', 'bitcoin:'),
         );
-        final newAddress = bip21Obj.address;
+        final newAddress = bitcoinUri.address();
         emit(state.copyWith(address: newAddress));
-        final amount = bip21Obj.options['amount'] as num?;
-        if (amount != null) {
-          _currencyCubit.btcToCurrentTempAmount(amount.toDouble());
-          final amountInSats =
-              _currencyCubit.convertBtcStringToSats(amount.toString());
-          // final amountInSats = (amount * 100000000).toInt();
-          _currencyCubit.updateAmountDirect(amountInSats);
-          emit(state.copyWith(tempAmt: amountInSats));
-        }
-        final label = bip21Obj.options['label'] as String?;
-        if (label != null) {
-          emit(state.copyWith(note: label));
+        final amountInSats = bitcoinUri.amountSats();
+
+        final amountInBtc = amountInSats!.toDouble() / 100000000;
+        _currencyCubit.btcToCurrentTempAmount(amountInBtc);
+        _currencyCubit.updateAmountDirect(amountInSats.toInt());
+        emit(state.copyWith(tempAmt: amountInSats.toInt()));
+
+        final label = 'todo'; // bitcoinUri.label();// not implemented in pj_uri
+        emit(state.copyWith(note: label));
+        try {
+          final pjUri = bitcoinUri.checkPjSupported();
+          emit(state.copyWith(payjoinEndpoint: pjUri.pjEndpoint()));
+        } catch (e) {
+          print("error: $e");
         }
       case AddressNetwork.lightning:
         final boltzUrl =
@@ -1013,7 +1017,7 @@ class SendCubit extends Cubit<SendState> {
       isTestnet: _networkCubit.state.testnet,
       sender: state.payjoinSender!,
       wallet: wallet,
-      pjUrl: state.payjoinEndpoint!.toString(),
+      pjUrl: state.payjoinEndpoint!,
     );
   }
 

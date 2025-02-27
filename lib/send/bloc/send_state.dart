@@ -38,7 +38,7 @@ class SendState with _$SendState {
     @Default('') String errDownloadingFile,
     @Default(false) bool downloaded,
     @Default(false) bool disableRBF,
-    Uri? payjoinEndpoint,
+    String? payjoinEndpoint,
     Sender? payjoinSender,
     @Default(true) bool togglePayjoin,
     @Default(false) bool isPayjoinPostSuccess,

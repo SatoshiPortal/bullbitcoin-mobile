@@ -39,16 +39,21 @@ class PayjoinManager {
     String originalPsbt,
   ) async {
     try {
+      // this caps logic is not needed (pj_uri capitalizes pj= path)
+      // however, playing around with this I noticed pj should error if fed lowercase framgents in pj=
+
       // TODO this is a super ugly hack because of ugliness in the bip21 module.
       // Fix that and get rid of this.
-      final pjSubstring = pjUriString.substring(pjUriString.indexOf('pj=') + 3);
-      final capitalizedPjSubstring = pjSubstring.toUpperCase();
-      final pjUriStringWithCapitalizedPj =
-          pjUriString.substring(0, pjUriString.indexOf('pj=') + 3) +
-              capitalizedPjSubstring;
+      print("Hack: pj cap"); // see outputs from console below this class
+      print("pjUriString: ${pjUriString}");
       // This should already be done before letting payjoin be enabled for sending
-      final pjUri = (await pj_uri.Uri.fromStr(pjUriStringWithCapitalizedPj))
-          .checkPjSupported();
+
+      // final pjUriLowercase = pjUriString.toLowerCase();
+      // print("pjUriLowercase: ${pjUriLowercase}");
+
+      final pjUri = (await pj_uri.Uri.fromStr(pjUriString)).checkPjSupported();
+      print("pjUri: ${pjUri.asString()}");
+
       final minFeeRateSatPerKwu = BigInt.from(networkFeesSatPerVb * 250);
       final senderBuilder = await SenderBuilder.fromPsbtAndUri(
         psbtBase64: originalPsbt,
@@ -63,6 +68,20 @@ class PayjoinManager {
     }
   }
 
+// flutter: Hack: pj cap (# => %23, hash is encoded as %23, begins fragments), RK OH and EX are fragment labels (fragments begin with one of these prefixes)
+// flutter: pjUriString:
+// bitcoin:tb1qm6w7e7szprrhfqvv86h4em3d4g5srpkm0yj0hx?amount=0.00003&label=pjtest&pj=https://payjo.in/HWD34VS8CRW3Q%23RK1QF5Y534ED0ZZ4G6F36ENEU24TJ9VEVZRGARQR77FWK8GXT5DD009K+OH1QYPM59NK2LXXS4890SUAXXYT25Z2VAPHP0X7YEYCJXGWAG6UG9ZU6NQ+EX1C0VTJEC&pjos=0
+// flutter: capitalizedPjSubstring:
+// HTTPS://PAYJO.IN/HWD34VS8CRW3Q%23RK1QF5Y534ED0ZZ4G6F36ENEU24TJ9VEVZRGARQR77FWK8GXT5DD009K+OH1QYPM59NK2LXXS4890SUAXXYT25Z2VAPHP0X7YEYCJXGWAG6UG9ZU6NQ+EX1C0VTJEC&PJOS=0
+// flutter: pjUriStringWithCapitalizedPj:
+// bitcoin:tb1qm6w7e7szprrhfqvv86h4em3d4g5srpkm0yj0hx?amount=0.00003&label=pjtest&pj=HTTPS://PAYJO.IN/HWD34VS8CRW3Q%23RK1QF5Y534ED0ZZ4G6F36ENEU24TJ9VEVZRGARQR77FWK8GXT5DD009K+OH1QYPM59NK2LXXS4890SUAXXYT25Z2VAPHP0X7YEYCJXGWAG6UG9ZU6NQ+EX1C0VTJEC&PJOS=0
+// flutter: pjUri:
+// bitcoin:tb1qm6w7e7szprrhfqvv86h4em3d4g5srpkm0yj0hx?amount=0.00003&label=pjtest&pjos=0&pj=HTTPS://PAYJO.IN/HWD34VS8CRW3Q%23RK1QF5Y534ED0ZZ4G6F36ENEU24TJ9VEVZRGARQR77FWK8GXT5DD009K+OH1QYPM59NK2LXXS4890SUAXXYT25Z2VAPHP0X7YEYCJXGWAG6UG9ZU6NQ+EX1C0VTJEC
+
+// after removing hacky capitalization logic:
+// flutter: pjUri:
+// bitcoin:tb1qm6w7e7szprrhfqvv86h4em3d4g5srpkm0yj0hx?amount=0.00003&label=pjtest&pjos=0&pj=HTTPS://PAYJO.IN/HWD34VS8CRW3Q%23RK1QF5Y534ED0ZZ4G6F36ENEU24TJ9VEVZRGARQR77FWK8GXT5DD009K+OH1QYPM59NK2LXXS4890SUAXXYT25Z2VAPHP0X7YEYCJXGWAG6UG9ZU6NQ+EX1C0VTJEC
+// seems pj_uri is handling capitalization internally? so the hack is unecessary...?
   Future<Err?> spawnNewSender({
     required bool isTestnet,
     required Sender sender,

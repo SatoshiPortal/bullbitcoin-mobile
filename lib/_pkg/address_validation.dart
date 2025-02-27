@@ -3,6 +3,7 @@ import 'package:bb_mobile/send/bloc/send_state.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:boltz_dart/boltz_dart.dart' as boltz;
 import 'package:lwk_dart/lwk_dart.dart' as lwk;
+import 'package:payjoin_flutter/uri.dart' as pj_uri;
 
 const lightningUri = 'lightning:';
 const bitcoinUri = 'bitcoin:';
@@ -44,6 +45,9 @@ Future<(AddressNetwork?, Err?)> checkIfValidBitcoinUri(
   bdk.Network network,
 ) async {
   try {
+    print("bitcoin: checkIfValidBitcoinUri $address");
+    // bdk.Address vs bitcoinUri?
+    // bdk.Address is just the pubkey, not the full uri (which is refered to as 'address' elsewhere)
     final _ = await bdk.Address.fromString(
       s: address,
       network: network,
@@ -58,16 +62,12 @@ Future<(AddressNetwork?, Err?)> checkIfValidBip21BitcoinUri(
   String address,
   bdk.Network network,
 ) async {
-  if (address.length > bitcoinUri.length) {
-    final addr = address.substring(bitcoinUri.length).split('?').first;
-    final (_, err) = await checkIfValidBitcoinUri(addr, network);
-
-    if (err == null) {
-      return (AddressNetwork.bip21Bitcoin, null);
-    } else {
-      return (null, Err('Invalid bip21 bitcoin uri'));
-    }
-  } else {
+  print("bip21-bitcoin: checkIfValidBip21BitcoinUri $address");
+  // this is manuall bip21 parsing logic that can be replaced with bitcoin.Uri.fromStr()
+  try {
+    final _ = pj_uri.Uri.fromStr(address);
+    return (AddressNetwork.bip21Bitcoin, null);
+  } catch (e) {
     return (null, Err('Invalid bip21 bitcoin uri'));
   }
 }

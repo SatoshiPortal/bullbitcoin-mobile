@@ -44,6 +44,8 @@ class ReceiveState with _$ReceiveState {
     SwapTx? swapTx,
     bool isTestnet = false,
   }) {
+    print(
+        "bip21-manual encoding"); // should this use encoding logic from bitcoin_uri?
     final String address = getQRStr(swapTx: swapTx);
 
     String finalAddress = '';
