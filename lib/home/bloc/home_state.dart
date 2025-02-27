@@ -435,35 +435,8 @@ class HomeState with _$HomeState {
           (
             info: 'Instant wallet balance is high',
             walletBloc: walletBloc,
-            route: null
           ),
         );
-      }
-
-      if (needsBackupWarning(walletBloc)) {
-        final fngr = walletBloc.sourceFingerprint;
-        if (backupWalletFngrForBackupWarning.contains(fngr)) continue;
-
-        if (!walletBloc.physicalBackupTested) {
-          warnings.add(
-            (
-              info: 'Physical backup needed! Tap to test backup.',
-              walletBloc: walletBloc,
-              route: '/wallet-settings/backup-settings/backup-options/physical'
-            ),
-          );
-        }
-        if (!walletBloc.vaultBackupTested) {
-          warnings.add(
-            (
-              info: 'Encrypted backup needed! Tap to test backup.',
-              walletBloc: walletBloc,
-              route: '/wallet-settings/backup-settings/backup-options/encrypted'
-            ),
-          );
-        }
-
-        backupWalletFngrForBackupWarning.add(fngr);
       }
     }
 
