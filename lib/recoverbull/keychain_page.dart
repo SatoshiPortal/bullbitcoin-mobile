@@ -697,51 +697,17 @@ class _RecoverButton extends StatelessWidget {
               ),
             ],
             const Gap(8),
-            FilledButton(
-              onPressed: state.loading
-                  ? null
-                  : () => context.read<KeychainCubit>().clickRecover(),
-              style: FilledButton.styleFrom(
-                backgroundColor: _getButtonColor(context, canRecover),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: state.loading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation(Colors.white),
-                      ),
-                    )
-                  : _buildButtonContent(context),
+            BBButton.withColour(
+              fillWidth: true,
+              label: 'Recover with ${_getInputTypeText()}',
+              leftIcon: Icons.arrow_forward_rounded,
+              disabled: !canRecover,
+              loading: state.loading,
+              onPressed: () => context.read<KeychainCubit>().clickRecover(),
             ),
           ],
         );
       },
-    );
-  }
-
-  Widget _buildButtonContent(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Recover with ${_getInputTypeText()}',
-          style: context.font.bodyMedium!.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        const SizedBox(width: 8),
-        const Icon(
-          Icons.arrow_forward,
-          color: Colors.white,
-          size: 16,
-        ),
-      ],
     );
   }
 
@@ -758,13 +724,6 @@ class _RecoverButton extends StatelessWidget {
           KeyChainInputType.backupKey,
           KeyChainPageState.recovery,
         );
-  }
-
-  Color _getButtonColor(BuildContext context, bool canRecover) {
-    if (inputType == KeyChainInputType.backupKey || canRecover) {
-      return context.colour.shadow;
-    }
-    return context.colour.surface;
   }
 
   String _getSwitchButtonText() {
@@ -925,7 +884,7 @@ class _SuccessDialog extends StatelessWidget {
             const Gap(8),
             BBText.bodySmall(message, textAlign: TextAlign.center),
             const Gap(24),
-            BBButton.big(
+            BBButton.withColour(
               label: 'Continue',
               onPressed: () {
                 Navigator.of(context).pop();
@@ -946,6 +905,7 @@ class _ErrorDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      backgroundColor: context.colour.primaryContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -954,34 +914,21 @@ class _ErrorDialog extends StatelessWidget {
           children: [
             Icon(
               Icons.error_outline,
-              color: context.colour.error,
+              color: context.colour.primary,
               size: 48,
             ),
             const Gap(16),
-            BBText.title(
-              isRecovery ? 'Recovery Failed' : 'Backup Failed',
-              textAlign: TextAlign.center,
-              isBold: true,
-            ),
+            BBText.title(isRecovery ? 'Recovery failed' : 'Backup failed',
+                textAlign: TextAlign.center, isBold: true),
             const Gap(8),
             BBText.bodySmall(error, textAlign: TextAlign.center),
             const Gap(24),
-            FilledButton(
-              onPressed: () => Navigator.of(context).pop(),
-              style: FilledButton.styleFrom(
-                backgroundColor: context.colour.shadow,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text(
-                'Close',
-                style: context.font.bodyMedium!.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-            ),
+            BBButton.withColour(
+              label: 'Continue',
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )
           ],
         ),
       ),
