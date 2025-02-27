@@ -41,19 +41,15 @@ class EncryptedVaultBackupPage extends StatefulWidget {
 
 class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
   late final BackupSettingsCubit _cubit;
-  late final KeychainCubit _keychainCubit;
-
   @override
   void initState() {
     super.initState();
     _cubit = createBackupSettingsCubit(walletId: widget.wallet);
-    _keychainCubit = KeychainCubit();
   }
 
   @override
   void dispose() {
     _cubit.close();
-    _keychainCubit.close();
     super.dispose();
   }
 
@@ -61,25 +57,13 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
     BuildContext context,
     BackupProvider provider,
   ) async {
-    await _keychainCubit.keyServerStatus();
-
-    final keyServerUp = _keychainCubit.state.keyServerUp;
-
-    if (keyServerUp) {
-      switch (provider) {
-        case BackupProvider.googleDrive:
-          await _cubit.saveGoogleDriveBackup();
-        case BackupProvider.iCloud:
-          debugPrint('iCloud backup');
-        case BackupProvider.custom:
-          _cubit.saveFileSystemBackup();
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        context.showToast(
-          'Key server is down. Please try backing up again later',
-        ),
-      );
+    switch (provider) {
+      case BackupProvider.googleDrive:
+        await _cubit.saveGoogleDriveBackup();
+      case BackupProvider.iCloud:
+        debugPrint('iCloud backup');
+      case BackupProvider.custom:
+        _cubit.saveFileSystemBackup();
     }
   }
 
@@ -88,7 +72,6 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _cubit),
-        BlocProvider.value(value: _keychainCubit),
       ],
       child: BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
         listenWhen: (previous, current) =>
