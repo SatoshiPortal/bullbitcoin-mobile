@@ -495,7 +495,7 @@ class CardItem extends StatelessWidget {
                       ),
                       Expanded(
                         flex: 1,
-                        child: !wallet.vaultBackupTested ||
+                        child: !wallet.vaultBackupTested &&
                                 !wallet.physicalBackupTested
                             ? IconButton(
                                 onPressed: () => context.push(
