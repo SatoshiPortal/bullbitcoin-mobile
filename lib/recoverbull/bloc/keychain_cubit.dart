@@ -39,18 +39,69 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   Future<void> keyServerStatus() async {
+    if (state.isInCooldown) {
+      emit(state.copyWith(
+        keyServerUp: false,
+        error:
+            'Rate limited. Please wait ${state.remainingCooldownSeconds} seconds.',
+        loading: false,
+      ));
+      return;
+    }
+
+    emit(state.copyWith(loading: true, error: ''));
+
     if (!isClosed) {
       try {
         final info = await _keyService.serverInfo();
-        final isUp = info.cooldown <= 1;
-
-        if (isUp != state.keyServerUp) {
-          emit(state.copyWith(keyServerUp: isUp));
-        }
+        debugPrint('Server info: $info');
+        emit(state.copyWith(
+          keyServerUp: true,
+          loading: false,
+          lastRequestTime: null,
+          cooldownMinutes: null,
+          error: '',
+        ));
       } catch (e) {
-        debugPrint('Server status check failed: $e');
-        if (state.keyServerUp) {
-          emit(state.copyWith(keyServerUp: false));
+        final errorStr = e.toString();
+
+        if (errorStr.contains('Failed host lookup') ||
+            errorStr.contains('SocketException') ||
+            errorStr.contains('Connection refused')) {
+          debugPrint('Connection issue: $errorStr');
+          emit(state.copyWith(
+            keyServerUp: false,
+            loading: false,
+            error:
+                'Unable to reach key server. This could be due to network issues or the server may be temporarily unavailable.',
+          ));
+        } else if (errorStr.contains('429')) {
+          final cooldownMatch = RegExp(r'cooldown: (\d+)').firstMatch(errorStr);
+          final dateMatch =
+              RegExp(r'requestedAt: ([^,\)]+)').firstMatch(errorStr);
+
+          final cooldownMinutes = cooldownMatch != null
+              ? int.tryParse(cooldownMatch.group(1) ?? '0')
+              : 1;
+
+          final requestedAt = dateMatch != null
+              ? DateTime.tryParse(dateMatch.group(1) ?? '')
+              : DateTime.now();
+
+          emit(state.copyWith(
+            keyServerUp: true, // Server is reachable but rate-limited
+            loading: false,
+            lastRequestTime: requestedAt ?? DateTime.now(),
+            cooldownMinutes: cooldownMinutes,
+            error: 'Rate limited. Please wait $cooldownMinutes minutes.',
+          ));
+        } else {
+          debugPrint('Server status check failed: $e');
+          emit(state.copyWith(
+            keyServerUp: false,
+            loading: false,
+            error: 'Key server is not responding. Please try again later.',
+          ));
         }
       }
     }
@@ -95,6 +146,7 @@ class KeychainCubit extends Cubit<KeychainState> {
       return;
     }
     if (!await _ensureServerStatus()) return;
+    print('_ensureServerStatus');
     // if (state.secret.length < pinMin) {
     //   state.inputType == KeyChainInputType.pin
     //       ? emit(
