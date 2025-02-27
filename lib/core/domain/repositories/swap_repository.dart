@@ -3,14 +3,20 @@ import 'package:bb_mobile/core/domain/entities/swap.dart';
 
 abstract class SwapRepository {
   Future<Swap> createLightningToLiquidSwap({
-    required String liquidAddress,
+    required String mnemonic,
+    required BigInt index,
+    required String walletId,
     required BigInt amountSat,
-    Environment environment,
+    required Environment environment,
+    required String electrumUrl,
   });
 
   Future<Swap> createLightningToBitcoinSwap({
-    required String bitcoinAddress,
+    required String mnemonic,
+    required BigInt index,
+    required String walletId,
     required BigInt amountSat,
-    Environment environment,
+    required Environment environment,
+    required String electrumUrl,
   });
 }

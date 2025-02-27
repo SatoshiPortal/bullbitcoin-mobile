@@ -1,5 +1,6 @@
 import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
+import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
@@ -23,6 +24,7 @@ class ReceiveLocator {
         swapRepositoryTestnet: locator<SwapRepository>(
           instanceName: CoreLocator.boltzSwapRepositoryTestnetInstanceName,
         ),
+        seedRepository: locator<SeedRepository>(),
       ),
     );
 

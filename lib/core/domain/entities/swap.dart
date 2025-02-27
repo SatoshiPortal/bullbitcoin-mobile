@@ -47,6 +47,7 @@ class Swap with _$Swap {
     required Environment environment,
     required creationTime,
     DateTime? completionTime,
+    required keyIndex,
   }) = _Swap;
   const Swap._();
 }
