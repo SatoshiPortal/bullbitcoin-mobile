@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/domain/services/swap_service.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_use_case.dart';
@@ -26,9 +27,7 @@ class ReceiveLocator {
           instanceName: CoreLocator.boltzSwapRepositoryTestnetInstanceName,
         ),
         seedRepository: locator<SeedRepository>(),
-        localSwapStorage: locator<KeyValueStorageDataSource>(
-          instanceName: CoreLocator.hiveSwapBoxName,
-        ),
+        swapService: locator<SwapService>(),
       ),
     );
 

@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/swap.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/domain/services/swap_service.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 
 class CreateReceiveSwapUseCase {
@@ -13,19 +14,19 @@ class CreateReceiveSwapUseCase {
   final SwapRepository _swapRepository;
   final SwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
-  final KeyValueStorageDataSource _localSwapStorage;
+  final SwapService _swapService;
 
   CreateReceiveSwapUseCase({
     required WalletRepositoryManager walletRepositoryManager,
     required SwapRepository swapRepository,
     required SwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
-    required KeyValueStorageDataSource localSwapStorage,
+    required SwapService swapService,
   })  : _walletRepositoryManager = walletRepositoryManager,
         _swapRepository = swapRepository,
         _swapRepositoryTestnet = swapRepositoryTestnet,
         _seedRepository = seedRepository,
-        _localSwapStorage = localSwapStorage;
+        _swapService = swapService;
 
   Future<Swap> execute({
     required String walletId,
@@ -60,18 +61,8 @@ class CreateReceiveSwapUseCase {
           ? _swapRepositoryTestnet
           : _swapRepository;
 
-      final swaps = await _localSwapStorage.getAll();
-      final walletRelatedReceiveSwaps = swaps.values
-          .where(
-            (swap) => swap.receiveWalletReference == walletId,
-          )
-          .toList();
-      final nextWalletIndex = walletRelatedReceiveSwaps.isEmpty
-          ? 0
-          : walletRelatedReceiveSwaps
-                  .map((swap) => swap.keyIndex as int)
-                  .reduce(max) +
-              1;
+      final nextWalletIndex = await _swapService.getNextBestIndex(walletId);
+
       switch (type) {
         case SwapType.lightningToBitcoin:
           return swapRepository.createLightningToBitcoinSwap(
@@ -79,7 +70,7 @@ class CreateReceiveSwapUseCase {
             amountSat: amountSat,
             environment: environment,
             mnemonic: mnemonic.toString(),
-            index: BigInt.from(nextWalletIndex),
+            index: nextWalletIndex,
             electrumUrl: bbElectrumMain,
           );
 
@@ -89,7 +80,7 @@ class CreateReceiveSwapUseCase {
             amountSat: amountSat,
             environment: environment,
             mnemonic: mnemonic.toString(),
-            index: BigInt.from(nextWalletIndex),
+            index: nextWalletIndex,
             electrumUrl: liquidElectrumTestUrl,
           );
         default:
