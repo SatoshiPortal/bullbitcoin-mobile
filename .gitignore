@@ -28,6 +28,10 @@ op/builds
 *.freezed.dart
 *.g.dart
 
+# l10n internationalization related
+lib/l10n/generated/*
+untranslated-messages.txt
+
 # Dev preferences
 .idea
 .vscode

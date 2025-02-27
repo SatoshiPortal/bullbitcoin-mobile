@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/domain/entities/swap.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap_model.freezed.dart';
+part 'swap_model.g.dart';
 
 @freezed
 class SwapModel with _$SwapModel {
