@@ -345,7 +345,7 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
                                   leftIcon: widget.backupKey.isNotEmpty
                                       ? CupertinoIcons.eye_fill
                                       : CupertinoIcons.cloud_download_fill,
-                                  onPressed: () => !keyState.keyServerUp
+                                  onPressed: () => keyState.keyServerUp
                                       ? _handleBackupAction(context)
                                       : () {},
                                 ),
