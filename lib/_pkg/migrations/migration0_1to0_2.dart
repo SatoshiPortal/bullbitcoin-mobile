@@ -362,8 +362,7 @@ Future<List<Wallet>> createLiquidWallet(
       network: BBNetwork.Mainnet,
       walletCreate: walletCreate,
     );
-    final liquidWallet =
-        lw?.copyWith(name: lw.creationName(), mainWallet: true);
+    final liquidWallet = lw?.copyWith(name: lw.defaultName(), mainWallet: true);
     wallets.add(liquidWallet!);
   }
 
@@ -378,8 +377,7 @@ Future<List<Wallet>> createLiquidWallet(
       network: BBNetwork.Testnet,
       walletCreate: walletCreate,
     );
-    final liquidWallet =
-        lw?.copyWith(name: lw.creationName(), mainWallet: true);
+    final liquidWallet = lw?.copyWith(name: lw.defaultName(), mainWallet: true);
 
     wallets.add(liquidWallet!);
     await walletsStorageRepository.newWallet(liquidWallet);

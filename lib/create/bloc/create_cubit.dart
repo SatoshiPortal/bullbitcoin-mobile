@@ -138,7 +138,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     if (state.mainWallet) wallet = wallet!.copyWith(mainWallet: true);
 
     var walletLabel = state.walletLabel ?? '';
-    if (state.mainWallet) walletLabel = wallet!.creationName();
+    if (state.mainWallet) walletLabel = wallet!.defaultName();
     final updatedWallet = wallet!.copyWith(name: walletLabel);
 
     final ssErr = await _walletSensRepository.newSeed(seed: seed);
@@ -219,7 +219,7 @@ class CreateWalletCubit extends Cubit<CreateWalletState> {
     wallet = wallet!.copyWith(mainWallet: true);
 
     var walletLabel = state.walletLabel ?? '';
-    if (state.mainWallet) walletLabel = wallet.creationName();
+    if (state.mainWallet) walletLabel = wallet.defaultName();
     final updatedWallet = wallet.copyWith(name: walletLabel);
 
     final wsErr = await _walletsStorageRepository.newWallet(updatedWallet);

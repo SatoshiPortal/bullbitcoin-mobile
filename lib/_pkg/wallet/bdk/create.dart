@@ -133,7 +133,7 @@ class BDKCreate {
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
     wallet44 = wallet44.copyWith(
-      name: wallet44.defaultNameString(),
+      name: wallet44.defaultName(),
       lastGeneratedAddress: Address(
         address: firstAddress44.address.asString(),
         index: 0,
@@ -165,7 +165,7 @@ class BDKCreate {
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
     wallet49 = wallet49.copyWith(
-      name: wallet49.defaultNameString(),
+      name: wallet49.defaultName(),
       lastGeneratedAddress: Address(
         address: firstAddress49.address.asString(),
         index: 0,
@@ -197,7 +197,7 @@ class BDKCreate {
       addressIndex: const bdk.AddressIndex.peek(index: 0),
     );
     wallet84 = wallet84.copyWith(
-      name: wallet84.defaultNameString(),
+      name: wallet84.defaultName(),
       lastGeneratedAddress: Address(
         address: firstAddress84.address.asString(),
         index: 0,
@@ -299,7 +299,7 @@ class BDKCreate {
         addressIndex: const bdk.AddressIndex.peek(index: 0),
       );
       wallet = wallet.copyWith(
-        name: wallet.defaultNameString(),
+        name: wallet.defaultName(),
         lastGeneratedAddress: Address(
           address: firstAddress.address.asString(),
           index: 0,
@@ -308,7 +308,7 @@ class BDKCreate {
         ),
       );
 
-      wallet = wallet.copyWith(name: wallet.defaultNameString());
+      wallet = wallet.copyWith(name: wallet.defaultName());
 
       _walletsRepository.removeBdkWallet(wallet.id);
 
@@ -490,7 +490,7 @@ class BDKCreate {
         addressIndex: const bdk.AddressIndex.peek(index: 0),
       );
       wallet = wallet.copyWith(
-        name: wallet.defaultNameString(),
+        name: wallet.defaultName(),
         lastGeneratedAddress: Address(
           address: firstAddress.address.asString(),
           index: 0,

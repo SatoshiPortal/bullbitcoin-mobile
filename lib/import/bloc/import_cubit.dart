@@ -639,7 +639,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       );
     }
     var walletLabel = state.walletLabel ?? '';
-    if (state.mainWallet) walletLabel = selectedWallet.creationName();
+    if (state.mainWallet) walletLabel = selectedWallet.defaultName();
     final secureWallet = selectedWallet.copyWith(name: walletLabel);
 
     final err = await _walletsStorageRepository.newWallet(
@@ -700,7 +700,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     }
 
     var walletLabel = state.walletLabel ?? '';
-    if (state.mainWallet) walletLabel = wallet.creationName();
+    if (state.mainWallet) walletLabel = wallet.defaultName();
     final updatedWallet = wallet.copyWith(name: walletLabel);
 
     final wsErr = await _walletsStorageRepository.newWallet(updatedWallet);
