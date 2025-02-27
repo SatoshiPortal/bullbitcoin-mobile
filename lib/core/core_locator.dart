@@ -16,7 +16,6 @@ import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/word_list_repository.dart';
 import 'package:bb_mobile/core/domain/services/mnemonic_seed_factory.dart';
-import 'package:bb_mobile/core/domain/services/swap_service.dart';
 import 'package:bb_mobile/core/domain/services/wallet_metadata_derivator.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 import 'package:bb_mobile/core/domain/usecases/find_mnemonic_words_use_case.dart';
@@ -143,13 +142,6 @@ class CoreLocator {
     );
     locator.registerLazySingleton<MnemonicSeedFactory>(
       () => const MnemonicSeedFactoryImpl(),
-    );
-    locator.registerLazySingleton<SwapService>(
-      () => SwapServiceImpl(
-        localSwapStorage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: swapStorageInstanceName,
-        ),
-      ),
     );
 
     // Use cases

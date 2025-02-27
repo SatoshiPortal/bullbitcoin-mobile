@@ -19,4 +19,6 @@ abstract class SwapRepository {
     required Environment environment,
     required String electrumUrl,
   });
+
+  Future<BigInt> getNextBestIndex(String walletId);
 }
