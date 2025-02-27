@@ -1034,24 +1034,13 @@ class HomeNoWalletsWithCreation extends StatelessWidget {
             ),
             const Gap(16),
             BBButton.text(
-              label: 'Recover wallet from Physical Backup',
+              label: 'Recover wallet from physical or encrypted backup',
               centered: true,
               onSurface: true,
               isBlue: false,
               fontSize: 11,
-              onPressed: () => context1.push('/import-main'),
-            ),
-            BBButton.text(
-              label: 'Recover wallet from Encrypted Vault',
-              centered: true,
-              onSurface: true,
-              isBlue: false,
-              fontSize: 11,
-              onPressed: () {
-                context1.push(
-                  '/wallet-settings/backup-settings/recover-options/encrypted',
-                );
-              },
+              onPressed: () => context1
+                  .push('/wallet-settings/backup-settings/recover-options'),
             ),
           ],
         ),
@@ -1137,24 +1126,13 @@ class HomeNoWalletsView extends StatelessWidget {
                 ),
                 const Gap(20),
                 BBButton.text(
-                  label: 'Recover wallet from Physical Backup',
+                  label: 'Recover wallet from physical or encrypted backup',
                   centered: true,
                   onSurface: true,
                   isBlue: false,
                   fontSize: 11,
-                  onPressed: () => context.push('/import-main'),
-                ),
-                BBButton.text(
-                  label: 'Recover wallet from Encrypted Vault',
-                  centered: true,
-                  onSurface: true,
-                  isBlue: false,
-                  fontSize: 11,
-                  onPressed: () {
-                    context.push(
-                      '/wallet-settings/backup-settings/recover-options/encrypted',
-                    );
-                  },
+                  onPressed: () => context
+                      .push('/wallet-settings/backup-settings/recover-options'),
                 ),
               ],
             ),
