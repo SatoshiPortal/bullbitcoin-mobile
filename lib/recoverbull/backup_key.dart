@@ -77,44 +77,56 @@ class _BackupKeyPageState extends State<BackupKeyPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _backupSettingsCubit,
-      child: BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
-        listenWhen: (previous, current) =>
-            previous.errorLoadingBackups != current.errorLoadingBackups ||
-            previous.latestRecoveredBackup != current.latestRecoveredBackup,
-        listener: (context, state) {
-          if (state.errorLoadingBackups.isNotEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              context.showToast(state.errorLoadingBackups),
-            );
-            _backupSettingsCubit.clearError();
-            return;
-          }
-          if (state.latestRecoveredBackup.isNotEmpty) {
-            context.push(
-              '/wallet-settings/backup-settings/backup-key/options',
-              extra: ('', state.latestRecoveredBackup),
-            );
-            _backupSettingsCubit.clearError();
-          }
-        },
-        builder: (context, state) {
-          return Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              automaticallyImplyLeading: false,
-              centerTitle: true,
-              flexibleSpace: BBAppBar(
-                text: '',
-                onBack: () => context.pop(),
-              ),
-            ),
-            body: state.loadingBackups
-                ? const Center(child: CircularProgressIndicator())
-                : _buildContent(context, state),
+    return BlocListener<KeychainCubit, KeychainState>(
+      listener: (context, state) {
+        if (!state.keyServerUp) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            context.showToast(state.error),
           );
-        },
+        }
+      },
+      listenWhen: (previous, current) =>
+          previous.keyServerUp != current.keyServerUp ||
+          current.loading != previous.loading,
+      child: BlocProvider.value(
+        value: _backupSettingsCubit,
+        child: BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
+          listenWhen: (previous, current) =>
+              previous.errorLoadingBackups != current.errorLoadingBackups ||
+              previous.latestRecoveredBackup != current.latestRecoveredBackup,
+          listener: (context, state) {
+            if (state.errorLoadingBackups.isNotEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                context.showToast(state.errorLoadingBackups),
+              );
+              _backupSettingsCubit.clearError();
+              return;
+            }
+            if (state.latestRecoveredBackup.isNotEmpty) {
+              context.push(
+                '/wallet-settings/backup-settings/key/options',
+                extra: ('', state.latestRecoveredBackup),
+              );
+              _backupSettingsCubit.clearError();
+            }
+          },
+          builder: (context, state) {
+            return Scaffold(
+              appBar: AppBar(
+                elevation: 0,
+                automaticallyImplyLeading: false,
+                centerTitle: true,
+                flexibleSpace: BBAppBar(
+                  text: '',
+                  onBack: () => context.pop(),
+                ),
+              ),
+              body: state.loadingBackups
+                  ? const Center(child: CircularProgressIndicator())
+                  : _buildContent(context, state),
+            );
+          },
+        ),
       ),
     );
   }
