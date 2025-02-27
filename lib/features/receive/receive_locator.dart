@@ -1,6 +1,5 @@
 import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/core/core_locator.dart';
-import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
