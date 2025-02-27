@@ -382,7 +382,7 @@ class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
                           : {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 context.showToast(
-                                  '${state.error} Please try again later!',
+                                  state.error,
                                 ),
                               ),
                               context.push(
