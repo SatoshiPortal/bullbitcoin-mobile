@@ -41,6 +41,8 @@ class KeychainState with _$KeychainState {
     @Default([]) List<int> shuffledNumbers,
     @Default('') String error,
     @Default(KeyChainPageState.enter) KeyChainPageState originalPageState,
+    DateTime? lastRequestTime,
+    int? cooldownMinutes,
   }) = _KeychainState;
 
   const KeychainState._();
@@ -82,4 +84,18 @@ class KeychainState with _$KeychainState {
   bool get canRecoverWithBckupKey => backupId.isNotEmpty && !loading;
   bool get canDeleteKey => backupId.isNotEmpty && keyServerUp && !loading;
   bool validateSecret(String secret) => commonPasswordsTop1000.contains(secret);
+
+  bool get isInCooldown {
+    if (lastRequestTime == null || cooldownMinutes == null) return false;
+    final cooldownEnd =
+        lastRequestTime!.add(Duration(minutes: cooldownMinutes!));
+    return DateTime.now().isBefore(cooldownEnd);
+  }
+
+  int? get remainingCooldownSeconds {
+    if (!isInCooldown) return null;
+    final cooldownEnd =
+        lastRequestTime!.add(Duration(minutes: cooldownMinutes!));
+    return cooldownEnd.difference(DateTime.now()).inSeconds;
+  }
 }
