@@ -61,53 +61,35 @@ class CreateReceiveSwapUseCase {
           : _swapRepository;
 
       final swaps = await _localSwapStorage.getAll();
-
+      final walletRelatedReceiveSwaps = swaps.values
+          .where(
+            (swap) => swap.receiveWalletReference == walletId,
+          )
+          .toList();
+      final nextWalletIndex = walletRelatedReceiveSwaps.isEmpty
+          ? 0
+          : walletRelatedReceiveSwaps
+                  .map((swap) => swap.keyIndex as int)
+                  .reduce(max) +
+              1;
       switch (type) {
         case SwapType.lightningToBitcoin:
-          final bitcoinReceiveSwaps = swaps.values
-              .where(
-                (swap) =>
-                    swap.type == SwapType.lightningToBitcoin ||
-                    swap.type == SwapType.liquidToBitcoin,
-              )
-              .toList();
-          final nextBitcoinIndex = bitcoinReceiveSwaps.isEmpty
-              ? 0
-              : bitcoinReceiveSwaps
-                      .map((swap) => swap.keyIndex as int)
-                      .reduce(max) +
-                  1;
-
           return swapRepository.createLightningToBitcoinSwap(
             walletId: walletId,
             amountSat: amountSat,
             environment: environment,
             mnemonic: mnemonic.toString(),
-            index: BigInt.from(nextBitcoinIndex),
+            index: BigInt.from(nextWalletIndex),
             electrumUrl: bbElectrumMain,
           );
 
         case SwapType.lightningToLiquid:
-          final liquidReceiveSwaps = swaps.values
-              .where(
-                (swap) =>
-                    swap.type == SwapType.lightningToLiquid ||
-                    swap.type == SwapType.bitcoinToLiquid,
-              )
-              .toList();
-          final nextLiquidIndex = liquidReceiveSwaps.isEmpty
-              ? 0
-              : liquidReceiveSwaps
-                      .map((swap) => swap.keyIndex as int)
-                      .reduce(max) +
-                  1;
-
           return swapRepository.createLightningToLiquidSwap(
             walletId: walletId,
             amountSat: amountSat,
             environment: environment,
             mnemonic: mnemonic.toString(),
-            index: BigInt.from(nextLiquidIndex),
+            index: BigInt.from(nextWalletIndex),
             electrumUrl: liquidElectrumTestUrl,
           );
         default:

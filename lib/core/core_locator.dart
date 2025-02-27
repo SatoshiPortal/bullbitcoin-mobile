@@ -120,15 +120,18 @@ class CoreLocator {
       ),
       instanceName: boltzSwapRepositoryInstanceName,
     );
-    // locator.registerLazySingleton<SwapRepository>(
-    //   () => BoltzSwapRepositoryImpl(
-    //     boltz: locator<BoltzDataSource>(instanceName: boltzTestnetInstanceName),
-    //     // localStorage: locator<KeyValueStorageDataSource<String>>(
-    //     //   instanceName: secureStorageInstanceName,
-    //     // ),
-    //   ),
-    //   instanceName: boltzSwapRepositoryTestnetInstanceName,
-    // );
+    locator.registerLazySingleton<SwapRepository>(
+      () => BoltzSwapRepositoryImpl(
+        boltz: locator<BoltzDataSource>(instanceName: boltzTestnetInstanceName),
+        secureStorage: locator<KeyValueStorageDataSource<String>>(
+          instanceName: secureStorageInstanceName,
+        ),
+        localSwapStorage: locator<KeyValueStorageDataSource<String>>(
+          instanceName: swapStorageInstanceName,
+        ),
+      ),
+      instanceName: boltzSwapRepositoryTestnetInstanceName,
+    );
 
     // Managers or services responsible for handling specific logic
     locator.registerLazySingleton<WalletMetadataDerivator>(
