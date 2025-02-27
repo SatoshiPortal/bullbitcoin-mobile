@@ -1150,11 +1150,8 @@ class HomeNoWalletsView extends StatelessWidget {
                   onSurface: true,
                   isBlue: false,
                   fontSize: 11,
-                  onPressed: () {
-                    context.push(
-                      '/wallet-settings/backup-settings/recover-options/encrypted',
-                    );
-                  },
+                  onPressed: () => context.push(
+                      '/wallet-settings/backup-settings/recover-options/encrypted'),
                 ),
               ],
             ),
