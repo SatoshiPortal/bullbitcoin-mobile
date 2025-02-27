@@ -411,7 +411,7 @@ class HomeState with _$HomeState {
     }
 
     bool needsBackupWarning(Wallet wb) =>
-        !wb.physicalBackupTested || !wb.vaultBackupTested;
+        !wb.physicalBackupTested && !wb.vaultBackupTested;
 
     final warnings = <({String info, Wallet walletBloc})>{};
     final networkWallets = walletsFromNetwork(network);
