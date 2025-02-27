@@ -131,7 +131,7 @@ class _Screen extends StatelessWidget {
             label: "View/Delete Backup Key",
             onPressed: () => {
               context.push(
-                '/wallet-settings/backup-settings/backup-key',
+                '/wallet-settings/backup-settings/key',
                 extra: context.read<WalletBloc>().state.wallet.id,
               ),
             },
