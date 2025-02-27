@@ -161,7 +161,7 @@ class _Screen extends StatelessWidget {
                 state.backupKey.isNotEmpty) {
               if (state.pageState == KeyChainPageState.download) {
                 context.push(
-                  '/wallet-settings/backup-settings/backup-key/options',
+                  '/wallet-settings/backup-settings/key/options',
                   extra: (state.backupKey, backup),
                 );
               } else {
