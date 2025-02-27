@@ -29,12 +29,15 @@ class GoogleDriveBackupManager extends IRecoverbullManager {
       account = await _google.signInSilently();
     } catch (e) {
       debugPrint('Silent sign-in failed, trying interactive sign-in: $e');
-      account = await _google.signIn();
+    }
+    try {
+      account ??= await _google.signIn();
+    } catch (e) {
+      debugPrint('Sign-in failed: $e');
     }
     // If we still don't have an account after both attempts
-    if (account == null) {
-      return (null, Err(_errorMessages['connection']!));
-    }
+
+    if (account == null) return (null, Err(_errorMessages['connection']!));
 
     try {
       final client = await _google.authenticatedClient();
