@@ -57,7 +57,7 @@ class KeychainCubit extends Cubit<KeychainState> {
             keyServerUp: false,
             loading: false,
             error:
-                'Unable to reach key server. This could be due to network issues or the server may be temporarily unavailable.'));
+                'Key server is temporarily unavailable. Please try again later.'));
       }
     }
   }
