@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bb_mobile/core/data/datasources/boltz_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
@@ -6,53 +8,100 @@ import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDataSource _boltz;
-  final KeyValueStorageDataSource<String> _localStorage;
+  final KeyValueStorageDataSource _secureStorage;
+  final KeyValueStorageDataSource _localSwapStorage;
+
+  static const _keyPrefix = 'swap_';
 
   BoltzSwapRepositoryImpl({
     required BoltzDataSource boltz,
-    required KeyValueStorageDataSource<String> localStorage,
+    required KeyValueStorageDataSource secureStorage,
+    required KeyValueStorageDataSource localSwapStorage,
   })  : _boltz = boltz,
-        _localStorage = localStorage;
+        _secureStorage = secureStorage,
+        _localSwapStorage = localSwapStorage;
 
   @override
   Future<Swap> createLightningToBitcoinSwap({
-    required String bitcoinAddress,
+    required String mnemonic,
+    required String walletId,
     required BigInt amountSat,
+    required String electrumUrl,
     Environment environment = Environment.mainnet,
   }) async {
-    // TODO: use the _boltz datasource to create a reverse swap from lightning to bitcoin
+    final index = await _getNextBestIndex(walletId);
+    final btcLnSwap = await _boltz.createBtcReverseSwap(
+      mnemonic,
+      index,
+      amountSat,
+      environment,
+      electrumUrl,
+    );
+    final key = '$_keyPrefix${btcLnSwap.id}';
+    await _secureStorage.saveValue(key: key, value: btcLnSwap);
 
-    // TODO: create a swap entity with the id from the reverse swap creation and other needed info
     final swap = Swap(
-      id: '',
+      id: btcLnSwap.id,
       type: SwapType.lightningToBitcoin,
       status: SwapStatus.pending,
       environment: environment,
+      creationTime: DateTime.now(),
+      receiveWalletReference: walletId,
+      sendWalletReference: btcLnSwap.invoice,
+      keyIndex: index as int,
     );
-
-    // TODO: store the swap in the local storage and return it (use the SwapModel for this)
-
+    await _localSwapStorage.saveValue(key: swap.id, value: swap);
     return swap;
   }
 
   @override
   Future<Swap> createLightningToLiquidSwap({
-    required String liquidAddress,
+    required String mnemonic,
+    required String walletId,
     required BigInt amountSat,
+    required String electrumUrl,
     Environment environment = Environment.mainnet,
   }) async {
-    // TODO: use the _boltz datasource to create a reverse swap from lightning to liquid
+    final index = await _getNextBestIndex(walletId);
+    final lbtcLnSwap = await _boltz.createBtcReverseSwap(
+      mnemonic,
+      index,
+      amountSat,
+      environment,
+      electrumUrl,
+    );
+    final key = '$_keyPrefix${lbtcLnSwap.id}';
+    await _secureStorage.saveValue(key: key, value: lbtcLnSwap);
 
-    // TODO: create a swap entity with the id from the reverse swap creation and other needed info
     final swap = Swap(
-      id: '',
+      id: lbtcLnSwap.id,
       type: SwapType.lightningToLiquid,
       status: SwapStatus.pending,
       environment: environment,
+      creationTime: DateTime.now(),
+      receiveWalletReference: walletId,
+      sendWalletReference: lbtcLnSwap.invoice,
+      keyIndex: index as int,
     );
-
-    // TODO: store the swap in the local storage and return it (use the SwapModel for this)
-
+    await _localSwapStorage.saveValue(key: swap.id, value: swap);
     return swap;
+  }
+
+  @override
+  Future<BigInt> _getNextBestIndex(String walletId) async {
+    final swaps = await _localSwapStorage.getAll();
+    final walletRelatedReceiveSwaps = swaps.values
+        .where(
+          (swap) => swap.receiveWalletReference == walletId,
+        )
+        .toList();
+    final nextWalletIndex = walletRelatedReceiveSwaps.isEmpty
+        ? 0
+        : walletRelatedReceiveSwaps
+                .map((swap) => swap.keyIndex as int)
+                .reduce(max) +
+            1;
+
+    return BigInt.from(nextWalletIndex);
   }
 }

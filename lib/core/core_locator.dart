@@ -39,6 +39,8 @@ class CoreLocator {
   static const String boltzSwapRepositoryInstanceName = 'boltzSwapRepository';
   static const String boltzSwapRepositoryTestnetInstanceName =
       'boltzSwapRepositoryTestnet';
+  static const String hiveSwapBoxName = 'swaps';
+  static const String swapStorageInstanceName = 'swapStorage';
 
   static Future<void> setup() async {
     // Data sources
@@ -61,6 +63,11 @@ class CoreLocator {
     locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
       () => HiveStorageDataSourceImpl<String>(walletsBox),
       instanceName: walletsStorageInstanceName,
+    );
+    final swapBox = await Hive.openBox<String>(hiveSwapBoxName);
+    locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
+      () => HiveStorageDataSourceImpl<String>(swapBox),
+      instanceName: swapStorageInstanceName,
     );
     locator.registerLazySingleton<Bip39WordListDataSource>(
       () => Bip39EnglishWordListDataSourceImpl(),
@@ -104,8 +111,11 @@ class CoreLocator {
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
         boltz: locator<BoltzDataSource>(instanceName: boltzInstanceName),
-        localStorage: locator<KeyValueStorageDataSource<String>>(
+        secureStorage: locator<KeyValueStorageDataSource<String>>(
           instanceName: secureStorageInstanceName,
+        ),
+        localSwapStorage: locator<KeyValueStorageDataSource<String>>(
+          instanceName: swapStorageInstanceName,
         ),
       ),
       instanceName: boltzSwapRepositoryInstanceName,
@@ -113,8 +123,11 @@ class CoreLocator {
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
         boltz: locator<BoltzDataSource>(instanceName: boltzTestnetInstanceName),
-        localStorage: locator<KeyValueStorageDataSource<String>>(
+        secureStorage: locator<KeyValueStorageDataSource<String>>(
           instanceName: secureStorageInstanceName,
+        ),
+        localSwapStorage: locator<KeyValueStorageDataSource<String>>(
+          instanceName: swapStorageInstanceName,
         ),
       ),
       instanceName: boltzSwapRepositoryTestnetInstanceName,

@@ -96,6 +96,8 @@ dependencies:
   bip32: ^2.0.0
   bip39: ^1.0.6
   bs58check: ^1.0.2
+  auto_size_text_field: ^2.2.4
+
 
 dev_dependencies:
   build_runner: ^2.4.9
@@ -111,6 +113,8 @@ dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   mockito: ^5.4.5
   test: ^1.25.8
+  # fluttergen: ^5.9.0
+  flutter_gen_runner: any
 
 flutter:
   generate: true # Needed for code generation, for example for internationalization
