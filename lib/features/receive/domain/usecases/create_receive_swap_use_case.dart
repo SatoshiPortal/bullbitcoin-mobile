@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:bb_mobile/_pkg/consts/config.dart';
-import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/swap.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
@@ -57,8 +54,6 @@ class CreateReceiveSwapUseCase {
           ? _swapRepositoryTestnet
           : _swapRepository;
 
-      final nextWalletIndex = await _swapRepository.getNextBestIndex(walletId);
-
       switch (type) {
         case SwapType.lightningToBitcoin:
           return swapRepository.createLightningToBitcoinSwap(
@@ -66,7 +61,6 @@ class CreateReceiveSwapUseCase {
             amountSat: amountSat,
             environment: environment,
             mnemonic: mnemonic.toString(),
-            index: nextWalletIndex,
             electrumUrl: bbElectrumMain,
           );
 
@@ -76,7 +70,6 @@ class CreateReceiveSwapUseCase {
             amountSat: amountSat,
             environment: environment,
             mnemonic: mnemonic.toString(),
-            index: nextWalletIndex,
             electrumUrl: liquidElectrumTestUrl,
           );
         default:

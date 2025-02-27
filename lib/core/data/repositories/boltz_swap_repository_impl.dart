@@ -24,12 +24,12 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<Swap> createLightningToBitcoinSwap({
     required String mnemonic,
-    required BigInt index,
     required String walletId,
     required BigInt amountSat,
     required String electrumUrl,
     Environment environment = Environment.mainnet,
   }) async {
+    final index = await _getNextBestIndex(walletId);
     final btcLnSwap = await _boltz.createBtcReverseSwap(
       mnemonic,
       index,
@@ -57,13 +57,12 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<Swap> createLightningToLiquidSwap({
     required String mnemonic,
-    required BigInt index,
     required String walletId,
     required BigInt amountSat,
     required String electrumUrl,
     Environment environment = Environment.mainnet,
   }) async {
-    // TODO: use the _boltz datasource to create a reverse swap from lightning to liquid
+    final index = await _getNextBestIndex(walletId);
     final lbtcLnSwap = await _boltz.createBtcReverseSwap(
       mnemonic,
       index,
@@ -89,7 +88,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<BigInt> getNextBestIndex(String walletId) async {
+  Future<BigInt> _getNextBestIndex(String walletId) async {
     final swaps = await _localSwapStorage.getAll();
     final walletRelatedReceiveSwaps = swaps.values
         .where(
