@@ -278,7 +278,7 @@ GoRouter setupRouter() => GoRouter(
                   },
                 ),
                 GoRoute(
-                    path: 'backup-key',
+                    path: 'key',
                     builder: (context, state) {
                       return BackupKeyPage(
                         wallet: state.extra! as String,

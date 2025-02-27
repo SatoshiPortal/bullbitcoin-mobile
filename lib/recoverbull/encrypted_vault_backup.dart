@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/recoverbull/bloc/backup_settings_cubit.dart';
@@ -41,19 +42,15 @@ class EncryptedVaultBackupPage extends StatefulWidget {
 
 class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
   late final BackupSettingsCubit _cubit;
-  late final KeychainCubit _keychainCubit;
-
   @override
   void initState() {
     super.initState();
     _cubit = createBackupSettingsCubit(walletId: widget.wallet);
-    _keychainCubit = KeychainCubit();
   }
 
   @override
   void dispose() {
     _cubit.close();
-    _keychainCubit.close();
     super.dispose();
   }
 
@@ -61,25 +58,13 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
     BuildContext context,
     BackupProvider provider,
   ) async {
-    await _keychainCubit.keyServerStatus();
-
-    final keyServerUp = _keychainCubit.state.keyServerUp;
-
-    if (keyServerUp) {
-      switch (provider) {
-        case BackupProvider.googleDrive:
-          await _cubit.saveGoogleDriveBackup();
-        case BackupProvider.iCloud:
-          debugPrint('iCloud backup');
-        case BackupProvider.custom:
-          _cubit.saveFileSystemBackup();
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        context.showToast(
-          'Key server is down. Please try backing up again later',
-        ),
-      );
+    switch (provider) {
+      case BackupProvider.googleDrive:
+        await _cubit.saveGoogleDriveBackup();
+      case BackupProvider.iCloud:
+        debugPrint('iCloud backup');
+      case BackupProvider.custom:
+        _cubit.saveFileSystemBackup();
     }
   }
 
@@ -88,7 +73,6 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _cubit),
-        BlocProvider.value(value: _keychainCubit),
       ],
       child: BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
         listenWhen: (previous, current) =>
@@ -408,17 +392,18 @@ class RecoveredBackupInfoPage extends StatefulWidget {
 }
 
 class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
-  late final BackupSettingsCubit _cubit;
+  late final BackupSettingsCubit _backupSettingsCubit;
 
   @override
   void initState() {
     super.initState();
-    _cubit = createBackupSettingsCubit();
+    _backupSettingsCubit = createBackupSettingsCubit();
+    context.read<KeychainCubit>().keyServerStatus();
   }
 
   @override
   void dispose() {
-    _cubit.close();
+    _backupSettingsCubit.close();
     super.dispose();
   }
 
@@ -493,7 +478,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
     }
 
     return BlocProvider.value(
-      value: _cubit,
+      value: _backupSettingsCubit,
       child: BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
         listenWhen: (previous, current) =>
             previous.errorLoadingBackups != current.errorLoadingBackups ||
@@ -504,7 +489,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               context.showToast(state.errorLoadingBackups),
             );
-            _cubit.clearError();
+            _backupSettingsCubit.clearError();
             return;
           }
         },
@@ -574,7 +559,10 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                     ),
                   ),
                   const Gap(20),
-                  FilledButton(
+                  BBButton.withColour(
+                    leftIcon: Icons.arrow_forward_rounded,
+                    label: 'Decrypt Backup',
+                    disabled: state.loadingBackups,
                     onPressed: () => {
                       context.push(
                         '/wallet-settings/backup-settings/keychain',
@@ -585,35 +573,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                         ),
                       ),
                     },
-                    style: FilledButton.styleFrom(
-                      backgroundColor: context.colour.shadow,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Decrypt Backup',
-                          style: context.font.bodyMedium!.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        const Gap(8),
-                        const Icon(
-                          Icons.arrow_forward,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                      ],
-                    ),
-                  ),
+                  )
                 ],
               ),
             ),

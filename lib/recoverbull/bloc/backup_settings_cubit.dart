@@ -682,9 +682,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       if (wallet == null) {
         return (null, Err('Failed to create wallet'));
       }
-
-      final walletRepoErr = await _walletsStorageRepository
-          .newWallet(wallet.copyWith(vaultBackupTested: true));
+      final walletRepoErr = await _walletsStorageRepository.newWallet(
+          wallet.copyWith(
+              vaultBackupTested: true, mainWallet: type == BBWalletType.main));
       if (walletRepoErr != null &&
           !walletRepoErr.message.toLowerCase().contains('exists')) {
         return (null, Err(walletRepoErr.toString()));

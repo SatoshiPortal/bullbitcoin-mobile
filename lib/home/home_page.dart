@@ -422,90 +422,95 @@ class CardItem extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  /*
-                  // Uncomment to get settings button (3 dots) on top right
-                  TopRight(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: IconButton(
-                        onPressed: () {
-                          final walletBloc = context.read<WalletBloc>();
-                          context.push('/wallet-settings', extra: walletBloc);
-                        },
-                        color: context.colour.onPrimary,
-                        icon: const FaIcon(
-                          FontAwesomeIcons.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ),
-                  */
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  Row(
                     children: [
-                      const Gap(8),
-                      BBText.titleLarge(
-                        name ?? fingerprint,
-                        onSurface: true,
-                        fontSize: 20,
-                        compact: true,
-                      ),
-                      const Gap(4),
-                      Opacity(
-                        opacity: 0.7,
-                        child: BBText.bodySmall(
-                          walletStr,
-                          onSurface: true,
-                          isBold: true,
-                          fontSize: 12,
-                        ),
-                      ),
-                      const Spacer(),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          BBText.titleLarge(
-                            balance,
-                            onSurface: true,
-                            isBold: true,
-                            fontSize: 24,
-                            compact: true,
-                          ),
-                          const Gap(4),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 1),
-                            child: BBText.title(
-                              unit,
-                              onSurface: true,
-                              isBold: true,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (fiatCurrency != null) ...[
-                        Row(
+                      Expanded(
+                        flex: 9,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            BBText.bodySmall(
-                              '~$fiatAmt',
+                            const Gap(8),
+                            BBText.titleLarge(
+                              name ?? fingerprint,
                               onSurface: true,
-                              fontSize: 12,
+                              fontSize: 20,
+                              compact: true,
                             ),
                             const Gap(4),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 1),
+                            Opacity(
+                              opacity: 0.7,
                               child: BBText.bodySmall(
-                                fiatCurrency.shortName.toUpperCase(),
+                                walletStr,
                                 onSurface: true,
+                                isBold: true,
                                 fontSize: 12,
                               ),
                             ),
+                            const Spacer(),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                BBText.titleLarge(
+                                  balance,
+                                  onSurface: true,
+                                  isBold: true,
+                                  fontSize: 24,
+                                  compact: true,
+                                ),
+                                const Gap(4),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 1),
+                                  child: BBText.title(
+                                    unit,
+                                    onSurface: true,
+                                    isBold: true,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (fiatCurrency != null) ...[
+                              Row(
+                                children: [
+                                  BBText.bodySmall(
+                                    '~$fiatAmt',
+                                    onSurface: true,
+                                    fontSize: 12,
+                                  ),
+                                  const Gap(4),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 1),
+                                    child: BBText.bodySmall(
+                                      fiatCurrency.shortName.toUpperCase(),
+                                      onSurface: true,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                            const Gap(4),
                           ],
                         ),
-                      ],
-                      const Gap(4),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: !wallet.vaultBackupTested ||
+                                !wallet.physicalBackupTested
+                            ? IconButton(
+                                onPressed: () => context.push(
+                                      '/wallet-settings/backup-settings',
+                                      extra: wallet.id,
+                                    ),
+                                icon: Icon(
+                                  Icons.warning_rounded,
+                                  color: context.colour.error,
+                                  size: 20,
+                                ))
+                            : const SizedBox.shrink(),
+                      ),
                     ],
-                  ),
+                  )
                 ],
               ),
             ),
@@ -1174,12 +1179,7 @@ class HomeWarnings extends StatelessWidget {
       children: [
         for (final w in warnings)
           WarningBanner(
-            onTap: () {
-              context.push(
-                w.route ?? '/home',
-                extra: w.walletBloc.id,
-              );
-            },
+            onTap: () {},
             info: w.info,
           ),
         if (!keyServerUp)

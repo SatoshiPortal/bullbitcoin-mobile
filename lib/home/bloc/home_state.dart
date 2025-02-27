@@ -402,7 +402,7 @@ class HomeState with _$HomeState {
         : walletsWithEnoughBalance;
   }
 
-  Set<({String info, Wallet walletBloc, String? route})> homeWarnings(
+  Set<({String info, Wallet walletBloc})> homeWarnings(
     BBNetwork network,
   ) {
     bool instantBalWarning(Wallet wb) {
@@ -411,46 +411,32 @@ class HomeState with _$HomeState {
     }
 
     bool needsBackupWarning(Wallet wb) =>
-        !wb.physicalBackupTested || !wb.vaultBackupTested;
+        !wb.physicalBackupTested && !wb.vaultBackupTested;
 
-    final warnings = <({String info, Wallet walletBloc, String? route})>{};
-    final List<String> backupWalletFngrForBackupWarning = [];
+    final warnings = <({String info, Wallet walletBloc})>{};
+    final networkWallets = walletsFromNetwork(network);
 
-    for (final walletBloc in walletsFromNetwork(network)) {
+    // Check for any wallet needing backup
+    final walletNeedingBackup =
+        networkWallets.where(needsBackupWarning).firstOrNull;
+    if (walletNeedingBackup != null) {
+      warnings.add(
+        (
+          info: 'Backup needed to be tested!',
+          walletBloc: walletNeedingBackup,
+        ),
+      );
+    }
+
+    // Check for instant wallets with high balance
+    for (final walletBloc in networkWallets) {
       if (instantBalWarning(walletBloc)) {
         warnings.add(
           (
             info: 'Instant wallet balance is high',
             walletBloc: walletBloc,
-            route: null
           ),
         );
-      }
-
-      if (needsBackupWarning(walletBloc)) {
-        final fngr = walletBloc.sourceFingerprint;
-        if (backupWalletFngrForBackupWarning.contains(fngr)) continue;
-
-        if (!walletBloc.physicalBackupTested) {
-          warnings.add(
-            (
-              info: 'Physical backup needed! Tap to test backup.',
-              walletBloc: walletBloc,
-              route: '/wallet-settings/backup-settings/backup-options/physical'
-            ),
-          );
-        }
-        if (!walletBloc.vaultBackupTested) {
-          warnings.add(
-            (
-              info: 'Encrypted backup needed! Tap to test backup.',
-              walletBloc: walletBloc,
-              route: '/wallet-settings/backup-settings/backup-options/encrypted'
-            ),
-          );
-        }
-
-        backupWalletFngrForBackupWarning.add(fngr);
       }
     }
 
