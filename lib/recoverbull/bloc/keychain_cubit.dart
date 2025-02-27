@@ -50,7 +50,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     if (!isClosed) {
       try {
         await _keyService.serverInfo();
-        emit(state.copyWith(keyServerUp: true));
+        emit(state.copyWith(keyServerUp: true, loading: false));
       } catch (e) {
         debugPrint('Server status check failed: $e');
         emit(state.copyWith(keyServerUp: false));
