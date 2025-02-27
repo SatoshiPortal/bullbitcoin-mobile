@@ -1,7 +1,10 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
+import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/recoverbull/bloc/backup_settings_cubit.dart';
+import 'package:bb_mobile/recoverbull/bloc/keychain_cubit.dart';
+import 'package:bb_mobile/recoverbull/bloc/keychain_state.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +33,9 @@ class _BackupSettingsState extends State<BackupSettings> {
         BlocProvider(
           create: (BuildContext context) =>
               createBackupSettingsCubit(walletId: widget.wallet),
+        ),
+        BlocProvider(
+          create: (context) => KeychainCubit(),
         ),
       ],
       child: Scaffold(
@@ -144,82 +150,103 @@ class _Screen extends StatelessWidget {
   }
 }
 
-class BackupOptionsScreen extends StatelessWidget {
+class BackupOptionsScreen extends StatefulWidget {
   const BackupOptionsScreen({super.key, required this.wallet});
   final String wallet;
 
   @override
+  State<BackupOptionsScreen> createState() => _BackupOptionsScreenState();
+}
+
+class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
+  @override
+  void initState() {
+    context.read<KeychainCubit>().keyServerStatus();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        flexibleSpace: BBAppBar(
-          onBack: () => context.pop(),
-          text: '',
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            const BBText.titleLarge(
-              'Backup your wallet',
-              isBold: true,
-              fontSize: 25,
+    return BlocBuilder<KeychainCubit, KeychainState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            flexibleSpace: BBAppBar(
+              onBack: () => context.pop(),
+              text: '',
             ),
-            const Gap(10),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Without a backup, you',
-                    style: context.font.bodySmall!.copyWith(
-                      fontSize: 12,
-                    ),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                const BBText.titleLarge(
+                  'Backup your wallet',
+                  isBold: true,
+                  fontSize: 25,
+                ),
+                const Gap(10),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Without a backup, you',
+                        style: context.font.bodySmall!.copyWith(
+                          fontSize: 12,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' will ',
+                        style: context.font.bodySmall!.copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 12,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            'eventually lose access to your money. It is critically important to do a backup.',
+                        style: context.font.bodySmall!.copyWith(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
-                  TextSpan(
-                    text: ' will ',
-                    style: context.font.bodySmall!.copyWith(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 12,
-                    ),
+                ),
+                const Gap(20),
+                _renderBackupSetting(
+                  title: 'Encrypted vault (quick and easy)',
+                  description:
+                      'Your backup is encrypted with a secure key that cannot be cracked, and uploaded to your cloud account. The key to unlock your vault is stored in an anonymous password manager and accessible with your PIN.',
+                  onTap: () => state.keyServerUp
+                      ? context.push(
+                          '/wallet-settings/backup-settings/backup-options/encrypted',
+                          extra: widget.wallet,
+                        )
+                      : ScaffoldMessenger.of(context).showSnackBar(
+                          context.showToast(
+                            '${state.error} Please try backing up again later',
+                          ),
+                        ),
+                ),
+                const Gap(20),
+                _renderBackupSetting(
+                  title: 'Physical backup (take your time)',
+                  description:
+                      'You have to write down 12 words on a piece of paper or engrave it in metal. Make sure not to lose it. If anybody ever finds those 12 words, they can steal your Bitcoin.',
+                  onTap: () => context.push(
+                    '/wallet-settings/backup-settings/backup-options/physical',
+                    extra: widget.wallet,
                   ),
-                  TextSpan(
-                    text:
-                        'eventually lose access to your money. It is critically important to do a backup.',
-                    style: context.font.bodySmall!.copyWith(
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const Gap(20),
-            _renderBackupSetting(
-              title: 'Encrypted vault (quick and easy)',
-              description:
-                  'Your backup is encrypted with a secure key that cannot be cracked, and uploaded to your cloud account. The key to unlock your vault is stored in an anonymous password manager and accessible with your PIN.',
-              onTap: () => context.push(
-                '/wallet-settings/backup-settings/backup-options/encrypted',
-                extra: wallet,
-              ),
-            ),
-            const Gap(20),
-            _renderBackupSetting(
-              title: 'Physical backup (take your time)',
-              description:
-                  'You have to write down 12 words on a piece of paper or engrave it in metal. Make sure not to lose it. If anybody ever finds those 12 words, they can steal your Bitcoin.',
-              onTap: () => context.push(
-                '/wallet-settings/backup-settings/backup-options/physical',
-                extra: wallet,
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -269,75 +296,101 @@ class BackupOptionsScreen extends StatelessWidget {
   }
 }
 
-class RecoverOptionsScreen extends StatelessWidget {
+class RecoverOptionsScreen extends StatefulWidget {
   const RecoverOptionsScreen({super.key});
 
   @override
+  State<RecoverOptionsScreen> createState() => _RecoverOptionsScreenState();
+}
+
+class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
+  @override
+  void initState() {
+    context.read<KeychainCubit>().keyServerStatus();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        flexibleSpace: BBAppBar(
-          onBack: () => context.pop(),
-          text: '',
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            const BBText.titleLarge(
-              'Recover or test your backup',
-              isBold: true,
-              fontSize: 25,
+    return BlocBuilder<KeychainCubit, KeychainState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            automaticallyImplyLeading: false,
+            flexibleSpace: BBAppBar(
+              onBack: () => context.pop(),
+              text: '',
             ),
-            const Gap(10),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Testing your backup is ',
-                    style: context.font.bodySmall!.copyWith(fontSize: 12),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                const BBText.titleLarge(
+                  'Recover or test your backup',
+                  isBold: true,
+                  fontSize: 25,
+                ),
+                const Gap(10),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Testing your backup is ',
+                        style: context.font.bodySmall!.copyWith(fontSize: 12),
+                      ),
+                      TextSpan(
+                        text: 'critically important ',
+                        style: context.font.bodySmall!.copyWith(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 12,
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                            'to ensure you can recover your wallet if needed. Choose your recovery method below.',
+                        style: context.font.bodySmall!.copyWith(fontSize: 12),
+                      ),
+                    ],
                   ),
-                  TextSpan(
-                    text: 'critically important ',
-                    style: context.font.bodySmall!.copyWith(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 12,
-                    ),
+                ),
+                const Gap(20),
+                _renderBackupSetting(
+                  title: 'Encrypted vault',
+                  description:
+                      "Restore your wallet using the encrypted backup stored in your cloud account. You'll need your PIN to access the decryption key from the password manager.",
+                  onTap: () => state.keyServerUp
+                      ? context.push(
+                          '/wallet-settings/backup-settings/recover-options/encrypted',
+                        )
+                      : {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            context.showToast(
+                              '${state.error} Please try again later!',
+                            ),
+                          ),
+                          context.push(
+                            '/wallet-settings/backup-settings/recover-options/encrypted',
+                          )
+                        },
+                ),
+                const Gap(20),
+                _renderBackupSetting(
+                  title: 'Physical backup',
+                  description:
+                      "Restore your wallet by entering the 12 words from your physical backup.",
+                  onTap: () => context.push(
+                    '/wallet-settings/backup-settings/recover-options/physical',
                   ),
-                  TextSpan(
-                    text:
-                        'to ensure you can recover your wallet if needed. Choose your recovery method below.',
-                    style: context.font.bodySmall!.copyWith(fontSize: 12),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const Gap(20),
-            _renderBackupSetting(
-              title: 'Encrypted vault',
-              description:
-                  "Restore your wallet using the encrypted backup stored in your cloud account. You'll need your PIN to access the decryption key from the password manager.",
-              onTap: () => context.push(
-                '/wallet-settings/backup-settings/recover-options/encrypted',
-              ),
-            ),
-            const Gap(20),
-            _renderBackupSetting(
-              title: 'Physical backup',
-              description:
-                  "Restore your wallet by entering the 12 words from your physical backup.",
-              onTap: () => context.push(
-                '/wallet-settings/backup-settings/recover-options/physical',
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
