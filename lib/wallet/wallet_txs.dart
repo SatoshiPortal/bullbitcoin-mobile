@@ -235,31 +235,17 @@ class BackupAlertBanner extends StatelessWidget {
     final vaultBackupTested =
         context.select((WalletBloc x) => x.state.wallet.vaultBackupTested);
 
-    if (physicalBackupTested && vaultBackupTested) {
-      return const SizedBox.shrink();
-    }
-
     return Column(
       children: [
-        if (!physicalBackupTested)
+        if (!physicalBackupTested && !vaultBackupTested)
           WarningBanner(
             onTap: () {
               context.push(
-                '/wallet-settings/backup-settings/backup-options/physical',
+                '/wallet-settings/backup-settings/backup-options',
                 extra: wallet.id,
               );
             },
-            info: 'Physical backup not tested! Tap to test backup.',
-          ),
-        if (!vaultBackupTested)
-          WarningBanner(
-            onTap: () {
-              context.push(
-                '/wallet-settings/backup-settings/backup-options/encrypted',
-                extra: wallet.id,
-              );
-            },
-            info: 'Encrypted backup not tested! Tap to test backup.',
+            info: 'Backup needed to be tested! Tap to test backup.',
           ),
       ],
     );

@@ -79,7 +79,7 @@ class _Screen extends StatelessWidget {
               children: <Widget>[
                 const WalletHeader(),
                 const ActionsRow(),
-                if (!physicalBackupTested || !vaultBackupTested) ...[
+                if (!physicalBackupTested && !vaultBackupTested) ...[
                   const Gap(24),
                   const BackupAlertBanner(),
                   // const Gap(24),
