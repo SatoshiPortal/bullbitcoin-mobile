@@ -273,8 +273,14 @@ class StorageOptionCard extends StatelessWidget {
 }
 
 class EncryptedVaultRecoverPage extends StatefulWidget {
-  const EncryptedVaultRecoverPage({super.key, this.wallet});
+  const EncryptedVaultRecoverPage({
+    super.key,
+    this.wallet,
+    this.canPop = true,
+  });
+
   final String? wallet;
+  final bool canPop;
 
   @override
   State<EncryptedVaultRecoverPage> createState() =>
@@ -365,7 +371,8 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
               centerTitle: true,
               flexibleSpace: BBAppBar(
                 text: '',
-                onBack: () => context.pop(),
+                onBack: () =>
+                    widget.canPop ? context.pop() : context.go('/home'),
               ),
             ),
             body: state.loadingBackups
