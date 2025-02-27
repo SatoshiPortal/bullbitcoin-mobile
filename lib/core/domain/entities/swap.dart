@@ -21,16 +21,32 @@ enum SwapType {
 enum SwapStatus {
   pending,
   completed,
+  refunded,
   failed,
 }
+
+// enum WalletIdType{
+//   internal("s"),
+//   external;
+
+//   final String id;
+
+//   const WalletIdType(this.id);
+// }
 
 @freezed
 class Swap with _$Swap {
   const factory Swap({
     required String id,
+    required String
+        receiveWalletReference, // address/invoice for external; id for internal
+    required String
+        sendWalletReference, // address/invoice for external; id for internal
     required SwapType type,
     required SwapStatus status,
     required Environment environment,
+    required creationTime,
+    DateTime? completionTime,
   }) = _Swap;
   const Swap._();
 }
