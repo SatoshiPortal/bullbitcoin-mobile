@@ -422,7 +422,7 @@ class HomeState with _$HomeState {
     if (walletNeedingBackup != null) {
       warnings.add(
         (
-          info: 'Backup needed to be tested! Tap to test.',
+          info: 'Backup needed to be tested!',
           walletBloc: walletNeedingBackup,
         ),
       );
