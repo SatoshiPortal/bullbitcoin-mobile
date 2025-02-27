@@ -247,9 +247,15 @@ GoRouter setupRouter() => GoRouter(
                     ),
                     GoRoute(
                       path: 'encrypted',
-                      builder: (context, state) => EncryptedVaultRecoverPage(
-                        wallet: state.extra as String?,
-                      ),
+                      builder: (context, state) {
+                        // Handle both String and bool extra parameters
+                        final extra = state.extra;
+                        if (extra is bool) {
+                          return EncryptedVaultRecoverPage(canPop: extra);
+                        }
+                        return EncryptedVaultRecoverPage(
+                            wallet: extra as String?);
+                      },
                       routes: [
                         GoRoute(
                           path: 'info',
