@@ -402,7 +402,7 @@ class HomeState with _$HomeState {
         : walletsWithEnoughBalance;
   }
 
-  Set<({String info, Wallet walletBloc, String? route})> homeWarnings(
+  Set<({String info, Wallet walletBloc})> homeWarnings(
     BBNetwork network,
   ) {
     bool instantBalWarning(Wallet wb) {
