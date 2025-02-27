@@ -413,10 +413,23 @@ class HomeState with _$HomeState {
     bool needsBackupWarning(Wallet wb) =>
         !wb.physicalBackupTested || !wb.vaultBackupTested;
 
-    final warnings = <({String info, Wallet walletBloc, String? route})>{};
-    final List<String> backupWalletFngrForBackupWarning = [];
+    final warnings = <({String info, Wallet walletBloc})>{};
+    final networkWallets = walletsFromNetwork(network);
 
-    for (final walletBloc in walletsFromNetwork(network)) {
+    // Check for any wallet needing backup
+    final walletNeedingBackup =
+        networkWallets.where(needsBackupWarning).firstOrNull;
+    if (walletNeedingBackup != null) {
+      warnings.add(
+        (
+          info: 'Backup needed to be tested! Tap to test.',
+          walletBloc: walletNeedingBackup,
+        ),
+      );
+    }
+
+    // Check for instant wallets with high balance
+    for (final walletBloc in networkWallets) {
       if (instantBalWarning(walletBloc)) {
         warnings.add(
           (
