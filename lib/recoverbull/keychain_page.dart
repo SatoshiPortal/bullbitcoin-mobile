@@ -840,6 +840,8 @@ class _SuccessDialog extends StatelessWidget {
     String title;
     String message;
     String route;
+    dynamic extra;
+
     if (pageState == KeyChainPageState.recovery) {
       title = 'Recovery Successful';
       message = 'Your wallet has been recovered successfully';
@@ -849,6 +851,7 @@ class _SuccessDialog extends StatelessWidget {
       message =
           'Your wallet has been backed up successfully \n Please test your backup';
       route = '/wallet-settings/backup-settings/recover-options/encrypted';
+      extra = false;
     } else if (pageState == KeyChainPageState.delete) {
       title = 'Backup Key Deleted';
       message = 'Your backup key has been permanently deleted';
@@ -881,7 +884,11 @@ class _SuccessDialog extends StatelessWidget {
               label: 'Continue',
               onPressed: () {
                 Navigator.of(context).pop();
-                context.go(route);
+                if (extra != null) {
+                  context.push(route, extra: extra);
+                } else {
+                  context.go(route);
+                }
               },
             )
           ],
