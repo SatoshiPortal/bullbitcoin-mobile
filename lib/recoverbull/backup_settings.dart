@@ -396,23 +396,14 @@ class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
                       description:
                           "Restore your wallet by entering the 12 words from your physical backup.",
                       onTap: () => context.push(
-                        '/wallet-settings/backup-settings/recover-options/physical',
+                        '/wallet-settings/backup-settings/backup-options/physical',
+                        extra: widget.wallet,
                       ),
                     ),
                   ],
                 ),
-                const Gap(20),
-                _renderBackupSetting(
-                  title: 'Physical backup',
-                  description:
-                      "Restore your wallet by entering the 12 words from your physical backup.",
-                  onTap: () => context.push(
-                    '/wallet-settings/backup-settings/backup-options/physical',
-                    extra: widget.wallet,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },
