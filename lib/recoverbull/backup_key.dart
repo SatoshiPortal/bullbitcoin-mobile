@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_ui/app_bar.dart';
+import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/toast.dart';
 import 'package:bb_mobile/recoverbull/bloc/backup_settings_cubit.dart';
@@ -30,6 +31,7 @@ class _BackupKeyPageState extends State<BackupKeyPage> {
   void initState() {
     super.initState();
     _backupSettingsCubit = createBackupSettingsCubit(walletId: widget.wallet);
+    context.read<KeychainCubit>().keyServerStatus();
   }
 
   @override
@@ -162,46 +164,6 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
     super.dispose();
   }
 
-  ButtonStyle _getButtonStyle(BuildContext context, bool isEnabled) {
-    return FilledButton.styleFrom(
-      backgroundColor:
-          isEnabled ? context.colour.shadow : context.colour.surface,
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-    );
-  }
-
-  Widget _buildActionButton({
-    required BuildContext context,
-    required bool isEnabled,
-    required String text,
-    required IconData icon,
-    required VoidCallback? onPressed,
-  }) {
-    return FilledButton(
-      onPressed: isEnabled ? onPressed : null,
-      style: _getButtonStyle(context, isEnabled),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            text,
-            style: context.font.bodyMedium!.copyWith(
-              color: isEnabled ? Colors.white : context.colour.onSurface,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          const Gap(8),
-          Icon(
-            icon,
-            color: isEnabled ? Colors.white : context.colour.onSurface,
-            size: 20,
-          ),
-        ],
-      ),
-    );
-  }
-
   void _handleBackupAction(BuildContext context) {
     if (widget.backupKey.isNotEmpty) {
       _showBackupKeyDialog(context, widget.backupKey);
@@ -221,7 +183,8 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const BBText.titleLarge('Backup Key', isBold: true),
+        backgroundColor: context.colour.primaryContainer,
+        title: const BBText.title('Backup key', isBold: true),
         content: Row(
           children: [
             Expanded(
@@ -239,7 +202,7 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
                   context.showToast('Copied to clipboard'),
                 );
               },
-              icon: const Icon(Icons.copy, color: Colors.black),
+              icon: Icon(Icons.copy, color: context.colour.primary),
             ),
           ],
         ),
@@ -316,7 +279,8 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
             builder: (context, keyState) {
               return BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
                 listenWhen: (previous, current) =>
-                    previous.backupKey != current.backupKey,
+                    previous.backupKey != current.backupKey ||
+                    previous.loadingBackups != current.loadingBackups,
                 listener: (context, state) {
                   if (state.errorLoadingBackups.isNotEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -351,7 +315,7 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Latest Available Backup',
+                                  'Latest available backup',
                                   style: context.font.titleLarge!
                                       .copyWith(fontWeight: FontWeight.w900),
                                 ),
@@ -372,23 +336,25 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
                                   ),
                                 ),
                                 const Gap(20),
-                                _buildActionButton(
-                                  context: context,
-                                  isEnabled: keyState.keyServerUp,
-                                  text: widget.backupKey.isNotEmpty
+                                BBButton.withColour(
+                                  fillWidth: true,
+                                  label: widget.backupKey.isNotEmpty
                                       ? 'View Backup Key'
                                       : 'Download Backup Key',
-                                  icon: widget.backupKey.isNotEmpty
+                                  disabled: !keyState.keyServerUp,
+                                  leftIcon: widget.backupKey.isNotEmpty
                                       ? CupertinoIcons.eye_fill
                                       : CupertinoIcons.cloud_download_fill,
-                                  onPressed: () => _handleBackupAction(context),
+                                  onPressed: () => !keyState.keyServerUp
+                                      ? _handleBackupAction(context)
+                                      : () {},
                                 ),
                                 const Gap(10),
-                                _buildActionButton(
-                                  context: context,
-                                  isEnabled: keyState.keyServerUp,
-                                  text: 'Delete Backup Key',
-                                  icon: CupertinoIcons.delete_right,
+                                BBButton.withColour(
+                                  fillWidth: true,
+                                  label: 'Delete Backup Key',
+                                  disabled: !keyState.keyServerUp,
+                                  leftIcon: CupertinoIcons.delete_right,
                                   onPressed: () => context.push(
                                     '/wallet-settings/backup-settings/keychain',
                                     extra: (
@@ -400,17 +366,20 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
                                   ),
                                 ),
                                 const Gap(10),
-                                InkWell(
-                                  onTap: () => context
+                                BBButton.text(
+                                  center: true,
+                                  centered: true,
+                                  isBlue: false,
+                                  onPressed: () => context
                                       .read<BackupSettingsCubit>()
                                       .recoverBackupKeyFromMnemonic(
                                         widget.recoveredBackup['path']
                                             as String?,
                                       ),
-                                  child: const BBText.bodySmall(
-                                    'Forgot your secret? Click to recover',
-                                    textAlign: TextAlign.center,
-                                  ),
+                                  fontSize: 12,
+                                  label: keyState.keyServerUp
+                                      ? 'Forgot your secret? Click to recover.'
+                                      : 'Server unreachable? Click to recover.',
                                 ),
                                 const Gap(10),
                               ],
