@@ -172,7 +172,7 @@ class _Screen extends StatelessWidget {
               }
             }
 
-            if (state.hasError) {
+            if (state.hasError && state.keyServerUp) {
               showDialog(
                 context: context,
                 barrierDismissible: false,
