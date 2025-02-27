@@ -36,7 +36,7 @@ class Swap with _$Swap {
     required SwapType type,
     required SwapStatus status,
     required Environment environment,
-    required creationTime,
+    required DateTime creationTime,
     DateTime? completionTime,
     required int keyIndex,
   }) = _Swap;
