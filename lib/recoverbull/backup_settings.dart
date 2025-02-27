@@ -323,17 +323,16 @@ class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
     return BlocBuilder<KeychainCubit, KeychainState>(
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            automaticallyImplyLeading: false,
-            flexibleSpace: BBAppBar(
-              onBack: () => context.pop(),
-              text: '',
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              automaticallyImplyLeading: false,
+              flexibleSpace: BBAppBar(
+                onBack: () => context.pop(),
+                text: '',
+              ),
             ),
-          ),
-          body: Column(
-            children: [
+            body: Column(children: [
               const KeyServerWarnings(),
               Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -402,20 +401,8 @@ class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
                     ),
                   ],
                 ),
-                const Gap(20),
-                _renderBackupSetting(
-                  title: 'Physical backup',
-                  description:
-                      "Restore your wallet by entering the 12 words from your physical backup.",
-                  onTap: () => context.push(
-                    '/wallet-settings/backup-settings/backup-options/physical',
-                    extra: widget.wallet,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
+              ),
+            ]));
       },
     );
   }
