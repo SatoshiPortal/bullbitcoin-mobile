@@ -678,18 +678,35 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         type,
         publicDescriptors,
       );
-
       if (wallet == null) {
+        debugPrint('Failed to create wallet');
         return (null, Err('Failed to create wallet'));
       }
-      final walletRepoErr = await _walletsStorageRepository.newWallet(
-          wallet.copyWith(
-              vaultBackupTested: true, mainWallet: type == BBWalletType.main));
-      if (walletRepoErr != null &&
-          !walletRepoErr.message.toLowerCase().contains('exists')) {
-        return (null, Err(walletRepoErr.toString()));
+      final updatedWallet = wallet.copyWith(
+        mainWallet: type == BBWalletType.main,
+        vaultBackupTested: true,
+        lastVaultBackupTested: DateTime.now(),
+      );
+      final createWalletErr =
+          await _walletsStorageRepository.newWallet(updatedWallet);
+
+      if (createWalletErr != null &&
+          createWalletErr.message.toLowerCase().contains('exists')) {
+        final (existingWallet, readErr) = await _walletsStorageRepository
+            .readWallet(walletHashId: wallet.getWalletStorageString());
+
+        if (readErr != null) {
+          return (null, Err(readErr.toString()));
+        }
+        return (
+          existingWallet?.copyWith(
+            vaultBackupTested: true,
+            lastVaultBackupTested: DateTime.now(),
+          ),
+          null
+        );
       }
-      return (wallet, null);
+      return (updatedWallet, null);
     } catch (e) {
       return (null, Err(e.toString()));
     }
@@ -971,12 +988,12 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       backup.passphrase,
       backup.publicDescriptors,
     );
+    if (err != null) {
+      return err;
+    }
     if (savedWallet != null) {
       await _updateWalletBackupStatus(
-        savedWallet.copyWith(
-          vaultBackupTested: true,
-          lastVaultBackupTested: DateTime.now(),
-        ),
+        savedWallet,
       );
     }
     return err;
