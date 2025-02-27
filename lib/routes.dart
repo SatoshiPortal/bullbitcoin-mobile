@@ -237,7 +237,8 @@ GoRouter setupRouter() => GoRouter(
                 ),
                 GoRoute(
                   path: 'recover-options',
-                  builder: (context, state) => const RecoverOptionsScreen(),
+                  builder: (context, state) =>
+                      RecoverOptionsScreen(wallet: state.extra! as String),
                   routes: [
                     GoRoute(
                       path: 'physical',
