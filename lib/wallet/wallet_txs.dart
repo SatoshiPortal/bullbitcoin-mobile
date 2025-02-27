@@ -245,7 +245,7 @@ class BackupAlertBanner extends StatelessWidget {
                 extra: wallet.id,
               );
             },
-            info: 'Backup needed to be tested! Tap to test backup.',
+            info: 'Backup needs to be tested! Tap to test',
           ),
       ],
     );
