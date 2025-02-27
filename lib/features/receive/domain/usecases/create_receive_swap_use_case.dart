@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:bb_mobile/_pkg/consts/config.dart';
+import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/core/data/repositories/seed_repository_impl.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/swap.dart';
@@ -10,75 +14,110 @@ class CreateReceiveSwapUseCase {
   final SwapRepository _swapRepository;
   final SwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
+  final KeyValueStorageDataSource _localSwapStorage;
 
   CreateReceiveSwapUseCase({
     required WalletRepositoryManager walletRepositoryManager,
     required SwapRepository swapRepository,
     required SwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
+    required KeyValueStorageDataSource localSwapStorage,
   })  : _walletRepositoryManager = walletRepositoryManager,
         _swapRepository = swapRepository,
         _swapRepositoryTestnet = swapRepositoryTestnet,
-        _seedRepository = seedRepository;
+        _seedRepository = seedRepository,
+        _localSwapStorage = localSwapStorage;
 
   Future<Swap> execute({
     required String walletId,
     required SwapType type,
     required BigInt amountSat,
   }) async {
-    final walletRepository = _walletRepositoryManager.getRepository(walletId);
-    // TODO: discuss error handling
-    if (walletRepository == null) {
-      throw Exception('Wallet repository not found');
-    }
-    final mnemonic = await _seedRepository.getSeed(walletRepository.id);
-    // TODO: what if a walletId does not have a seed; for example xpub wallet
-    if (mnemonic == null) {
-      throw Exception('Mnemonic for wallet not found');
-    }
-    if (walletRepository.network.isLiquid &&
-        type == SwapType.lightningToBitcoin) {
-      throw Exception(
-        'Cannot create a lightning to bitcoin with a liquid wallet',
-      );
-    }
-    if (walletRepository.network.isBitcoin &&
-        type == SwapType.lightningToLiquid) {
-      throw Exception(
-        'Cannot create a lightning to liquid swap with a bitcoin wallet',
-      );
-    }
+    try {
+      final walletRepository = _walletRepositoryManager.getRepository(walletId);
+      if (walletRepository == null) {
+        throw Exception('Wallet repository not found');
+      }
+      final mnemonic = await _seedRepository.getSeed(walletRepository.id);
 
-    final environment = walletRepository.network.isTestnet
-        ? Environment.testnet
-        : Environment.mainnet;
+      if (walletRepository.network.isLiquid &&
+          type == SwapType.lightningToBitcoin) {
+        throw Exception(
+          'Cannot create a lightning to bitcoin with a liquid wallet',
+        );
+      }
+      if (walletRepository.network.isBitcoin &&
+          type == SwapType.lightningToLiquid) {
+        throw Exception(
+          'Cannot create a lightning to liquid swap with a bitcoin wallet',
+        );
+      }
 
-    final swapRepository = environment == Environment.testnet
-        ? _swapRepositoryTestnet
-        : _swapRepository;
+      final environment = walletRepository.network.isTestnet
+          ? Environment.testnet
+          : Environment.mainnet;
 
-    // TODO read all swaps from the database and increment index
-    final index = BigInt.from(0);
-    // final address = await walletRepository.getLastUnusedAddress();
+      final swapRepository = environment == Environment.testnet
+          ? _swapRepositoryTestnet
+          : _swapRepository;
 
-    final swap = type == SwapType.lightningToLiquid
-        ? await swapRepository.createLightningToLiquidSwap(
+      final swaps = await _localSwapStorage.getAll();
+
+      switch (type) {
+        case SwapType.lightningToBitcoin:
+          final bitcoinReceiveSwaps = swaps.values
+              .where(
+                (swap) =>
+                    swap.type == SwapType.lightningToBitcoin ||
+                    swap.type == SwapType.liquidToBitcoin,
+              )
+              .toList();
+          final nextBitcoinIndex = bitcoinReceiveSwaps.isEmpty
+              ? 0
+              : bitcoinReceiveSwaps
+                      .map((swap) => swap.keyIndex as int)
+                      .reduce(max) +
+                  1;
+
+          return swapRepository.createLightningToBitcoinSwap(
             walletId: walletId,
             amountSat: amountSat,
             environment: environment,
             mnemonic: mnemonic.toString(),
-            index: index,
-            electrumUrl: '',
-          )
-        : await swapRepository.createLightningToBitcoinSwap(
-            walletId: walletId,
-            amountSat: amountSat,
-            environment: environment,
-            mnemonic: mnemonic.toString(),
-            index: index,
-            electrumUrl: '',
+            index: BigInt.from(nextBitcoinIndex),
+            electrumUrl: bbElectrumMain,
           );
 
-    return swap;
+        case SwapType.lightningToLiquid:
+          final liquidReceiveSwaps = swaps.values
+              .where(
+                (swap) =>
+                    swap.type == SwapType.lightningToLiquid ||
+                    swap.type == SwapType.bitcoinToLiquid,
+              )
+              .toList();
+          final nextLiquidIndex = liquidReceiveSwaps.isEmpty
+              ? 0
+              : liquidReceiveSwaps
+                      .map((swap) => swap.keyIndex as int)
+                      .reduce(max) +
+                  1;
+
+          return swapRepository.createLightningToLiquidSwap(
+            walletId: walletId,
+            amountSat: amountSat,
+            environment: environment,
+            mnemonic: mnemonic.toString(),
+            index: BigInt.from(nextLiquidIndex),
+            electrumUrl: liquidElectrumTestUrl,
+          );
+        default:
+          throw Exception(
+            'This is not a swap for the receive feature!',
+          );
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 }

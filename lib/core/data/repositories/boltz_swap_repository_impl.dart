@@ -9,22 +9,18 @@ import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDataSource _boltz;
-  // final SeedRepositoryImpl _seedRepo;
-  // final HiveWalletMetadataRepositoryImpl _walletRepo;
-  // final SettingsRepositoryImpl _settings;
-  final KeyValueStorageDataSource _localStorage;
+  final KeyValueStorageDataSource _secureStorage;
+  final KeyValueStorageDataSource _localSwapStorage;
+
+  static const _keyPrefix = 'swap_';
 
   BoltzSwapRepositoryImpl({
     required BoltzDataSource boltz,
-    // required SeedRepositoryImpl seedRepository,
-    // required HiveWalletMetadataRepositoryImpl walletRepository,
-    // required SettingsRepositoryImpl settings,
-    required KeyValueStorageDataSource localStorage,
+    required KeyValueStorageDataSource secureStorage,
+    required KeyValueStorageDataSource localSwapStorage,
   })  : _boltz = boltz,
-        _localStorage = localStorage;
-  // _seedRepo = seedRepository,
-  // _walletRepo = walletRepository,
-  // _settings = settings;
+        _secureStorage = secureStorage,
+        _localSwapStorage = localSwapStorage;
 
   @override
   Future<Swap> createLightningToBitcoinSwap({
@@ -32,10 +28,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required BigInt index,
     required String walletId,
     required BigInt amountSat,
-    Environment environment = Environment.mainnet,
     required String electrumUrl,
+    Environment environment = Environment.mainnet,
   }) async {
-    // TODO: use the _boltz datasource to create a reverse swap from lightning to bitcoin
     final btcLnSwap = await _boltz.createBtcReverseSwap(
       mnemonic,
       index,
@@ -43,7 +38,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       environment,
       electrumUrl,
     );
-    // TODO: create a swap entity with the id from the reverse swap creation and other needed info
+    final key = '$_keyPrefix${btcLnSwap.id}';
+    await _secureStorage.saveValue(key: key, value: btcLnSwap);
+
     final swap = Swap(
       id: btcLnSwap.id,
       type: SwapType.lightningToBitcoin,
@@ -52,11 +49,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       creationTime: DateTime.now(),
       receiveWalletReference: walletId,
       sendWalletReference: btcLnSwap.invoice,
-      keyIndex: index,
+      keyIndex: index as int,
     );
-
-    // TODO: store the swap in the local storage and return it (use the SwapModel for this)
-    // TODO: store the btcLnSwap object in secure storage as it needs to be used to progress the swap
+    await _localSwapStorage.saveValue(key: swap.id, value: swap);
     return swap;
   }
 
@@ -66,8 +61,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required BigInt index,
     required String walletId,
     required BigInt amountSat,
-    Environment environment = Environment.mainnet,
     required String electrumUrl,
+    Environment environment = Environment.mainnet,
   }) async {
     // TODO: use the _boltz datasource to create a reverse swap from lightning to liquid
     final lbtcLnSwap = await _boltz.createBtcReverseSwap(
@@ -77,7 +72,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       environment,
       electrumUrl,
     );
-    // TODO: create a swap entity with the id from the reverse swap creation and other needed info
+    final key = '$_keyPrefix${lbtcLnSwap.id}';
+    await _secureStorage.saveValue(key: key, value: lbtcLnSwap);
+
     final swap = Swap(
       id: lbtcLnSwap.id,
       type: SwapType.lightningToLiquid,
@@ -86,11 +83,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       creationTime: DateTime.now(),
       receiveWalletReference: walletId,
       sendWalletReference: lbtcLnSwap.invoice,
-      keyIndex: index,
+      keyIndex: index as int,
     );
-
-    // TODO: store the swap in the local storage and return it (use the SwapModel for this)
-
+    await _localSwapStorage.saveValue(key: swap.id, value: swap);
     return swap;
   }
 }

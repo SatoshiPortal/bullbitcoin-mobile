@@ -22,17 +22,8 @@ enum SwapStatus {
   pending,
   completed,
   refunded,
-  failed,
+  expired,
 }
-
-// enum WalletIdType{
-//   internal("s"),
-//   external;
-
-//   final String id;
-
-//   const WalletIdType(this.id);
-// }
 
 @freezed
 class Swap with _$Swap {
@@ -47,7 +38,7 @@ class Swap with _$Swap {
     required Environment environment,
     required creationTime,
     DateTime? completionTime,
-    required keyIndex,
+    required int keyIndex,
   }) = _Swap;
   const Swap._();
 }

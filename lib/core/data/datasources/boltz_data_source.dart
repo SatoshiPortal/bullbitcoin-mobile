@@ -39,17 +39,11 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     Environment environment,
     String electrumUrl,
   ) async {
-    // TODO: make this conversion a helper
-    // QUESTION: where should the conversion from Environment to chain take place?
-    final network = environment == Environment.mainnet
-        ? Chain.bitcoin
-        : Chain.bitcoinTestnet;
-
     return await BtcLnSwap.newReverse(
       mnemonic: mnemonic,
       index: index,
       outAmount: outAmount,
-      network: network,
+      network: environment.toBtcChain(),
       electrumUrl: electrumUrl,
       boltzUrl: _url,
     );
@@ -63,16 +57,23 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     Environment environment,
     String electrumUrl,
   ) async {
-    final network = environment == Environment.mainnet
-        ? Chain.bitcoin
-        : Chain.bitcoinTestnet;
     return await LbtcLnSwap.newReverse(
       mnemonic: mnemonic,
       index: index,
       outAmount: outAmount,
-      network: network,
+      network: environment.toLbtcChain(),
       electrumUrl: electrumUrl,
       boltzUrl: _url,
     );
+  }
+}
+
+extension EnvironmentToChain on Environment {
+  Chain toBtcChain() {
+    return this == Environment.mainnet ? Chain.bitcoin : Chain.bitcoinTestnet;
+  }
+
+  Chain toLbtcChain() {
+    return this == Environment.mainnet ? Chain.liquid : Chain.liquidTestnet;
   }
 }
