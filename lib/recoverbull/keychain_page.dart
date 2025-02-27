@@ -370,7 +370,7 @@ class _DeletePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StackedPage(
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.15,
+      bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
       bottomChild: _DeleteButton(inputType: inputType),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
