@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:bb_mobile/_pkg/consts/config.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
-import 'package:bb_mobile/core/data/repositories/seed_repository_impl.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/swap.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
