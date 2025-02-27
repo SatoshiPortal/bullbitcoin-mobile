@@ -251,7 +251,7 @@ class _EnterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StackedPage(
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.12,
+      bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
       bottomChild: _SetButton(inputType: inputType),
       child: Padding(
         key: ValueKey('enter$inputType'),
@@ -285,7 +285,7 @@ class _ConfirmPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return StackedPage(
       bottomChild: _ConfirmButton(inputType: inputType),
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.12,
+      bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
       child: SingleChildScrollView(
         key: ValueKey('confirm$inputType'),
         child: Padding(
@@ -320,7 +320,7 @@ class _RecoveryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StackedPage(
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.18,
+      bottomChildHeight: MediaQuery.of(context).size.height * 0.16,
       bottomChild: _RecoverButton(inputType: inputType),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
