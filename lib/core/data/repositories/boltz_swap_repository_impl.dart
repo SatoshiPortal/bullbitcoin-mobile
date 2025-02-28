@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:bb_mobile/core/data/datasources/boltz_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/core/data/models/swap_model.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/swap.dart';
 import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
@@ -50,7 +51,10 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       sendWalletReference: btcLnSwap.invoice,
       keyIndex: index as int,
     );
-    await _localSwapStorage.saveValue(key: swap.id, value: swap);
+    await _localSwapStorage.saveValue(
+      key: swap.id,
+      value: SwapModel.fromEntity(swap),
+    );
     return swap;
   }
 
