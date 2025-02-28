@@ -34,8 +34,8 @@ class AppUnlockLocator {
         timeoutCalculator: locator<TimeoutCalculator>(),
       ),
     );
-    locator.registerFactory<CheckPinCodeExistsUsecase>(
-      () => CheckPinCodeExistsUsecase(
+    locator.registerFactory<CheckPinCodeExistsUseCase>(
+      () => CheckPinCodeExistsUseCase(
         pinCodeRepository: locator<PinCodeRepository>(),
       ),
     );
@@ -51,7 +51,7 @@ class AppUnlockLocator {
     // Blocs
     locator.registerFactory<AppUnlockBloc>(
       () => AppUnlockBloc(
-        checkPinCodeExistsUsecase: locator<CheckPinCodeExistsUsecase>(),
+        checkPinCodeExistsUseCase: locator<CheckPinCodeExistsUseCase>(),
         getLatestUnlockAttemptUseCase: locator<GetLatestUnlockAttemptUseCase>(),
         attemptUnlockWithPinCodeUseCase:
             locator<AttemptUnlockWithPinCodeUseCase>(),

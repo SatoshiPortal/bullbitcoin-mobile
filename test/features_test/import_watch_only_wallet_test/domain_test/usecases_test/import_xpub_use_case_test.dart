@@ -1,144 +1,118 @@
 import 'package:bb_mobile/core/domain/entities/settings.dart';
+import 'package:bb_mobile/core/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/core/domain/services/wallet_metadata_derivator.dart';
-import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
+import 'package:bb_mobile/core/domain/services/wallet_manager.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/usecases/import_xpub_use_case.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 class MockSettingsRepository extends Mock implements SettingsRepository {}
 
-class MockWalletMetadataDerivator extends Mock
-    implements WalletMetadataDerivator {}
-
-class MockWalletMetadataRepository extends Mock
-    implements WalletMetadataRepository {}
-
-class MockWalletRepositoryManager extends Mock
-    implements WalletRepositoryManager {}
+class MockWalletManager extends Mock implements WalletManager {}
 
 void main() {
   late ImportXpubUseCase useCase;
   late MockSettingsRepository mockSettingsRepository;
-  late MockWalletMetadataDerivator mockWalletMetadataDerivator;
-  late MockWalletMetadataRepository mockWalletMetadataRepository;
-  late MockWalletRepositoryManager mockWalletRepositoryManager;
+  late MockWalletManager mockWalletManager;
 
   setUp(() {
     mockSettingsRepository = MockSettingsRepository();
-    mockWalletMetadataDerivator = MockWalletMetadataDerivator();
-    mockWalletMetadataRepository = MockWalletMetadataRepository();
-    mockWalletRepositoryManager = MockWalletRepositoryManager();
+    mockWalletManager = MockWalletManager();
 
     useCase = ImportXpubUseCase(
       settingsRepository: mockSettingsRepository,
-      walletMetadataDerivator: mockWalletMetadataDerivator,
-      walletMetadataRepository: mockWalletMetadataRepository,
-      walletRepositoryManager: mockWalletRepositoryManager,
+      walletManager: mockWalletManager,
     );
   });
 
-  final testXpub = 'xpub1234567890';
-  final testScriptType = ScriptType.bip84;
-  final testLabel = 'Test Wallet';
-  final testMetadata = WalletMetadata(
-    masterFingerprint: '',
-    xpubFingerprint: 'fingerprint1234',
-    network: Network.bitcoinMainnet,
-    scriptType: testScriptType,
-    xpub: testXpub,
-    externalPublicDescriptor: 'desc-external',
-    internalPublicDescriptor: 'desc-internal',
-    source: WalletSource.xpub,
-    isDefault: false,
-    label: testLabel,
-  );
+  const testXpub = 'xpub1234567890';
+  const testScriptType = ScriptType.bip84;
+  const testLabel = 'Test Wallet';
 
   group('ImportXpubUseCase - execute', () {
-    test('imports xpub for mainnet and registers wallet', () async {
+    test('imports xpub for mainnet', () async {
+      final result = Wallet(
+        id: 'id1234',
+        name: 'Test Wallet',
+        network: Network.bitcoinMainnet,
+        balanceSat: BigInt.zero,
+        isDefault: false,
+      );
+
       // Arrange: Set up mock responses
       when(() => mockSettingsRepository.getEnvironment())
           .thenAnswer((_) async => Environment.mainnet);
 
-      when(() => mockWalletMetadataDerivator.fromXpub(
+      when(() => mockWalletManager.importWatchOnlyWallet(
             xpub: testXpub,
             network: Network.bitcoinMainnet,
             scriptType: testScriptType,
             label: testLabel,
-          )).thenAnswer((_) async => testMetadata);
-
-      when(() => mockWalletMetadataRepository.storeWalletMetadata(testMetadata))
-          .thenAnswer((_) async {});
-
-      when(() => mockWalletRepositoryManager.registerWallet(testMetadata))
-          .thenAnswer((_) async {});
+          )).thenAnswer((_) async {
+        return result;
+      });
 
       // Act
-      await useCase.execute(
+      final wallet = await useCase.execute(
         xpub: testXpub,
         scriptType: testScriptType,
         label: testLabel,
       );
 
       // Assert
+      expect(wallet, result);
       verify(() => mockSettingsRepository.getEnvironment()).called(1);
-      verify(() => mockWalletMetadataDerivator.fromXpub(
-            xpub: testXpub,
-            network: Network.bitcoinMainnet,
-            scriptType: testScriptType,
-            label: testLabel,
-          )).called(1);
-      verify(() =>
-              mockWalletMetadataRepository.storeWalletMetadata(testMetadata))
-          .called(1);
-      verify(() => mockWalletRepositoryManager.registerWallet(testMetadata))
-          .called(1);
+      verify(
+        () => mockWalletManager.importWatchOnlyWallet(
+          xpub: testXpub,
+          network: Network.bitcoinMainnet,
+          scriptType: testScriptType,
+          label: testLabel,
+        ),
+      ).called(1);
     });
 
-    test('imports xpub for testnet and registers wallet', () async {
+    test('imports xpub for testnet', () async {
+      final result = Wallet(
+        id: 'id1234',
+        name: 'Test Wallet',
+        network: Network.bitcoinTestnet,
+        balanceSat: BigInt.zero,
+        isDefault: false,
+      );
+
       // Arrange: Set up mock responses
       when(() => mockSettingsRepository.getEnvironment())
           .thenAnswer((_) async => Environment.testnet);
 
-      final testMetadataTestnet =
-          testMetadata.copyWith(network: Network.bitcoinTestnet);
-
-      when(() => mockWalletMetadataDerivator.fromXpub(
+      when(() => mockWalletManager.importWatchOnlyWallet(
             xpub: testXpub,
             network: Network.bitcoinTestnet,
             scriptType: testScriptType,
             label: testLabel,
-          )).thenAnswer((_) async => testMetadataTestnet);
-
-      when(() => mockWalletMetadataRepository
-          .storeWalletMetadata(testMetadataTestnet)).thenAnswer((_) async {});
-
-      when(() =>
-              mockWalletRepositoryManager.registerWallet(testMetadataTestnet))
-          .thenAnswer((_) async {});
+          )).thenAnswer((_) async {
+        return result;
+      });
 
       // Act
-      await useCase.execute(
+      final wallet = await useCase.execute(
         xpub: testXpub,
         scriptType: testScriptType,
         label: testLabel,
       );
 
       // Assert
+      expect(wallet, result);
       verify(() => mockSettingsRepository.getEnvironment()).called(1);
-      verify(() => mockWalletMetadataDerivator.fromXpub(
-            xpub: testXpub,
-            network: Network.bitcoinTestnet,
-            scriptType: testScriptType,
-            label: testLabel,
-          )).called(1);
-      verify(() => mockWalletMetadataRepository
-          .storeWalletMetadata(testMetadataTestnet)).called(1);
-      verify(() =>
-              mockWalletRepositoryManager.registerWallet(testMetadataTestnet))
-          .called(1);
+      verify(
+        () => mockWalletManager.importWatchOnlyWallet(
+          xpub: testXpub,
+          network: Network.bitcoinTestnet,
+          scriptType: testScriptType,
+          label: testLabel,
+        ),
+      ).called(1);
     });
   });
 }

@@ -1,19 +1,19 @@
 import 'package:bb_mobile/core/domain/entities/address.dart';
-import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
+import 'package:bb_mobile/core/domain/services/wallet_manager.dart';
 
 class GetUsedReceiveAddressesUsecase {
-  final WalletRepositoryManager _walletRepositoryManager;
+  final WalletManager _walletManager;
 
   GetUsedReceiveAddressesUsecase({
-    required WalletRepositoryManager walletRepositoryManager,
-  }) : _walletRepositoryManager = walletRepositoryManager;
+    required WalletManager walletManager,
+  }) : _walletManager = walletManager;
 
   Future<List<Address>> execute({
     required String walletId,
     int? limit,
     int? offset,
   }) async {
-    final wallet = _walletRepositoryManager.getRepository(walletId);
+    final wallet = _walletManager.getRepository(walletId);
 
     if (wallet == null) {
       return [];

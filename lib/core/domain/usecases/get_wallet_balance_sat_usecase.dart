@@ -1,12 +1,11 @@
 import 'package:bb_mobile/core/domain/entities/balance.dart';
-import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
+import 'package:bb_mobile/core/domain/services/wallet_manager.dart';
 
 class GetWalletBalanceSatUseCase {
-  final WalletRepositoryManager _manager;
+  final WalletManager _manager;
 
-  GetWalletBalanceSatUseCase(
-      {required WalletRepositoryManager walletRepositoryManager})
-      : _manager = walletRepositoryManager;
+  GetWalletBalanceSatUseCase({required WalletManager walletManager})
+      : _manager = walletManager;
 
   Future<Balance> execute(String walletId) async {
     final walletRepository = _manager.getRepository(walletId);

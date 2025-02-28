@@ -2,10 +2,10 @@ import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_reposit
 
 // On iOS especially, some secure storage data might still be there after the app is uninstalled.
 // This use case is used to reset the app data when the app is installed again.
-class ResetAppDataUsecase {
+class ResetAppDataUseCase {
   final PinCodeRepository _pinCodeRepository;
 
-  ResetAppDataUsecase({
+  ResetAppDataUseCase({
     required PinCodeRepository pinCodeRepository,
   }) : _pinCodeRepository = pinCodeRepository;
 
