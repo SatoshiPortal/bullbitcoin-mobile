@@ -62,7 +62,7 @@ Services are helper classes that:
 - Separate and perform calculations, transformations, derivations or business rules not directly related to retrieving or storing data.
 - Typically include `Manager`, `Factory` or `Calculator` or other -er/-or suffixes in their names.
 
-E.g. [`WalletManager`](lib/core/domain/services/wallet_repository_manager.dart), [`WalletMetadataDerivator`](lib/core/domain/services/wallet_metadata_derivation_service.dart), [`MnemonicSeedFactory`](lib/core/domain/services/mnemonic_seed_factory.dart), [`TimeoutCalculator`](lib/features/pin_code/domain/services/timeout_calculator.dart).
+E.g. [`WalletManager`](lib/core/domain/services/wallet_manager.dart), [`WalletMetadataDerivator`](lib/core/domain/services/wallet_metadata_derivation_service.dart), [`MnemonicSeedFactory`](lib/core/domain/services/mnemonic_seed_factory.dart), [`TimeoutCalculator`](lib/features/pin_code/domain/services/timeout_calculator.dart).
 
 #### Use cases
 
