@@ -1,16 +1,15 @@
 import 'package:bb_mobile/core/domain/entities/address.dart';
-import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
+import 'package:bb_mobile/core/domain/services/wallet_manager.dart';
 
 class GetReceiveAddressUseCase {
-  final WalletRepositoryManager _walletRepositoryManager;
+  final WalletManager _walletManager;
 
-  GetReceiveAddressUseCase(
-      {required WalletRepositoryManager walletRepositoryManager})
-      : _walletRepositoryManager = walletRepositoryManager;
+  GetReceiveAddressUseCase({required WalletManager walletManager})
+      : _walletManager = walletManager;
 
   Future<Address> execute(
       {required String walletId, bool newAddress = false}) async {
-    final wallet = _walletRepositoryManager.getRepository(walletId);
+    final wallet = _walletManager.getRepository(walletId);
 
     // TODO: move this to getRepository function so it throws an exception if wallet is not found instead of returning null
     if (wallet == null) {

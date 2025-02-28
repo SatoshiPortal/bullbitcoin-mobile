@@ -1,13 +1,13 @@
 import 'package:bb_mobile/core/domain/services/wallet_manager.dart';
 
-class InitExistingWalletsUseCase {
+class CheckForExistingDefaultWalletsUseCase {
   final WalletManager _walletManager;
 
-  InitExistingWalletsUseCase({
+  CheckForExistingDefaultWalletsUseCase({
     required WalletManager walletManager,
   }) : _walletManager = walletManager;
 
-  Future<void> execute() async {
-    await _walletManager.initExistingWallets();
+  Future<bool> execute() async {
+    return _walletManager.doDefaultWalletsExist();
   }
 }

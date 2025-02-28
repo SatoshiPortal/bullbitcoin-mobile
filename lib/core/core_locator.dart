@@ -16,8 +16,8 @@ import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/word_list_repository.dart';
 import 'package:bb_mobile/core/domain/services/mnemonic_seed_factory.dart';
+import 'package:bb_mobile/core/domain/services/wallet_manager.dart';
 import 'package:bb_mobile/core/domain/services/wallet_metadata_derivator.dart';
-import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 import 'package:bb_mobile/core/domain/usecases/find_mnemonic_words_use_case.dart';
 import 'package:bb_mobile/core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_environment_usecase.dart';
@@ -137,8 +137,13 @@ class CoreLocator {
     locator.registerLazySingleton<WalletMetadataDerivator>(
       () => const WalletMetadataDerivatorImpl(),
     );
-    locator.registerLazySingleton<WalletRepositoryManager>(
-      () => WalletRepositoryManagerImpl(),
+    locator.registerLazySingleton<WalletManager>(
+      () => WalletManagerImpl(
+        walletMetadataRepository: locator<WalletMetadataRepository>(),
+        seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+        walletMetadataDerivator: locator<WalletMetadataDerivator>(),
+      ),
     );
     locator.registerLazySingleton<MnemonicSeedFactory>(
       () => const MnemonicSeedFactoryImpl(),
@@ -167,14 +172,12 @@ class CoreLocator {
     );
     locator.registerFactory<GetWalletsUseCase>(
       () => GetWalletsUseCase(
-        walletRepositoryManager: locator<WalletRepositoryManager>(),
-        walletMetadataRepository: locator<WalletMetadataRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
+        walletManager: locator<WalletManager>(),
       ),
     );
     locator.registerFactory<GetWalletBalanceSatUseCase>(
       () => GetWalletBalanceSatUseCase(
-        walletRepositoryManager: locator<WalletRepositoryManager>(),
+        walletManager: locator<WalletManager>(),
       ),
     );
   }

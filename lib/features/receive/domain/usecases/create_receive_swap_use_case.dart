@@ -3,20 +3,20 @@ import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/swap.dart';
 import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
-import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
+import 'package:bb_mobile/core/domain/services/wallet_manager.dart';
 
 class CreateReceiveSwapUseCase {
-  final WalletRepositoryManager _walletRepositoryManager;
+  final WalletManager _walletManager;
   final SwapRepository _swapRepository;
   final SwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
 
   CreateReceiveSwapUseCase({
-    required WalletRepositoryManager walletRepositoryManager,
+    required WalletManager walletManager,
     required SwapRepository swapRepository,
     required SwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
-  })  : _walletRepositoryManager = walletRepositoryManager,
+  })  : _walletManager = walletManager,
         _swapRepository = swapRepository,
         _swapRepositoryTestnet = swapRepositoryTestnet,
         _seedRepository = seedRepository;
@@ -27,7 +27,7 @@ class CreateReceiveSwapUseCase {
     required BigInt amountSat,
   }) async {
     try {
-      final walletRepository = _walletRepositoryManager.getRepository(walletId);
+      final walletRepository = _walletManager.getRepository(walletId);
       if (walletRepository == null) {
         throw Exception('Wallet repository not found');
       }

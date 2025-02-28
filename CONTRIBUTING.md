@@ -24,7 +24,7 @@ With that in mind, create a comment on the issue of the feature you want to impl
 - domain
   - entities: WalletMetadata (to store the imported wallet), Settings (to get the environment to import the wallet to)
   - repository contracts: WalletMetadataRepository, SettingsRepository
-  - services: WalletMetadataDerivator (to derive the wallet metadata from the imported xpub), WalletRepositoryManager (to inititalize and register the imported wallet so it can be used in the app)
+  - services: WalletMetadataDerivator (to derive the wallet metadata from the imported xpub), WalletManager (to inititalize and register the imported wallet so it can be used in the app)
   - use cases: ImportXpubUseCase (This will orchestrate the whole process of importing the xpub and registering the wallet in the app)
 - data
   - models: WalletMetadataModel

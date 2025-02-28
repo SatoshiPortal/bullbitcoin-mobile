@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/data/repositories/bdk_wallet_repository_impl.dart';
+import 'package:bb_mobile/core/data/repositories/lwk_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/domain/entities/seed.dart';
 import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/core/domain/services/wallet_repository_manager.dart';
 import 'package:bb_mobile/utils/uint_8_list_x.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:bip32/bip32.dart' as bip32;

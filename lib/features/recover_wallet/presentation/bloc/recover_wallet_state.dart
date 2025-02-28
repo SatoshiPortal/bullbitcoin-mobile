@@ -13,6 +13,7 @@ sealed class RecoverWalletState implements _$RecoverWalletState {
     @Default(ScriptType.bip84) ScriptType scriptType,
     @Default('') String label,
     @Default(false) bool isConfirming,
+    Wallet? recoveredWallet,
     @Default(null) Object? error,
   }) = _RecoverWalletState;
   const RecoverWalletState._();

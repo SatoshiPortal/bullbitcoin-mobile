@@ -1,9 +1,9 @@
 import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_repository.dart';
 
-class CheckPinCodeExistsUsecase {
+class CheckPinCodeExistsUseCase {
   final PinCodeRepository _pinCodeRepository;
 
-  CheckPinCodeExistsUsecase({
+  CheckPinCodeExistsUseCase({
     required PinCodeRepository pinCodeRepository,
   }) : _pinCodeRepository = pinCodeRepository;
 

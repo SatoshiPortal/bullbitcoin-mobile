@@ -8,6 +8,7 @@ class ElectrumServer with _$ElectrumServer {
   factory ElectrumServer({
     required String url,
     required Network network,
+    @Default(null) String? socks5,
     @Default(20) int stopGap,
     @Default(5) int timeout,
     @Default(5) int retry,
