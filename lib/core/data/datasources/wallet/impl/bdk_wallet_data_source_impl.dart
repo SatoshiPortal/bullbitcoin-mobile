@@ -1,59 +1,49 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/data/datasources/pdk_data_source.dart';
-import 'package:bb_mobile/core/domain/entities/address.dart';
-import 'package:bb_mobile/core/domain/entities/balance.dart';
-import 'package:bb_mobile/core/domain/entities/electrum_server.dart';
-import 'package:bb_mobile/core/domain/entities/payjoin.dart';
+import 'package:bb_mobile/core/data/datasources/wallet/bitcoin_wallet_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/wallet/payjoin_wallet_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/wallet/wallet_data_source.dart';
+import 'package:bb_mobile/core/data/models/address_model.dart';
+import 'package:bb_mobile/core/data/models/balance_model.dart';
+import 'package:bb_mobile/core/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/domain/entities/seed.dart';
 import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/core/domain/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/domain/repositories/payjoin_wallet_repository.dart';
-import 'package:bb_mobile/core/domain/repositories/wallet_repository.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:path_provider/path_provider.dart'
-    show getApplicationDocumentsDirectory;
 
-class BdkWalletRepositoryImpl
+class BdkWalletDataSourceImpl
     implements
-        WalletRepository,
-        BitcoinWalletRepository,
-        PayjoinWalletRepository {
-  final String _id;
+        WalletDataSource,
+        BitcoinWalletDataSource,
+        PayjoinWalletDataSource {
   final bdk.Wallet _wallet;
   final bdk.Blockchain _blockchain;
-  final PdkDataSource? _pdk;
 
-  BdkWalletRepositoryImpl({
-    required String id,
+  BdkWalletDataSourceImpl({
     required bdk.Wallet wallet,
     required bdk.Blockchain blockchain,
-    PdkDataSource? pdk,
-  })  : _id = id,
-        _wallet = wallet,
-        _blockchain = blockchain,
-        _pdk = pdk;
+  })  : _wallet = wallet,
+        _blockchain = blockchain;
 
-  static Future<BdkWalletRepositoryImpl> public({
-    required WalletMetadata walletMetadata,
-    required ElectrumServer electrumServer,
+  static Future<BdkWalletDataSourceImpl> public({
+    required String externalDescriptor,
+    required String internalDescriptor,
+    required bool isTestnet,
+    required String dbPath,
+    required ElectrumServerModel electrumServer,
   }) async {
-    final network = walletMetadata.network.bdkNetwork;
+    final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
     final external = await bdk.Descriptor.create(
-      descriptor: walletMetadata.externalPublicDescriptor,
+      descriptor: externalDescriptor,
       network: network,
     );
     final internal = await bdk.Descriptor.create(
-      descriptor: walletMetadata.internalPublicDescriptor,
+      descriptor: internalDescriptor,
       network: network,
     );
 
-    final appDocDir = await getApplicationDocumentsDirectory();
-    final String dbDir = '${appDocDir.path}/${walletMetadata.id}';
-
     final dbConfig = bdk.DatabaseConfig.sqlite(
-      config: bdk.SqliteDbConfiguration(path: dbDir),
+      config: bdk.SqliteDbConfiguration(path: dbPath),
     );
 
     final wallet = await bdk.Wallet.create(
@@ -76,19 +66,20 @@ class BdkWalletRepositoryImpl
       ),
     );
 
-    return BdkWalletRepositoryImpl(
-      id: walletMetadata.id,
+    return BdkWalletDataSourceImpl(
       wallet: wallet,
       blockchain: blockchain,
     );
   }
 
-  static Future<BdkWalletRepositoryImpl> private({
-    required WalletMetadata walletMetadata,
-    required ElectrumServer electrumServer,
+  static Future<BdkWalletDataSourceImpl> private({
+    required ScriptType scriptType,
     required MnemonicSeed mnemonicSeed,
+    required bool isTestnet,
+    required String dbPath,
+    required ElectrumServerModel electrumServer,
   }) async {
-    final network = walletMetadata.network.bdkNetwork;
+    final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
     final mnemonic =
         await bdk.Mnemonic.fromString(mnemonicSeed.mnemonicWords.join(' '));
@@ -101,7 +92,7 @@ class BdkWalletRepositoryImpl
     bdk.Descriptor? external;
     bdk.Descriptor? internal;
 
-    switch (walletMetadata.scriptType) {
+    switch (scriptType) {
       case ScriptType.bip84:
         external = await bdk.Descriptor.newBip84(
           secretKey: secretKey,
@@ -137,13 +128,8 @@ class BdkWalletRepositoryImpl
         );
     }
 
-    // TODO: check if the path of the private wallet can be the same as the public wallet
-    //  or if we need to create a new path for the private wallet
-    final appDocDir = await getApplicationDocumentsDirectory();
-    final String dbDir = '${appDocDir.path}/${walletMetadata.id}';
-
     final dbConfig = bdk.DatabaseConfig.sqlite(
-      config: bdk.SqliteDbConfiguration(path: dbDir),
+      config: bdk.SqliteDbConfiguration(path: dbPath),
     );
 
     final wallet = await bdk.Wallet.create(
@@ -166,24 +152,17 @@ class BdkWalletRepositoryImpl
       ),
     );
 
-    return BdkWalletRepositoryImpl(
-      id: walletMetadata.id,
+    return BdkWalletDataSourceImpl(
       wallet: wallet,
       blockchain: blockchain,
     );
   }
 
   @override
-  String get id => _id;
-
-  @override
-  Network get network => _wallet.network().network;
-
-  @override
-  Future<Balance> getBalance() async {
+  Future<BalanceModel> getBalance() async {
     final balanceInfo = _wallet.getBalance();
 
-    final balance = Balance(
+    final balance = BalanceModel(
       confirmedSat: balanceInfo.confirmed,
       immatureSat: balanceInfo.immature,
       trustedPendingSat: balanceInfo.trustedPending,
@@ -201,70 +180,49 @@ class BdkWalletRepositoryImpl
   }
 
   @override
-  Future<Address> getNewAddress() async {
+  Future<AddressModel> getNewAddress() async {
     final addressInfo = _wallet.getAddress(
       addressIndex: const bdk.AddressIndex.increase(),
     );
 
-    final address = Address.bitcoin(
+    final address = AddressModel(
       address: addressInfo.address.asString(),
       index: addressInfo.index,
-      kind: AddressKind.external,
-      state: AddressStatus.unused,
     );
 
     return address;
   }
 
   @override
-  Future<Address> getAddressByIndex(int index) async {
+  Future<AddressModel> getAddressByIndex(int index) async {
     final addressInfo = _wallet.getAddress(
       addressIndex: bdk.AddressIndex.peek(index: index),
     );
 
-    final address = Address.bitcoin(
+    final address = AddressModel(
       address: addressInfo.address.asString(),
       index: addressInfo.index,
-      kind: AddressKind.external,
-      state: await _isAddressUsed(addressInfo.address.asString())
-          ? AddressStatus.used
-          : AddressStatus.unused,
-      balanceSat: await _getAddressBalance(addressInfo.address.asString()),
     );
 
     return address;
   }
 
   @override
-  Future<Address> getLastUnusedAddress() async {
+  Future<AddressModel> getLastUnusedAddress() async {
     final addressInfo = _wallet.getAddress(
       addressIndex: const bdk.AddressIndex.lastUnused(),
     );
 
-    final address = Address.bitcoin(
+    final address = AddressModel(
       address: addressInfo.address.asString(),
       index: addressInfo.index,
-      kind: AddressKind.external,
-      state: AddressStatus.unused,
     );
 
     return address;
   }
 
   @override
-  Future<Payjoin> receivePayjoin() {
-    // TODO: implement receivePayjoin
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Payjoin> sendPayjoin() {
-    // TODO: implement sendPayjoin
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<bool> _isMine(Uint8List scriptBytes) async {
+  Future<bool> isMine(Uint8List scriptBytes) async {
     final script = bdk.ScriptBuf(bytes: scriptBytes);
     final isMine = _wallet.isMine(script: script);
 
@@ -278,7 +236,7 @@ class BdkWalletRepositoryImpl
   }
 
   @override
-  Future<String> _buildPsbt({
+  Future<String> buildPsbt({
     required String address,
     required BigInt amountSat,
     BigInt? absoluteFeeSat,
@@ -318,7 +276,7 @@ class BdkWalletRepositoryImpl
   }
 
   @override
-  Future<String> _signPsbt(String psbt) async {
+  Future<String> signPsbt(String psbt) async {
     final partiallySignedTransaction =
         await bdk.PartiallySignedTransaction.fromString(psbt);
     final isFinalized = await _wallet.sign(
@@ -340,7 +298,7 @@ class BdkWalletRepositoryImpl
   }
 
   @override
-  Future<String> _getTxIdFromPsbt(String psbt) async {
+  Future<String> getTxIdFromPsbt(String psbt) async {
     final partiallySignedTransaction =
         await bdk.PartiallySignedTransaction.fromString(
       psbt,
@@ -351,27 +309,28 @@ class BdkWalletRepositoryImpl
   }
 
   @override
-  Future<bool> _isTxBroadcasted(String txId) async {
+  Future<bool> isTxBroadcasted(String txId) async {
     final txs = _wallet.listTransactions(includeRaw: false);
 
     return txs.any((tx) => tx.txid == txId);
   }
 
   @override
-  Future<String> _getTxIdFromTxBytes(List<int> bytes) async {
+  Future<String> getTxIdFromTxBytes(List<int> bytes) async {
     final tx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
 
     return tx.txid();
   }
 
   @override
-  Future<String> _broadcastTxFromBytes(List<int> bytes) async {
+  Future<String> broadcastTxFromBytes(List<int> bytes) async {
     final tx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
 
     return _blockchain.broadcast(transaction: tx);
   }
 
-  Future<bool> _isAddressUsed(String address) async {
+  @override
+  Future<bool> isAddressUsed(String address) async {
     final txOutputLists = await Future.wait(
       _wallet.listTransactions(includeRaw: false).map((tx) async {
         return await tx.transaction?.output() ?? <bdk.TxOut>[];
@@ -392,26 +351,8 @@ class BdkWalletRepositoryImpl
     return isUsed;
   }
 
-  Future<BigInt> _getAddressBalance(String address) async {
-    final utxos = _wallet.listUnspent();
-    BigInt balance = BigInt.zero;
-
-    for (final utxo in utxos) {
-      final utxoAddress = await bdk.Address.fromScript(
-        script: bdk.ScriptBuf(bytes: utxo.txout.scriptPubkey.bytes),
-        network: _wallet.network(),
-      );
-
-      if (utxoAddress.asString() == address) {
-        balance += utxo.txout.value;
-      }
-    }
-
-    return balance;
-  }
-
   @override
-  Future<String> _broadcastPsbt(String psbt) async {
+  Future<String> broadcastPsbt(String psbt) async {
     final partiallySignedTransaction =
         await bdk.PartiallySignedTransaction.fromString(psbt);
     final finalized = await _wallet!.sign(
@@ -432,6 +373,25 @@ class BdkWalletRepositoryImpl
     return _blockchain.broadcast(
       transaction: partiallySignedTransaction.extractTx(),
     );
+  }
+
+  @override
+  Future<BigInt> getAddressBalance(String address) async {
+    final utxos = _wallet.listUnspent();
+    BigInt balance = BigInt.zero;
+
+    for (final utxo in utxos) {
+      final utxoAddress = await bdk.Address.fromScript(
+        script: bdk.ScriptBuf(bytes: utxo.txout.scriptPubkey.bytes),
+        network: _wallet.network(),
+      );
+
+      if (utxoAddress.asString() == address) {
+        balance += utxo.txout.value;
+      }
+    }
+
+    return balance;
   }
 }
 

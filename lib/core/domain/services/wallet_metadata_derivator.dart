@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/data/repositories/bdk_wallet_repository_impl.dart';
-import 'package:bb_mobile/core/data/repositories/lwk_wallet_repository_impl.dart';
+import 'package:bb_mobile/core/data/datasources/wallet/impl/bdk_data_source_impl.dart';
+import 'package:bb_mobile/core/data/datasources/wallet/impl/lwk_wallet_data_source_impl.dart';
 import 'package:bb_mobile/core/domain/entities/seed.dart';
 import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/utils/uint_8_list_x.dart';

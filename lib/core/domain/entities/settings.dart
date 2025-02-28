@@ -11,6 +11,9 @@ enum Environment {
     return Environment.values
         .firstWhere((environment) => environment.name == name);
   }
+
+  bool get isMainnet => this == Environment.mainnet;
+  bool get isTestnet => this == Environment.testnet;
 }
 
 enum BitcoinUnit {

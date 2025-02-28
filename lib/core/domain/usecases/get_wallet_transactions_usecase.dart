@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/domain/services/wallet_manager.dart';
+import 'package:bb_mobile/core/data/repositories/wallet_manager_repository_impl.dart';
 
 /*class GetWalletTransactionsUseCase {
   final WalletManager _manager;
