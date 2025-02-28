@@ -15,6 +15,7 @@ abstract class SwapRepository {
     required String liquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required bool broadcastViaBoltz,
   });
 
   Future<Swap> createLightningToBitcoinSwap({
@@ -30,5 +31,6 @@ abstract class SwapRepository {
     required String bitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required bool broadcastViaBoltz,
   });
 }

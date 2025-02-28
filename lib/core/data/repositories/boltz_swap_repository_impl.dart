@@ -66,17 +66,25 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String bitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required bool broadcastViaBoltz,
   }) async {
     final key = '$_keyPrefix$swapId';
     final jsonSwap = await _secureStorage.getValue(key) as String;
     final btcLnSwap = await boltz.BtcLnSwap.fromJson(jsonStr: jsonSwap);
 
-    return _boltz.claimBtcReverseSwap(
+    final signedTxHex = await _boltz.claimBtcReverseSwap(
       btcLnSwap,
       bitcoinAddress,
       absoluteFees,
       tryCooperate,
     );
+
+    final txid = await _boltz.broadcastBtcLnSwap(
+      btcLnSwap,
+      signedTxHex,
+      broadcastViaBoltz ? BroadcastProvider.boltz : BroadcastProvider.local,
+    );
+    return txid;
   }
 
   @override
@@ -119,17 +127,24 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String liquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
+    required bool broadcastViaBoltz,
   }) async {
     final key = '$_keyPrefix$swapId';
     final jsonSwap = await _secureStorage.getValue(key) as String;
     final lbtcLnSwap = await boltz.LbtcLnSwap.fromJson(jsonStr: jsonSwap);
 
-    return _boltz.claimLBtcReverseSwap(
+    final signedTxHex = await _boltz.claimLBtcReverseSwap(
       lbtcLnSwap,
       liquidAddress,
       absoluteFees,
       tryCooperate,
     );
+    final txid = await _boltz.broadcastLbtcLnSwap(
+      lbtcLnSwap,
+      signedTxHex,
+      broadcastViaBoltz ? BroadcastProvider.boltz : BroadcastProvider.local,
+    );
+    return txid;
   }
 
   Future<BigInt> _getNextBestIndex(String walletId) async {
