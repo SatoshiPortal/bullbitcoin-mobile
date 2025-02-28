@@ -82,7 +82,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     final txid = await _boltz.broadcastBtcLnSwap(
       btcLnSwap,
       signedTxHex,
-      broadcastViaBoltz ? BroadcastProvider.boltz : BroadcastProvider.local,
+      broadcastViaBoltz,
     );
     return txid;
   }
@@ -142,7 +142,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     final txid = await _boltz.broadcastLbtcLnSwap(
       lbtcLnSwap,
       signedTxHex,
-      broadcastViaBoltz ? BroadcastProvider.boltz : BroadcastProvider.local,
+      broadcastViaBoltz,
     );
     return txid;
   }

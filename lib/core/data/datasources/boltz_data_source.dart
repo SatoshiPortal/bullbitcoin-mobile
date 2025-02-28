@@ -1,8 +1,6 @@
 import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:boltz/boltz.dart';
 
-enum BroadcastProvider { local, boltz }
-
 abstract class BoltzDataSource {
   Future<ReverseFeesAndLimits> getReverseFeesAndLimits();
   Future<BtcLnSwap> createBtcReverseSwap(
@@ -23,7 +21,7 @@ abstract class BoltzDataSource {
   Future<String> broadcastBtcLnSwap(
     BtcLnSwap btcLnSwap,
     String signedTxHex,
-    BroadcastProvider provider,
+    bool broadcastViaBoltz,
   );
   Future<LbtcLnSwap> createLBtcReverseSwap(
     String mnemonic,
@@ -44,7 +42,7 @@ abstract class BoltzDataSource {
   Future<String> broadcastLbtcLnSwap(
     LbtcLnSwap lbtcLnSwap,
     String signedTxHex,
-    BroadcastProvider provider,
+    bool broadcastViaBoltz,
   );
 }
 
@@ -130,36 +128,30 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> broadcastBtcLnSwap(
     BtcLnSwap btcLnSwap,
     String signedTxHex,
-    BroadcastProvider provider,
+    bool broadcastViaBoltz,
   ) {
-    switch (provider) {
-      case BroadcastProvider.local:
-        return btcLnSwap.broadcastLocal(
-          signedHex: signedTxHex,
-        );
-      case BroadcastProvider.boltz:
-        return btcLnSwap.broadcastBoltz(
-          signedHex: signedTxHex,
-        );
-    }
+    return broadcastViaBoltz
+        ? btcLnSwap.broadcastLocal(
+            signedHex: signedTxHex,
+          )
+        : btcLnSwap.broadcastBoltz(
+            signedHex: signedTxHex,
+          );
   }
 
   @override
   Future<String> broadcastLbtcLnSwap(
     LbtcLnSwap lbtcLnSwap,
     String signedTxHex,
-    BroadcastProvider provider,
+    bool broadcastViaBoltz,
   ) {
-    switch (provider) {
-      case BroadcastProvider.local:
-        return lbtcLnSwap.broadcastLocal(
-          signedHex: signedTxHex,
-        );
-      case BroadcastProvider.boltz:
-        return lbtcLnSwap.broadcastBoltz(
-          signedHex: signedTxHex,
-        );
-    }
+    return broadcastViaBoltz
+        ? lbtcLnSwap.broadcastLocal(
+            signedHex: signedTxHex,
+          )
+        : lbtcLnSwap.broadcastBoltz(
+            signedHex: signedTxHex,
+          );
   }
 
   // SUBMARINE SWAPS
