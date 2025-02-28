@@ -10,6 +10,13 @@ abstract class SwapRepository {
     required String electrumUrl,
   });
 
+  Future<String> claimLightningToLiquidSwap({
+    required String swapId,
+    required String liquidAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  });
+
   Future<Swap> createLightningToBitcoinSwap({
     required String mnemonic,
     required String walletId,
@@ -18,5 +25,10 @@ abstract class SwapRepository {
     required String electrumUrl,
   });
 
-  Future<BigInt> _getNextBestIndex(String walletId);
+  Future<String> claimLightningToBitcoinSwap({
+    required String swapId,
+    required String bitcoinAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  });
 }

@@ -4,6 +4,14 @@
 
 TODO: Describe the branch structure, forking to a personal repository, pull request, etc.
 
+## Generated files
+
+This project uses flutter freezed. Freezed files are not checked into git and must be generated locally using:
+
+```
+flutter pub run build_runner watch --delete-conflicting-outputs 
+```
+
 ## Adding a new feature
 
 ### Step 1: Define the different layers of the feature

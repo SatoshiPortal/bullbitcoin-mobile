@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/data/models/swap_model.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/swap.dart';
 import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
+import 'package:boltz/boltz.dart' as boltz;
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDataSource _boltz;
@@ -39,7 +40,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       electrumUrl,
     );
     final key = '$_keyPrefix${btcLnSwap.id}';
-    await _secureStorage.saveValue(key: key, value: btcLnSwap);
+    final jsonSwap = await btcLnSwap.toJson();
+    await _secureStorage.saveValue(key: key, value: jsonSwap);
 
     final swap = Swap(
       id: btcLnSwap.id,
@@ -59,6 +61,25 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
+  Future<String> claimLightningToBitcoinSwap({
+    required String swapId,
+    required String bitcoinAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final key = '$_keyPrefix$swapId';
+    final jsonSwap = await _secureStorage.getValue(key) as String;
+    final btcLnSwap = await boltz.BtcLnSwap.fromJson(jsonStr: jsonSwap);
+
+    return _boltz.claimBtcReverseSwap(
+      btcLnSwap,
+      bitcoinAddress,
+      absoluteFees,
+      tryCooperate,
+    );
+  }
+
+  @override
   Future<Swap> createLightningToLiquidSwap({
     required String mnemonic,
     required String walletId,
@@ -75,7 +96,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       electrumUrl,
     );
     final key = '$_keyPrefix${lbtcLnSwap.id}';
-    await _secureStorage.saveValue(key: key, value: lbtcLnSwap);
+    final jsonSwap = await lbtcLnSwap.toJson();
+    await _secureStorage.saveValue(key: key, value: jsonSwap);
 
     final swap = Swap(
       id: lbtcLnSwap.id,
@@ -92,6 +114,24 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
+  Future<String> claimLightningToLiquidSwap({
+    required String swapId,
+    required String liquidAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final key = '$_keyPrefix$swapId';
+    final jsonSwap = await _secureStorage.getValue(key) as String;
+    final lbtcLnSwap = await boltz.LbtcLnSwap.fromJson(jsonStr: jsonSwap);
+
+    return _boltz.claimLBtcReverseSwap(
+      lbtcLnSwap,
+      liquidAddress,
+      absoluteFees,
+      tryCooperate,
+    );
+  }
+
   Future<BigInt> _getNextBestIndex(String walletId) async {
     final swaps = await _localSwapStorage.getAll();
     final walletRelatedReceiveSwaps = swaps.values
