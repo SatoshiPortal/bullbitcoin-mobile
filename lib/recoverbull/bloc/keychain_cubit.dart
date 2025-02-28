@@ -53,7 +53,11 @@ class KeychainCubit extends Cubit<KeychainState> {
         emit(state.copyWith(keyServerUp: true, loading: false));
       } catch (e) {
         debugPrint('Server status check failed: $e');
-        emit(state.copyWith(keyServerUp: false));
+        emit(state.copyWith(
+            keyServerUp: false,
+            loading: false,
+            error:
+                'Unable to reach key server. This could be due to network issues or the server may be temporarily unavailable.'));
       }
     }
   }
