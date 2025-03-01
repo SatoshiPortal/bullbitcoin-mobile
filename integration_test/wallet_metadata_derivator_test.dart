@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/domain/entities/seed.dart';
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/core/domain/services/wallet_metadata_derivator.dart';
+import 'package:bb_mobile/_core/domain/entities/seed.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/_core/domain/services/wallet_metadata_derivator.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:test/test.dart';
 
@@ -176,10 +176,14 @@ void main() {
           expect(metadata.network, test.network);
           expect(metadata.scriptType, test.scriptType);
           expect(metadata.xpub, test.expectedXpub);
-          expect(metadata.externalPublicDescriptor,
-              test.expectedExternalPublicDescriptor);
-          expect(metadata.internalPublicDescriptor,
-              test.expectedInternalPublicDescriptor);
+          expect(
+            metadata.externalPublicDescriptor,
+            test.expectedExternalPublicDescriptor,
+          );
+          expect(
+            metadata.internalPublicDescriptor,
+            test.expectedInternalPublicDescriptor,
+          );
           expect(metadata.source, WalletSource.mnemonic);
           expect(metadata.isDefault, test.isDefault);
           expect(metadata.label, test.label);
@@ -208,10 +212,14 @@ void main() {
           expect(metadata.network, test.network);
           expect(metadata.scriptType, test.scriptType);
           expect(metadata.xpub, test.expectedXpub);
-          expect(metadata.externalPublicDescriptor,
-              test.expectedExternalPublicDescriptor);
-          expect(metadata.internalPublicDescriptor,
-              test.expectedInternalPublicDescriptor);
+          expect(
+            metadata.externalPublicDescriptor,
+            test.expectedExternalPublicDescriptor,
+          );
+          expect(
+            metadata.internalPublicDescriptor,
+            test.expectedInternalPublicDescriptor,
+          );
           expect(metadata.source, WalletSource.xpub);
           expect(metadata.isDefault, false);
           expect(metadata.label, test.label);

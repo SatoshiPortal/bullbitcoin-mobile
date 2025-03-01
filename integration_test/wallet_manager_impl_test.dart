@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
-import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/core/domain/services/wallet_manager.dart';
-import 'package:bb_mobile/core/domain/services/wallet_metadata_derivator.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
+import 'package:bb_mobile/_core/domain/services/wallet_manager.dart';
+import 'package:bb_mobile/_core/domain/services/wallet_metadata_derivator.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:mocktail/mocktail.dart';
 import 'package:path_provider/path_provider.dart';
