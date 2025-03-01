@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/domain/services/wallet_manager.dart';
+import 'package:bb_mobile/core/domain/repositories/wallet_manager_repository.dart';
 
 class GetWalletsUseCase {
-  final WalletManager _manager;
+  final WalletManagerRepository _manager;
 
   GetWalletsUseCase({
-    required WalletManager walletManager,
+    required WalletManagerRepository walletManager,
   }) : _manager = walletManager;
 
   Future<List<Wallet>> execute() async {

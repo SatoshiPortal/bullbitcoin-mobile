@@ -8,5 +8,5 @@ abstract class WalletDataSource {
   Future<AddressModel> getLastUnusedAddress();
   Future<AddressModel> getNewAddress();
   Future<bool> isAddressUsed(String address);
-  Future<BigInt> getAddressBalance(String address);
+  Future<BigInt> getAddressBalanceSat(String address);
 }

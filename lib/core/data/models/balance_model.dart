@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/domain/entities/balance.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'balance_model.freezed.dart';
@@ -12,4 +13,16 @@ class BalanceModel with _$BalanceModel {
     required BigInt spendableSat,
     required BigInt totalSat,
   }) = _BalanceModel;
+  const BalanceModel._();
+
+  Balance toEntity() {
+    return Balance(
+      immatureSat: immatureSat,
+      trustedPendingSat: trustedPendingSat,
+      untrustedPendingSat: untrustedPendingSat,
+      confirmedSat: confirmedSat,
+      spendableSat: spendableSat,
+      totalSat: totalSat,
+    );
+  }
 }

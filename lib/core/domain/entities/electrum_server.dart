@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/core/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'electrum_server.freezed.dart';

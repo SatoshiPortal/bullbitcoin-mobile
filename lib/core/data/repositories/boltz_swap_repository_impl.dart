@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:bb_mobile/core/data/datasources/boltz_data_source.dart';
-import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
 import 'package:bb_mobile/core/data/models/swap_model.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/swap.dart';

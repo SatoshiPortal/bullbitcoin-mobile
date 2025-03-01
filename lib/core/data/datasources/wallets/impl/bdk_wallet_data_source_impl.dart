@@ -1,13 +1,12 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/data/datasources/wallet/bitcoin_wallet_data_source.dart';
-import 'package:bb_mobile/core/data/datasources/wallet/payjoin_wallet_data_source.dart';
-import 'package:bb_mobile/core/data/datasources/wallet/wallet_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/wallets/bitcoin_wallet_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/wallets/payjoin_wallet_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/wallets/wallet_data_source.dart';
 import 'package:bb_mobile/core/data/models/address_model.dart';
 import 'package:bb_mobile/core/data/models/balance_model.dart';
 import 'package:bb_mobile/core/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/domain/entities/seed.dart';
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/core/domain/entities/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class BdkWalletDataSourceImpl
@@ -74,19 +73,19 @@ class BdkWalletDataSourceImpl
 
   static Future<BdkWalletDataSourceImpl> private({
     required ScriptType scriptType,
-    required MnemonicSeed mnemonicSeed,
+    required String mnemonic,
+    String? passphrase,
     required bool isTestnet,
     required String dbPath,
     required ElectrumServerModel electrumServer,
   }) async {
     final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
-    final mnemonic =
-        await bdk.Mnemonic.fromString(mnemonicSeed.mnemonicWords.join(' '));
+    final bdkMnemonic = await bdk.Mnemonic.fromString(mnemonic);
     final secretKey = await bdk.DescriptorSecretKey.create(
       network: network,
-      mnemonic: mnemonic,
-      password: mnemonicSeed.passphrase,
+      mnemonic: bdkMnemonic,
+      password: passphrase,
     );
 
     bdk.Descriptor? external;
@@ -355,7 +354,7 @@ class BdkWalletDataSourceImpl
   Future<String> broadcastPsbt(String psbt) async {
     final partiallySignedTransaction =
         await bdk.PartiallySignedTransaction.fromString(psbt);
-    final finalized = await _wallet!.sign(
+    final finalized = await _wallet.sign(
       psbt: partiallySignedTransaction,
       signOptions: const bdk.SignOptions(
         trustWitnessUtxo: true,
@@ -376,7 +375,7 @@ class BdkWalletDataSourceImpl
   }
 
   @override
-  Future<BigInt> getAddressBalance(String address) async {
+  Future<BigInt> getAddressBalanceSat(String address) async {
     final utxos = _wallet.listUnspent();
     BigInt balance = BigInt.zero;
 

@@ -1,18 +1,12 @@
-import 'dart:convert';
-
-import 'package:bb_mobile/_pkg/consts/config.dart'
-    show
-        bbElectrumMain,
-        bbElectrumTest,
-        bbLiquidElectrumTestUrl,
-        bbLiquidElectrumUrl;
-import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_pkg/consts/config.dart';
 import 'package:bb_mobile/core/data/datasources/pdk_data_source.dart';
-import 'package:bb_mobile/core/data/datasources/wallet/impl/bdk_wallet_data_source_impl.dart';
-import 'package:bb_mobile/core/data/datasources/wallet/impl/lwk_wallet_data_source_impl.dart';
-import 'package:bb_mobile/core/data/datasources/wallet/wallet_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/seed_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/wallet_metadata_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/wallets/impl/bdk_wallet_data_source_impl.dart';
+import 'package:bb_mobile/core/data/datasources/wallets/impl/lwk_wallet_data_source_impl.dart';
+import 'package:bb_mobile/core/data/datasources/wallets/wallet_data_source.dart';
+import 'package:bb_mobile/core/data/models/address_model.dart';
 import 'package:bb_mobile/core/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/data/models/seed_model.dart';
 import 'package:bb_mobile/core/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/domain/entities/address.dart';
 import 'package:bb_mobile/core/domain/entities/balance.dart';
@@ -20,40 +14,34 @@ import 'package:bb_mobile/core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/core/domain/entities/seed.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_manager_repository.dart';
-import 'package:bb_mobile/core/domain/services/wallet_metadata_derivator.dart';
-import 'package:bb_mobile/utils/constants.dart';
 import 'package:path_provider/path_provider.dart';
 
 class WalletManagerRepositoryImpl implements WalletManagerRepository {
-  final WalletMetadataDerivator _walletMetadataDerivator;
-  final KeyValueStorageDataSource<String> _secureStorage;
-  final KeyValueStorageDataSource<String> _walletMetadataStorage;
+  final WalletMetadataDataSource _walletMetadata;
+  final SeedDataSource _seed;
   final PdkDataSource _pdk;
-  final Map<String, WalletDataSource> _wallets = {};
 
   WalletManagerRepositoryImpl({
-    required WalletMetadataDerivator walletMetadataDerivator,
-    required KeyValueStorageDataSource<String> secureStorage,
-    required KeyValueStorageDataSource<String> walletMetadataStorage,
+    required WalletMetadataDataSource walletMetadataDataSource,
+    required SeedDataSource seedDataSource,
     required PdkDataSource pdk,
-  })  : _walletMetadataDerivator = walletMetadataDerivator,
-        _secureStorage = secureStorage,
-        _walletMetadataStorage = walletMetadataStorage,
+  })  : _walletMetadata = walletMetadataDataSource,
+        _seed = seedDataSource,
         _pdk = pdk;
 
+  final Map<String, WalletDataSource> _wallets = {};
+
   @override
-  Future<bool> doDefaultWalletsExist({Environment? environment}) async {
-    final wallets = await _getAllWalletsMetadata();
+  Future<bool> doDefaultWalletsExist({required Environment environment}) async {
+    final wallets = await _walletMetadata.getAll();
 
     final defaultWalletsOfEnvironment = wallets
         .where(
           (wallet) =>
               wallet.isDefault &&
-              (wallet.network.isMainnet && Environment.mainnet == environment ||
-                  wallet.network.isTestnet &&
-                      Environment.testnet == environment),
+              (wallet.isMainnet && environment.isMainnet ||
+                  wallet.isTestnet && environment.isTestnet),
         )
         .toList();
 
@@ -63,17 +51,17 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
     }
 
     // Make sure that one is bitcoin and the other is liquid
-    if (defaultWalletsOfEnvironment[0].network.isBitcoin !=
-        defaultWalletsOfEnvironment[1].network.isLiquid) {
+    if (defaultWalletsOfEnvironment[0].isBitcoin !=
+        defaultWalletsOfEnvironment[1].isLiquid) {
       return false;
     }
 
     // Make sure the wallets were created correctly and are usable
     for (final wallet in defaultWalletsOfEnvironment) {
-      if (wallet.source != WalletSource.mnemonic) {
+      if (wallet.source != WalletSource.mnemonic.name) {
         return false;
       }
-      final hasSeed = await _hasSeed(wallet.masterFingerprint);
+      final hasSeed = await _seed.exists(wallet.masterFingerprint);
       if (!hasSeed) {
         return false;
       }
@@ -84,7 +72,7 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
 
   @override
   Future<void> initExistingWallets() async {
-    final walletsMetadata = await _getAllWalletsMetadata();
+    final walletsMetadata = await _walletMetadata.getAll();
 
     for (final metadata in walletsMetadata) {
       final wallet =
@@ -101,7 +89,7 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
     String label = '',
     bool isDefault = false,
   }) async {
-    final metadata = await _walletMetadataDerivator.fromSeed(
+    final metadata = await _walletMetadata.deriveFromSeed(
       seed: seed,
       network: network,
       scriptType: scriptType,
@@ -112,20 +100,29 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
     final wallet =
         await _createPublicWalletDataSource(walletMetadata: metadata);
 
-    await _storeWalletMetadata(metadata);
+    await _walletMetadata.store(metadata);
 
     await _registerWalletDataSource(id: metadata.id, wallet: wallet);
 
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await wallet.getBalance();
+    //final lastTransactions = await wallet.getTransactions(offset: 0, limit: 3);
 
     // Return the created wallet entity
     return Wallet(
       id: metadata.id,
-      name: metadata.name,
-      balanceSat: balance.totalSat,
+      label: metadata.label,
       network: network,
+      balanceSat: balance.totalSat,
       isDefault: isDefault,
+      //lastTransactions: lastTransactions,
+      masterFingerprint: metadata.masterFingerprint,
+      xpubFingerprint: metadata.xpubFingerprint,
+      scriptType: scriptType,
+      xpub: metadata.xpub,
+      externalPublicDescriptor: metadata.externalPublicDescriptor,
+      internalPublicDescriptor: metadata.internalPublicDescriptor,
+      source: WalletSource.fromName(metadata.source),
     );
   }
 
@@ -136,7 +133,7 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
     required ScriptType scriptType,
     required String label,
   }) async {
-    final metadata = await _walletMetadataDerivator.fromXpub(
+    final metadata = await _walletMetadata.deriveFromXpub(
       xpub: xpub,
       network: network,
       scriptType: scriptType,
@@ -146,7 +143,7 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
     final wallet =
         await _createPublicWalletDataSource(walletMetadata: metadata);
 
-    await _storeWalletMetadata(metadata);
+    await _walletMetadata.store(metadata);
 
     await _registerWalletDataSource(id: metadata.id, wallet: wallet);
 
@@ -156,37 +153,51 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
     // Return the created wallet entity
     return Wallet(
       id: metadata.id,
-      name: metadata.name,
-      balanceSat: balance.totalSat,
+      label: metadata.label,
       network: network,
-      isDefault: false,
+      balanceSat: balance.totalSat,
+      xpubFingerprint: metadata.xpubFingerprint,
+      scriptType: scriptType,
+      xpub: metadata.xpub,
+      externalPublicDescriptor: metadata.externalPublicDescriptor,
+      internalPublicDescriptor: metadata.internalPublicDescriptor,
+      source: WalletSource.fromName(metadata.source),
     );
   }
 
   @override
   Future<List<Wallet>> getWallets({Environment? environment}) async {
     final wallets = <Wallet>[];
-    for (final walletId in _wallets.keys) {
-      final walletMetadata = await _getWalletMetadata(walletId);
+    for (final walletEntry in _wallets.entries) {
+      final metadata = await _walletMetadata.get(walletEntry.key);
 
-      if (walletMetadata == null) {
+      if (metadata == null) {
         continue;
       }
 
-      if (environment != null &&
-          walletMetadata.network.isMainnet != environment.isMainnet) {
+      if (environment != null && metadata.isMainnet != environment.isMainnet) {
         continue;
       }
 
-      final balance = await _wallets[walletId]?.getBalance();
+      final balance = await walletEntry.value.getBalance();
 
       wallets.add(
         Wallet(
-          id: walletId,
-          name: walletMetadata.name,
-          balanceSat: balance?.totalSat ?? BigInt.zero,
-          network: walletMetadata.network,
-          isDefault: walletMetadata.isDefault,
+          id: metadata.id,
+          label: metadata.label,
+          network: Network.fromEnvironment(
+            isTestnet: metadata.isTestnet,
+            isLiquid: metadata.isLiquid,
+          ),
+          balanceSat: balance.totalSat,
+          isDefault: metadata.isDefault,
+          masterFingerprint: metadata.masterFingerprint,
+          xpubFingerprint: metadata.xpubFingerprint,
+          scriptType: ScriptType.fromName(metadata.scriptType),
+          xpub: metadata.xpub,
+          externalPublicDescriptor: metadata.externalPublicDescriptor,
+          internalPublicDescriptor: metadata.internalPublicDescriptor,
+          source: WalletSource.fromName(metadata.source),
         ),
       );
     }
@@ -195,8 +206,10 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
   }
 
   @override
-  Future<Address> getAddressByIndex(
-      {required String walletId, required int index}) async {
+  Future<Address> getAddressByIndex({
+    required String walletId,
+    required int index,
+  }) async {
     final wallet = _wallets[walletId];
 
     if (wallet == null) {
@@ -204,69 +217,99 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
     }
 
     final model = await wallet.getAddressByIndex(index);
-    // TODO: Here we can look up if the address has any label and add it to the entity
+    final address = await _addressModelToEntity(model, wallet: wallet);
 
-    final address = Address(
-      index: model.index,
-      address: model.address,
-      scriptType: model.scriptType,
-      network: model.network,
-      isChange: model.isChange,
-      isUsed: model.isUsed,
-    );
     return address;
   }
 
   @override
-  Future<Balance> getBalance({required String walletId}) {
-    // TODO: implement getBalance
-    throw UnimplementedError();
+  Future<Balance> getBalance({required String walletId}) async {
+    final wallet = _wallets[walletId];
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    final model = await wallet.getBalance();
+
+    return model.toEntity();
   }
 
   @override
-  Future<Address> getLastUnusedAddress({required String walletId}) {
-    // TODO: implement getLastUnusedAddress
-    throw UnimplementedError();
+  Future<Address> getLastUnusedAddress({required String walletId}) async {
+    final wallet = _wallets[walletId];
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    final model = await wallet.getLastUnusedAddress();
+
+    final address = await _addressModelToEntity(model, wallet: wallet);
+
+    return address;
   }
 
   @override
-  Future<Address> getNewAddress({required String walletId}) {
-    // TODO: implement getNewAddress
-    throw UnimplementedError();
+  Future<Address> getNewAddress({required String walletId}) async {
+    final wallet = _wallets[walletId];
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    final model = await wallet.getNewAddress();
+    final address = await _addressModelToEntity(model, wallet: wallet);
+
+    return address;
   }
 
   @override
-  Future<Seed> getSeed({required String walletId}) {
-    // TODO: implement getSeed
-    throw UnimplementedError();
+  Future<Seed> getSeed({required String walletId}) async {
+    final metadata = await _walletMetadata.get(walletId);
+
+    if (metadata == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    final model = await _seed.get(metadata.masterFingerprint);
+    final seed = model.toEntity();
+
+    return seed;
   }
 
   @override
-  Future<Payjoin> receivePayjoin({required String walletId}) {
+  Future<void> sync({required String walletId}) async {
+    final wallet = _wallets[walletId];
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    return wallet.sync();
+  }
+
+  @override
+  Future<void> syncAll() async {
+    for (final wallet in _wallets.values) {
+      await wallet.sync();
+    }
+  }
+
+  @override
+  Future<Payjoin> receivePayjoin({required String walletId}) async {
     // TODO: implement receivePayjoin
     throw UnimplementedError();
   }
 
   @override
-  Future<Payjoin> sendPayjoin({required String walletId}) {
+  Future<Payjoin> sendPayjoin({required String walletId}) async {
     // TODO: implement sendPayjoin
     throw UnimplementedError();
   }
 
-  @override
-  Future<void> sync({required String walletId}) {
-    // TODO: implement sync
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> syncAll() {
-    // TODO: implement syncAll
-    throw UnimplementedError();
-  }
-
   Future<WalletDataSource?> _getWalletWithPrivateKey(String id) async {
-    final walletMetadata = await _getWalletMetadata(id);
+    final walletMetadata = await _walletMetadata.get(id);
 
     if (walletMetadata == null) {
       return null;
@@ -292,19 +335,18 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
   }
 
   Future<WalletDataSource> _createPublicWalletDataSource({
-    required WalletMetadata walletMetadata,
+    required WalletMetadataModel walletMetadata,
   }) async {
-    final network = walletMetadata.network;
     final dbPath = await _getWalletDbPath(walletMetadata.id);
     // TODO: get the Electrum Server from the settings repository
-    if (network.isBitcoin) {
+    if (walletMetadata.isBitcoin) {
       return BdkWalletDataSourceImpl.public(
         externalDescriptor: walletMetadata.externalPublicDescriptor,
         internalDescriptor: walletMetadata.internalPublicDescriptor,
-        isTestnet: network.isTestnet,
+        isTestnet: walletMetadata.isTestnet,
         dbPath: dbPath,
         electrumServer: ElectrumServerModel(
-          url: network.isMainnet ? bbElectrumMain : bbElectrumTest,
+          url: walletMetadata.isMainnet ? bbElectrumMain : bbElectrumTest,
           stopGap: 20,
           retry: 5,
           timeout: 5,
@@ -315,10 +357,11 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
       return LwkWalletDataSourceImpl.public(
         ctDescriptor: walletMetadata.externalPublicDescriptor,
         dbPath: dbPath,
-        isTestnet: network.isTestnet,
+        isTestnet: walletMetadata.isTestnet,
         electrumServer: ElectrumServerModel(
-          url:
-              network.isMainnet ? bbLiquidElectrumUrl : bbLiquidElectrumTestUrl,
+          url: walletMetadata.isMainnet
+              ? bbLiquidElectrumUrl
+              : bbLiquidElectrumTestUrl,
           stopGap: 20,
           retry: 5,
           timeout: 5,
@@ -329,11 +372,10 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
   }
 
   Future<WalletDataSource> _createPrivateWalletDataSource({
-    required WalletMetadata walletMetadata,
+    required WalletMetadataModel walletMetadata,
   }) async {
-    final network = walletMetadata.network;
     final dbPath = await _getWalletDbPath(walletMetadata.id);
-    final seed = await _getSeed(walletMetadata.masterFingerprint);
+    final seed = await _seed.get(walletMetadata.masterFingerprint);
 
     if (seed is! MnemonicSeed) {
       throw WrongSeedTypeException(
@@ -341,15 +383,18 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
       );
     }
 
+    final mnemonic = seed.mnemonicWords.join(' ');
+
     // TODO: get the Electrum Server from the settings repository
-    if (network.isBitcoin) {
+    if (walletMetadata.isBitcoin) {
       return BdkWalletDataSourceImpl.private(
-        scriptType: walletMetadata.scriptType,
-        mnemonicSeed: seed,
-        isTestnet: network.isTestnet,
+        scriptType: ScriptType.fromName(walletMetadata.scriptType),
+        mnemonic: mnemonic,
+        passphrase: seed.passphrase,
+        isTestnet: walletMetadata.isTestnet,
         dbPath: dbPath,
         electrumServer: ElectrumServerModel(
-          url: network.isMainnet ? bbElectrumMain : bbElectrumTest,
+          url: walletMetadata.isMainnet ? bbElectrumMain : bbElectrumTest,
           stopGap: 20,
           retry: 5,
           timeout: 5,
@@ -358,12 +403,13 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
       );
     } else {
       return LwkWalletDataSourceImpl.private(
-        mnemonicSeed: seed,
+        mnemonic: mnemonic,
         dbPath: dbPath,
-        isTestnet: network.isTestnet,
+        isTestnet: walletMetadata.isTestnet,
         electrumServer: ElectrumServerModel(
-          url:
-              network.isMainnet ? bbLiquidElectrumUrl : bbLiquidElectrumTestUrl,
+          url: walletMetadata.isMainnet
+              ? bbLiquidElectrumUrl
+              : bbLiquidElectrumTestUrl,
           stopGap: 20,
           retry: 5,
           timeout: 5,
@@ -373,86 +419,87 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
     }
   }
 
-  Future<void> _storeWalletMetadata(WalletMetadata metadata) async {
-    final model = WalletMetadataModel.fromEntity(metadata);
-    final value = jsonEncode(model.toJson());
-    await _walletMetadataStorage.saveValue(key: metadata.id, value: value);
-  }
+  @override
+  Future<List<Address>> getUsedReceiveAddresses({
+    required String walletId,
+    int? limit,
+    int? offset,
+  }) async {
+    final wallet = _wallets[walletId];
 
-  Future<WalletMetadata?> _getWalletMetadata(String walletId) async {
-    final value = await _walletMetadataStorage.getValue(walletId);
-
-    if (value == null) {
-      return null;
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
     }
 
-    final json = jsonDecode(value) as Map<String, dynamic>;
-    final model = WalletMetadataModel.fromJson(json);
-    final metadata = model.toEntity();
+    final lastUnusedAddress = await wallet.getLastUnusedAddress();
+    final nrOfAddresses = limit ?? lastUnusedAddress.index ?? 0 - (offset ?? 0);
 
-    return metadata;
+    final addresses = <Address>[];
+    for (int i = offset ?? 0; i < nrOfAddresses; i++) {
+      final address = await wallet.getAddressByIndex(i);
+
+      final balanceSat = await wallet.getAddressBalanceSat(address.address);
+      if (wallet is LwkWalletDataSourceImpl) {
+        addresses.add(
+          Address.liquid(
+            index: address.index,
+            standard: address.address,
+            kind: AddressKind.external,
+            state: AddressStatus.used,
+            balanceSat: balanceSat,
+          ),
+        );
+      } else {
+        addresses.add(
+          Address.bitcoin(
+            index: address.index,
+            address: address.address,
+            kind: AddressKind.external,
+            state: AddressStatus.used,
+            balanceSat: balanceSat,
+          ),
+        );
+      }
+    }
+
+    return addresses;
   }
 
-  Future<List<WalletMetadata>> _getAllWalletsMetadata() async {
-    final map = await _walletMetadataStorage.getAll();
+  Future<Address> _addressModelToEntity(
+    AddressModel model, {
+    required WalletDataSource wallet,
+    AddressKind kind = AddressKind.external,
+  }) async {
+    final isUsed = await wallet.isAddressUsed(model.address);
+    final balanceSat = await wallet.getAddressBalanceSat(model.address);
 
-    return map.values
-        .map((value) => jsonDecode(value) as Map<String, dynamic>)
-        .map((json) => WalletMetadataModel.fromJson(json).toEntity())
-        .toList();
-  }
-
-  Future<void> _deleteWalletMetadata(String walletId) {
-    return _walletMetadataStorage.deleteValue(walletId);
-  }
-
-  Future<void> _storeSeed(Seed seed) {
-    final key = _seedKey(seed.masterFingerprint);
-    final model = SeedModel.fromEntity(seed);
-    final value = jsonEncode(model.toJson());
-    return _secureStorage.saveValue(key: key, value: value);
-  }
-
-  Future<Seed> _getSeed(String fingerprint) async {
-    final key = _seedKey(fingerprint);
-    final value = await _secureStorage.getValue(key);
-    if (value == null) {
-      throw SeedNotFoundException(
-        'Seed not found for fingerprint: $fingerprint',
+    Address address;
+    if (wallet is LwkWalletDataSourceImpl) {
+      address = Address.liquid(
+        index: model.index,
+        standard: model.address,
+        kind: kind,
+        state: isUsed ? AddressStatus.used : AddressStatus.unused,
+        balanceSat: balanceSat,
+      );
+    } else {
+      address = Address.bitcoin(
+        index: model.index,
+        address: model.address,
+        kind: kind,
+        state: isUsed ? AddressStatus.used : AddressStatus.unused,
+        balanceSat: balanceSat,
       );
     }
 
-    final json = jsonDecode(value) as Map<String, dynamic>;
-    final model = SeedModel.fromJson(json);
-    final seed = model.toEntity();
-
-    return seed;
+    return address;
   }
-
-  Future<bool> _hasSeed(String fingerprint) {
-    final key = _seedKey(fingerprint);
-    return _secureStorage.hasValue(key);
-  }
-
-  Future<void> _deleteSeed(String fingerprint) {
-    final key = _seedKey(fingerprint);
-    return _secureStorage.deleteValue(key);
-  }
-
-  String _seedKey(String fingerprint) =>
-      '${StorageConstants.seedKeyPrefix}$fingerprint';
 }
 
 class WrongSeedTypeException implements Exception {
   final String message;
 
   WrongSeedTypeException(this.message);
-}
-
-class SeedNotFoundException implements Exception {
-  final String message;
-
-  const SeedNotFoundException(this.message);
 }
 
 class WalletNotFoundException implements Exception {

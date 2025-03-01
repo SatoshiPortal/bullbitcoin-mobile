@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -10,7 +9,10 @@ class WalletMetadataModel with _$WalletMetadataModel {
   factory WalletMetadataModel({
     @Default('') String masterFingerprint,
     required String xpubFingerprint,
-    required String network,
+    required bool isBitcoin,
+    required bool isLiquid,
+    required bool isMainnet,
+    required bool isTestnet,
     required String scriptType,
     required String xpub,
     required String externalPublicDescriptor,
@@ -24,33 +26,10 @@ class WalletMetadataModel with _$WalletMetadataModel {
   factory WalletMetadataModel.fromJson(Map<String, Object?> json) =>
       _$WalletMetadataModelFromJson(json);
 
-  factory WalletMetadataModel.fromEntity(WalletMetadata entity) {
-    return WalletMetadataModel(
-      masterFingerprint: entity.masterFingerprint,
-      xpubFingerprint: entity.xpubFingerprint,
-      network: entity.network.name,
-      scriptType: entity.scriptType.name,
-      xpub: entity.xpub,
-      externalPublicDescriptor: entity.externalPublicDescriptor,
-      internalPublicDescriptor: entity.internalPublicDescriptor,
-      source: entity.source.name,
-      isDefault: entity.isDefault,
-      label: entity.label,
-    );
-  }
-
-  WalletMetadata toEntity() {
-    return WalletMetadata(
-      masterFingerprint: masterFingerprint,
-      xpubFingerprint: xpubFingerprint,
-      network: Network.fromName(network),
-      scriptType: ScriptType.fromName(scriptType),
-      xpub: xpub,
-      externalPublicDescriptor: externalPublicDescriptor,
-      internalPublicDescriptor: internalPublicDescriptor,
-      source: WalletSource.fromName(source),
-      label: label,
-      isDefault: isDefault,
-    );
-  }
+  // The network name is important since the same coin type and script types
+  //  are used in for example bitcoin and liquid testnet, so we need to include
+  //  the network name in the id to differentiate wallets from different
+  //  networks with the same xpub/seed.
+  String get id =>
+      '$xpubFingerprint:${isLiquid ? 'liquid' : 'bitcoin'}:${isTestnet ? 'testnet' : 'mainnet'}';
 }

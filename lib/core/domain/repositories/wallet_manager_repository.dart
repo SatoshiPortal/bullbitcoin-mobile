@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/core/domain/entities/seed.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
 
 abstract class WalletManagerRepository {
   Future<bool> doDefaultWalletsExist({required Environment environment});
@@ -29,6 +28,11 @@ abstract class WalletManagerRepository {
   Future<Address> getAddressByIndex({
     required String walletId,
     required int index,
+  });
+  Future<List<Address>> getUsedReceiveAddresses({
+    required String walletId,
+    int? limit,
+    int? offset,
   });
   Future<Address> getLastUnusedAddress({required String walletId});
   Future<Address> getNewAddress({required String walletId});

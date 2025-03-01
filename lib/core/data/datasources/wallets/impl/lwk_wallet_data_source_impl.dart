@@ -1,10 +1,9 @@
-import 'package:bb_mobile/core/data/datasources/wallet/liquid_wallet_data_source.dart';
-import 'package:bb_mobile/core/data/datasources/wallet/wallet_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/wallets/liquid_wallet_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/wallets/wallet_data_source.dart';
 import 'package:bb_mobile/core/data/models/address_model.dart';
 import 'package:bb_mobile/core/data/models/balance_model.dart';
 import 'package:bb_mobile/core/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/domain/entities/seed.dart';
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/core/domain/entities/wallet.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
 class LwkWalletDataSourceImpl
@@ -51,14 +50,13 @@ class LwkWalletDataSourceImpl
   }
 
   static Future<LwkWalletDataSourceImpl> private({
-    required MnemonicSeed mnemonicSeed,
+    required String mnemonic,
     required String dbPath,
     required bool isTestnet,
     required ElectrumServerModel electrumServer,
   }) async {
     final network = isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
 
-    final mnemonic = mnemonicSeed.mnemonicWords.join(' ');
     final descriptor = await lwk.Descriptor.newConfidential(
       mnemonic: mnemonic,
       network: network,
@@ -145,7 +143,7 @@ class LwkWalletDataSourceImpl
   }
 
   @override
-  Future<BigInt> getAddressBalance(String address) async {
+  Future<BigInt> getAddressBalanceSat(String address) async {
     final utxos = await _wallet.utxos();
     final blindingKey = await _wallet.blindingKey();
 
@@ -169,6 +167,27 @@ class LwkWalletDataSourceImpl
     }
 
     return balance;
+  }
+
+  @override
+  Future<bool> isAddressUsed(String address) async {
+    final txs = await _wallet.txs();
+    final txOutputLists = txs.map((tx) => tx.outputs).toList();
+
+    final outputs = txOutputLists.expand((list) => list).toList();
+    final isUsed = await Future.any(
+      outputs.map((output) async {
+        final outputAddress = await lwk.Address.addressFromScript(
+          script: output.scriptPubkey,
+          network: _network,
+          blindingKey: await _wallet.blindingKey(),
+        );
+        return outputAddress.confidential == address ||
+            outputAddress.standard == address;
+      }),
+    ).catchError((_) => false); // To handle empty lists
+
+    return isUsed;
   }
 
   String get _lBtcAssetId =>

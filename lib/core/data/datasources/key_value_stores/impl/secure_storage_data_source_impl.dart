@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageDataSourceImpl implements KeyValueStorageDataSource<String> {
