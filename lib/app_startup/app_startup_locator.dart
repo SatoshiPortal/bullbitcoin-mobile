@@ -5,6 +5,7 @@ import 'package:bb_mobile/app_startup/domain/usecases/reset_app_data_usecase.dar
 import 'package:bb_mobile/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/pin_code/domain/repositories/pin_code_repository.dart';
 
 class AppStartupLocator {
@@ -34,6 +35,7 @@ class AppStartupLocator {
         checkForExistingDefaultWalletsUseCase:
             locator<CheckForExistingDefaultWalletsUseCase>(),
         initExistingWalletsUseCase: locator<InitExistingWalletsUseCase>(),
+        createDefaultWalletsUseCase: locator<CreateDefaultWalletsUseCase>(),
       ),
     );
   }
