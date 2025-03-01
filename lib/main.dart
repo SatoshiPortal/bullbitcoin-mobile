@@ -32,7 +32,7 @@ Future main() async {
     //  so it's important to call it after the initialization
     await AppLocator.setup();
 
-    Bloc.observer = const AppBlocObserver();
+    Bloc.observer = AppBlocObserver();
 
     runApp(const BullBitcoinWalletApp());
   }, (error, stack) {
