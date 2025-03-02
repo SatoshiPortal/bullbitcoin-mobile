@@ -9,7 +9,7 @@ class ImportWatchOnlyWalletLocator {
     locator.registerFactory<ImportXpubUseCase>(
       () => ImportXpubUseCase(
         settingsRepository: locator<SettingsRepository>(),
-        walletManager: locator<WalletManagerRepository>(),
+        walletManagerRepository: locator<WalletManagerRepository>(),
       ),
     );
   }
