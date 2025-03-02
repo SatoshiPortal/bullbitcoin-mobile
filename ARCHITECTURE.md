@@ -19,7 +19,7 @@ The lib/ directory is organized into the following main sections:
   - UI (lib/features/`<feature>`/ui/): Contains **feature-specific** UI components, screens, widgets, themes and routes.
   - Locator (lib/features/`<feature>`/): Defines **dependency injection** setup for the feature.
 - [Localization](lib/l10n/): Contains **localization files** with translations for different languages.
-- [Utils](lib/utils/): Contains **small utility functions and extensions** used throughout the app.
+- [Utils](lib/utils/): Contains **small utility functions, extensions and constants** used throughout the app.
 - App-Level Configuration in the root directory [lib/](lib/): Contains the main app entry point, configuration, and global utilities.
   - [App Bloc Observer](app_bloc_observer.dart) – Observes **global BLoC events** for debugging and logging.
   - [App Locator](app_locator.dart) – Configures **dependency injection** registration by calling the **core and feature locators**.
@@ -39,6 +39,9 @@ This also enhances testability, maintainability, and scalability. While it may s
 ### Domain Layer
 
 The domain layer is the heart of the application. It consists of entities, repository interfaces/contracts, services and use cases that define the pure business logic of the application, making it independent of the data and presentation layers. This allows the business logic to be tested and reused without being tied to a specific data source or UI framework.
+
+> [!TIP]
+> You can think of the domain layer as the 'what' of the application. It defines what the application should permit the user to do, but not how it should be done or how it should be displayed.
 
 #### Entities
 
@@ -74,6 +77,9 @@ E.g. [`CreateDefaultWalletsUseCase`](lib/features/onboarding/domain/usecases/cre
 
 The data layer is responsible for retrieving and storing data from and to different sources, like APIs, databases, or local storage. It consists of data sources, models, and concrete repository implementations.
 
+> [!TIP]
+> You can think of the data layer as the 'how' to achieve the 'what' defined in the domain layer.
+
 #### Data sources
 
 Classes responsible for the actual retrieving or storing of the data that directly interact with APIs, databases, or local storage sources.
@@ -98,6 +104,9 @@ The presentation layer is responsible for managing the state for the user interf
 
 In this project, BLoCs/Cubits are used for state management, but other solutions like ViewModels, Providers, or Riverpod could also be used.
 
+> [!TIP]
+> You can think of the data layer as the 'how' to present the 'what' defined in the domain layer.
+
 ### Rules of Thumb
 
 > [!TIP]
@@ -121,7 +130,7 @@ In this project, BLoCs/Cubits are used for state management, but other solutions
 ✅ Entity vs Model:
 
 - The **domain and presentation layer should use entities**, not models.
-- Only the **data layer should use models**, and use entities as well.
+- Only the **data layer should use models**, and transform them to entities.
 
 ### Further reading
 

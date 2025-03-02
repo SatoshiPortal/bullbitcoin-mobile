@@ -7,4 +7,6 @@ abstract class SettingsRepository {
   Future<BitcoinUnit> getBitcoinUnit();
   Future<void> setLanguage(Language language);
   Future<Language?> getLanguage();
+  Future<void> setCurrency(String currencyCode);
+  Future<String> getCurrency();
 }

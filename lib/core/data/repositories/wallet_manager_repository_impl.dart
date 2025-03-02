@@ -1,12 +1,13 @@
-import 'package:bb_mobile/_pkg/consts/config.dart';
 import 'package:bb_mobile/core/data/datasources/pdk_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/seed_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/wallet_metadata_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/wallets/impl/bdk_wallet_data_source_impl.dart';
 import 'package:bb_mobile/core/data/datasources/wallets/impl/lwk_wallet_data_source_impl.dart';
+import 'package:bb_mobile/core/data/datasources/wallets/payjoin_wallet_data_source.dart';
 import 'package:bb_mobile/core/data/datasources/wallets/wallet_data_source.dart';
 import 'package:bb_mobile/core/data/models/address_model.dart';
 import 'package:bb_mobile/core/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/data/models/seed_model.dart';
 import 'package:bb_mobile/core/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/domain/entities/address.dart';
 import 'package:bb_mobile/core/domain/entities/balance.dart';
@@ -15,6 +16,7 @@ import 'package:bb_mobile/core/domain/entities/seed.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_manager_repository.dart';
+import 'package:bb_mobile/utils/constants.dart';
 import 'package:path_provider/path_provider.dart';
 
 class WalletManagerRepositoryImpl implements WalletManagerRepository {
@@ -79,6 +81,11 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
           await _createPublicWalletDataSource(walletMetadata: metadata);
       await _registerWalletDataSource(id: metadata.id, wallet: wallet);
     }
+
+    // Resume any existing payjoin sessions as well
+    await _pdk.resumeSessions();
+
+    // TODO: resume any existing swap sessions
   }
 
   @override
@@ -96,12 +103,21 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
       label: label,
       isDefault: isDefault,
     );
-
     final wallet =
         await _createPublicWalletDataSource(walletMetadata: metadata);
 
-    await _walletMetadata.store(metadata);
+    // Now that both the metadata as the wallet datasource instance were created successfully
+    //  we can store both the wallet metadata as the seed
+    await Future.wait([
+      _walletMetadata.store(metadata),
+      _seed.store(
+        fingerprint: seed.masterFingerprint,
+        seed: SeedModel.fromEntity(seed),
+      ),
+    ]);
 
+    // Now that the wallet is created and stored, register it here in the manager
+    //  for use in the app.
     await _registerWalletDataSource(id: metadata.id, wallet: wallet);
 
     // Fetch the balance (in the future maybe other details of the wallet too)
@@ -166,7 +182,37 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
   }
 
   @override
-  Future<List<Wallet>> getWallets({Environment? environment}) async {
+  Future<Wallet> getWallet(String id) async {
+    final wallet = _wallets[id];
+    final metadata = await _walletMetadata.get(id);
+
+    if (wallet == null || metadata == null) {
+      throw WalletNotFoundException(id);
+    }
+
+    final balance = await wallet.getBalance();
+
+    return Wallet(
+      id: metadata.id,
+      label: metadata.label,
+      network: Network.fromEnvironment(
+        isTestnet: metadata.isTestnet,
+        isLiquid: metadata.isLiquid,
+      ),
+      balanceSat: balance.totalSat,
+      isDefault: metadata.isDefault,
+      masterFingerprint: metadata.masterFingerprint,
+      xpubFingerprint: metadata.xpubFingerprint,
+      scriptType: ScriptType.fromName(metadata.scriptType),
+      xpub: metadata.xpub,
+      externalPublicDescriptor: metadata.externalPublicDescriptor,
+      internalPublicDescriptor: metadata.internalPublicDescriptor,
+      source: WalletSource.fromName(metadata.source),
+    );
+  }
+
+  @override
+  Future<List<Wallet>> getAllWallets({Environment? environment}) async {
     final wallets = <Wallet>[];
     for (final walletEntry in _wallets.entries) {
       final metadata = await _walletMetadata.get(walletEntry.key);
@@ -279,33 +325,116 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
   }
 
   @override
-  Future<void> sync({required String walletId}) async {
+  Future<Wallet> sync({required String walletId}) async {
     final wallet = _wallets[walletId];
 
     if (wallet == null) {
       throw WalletNotFoundException(walletId);
     }
 
-    return wallet.sync();
+    await wallet.sync();
+
+    return getWallet(walletId);
   }
 
   @override
-  Future<void> syncAll() async {
+  Future<List<Wallet>> syncAll({Environment? environment}) async {
     for (final wallet in _wallets.values) {
       await wallet.sync();
     }
+
+    return getAllWallets(environment: environment);
   }
 
   @override
-  Future<Payjoin> receivePayjoin({required String walletId}) async {
-    // TODO: implement receivePayjoin
-    throw UnimplementedError();
+  Future<Payjoin> receivePayjoin({
+    required String walletId,
+    String? address,
+    int? expireAfterSec,
+  }) async {
+    final wallet = _wallets[walletId];
+    final metadata = await _walletMetadata.get(walletId);
+
+    if (wallet == null || metadata == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    if (address == null) {
+      final lastUnusedAddress = await wallet.getLastUnusedAddress();
+      address = lastUnusedAddress.address;
+    }
+
+    final receiver = await _pdk.createReceiver(
+      walletId: walletId,
+      address: address,
+      isTestnet: metadata.isTestnet,
+      expireAfterSec: expireAfterSec,
+    );
+
+    final url = await receiver.pjUrl();
+    final payjoin = Payjoin.receive(
+      id: receiver.id(),
+      walletId: walletId,
+      url: url.asString(),
+    );
+
+    return payjoin;
   }
 
   @override
-  Future<Payjoin> sendPayjoin({required String walletId}) async {
-    // TODO: implement sendPayjoin
-    throw UnimplementedError();
+  Future<Payjoin> sendPayjoin({
+    required String walletId,
+    required String bip21,
+    BigInt? amountSat,
+    required double networkFeesSatPerVb,
+  }) async {
+    // A wallet with a private key is needed to send a payjoin,
+    //  since we need to sign the original PSBT
+    final wallet = await _getWalletWithPrivateKey(walletId);
+    final metadata = await _walletMetadata.get(walletId);
+
+    if (wallet == null || metadata == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    // Check if the wallet supports payjoin
+    if (wallet is! PayjoinWalletDataSource) {
+      throw const PayjoinNotSupportedException(
+        'Wallet does not support payjoin',
+      );
+    }
+    final pjWallet = wallet as PayjoinWalletDataSource;
+
+    final uri = await _pdk.parseBip21Uri(bip21);
+    final amount = amountSat ?? uri.amountSats();
+    if (amount == null) {
+      throw const MissingAmountException(
+        'Amount is required to send a payjoin',
+      );
+    }
+
+    // Build the original PSBT
+    final psbt = await pjWallet.buildPsbt(
+      address: uri.address(),
+      amountSat: amount,
+      feeRateSatPerVb: networkFeesSatPerVb,
+    );
+
+    // Create the payjoin sender session
+    await _pdk.createSender(
+      walletId: walletId,
+      uri: uri,
+      originalPsbt: psbt,
+      networkFeesSatPerVb: networkFeesSatPerVb,
+    );
+
+    // Return a payjoin entity with send details
+    final payjoin = Payjoin.send(
+      uri: uri.asString(),
+      walletId: walletId,
+    );
+
+    return payjoin;
   }
 
   Future<WalletDataSource?> _getWalletWithPrivateKey(String id) async {
@@ -346,7 +475,9 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
         isTestnet: walletMetadata.isTestnet,
         dbPath: dbPath,
         electrumServer: ElectrumServerModel(
-          url: walletMetadata.isMainnet ? bbElectrumMain : bbElectrumTest,
+          url: walletMetadata.isMainnet
+              ? ApiServiceConstants.bbElectrumUrlPath
+              : ApiServiceConstants.bbElectrumTestUrlPath,
           stopGap: 20,
           retry: 5,
           timeout: 5,
@@ -360,8 +491,8 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
         isTestnet: walletMetadata.isTestnet,
         electrumServer: ElectrumServerModel(
           url: walletMetadata.isMainnet
-              ? bbLiquidElectrumUrl
-              : bbLiquidElectrumTestUrl,
+              ? ApiServiceConstants.bbLiquidElectrumUrlPath
+              : ApiServiceConstants.bbLiquidElectrumTestUrlPath,
           stopGap: 20,
           retry: 5,
           timeout: 5,
@@ -394,7 +525,9 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
         isTestnet: walletMetadata.isTestnet,
         dbPath: dbPath,
         electrumServer: ElectrumServerModel(
-          url: walletMetadata.isMainnet ? bbElectrumMain : bbElectrumTest,
+          url: walletMetadata.isMainnet
+              ? ApiServiceConstants.bbElectrumUrlPath
+              : ApiServiceConstants.bbElectrumTestUrlPath,
           stopGap: 20,
           retry: 5,
           timeout: 5,
@@ -408,8 +541,8 @@ class WalletManagerRepositoryImpl implements WalletManagerRepository {
         isTestnet: walletMetadata.isTestnet,
         electrumServer: ElectrumServerModel(
           url: walletMetadata.isMainnet
-              ? bbLiquidElectrumUrl
-              : bbLiquidElectrumTestUrl,
+              ? ApiServiceConstants.bbLiquidElectrumUrlPath
+              : ApiServiceConstants.bbLiquidElectrumTestUrlPath,
           stopGap: 20,
           retry: 5,
           timeout: 5,
@@ -506,4 +639,16 @@ class WalletNotFoundException implements Exception {
   final String message;
 
   const WalletNotFoundException(this.message);
+}
+
+class PayjoinNotSupportedException implements Exception {
+  final String message;
+
+  const PayjoinNotSupportedException(this.message);
+}
+
+class MissingAmountException implements Exception {
+  final String message;
+
+  const MissingAmountException(this.message);
 }

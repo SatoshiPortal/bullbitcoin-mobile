@@ -63,6 +63,7 @@ class Settings with _$Settings {
     required Environment environment,
     required BitcoinUnit bitcoinUnit,
     Language? language,
+    required String currencyCode,
   }) = _Settings;
   const Settings._();
 }

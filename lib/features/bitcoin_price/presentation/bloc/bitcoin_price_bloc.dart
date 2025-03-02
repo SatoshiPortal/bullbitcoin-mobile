@@ -1,50 +1,42 @@
-import 'package:bb_mobile/features/fiat_currencies/domain/usecases/fetch_bitcoin_price_usecase.dart';
-import 'package:bb_mobile/features/fiat_currencies/domain/usecases/get_available_fiat_currencies.dart';
-import 'package:bb_mobile/features/fiat_currencies/domain/usecases/get_fiat_currency_usecase.dart';
-import 'package:bb_mobile/features/fiat_currencies/domain/usecases/set_fiat_currency_usecase.dart';
+import 'package:bb_mobile/core/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/fetch_bitcoin_price_usecase.dart';
+import 'package:bb_mobile/features/bitcoin_price/domain/usecases/get_available_fiat_currencies.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'fiat_currencies_bloc.freezed.dart';
-part 'fiat_currencies_event.dart';
-part 'fiat_currencies_state.dart';
+part 'bitcoin_price_bloc.freezed.dart';
+part 'bitcoin_price_event.dart';
+part 'bitcoin_price_state.dart';
 
-class FiatCurrenciesBloc
-    extends Bloc<FiatCurrenciesEvent, FiatCurrenciesState> {
-  FiatCurrenciesBloc({
+class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
+  BitcoinPriceBloc({
     required GetAvailableFiatCurrenciesUseCase
         getAvailableFiatCurrenciesUseCase,
-    required GetFiatCurrencyUseCase getFiatCurrencyUseCase,
-    required SetFiatCurrencyUseCase setFiatCurrencyUseCase,
+    required GetCurrencyUseCase getCurrencyUseCase,
     required FetchBitcoinPriceUseCase fetchBitcoinPriceUseCase,
   })  : _getAvailableFiatCurrenciesUseCase = getAvailableFiatCurrenciesUseCase,
-        _getFiatCurrencyUseCase = getFiatCurrencyUseCase,
-        _setFiatCurrencyUseCase = setFiatCurrencyUseCase,
+        _getCurrencyUseCase = getCurrencyUseCase,
         _fetchBitcoinPriceUseCase = fetchBitcoinPriceUseCase,
-        super(const FiatCurrenciesState.initial()) {
-    on<FiatCurrenciesStarted>(_onStarted);
-    on<FiatCurrenciesBitcoinPriceFetched>(_onBitcoinPriceFetched);
-    on<FiatCurrenciesBitcoinPriceCurrencyChanged>(
-        _onBitcoinPriceCurrencyChanged);
+        super(const BitcoinPriceState.initial()) {
+    on<BitcoinPriceStarted>(_onStarted);
+    on<BitcoinPriceFetched>(_onFetched);
+    on<BitcoinPriceCurrencyChanged>(_onCurrencyChanged);
   }
 
   final GetAvailableFiatCurrenciesUseCase _getAvailableFiatCurrenciesUseCase;
-  final GetFiatCurrencyUseCase _getFiatCurrencyUseCase;
-  final SetFiatCurrencyUseCase _setFiatCurrencyUseCase;
+  final GetCurrencyUseCase _getCurrencyUseCase;
   final FetchBitcoinPriceUseCase _fetchBitcoinPriceUseCase;
 
   Future<void> _onStarted(
-    FiatCurrenciesStarted event,
-    Emitter<FiatCurrenciesState> emit,
+    BitcoinPriceStarted event,
+    Emitter<BitcoinPriceState> emit,
   ) async {
     debugPrint('FiatCurrenciesStarted');
 
     try {
-      final currency =
-          event.bitcoinPriceCurrency ?? await _getFiatCurrencyUseCase.execute();
+      final currency = event.currency ?? await _getCurrencyUseCase.execute();
       final availableCurrencies =
           await _getAvailableFiatCurrenciesUseCase.execute();
 
@@ -55,30 +47,31 @@ class FiatCurrenciesBloc
       final price = await _fetchBitcoinPriceUseCase.execute(currency);
 
       emit(
-        FiatCurrenciesState.success(
-          bitcoinPriceCurrency: currency,
+        BitcoinPriceState.success(
+          currency: currency,
           availableCurrencies: availableCurrencies,
           bitcoinPrice: price,
         ),
       );
     } catch (e) {
       debugPrint(e.toString());
-      emit(FiatCurrenciesState.failure(e));
+      emit(BitcoinPriceState.failure(e));
     }
   }
 
-  Future<void> _onBitcoinPriceFetched(
-    FiatCurrenciesBitcoinPriceFetched event,
-    Emitter<FiatCurrenciesState> emit,
+  Future<void> _onFetched(
+    BitcoinPriceFetched event,
+    Emitter<BitcoinPriceState> emit,
   ) async {
     debugPrint('BitcoinPriceFetched');
 
     try {
       // The state should be in the success state, otherwise try to start the bloc
       //  again with the new currency in the event.
-      final successState = state as FiatCurrenciesSuccess;
-      final currency = successState.bitcoinPriceCurrency;
-      final price = await _fetchBitcoinPriceUseCase.execute(currency);
+      final successState = state as BitcoinPriceSuccess;
+
+      final price =
+          await _fetchBitcoinPriceUseCase.execute(successState.currency);
 
       emit(
         successState.copyWith(
@@ -93,37 +86,33 @@ class FiatCurrenciesBloc
       //  to the success state. So the UI can show the exchange rate, but also show
       //  that it might not be the most recent one.
       //  (Adding a fetch and rate timestamp to the success can also help)
-      emit(FiatCurrenciesState.failure(e));
+      emit(BitcoinPriceState.failure(e));
     }
   }
 
-  Future<void> _onBitcoinPriceCurrencyChanged(
-    FiatCurrenciesBitcoinPriceCurrencyChanged event,
-    Emitter<FiatCurrenciesState> emit,
+  Future<void> _onCurrencyChanged(
+    BitcoinPriceCurrencyChanged event,
+    Emitter<BitcoinPriceState> emit,
   ) async {
     debugPrint('BitcoinPriceCurrencyChanged to ${event.currencyCode}');
 
     try {
       // The state should be in the success state, otherwise try to start the bloc
       //  again with the new currency in the event.
-      final successState = state as FiatCurrenciesSuccess;
+      final successState = state as BitcoinPriceSuccess;
       final currency = event.currencyCode;
       // Get the exchange rate for the new currency
       final price = await _fetchBitcoinPriceUseCase.execute(currency);
 
-      if (event.save) {
-        await _setFiatCurrencyUseCase.execute(currency);
-      }
-
       emit(
         successState.copyWith(
-          bitcoinPriceCurrency: currency,
+          currency: currency,
           bitcoinPrice: price,
         ),
       );
     } catch (e) {
       debugPrint(e.toString());
-      emit(FiatCurrenciesState.failure(e));
+      emit(BitcoinPriceState.failure(e));
     }
   }
 }

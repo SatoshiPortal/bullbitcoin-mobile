@@ -6,14 +6,13 @@ import 'package:bb_mobile/core/data/models/swap_model.dart';
 import 'package:bb_mobile/core/domain/entities/settings.dart';
 import 'package:bb_mobile/core/domain/entities/swap.dart';
 import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/utils/constants.dart';
 import 'package:boltz/boltz.dart' as boltz;
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDataSource _boltz;
   final KeyValueStorageDataSource _secureStorage;
   final KeyValueStorageDataSource _localSwapStorage;
-
-  static const _keyPrefix = 'swap_';
 
   BoltzSwapRepositoryImpl({
     required BoltzDataSource boltz,
@@ -39,7 +38,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       environment,
       electrumUrl,
     );
-    final key = '$_keyPrefix${btcLnSwap.id}';
+    final key = '${SecureStorageKeyPrefixConstants.swap}${btcLnSwap.id}';
     final jsonSwap = await btcLnSwap.toJson();
     await _secureStorage.saveValue(key: key, value: jsonSwap);
 
@@ -68,7 +67,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   }) async {
-    final key = '$_keyPrefix$swapId';
+    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
     final jsonSwap = await _secureStorage.getValue(key) as String;
     final btcLnSwap = await boltz.BtcLnSwap.fromJson(jsonStr: jsonSwap);
 
@@ -103,7 +102,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       environment,
       electrumUrl,
     );
-    final key = '$_keyPrefix${lbtcLnSwap.id}';
+    final key = '${SecureStorageKeyPrefixConstants.swap}${lbtcLnSwap.id}';
     final jsonSwap = await lbtcLnSwap.toJson();
     await _secureStorage.saveValue(key: key, value: jsonSwap);
 
@@ -129,7 +128,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   }) async {
-    final key = '$_keyPrefix$swapId';
+    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
     final jsonSwap = await _secureStorage.getValue(key) as String;
     final lbtcLnSwap = await boltz.LbtcLnSwap.fromJson(jsonStr: jsonSwap);
 

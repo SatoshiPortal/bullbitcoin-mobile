@@ -1,9 +1,11 @@
 import 'package:bb_mobile/app_locator.dart';
 import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/domain/usecases/get_bitcoin_unit_usecase.dart';
+import 'package:bb_mobile/core/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_testnet_mode_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -26,6 +28,11 @@ class SettingsLocator {
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
+    locator.registerFactory<SetCurrencyUseCase>(
+      () => SetCurrencyUseCase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
 
     // Bloc
     locator.registerFactory<SettingsCubit>(
@@ -36,6 +43,8 @@ class SettingsLocator {
         getBitcoinUnitUseCase: locator<GetBitcoinUnitUseCase>(),
         setLanguageUseCase: locator<SetLanguageUseCase>(),
         getLanguageUseCase: locator<GetLanguageUseCase>(),
+        getCurrencyUseCase: locator<GetCurrencyUseCase>(),
+        setCurrencyUseCase: locator<SetCurrencyUseCase>(),
       ),
     );
   }

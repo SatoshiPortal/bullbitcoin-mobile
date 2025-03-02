@@ -1,5 +1,4 @@
 import 'package:bb_mobile/app_locator.dart';
-import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
 import 'package:bb_mobile/features/app_unlock/data/repositories/failed_unlock_attempts_repository_impl.dart';
 import 'package:bb_mobile/features/app_unlock/domain/repositories/failed_unlock_attempts_repository.dart';
@@ -9,6 +8,7 @@ import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exi
 import 'package:bb_mobile/features/app_unlock/domain/usecases/get_latest_unlock_attempt_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_repository.dart';
+import 'package:bb_mobile/utils/constants.dart';
 
 class AppUnlockLocator {
   static void setup() {
@@ -16,7 +16,7 @@ class AppUnlockLocator {
     locator.registerLazySingleton<FailedUnlockAttemptsRepository>(
       () => FailedUnlockAttemptsRepositoryImpl(
         locator<KeyValueStorageDataSource<String>>(
-          instanceName: CoreLocator.secureStorageInstanceName,
+          instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
         ),
       ),
     );

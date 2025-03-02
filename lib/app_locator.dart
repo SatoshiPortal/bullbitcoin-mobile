@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
-import 'package:bb_mobile/features/fiat_currencies/fiat_currencies_locator.dart';
+import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/home/home_locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_wallet_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
@@ -28,7 +28,7 @@ class AppLocator {
     OnboardingLocator.setup();
     RecoverWalletLocator.setup();
     SettingsLocator.setup();
-    FiatCurrenciesLocator.setup();
+    BitcoinPriceLocator.setup();
     HomeLocator.setup();
     ReceiveLocator.setup();
     ImportWatchOnlyWalletLocator.setup();

@@ -42,7 +42,9 @@ class SettingsScreen extends StatelessWidget {
               ),
               ListTile(
                 title: Text(context.loc.fiatCurrencySettingsLabel),
-                onTap: () {},
+                onTap: () {
+                  //context.pushNamed(SettingsSubroute.currency.name);
+                },
                 trailing: const Icon(Icons.chevron_right),
               ),
             ],

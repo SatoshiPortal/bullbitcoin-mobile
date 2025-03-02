@@ -58,7 +58,13 @@ class WalletCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    wallet!.name,
+                    wallet!.label.isNotEmpty
+                        ? wallet!.label
+                        : wallet!.isDefault
+                            ? wallet!.network.isBitcoin
+                                ? 'Secure Bitcoin Wallet' // Todo: use localization label here
+                                : 'Instant Payments Wallet' // Todo: use localization label here
+                            : wallet!.id,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,

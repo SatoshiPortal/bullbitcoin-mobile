@@ -1,10 +1,10 @@
 import 'package:bb_mobile/app_locator.dart';
-import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
 import 'package:bb_mobile/features/pin_code/data/repositories/pin_code_repository_impl.dart';
 import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_repository.dart';
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
+import 'package:bb_mobile/utils/constants.dart';
 
 class PinCodeLocator {
   static void setup() {
@@ -14,7 +14,7 @@ class PinCodeLocator {
     locator.registerLazySingleton<PinCodeRepository>(
       () => PinCodeRepositoryImpl(
         locator<KeyValueStorageDataSource<String>>(
-          instanceName: CoreLocator.secureStorageInstanceName,
+          instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
         ),
       ),
     );

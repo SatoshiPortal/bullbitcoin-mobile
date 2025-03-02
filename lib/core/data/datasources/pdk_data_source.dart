@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
+import 'package:bb_mobile/core/data/models/pdk_receive_payjoin_model.dart';
+import 'package:bb_mobile/core/data/models/pdk_send_payjoin_model.dart';
 import 'package:dio/dio.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:payjoin_flutter/receive.dart';
@@ -5,23 +8,20 @@ import 'package:payjoin_flutter/send.dart';
 import 'package:payjoin_flutter/uri.dart';
 
 abstract class PdkDataSource {
-  Stream<(Receiver, UncheckedProposal)> get receiverStream;
-  Stream<(Sender, String)> get senderStream;
+  Stream<(PdkReceivePayjoinModel, UncheckedProposal)> get receiverStream;
+  Stream<PdkSendPayjoinModel> get senderStream;
   Future<Receiver> createReceiver({
+    required String walletId,
     required String address,
     bool isTestnet = false,
     int? expireAfterSec,
   });
+  Future<Uri> parseBip21Uri(String bip21);
   Future<Sender> createSender({
-    required String bip21,
+    required String walletId,
+    required Uri uri,
     required String originalPsbt,
-    required int networkFeesSatPerVb,
-  });
-  Future<void> resumeReceiver({
-    required Receiver receiver,
-  });
-  Future<void> resumeSender({
-    required Sender sender,
+    required double networkFeesSatPerVb,
   });
   Future<void> request({
     required Sender sender,
@@ -33,23 +33,37 @@ abstract class PdkDataSource {
     PayjoinProposal proposal,
   );
   Future<String?> checkForProposalPsbt({required V2GetContext context});
+  Future<void> resumeSessions();
 }
 
 class PdkDataSourceImpl implements PdkDataSource {
   final String _ohttpRelayUrl;
   final String _payjoinDirectoryUrl;
   final Dio _dio;
+  final KeyValueStorageDataSource<String> _storage;
 
   const PdkDataSourceImpl({
     String ohttpRelayUrl = 'https://pj.bobspacebkk.com',
     String payjoinDirectoryUrl = 'https://payjo.in',
     required Dio dio,
+    required KeyValueStorageDataSource<String> storage,
   })  : _ohttpRelayUrl = ohttpRelayUrl,
         _payjoinDirectoryUrl = payjoinDirectoryUrl,
-        _dio = dio;
+        _dio = dio,
+        _storage = storage;
+
+  @override
+  // TODO: implement receiverStream
+  Stream<(PdkReceivePayjoinModel, UncheckedProposal)> get receiverStream =>
+      throw UnimplementedError();
+
+  @override
+  // TODO: implement senderStream
+  Stream<PdkSendPayjoinModel> get senderStream => throw UnimplementedError();
 
   @override
   Future<Receiver> createReceiver({
+    required String walletId,
     required String address,
     bool isTestnet = false,
     int? expireAfterSec,
@@ -61,7 +75,7 @@ class PdkDataSourceImpl implements PdkDataSource {
         ohttpRelay: ohttpRelay,
         payjoinDirectory: payjoinDirectory,
       );
-      return await Receiver.create(
+      final receiver = await Receiver.create(
         address: address,
         network: isTestnet ? Network.testnet : Network.bitcoin,
         directory: payjoinDirectory,
@@ -70,18 +84,30 @@ class PdkDataSourceImpl implements PdkDataSource {
         expireAfter:
             expireAfterSec == null ? null : BigInt.from(expireAfterSec),
       );
+
+      // TODO: create receiver model
+      // TODO: Save model to storage
+      // TODO: Start listening for original psbt in isolate
+
+      return receiver;
     } catch (e) {
       throw ReceiveCreationException(e.toString());
     }
   }
 
   @override
-  Future<Sender> createSender({
-    required String bip21,
-    required String originalPsbt,
-    required int networkFeesSatPerVb,
-  }) async {
+  Future<Uri> parseBip21Uri(String bip21) async {
     final uri = await Uri.fromStr(bip21);
+    return uri;
+  }
+
+  @override
+  Future<Sender> createSender({
+    required String walletId,
+    required Uri uri,
+    required String originalPsbt,
+    required double networkFeesSatPerVb,
+  }) async {
     PjUri pjUri;
     try {
       pjUri = uri.checkPjSupported();
@@ -97,6 +123,11 @@ class PdkDataSourceImpl implements PdkDataSource {
     final sender = await senderBuilder.buildRecommended(
       minFeeRate: minFeeRateSatPerKwu,
     );
+
+    // TODO: create sender model
+    // TODO: Save model to storage
+    // TODO: Start listening for proposals in isolate
+
     return sender;
   }
 
@@ -193,6 +224,9 @@ class PdkDataSourceImpl implements PdkDataSource {
 
     return proposalPsbt;
   }
+
+  @override
+  Future<void> resumeSessions() async {}
 }
 
 class ReceiveCreationException implements Exception {

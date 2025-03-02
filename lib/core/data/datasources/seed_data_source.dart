@@ -57,7 +57,7 @@ class SeedDataSourceImpl implements SeedDataSource {
   }
 
   String _seedKey(String fingerprint) =>
-      '${StorageConstants.seedKeyPrefix}$fingerprint';
+      '${SecureStorageKeyPrefixConstants.seed}$fingerprint';
 }
 
 class SeedNotFoundException implements Exception {

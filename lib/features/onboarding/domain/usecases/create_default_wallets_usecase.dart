@@ -1,25 +1,21 @@
 import 'package:bb_mobile/core/domain/entities/settings.dart';
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
+import 'package:bb_mobile/core/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/domain/repositories/wallet_manager_repository.dart';
 import 'package:bb_mobile/core/domain/services/mnemonic_seed_factory.dart';
-import 'package:bb_mobile/core/domain/services/wallet_manager.dart';
 import 'package:flutter/material.dart';
 
 class CreateDefaultWalletsUseCase {
   final SettingsRepository _settingsRepository;
   final MnemonicSeedFactory _mnemonicSeedFactory;
-  final SeedRepository _seedRepository;
-  final WalletManager _walletManager;
+  final WalletManagerRepository _walletManager;
 
   CreateDefaultWalletsUseCase({
     required SettingsRepository settingsRepository,
     required MnemonicSeedFactory mnemonicSeedFactory,
-    required SeedRepository seedRepository,
-    required WalletManager walletManager,
+    required WalletManagerRepository walletManager,
   })  : _settingsRepository = settingsRepository,
         _mnemonicSeedFactory = mnemonicSeedFactory,
-        _seedRepository = seedRepository,
         _walletManager = walletManager;
 
   Future<void> execute({
@@ -44,9 +40,8 @@ class CreateDefaultWalletsUseCase {
         ? Network.liquidMainnet
         : Network.liquidTestnet;
 
-    // Store the seed and create the default wallets, 1 bitcoin and 1 liquid wallet.
+    // The default wallets should be 1 Bitcoin and 1 Liquid wallet.
     await Future.wait([
-      _seedRepository.storeSeed(mnemonicSeed),
       _walletManager.createWallet(
         seed: mnemonicSeed,
         network: bitcoinNetwork,

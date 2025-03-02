@@ -21,9 +21,10 @@ abstract class WalletManagerRepository {
     required ScriptType scriptType,
     required String label,
   });
-  Future<List<Wallet>> getWallets({Environment? environment});
+  Future<Wallet?> getWallet(String id);
+  Future<List<Wallet>> getAllWallets({Environment? environment});
   Future<void> sync({required String walletId});
-  Future<void> syncAll();
+  Future<void> syncAll({Environment? environment});
   Future<Balance> getBalance({required String walletId});
   Future<Address> getAddressByIndex({
     required String walletId,
@@ -37,6 +38,15 @@ abstract class WalletManagerRepository {
   Future<Address> getLastUnusedAddress({required String walletId});
   Future<Address> getNewAddress({required String walletId});
   Future<Seed> getSeed({required String walletId});
-  Future<Payjoin> receivePayjoin({required String walletId});
-  Future<Payjoin> sendPayjoin({required String walletId});
+  Future<Payjoin> receivePayjoin({
+    required String walletId,
+    String? address,
+    int? expireAfterSec,
+  });
+  Future<Payjoin> sendPayjoin({
+    required String walletId,
+    required String bip21,
+    BigInt? amountSat,
+    required double networkFeesSatPerVb,
+  });
 }

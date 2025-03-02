@@ -5,8 +5,6 @@ part 'electrum_server_model.g.dart';
 
 @freezed
 class ElectrumServerModel with _$ElectrumServerModel {
-  const ElectrumServerModel._();
-
   factory ElectrumServerModel({
     required String url,
     String? socks5,

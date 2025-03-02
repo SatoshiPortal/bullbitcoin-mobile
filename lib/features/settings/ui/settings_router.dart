@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 
 enum SettingsSubroute {
   pinCode('pin-code'),
-  language('language');
+  language('language'),
+  currency('currency');
 
   final String path;
 
@@ -23,5 +24,14 @@ class SettingsRouter {
       name: SettingsSubroute.pinCode.name,
       builder: (context, state) => const PinCodeSettingFlow(),
     ),
+    /** TODO: Implement CurrencySettingsScreen
+     * Add the `BitcoinPriceCurrencyChanged` event to the `BitcoinPriceBloc` when the currency is changed successfully on the settings screen
+     *  This way the `BitcoinPriceBloc` can fetch the bitcoin price with the new currency and the whole app will be updated with the new currency
+     * The global BitcoinPriceBloc can also be used to obtain the available fiat currencies and show them in the CurrencySettingsScreen
+    GoRoute(
+      path: SettingsSubroute.currency.path,
+      name: SettingsSubroute.currency.name,
+      builder: (context, state) => const CurrencySettingsScreen(),
+    ),*/
   ];
 }

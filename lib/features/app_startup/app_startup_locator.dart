@@ -1,4 +1,5 @@
 import 'package:bb_mobile/app_locator.dart';
+import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/domain/repositories/wallet_manager_repository.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/init_wallets_usecase.dart';
@@ -18,6 +19,7 @@ class AppStartupLocator {
     locator.registerFactory<CheckForExistingDefaultWalletsUseCase>(
       () => CheckForExistingDefaultWalletsUseCase(
         walletManager: locator<WalletManagerRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<InitExistingWalletsUseCase>(

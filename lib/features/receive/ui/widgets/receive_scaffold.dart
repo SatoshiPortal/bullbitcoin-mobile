@@ -12,7 +12,7 @@ class ReceiveScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasReceived =
-        context.select((ReceiveBloc bloc) => bloc.state.hasReceived);
+        context.select((ReceiveBloc bloc) => bloc.state.hasReceivedFunds);
 
     return Scaffold(
       appBar: AppBar(

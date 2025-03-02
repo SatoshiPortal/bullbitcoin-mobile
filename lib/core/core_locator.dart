@@ -21,130 +21,113 @@ import 'package:bb_mobile/core/domain/repositories/word_list_repository.dart';
 import 'package:bb_mobile/core/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/core/domain/usecases/find_mnemonic_words_use_case.dart';
 import 'package:bb_mobile/core/domain/usecases/get_bitcoin_unit_usecase.dart';
+import 'package:bb_mobile/core/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/core/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/utils/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 
 class CoreLocator {
-  static const String secureStorageInstanceName = 'secureStorage';
-  static const String hiveSettingsBoxName = 'settings';
-  static const String settingsStorageInstanceName = 'settingsStorage';
-  static const String bullBitcoinExchangeInstanceName = 'bullBitcoinExchange';
-  static const String hiveWalletsBoxName = 'wallets';
-  static const String walletsStorageInstanceName = 'walletsStorage';
-  static const String boltzInstanceName = 'boltz';
-  static const String boltzTestnetInstanceName = 'boltzTestnet';
-  static const String boltzSwapRepositoryInstanceName = 'boltzSwapRepository';
-  static const String boltzSwapRepositoryTestnetInstanceName =
-      'boltzSwapRepositoryTestnet';
-  static const String hiveSwapBoxName = 'swaps';
-  static const String swapStorageInstanceName = 'swapStorage';
-
   static Future<void> setup() async {
     // Data sources
+    //  - Secure storage
     locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
       () => SecureStorageDataSourceImpl(
         const FlutterSecureStorage(),
       ),
-      instanceName: secureStorageInstanceName,
+      instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
     );
-    final settingsBox = await Hive.openBox<String>(hiveSettingsBoxName);
-    locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
-      () => HiveStorageDataSourceImpl<String>(settingsBox),
-      instanceName: settingsStorageInstanceName,
-    );
-    locator.registerLazySingleton<ExchangeDataSource>(
-      () => BullBitcoinExchangeDataSourceImpl(),
-      instanceName: bullBitcoinExchangeInstanceName,
-    );
-    final walletsBox = await Hive.openBox<String>(hiveWalletsBoxName);
-    locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
-      () => HiveStorageDataSourceImpl<String>(walletsBox),
-      instanceName: walletsStorageInstanceName,
-    );
-    final swapBox = await Hive.openBox<String>(hiveSwapBoxName);
-    locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
-      () => HiveStorageDataSourceImpl<String>(swapBox),
-      instanceName: swapStorageInstanceName,
-    );
-    locator.registerLazySingleton<Bip39WordListDataSource>(
-      () => Bip39EnglishWordListDataSourceImpl(),
-    );
-    locator.registerLazySingleton<BoltzDataSource>(
-      () => BoltzDataSourceImpl(),
-      instanceName: boltzInstanceName,
-    );
-    locator.registerLazySingleton<BoltzDataSource>(
-      () => BoltzDataSourceImpl(url: 'api.testnet.boltz.exchange/v2'),
-      instanceName: boltzTestnetInstanceName,
-    );
+    //  - Wallet metadata
+    final walletMetadataBox =
+        await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
     locator.registerLazySingleton<WalletMetadataDataSource>(
       () => WalletMetadataDataSourceImpl(
         bip32: const Bip32DataSourceImpl(),
         descriptor: const DescriptorDataSourceImpl(),
-        walletMetadataStorage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: walletsStorageInstanceName,
-        ),
+        walletMetadataStorage:
+            HiveStorageDataSourceImpl<String>(walletMetadataBox),
       ),
     );
-    locator.registerLazySingleton<SeedDataSource>(
-      () => SeedDataSourceImpl(
-        secureStorage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: secureStorageInstanceName,
-        ),
-      ),
-    );
-    // TODO: We could add a Dio instance with the payjoin directory URL here already
+    //  - Payjoin
+    final pdkPayjoinsBox =
+        await Hive.openBox<String>(HiveBoxNameConstants.pdkPayjoins);
     locator.registerLazySingleton<PdkDataSource>(
-      () => PdkDataSourceImpl(dio: Dio()),
+      () => PdkDataSourceImpl(
+        dio:
+            Dio(), // TODO: We could add a Dio instance with the payjoin directory URL here already
+        storage: HiveStorageDataSourceImpl<String>(pdkPayjoinsBox),
+      ),
+    );
+    //  - Exchange
+    locator.registerLazySingleton<ExchangeDataSource>(
+      () => BullBitcoinExchangeDataSourceImpl(),
+      instanceName: LocatorInstanceNameConstants
+          .bullBitcoinExchangeDataSourceInstanceName,
+    );
+    //  - Swaps
+    final boltzSwapsBox =
+        await Hive.openBox<String>(HiveBoxNameConstants.boltzSwaps);
+    locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
+      () => HiveStorageDataSourceImpl<String>(boltzSwapsBox),
+      instanceName: LocatorInstanceNameConstants
+          .boltzSwapsHiveStorageDataSourceInstanceName,
     );
 
     // Repositories
+    final settingsBox =
+        await Hive.openBox<String>(HiveBoxNameConstants.settings);
     locator.registerLazySingleton<SettingsRepository>(
       () => SettingsRepositoryImpl(
-        storage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: CoreLocator.settingsStorageInstanceName,
-        ),
+        storage: HiveStorageDataSourceImpl<String>(settingsBox),
       ),
     );
     locator.registerLazySingleton<WalletManagerRepository>(
       () => WalletManagerRepositoryImpl(
         walletMetadataDataSource: locator<WalletMetadataDataSource>(),
-        seedDataSource: locator<SeedDataSource>(),
+        seedDataSource: SeedDataSourceImpl(
+          secureStorage: locator<KeyValueStorageDataSource<String>>(
+            instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
+          ),
+        ),
         pdk: locator<PdkDataSource>(),
       ),
     );
     locator.registerLazySingleton<WordListRepository>(
       () => WordListRepositoryImpl(
-        dataSource: locator<Bip39WordListDataSource>(),
+        dataSource: Bip39EnglishWordListDataSourceImpl(),
       ),
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltz: locator<BoltzDataSource>(instanceName: boltzInstanceName),
+        boltz: BoltzDataSourceImpl(),
         secureStorage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: secureStorageInstanceName,
+          instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
         ),
         localSwapStorage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: swapStorageInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzSwapsHiveStorageDataSourceInstanceName,
         ),
       ),
-      instanceName: boltzSwapRepositoryInstanceName,
+      instanceName:
+          LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltz: locator<BoltzDataSource>(instanceName: boltzTestnetInstanceName),
+        boltz:
+            BoltzDataSourceImpl(url: ApiServiceConstants.boltzTestnetUrlPath),
         secureStorage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: secureStorageInstanceName,
+          instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
         ),
         localSwapStorage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: swapStorageInstanceName,
+          instanceName: LocatorInstanceNameConstants
+              .boltzSwapsHiveStorageDataSourceInstanceName,
         ),
       ),
-      instanceName: boltzSwapRepositoryTestnetInstanceName,
+      instanceName:
+          LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
     );
 
     // Factories, managers or services responsible for handling specific logic
@@ -173,8 +156,14 @@ class CoreLocator {
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
+    locator.registerFactory<GetCurrencyUseCase>(
+      () => GetCurrencyUseCase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
     locator.registerFactory<GetWalletsUseCase>(
       () => GetWalletsUseCase(
+        settingsRepository: locator<SettingsRepository>(),
         walletManager: locator<WalletManagerRepository>(),
       ),
     );
