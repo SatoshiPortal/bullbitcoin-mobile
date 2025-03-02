@@ -29,7 +29,7 @@ op/builds
 *.g.dart
 
 # l10n internationalization related
-lib/l10n/generated/*
+lib/_l10n/generated/*
 untranslated-messages.txt
 
 # Dev preferences
