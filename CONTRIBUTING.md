@@ -48,7 +48,7 @@ With that in mind, create a comment on the issue of the feature you want to impl
 Some remarks on the example above:
 
 - The above example is just an example and might not be complete or the same as the real current implementation.
-- The example specifies a lot of things that were implemented in the `core` folder of the app. If classes exist already, you should not specify them. You can just clarify in the comment that you will use the existing implementations of certain repositories or services in the feature's use cases.
+- The example specifies a lot of things that were implemented in the [`_core`](lib/_core/) folder of the app. If classes exist already, you should not specify them. You can just clarify in the comment that you will use the existing implementations of certain repositories or services in the feature's use cases.
 - Not every feature will require all layers, and it's important to consider which ones are necessary and why. For example, a simple data source might not need a model, and a simple single-screen feature might not require a Bloc.
 
 Software development is not an exact science, and this step is about understanding the feature better and getting feedback on your approach. Don’t worry if you're unsure about all the layers initially or need to adjust them later; the goal is to have a starting point for discussion and refinement.
