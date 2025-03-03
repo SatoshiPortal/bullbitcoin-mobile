@@ -422,3 +422,40 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
     );
   }
 }
+
+class _BackupKeyDialog extends StatelessWidget {
+  final String backupKey;
+
+  const _BackupKeyDialog({required this.backupKey});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: context.colour.primaryContainer,
+      title: const BBText.title('Backup key', isBold: true),
+      content: Row(
+        children: [
+          Expanded(
+            child: Text(
+              backupKey,
+              style:
+                  context.font.bodySmall!.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          IconButton(
+            onPressed: () => _copyToClipboard(context),
+            icon: Icon(Icons.copy, color: context.colour.primary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _copyToClipboard(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: backupKey));
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      context.showToast('Copied to clipboard'),
+    );
+  }
+}
