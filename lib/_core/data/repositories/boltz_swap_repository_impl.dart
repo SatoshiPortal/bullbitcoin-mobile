@@ -48,9 +48,11 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       status: SwapStatus.pending,
       environment: environment,
       creationTime: DateTime.now(),
-      receiveWalletReference: walletId,
-      sendWalletReference: btcLnSwap.invoice,
       keyIndex: index as int,
+      receiveSwapDetails: LnReceiveSwap(
+        receiveWalletId: walletId,
+        invoice: btcLnSwap.invoice,
+      ),
     );
     await _localSwapStorage.saveValue(
       key: swap.id,
@@ -112,9 +114,11 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       status: SwapStatus.pending,
       environment: environment,
       creationTime: DateTime.now(),
-      receiveWalletReference: walletId,
-      sendWalletReference: lbtcLnSwap.invoice,
       keyIndex: index as int,
+      receiveSwapDetails: LnReceiveSwap(
+        receiveWalletId: walletId,
+        invoice: lbtcLnSwap.invoice,
+      ),
     );
     await _localSwapStorage.saveValue(key: swap.id, value: swap);
     return swap;

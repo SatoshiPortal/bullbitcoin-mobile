@@ -12,11 +12,12 @@ class SwapModel with _$SwapModel {
     required String type,
     required String status,
     @Default(false) bool isTestnet,
-    required String receiveWalletReference,
-    required String sendWalletReference,
     required int keyIndex,
     required int creationTime,
     int? completionTime,
+    Map<String, dynamic>? chainSwapJson,
+    Map<String, dynamic>? lnReceiveSwapJson,
+    Map<String, dynamic>? lnSendSwapJson,
   }) = _SwapModel;
   const SwapModel._();
 
@@ -26,19 +27,18 @@ class SwapModel with _$SwapModel {
       type: swap.type.name,
       status: swap.status.name,
       isTestnet: swap.environment == Environment.testnet,
-      receiveWalletReference: swap.receiveWalletReference,
-      sendWalletReference: swap.sendWalletReference,
       keyIndex: swap.keyIndex,
       creationTime: swap.creationTime.millisecondsSinceEpoch,
       completionTime: swap.completionTime?.millisecondsSinceEpoch,
+      chainSwapJson: swap.chainSwapDetails?.toJson(),
+      lnReceiveSwapJson: swap.receiveSwapDetails?.toJson(),
+      lnSendSwapJson: swap.sendSwapDetails?.toJson(),
     );
   }
 
   Swap toEntity() {
     return Swap(
       id: id,
-      receiveWalletReference: receiveWalletReference,
-      sendWalletReference: sendWalletReference,
       type: SwapType.values.byName(type),
       status: SwapStatus.values.byName(status),
       environment: isTestnet ? Environment.testnet : Environment.mainnet,
@@ -47,6 +47,13 @@ class SwapModel with _$SwapModel {
           ? null
           : DateTime.fromMillisecondsSinceEpoch(completionTime!),
       keyIndex: keyIndex,
+      chainSwapDetails:
+          chainSwapJson != null ? ChainSwap.fromJson(chainSwapJson!) : null,
+      receiveSwapDetails: lnReceiveSwapJson != null
+          ? LnReceiveSwap.fromJson(lnReceiveSwapJson!)
+          : null,
+      sendSwapDetails:
+          lnSendSwapJson != null ? LnSendSwap.fromJson(lnSendSwapJson!) : null,
     );
   }
 
