@@ -18,6 +18,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
+/// Common constants
+const _kGapSmall = 8.0;
+const _kGapMedium = 16.0;
+const _kGapLarge = 24.0;
+const _kGapXLarge = 50.0;
+const _kHorizontalPadding = 32.0;
+
 class KeychainBackupPage extends StatelessWidget {
   KeychainBackupPage({
     super.key,
@@ -32,20 +39,17 @@ class KeychainBackupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Extract backup data
-    final backupId = backup['id'] as String?;
-    final backupSalt = backup['salt'] as String?;
-
     return MultiBlocProvider(
       providers: [
         BlocProvider<KeychainCubit>(
           create: (context) => KeychainCubit()
             ..setChainState(
               _pState,
-              backupId ?? '',
+              backup['id'] as String? ?? '',
               backupKey,
-              backupSalt ?? '',
-            ),
+              backup['salt'] as String? ?? '',
+            )
+            ..keyServerStatus(),
         ),
         BlocProvider.value(value: createBackupSettingsCubit()),
       ],
@@ -184,6 +188,19 @@ class _Screen extends StatelessWidget {
             }
           },
         ),
+        BlocListener<KeychainCubit, KeychainState>(
+          listenWhen: (previous, current) =>
+              previous.keyServerUp != current.keyServerUp,
+          listener: (context, state) {
+            if (!state.keyServerUp &&
+                state.inputType != KeyChainInputType.backupKey) {
+              context.read<KeychainCubit>().updatePageState(
+                    KeyChainInputType.backupKey,
+                    state.pageState,
+                  );
+            }
+          },
+        ),
       ],
       child: BlocBuilder<KeychainCubit, KeychainState>(
         builder: (context, state) {
@@ -243,36 +260,73 @@ class _Screen extends StatelessWidget {
   }
 }
 
-/// Page Type Widgets
+/// Shared layout widget for all pages
+class _PageLayout extends StatelessWidget {
+  const _PageLayout({
+    required this.bottomChild,
+    required this.children,
+    this.bottomHeight,
+  });
+
+  final Widget bottomChild;
+  final List<Widget> children;
+  final double? bottomHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    return StackedPage(
+      bottomChildHeight:
+          bottomHeight ?? MediaQuery.of(context).size.height * 0.11,
+      bottomChild: bottomChild,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: _kHorizontalPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
+        ),
+      ),
+    );
+  }
+}
+
+/// Shared input section widget
+class _InputSection extends StatelessWidget {
+  const _InputSection({required this.inputType});
+
+  final KeyChainInputType inputType;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        if (inputType == KeyChainInputType.pin) ...[
+          _PinField(),
+          const KeyPad(),
+        ] else
+          _PasswordField(),
+      ],
+    );
+  }
+}
+
+// Optimize page type widgets
 class _EnterPage extends StatelessWidget {
   const _EnterPage({super.key, required this.inputType});
   final KeyChainInputType inputType;
 
   @override
   Widget build(BuildContext context) {
-    return StackedPage(
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
+    return _PageLayout(
       bottomChild: _SetButton(inputType: inputType),
-      child: Padding(
-        key: ValueKey('enter$inputType'),
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(50),
-            const _TitleText(),
-            const Gap(8),
-            const _SubtitleText(),
-            const Gap(50),
-            if (inputType == KeyChainInputType.pin) ...[
-              _PinField(),
-              const KeyPad(),
-            ] else
-              _PasswordField(),
-            const Gap(30),
-          ],
-        ),
-      ),
+      children: [
+        const Gap(_kGapXLarge),
+        const _TitleText(),
+        const Gap(_kGapSmall),
+        const _SubtitleText(),
+        const Gap(_kGapXLarge),
+        _InputSection(inputType: inputType),
+        const Gap(_kGapLarge),
+      ],
     );
   }
 }
@@ -283,32 +337,18 @@ class _ConfirmPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StackedPage(
+    return _PageLayout(
       bottomChild: _ConfirmButton(inputType: inputType),
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
-      child: SingleChildScrollView(
-        key: ValueKey('confirm$inputType'),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Gap(20),
-              const _ConfirmTitleText(),
-              const Gap(8),
-              const _ConfirmSubtitleText(),
-              const Gap(48),
-              if (inputType == KeyChainInputType.pin) ...[
-                _PinField(),
-                const KeyPad(),
-              ] else
-                _PasswordField(),
-              const Gap(24),
-            ],
-          ),
-        ),
-      ),
+      bottomHeight: MediaQuery.of(context).size.height * 0.11,
+      children: [
+        const Gap(20),
+        const _ConfirmTitleText(),
+        const Gap(_kGapSmall),
+        const _ConfirmSubtitleText(),
+        const Gap(48),
+        _InputSection(inputType: inputType),
+        const Gap(24),
+      ],
     );
   }
 }
@@ -319,35 +359,25 @@ class _RecoveryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StackedPage(
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.16,
+    return _PageLayout(
       bottomChild: _RecoverButton(inputType: inputType),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(50),
-            BBText.titleLarge(
-              'Enter Recovery ${_getInputTypeText(inputType)}',
-              textAlign: TextAlign.center,
-              isBold: true,
-            ),
-            const Gap(8),
-            BBText.bodySmall(
-              'Enter the ${_getInputTypeText(inputType).toLowerCase()} you used to backup your keychain',
-              textAlign: TextAlign.center,
-            ),
-            const Gap(50),
-            if (inputType == KeyChainInputType.pin) ...[
-              _PinField(),
-              const KeyPad(),
-            ] else
-              _PasswordField(),
-            const Gap(30),
-          ],
+      bottomHeight: MediaQuery.of(context).size.height * 0.16,
+      children: [
+        const Gap(_kGapXLarge),
+        BBText.titleLarge(
+          'Enter Recovery ${_getInputTypeText(inputType)}',
+          textAlign: TextAlign.center,
+          isBold: true,
         ),
-      ),
+        const Gap(_kGapSmall),
+        BBText.bodySmall(
+          'Enter the ${_getInputTypeText(inputType).toLowerCase()} you used to backup your keychain',
+          textAlign: TextAlign.center,
+        ),
+        const Gap(_kGapXLarge),
+        _InputSection(inputType: inputType),
+        const Gap(_kGapLarge),
+      ],
     );
   }
 
@@ -369,35 +399,25 @@ class _DeletePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StackedPage(
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
+    return _PageLayout(
       bottomChild: _DeleteButton(inputType: inputType),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(50),
-            const BBText.titleLarge(
-              'Delete Backup Key',
-              textAlign: TextAlign.center,
-              isBold: true,
-            ),
-            const Gap(8),
-            BBText.bodySmall(
-              'Enter your ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to delete this backup key',
-              textAlign: TextAlign.center,
-            ),
-            const Gap(50),
-            if (inputType == KeyChainInputType.pin) ...[
-              _PinField(),
-              const KeyPad(),
-            ] else
-              _PasswordField(),
-            const Gap(30),
-          ],
+      bottomHeight: MediaQuery.of(context).size.height * 0.11,
+      children: [
+        const Gap(_kGapXLarge),
+        const BBText.titleLarge(
+          'Delete Backup Key',
+          textAlign: TextAlign.center,
+          isBold: true,
         ),
-      ),
+        const Gap(_kGapSmall),
+        BBText.bodySmall(
+          'Enter your ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to delete this backup key',
+          textAlign: TextAlign.center,
+        ),
+        const Gap(_kGapXLarge),
+        _InputSection(inputType: inputType),
+        const Gap(_kGapLarge),
+      ],
     );
   }
 }
@@ -574,13 +594,34 @@ class _NumberButtonState extends State<NumberButton> {
 }
 
 /// Action Buttons
-class _SetButton extends StatelessWidget {
+mixin _ButtonLogicMixin {
+  void handleServerCheck(BuildContext context, VoidCallback onSuccess) {
+    context.read<KeychainCubit>().keyServerStatus();
+    final state = context.read<KeychainCubit>().state;
+    if (state.canStoreKey) onSuccess();
+  }
+
+  Widget buildServerDownMessage() {
+    return const BBText.bodySmall(
+      'Server is currently unavailable.\nPlease use your backup key.',
+      textAlign: TextAlign.center,
+      isRed: true,
+    );
+  }
+}
+
+class _SetButton extends StatelessWidget with _ButtonLogicMixin {
   final KeyChainInputType inputType;
   const _SetButton({required this.inputType});
   @override
   Widget build(BuildContext context) {
-    final canStoreKey =
-        context.select((KeychainCubit x) => x.state.canStoreKey);
+    final state = context.select((KeychainCubit x) => x.state);
+    final canStoreKey = state.canStoreKey;
+    final keyServerUp = state.keyServerUp;
+
+    // Don't show the button if keyserver is down
+    if (!keyServerUp) return const SizedBox.shrink();
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       child: Column(
@@ -624,7 +665,7 @@ class _SetButton extends StatelessWidget {
   }
 }
 
-class _ConfirmButton extends StatelessWidget {
+class _ConfirmButton extends StatelessWidget with _ButtonLogicMixin {
   const _ConfirmButton({required this.inputType});
   final KeyChainInputType inputType;
   @override
@@ -650,7 +691,7 @@ class _ConfirmButton extends StatelessWidget {
   }
 }
 
-class _RecoverButton extends StatelessWidget {
+class _RecoverButton extends StatelessWidget with _ButtonLogicMixin {
   const _RecoverButton({required this.inputType});
   final KeyChainInputType inputType;
 
@@ -660,7 +701,8 @@ class _RecoverButton extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.canRecoverKey != current.canRecoverKey ||
           previous.loading != current.loading ||
-          previous.pageState != current.pageState,
+          previous.pageState != current.pageState ||
+          previous.keyServerUp != current.keyServerUp,
       builder: (context, state) {
         final canRecover = inputType == KeyChainInputType.backupKey
             ? state.canRecoverWithBckupKey
@@ -670,9 +712,27 @@ class _RecoverButton extends StatelessWidget {
         final isDownloadFlow = state.pageState == KeyChainPageState.download ||
             state.originalPageState == KeyChainPageState.download;
 
+        // Show only backup key option if server is down
+        if (!state.keyServerUp && inputType != KeyChainInputType.backupKey) {
+          return Column(
+            children: [
+              const BBText.bodySmall(
+                'Server is currently unavailable.\nPlease use your backup key to recover.',
+                textAlign: TextAlign.center,
+                isRed: true,
+              ),
+              const Gap(16),
+              BBButton.withColour(
+                fillWidth: true,
+                label: 'Switch to Backup Key',
+                onPressed: () => _switchToBackupKey(context),
+              ),
+            ],
+          );
+        }
+
         return Column(
           children: [
-            const Gap(10),
             // Always show PIN/password switch
             InkWell(
               onTap: () => _switchInputType(context),
@@ -680,7 +740,7 @@ class _RecoverButton extends StatelessWidget {
             ),
             if (!isDownloadFlow &&
                 inputType != KeyChainInputType.backupKey) ...[
-              const Gap(10),
+              const Gap(20),
               InkWell(
                 onTap: () => _switchToBackupKey(context),
                 child: const BBText.bodySmall(
@@ -689,7 +749,7 @@ class _RecoverButton extends StatelessWidget {
                 ),
               ),
             ],
-            const Gap(8),
+            const Gap(10),
             BBButton.withColour(
               fillWidth: true,
               label: 'Recover with ${_getInputTypeText()}',
@@ -742,7 +802,7 @@ class _RecoverButton extends StatelessWidget {
   }
 }
 
-class _DeleteButton extends StatelessWidget {
+class _DeleteButton extends StatelessWidget with _ButtonLogicMixin {
   const _DeleteButton({required this.inputType});
   final KeyChainInputType inputType;
 
@@ -830,6 +890,54 @@ class _LoadingView extends StatelessWidget {
   }
 }
 
+class _DialogBase extends StatelessWidget {
+  const _DialogBase({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.buttonText,
+    required this.onButtonPressed,
+    this.iconColor,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final String buttonText;
+  final VoidCallback onButtonPressed;
+  final Color? iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: context.colour.primaryContainer,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(_kGapLarge),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: iconColor ?? context.colour.primary,
+              size: 48,
+            ),
+            const Gap(_kGapMedium),
+            BBText.title(title, textAlign: TextAlign.center, isBold: true),
+            const Gap(_kGapSmall),
+            BBText.bodySmall(message, textAlign: TextAlign.center),
+            const Gap(_kGapLarge),
+            BBButton.withColour(
+              label: buttonText,
+              onPressed: onButtonPressed,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _SuccessDialog extends StatelessWidget {
   const _SuccessDialog({required this.pageState});
 
@@ -862,38 +970,19 @@ class _SuccessDialog extends StatelessWidget {
       route = '/home';
     }
 
-    return Dialog(
-      backgroundColor: context.colour.primaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.check_circle_outline,
-              color: context.colour.primary,
-              size: 48,
-            ),
-            const Gap(16),
-            BBText.title(title, textAlign: TextAlign.center, isBold: true),
-            const Gap(8),
-            BBText.bodySmall(message, textAlign: TextAlign.center),
-            const Gap(24),
-            BBButton.withColour(
-              label: 'Continue',
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (extra != null) {
-                  context.push(route, extra: extra);
-                } else {
-                  context.go(route);
-                }
-              },
-            )
-          ],
-        ),
-      ),
+    return _DialogBase(
+      icon: Icons.check_circle_outline,
+      title: title,
+      message: message,
+      buttonText: 'Continue',
+      onButtonPressed: () {
+        Navigator.of(context).pop();
+        if (extra != null) {
+          context.push(route, extra: extra);
+        } else {
+          context.go(route);
+        }
+      },
     );
   }
 }
@@ -904,34 +993,14 @@ class _ErrorDialog extends StatelessWidget {
   final bool isRecovery;
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: context.colour.primaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline,
-              color: context.colour.primary,
-              size: 48,
-            ),
-            const Gap(16),
-            BBText.title(isRecovery ? 'Recovery failed' : 'Backup failed',
-                textAlign: TextAlign.center, isBold: true),
-            const Gap(8),
-            BBText.bodySmall(error, textAlign: TextAlign.center),
-            const Gap(24),
-            BBButton.withColour(
-              label: 'Continue',
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        ),
-      ),
+    return _DialogBase(
+      icon: Icons.error_outline,
+      title: isRecovery ? 'Recovery failed' : 'Backup failed',
+      message: error,
+      buttonText: 'Continue',
+      onButtonPressed: () {
+        Navigator.of(context).pop();
+      },
     );
   }
 }

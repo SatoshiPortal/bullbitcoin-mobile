@@ -88,6 +88,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         .getWalletServiceById(state.wallet.id)
         ?.syncWallet();
   }
+
+  void updateWallet(Wallet updatedWallet) {
+    emit(state.copyWith(wallet: updatedWallet));
+  }
 }
 
 WalletBloc createOrRetreiveWalletBloc(String walletId, {Wallet? wallet}) {

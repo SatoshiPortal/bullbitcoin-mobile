@@ -66,6 +66,7 @@ class _BackupSettingsState extends State<BackupSettings> {
 
 class _Screen extends StatelessWidget {
   const _Screen();
+
   @override
   Widget build(BuildContext context) {
     final watchOnly =
@@ -74,6 +75,7 @@ class _Screen extends StatelessWidget {
         context.select((WalletBloc x) => x.state.wallet.physicalBackupTested);
     final isVaultBackupTested =
         context.select((WalletBloc x) => x.state.wallet.vaultBackupTested);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(

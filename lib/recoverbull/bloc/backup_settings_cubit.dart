@@ -18,6 +18,7 @@ import 'package:bb_mobile/_repository/wallet/wallet_storage.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
+import 'package:bb_mobile/home/home_page.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/recoverbull/bloc/backup_settings_state.dart';
 import 'package:flutter/material.dart';
@@ -377,8 +378,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
     // Update home state and sort wallets
     locator<HomeBloc>().add(LoadWalletsFromStorage());
-    await locator<WalletsStorageRepository>().sortWallets();
-
+    await locator<WalletsStorageRepository>().readAllWallets();
     _emitSafe(
       state.copyWith(
         loadingBackups: false,
@@ -1007,6 +1007,13 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         updatedWallet,
         updateTypes: [UpdateWalletTypes.settings],
       );
+
+      // Get the WalletBloc and update it directly
+      final walletBloc = locator<AppWalletBlocs>()
+          .state
+          .firstWhere((bloc) => bloc.state.wallet.id == updatedWallet.id);
+      walletBloc.updateWallet(updatedWallet);
+
       _currentWallet = updatedWallet;
     }
   }
