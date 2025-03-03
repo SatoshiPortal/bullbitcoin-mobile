@@ -60,7 +60,7 @@ class WalletCard extends StatelessWidget {
               ),
               const Spacer(),
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   const Gap(16),
                   BBText(
