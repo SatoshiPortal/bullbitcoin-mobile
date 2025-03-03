@@ -35,11 +35,21 @@ class $AssetsIconsGen {
   AssetGenImage get rightArrow =>
       const AssetGenImage('assets/icons/right-arrow.png');
 
+  /// File path: assets/icons/settings-line.png
+  AssetGenImage get settingsLine =>
+      const AssetGenImage('assets/icons/settings-line.png');
+
   /// File path: assets/icons/swap.png
   AssetGenImage get swap => const AssetGenImage('assets/icons/swap.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [btc, dollar, rightArrow, swap];
+  List<AssetGenImage> get values => [
+    btc,
+    dollar,
+    rightArrow,
+    settingsLine,
+    swap,
+  ];
 }
 
 class $AssetsImagesGen {
@@ -83,11 +93,15 @@ class $AssetsImagesGen {
 class $AssetsImages2Gen {
   const $AssetsImages2Gen();
 
+  /// File path: assets/images2/bb-logo-small.png
+  AssetGenImage get bbLogoSmall =>
+      const AssetGenImage('assets/images2/bb-logo-small.png');
+
   /// File path: assets/images2/bg-red.png
   AssetGenImage get bgRed => const AssetGenImage('assets/images2/bg-red.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [bgRed];
+  List<AssetGenImage> get values => [bbLogoSmall, bgRed];
 }
 
 class Assets {

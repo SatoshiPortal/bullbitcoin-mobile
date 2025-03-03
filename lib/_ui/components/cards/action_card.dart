@@ -38,38 +38,41 @@ class _ActionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      elevation: 4,
+      elevation: 2,
       color: Colors.transparent,
-      child: Row(
-        children: [
-          _ActionButton(
-            icon: Assets.icons.btc.path,
-            label: 'Buy',
-            onPressed: () {},
-            position: _ButtonPosition.first,
-          ),
-          const Gap(1),
-          _ActionButton(
-            icon: Assets.icons.dollar.path,
-            label: 'Sell',
-            onPressed: () {},
-            position: _ButtonPosition.middle,
-          ),
-          const Gap(1),
-          _ActionButton(
-            icon: Assets.icons.rightArrow.path,
-            label: 'Pay',
-            onPressed: () {},
-            position: _ButtonPosition.middle,
-          ),
-          const Gap(1),
-          _ActionButton(
-            icon: Assets.icons.swap.path,
-            label: 'Swap',
-            onPressed: () {},
-            position: _ButtonPosition.last,
-          ),
-        ],
+      child: SizedBox(
+        height: 80,
+        child: Row(
+          children: [
+            _ActionButton(
+              icon: Assets.icons.btc.path,
+              label: 'Buy',
+              onPressed: () {},
+              position: _ButtonPosition.first,
+            ),
+            const Gap(1),
+            _ActionButton(
+              icon: Assets.icons.dollar.path,
+              label: 'Sell',
+              onPressed: () {},
+              position: _ButtonPosition.middle,
+            ),
+            const Gap(1),
+            _ActionButton(
+              icon: Assets.icons.rightArrow.path,
+              label: 'Pay',
+              onPressed: () {},
+              position: _ButtonPosition.middle,
+            ),
+            const Gap(1),
+            _ActionButton(
+              icon: Assets.icons.swap.path,
+              label: 'Swap',
+              onPressed: () {},
+              position: _ButtonPosition.last,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -109,8 +112,9 @@ class _ActionButton extends StatelessWidget {
           ),
           child: Column(
             spacing: 8,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(icon, height: 20, width: 20),
+              Image.asset(icon, height: 24, width: 24),
               BBText(
                 label,
                 style: context.font.bodyLarge,

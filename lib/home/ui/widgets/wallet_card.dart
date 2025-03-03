@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_ui/components/cards/wallet_card.dart';
+import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -13,7 +14,7 @@ class HomeWalletCards extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           WalletCard(
-            tagColor: Colors.red,
+            tagColor: context.colour.tertiary,
             title: 'Instant payments wallet',
             description: 'Liquid and Lightning network',
             balance: '0 sats',

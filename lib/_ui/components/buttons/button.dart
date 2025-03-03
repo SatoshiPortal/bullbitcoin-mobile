@@ -43,7 +43,7 @@ class BBButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(size == _ButtonSize.large ? 4 : 2);
+    final radius = BorderRadius.circular(size == _ButtonSize.large ? 2 : 2);
 
     final image = iconData != null
         ? Icon(iconData, size: 20, color: textColor)

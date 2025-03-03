@@ -1,5 +1,4 @@
-import 'dart:ui';
-
+import 'package:bb_mobile/_ui/components/cards/action_card.dart';
 import 'package:bb_mobile/_ui/components/cards/price_card.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
@@ -12,14 +11,55 @@ class HomeTopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return const SizedBox(
+      height: 264 + 78 + 46,
+      child: Stack(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(
+                height: 264 + 78,
+                // color: Colors.red,
+                child: _UI(),
+              ),
+              // const Gap(40),
+            ],
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 13.0),
+              child: ActionCard(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UI extends StatelessWidget {
+  const _UI();
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
-      // fit: StackFit.expand,
+      fit: StackFit.expand,
       children: [
         Image.asset(
           Assets.images2.bgRed.path,
+          fit: BoxFit.fitHeight,
         ),
         const _Amounts(),
-        const _TopNav(),
+        const Positioned(
+          top: 54,
+          left: 0,
+          right: 0,
+          child: _TopNav(),
+        ),
       ],
     );
   }
@@ -31,18 +71,22 @@ class _Amounts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Gap(32),
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Spacer(),
             Gap(31),
-            Gap(24),
+            Gap(32),
             PriceCard(text: '0 BTC'),
-            Gap(24),
+            Gap(32),
             _EyeToggle(),
             Spacer(),
           ],
         ),
+        Gap(12),
         _FiatAmt(),
       ],
     );
@@ -63,13 +107,10 @@ class _EyeToggle extends StatelessWidget {
         ),
         color: context.colour.scrim,
       ),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 3.5, sigmaY: 3.5),
-        child: Icon(
-          Icons.remove_red_eye,
-          color: context.colour.onPrimary,
-          size: 20,
-        ),
+      child: Icon(
+        Icons.remove_red_eye,
+        color: context.colour.onPrimary,
+        size: 20,
       ),
     );
   }
@@ -89,13 +130,10 @@ class _FiatAmt extends StatelessWidget {
         ),
         color: context.colour.surfaceDim,
       ),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 2.4, sigmaY: 2.4),
-        child: BBText(
-          '\$0.0 CAD',
-          style: context.font.displaySmall,
-          color: context.colour.onPrimary,
-        ),
+      child: BBText(
+        '\$0.0 CAD',
+        style: context.font.bodyLarge,
+        color: context.colour.onPrimary,
       ),
     );
   }
@@ -108,28 +146,45 @@ class _TopNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
+        const Gap(8),
         IconButton(
           onPressed: () {},
+          visualDensity: VisualDensity.compact,
           iconSize: 24,
-          icon: const Icon(
-            Icons.bar_chart,
-          ),
+          color: context.colour.onPrimary,
+          icon: const Icon(Icons.bar_chart),
         ),
-        const Gap(24 + 16),
+        const Gap(24 + 42),
         const Spacer(),
         const _BullLogo(),
         const Spacer(),
+        const Gap(12),
         IconButton(
           onPressed: () {},
+          visualDensity: VisualDensity.compact,
+          color: context.colour.onPrimary,
           iconSize: 24,
           icon: const Icon(Icons.history),
         ),
-        const Gap(16),
-        IconButton(
-          onPressed: () {},
-          iconSize: 24,
-          icon: const Icon(Icons.settings),
+        const Gap(8),
+
+        InkWell(
+          onTap: () {},
+          child: Image.asset(
+            Assets.icons.settingsLine.path,
+            width: 24,
+            height: 24,
+            color: context.colour.onPrimary,
+          ),
         ),
+        // IconButton(
+        //   visualDensity: VisualDensity.compact,
+        //   onPressed: () {},
+        //   iconSize: 24,
+        //   color: context.colour.onPrimary,
+        //   icon: const Icon(Icons.bolt),
+        // ),
+        const Gap(16),
       ],
     );
   }
@@ -140,6 +195,10 @@ class _BullLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Image.asset(
+      Assets.images2.bbLogoSmall.path,
+      height: 32,
+      // width: 40,
+    );
   }
 }

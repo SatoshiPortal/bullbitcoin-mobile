@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
-import 'package:bb_mobile/_ui/components/cards/action_card.dart';
 import 'package:bb_mobile/_ui/components/navbar/bottom_navbar.dart';
 import 'package:bb_mobile/home/presentation/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/ui/widgets/home_bottom_buttons.dart';
+import 'package:bb_mobile/home/ui/widgets/top_section.dart';
 import 'package:bb_mobile/home/ui/widgets/wallet_card.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/presentation/bloc/settings_cubit.dart';
@@ -36,23 +36,17 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       bottomNavigationBar: BottomNavbar(),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // HomeTopSection(),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.0),
-              child: ActionCard(),
-            ),
-            HomeWalletCards(),
-            Spacer(),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 13.0),
-              child: HomeBottomButtons(),
-            ),
-            Gap(16),
-          ],
-        ),
+      body: Column(
+        children: [
+          HomeTopSection(),
+          HomeWalletCards(),
+          Spacer(),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 13.0),
+            child: HomeBottomButtons(),
+          ),
+          Gap(16),
+        ],
       ),
     );
   }

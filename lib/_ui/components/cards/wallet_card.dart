@@ -29,7 +29,7 @@ class WalletCard extends StatelessWidget {
         height: 80,
         child: Material(
           clipBehavior: Clip.antiAlias,
-          elevation: 4,
+          elevation: 2,
           color: context.colour.onPrimary,
           borderRadius: BorderRadius.circular(2),
           child: Row(
