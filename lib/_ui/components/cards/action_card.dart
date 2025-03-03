@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/_ui/themes/values/corners.dart';
+import 'package:bb_mobile/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 
 enum _ButtonPosition { first, last, middle }
@@ -22,25 +23,25 @@ class ActionCard extends StatelessWidget {
           spacing: 1,
           children: [
             _ActionButton(
-              icon: 'buy',
+              icon: Assets.icons.btc.path,
               label: 'Buy',
               onPressed: () {},
               position: _ButtonPosition.first,
             ),
             _ActionButton(
-              icon: 'sell',
+              icon: Assets.icons.dollar.path,
               label: 'Sell',
               onPressed: () {},
               position: _ButtonPosition.middle,
             ),
             _ActionButton(
-              icon: 'pay',
+              icon: Assets.icons.rightArrow.path,
               label: 'Pay',
               onPressed: () {},
               position: _ButtonPosition.middle,
             ),
             _ActionButton(
-              icon: 'swap',
+              icon: Assets.icons.swap.path,
               label: 'Swap',
               onPressed: () {},
               position: _ButtonPosition.last,

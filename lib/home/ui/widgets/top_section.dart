@@ -12,7 +12,7 @@ class HomeTopSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      fit: StackFit.expand,
+      // fit: StackFit.expand,
       children: [
         Image.asset(
           'bg',

@@ -1,3 +1,14 @@
+import 'package:flutter/material.dart';
+
+class HomeWalletCards extends StatelessWidget {
+  const HomeWalletCards({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
+
 // import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 // import 'package:bb_mobile/home/presentation/bloc/home_bloc.dart';
 // import 'package:flutter/material.dart';
