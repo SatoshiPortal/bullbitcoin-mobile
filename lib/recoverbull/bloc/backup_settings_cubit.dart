@@ -95,21 +95,16 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   static const _kMinBackupInterval = Duration(seconds: 5);
 
   /// Gets the appropriate backup manager based on backup type
-  IRecoverbullManager get _backupManager =>
-      state.backupType == BackupType.googleDrive
-          ? _googleDriveBackupManager
-          : _fileSystemBackupManager;
 
-  void setBackupType(BackupType type) {
-    emit(state.copyWith(backupType: type));
+  IRecoverbullManager _getBackupManager(Type type) {
+    if (type == GoogleDriveBackupManager) return _googleDriveBackupManager;
+    if (type == FileSystemBackupManager) return _fileSystemBackupManager;
+    throw Exception('Unknown backup manager');
   }
 
   void changePassword(String password) {
     emit(
-      state.copyWith(
-        testBackupPassword: password,
-        errTestingBackup: '',
-      ),
+      state.copyWith(testBackupPassword: password, errTestingBackup: ''),
     );
   }
 
@@ -142,8 +137,10 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
   }
 
-  Future<void> deleteBackup([String? path]) async {
-    if (state.backupType == BackupType.fileSystem) {
+  Future<void> deleteBackup({required Type manager, String? path}) async {
+    final backupManager = _getBackupManager(manager);
+
+    if (backupManager is FileSystemBackupManager) {
       if (_filePicker == null) return;
 
       final (file, error) = await _filePicker.pickFile();
@@ -157,9 +154,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    final (deleted, err) = await _backupManager.removeEncryptedBackup(
-      path: path!,
-    );
+    final (deleted, err) =
+        await backupManager.removeEncryptedBackup(path: path!);
 
     if (err != null) {
       _handleSaveError('Failed to delete backup: ${err.message}');
@@ -171,17 +167,16 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
   /// Fetches and processes backup data from either filesystem or Google Drive
   /// [forceRefresh] - If true, forces reload of backup data even if cached
-  Future<void> fetchBackup({bool forceRefresh = false}) async {
+  Future<void> fetchBackup({
+    required Type manager,
+    bool forceRefresh = false,
+  }) async {
     try {
+      final backupManager = _getBackupManager(manager);
+
       _emitSafe(state.copyWith(loadingBackups: true));
 
-      final (_, connectErr) = await _backupManager.connect();
-      if (connectErr != null) {
-        _handleLoadError(connectErr.message);
-        return;
-      }
-
-      if (state.backupType == BackupType.fileSystem) {
+      if (backupManager is FileSystemBackupManager) {
         if (_filePicker == null) return;
 
         final (file, error) = await _filePicker.pickFile();
@@ -191,7 +186,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         }
 
         final fileContent = await file.readAsString();
-        final (loadedBackup, err) = _backupManager.loadEncryptedBackup(
+        final (loadedBackup, err) = backupManager.loadEncryptedBackup(
           file: fileContent,
         );
 
@@ -210,77 +205,81 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         return;
       }
 
-      // Google Drive fetch logic
-      if (!forceRefresh && state.loadedBackups.isNotEmpty) {
-        emit(state.copyWith(loadingBackups: false));
-        return;
+      if (backupManager is GoogleDriveBackupManager) {
+        final (_, connectErr) = await backupManager.connect();
+        if (connectErr != null) {
+          _handleLoadError(connectErr.message);
+          return;
+        }
+
+        if (!forceRefresh && state.loadedBackups.isNotEmpty) {
+          emit(state.copyWith(loadingBackups: false));
+          return;
+        }
+
+        final (availableBackups, err) =
+            await backupManager.loadAllEncryptedBackupFiles();
+
+        if (err != null) {
+          debugPrint('Error loading backups: ${err.message}');
+          _handleLoadError("Failed to get backup files");
+          return;
+        }
+
+        if (availableBackups == null || availableBackups.isEmpty) {
+          _handleLoadError("No backup files found");
+          return;
+        }
+
+        // Get latest backup by creation time
+        final latestBackup = availableBackups.reduce((a, b) {
+          final aTime = a.createdTime;
+          final bTime = b.createdTime;
+          if (aTime == null) return b;
+          if (bTime == null) return a;
+          return aTime.compareTo(bTime) > 0 ? a : b;
+        });
+
+        final backupId = latestBackup.name?.split('_').last.split('.').first;
+        if (backupId == null) {
+          _handleLoadError("Corrupted backup file name");
+          return;
+        }
+
+        final (loadedBackupMetaData, mediaErr) =
+            await backupManager.fetchMediaStream(file: latestBackup);
+
+        if (mediaErr != null || loadedBackupMetaData == null) {
+          debugPrint('Error loading backup data: ${mediaErr?.message}');
+          _handleLoadError("Failed to load backup data");
+          return;
+        }
+
+        final (backup, decodeErr) = backupManager.loadEncryptedBackup(
+          file: utf8.decode(loadedBackupMetaData),
+        );
+
+        if (decodeErr != null || backup == null) {
+          debugPrint('Error decoding backup: ${decodeErr?.message}');
+          _handleLoadError("Corrupted backup file");
+          return;
+        }
+
+        final backupMap = backup.toMap();
+        backupMap.addAll({
+          'source': 'drive',
+          'filename': latestBackup.name,
+        });
+
+        _emitSafe(
+          state.copyWith(
+            loadingBackups: false,
+            latestRecoveredBackup: backupMap,
+            lastBackupAttempt: DateTime.now(),
+            errorLoadingBackups: '',
+          ),
+        );
       }
-
-      final (availableBackups, err) =
-          await (_backupManager as GoogleDriveBackupManager)
-              .loadAllEncryptedBackupFiles();
-
-      if (err != null) {
-        debugPrint('Error loading backups: ${err.message}');
-        _handleLoadError("Failed to get backup files");
-        return;
-      }
-
-      if (availableBackups == null || availableBackups.isEmpty) {
-        _handleLoadError("No backup files found");
-        return;
-      }
-
-      // Get latest backup by creation time
-      final latestBackup = availableBackups.reduce((a, b) {
-        final aTime = a.createdTime;
-        final bTime = b.createdTime;
-        if (aTime == null) return b;
-        if (bTime == null) return a;
-        return aTime.compareTo(bTime) > 0 ? a : b;
-      });
-
-      final backupId = latestBackup.name?.split('_').last.split('.').first;
-      if (backupId == null) {
-        _handleLoadError("Corrupted backup file name");
-        return;
-      }
-
-      final (loadedBackupMetaData, mediaErr) =
-          await (_backupManager as GoogleDriveBackupManager).fetchMediaStream(
-        file: latestBackup,
-      );
-
-      if (mediaErr != null || loadedBackupMetaData == null) {
-        debugPrint('Error loading backup data: ${mediaErr?.message}');
-        _handleLoadError("Failed to load backup data");
-        return;
-      }
-
-      final (backup, decodeErr) = _backupManager.loadEncryptedBackup(
-        file: utf8.decode(loadedBackupMetaData),
-      );
-
-      if (decodeErr != null || backup == null) {
-        debugPrint('Error decoding backup: ${decodeErr?.message}');
-        _handleLoadError("Corrupted backup file");
-        return;
-      }
-
-      final backupMap = backup.toMap();
-      backupMap.addAll({
-        'source': 'drive',
-        'filename': latestBackup.name,
-      });
-
-      _emitSafe(
-        state.copyWith(
-          loadingBackups: false,
-          latestRecoveredBackup: backupMap,
-          lastBackupAttempt: DateTime.now(),
-          errorLoadingBackups: '',
-        ),
-      );
     } catch (e) {
       debugPrint('Fetch backup error: $e');
       _handleLoadError('Failed to fetch backup: $e');
@@ -416,7 +415,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
   /// Saves encrypted backup to selected location (filesystem or Google Drive)
   /// Handles backup key derivation and encryption process
-  Future<void> saveBackup() async {
+  Future<void> saveBackup<T>({required Type manager}) async {
+    final backupManager = _getBackupManager(manager);
+
     if (!_canStartBackup()) {
       _handleSaveError('Please wait before attempting another backup');
       return;
@@ -428,7 +429,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       // Get the file path first if needed for filesystem backup
       String? savePath;
 
-      if (state.backupType == BackupType.fileSystem) {
+      if (backupManager is FileSystemBackupManager) {
         // For filesystem backup, get directory first
         final (path, pickErr) = await _filePicker?.getDirectoryPath() ??
             (null, Err('File picker not initialized'));
@@ -437,9 +438,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           return;
         }
         savePath = path;
-      } else {
+      } else if (backupManager is GoogleDriveBackupManager) {
         // For other backup types, connect normally
-        final (result, connectErr) = await _backupManager.connect();
+        final (result, connectErr) = await backupManager.connect();
         if (connectErr != null) {
           _handleSaveError(connectErr.message);
           return;
@@ -461,7 +462,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       }
 
       // Create encrypted backup
-      final (result, err) = await _backupManager.createEncryptedBackup(
+      final (result, err) = await backupManager.createEncryptedBackup(
         wallets: backups,
         mnemonic: mainSeed.mnemonic.split(' '),
         network: mainSeed.network.toString().toLowerCase(),
@@ -473,11 +474,11 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       }
 
       // Save backup to selected location
-      final backupFolder = state.backupType == BackupType.fileSystem
+      final backupFolder = backupManager is FileSystemBackupManager
           ? savePath ?? defaultBackupPath
           : 'appDataFolder';
 
-      final (filePath, saveErr) = await _backupManager.saveEncryptedBackup(
+      final (filePath, saveErr) = await backupManager.saveEncryptedBackup(
         backup: result.backup,
         backupFolder: backupFolder,
       );

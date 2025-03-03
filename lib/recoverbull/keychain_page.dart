@@ -864,11 +864,13 @@ class _DeleteButton extends StatelessWidget with _ButtonLogicMixin {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            child: Text('Delete',
-                style: context.font.bodyMedium!.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                )),
+            child: Text(
+              'Delete',
+              style: context.font.bodyMedium!.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
           ),
         ],
       ),
@@ -897,7 +899,6 @@ class _DialogBase extends StatelessWidget {
     required this.message,
     required this.buttonText,
     required this.onButtonPressed,
-    this.iconColor,
   });
 
   final IconData icon;
@@ -905,7 +906,6 @@ class _DialogBase extends StatelessWidget {
   final String message;
   final String buttonText;
   final VoidCallback onButtonPressed;
-  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -919,7 +919,7 @@ class _DialogBase extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: iconColor ?? context.colour.primary,
+              color: context.colour.primary,
               size: 48,
             ),
             const Gap(_kGapMedium),

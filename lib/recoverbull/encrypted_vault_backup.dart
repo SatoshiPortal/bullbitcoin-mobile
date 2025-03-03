@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bb_mobile/_pkg/recoverbull/google_drive.dart';
+import 'package:bb_mobile/_pkg/recoverbull/local.dart';
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -21,39 +23,38 @@ import 'package:intl/intl.dart';
 const double _kSpacing = 15.0;
 
 enum BackupProvider {
-  googleDrive('Google Drive', 'Easy', Icons.add_to_drive_rounded,
-      'Your Google account information is never collected by Bull Bitcoin. It stays within the app and is not shared to our organization or to any third party.'),
-  iCloud('Apple iCloud', 'Easy', CupertinoIcons.cloud_upload, ''),
-  custom('Custom location', 'Private', Icons.folder, '');
+  googleDrive(
+    GoogleDriveBackupManager,
+    'Google Drive',
+    'Easy',
+    Icons.add_to_drive_rounded,
+    'Your Google account information is never collected by Bull Bitcoin. It stays within the app and is not shared to our organization or to any third party.',
+  ),
+  iCloud(Null, 'Apple iCloud', 'Easy', CupertinoIcons.cloud_upload, ''),
+  custom(
+    FileSystemBackupManager,
+    'Custom location',
+    'Private',
+    Icons.folder,
+    '',
+  );
 
   final String title;
   final String description;
   final IconData icon;
   final String disclaimer;
+  final Type manager;
 
-  const BackupProvider(this.title, this.description, this.icon, this.disclaimer);
+  const BackupProvider(
+      this.manager, this.title, this.description, this.icon, this.disclaimer);
 
   Future<void> handleBackup(BackupSettingsCubit cubit) async {
-    cubit.setBackupType(_getBackupType());
-    await cubit.saveBackup();
+    await cubit.saveBackup(manager: manager);
   }
 
   Future<void> handleRecover(BackupSettingsCubit cubit) async {
-    cubit.setBackupType(_getBackupType());
-    await cubit.fetchBackup();
+    await cubit.fetchBackup(manager: manager);
   }
-
-  BackupType _getBackupType() {
-    switch (this) {
-      case BackupProvider.googleDrive:
-        return BackupType.googleDrive;
-      case BackupProvider.iCloud:
-        return BackupType.iCloud;
-      case BackupProvider.custom:
-        return BackupType.fileSystem;
-    }
-  }
-
 }
 
 class EncryptedVaultBackupPage extends StatefulWidget {
@@ -87,7 +88,7 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
       _showDisclaimer(context, provider.disclaimer);
       await Future.delayed(const Duration(seconds: 3));
     }
-    
+
     await provider.handleBackup(_cubit);
   }
 

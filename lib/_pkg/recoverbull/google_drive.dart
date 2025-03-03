@@ -23,7 +23,6 @@ class GoogleDriveBackupManager extends IRecoverbullManager {
 
   DriveApi? _api;
 
-  @override
   Future<(DriveApi?, Err?)> connect() async {
     GoogleSignInAccount? account;
     try {
@@ -52,7 +51,6 @@ class GoogleDriveBackupManager extends IRecoverbullManager {
     }
   }
 
-  @override
   Future<void> disconnect() async {
     await _google.disconnect();
     _api = null;
