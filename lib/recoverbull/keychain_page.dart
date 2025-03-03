@@ -733,7 +733,6 @@ class _RecoverButton extends StatelessWidget with _ButtonLogicMixin {
 
         return Column(
           children: [
-            const Gap(10),
             // Always show PIN/password switch
             InkWell(
               onTap: () => _switchInputType(context),
@@ -741,7 +740,7 @@ class _RecoverButton extends StatelessWidget with _ButtonLogicMixin {
             ),
             if (!isDownloadFlow &&
                 inputType != KeyChainInputType.backupKey) ...[
-              const Gap(10),
+              const Gap(20),
               InkWell(
                 onTap: () => _switchToBackupKey(context),
                 child: const BBText.bodySmall(
@@ -750,7 +749,7 @@ class _RecoverButton extends StatelessWidget with _ButtonLogicMixin {
                 ),
               ),
             ],
-            const Gap(8),
+            const Gap(10),
             BBButton.withColour(
               fillWidth: true,
               label: 'Recover with ${_getInputTypeText()}',
