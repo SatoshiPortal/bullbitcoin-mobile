@@ -7,17 +7,19 @@ class BBText extends StatelessWidget {
     super.key,
     required this.style,
     this.maxLines = 1,
+    this.color,
   });
 
   final String text;
   final int maxLines;
   final TextStyle style;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
     return AutoSizeText(
       text,
-      style: style,
+      style: style.copyWith(color: color),
       maxLines: maxLines,
     );
   }

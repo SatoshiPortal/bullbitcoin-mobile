@@ -82,7 +82,7 @@ class _ActionButton extends StatelessWidget {
           : Radius.zero,
     );
 
-    return GestureDetector(
+    return InkWell(
       onTap: () => onPressed(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
