@@ -21,6 +21,7 @@ enum SwapType {
 // TODO: add/change to statusses that make sense for the application (so not just the same Boltz swap states, unless it is a status we need in the app to manage or show)
 enum SwapStatus {
   pending,
+  paid,
   completed,
   refunded,
   expired,

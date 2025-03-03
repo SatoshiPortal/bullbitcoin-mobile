@@ -314,6 +314,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     );
     final updatedSwap = swap.copyWith(
       sendSwapDetails: sendSwapDetails,
+      status: SwapStatus.paid,
     );
     await _boltz.store(SwapModel.fromEntity(updatedSwap));
   }
@@ -391,8 +392,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     }
 
     final swap = swapModel.toEntity();
-    if (swap.status != SwapStatus.pending) {
-      throw "Can only update status of a pending swap";
+    if (swap.status != SwapStatus.paid) {
+      throw "Can only update status of a paid swap";
     }
     final sendSwapDetails = swap.sendSwapDetails!.copyWith(
       refundAddress: refundAddress,
@@ -415,8 +416,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     }
 
     final swap = swapModel.toEntity();
-    if (swap.status != SwapStatus.pending) {
-      throw "Can only update status of a pending swap";
+    if (swap.status != SwapStatus.paid) {
+      throw "Can only update status of a paid swap";
     }
 
     final updatedSwap = swap.copyWith(
