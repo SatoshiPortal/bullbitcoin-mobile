@@ -109,6 +109,22 @@ abstract class SwapRepository {
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });
+
+  Future<String> refundLiquidToBitcoinSwap({
+    required String swapId,
+    required String liquidRefundAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+    required bool broadcastViaBoltz,
+  });
+
+  Future<String> refundBitcoinToLiquidSwap({
+    required String swapId,
+    required String bitcoinRefundAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+    required bool broadcastViaBoltz,
+  });
   // SWAP STORAGE UTILITY
   Future<void> updatePaidSendSwap({
     required String swapId,

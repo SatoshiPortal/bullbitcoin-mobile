@@ -100,16 +100,6 @@ abstract class BoltzDataSource {
     String btcElectrumUrl,
     String lbtcElectrumUrl,
   );
-  Future<String> broadcastChainSwapClaim(
-    ChainSwap chainSwap,
-    String signedTxHex,
-    bool broadcastViaBoltz,
-  );
-  Future<String> broadcastChainSwapRefund(
-    ChainSwap chainSwap,
-    String signedTxHex,
-    bool broadcastViaBoltz,
-  );
 
   /// Returns a signed tx hex which needs to be broadcasted
   Future<String> claimBtcToLbtcChainSwap(
@@ -127,6 +117,33 @@ abstract class BoltzDataSource {
     String refundLiquidAddress,
     int absoluteFees,
     bool tryCooperate,
+  );
+  Future<String> broadcastChainSwapClaim(
+    ChainSwap chainSwap,
+    String signedTxHex,
+    bool broadcastViaBoltz,
+  );
+
+  /// Returns a signed tx hex which needs to be broadcasted
+  Future<String> refundBtcToLbtcChainSwap(
+    ChainSwap chainSwap,
+    String refundBitcoinAddress,
+    int absoluteFees,
+    bool tryCooperate,
+  );
+
+  /// Returns a signed tx hex which needs to be broadcasted
+  Future<String> refundLbtcToBtcChainSwap(
+    ChainSwap chainSwap,
+    String refundLiquidAddress,
+    int absoluteFees,
+    bool tryCooperate,
+  );
+
+  Future<String> broadcastChainSwapRefund(
+    ChainSwap chainSwap,
+    String signedTxHex,
+    bool broadcastViaBoltz,
   );
   // Local Storage
   Future<void> store(SwapModel swap);
@@ -532,6 +549,34 @@ class BoltzDataSourceImpl implements BoltzDataSource {
             signedHex: signedTxHex,
             kind: SwapTxKind.claim,
           );
+  }
+
+  @override
+  Future<String> refundBtcToLbtcChainSwap(
+    ChainSwap chainSwap,
+    String refundBitcoinAddress,
+    int absoluteFees,
+    bool tryCooperate,
+  ) async {
+    return await chainSwap.refund(
+      refundAddress: refundBitcoinAddress,
+      absFee: BigInt.from(absoluteFees),
+      tryCooperate: tryCooperate,
+    );
+  }
+
+  @override
+  Future<String> refundLbtcToBtcChainSwap(
+    ChainSwap chainSwap,
+    String refundLiquidAddress,
+    int absoluteFees,
+    bool tryCooperate,
+  ) async {
+    return await chainSwap.refund(
+      refundAddress: refundLiquidAddress,
+      absFee: BigInt.from(absoluteFees),
+      tryCooperate: tryCooperate,
+    );
   }
 }
 

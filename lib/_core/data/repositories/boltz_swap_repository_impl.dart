@@ -629,4 +629,63 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     );
     return txid;
   }
+
+  @override
+  Future<String> refundBitcoinToLiquidSwap({
+    required String swapId,
+    required String bitcoinRefundAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+    required bool broadcastViaBoltz,
+  }) async {
+    final chainSwap = await _boltz.getChainSwap(swapId);
+    final signedTxHex = await _boltz.refundBtcToLbtcChainSwap(
+      chainSwap,
+      bitcoinRefundAddress,
+      absoluteFees,
+      tryCooperate,
+    );
+    // TODO: if coop fails attempt script path spend
+    final txid = await _boltz.broadcastChainSwapRefund(
+      chainSwap,
+      signedTxHex,
+      broadcastViaBoltz,
+    );
+    await _updateRefundedSendSwap(
+      swapId: swapId,
+      refundAddress: bitcoinRefundAddress,
+      txid: txid,
+    );
+
+    return txid;
+  }
+
+  @override
+  Future<String> refundLiquidToBitcoinSwap({
+    required String swapId,
+    required String liquidRefundAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+    required bool broadcastViaBoltz,
+  }) async {
+    final chainSwap = await _boltz.getChainSwap(swapId);
+    final signedTxHex = await _boltz.refundLbtcToBtcChainSwap(
+      chainSwap,
+      liquidRefundAddress,
+      absoluteFees,
+      tryCooperate,
+    );
+    // TODO: if coop fails attempt script path spend
+    final txid = await _boltz.broadcastChainSwapRefund(
+      chainSwap,
+      signedTxHex,
+      broadcastViaBoltz,
+    );
+    await _updateRefundedSendSwap(
+      swapId: swapId,
+      refundAddress: liquidRefundAddress,
+      txid: txid,
+    );
+    return txid;
+  }
 }
