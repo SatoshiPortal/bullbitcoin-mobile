@@ -891,6 +891,54 @@ class _LoadingView extends StatelessWidget {
   }
 }
 
+class _DialogBase extends StatelessWidget {
+  const _DialogBase({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.buttonText,
+    required this.onButtonPressed,
+    this.iconColor,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final String buttonText;
+  final VoidCallback onButtonPressed;
+  final Color? iconColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: context.colour.primaryContainer,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(_kGapLarge),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: iconColor ?? context.colour.primary,
+              size: 48,
+            ),
+            const Gap(_kGapMedium),
+            BBText.title(title, textAlign: TextAlign.center, isBold: true),
+            const Gap(_kGapSmall),
+            BBText.bodySmall(message, textAlign: TextAlign.center),
+            const Gap(_kGapLarge),
+            BBButton.withColour(
+              label: buttonText,
+              onPressed: onButtonPressed,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _SuccessDialog extends StatelessWidget {
   const _SuccessDialog({required this.pageState});
 
@@ -923,38 +971,19 @@ class _SuccessDialog extends StatelessWidget {
       route = '/home';
     }
 
-    return Dialog(
-      backgroundColor: context.colour.primaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.check_circle_outline,
-              color: context.colour.primary,
-              size: 48,
-            ),
-            const Gap(16),
-            BBText.title(title, textAlign: TextAlign.center, isBold: true),
-            const Gap(8),
-            BBText.bodySmall(message, textAlign: TextAlign.center),
-            const Gap(24),
-            BBButton.withColour(
-              label: 'Continue',
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (extra != null) {
-                  context.push(route, extra: extra);
-                } else {
-                  context.go(route);
-                }
-              },
-            )
-          ],
-        ),
-      ),
+    return _DialogBase(
+      icon: Icons.check_circle_outline,
+      title: title,
+      message: message,
+      buttonText: 'Continue',
+      onButtonPressed: () {
+        Navigator.of(context).pop();
+        if (extra != null) {
+          context.push(route, extra: extra);
+        } else {
+          context.go(route);
+        }
+      },
     );
   }
 }
@@ -965,34 +994,14 @@ class _ErrorDialog extends StatelessWidget {
   final bool isRecovery;
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: context.colour.primaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline,
-              color: context.colour.primary,
-              size: 48,
-            ),
-            const Gap(16),
-            BBText.title(isRecovery ? 'Recovery failed' : 'Backup failed',
-                textAlign: TextAlign.center, isBold: true),
-            const Gap(8),
-            BBText.bodySmall(error, textAlign: TextAlign.center),
-            const Gap(24),
-            BBButton.withColour(
-              label: 'Continue',
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            )
-          ],
-        ),
-      ),
+    return _DialogBase(
+      icon: Icons.error_outline,
+      title: isRecovery ? 'Recovery failed' : 'Backup failed',
+      message: error,
+      buttonText: 'Continue',
+      onButtonPressed: () {
+        Navigator.of(context).pop();
+      },
     );
   }
 }
