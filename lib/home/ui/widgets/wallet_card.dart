@@ -1,11 +1,37 @@
+import 'package:bb_mobile/_ui/components/cards/wallet_card.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class HomeWalletCards extends StatelessWidget {
   const HomeWalletCards({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Padding(
+      padding: const EdgeInsets.all(13.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          WalletCard(
+            tagColor: Colors.red,
+            title: 'Instant payments wallet',
+            description: 'Liquid and Lightning network',
+            balance: '0 sats',
+            balanceFiat: '0 CAD',
+            onTap: () {},
+          ),
+          const Gap(8),
+          // WalletCard(
+          //   tagColor: Colors.amber,
+          //   title: 'Instant payments wallet',
+          //   description: 'Liquid and Lightning network',
+          //   balance: '0 sats',
+          //   balanceFiat: '0 CAD',
+          //   onTap: () {},
+          // ),
+        ],
+      ),
+    );
   }
 }
 
