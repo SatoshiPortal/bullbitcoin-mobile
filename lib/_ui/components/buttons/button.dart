@@ -8,27 +8,31 @@ enum _ButtonSize { small, large }
 class BBButton extends StatelessWidget {
   const BBButton.big({
     super.key,
-    required this.icon,
+    this.icon,
     required this.label,
     required this.onPressed,
     required this.bgColor,
     required this.textColor,
+    this.iconData,
     this.iconFirst = false,
     this.outlined = false,
   }) : size = _ButtonSize.large;
 
   const BBButton.small({
     super.key,
-    required this.icon,
+    this.icon,
     required this.label,
     required this.onPressed,
     required this.bgColor,
     required this.textColor,
+    this.iconData,
     this.iconFirst = false,
     this.outlined = false,
   }) : size = _ButtonSize.small;
 
-  final String icon;
+  final String? icon;
+  final IconData? iconData;
+
   final String label;
   final Color bgColor;
   final Color textColor;
@@ -40,46 +44,46 @@ class BBButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(size == _ButtonSize.large ? 4 : 2);
-    return InkWell(
-      onTap: () => onPressed(),
-      borderRadius: radius,
-      child: Container(
-        width: size == _ButtonSize.large ? double.infinity : 160,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: !outlined ? bgColor : Colors.transparent,
-          border: outlined ? Border.all(color: bgColor) : null,
-          borderRadius: radius,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (iconFirst) ...[
-              Image.asset(
-                icon,
-                width: 20,
-                height: 20,
-                color: textColor,
-              ),
-              const Gap(10),
-              BBText(
-                label,
-                style: context.font.headlineLarge,
-              ),
-            ] else ...[
-              BBText(
-                label,
-                style: context.font.headlineLarge,
-              ),
-              const Gap(10),
-              Image.asset(
-                icon,
-                width: 20,
-                height: 20,
-                color: textColor,
-              ),
+
+    final image = iconData != null
+        ? Icon(iconData, size: 20, color: textColor)
+        : Image.asset(icon!, width: 20, height: 20, color: textColor);
+
+    return Expanded(
+      child: InkWell(
+        onTap: () => onPressed(),
+        borderRadius: radius,
+        child: Container(
+          height: 52,
+          width: size == _ButtonSize.large ? null : 160,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: !outlined ? bgColor : Colors.transparent,
+            border: outlined ? Border.all(color: bgColor) : null,
+            borderRadius: radius,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (iconFirst) ...[
+                image,
+                const Gap(10),
+                BBText(
+                  label,
+                  style: context.font.headlineLarge,
+                  color: textColor,
+                ),
+              ] else ...[
+                BBText(
+                  label,
+                  style: context.font.headlineLarge,
+                  color: textColor,
+                ),
+                const Gap(10),
+                image,
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
