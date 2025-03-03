@@ -4,6 +4,7 @@ import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/_ui/toast.dart';
+import 'package:bb_mobile/recoverbull/backup_settings.dart';
 import 'package:bb_mobile/recoverbull/bloc/backup_settings_cubit.dart';
 import 'package:bb_mobile/recoverbull/bloc/backup_settings_state.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_cubit.dart';
@@ -317,25 +318,30 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
   }
 
   Widget _buildContent(BuildContext context, BackupSettingsState state) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          const BBText.titleLarge('Where is your backup?', isBold: true),
-          const Gap(20),
-          ...BackupProvider.values.map(
-            (provider) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: StorageOptionCard(
-                title: provider.title,
-                description: provider.description,
-                icon: Icon(provider.icon, size: 40),
-                onTap: () => _handleRecover(context, provider),
+    return Column(
+      children: [
+        const KeyServerWarnings(),
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              const BBText.titleLarge('Where is your backup?', isBold: true),
+              const Gap(20),
+              ...BackupProvider.values.map(
+                (provider) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: StorageOptionCard(
+                    title: provider.title,
+                    description: provider.description,
+                    icon: Icon(provider.icon, size: 40),
+                    onTap: () => _handleRecover(context, provider),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
