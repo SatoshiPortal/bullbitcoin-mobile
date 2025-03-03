@@ -7,7 +7,6 @@ import 'package:bb_mobile/recoverbull/bloc/backup_settings_cubit.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_cubit.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_state.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:bb_mobile/wallet/bloc/state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -65,14 +64,9 @@ class _BackupSettingsState extends State<BackupSettings> {
   }
 }
 
-class _Screen extends StatefulWidget {
+class _Screen extends StatelessWidget {
   const _Screen();
 
-  @override
-  State<_Screen> createState() => _ScreenState();
-}
-
-class _ScreenState extends State<_Screen> {
   @override
   Widget build(BuildContext context) {
     final watchOnly =
@@ -82,88 +76,78 @@ class _ScreenState extends State<_Screen> {
     final isVaultBackupTested =
         context.select((WalletBloc x) => x.state.wallet.vaultBackupTested);
 
-    return BlocListener<WalletBloc, WalletState>(
-      listenWhen: (previous, current) =>
-          previous.wallet.vaultBackupTested !=
-              current.wallet.vaultBackupTested ||
-          previous.wallet.physicalBackupTested !=
-              current.wallet.physicalBackupTested,
-      listener: (context, state) {
-        setState(() {});
-      },
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: context.colour.primaryContainer,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: NewColours.lightGray.withAlpha(50),
-              blurRadius: 30,
-              spreadRadius: 2,
-              offset: const Offset(0, 10),
-            ),
-          ],
-          border: Border.all(color: NewColours.lightGray.withAlpha(50)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const BBText.titleLarge("Backup settings", isBold: true),
-            const Gap(10),
-            if (!watchOnly) ...[
-              BBButton.textWithStatus(
-                label: "Physical backup",
-                onPressed: () {},
-                statusText: isPhysicalBackupTested ? 'Tested' : 'Not Tested',
-                isGreen: isPhysicalBackupTested,
-                isRed: !isPhysicalBackupTested,
-              ),
-            ],
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: context.colour.primaryContainer,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: NewColours.lightGray.withAlpha(50),
+            blurRadius: 30,
+            spreadRadius: 2,
+            offset: const Offset(0, 10),
+          ),
+        ],
+        border: Border.all(color: NewColours.lightGray.withAlpha(50)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const BBText.titleLarge("Backup settings", isBold: true),
+          const Gap(10),
+          if (!watchOnly) ...[
             BBButton.textWithStatus(
-              label: "Encrypted vault",
+              label: "Physical backup",
               onPressed: () {},
-              statusText: isVaultBackupTested ? 'Tested' : 'Not Tested',
-              isGreen: isVaultBackupTested,
-              isRed: !isVaultBackupTested,
-            ),
-            BBButton.withColour(
-              label: "Start Backup",
-              onPressed: () => {
-                context.push(
-                  '/wallet-settings/backup-settings/backup-options',
-                  extra: context.read<WalletBloc>().state.wallet.id,
-                ),
-              },
-              fillWidth: true,
-              center: true,
-            ),
-            const Gap(20),
-            BBButton.withColour(
-              label: "Recover/Test Backup",
-              onPressed: () {
-                context.push(
-                  '/wallet-settings/backup-settings/recover-options',
-                  extra: context.read<WalletBloc>().state.wallet.id,
-                );
-              },
-              fillWidth: true,
-              center: true,
-            ),
-            const Gap(20),
-            BBButton.withColour(
-              label: "View/Delete Backup Key",
-              onPressed: () => {
-                context.push(
-                  '/wallet-settings/backup-settings/key',
-                  extra: context.read<WalletBloc>().state.wallet.id,
-                ),
-              },
-              fillWidth: true,
-              center: true,
+              statusText: isPhysicalBackupTested ? 'Tested' : 'Not Tested',
+              isGreen: isPhysicalBackupTested,
+              isRed: !isPhysicalBackupTested,
             ),
           ],
-        ),
+          BBButton.textWithStatus(
+            label: "Encrypted vault",
+            onPressed: () {},
+            statusText: isVaultBackupTested ? 'Tested' : 'Not Tested',
+            isGreen: isVaultBackupTested,
+            isRed: !isVaultBackupTested,
+          ),
+          BBButton.withColour(
+            label: "Start Backup",
+            onPressed: () => {
+              context.push(
+                '/wallet-settings/backup-settings/backup-options',
+                extra: context.read<WalletBloc>().state.wallet.id,
+              ),
+            },
+            fillWidth: true,
+            center: true,
+          ),
+          const Gap(20),
+          BBButton.withColour(
+            label: "Recover/Test Backup",
+            onPressed: () {
+              context.push(
+                '/wallet-settings/backup-settings/recover-options',
+                extra: context.read<WalletBloc>().state.wallet.id,
+              );
+            },
+            fillWidth: true,
+            center: true,
+          ),
+          const Gap(20),
+          BBButton.withColour(
+            label: "View/Delete Backup Key",
+            onPressed: () => {
+              context.push(
+                '/wallet-settings/backup-settings/key',
+                extra: context.read<WalletBloc>().state.wallet.id,
+              ),
+            },
+            fillWidth: true,
+            center: true,
+          ),
+        ],
       ),
     );
   }
