@@ -11,6 +11,9 @@ enum Environment {
     return Environment.values
         .firstWhere((environment) => environment.name == name);
   }
+
+  bool get isMainnet => this == Environment.mainnet;
+  bool get isTestnet => this == Environment.testnet;
 }
 
 enum BitcoinUnit {
@@ -60,6 +63,7 @@ class Settings with _$Settings {
     required Environment environment,
     required BitcoinUnit bitcoinUnit,
     Language? language,
+    required String currencyCode,
   }) = _Settings;
   const Settings._();
 }

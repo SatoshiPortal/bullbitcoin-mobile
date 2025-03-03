@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
+import 'package:bb_mobile/_utils/constants.dart';
 import 'package:boltz/boltz.dart';
 
 abstract class BoltzDataSource {
@@ -49,7 +50,8 @@ abstract class BoltzDataSource {
 class BoltzDataSourceImpl implements BoltzDataSource {
   final String _url;
 
-  BoltzDataSourceImpl({String url = 'api.boltz.exchange/v2'}) : _url = url;
+  BoltzDataSourceImpl({String url = ApiServiceConstants.boltzMainnetUrlPath})
+      : _url = url;
 
   // REVERSE SWAPS
 

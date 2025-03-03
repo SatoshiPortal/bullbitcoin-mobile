@@ -1,4 +1,4 @@
-import 'package:bb_mobile/_core/utils/build_context_x.dart';
+import 'package:bb_mobile/_utils/build_context_x.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/onboarding/ui/widgets/create_wallet_button.dart';

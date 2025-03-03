@@ -31,8 +31,8 @@ sealed class Address with _$Address {
   }) = BitcoinAddress;
 
   factory Address.liquid({
-    required String address, // Confidential address
-    String? standard, // Regular address
+    required String standard, // Standard address
+    String? confidential, // Confidential address
     int? index,
     required AddressKind kind,
     required AddressStatus state,

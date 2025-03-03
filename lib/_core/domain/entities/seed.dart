@@ -1,4 +1,4 @@
-import 'package:bb_mobile/_core/utils/uint_8_list_x.dart';
+import 'package:bb_mobile/_utils/uint_8_list_x.dart';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:flutter/foundation.dart';

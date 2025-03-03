@@ -1,57 +1,29 @@
 part of 'receive_bloc.dart';
 
-@freezed
-sealed class ReceiveState {
-  const factory ReceiveState.initial() = ReceiveInitial;
-  const factory ReceiveState.lightning({
-    required Wallet wallet,
-    @Default(false) bool isFiatInput,
-    required String fiatCurrencyCode,
-    required double exchangeRate,
-    required BitcoinUnit bitcoinUnit,
-    @Default('') String fiatInputAmount,
-    @Default('') String bitcoinInputAmount,
-    @Default('') String description,
-    BigInt? feeAmountSat,
-    @Default('') String invoice,
-    @Default(false) bool isReceived,
-  }) = ReceiveLightning;
-  const factory ReceiveState.bitcoin({
-    required Wallet wallet,
-    @Default(false) bool isFiatInput,
-    required String fiatCurrencyCode,
-    required double exchangeRate,
-    required BitcoinUnit bitcoinUnit,
-    @Default('') String fiatInputAmount,
-    @Default('') String bitcoinInputAmount,
-    @Default('') String description,
-    BigInt? feeAmountSat,
-    @Default('') String invoice,
-    @Default(false) bool isReceived,
-    @Default(true) bool isPayjoin,
-  }) = ReceiveBitcoin;
-  const factory ReceiveState.liquid({
-    required Wallet wallet,
-    @Default(false) bool isFiatInput,
-    required String fiatCurrencyCode,
-    required double exchangeRate,
-    required BitcoinUnit bitcoinUnit,
-    @Default('') String fiatInputAmount,
-    @Default('') String bitcoinInputAmount,
-    @Default('') String description,
-    BigInt? feeAmountSat,
-    @Default('') String invoice,
-    @Default(false) bool isReceived,
-  }) = ReceiveLiquid;
+enum ReceiveStatus { initial, inProgress, success, error }
 
+enum ReceivePaymentNetwork { bitcoin, lightning, liquid }
+
+@freezed
+class ReceiveState with _$ReceiveState {
+  const factory ReceiveState({
+    @Default(ReceiveStatus.initial) ReceiveStatus status,
+    @Default(ReceivePaymentNetwork.bitcoin)
+    ReceivePaymentNetwork paymentNetwork,
+    List<Wallet>? wallets,
+    String? selectedWalletId,
+    @Default(false) bool isFiatInput,
+    String? fiatCurrencyCode,
+    double? exchangeRate,
+    BitcoinUnit? bitcoinUnit,
+    @Default('') String fiatInputAmount,
+    @Default('') String bitcoinInputAmount,
+    @Default('') String description,
+    BigInt? feeAmountSat,
+    @Default('') String invoice,
+    @Default(false) bool isPayjoinEnabled,
+  }) = _ReceiveState;
   const ReceiveState._();
 
-  bool get hasReceived {
-    return switch (this) {
-      ReceiveLightning(:final isReceived) => isReceived,
-      ReceiveBitcoin(:final isReceived) => isReceived,
-      ReceiveLiquid(:final isReceived) => isReceived,
-      ReceiveInitial() => false,
-    };
-  }
+  bool get hasReceivedFunds => status == ReceiveStatus.success;
 }

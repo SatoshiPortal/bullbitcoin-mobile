@@ -1,5 +1,4 @@
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
-import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

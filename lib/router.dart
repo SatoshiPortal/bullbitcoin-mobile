@@ -2,7 +2,6 @@ import 'package:bb_mobile/_ui/screens/route_error_screen.dart';
 import 'package:bb_mobile/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/home/ui/home_screen.dart';
-import 'package:bb_mobile/onboarding/ui/onboarding_screen.dart';
 import 'package:bb_mobile/receive/ui/receive_router.dart';
 import 'package:bb_mobile/recover_wallet/ui/recover_wallet_flow.dart';
 import 'package:bb_mobile/settings/ui/screens/settings_screen.dart';
@@ -37,30 +36,20 @@ class AppRouter {
     initialLocation: AppRoute.home.path,
     routes: [
       GoRoute(
-        name: AppRoute.onboarding.name,
-        path: AppRoute.onboarding.path,
+        name: AppRoute.home.name,
+        path: AppRoute.home.path,
         redirect: (context, state) {
           // Check AppStartupState to skip onboarding if user has existing wallets
           final appStartupState = context.read<AppStartupBloc>().state;
-          if (appStartupState is AppStartupSuccess) {
-            if (appStartupState.hasExistingWallets) {
-              if (appStartupState.isPinCodeSet) {
-                return AppRoute.appUnlock.path;
-              }
-              return AppRoute.home.path;
-            }
+          if (appStartupState is AppStartupSuccess &&
+              appStartupState.isPinCodeSet) {
+            return AppRoute.appUnlock.path;
           }
 
           return null;
         },
-        builder: (context, state) => const OnboardingScreen(),
-      ),
-      GoRoute(
-        name: AppRoute.home.name,
-        path: AppRoute.home.path,
-        pageBuilder: (context, state) => const NoTransitionPage(
-          child: HomeScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            const NoTransitionPage(child: HomeScreen()),
       ),
       GoRoute(
         name: AppRoute.appUnlock.name,

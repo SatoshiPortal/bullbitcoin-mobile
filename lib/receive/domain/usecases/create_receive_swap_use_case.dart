@@ -1,25 +1,21 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
-import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
-import 'package:bb_mobile/_core/domain/services/wallet_manager.dart';
-import 'package:bb_mobile/_core/utils/config.dart';
+import 'package:bb_mobile/_core/domain/repositories/wallet_manager_repository.dart';
+import 'package:bb_mobile/_utils/constants.dart';
 
 class CreateReceiveSwapUseCase {
-  final WalletManager _walletManager;
+  final WalletManagerRepository _walletManager;
   final SwapRepository _swapRepository;
   final SwapRepository _swapRepositoryTestnet;
-  final SeedRepository _seedRepository;
 
   CreateReceiveSwapUseCase({
-    required WalletManager walletManager,
+    required WalletManagerRepository walletManager,
     required SwapRepository swapRepository,
     required SwapRepository swapRepositoryTestnet,
-    required SeedRepository seedRepository,
   })  : _walletManager = walletManager,
         _swapRepository = swapRepository,
-        _swapRepositoryTestnet = swapRepositoryTestnet,
-        _seedRepository = seedRepository;
+        _swapRepositoryTestnet = swapRepositoryTestnet;
 
   Future<Swap> execute({
     required String walletId,
@@ -27,32 +23,28 @@ class CreateReceiveSwapUseCase {
     required BigInt amountSat,
   }) async {
     try {
-      final walletRepository = _walletManager.getRepository(walletId);
-      if (walletRepository == null) {
-        throw Exception('Wallet repository not found');
+      final wallet = await _walletManager.getWallet(walletId);
+      if (wallet == null) {
+        throw Exception('Wallet not found');
       }
-      final mnemonic = await _seedRepository.getSeed(walletRepository.id);
+      final mnemonic = await _walletManager.getSeed(walletId: walletId);
 
-      if (walletRepository.network.isLiquid &&
-          type == SwapType.lightningToBitcoin) {
+      if (wallet.network.isLiquid && type == SwapType.lightningToBitcoin) {
         throw Exception(
           'Cannot create a lightning to bitcoin with a liquid wallet',
         );
       }
-      if (walletRepository.network.isBitcoin &&
-          type == SwapType.lightningToLiquid) {
+      if (wallet.network.isBitcoin && type == SwapType.lightningToLiquid) {
         throw Exception(
           'Cannot create a lightning to liquid swap with a bitcoin wallet',
         );
       }
 
-      final environment = walletRepository.network.isTestnet
-          ? Environment.testnet
-          : Environment.mainnet;
+      final environment =
+          wallet.network.isTestnet ? Environment.testnet : Environment.mainnet;
 
-      final swapRepository = environment == Environment.testnet
-          ? _swapRepositoryTestnet
-          : _swapRepository;
+      final swapRepository =
+          wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
 
       switch (type) {
         case SwapType.lightningToBitcoin:
@@ -61,7 +53,8 @@ class CreateReceiveSwapUseCase {
             amountSat: amountSat,
             environment: environment,
             mnemonic: mnemonic.toString(),
-            electrumUrl: bbElectrumMain,
+            electrumUrl: ApiServiceConstants
+                .bbElectrumUrlPath, // TODO: check if this should be test or mainnet following the environment
           );
 
         case SwapType.lightningToLiquid:
@@ -70,7 +63,8 @@ class CreateReceiveSwapUseCase {
             amountSat: amountSat,
             environment: environment,
             mnemonic: mnemonic.toString(),
-            electrumUrl: liquidElectrumTestUrl,
+            electrumUrl: ApiServiceConstants
+                .publicliquidElectrumTestUrlPath, // TODO: check if this should be test or mainnet following the environment
           );
         default:
           throw Exception(

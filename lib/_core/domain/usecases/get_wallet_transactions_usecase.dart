@@ -1,8 +1,10 @@
-/*class GetWalletTransactionsUseCase {
-  final WalletManager _manager;
+// TODO: Create a Transaction entity first
+/*import 'package:bb_mobile/_core/domain/repositories/wallet_manager_repository.dart';
 
-  GetWalletTransactionsUseCase(
-      {required WalletManager walletManager})
+class GetWalletTransactionsUseCase {
+  final WalletManagerRepository _manager;
+
+  GetWalletTransactionsUseCase({required WalletManagerRepository walletManager})
       : _manager = walletManager;
 
   Future<List<Transaction>> execute(
@@ -10,12 +12,10 @@
     int? offset,
     int? limit,
   }) async {
-    final walletRepository = _manager.getRepository(walletId);
-
-    if (walletRepository == null) {
-      return [];
-    }
-
-    return await walletRepository.getTransactions(offset: offset, limit: limit);
+    return await _manager.getTransactions({
+      walletId: walletId,
+      offset: offset,
+      limit: limit,
+    });
   }
 }*/

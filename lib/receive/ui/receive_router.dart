@@ -38,7 +38,8 @@ class ReceiveRouter {
         builder: (context, state, child) =>
             BlocListener<ReceiveBloc, ReceiveState>(
           listenWhen: (previous, current) =>
-              previous.hasReceived != true && current.hasReceived == true,
+              previous.hasReceivedFunds != true &&
+              current.hasReceivedFunds == true,
           listener: (context, blocState) {
             // Show the success screen when the user has received funds
             context.go(
@@ -57,7 +58,7 @@ class ReceiveRouter {
             builder: (context, state) {
               // Entry route, go to bitcoin receive state if not already there
               final bloc = context.read<ReceiveBloc>();
-              if (bloc.state is! ReceiveBitcoin) {
+              if (bloc.state.paymentNetwork != ReceivePaymentNetwork.bitcoin) {
                 bloc.add(const ReceiveBitcoinStarted());
               }
               return const ReceiveInvoiceSegment();
@@ -85,7 +86,8 @@ class ReceiveRouter {
             builder: (context, state) {
               // Entry route, go to lightning receive state if not already there
               final bloc = context.read<ReceiveBloc>();
-              if (bloc.state is! ReceiveLightning) {
+              if (bloc.state.paymentNetwork !=
+                  ReceivePaymentNetwork.lightning) {
                 bloc.add(const ReceiveLightningStarted());
               }
               return const ReceiveAmountSegment();
@@ -113,7 +115,7 @@ class ReceiveRouter {
             builder: (context, state) {
               // Entry route, go to liquid receive state if not already there
               final bloc = context.read<ReceiveBloc>();
-              if (bloc.state is! ReceiveLiquid) {
+              if (bloc.state.paymentNetwork != ReceivePaymentNetwork.liquid) {
                 bloc.add(const ReceiveLiquidStarted());
               }
               return const ReceiveInvoiceSegment();

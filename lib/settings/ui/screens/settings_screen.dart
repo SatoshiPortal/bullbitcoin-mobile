@@ -1,4 +1,4 @@
-import 'package:bb_mobile/_core/utils/build_context_x.dart';
+import 'package:bb_mobile/_utils/build_context_x.dart';
 import 'package:bb_mobile/settings/ui/settings_router.dart';
 import 'package:bb_mobile/settings/ui/widgets/sats_bitcoin_unit_switch.dart';
 import 'package:bb_mobile/settings/ui/widgets/testnet_mode_switch.dart';
@@ -42,7 +42,9 @@ class SettingsScreen extends StatelessWidget {
               ),
               ListTile(
                 title: Text(context.loc.fiatCurrencySettingsLabel),
-                onTap: () {},
+                onTap: () {
+                  //context.pushNamed(SettingsSubroute.currency.name);
+                },
                 trailing: const Icon(Icons.chevron_right),
               ),
             ],

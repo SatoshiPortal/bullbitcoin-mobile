@@ -9,7 +9,7 @@ TODO: Describe the branch structure, forking to a personal repository, pull requ
 This project uses flutter freezed. Freezed files are not checked into git and must be generated locally using:
 
 ```
-flutter pub run build_runner watch --delete-conflicting-outputs 
+flutter pub run build_runner watch --delete-conflicting-outputs
 ```
 
 ## Adding a new feature
@@ -26,18 +26,17 @@ With answers to these questions, dividing the feature into the different layers 
 
 The first question helps you identify the entities and repository contracts needed in the domain layer. The second question helps you identify the data sources and repository implementations needed in the data layer. The third question helps you identify the use cases needed in the domain layer and how to connect them to the presentation layer.
 
-With that in mind, create a comment on the issue of the feature you want to implement, describing the different layers of the feature. This will help you to get feedback on your approach and to make sure you are on the right track. Here is an example for the ['Import watch-only wallet' feature](/lib/features/import_watch_only_wallet):
+With that in mind, create a comment on the issue of the feature you want to implement, describing the different layers of the feature. This will help you to get feedback on your approach and to make sure you are on the right track. Here is an example for the ['Import watch-only wallet' feature](/lib/import_watch_only_wallet):
 
 ```markdown
 - domain
-  - entities: WalletMetadata (to store the imported wallet), Settings (to get the environment to import the wallet to)
-  - repository contracts: WalletMetadataRepository, SettingsRepository
-  - services: WalletMetadataDerivator (to derive the wallet metadata from the imported xpub), WalletManager (to inititalize and register the imported wallet so it can be used in the app)
+  - entities: Wallet, Settings (to get the environment to import the wallet to)
+  - repository contracts: WalletManagerRepository, SettingsRepository
   - use cases: ImportXpubUseCase (This will orchestrate the whole process of importing the xpub and registering the wallet in the app)
 - data
-  - models: WalletMetadataModel
-  - data sources: KeyValueStorageDataSource with HiveStorageDataSourceImpl
-  - repository implementations: HiveWalletMetadataRepositoryImpl, SettingsRepositoryImpl
+  - models: WalletMetadataModel, SettingsModel, BalanceModel
+  - data sources: WalletDataSource, BdkWalletDataSourceImpl, WalletMetadataDataSource, Bip32DataSource, DescriptorDataSource
+  - repository implementations: WalletManagerRepositoryImpl, SettingsRepositoryImpl
 - presentation
   - bloc
     - ImportWatchOnlyWalletBloc
@@ -49,7 +48,7 @@ With that in mind, create a comment on the issue of the feature you want to impl
 Some remarks on the example above:
 
 - The above example is just an example and might not be complete or the same as the real current implementation.
-- The example specifies a lot of things that were implemented in the `core` folder of the app. If classes exist already, you should not specify them. You can just clarify in the comment that you will use the existing implementations of certain repositories or services in the feature's use cases.
+- The example specifies a lot of things that were implemented in the [`_core`](lib/_core/) folder of the app. If classes exist already, you should not specify them. You can just clarify in the comment that you will use the existing implementations of certain repositories or services in the feature's use cases.
 - Not every feature will require all layers, and it's important to consider which ones are necessary and why. For example, a simple data source might not need a model, and a simple single-screen feature might not require a Bloc.
 
 Software development is not an exact science, and this step is about understanding the feature better and getting feedback on your approach. Don’t worry if you're unsure about all the layers initially or need to adjust them later; the goal is to have a starting point for discussion and refinement.
@@ -58,9 +57,9 @@ Software development is not an exact science, and this step is about understandi
 
 - Add a new folder for the feature
 - Implement the different layers of the feature as defined and signed-off on in the issue
-- In case your feature requires some initialization or checks before the app starts, for initial routing or just initial setup, please create a use case for it and execute it in the `AppStartupBloc`'s `_onStarted` method. You can look at the existing use cases in the [`AppStartupBloc`](lib/features/app_startup/presentation/bloc/app_startup_bloc.dart) for reference.
-- Use `GetIt` to register datasources, repositories, services, usecases and blocs. Generally, datasources, repositories and services should be registered as singletons, and usecases and blocs as a factory. You can create a `<feature>_locator.dart` file in the root of the feature's folder with a class with a `setup` function in which of the feature easily. E.g. [`HomeLocator`](lib/features/home/home_locator.dart). Make sure to then call the `setup` function in the [`AppLocator`](lib/app_locator.dart) so it gets registered at app startup.
-- If the feature has subroutes, you can define a `<feature>_router.dart` file in the ui folder of the feature with a class that defines the subroutes. E.g. [`ReceiveRouter`](lib/features/receive/ui/receive_router.dart). Make sure to add the top-level routes to the [`AppRouter`](lib/app_router.dart) as well.
+- In case your feature requires some initialization or checks before the app starts, for initial routing or just initial setup, please create a use case for it and execute it in the `AppStartupBloc`'s `_onStarted` method. You can look at the existing use cases in the [`AppStartupBloc`](lib/app_startup/presentation/bloc/app_startup_bloc.dart) for reference.
+- Use `GetIt` to register datasources, repositories, services, usecases and blocs. Generally, datasources, repositories and services should be registered as singletons, and usecases and blocs as a factory. You can create a `<feature>_locator.dart` file in the root of the feature's folder with a class with a `setup` function in which of the feature easily. E.g. [`HomeLocator`](lib/home/home_locator.dart). Make sure to then call the `setup` function in the [`AppLocator`](lib/locator.dart) so it gets registered at app startup.
+- If the feature has subroutes, you can define a `<feature>_router.dart` file in the ui folder of the feature with a class that defines the subroutes. E.g. [`ReceiveRouter`](lib/receive/ui/receive_router.dart). Make sure to add the top-level routes to the [`AppRouter`](lib/router.dart) as well.
 
 ### Step 3: Write tests
 

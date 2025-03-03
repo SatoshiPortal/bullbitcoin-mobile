@@ -1,10 +1,10 @@
-import 'package:bb_mobile/_core/domain/services/wallet_manager.dart';
+import 'package:bb_mobile/_core/domain/repositories/wallet_manager_repository.dart';
 
 class InitExistingWalletsUseCase {
-  final WalletManager _walletManager;
+  final WalletManagerRepository _walletManager;
 
   InitExistingWalletsUseCase({
-    required WalletManager walletManager,
+    required WalletManagerRepository walletManager,
   }) : _walletManager = walletManager;
 
   Future<void> execute() async {

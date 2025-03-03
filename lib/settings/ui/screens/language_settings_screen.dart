@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
-import 'package:bb_mobile/_core/utils/build_context_x.dart';
+import 'package:bb_mobile/_utils/build_context_x.dart';
 import 'package:bb_mobile/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/settings/ui/widgets/language_option.dart';
 import 'package:flutter/material.dart';

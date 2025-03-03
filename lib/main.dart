@@ -7,8 +7,8 @@ import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
+import 'package:bb_mobile/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/bloc_observer.dart';
-import 'package:bb_mobile/fiat_currencies/presentation/bloc/fiat_currencies_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/settings/presentation/bloc/settings_cubit.dart';
@@ -119,9 +119,9 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             ),
         ),
         BlocProvider.value(
-          value: locator<FiatCurrenciesBloc>()
+          value: locator<BitcoinPriceBloc>()
             ..add(
-              const FiatCurrenciesStarted(),
+              const BitcoinPriceStarted(),
             ),
         ),
       ],

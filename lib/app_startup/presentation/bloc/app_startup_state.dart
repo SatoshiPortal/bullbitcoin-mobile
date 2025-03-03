@@ -6,7 +6,6 @@ sealed class AppStartupState with _$AppStartupState {
   const factory AppStartupState.loadingInProgress() =
       AppStartupLoadingInProgress;
   const factory AppStartupState.success({
-    @Default(false) bool hasExistingWallets,
     @Default(false) bool isPinCodeSet,
   }) = AppStartupSuccess;
   const factory AppStartupState.failure(Object? e) = AppStartupFailure;
