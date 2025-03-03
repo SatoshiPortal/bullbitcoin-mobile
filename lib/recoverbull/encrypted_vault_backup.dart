@@ -20,15 +20,22 @@ import 'package:intl/intl.dart';
 const double _kSpacing = 15.0;
 
 enum BackupProvider {
-  googleDrive('Google Drive', 'Easy', Icons.add_to_drive_rounded),
-  iCloud('Apple iCloud', 'Easy', CupertinoIcons.cloud_upload),
-  custom('Custom location', 'Private', Icons.folder);
+  googleDrive('Google Drive', 'Easy', Icons.add_to_drive_rounded,
+      'Your Google account information is never collected by Bull Bitcoin. It stays within the app and is not shared to our organization or to any third party.'),
+  iCloud('Apple iCloud', 'Easy', CupertinoIcons.cloud_upload, ''),
+  custom('Custom location', 'Private', Icons.folder, '');
 
   final String title;
   final String description;
   final IconData icon;
+  final String disclaimer;
 
-  const BackupProvider(this.title, this.description, this.icon);
+  const BackupProvider(
+    this.title,
+    this.description,
+    this.icon,
+    this.disclaimer,
+  );
 }
 
 class EncryptedVaultBackupPage extends StatefulWidget {
@@ -58,6 +65,11 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
     BuildContext context,
     BackupProvider provider,
   ) async {
+    if (provider.disclaimer.isNotEmpty) {
+      _showDisclaimer(context, provider.disclaimer);
+      await Future.delayed(const Duration(seconds: 3));
+    }
+
     switch (provider) {
       case BackupProvider.googleDrive:
         await _cubit.saveGoogleDriveBackup();
@@ -589,4 +601,17 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
       ),
     );
   }
+}
+
+void _showDisclaimer(BuildContext context, String disclaimer) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      backgroundColor: context.colour.primaryContainer,
+      content: Text(
+        disclaimer,
+        style: context.font.bodySmall!.copyWith(fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
 }
