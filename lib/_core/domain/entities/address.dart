@@ -21,11 +21,11 @@ sealed class Address with _$Address {
 
   factory Address.bitcoin({
     required String address,
-    int? index,
-    required AddressKind kind,
-    required AddressStatus state,
+    required int index,
+    AddressKind? kind,
+    AddressStatus? state,
     String? spentTxId,
-    @Default(true) bool spendable,
+    bool? spendable,
     BigInt? highestPreviousBalance,
     BigInt? balanceSat,
   }) = BitcoinAddress;
@@ -33,12 +33,27 @@ sealed class Address with _$Address {
   factory Address.liquid({
     required String standard, // Standard address
     String? confidential, // Confidential address
-    int? index,
-    required AddressKind kind,
-    required AddressStatus state,
+    required int index,
+    AddressKind? kind,
+    AddressStatus? state,
     String? spentTxId,
-    @Default(true) bool spendable,
+    bool? spendable,
     BigInt? highestPreviousBalanceSat,
     BigInt? balanceSat,
   }) = LiquidAddress;
+
+  // TODO: Validate if the standard or confidential address should be used
+  String get address => when(
+        bitcoin: (address, _, __, ___, ____, _____, ______, _______) => address,
+        liquid: (standard, confidential, __, ___, ____, _____, ______, _______,
+                ________) =>
+            standard,
+      );
+
+  String? get confidential => when(
+        bitcoin: (_, __, ___, ____, _____, ______, _______, ________) => null,
+        liquid: (_, confidential, __, ___, ____, _____, ______, _______,
+                ________) =>
+            confidential,
+      );
 }

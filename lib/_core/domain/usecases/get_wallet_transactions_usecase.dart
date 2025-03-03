@@ -2,9 +2,9 @@
 /*import 'package:bb_mobile/_core/domain/repositories/wallet_manager_repository.dart';
 
 class GetWalletTransactionsUseCase {
-  final WalletManagerRepository _manager;
+  final WalletManagerService _manager;
 
-  GetWalletTransactionsUseCase({required WalletManagerRepository walletManager})
+  GetWalletTransactionsUseCase({required WalletManagerService walletManager})
       : _manager = walletManager;
 
   Future<List<Transaction>> execute(

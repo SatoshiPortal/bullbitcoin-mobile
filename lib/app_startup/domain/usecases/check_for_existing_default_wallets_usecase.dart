@@ -1,13 +1,13 @@
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/wallet_manager_repository.dart';
+import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 
 class CheckForExistingDefaultWalletsUseCase {
   final SettingsRepository _settingsRepository;
-  final WalletManagerRepository _walletManager;
+  final WalletManagerService _walletManager;
 
   CheckForExistingDefaultWalletsUseCase({
     required SettingsRepository settingsRepository,
-    required WalletManagerRepository walletManager,
+    required WalletManagerService walletManager,
   })  : _settingsRepository = settingsRepository,
         _walletManager = walletManager;
 

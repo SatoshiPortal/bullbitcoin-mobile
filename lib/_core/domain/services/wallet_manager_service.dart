@@ -1,11 +1,11 @@
 import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
-import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 
-abstract class WalletManagerRepository {
+abstract class WalletManagerService {
   Future<bool> doDefaultWalletsExist({required Environment environment});
   Future<void> initExistingWallets();
   Future<Wallet> createWallet({
@@ -37,16 +37,4 @@ abstract class WalletManagerRepository {
   });
   Future<Address> getLastUnusedAddress({required String walletId});
   Future<Address> getNewAddress({required String walletId});
-  Future<Seed> getSeed({required String walletId});
-  Future<Payjoin> receivePayjoin({
-    required String walletId,
-    String? address,
-    int? expireAfterSec,
-  });
-  Future<Payjoin> sendPayjoin({
-    required String walletId,
-    required String bip21,
-    BigInt? amountSat,
-    required double networkFeesSatPerVb,
-  });
 }

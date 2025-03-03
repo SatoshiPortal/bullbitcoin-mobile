@@ -1,15 +1,16 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/wallet_manager_repository.dart';
+import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 
 class ImportXpubUseCase {
   final SettingsRepository _settings;
-  final WalletManagerRepository _walletManager;
+  final WalletManagerService _walletManager;
 
   ImportXpubUseCase({
     required SettingsRepository settingsRepository,
-    required WalletManagerRepository walletManagerRepository,
+    required WalletManagerService walletManagerRepository,
   })  : _settings = settingsRepository,
         _walletManager = walletManagerRepository;
 

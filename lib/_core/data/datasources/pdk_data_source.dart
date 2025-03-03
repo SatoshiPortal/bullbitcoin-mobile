@@ -1,6 +1,8 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:bb_mobile/_core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
-import 'package:bb_mobile/_core/data/models/pdk_receive_payjoin_model.dart';
-import 'package:bb_mobile/_core/data/models/pdk_send_payjoin_model.dart';
+import 'package:bb_mobile/_core/data/models/pdk_payjoin_model.dart';
 import 'package:dio/dio.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:payjoin_flutter/receive.dart';
@@ -8,32 +10,34 @@ import 'package:payjoin_flutter/send.dart';
 import 'package:payjoin_flutter/uri.dart';
 
 abstract class PdkDataSource {
-  Stream<(PdkReceivePayjoinModel, UncheckedProposal)> get receiverStream;
-  Stream<PdkSendPayjoinModel> get senderStream;
-  Future<Receiver> createReceiver({
+  Stream<PdkReceivePayjoinModel> get payjoinRequestedStream;
+  Stream<PdkSendPayjoinModel> get proposalSentStream;
+  Future<PdkReceivePayjoinModel> createReceiver({
     required String walletId,
     required String address,
     bool isTestnet = false,
     int? expireAfterSec,
   });
   Future<Uri> parseBip21Uri(String bip21);
-  Future<Sender> createSender({
+  Future<PdkSendPayjoinModel> createSender({
     required String walletId,
     required Uri uri,
     required String originalPsbt,
     required double networkFeesSatPerVb,
   });
-  Future<void> request({
-    required Sender sender,
+
+  Future<PdkReceivePayjoinModel> processRequest({
+    required PdkReceivePayjoinModel payjoin,
   });
-  Future<UncheckedProposal?> checkForRequest({
-    required Receiver receiver,
+  Future<PdkSendPayjoinModel> processProposal({
+    required PdkSendPayjoinModel payjoin,
   });
-  Future<void> proposePayjoin(
-    PayjoinProposal proposal,
-  );
-  Future<String?> checkForProposalPsbt({required V2GetContext context});
-  Future<void> resumeSessions();
+
+  Future<void> store(PdkPayjoinModel payjoin);
+  Future<PdkPayjoinModel?> get(String id);
+  Future<List<PdkPayjoinModel>> getAll();
+  Future<void> delete(String id);
+  Future<void> resumePayjoin(PdkPayjoinModel payjoin);
 }
 
 class PdkDataSourceImpl implements PdkDataSource {
@@ -41,8 +45,12 @@ class PdkDataSourceImpl implements PdkDataSource {
   final String _payjoinDirectoryUrl;
   final Dio _dio;
   final KeyValueStorageDataSource<String> _storage;
+  final StreamController<PdkReceivePayjoinModel> _payjoinRequestedController =
+      StreamController.broadcast();
+  final StreamController<PdkSendPayjoinModel> _proposalSentController =
+      StreamController.broadcast();
 
-  const PdkDataSourceImpl({
+  PdkDataSourceImpl({
     String ohttpRelayUrl = 'https://pj.bobspacebkk.com',
     String payjoinDirectoryUrl = 'https://payjo.in',
     required Dio dio,
@@ -53,16 +61,15 @@ class PdkDataSourceImpl implements PdkDataSource {
         _storage = storage;
 
   @override
-  // TODO: implement receiverStream
-  Stream<(PdkReceivePayjoinModel, UncheckedProposal)> get receiverStream =>
-      throw UnimplementedError();
+  Stream<PdkReceivePayjoinModel> get payjoinRequestedStream =>
+      _payjoinRequestedController.stream.asBroadcastStream();
 
   @override
-  // TODO: implement senderStream
-  Stream<PdkSendPayjoinModel> get senderStream => throw UnimplementedError();
+  Stream<PdkSendPayjoinModel> get proposalSentStream =>
+      _proposalSentController.stream.asBroadcastStream();
 
   @override
-  Future<Receiver> createReceiver({
+  Future<PdkReceivePayjoinModel> createReceiver({
     required String walletId,
     required String address,
     bool isTestnet = false,
@@ -75,6 +82,7 @@ class PdkDataSourceImpl implements PdkDataSource {
         ohttpRelay: ohttpRelay,
         payjoinDirectory: payjoinDirectory,
       );
+
       final receiver = await Receiver.create(
         address: address,
         network: isTestnet ? Network.testnet : Network.bitcoin,
@@ -85,11 +93,17 @@ class PdkDataSourceImpl implements PdkDataSource {
             expireAfterSec == null ? null : BigInt.from(expireAfterSec),
       );
 
-      // TODO: create receiver model
-      // TODO: Save model to storage
+      final pjUrl = await receiver.pjUrl();
+      final model = PdkPayjoinModel.receive(
+        id: receiver.id(),
+        receiver: receiver.toJson(),
+        walletId: walletId,
+        pjUrl: pjUrl.asString(),
+      ) as PdkReceivePayjoinModel;
+
       // TODO: Start listening for original psbt in isolate
 
-      return receiver;
+      return model;
     } catch (e) {
       throw ReceiveCreationException(e.toString());
     }
@@ -102,7 +116,7 @@ class PdkDataSourceImpl implements PdkDataSource {
   }
 
   @override
-  Future<Sender> createSender({
+  Future<PdkSendPayjoinModel> createSender({
     required String walletId,
     required Uri uri,
     required String originalPsbt,
@@ -124,15 +138,85 @@ class PdkDataSourceImpl implements PdkDataSource {
       minFeeRate: minFeeRateSatPerKwu,
     );
 
-    // TODO: create sender model
-    // TODO: Save model to storage
+    final model = PdkPayjoinModel.send(
+      uri: uri.asString(),
+      sender: sender.toJson(),
+      walletId: walletId,
+      originalPsbt: originalPsbt,
+    ) as PdkSendPayjoinModel;
+
     // TODO: Start listening for proposals in isolate
 
-    return sender;
+    return model;
   }
 
   @override
-  Future<V2GetContext> request({
+  Future<void> store(PdkPayjoinModel model) async {
+    final value = jsonEncode(model.toJson());
+    if (model is PdkReceivePayjoinModel) {
+      await _storage.saveValue(key: model.id, value: value);
+    } else if (model is PdkSendPayjoinModel) {
+      await _storage.saveValue(key: model.uri, value: value);
+    }
+  }
+
+  @override
+  Future<PdkPayjoinModel?> get(String id) async {
+    final value = await _storage.getValue(id);
+    if (value == null) {
+      return null;
+    }
+    final json = jsonDecode(value) as Map<String, dynamic>;
+    if (json['uri'] != null) {
+      return PdkSendPayjoinModel.fromJson(json);
+    } else {
+      return PdkReceivePayjoinModel.fromJson(json);
+    }
+  }
+
+  @override
+  Future<List<PdkPayjoinModel>> getAll() async {
+    final entries = await _storage.getAll();
+    final models = <PdkPayjoinModel>[];
+
+    for (final value in entries.values) {
+      final json = jsonDecode(value) as Map<String, dynamic>;
+      if (json['uri'] != null) {
+        models.add(PdkSendPayjoinModel.fromJson(json));
+      } else {
+        models.add(PdkReceivePayjoinModel.fromJson(json));
+      }
+    }
+    return models;
+  }
+
+  @override
+  Future<void> delete(String id) async {
+    await _storage.deleteValue(id);
+  }
+
+  @override
+  Future<PdkSendPayjoinModel> processProposal({
+    required PdkSendPayjoinModel payjoin,
+  }) async {
+    // TODO: implement processProposal
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<PdkReceivePayjoinModel> processRequest({
+    required PdkReceivePayjoinModel payjoin,
+  }) async {
+    // TODO: implement processRequest
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> resumePayjoin(PdkPayjoinModel payjoin) async {
+    // TODO: implement resumePayjoin by starting to listen in the isolate
+  }
+
+  Future<V2GetContext> _request({
     required Sender sender,
   }) async {
     final (req, context) = await sender.extractV2(
@@ -157,8 +241,7 @@ class PdkDataSourceImpl implements PdkDataSource {
     return getCtx;
   }
 
-  @override
-  Future<UncheckedProposal?> checkForRequest({
+  Future<UncheckedProposal?> _getRequest({
     required Receiver receiver,
   }) async {
     final (req, context) = await receiver.extractReq();
@@ -180,8 +263,7 @@ class PdkDataSourceImpl implements PdkDataSource {
     return proposal;
   }
 
-  @override
-  Future<void> proposePayjoin(
+  Future<void> _proposePayjoin(
     PayjoinProposal proposal,
   ) async {
     final (req, ohttpCtx) = await proposal.extractV2Req();
@@ -201,8 +283,7 @@ class PdkDataSourceImpl implements PdkDataSource {
     );
   }
 
-  @override
-  Future<String?> checkForProposalPsbt({required V2GetContext context}) async {
+  Future<String?> _getProposalPsbt({required V2GetContext context}) async {
     final (req, reqCtx) =
         await context.extractReq(ohttpRelay: await Url.fromStr(_ohttpRelayUrl));
 
@@ -224,9 +305,6 @@ class PdkDataSourceImpl implements PdkDataSource {
 
     return proposalPsbt;
   }
-
-  @override
-  Future<void> resumeSessions() async {}
 }
 
 class ReceiveCreationException implements Exception {

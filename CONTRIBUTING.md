@@ -31,12 +31,14 @@ With that in mind, create a comment on the issue of the feature you want to impl
 ```markdown
 - domain
   - entities: Wallet, Settings (to get the environment to import the wallet to)
-  - repository contracts: WalletManagerRepository, SettingsRepository
+  - repository contracts: SettingsRepository
+  - service contracts: WalletManagerService
   - use cases: ImportXpubUseCase (This will orchestrate the whole process of importing the xpub and registering the wallet in the app)
 - data
   - models: WalletMetadataModel, SettingsModel, BalanceModel
   - data sources: WalletDataSource, BdkWalletDataSourceImpl, WalletMetadataDataSource, Bip32DataSource, DescriptorDataSource
-  - repository implementations: WalletManagerRepositoryImpl, SettingsRepositoryImpl
+  - repository implementations: SettingsRepositoryImpl
+  - service implementations: WalletManagerServiceImpl
 - presentation
   - bloc
     - ImportWatchOnlyWalletBloc
@@ -69,8 +71,8 @@ Tests are an essential part of the development process. They help to ensure that
 
 Make sure all code of the data, domain and presentation layers of the feature is covered by unit tests:
 
-- The data layer should be tested by mocking the data sources and checking if the repository implementations return the expected entities.
-- The domain layer should be tested by mocking the repository and service contracts and checking if the use cases return the expected entities or states.
+- The data layer should be tested by mocking the data sources and checking if the repository implementations return the expected entities. If the data sources have dependencies that are not easily mocked, you can use integration tests to test them. To test services, mock the repositories they depend on and check if the service returns the expected entities.
+- The domain layer should be tested by mocking the repository and service contracts and checking if the use cases return the expected entities or values.
 - The presentation layer should be tested by mocking the use cases and checking if the Blocs emit the expected states when the events are added.
 
 #### Widget tests
