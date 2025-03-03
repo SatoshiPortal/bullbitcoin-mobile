@@ -103,10 +103,10 @@ class CoreLocator {
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
         boltz: BoltzDataSourceImpl(
-          sensitiveSwapStorage: locator<KeyValueStorageDataSource<String>>(
+          secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
             instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
           ),
-          swapStorage: locator<KeyValueStorageDataSource<String>>(
+          localSwapStorage: locator<KeyValueStorageDataSource<String>>(
             instanceName: LocatorInstanceNameConstants
                 .boltzSwapsHiveStorageDataSourceInstanceName,
           ),
@@ -119,10 +119,10 @@ class CoreLocator {
       () => BoltzSwapRepositoryImpl(
         boltz: BoltzDataSourceImpl(
           url: ApiServiceConstants.boltzTestnetUrlPath,
-          sensitiveSwapStorage: locator<KeyValueStorageDataSource<String>>(
+          secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
             instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
           ),
-          swapStorage: locator<KeyValueStorageDataSource<String>>(
+          localSwapStorage: locator<KeyValueStorageDataSource<String>>(
             instanceName: LocatorInstanceNameConstants
                 .boltzSwapsHiveStorageDataSourceInstanceName,
           ),

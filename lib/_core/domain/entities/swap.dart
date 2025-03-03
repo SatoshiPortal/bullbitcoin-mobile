@@ -24,6 +24,7 @@ enum SwapStatus {
   completed,
   refunded,
   expired,
+  failed,
 }
 
 @freezed

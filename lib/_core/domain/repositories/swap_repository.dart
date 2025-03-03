@@ -33,4 +33,11 @@ abstract class SwapRepository {
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });
+  Future<void> updateExpiredSwap({
+    required String swapId,
+  });
+
+  Future<void> updateFailedSwap({
+    required String swapId,
+  });
 }

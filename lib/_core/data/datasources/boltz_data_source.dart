@@ -48,10 +48,10 @@ abstract class BoltzDataSource {
     String signedTxHex,
     bool broadcastViaBoltz,
   );
-  Future<void> storeMetadata(SwapModel swap);
-  Future<SwapModel?> getMetadata(String swapId);
-  Future<List<SwapModel>> getAllMetadata();
-  Future<void> deleteMetadata(String swapId);
+  Future<void> store(SwapModel swap);
+  Future<SwapModel?> get(String swapId);
+  Future<List<SwapModel>> getAll();
+  Future<void> delete(String swapId);
   Future<void> storeBtcLnSwap(BtcLnSwap swap);
   Future<void> storeLbtcLnSwap(LbtcLnSwap swap);
   Future<void> storeChainSwap(ChainSwap swap);
@@ -66,23 +66,23 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   final KeyValueStorageDataSource _secureSwapStorage;
 
   BoltzDataSourceImpl({
-    required KeyValueStorageDataSource<String> swapStorage,
-    required KeyValueStorageDataSource<String> sensitiveSwapStorage,
+    required KeyValueStorageDataSource<String> localSwapStorage,
+    required KeyValueStorageDataSource<String> secureSwapStorage,
     String url = ApiServiceConstants.boltzMainnetUrlPath,
   })  : _url = url,
-        _localSwapStorage = swapStorage,
-        _secureSwapStorage = sensitiveSwapStorage;
+        _localSwapStorage = localSwapStorage,
+        _secureSwapStorage = secureSwapStorage;
 
   // LOCAL STORAGE
   @override
-  Future<void> storeMetadata(SwapModel swap) async {
+  Future<void> store(SwapModel swap) async {
     final swapJsonMap = swap.toJson();
     final jsonString = jsonEncode(swapJsonMap);
     await _localSwapStorage.saveValue(key: swap.id, value: jsonString);
   }
 
   @override
-  Future<SwapModel?> getMetadata(String swapId) async {
+  Future<SwapModel?> get(String swapId) async {
     final jsonString = await _localSwapStorage.getValue(swapId);
     if (jsonString == null) {
       return null;
@@ -92,7 +92,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   @override
-  Future<List<SwapModel>> getAllMetadata() async {
+  Future<List<SwapModel>> getAll() async {
     final allEntries = await _localSwapStorage.getAll();
     final swaps = <SwapModel>[];
     for (final jsonString in allEntries.values) {
@@ -104,7 +104,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   @override
-  Future<void> deleteMetadata(String swapId) async {
+  Future<void> delete(String swapId) async {
     await _localSwapStorage.deleteValue(swapId);
   }
 
@@ -152,7 +152,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   // REVERSE SWAPS
-
   @override
   Future<ReverseFeesAndLimits> getReverseFeesAndLimits() async {
     final fees = Fees(boltzUrl: _url);

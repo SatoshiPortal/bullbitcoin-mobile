@@ -1,13 +1,10 @@
 import 'dart:math';
 
 import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/models/swap_model.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
-import 'package:bb_mobile/_utils/constants.dart';
-import 'package:boltz/boltz.dart' as boltz;
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDataSource _boltz;
@@ -23,7 +20,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String electrumUrl,
     Environment environment = Environment.mainnet,
   }) async {
-    final index = await _getNextBestIndex(walletId);
+    final index = await _nextKeyIndex(walletId);
     final btcLnSwap = await _boltz.createBtcReverseSwap(
       mnemonic,
       index,
@@ -44,7 +41,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         invoice: btcLnSwap.invoice,
       ),
     );
-    await _boltz.storeMetadata(SwapModel.fromEntity(swap));
+    await _boltz.store(SwapModel.fromEntity(swap));
     return swap;
   }
 
@@ -57,19 +54,23 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required bool broadcastViaBoltz,
   }) async {
     final btcLnSwap = await _boltz.getBtcLnSwap(swapId);
-
     final signedTxHex = await _boltz.claimBtcReverseSwap(
       btcLnSwap,
       bitcoinAddress,
       absoluteFees,
       tryCooperate,
     );
-
     final txid = await _boltz.broadcastBtcLnSwap(
       btcLnSwap,
       signedTxHex,
       broadcastViaBoltz,
     );
+    await _updateClaimedReceiveSwap(
+      swapId: swapId,
+      receiveAddress: bitcoinAddress,
+      txid: txid,
+    );
+
     return txid;
   }
 
@@ -81,7 +82,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String electrumUrl,
     Environment environment = Environment.mainnet,
   }) async {
-    final index = await _getNextBestIndex(walletId);
+    final index = await _nextKeyIndex(walletId);
     final lbtcLnSwap = await _boltz.createLBtcReverseSwap(
       mnemonic,
       index,
@@ -103,7 +104,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         invoice: lbtcLnSwap.invoice,
       ),
     );
-    await _boltz.storeMetadata(SwapModel.fromEntity(swap));
+    await _boltz.store(SwapModel.fromEntity(swap));
     return swap;
   }
 
@@ -116,7 +117,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required bool broadcastViaBoltz,
   }) async {
     final lbtcLnSwap = await _boltz.getLbtcLnSwap(swapId);
-
     final signedTxHex = await _boltz.claimLBtcReverseSwap(
       lbtcLnSwap,
       liquidAddress,
@@ -128,10 +128,77 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       signedTxHex,
       broadcastViaBoltz,
     );
+    await _updateClaimedReceiveSwap(
+      swapId: swapId,
+      receiveAddress: liquidAddress,
+      txid: txid,
+    );
     return txid;
   }
 
-  Future<BigInt> _getNextBestIndex(String walletId) async {
+  Future<void> _updateClaimedReceiveSwap({
+    required String swapId,
+    required String receiveAddress,
+    required String txid,
+  }) async {
+    final swapModel = await _boltz.get(swapId);
+    if (swapModel == null) {
+      throw "No swap model found";
+    }
+
+    final swap = swapModel.toEntity();
+    if (swap.status != SwapStatus.pending) {
+      throw "Can only update status of a pending swap";
+    }
+    final receiveSwapDetails = swap.receiveSwapDetails!.copyWith(
+      receiveAddress: receiveAddress,
+      receiveTxid: txid,
+    );
+    final updatedSwap = swap.copyWith(
+      receiveSwapDetails: receiveSwapDetails,
+      completionTime: DateTime.now(),
+      status: SwapStatus.completed,
+    );
+    await _boltz.store(SwapModel.fromEntity(updatedSwap));
+  }
+
+  @override
+  Future<void> updateExpiredSwap({
+    required String swapId,
+  }) async {
+    final swapModel = await _boltz.get(swapId);
+    if (swapModel == null) {
+      throw "No swap model found";
+    }
+    final swap = swapModel.toEntity();
+    if (swap.status != SwapStatus.pending) {
+      throw "Can only update status of a pending swap";
+    }
+    final updatedSwap = swap.copyWith(
+      status: SwapStatus.expired,
+    );
+    await _boltz.store(SwapModel.fromEntity(updatedSwap));
+  }
+
+  @override
+  Future<void> updateFailedSwap({
+    required String swapId,
+  }) async {
+    final swapModel = await _boltz.get(swapId);
+    if (swapModel == null) {
+      throw "No swap model found";
+    }
+    final swap = swapModel.toEntity();
+    if (swap.status != SwapStatus.pending) {
+      throw "Can only update status of a pending swap";
+    }
+    final updatedSwap = swap.copyWith(
+      status: SwapStatus.failed,
+    );
+    await _boltz.store(SwapModel.fromEntity(updatedSwap));
+  }
+
+  Future<BigInt> _nextKeyIndex(String walletId) async {
     final swaps = await _getSwapsForWallet(walletId);
     final nextWalletIndex =
         swaps.isEmpty ? 0 : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
@@ -139,20 +206,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   Future<List<Swap>> _getSwapsForWallet(String walletId) async {
-    final allSwapModels = await _boltz.getAllMetadata();
-    final relatedSwaps = <Swap>[];
-
-    for (final swapModel in allSwapModels) {
-      final Swap swap = swapModel.toEntity();
-      if (_swapReferencesWallet(swap, walletId)) {
-        relatedSwaps.add(swap);
-      }
-    }
-
-    return relatedSwaps;
+    return (await _boltz.getAll())
+        .map((swapModel) => swapModel.toEntity())
+        .where((swap) => _swapBelongsToWallet(swap, walletId))
+        .toList();
   }
 
-  bool _swapReferencesWallet(Swap swap, String walletId) {
+  bool _swapBelongsToWallet(Swap swap, String walletId) {
     final chain = swap.chainSwapDetails;
     if (chain?.sendWalletId == walletId || chain?.receiveWalletId == walletId) {
       return true;
