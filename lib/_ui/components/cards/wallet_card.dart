@@ -39,13 +39,13 @@ class WalletCard extends StatelessWidget {
               const Gap(16),
               BBText(
                 title,
-                style: context.font.bodyLarge!,
+                style: context.font.bodyLarge,
                 color: context.colour.secondary,
               ),
               const Gap(4),
               BBText(
                 description,
-                style: context.font.labelMedium!,
+                style: context.font.labelMedium,
                 color: context.colour.outline,
               ),
               const Gap(16),
@@ -57,13 +57,13 @@ class WalletCard extends StatelessWidget {
               const Gap(16),
               BBText(
                 balance,
-                style: context.font.bodyLarge!,
+                style: context.font.bodyLarge,
                 color: context.colour.secondary,
               ),
               const Gap(4),
               BBText(
                 balanceFiat,
-                style: context.font.labelMedium!,
+                style: context.font.labelMedium,
                 color: context.colour.outline,
               ),
               const Gap(16),

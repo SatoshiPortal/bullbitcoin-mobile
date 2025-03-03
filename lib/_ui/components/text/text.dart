@@ -12,14 +12,14 @@ class BBText extends StatelessWidget {
 
   final String text;
   final int maxLines;
-  final TextStyle style;
+  final TextStyle? style;
   final Color? color;
 
   @override
   Widget build(BuildContext context) {
     return AutoSizeText(
       text,
-      style: style.copyWith(color: color),
+      style: style!.copyWith(color: color),
       maxLines: maxLines,
     );
   }

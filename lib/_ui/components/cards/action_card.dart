@@ -96,7 +96,7 @@ class _ActionButton extends StatelessWidget {
             Image.asset(icon, height: 20, width: 20),
             BBText(
               label,
-              style: context.font.bodyLarge!,
+              style: context.font.bodyLarge,
             ),
           ],
         ),
