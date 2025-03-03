@@ -11,17 +11,10 @@ import 'package:boltz/boltz.dart' as boltz;
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDataSource _boltz;
-  final KeyValueStorageDataSource _secureStorage;
-  final KeyValueStorageDataSource _localSwapStorage;
 
   BoltzSwapRepositoryImpl({
     required BoltzDataSource boltz,
-    required KeyValueStorageDataSource secureStorage,
-    required KeyValueStorageDataSource localSwapStorage,
-  })  : _boltz = boltz,
-        _secureStorage = secureStorage,
-        _localSwapStorage = localSwapStorage;
-
+  }) : _boltz = boltz;
   @override
   Future<Swap> createLightningToBitcoinSwap({
     required String mnemonic,
@@ -38,10 +31,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       environment,
       electrumUrl,
     );
-    final key = '${SecureStorageKeyPrefixConstants.swap}${btcLnSwap.id}';
-    final jsonSwap = await btcLnSwap.toJson();
-    await _secureStorage.saveValue(key: key, value: jsonSwap);
-
+    await _boltz.storeBtcLnSwap(btcLnSwap);
     final swap = Swap(
       id: btcLnSwap.id,
       type: SwapType.lightningToBitcoin,
@@ -54,10 +44,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         invoice: btcLnSwap.invoice,
       ),
     );
-    await _localSwapStorage.saveValue(
-      key: swap.id,
-      value: SwapModel.fromEntity(swap),
-    );
+    await _boltz.storeMetadata(SwapModel.fromEntity(swap));
     return swap;
   }
 
@@ -69,9 +56,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   }) async {
-    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
-    final jsonSwap = await _secureStorage.getValue(key) as String;
-    final btcLnSwap = await boltz.BtcLnSwap.fromJson(jsonStr: jsonSwap);
+    final btcLnSwap = await _boltz.getBtcLnSwap(swapId);
 
     final signedTxHex = await _boltz.claimBtcReverseSwap(
       btcLnSwap,
@@ -97,16 +82,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     Environment environment = Environment.mainnet,
   }) async {
     final index = await _getNextBestIndex(walletId);
-    final lbtcLnSwap = await _boltz.createBtcReverseSwap(
+    final lbtcLnSwap = await _boltz.createLBtcReverseSwap(
       mnemonic,
       index,
       amountSat,
       environment,
       electrumUrl,
     );
-    final key = '${SecureStorageKeyPrefixConstants.swap}${lbtcLnSwap.id}';
-    final jsonSwap = await lbtcLnSwap.toJson();
-    await _secureStorage.saveValue(key: key, value: jsonSwap);
+    await _boltz.storeLbtcLnSwap(lbtcLnSwap);
 
     final swap = Swap(
       id: lbtcLnSwap.id,
@@ -120,7 +103,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         invoice: lbtcLnSwap.invoice,
       ),
     );
-    await _localSwapStorage.saveValue(key: swap.id, value: swap);
+    await _boltz.storeMetadata(SwapModel.fromEntity(swap));
     return swap;
   }
 
@@ -132,9 +115,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   }) async {
-    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
-    final jsonSwap = await _secureStorage.getValue(key) as String;
-    final lbtcLnSwap = await boltz.LbtcLnSwap.fromJson(jsonStr: jsonSwap);
+    final lbtcLnSwap = await _boltz.getLbtcLnSwap(swapId);
 
     final signedTxHex = await _boltz.claimLBtcReverseSwap(
       lbtcLnSwap,
@@ -151,19 +132,39 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   Future<BigInt> _getNextBestIndex(String walletId) async {
-    final swaps = await _localSwapStorage.getAll();
-    final walletRelatedReceiveSwaps = swaps.values
-        .where(
-          (swap) => swap.receiveWalletReference == walletId,
-        )
-        .toList();
-    final nextWalletIndex = walletRelatedReceiveSwaps.isEmpty
-        ? 0
-        : walletRelatedReceiveSwaps
-                .map((swap) => swap.keyIndex as int)
-                .reduce(max) +
-            1;
-
+    final swaps = await _getSwapsForWallet(walletId);
+    final nextWalletIndex =
+        swaps.isEmpty ? 0 : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
     return BigInt.from(nextWalletIndex);
+  }
+
+  Future<List<Swap>> _getSwapsForWallet(String walletId) async {
+    final allSwapModels = await _boltz.getAllMetadata();
+    final relatedSwaps = <Swap>[];
+
+    for (final swapModel in allSwapModels) {
+      final Swap swap = swapModel.toEntity();
+      if (_swapReferencesWallet(swap, walletId)) {
+        relatedSwaps.add(swap);
+      }
+    }
+
+    return relatedSwaps;
+  }
+
+  bool _swapReferencesWallet(Swap swap, String walletId) {
+    final chain = swap.chainSwapDetails;
+    if (chain?.sendWalletId == walletId || chain?.receiveWalletId == walletId) {
+      return true;
+    }
+    final lnReceive = swap.receiveSwapDetails;
+    if (lnReceive?.receiveWalletId == walletId) {
+      return true;
+    }
+    final lnSend = swap.sendSwapDetails;
+    if (lnSend?.sendWalletId == walletId) {
+      return true;
+    }
+    return false;
   }
 }

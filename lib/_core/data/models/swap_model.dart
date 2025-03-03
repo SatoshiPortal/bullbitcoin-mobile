@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'dart:convert';
 
 part 'swap_model.freezed.dart';
 part 'swap_model.g.dart';
@@ -15,10 +16,12 @@ class SwapModel with _$SwapModel {
     required int keyIndex,
     required int creationTime,
     int? completionTime,
-    Map<String, dynamic>? chainSwapJson,
-    Map<String, dynamic>? lnReceiveSwapJson,
-    Map<String, dynamic>? lnSendSwapJson,
+    // Changed from Map<String, dynamic>? to String?
+    String? chainSwapJson,
+    String? lnReceiveSwapJson,
+    String? lnSendSwapJson,
   }) = _SwapModel;
+
   const SwapModel._();
 
   factory SwapModel.fromEntity(Swap swap) {
@@ -30,9 +33,15 @@ class SwapModel with _$SwapModel {
       keyIndex: swap.keyIndex,
       creationTime: swap.creationTime.millisecondsSinceEpoch,
       completionTime: swap.completionTime?.millisecondsSinceEpoch,
-      chainSwapJson: swap.chainSwapDetails?.toJson(),
-      lnReceiveSwapJson: swap.receiveSwapDetails?.toJson(),
-      lnSendSwapJson: swap.sendSwapDetails?.toJson(),
+      chainSwapJson: swap.chainSwapDetails == null
+          ? null
+          : jsonEncode(swap.chainSwapDetails!.toJson()),
+      lnReceiveSwapJson: swap.receiveSwapDetails == null
+          ? null
+          : jsonEncode(swap.receiveSwapDetails!.toJson()),
+      lnSendSwapJson: swap.sendSwapDetails == null
+          ? null
+          : jsonEncode(swap.sendSwapDetails!.toJson()),
     );
   }
 
@@ -47,13 +56,21 @@ class SwapModel with _$SwapModel {
           ? null
           : DateTime.fromMillisecondsSinceEpoch(completionTime!),
       keyIndex: keyIndex,
-      chainSwapDetails:
-          chainSwapJson != null ? ChainSwap.fromJson(chainSwapJson!) : null,
-      receiveSwapDetails: lnReceiveSwapJson != null
-          ? LnReceiveSwap.fromJson(lnReceiveSwapJson!)
-          : null,
-      sendSwapDetails:
-          lnSendSwapJson != null ? LnSendSwap.fromJson(lnSendSwapJson!) : null,
+      chainSwapDetails: chainSwapJson == null
+          ? null
+          : ChainSwap.fromJson(
+              jsonDecode(chainSwapJson!) as Map<String, dynamic>,
+            ),
+      receiveSwapDetails: lnReceiveSwapJson == null
+          ? null
+          : LnReceiveSwap.fromJson(
+              jsonDecode(lnReceiveSwapJson!) as Map<String, dynamic>,
+            ),
+      sendSwapDetails: lnSendSwapJson == null
+          ? null
+          : LnSendSwap.fromJson(
+              jsonDecode(lnSendSwapJson!) as Map<String, dynamic>,
+            ),
     );
   }
 

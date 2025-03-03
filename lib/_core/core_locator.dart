@@ -102,13 +102,14 @@ class CoreLocator {
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltz: BoltzDataSourceImpl(),
-        secureStorage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
-        ),
-        localSwapStorage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzSwapsHiveStorageDataSourceInstanceName,
+        boltz: BoltzDataSourceImpl(
+          sensitiveSwapStorage: locator<KeyValueStorageDataSource<String>>(
+            instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
+          ),
+          swapStorage: locator<KeyValueStorageDataSource<String>>(
+            instanceName: LocatorInstanceNameConstants
+                .boltzSwapsHiveStorageDataSourceInstanceName,
+          ),
         ),
       ),
       instanceName:
@@ -116,14 +117,15 @@ class CoreLocator {
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltz:
-            BoltzDataSourceImpl(url: ApiServiceConstants.boltzTestnetUrlPath),
-        secureStorage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
-        ),
-        localSwapStorage: locator<KeyValueStorageDataSource<String>>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzSwapsHiveStorageDataSourceInstanceName,
+        boltz: BoltzDataSourceImpl(
+          url: ApiServiceConstants.boltzTestnetUrlPath,
+          sensitiveSwapStorage: locator<KeyValueStorageDataSource<String>>(
+            instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
+          ),
+          swapStorage: locator<KeyValueStorageDataSource<String>>(
+            instanceName: LocatorInstanceNameConstants
+                .boltzSwapsHiveStorageDataSourceInstanceName,
+          ),
         ),
       ),
       instanceName:

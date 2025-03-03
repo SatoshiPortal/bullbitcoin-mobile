@@ -34,10 +34,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: "528579c7e4579719f04b21eeeeddfd73a18b31dabc22766893b7d1be7f49b967"
+      sha256: "0c64e928dcbefddecd234205422bcfc2b5e6d31be0b86fef0d0dd48d7b4c9742"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.3"
+    version: "4.0.4"
   args:
     dependency: transitive
     description:
@@ -509,18 +509,18 @@ packages:
     dependency: transitive
     description:
       name: flutter_gen_core
-      sha256: "53890b653738f34363d9f0d40f82104c261716bd551d3ba65f648770b6764c21"
+      sha256: "3eaa2d3d8be58267ac4cd5e215ac965dd23cae0410dc073de2e82e227be32bfc"
       url: "https://pub.dev"
     source: hosted
-    version: "5.9.0"
+    version: "5.10.0"
   flutter_gen_runner:
     dependency: "direct dev"
     description:
       name: flutter_gen_runner
-      sha256: de70b42eb5329f712c8b041069d081ad5fb5109f32d6d1ea9c1b39596786215d
+      sha256: e74b4ead01df3e8f02e73a26ca856759dbbe8cb3fd60941ba9f4005cd0cd19c9
       url: "https://pub.dev"
     source: hosted
-    version: "5.9.0"
+    version: "5.10.0"
   flutter_hooks:
     dependency: "direct main"
     description:
@@ -602,10 +602,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_plugin_android_lifecycle
-      sha256: "1f74d9bd071bd8ab661faf38f6c57028a953b182703cac4b60821b9b2af583e9"
+      sha256: "1c2b787f99bdca1f3718543f81d38aa1b124817dfeb9fb196201bea85b6134bf"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.25"
+    version: "2.0.26"
   flutter_rust_bridge:
     dependency: transitive
     description:
@@ -975,7 +975,7 @@ packages:
     description:
       path: "."
       ref: develop
-      resolved-ref: "1b7a0541fd72cbd16fd50b4e8eb2cb7dd747a62c"
+      resolved-ref: "4779f80cede880364764e1d72d4f1fac3359414d"
       url: "https://github.com/SatoshiPortal/lwk-dart.git"
     source: git
     version: "0.1.6"

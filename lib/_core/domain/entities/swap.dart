@@ -30,7 +30,7 @@ enum SwapStatus {
 class Swap with _$Swap {
   const factory Swap({
     required String id,
-    required int keyIndex,
+    required int keyIndex, // keys used for swap at swap path
     required SwapType type,
     required SwapStatus status,
     required Environment environment,
