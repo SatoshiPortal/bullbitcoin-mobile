@@ -39,19 +39,15 @@ class KeychainBackupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Extract backup data
-    final backupId = backup['id'] as String?;
-    final backupSalt = backup['salt'] as String?;
-
     return MultiBlocProvider(
       providers: [
         BlocProvider<KeychainCubit>(
           create: (context) => KeychainCubit()
             ..setChainState(
               _pState,
-              backupId ?? '',
+              backup['id'] as String? ?? '',
               backupKey,
-              backupSalt ?? '',
+              backup['salt'] as String? ?? '',
             )
             ..keyServerStatus(),
         ),
@@ -264,36 +260,73 @@ class _Screen extends StatelessWidget {
   }
 }
 
-/// Page Type Widgets
+/// Shared layout widget for all pages
+class _PageLayout extends StatelessWidget {
+  const _PageLayout({
+    required this.bottomChild,
+    required this.children,
+    this.bottomHeight,
+  });
+
+  final Widget bottomChild;
+  final List<Widget> children;
+  final double? bottomHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    return StackedPage(
+      bottomChildHeight:
+          bottomHeight ?? MediaQuery.of(context).size.height * 0.11,
+      bottomChild: bottomChild,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: _kHorizontalPadding),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: children,
+        ),
+      ),
+    );
+  }
+}
+
+/// Shared input section widget
+class _InputSection extends StatelessWidget {
+  const _InputSection({required this.inputType});
+
+  final KeyChainInputType inputType;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        if (inputType == KeyChainInputType.pin) ...[
+          _PinField(),
+          const KeyPad(),
+        ] else
+          _PasswordField(),
+      ],
+    );
+  }
+}
+
+// Optimize page type widgets
 class _EnterPage extends StatelessWidget {
   const _EnterPage({super.key, required this.inputType});
   final KeyChainInputType inputType;
 
   @override
   Widget build(BuildContext context) {
-    return StackedPage(
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
+    return _PageLayout(
       bottomChild: _SetButton(inputType: inputType),
-      child: Padding(
-        key: ValueKey('enter$inputType'),
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(50),
-            const _TitleText(),
-            const Gap(8),
-            const _SubtitleText(),
-            const Gap(50),
-            if (inputType == KeyChainInputType.pin) ...[
-              _PinField(),
-              const KeyPad(),
-            ] else
-              _PasswordField(),
-            const Gap(30),
-          ],
-        ),
-      ),
+      children: [
+        const Gap(_kGapXLarge),
+        const _TitleText(),
+        const Gap(_kGapSmall),
+        const _SubtitleText(),
+        const Gap(_kGapXLarge),
+        _InputSection(inputType: inputType),
+        const Gap(_kGapLarge),
+      ],
     );
   }
 }
@@ -304,32 +337,18 @@ class _ConfirmPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StackedPage(
+    return _PageLayout(
       bottomChild: _ConfirmButton(inputType: inputType),
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
-      child: SingleChildScrollView(
-        key: ValueKey('confirm$inputType'),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Gap(20),
-              const _ConfirmTitleText(),
-              const Gap(8),
-              const _ConfirmSubtitleText(),
-              const Gap(48),
-              if (inputType == KeyChainInputType.pin) ...[
-                _PinField(),
-                const KeyPad(),
-              ] else
-                _PasswordField(),
-              const Gap(24),
-            ],
-          ),
-        ),
-      ),
+      bottomHeight: MediaQuery.of(context).size.height * 0.11,
+      children: [
+        const Gap(20),
+        const _ConfirmTitleText(),
+        const Gap(_kGapSmall),
+        const _ConfirmSubtitleText(),
+        const Gap(48),
+        _InputSection(inputType: inputType),
+        const Gap(24),
+      ],
     );
   }
 }
@@ -340,35 +359,25 @@ class _RecoveryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StackedPage(
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.16,
+    return _PageLayout(
       bottomChild: _RecoverButton(inputType: inputType),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(50),
-            BBText.titleLarge(
-              'Enter Recovery ${_getInputTypeText(inputType)}',
-              textAlign: TextAlign.center,
-              isBold: true,
-            ),
-            const Gap(8),
-            BBText.bodySmall(
-              'Enter the ${_getInputTypeText(inputType).toLowerCase()} you used to backup your keychain',
-              textAlign: TextAlign.center,
-            ),
-            const Gap(50),
-            if (inputType == KeyChainInputType.pin) ...[
-              _PinField(),
-              const KeyPad(),
-            ] else
-              _PasswordField(),
-            const Gap(30),
-          ],
+      bottomHeight: MediaQuery.of(context).size.height * 0.16,
+      children: [
+        const Gap(_kGapXLarge),
+        BBText.titleLarge(
+          'Enter Recovery ${_getInputTypeText(inputType)}',
+          textAlign: TextAlign.center,
+          isBold: true,
         ),
-      ),
+        const Gap(_kGapSmall),
+        BBText.bodySmall(
+          'Enter the ${_getInputTypeText(inputType).toLowerCase()} you used to backup your keychain',
+          textAlign: TextAlign.center,
+        ),
+        const Gap(_kGapXLarge),
+        _InputSection(inputType: inputType),
+        const Gap(_kGapLarge),
+      ],
     );
   }
 
@@ -390,35 +399,25 @@ class _DeletePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StackedPage(
-      bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
+    return _PageLayout(
       bottomChild: _DeleteButton(inputType: inputType),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(50),
-            const BBText.titleLarge(
-              'Delete Backup Key',
-              textAlign: TextAlign.center,
-              isBold: true,
-            ),
-            const Gap(8),
-            BBText.bodySmall(
-              'Enter your ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to delete this backup key',
-              textAlign: TextAlign.center,
-            ),
-            const Gap(50),
-            if (inputType == KeyChainInputType.pin) ...[
-              _PinField(),
-              const KeyPad(),
-            ] else
-              _PasswordField(),
-            const Gap(30),
-          ],
+      bottomHeight: MediaQuery.of(context).size.height * 0.11,
+      children: [
+        const Gap(_kGapXLarge),
+        const BBText.titleLarge(
+          'Delete Backup Key',
+          textAlign: TextAlign.center,
+          isBold: true,
         ),
-      ),
+        const Gap(_kGapSmall),
+        BBText.bodySmall(
+          'Enter your ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to delete this backup key',
+          textAlign: TextAlign.center,
+        ),
+        const Gap(_kGapXLarge),
+        _InputSection(inputType: inputType),
+        const Gap(_kGapLarge),
+      ],
     );
   }
 }
