@@ -39,7 +39,10 @@ class _Screen extends StatelessWidget {
           child: Column(
             children: [
               HomeTopSection(),
-              ActionCard(),
+              Padding(
+                padding: EdgeInsets.all(13),
+                child: ActionCard(),
+              ),
               HomeWalletCards(),
               HomeBottomButtons(),
             ],

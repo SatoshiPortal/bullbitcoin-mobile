@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:bb_mobile/_ui/components/cards/price_card.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:bb_mobile/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -15,7 +16,7 @@ class HomeTopSection extends StatelessWidget {
       // fit: StackFit.expand,
       children: [
         Image.asset(
-          'bg',
+          Assets.images2.bgRed.path,
         ),
         const _Amounts(),
         const _TopNav(),

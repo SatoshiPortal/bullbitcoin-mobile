@@ -80,6 +80,16 @@ class $AssetsImagesGen {
   ];
 }
 
+class $AssetsImages2Gen {
+  const $AssetsImages2Gen();
+
+  /// File path: assets/images2/bg-red.png
+  AssetGenImage get bgRed => const AssetGenImage('assets/images2/bg-red.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [bgRed];
+}
+
 class Assets {
   const Assets._();
 
@@ -112,6 +122,7 @@ class Assets {
   static const AssetGenImage iconnew = AssetGenImage('assets/iconnew.png');
   static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
+  static const $AssetsImages2Gen images2 = $AssetsImages2Gen();
   static const String loaderanimation = 'assets/loaderanimation.json';
   static const String newAddress = 'assets/new-address.svg';
   static const AssetGenImage nfcScan = AssetGenImage('assets/nfc_scan.png');
