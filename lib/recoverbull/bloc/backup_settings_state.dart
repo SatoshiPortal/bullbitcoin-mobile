@@ -1,6 +1,9 @@
 import 'package:bb_mobile/_model/wallet_sensitive_data.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 part 'backup_settings_state.freezed.dart';
+
+enum BackupType { fileSystem, googleDrive, iCloud }
 
 @freezed
 class BackupSettingsState with _$BackupSettingsState {
@@ -27,6 +30,7 @@ class BackupSettingsState with _$BackupSettingsState {
     @Default('') String backupKey,
     @Default({}) Map<String, dynamic> latestRecoveredBackup,
     @Default(null) DateTime? lastBackupAttempt,
+    @Default(BackupType.fileSystem) BackupType backupType,
   }) = _BackupSettingsState;
 
   const BackupSettingsState._();

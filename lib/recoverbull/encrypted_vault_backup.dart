@@ -31,12 +31,29 @@ enum BackupProvider {
   final IconData icon;
   final String disclaimer;
 
-  const BackupProvider(
-    this.title,
-    this.description,
-    this.icon,
-    this.disclaimer,
-  );
+  const BackupProvider(this.title, this.description, this.icon, this.disclaimer);
+
+  Future<void> handleBackup(BackupSettingsCubit cubit) async {
+    cubit.setBackupType(_getBackupType());
+    await cubit.saveBackup();
+  }
+
+  Future<void> handleRecover(BackupSettingsCubit cubit) async {
+    cubit.setBackupType(_getBackupType());
+    await cubit.fetchBackup();
+  }
+
+  BackupType _getBackupType() {
+    switch (this) {
+      case BackupProvider.googleDrive:
+        return BackupType.googleDrive;
+      case BackupProvider.iCloud:
+        return BackupType.iCloud;
+      case BackupProvider.custom:
+        return BackupType.fileSystem;
+    }
+  }
+
 }
 
 class EncryptedVaultBackupPage extends StatefulWidget {
@@ -70,15 +87,8 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
       _showDisclaimer(context, provider.disclaimer);
       await Future.delayed(const Duration(seconds: 3));
     }
-
-    switch (provider) {
-      case BackupProvider.googleDrive:
-        await _cubit.saveGoogleDriveBackup();
-      case BackupProvider.iCloud:
-        debugPrint('iCloud backup');
-      case BackupProvider.custom:
-        _cubit.saveFileSystemBackup();
-    }
+    
+    await provider.handleBackup(_cubit);
   }
 
   @override
@@ -319,14 +329,7 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
     BuildContext context,
     BackupProvider provider,
   ) async {
-    switch (provider) {
-      case BackupProvider.googleDrive:
-        await _backupSettingsCubit.fetchGoogleDriveBackup();
-      case BackupProvider.iCloud:
-        debugPrint('iCloud backup');
-      case BackupProvider.custom:
-        _backupSettingsCubit.fetchFsBackup();
-    }
+    await provider.handleRecover(_backupSettingsCubit);
   }
 
   Widget _buildContent(BuildContext context, BackupSettingsState state) {

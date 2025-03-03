@@ -8,9 +8,18 @@ import 'package:bb_mobile/locator.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 class FileSystemBackupManager extends IRecoverbullManager {
-  final FileStorage fileStorage = locator<FileStorage>();
-
   FileSystemBackupManager();
+
+  @override
+  Future<(String?, Err?)> connect() async {
+    // Don't show picker here since path will be provided by cubit
+    return (null, null);
+  }
+
+  @override
+  Future<void> disconnect() async {}
+
+  final FileStorage fileStorage = locator<FileStorage>();
 
   /// Deletes the encrypted backup from the specified directory.
   /// Returns the path to the deleted backup or an error message.
