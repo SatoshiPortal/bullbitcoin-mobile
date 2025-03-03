@@ -594,7 +594,23 @@ class _NumberButtonState extends State<NumberButton> {
 }
 
 /// Action Buttons
-class _SetButton extends StatelessWidget {
+mixin _ButtonLogicMixin {
+  void handleServerCheck(BuildContext context, VoidCallback onSuccess) {
+    context.read<KeychainCubit>().keyServerStatus();
+    final state = context.read<KeychainCubit>().state;
+    if (state.canStoreKey) onSuccess();
+  }
+
+  Widget buildServerDownMessage() {
+    return const BBText.bodySmall(
+      'Server is currently unavailable.\nPlease use your backup key.',
+      textAlign: TextAlign.center,
+      isRed: true,
+    );
+  }
+}
+
+class _SetButton extends StatelessWidget with _ButtonLogicMixin {
   final KeyChainInputType inputType;
   const _SetButton({required this.inputType});
   @override
@@ -649,7 +665,7 @@ class _SetButton extends StatelessWidget {
   }
 }
 
-class _ConfirmButton extends StatelessWidget {
+class _ConfirmButton extends StatelessWidget with _ButtonLogicMixin {
   const _ConfirmButton({required this.inputType});
   final KeyChainInputType inputType;
   @override
@@ -675,7 +691,7 @@ class _ConfirmButton extends StatelessWidget {
   }
 }
 
-class _RecoverButton extends StatelessWidget {
+class _RecoverButton extends StatelessWidget with _ButtonLogicMixin {
   const _RecoverButton({required this.inputType});
   final KeyChainInputType inputType;
 
@@ -787,7 +803,7 @@ class _RecoverButton extends StatelessWidget {
   }
 }
 
-class _DeleteButton extends StatelessWidget {
+class _DeleteButton extends StatelessWidget with _ButtonLogicMixin {
   const _DeleteButton({required this.inputType});
   final KeyChainInputType inputType;
 
