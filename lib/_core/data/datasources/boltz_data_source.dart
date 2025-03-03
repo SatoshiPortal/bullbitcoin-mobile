@@ -100,6 +100,34 @@ abstract class BoltzDataSource {
     String btcElectrumUrl,
     String lbtcElectrumUrl,
   );
+  Future<String> broadcastChainSwapClaim(
+    ChainSwap chainSwap,
+    String signedTxHex,
+    bool broadcastViaBoltz,
+  );
+  Future<String> broadcastChainSwapRefund(
+    ChainSwap chainSwap,
+    String signedTxHex,
+    bool broadcastViaBoltz,
+  );
+
+  /// Returns a signed tx hex which needs to be broadcasted
+  Future<String> claimBtcToLbtcChainSwap(
+    ChainSwap chainSwap,
+    String claimLiquidAddress,
+    String refundBitcoinAddress,
+    int absoluteFees,
+    bool tryCooperate,
+  );
+
+  /// Returns a signed tx hex which needs to be broadcasted
+  Future<String> claimLbtcToBtcChainSwap(
+    ChainSwap chainSwap,
+    String claimBitcoinAddress,
+    String refundLiquidAddress,
+    int absoluteFees,
+    bool tryCooperate,
+  );
   // Local Storage
   Future<void> store(SwapModel swap);
   Future<SwapModel?> get(String swapId);
@@ -438,6 +466,72 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
     final jsonSwap = await _secureSwapStorage.getValue(key) as String;
     return ChainSwap.fromJson(jsonStr: jsonSwap);
+  }
+
+  @override
+  Future<String> broadcastChainSwapRefund(
+    ChainSwap chainSwap,
+    String signedTxHex,
+    bool broadcastViaBoltz,
+  ) {
+    return broadcastViaBoltz
+        ? chainSwap.broadcastLocal(
+            signedHex: signedTxHex,
+            kind: SwapTxKind.refund,
+          )
+        : chainSwap.broadcastBoltz(
+            signedHex: signedTxHex,
+            kind: SwapTxKind.refund,
+          );
+  }
+
+  @override
+  Future<String> claimBtcToLbtcChainSwap(
+    ChainSwap chainSwap,
+    String claimLiquidAddress,
+    String refundBitcoinAddress,
+    int absoluteFees,
+    bool tryCooperate,
+  ) async {
+    return await chainSwap.claim(
+      outAddress: claimLiquidAddress,
+      refundAddress: refundBitcoinAddress,
+      absFee: BigInt.from(absoluteFees),
+      tryCooperate: tryCooperate,
+    );
+  }
+
+  @override
+  Future<String> claimLbtcToBtcChainSwap(
+    ChainSwap chainSwap,
+    String claimBitcoinAddress,
+    String refundLiquidAddress,
+    int absoluteFees,
+    bool tryCooperate,
+  ) async {
+    return await chainSwap.claim(
+      outAddress: claimBitcoinAddress,
+      refundAddress: refundLiquidAddress,
+      absFee: BigInt.from(absoluteFees),
+      tryCooperate: tryCooperate,
+    );
+  }
+
+  @override
+  Future<String> broadcastChainSwapClaim(
+    ChainSwap chainSwap,
+    String signedTxHex,
+    bool broadcastViaBoltz,
+  ) {
+    return broadcastViaBoltz
+        ? chainSwap.broadcastLocal(
+            signedHex: signedTxHex,
+            kind: SwapTxKind.claim,
+          )
+        : chainSwap.broadcastBoltz(
+            signedHex: signedTxHex,
+            kind: SwapTxKind.claim,
+          );
   }
 }
 

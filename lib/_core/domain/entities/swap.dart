@@ -53,7 +53,7 @@ class ChainSwap with _$ChainSwap {
     String? sendTxid,
     String? receiveWalletId,
     String? receiveTxid,
-    String? recipientAddress,
+    String? receiveAddress,
     String? refundTxid,
     String? refundAddress,
   }) = _ChainSwap;
