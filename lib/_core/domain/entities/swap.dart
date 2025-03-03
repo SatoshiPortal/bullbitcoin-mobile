@@ -33,6 +33,8 @@ class Swap with _$Swap {
         receiveWalletReference, // address/invoice for external; id for internal
     required String
         sendWalletReference, // address/invoice for external; id for internal
+    String? receiveTxReference, // claimTxid for reverse and chain
+    String? sendTxReference, // lockupTxid for submarine and chain
     required SwapType type,
     required SwapStatus status,
     required Environment environment,
@@ -42,3 +44,87 @@ class Swap with _$Swap {
   }) = _Swap;
   const Swap._();
 }
+
+// @freezed
+// class SwapTx with _$SwapTx {
+//   const factory SwapTx({
+//     required String id,
+//     // only for reverse and chain.self
+//     String? receiveWalletReference,
+//     // only for submarine and chain.all
+//     String? sendWalletReference,
+//     // claimTxid for reverse and chain
+//     required SwapType type,
+//     required SwapStatus status,
+//     required Environment environment,
+//     required DateTime creationTime,
+//     DateTime? completionTime,
+//     required int keyIndex,
+//   }) = _SwapTx;
+//   const SwapTx._();
+// }
+
+// @freezed
+// class ChainSwap with _$ChainSwap {
+//   const factory ChainSwap({
+//     required bool toSelf,
+//     required String sendWalletId,
+//     required String sendTxid, // 
+//     String? receiveWalletId,
+//     String? receiveTxid, // 
+//     String? recipientAddress,
+//     String? refundTxid,
+//     String? refundAddress,
+//   }) = _ChainSwap;
+//   const ChainSwap._();
+// }
+
+// @freezed
+// class LnReceiveSwap with _$LnReceiveSwap {
+//   const factory LnReceiveSwap({
+//     required String receiveWalletId,
+//     required String invoice,
+//     String? receiveTxid,
+//     String? receiveAddress,
+//   }) = _LnReceiveSwap;
+//   const LnReceiveSwap._();
+// }
+
+// @freezed
+// class LnSendSwap with _$LnSendSwap {
+//   const factory LnSendSwap({
+//     required String sendWalletId,
+//     required String sendTxid,
+//     String? preimage,
+//     String? refundTxid,
+//     String? refundAddress,
+//   }) = _LnSendSwap;
+//   const LnSendSwap._();
+// }
+
+// @freezed
+// class SwapTx2 with _$SwapTx2 {
+//   const factory SwapTx2({
+//     required String id,
+//     required int keyIndex,
+//     required SwapType type,
+//     required SwapStatus status,
+//     required Environment environment,
+//     required DateTime creationTime,
+//     ChainSwap? chainSwapDetails,
+//     LnReceiveSwap? receiveSwapDetails,
+//     LnSendSwap? sendSwapDetails,
+//     DateTime? completionTime,
+//   }) = _SwapTx2;
+//   const SwapTx2._();
+// }
+
+/**
+ * 
+ * Requirements for local swap entity
+ * walletIds
+ * addresses used
+ * txids
+ * preimage for lightning sends
+ * 
+ */
