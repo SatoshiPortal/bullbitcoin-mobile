@@ -50,7 +50,7 @@ class ChainSwap with _$ChainSwap {
   const factory ChainSwap({
     required bool toSelf,
     required String sendWalletId,
-    required String sendTxid,
+    String? sendTxid,
     String? receiveWalletId,
     String? receiveTxid,
     String? recipientAddress,

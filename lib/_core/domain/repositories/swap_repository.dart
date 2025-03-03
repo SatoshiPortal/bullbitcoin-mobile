@@ -69,6 +69,28 @@ abstract class SwapRepository {
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });
+  // CHAIN SWAPS
+  Future<Swap> createLiquidToBitcoinSwap({
+    required String mnemonic,
+    required String sendWalletId,
+    required int amountSat,
+    required Environment environment,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+    required bool toSelf,
+    String? receiveWalletId,
+  });
+
+  Future<Swap> createBitcoinToLiquidSwap({
+    required String mnemonic,
+    required String sendWalletId,
+    required int amountSat,
+    required Environment environment,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+    required bool toSelf,
+    String? receiveWalletId,
+  });
   // SWAP STORAGE UTILITY
   Future<void> updatePaidSendSwap({
     required String swapId,

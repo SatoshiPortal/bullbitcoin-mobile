@@ -83,6 +83,23 @@ abstract class BoltzDataSource {
     int absoluteFees,
     bool tryCooperate,
   );
+  // Chain Swap
+  Future<ChainSwap> createBtcToLbtcChainSwap(
+    String mnemonic,
+    BigInt index,
+    int amountSat,
+    Environment environment,
+    String btcElectrumUrl,
+    String lbtcElectrumUrl,
+  );
+  Future<ChainSwap> createLbtcToBtcChainSwap(
+    String mnemonic,
+    BigInt index,
+    int amountSat,
+    Environment environment,
+    String btcElectrumUrl,
+    String lbtcElectrumUrl,
+  );
   // Local Storage
   Future<void> store(SwapModel swap);
   Future<SwapModel?> get(String swapId);
@@ -295,6 +312,56 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     );
   }
 
+  // CHAIN SWAPS
+  @override
+  Future<ChainFeesAndLimits> getChainFeesAndLimits() async {
+    final fees = Fees(boltzUrl: _url);
+    final chain = await fees.chain();
+    return chain;
+  }
+
+  @override
+  Future<ChainSwap> createBtcToLbtcChainSwap(
+    String mnemonic,
+    BigInt index,
+    int amountSat,
+    Environment environment,
+    String btcElectrumUrl,
+    String lbtcElectrumUrl,
+  ) async {
+    return ChainSwap.newSwap(
+      mnemonic: mnemonic,
+      index: index,
+      boltzUrl: _url,
+      direction: ChainSwapDirection.btcToLbtc,
+      amount: BigInt.from(amountSat),
+      isTestnet: environment == Environment.testnet,
+      btcElectrumUrl: btcElectrumUrl,
+      lbtcElectrumUrl: lbtcElectrumUrl,
+    );
+  }
+
+  @override
+  Future<ChainSwap> createLbtcToBtcChainSwap(
+    String mnemonic,
+    BigInt index,
+    int amountSat,
+    Environment environment,
+    String btcElectrumUrl,
+    String lbtcElectrumUrl,
+  ) async {
+    return ChainSwap.newSwap(
+      mnemonic: mnemonic,
+      index: index,
+      boltzUrl: _url,
+      direction: ChainSwapDirection.lbtcToBtc,
+      amount: BigInt.from(amountSat),
+      isTestnet: environment == Environment.testnet,
+      btcElectrumUrl: btcElectrumUrl,
+      lbtcElectrumUrl: lbtcElectrumUrl,
+    );
+  }
+
   // LOCAL STORAGE
   @override
   Future<void> store(SwapModel swap) async {
@@ -331,7 +398,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   // SECURE STORAGE
-
   @override
   Future<void> storeBtcLnSwap(BtcLnSwap swap) async {
     final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
