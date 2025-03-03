@@ -92,6 +92,15 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   static const _kShuffleDelay = Duration(milliseconds: 500);
   static const _kMinBackupInterval = Duration(seconds: 5);
 
+  IRecoverbullManager get _backupManager =>
+      state.backupType == BackupType.googleDrive
+          ? _googleDriveBackupManager
+          : _fileSystemBackupManager;
+
+  void setBackupType(BackupType type) {
+    emit(state.copyWith(backupType: type));
+  }
+
   void changePassword(String password) {
     emit(
       state.copyWith(
