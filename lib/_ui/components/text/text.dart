@@ -2,9 +2,9 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class BBText extends StatelessWidget {
-  const BBText({
+  const BBText(
+    this.text, {
     super.key,
-    required this.text,
     required this.style,
     this.maxLines = 1,
   });

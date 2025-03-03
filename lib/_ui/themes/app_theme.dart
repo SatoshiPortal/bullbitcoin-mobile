@@ -15,9 +15,15 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colours,
       canvasColor: colours.surface,
-      scaffoldBackgroundColor: colours.surface,
+      scaffoldBackgroundColor: colours.secondaryFixed,
       fontFamily: fonts.fontFamily,
       textTheme: fonts.textTheme,
     );
   }
+}
+
+extension FontEx on BuildContext {
+  ThemeData get theme => Theme.of(this);
+  TextTheme get font => theme.textTheme;
+  ColorScheme get colour => theme.colorScheme;
 }
