@@ -26,34 +26,31 @@ class BackupKeyPage extends StatefulWidget {
 }
 
 class _BackupKeyPageState extends State<BackupKeyPage> {
-  late final BackupSettingsCubit _backupSettingsCubit;
+  late final BackupSettingsCubit _cubit;
 
   @override
   void initState() {
     super.initState();
-    _backupSettingsCubit = createBackupSettingsCubit(walletId: widget.wallet);
+    _cubit = createBackupSettingsCubit(walletId: widget.wallet);
+    _initializeKeyServer();
+  }
+
+  void _initializeKeyServer() {
     context.read<KeychainCubit>().keyServerStatus();
   }
 
   @override
   void dispose() {
-    _backupSettingsCubit.close();
+    _cubit.close();
     super.dispose();
   }
 
-  Future<void> _handleRecover(
-    BuildContext context,
-    BackupProvider provider,
-  ) async {
-    switch (provider) {
-      case BackupProvider.googleDrive:
-        await _backupSettingsCubit.fetchGoogleDriveBackup();
-      case BackupProvider.iCloud:
-        debugPrint('iCloud backup');
-      case BackupProvider.custom:
-        _backupSettingsCubit.fetchFsBackup();
-    }
+  Future<void> _handleRecover(BackupProvider provider) async {
+    await provider.handleRecover(_cubit);
   }
+
+  Widget _buildLoadingState() =>
+      const Center(child: CircularProgressIndicator());
 
   Widget _buildContent(BuildContext context, BackupSettingsState state) {
     return Column(
@@ -73,7 +70,7 @@ class _BackupKeyPageState extends State<BackupKeyPage> {
                     title: provider.title,
                     description: provider.description,
                     icon: Icon(provider.icon, size: 40),
-                    onTap: () => _handleRecover(context, provider),
+                    onTap: () => _handleRecover(provider),
                   ),
                 ),
               ),
@@ -98,7 +95,7 @@ class _BackupKeyPageState extends State<BackupKeyPage> {
           previous.keyServerUp != current.keyServerUp ||
           current.loading != previous.loading,
       child: BlocProvider.value(
-        value: _backupSettingsCubit,
+        value: _cubit,
         child: BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
           listenWhen: (previous, current) =>
               previous.errorLoadingBackups != current.errorLoadingBackups ||
@@ -108,7 +105,7 @@ class _BackupKeyPageState extends State<BackupKeyPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 context.showToast(state.errorLoadingBackups),
               );
-              _backupSettingsCubit.clearError();
+              _cubit.clearError();
               return;
             }
             if (state.latestRecoveredBackup.isNotEmpty) {
@@ -116,7 +113,7 @@ class _BackupKeyPageState extends State<BackupKeyPage> {
                 '/wallet-settings/backup-settings/key/options',
                 extra: ('', state.latestRecoveredBackup),
               );
-              _backupSettingsCubit.clearError();
+              _cubit.clearError();
             }
           },
           builder: (context, state) {
@@ -131,7 +128,7 @@ class _BackupKeyPageState extends State<BackupKeyPage> {
                 ),
               ),
               body: state.loadingBackups
-                  ? const Center(child: CircularProgressIndicator())
+                  ? _buildLoadingState()
                   : _buildContent(context, state),
             );
           },
@@ -156,64 +153,48 @@ class BackupKeyOptionsPage extends StatefulWidget {
 }
 
 class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
-  late final BackupSettingsCubit _backupSettingsCubit;
+  late final BackupSettingsCubit _cubit;
 
   @override
   void initState() {
     super.initState();
-    _backupSettingsCubit = createBackupSettingsCubit();
+    _cubit = createBackupSettingsCubit();
+    _initializeKeyServer();
+  }
+
+  void _initializeKeyServer() {
     context.read<KeychainCubit>().keyServerStatus();
   }
 
   @override
   void dispose() {
-    _backupSettingsCubit.close();
+    _cubit.close();
     super.dispose();
   }
 
-  void _handleBackupAction(BuildContext context) {
+  Future<void> _handleBackupAction(BuildContext context) async {
     if (widget.backupKey.isNotEmpty) {
       _showBackupKeyDialog(context, widget.backupKey);
     } else {
-      context.push(
-        '/wallet-settings/backup-settings/keychain',
-        extra: (
-          '',
-          widget.recoveredBackup,
-          KeyChainPageState.download.name.toLowerCase()
-        ),
-      );
+      _navigateToKeychain(context);
     }
+  }
+
+  void _navigateToKeychain(BuildContext context) {
+    context.push(
+      '/wallet-settings/backup-settings/keychain',
+      extra: (
+        '',
+        widget.recoveredBackup,
+        KeyChainPageState.download.name.toLowerCase(),
+      ),
+    );
   }
 
   void _showBackupKeyDialog(BuildContext context, String backupKey) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: context.colour.primaryContainer,
-        title: const BBText.title('Backup key', isBold: true),
-        content: Row(
-          children: [
-            Expanded(
-              child: Text(
-                backupKey,
-                style: context.font.bodySmall!
-                    .copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: backupKey));
-                Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  context.showToast('Copied to clipboard'),
-                );
-              },
-              icon: Icon(Icons.copy, color: context.colour.primary),
-            ),
-          ],
-        ),
-      ),
+      builder: (context) => _BackupKeyDialog(backupKey: backupKey),
     );
   }
 
@@ -279,7 +260,7 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
     }
 
     return MultiBlocProvider(
-      providers: [BlocProvider.value(value: _backupSettingsCubit)],
+      providers: [BlocProvider.value(value: _cubit)],
       child: Builder(
         builder: (context) {
           return BlocBuilder<KeychainCubit, KeychainState>(
