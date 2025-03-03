@@ -45,7 +45,8 @@ class KeychainBackupPage extends StatelessWidget {
               backupId ?? '',
               backupKey,
               backupSalt ?? '',
-            ),
+            )
+            ..keyServerStatus(),
         ),
         BlocProvider.value(value: createBackupSettingsCubit()),
       ],
@@ -181,6 +182,19 @@ class _Screen extends StatelessWidget {
                   isRecovery: state.pageState == KeyChainPageState.recovery,
                 ),
               );
+            }
+          },
+        ),
+        BlocListener<KeychainCubit, KeychainState>(
+          listenWhen: (previous, current) =>
+              previous.keyServerUp != current.keyServerUp,
+          listener: (context, state) {
+            if (!state.keyServerUp &&
+                state.inputType != KeyChainInputType.backupKey) {
+              context.read<KeychainCubit>().updatePageState(
+                    KeyChainInputType.backupKey,
+                    state.pageState,
+                  );
             }
           },
         ),
@@ -579,8 +593,13 @@ class _SetButton extends StatelessWidget {
   const _SetButton({required this.inputType});
   @override
   Widget build(BuildContext context) {
-    final canStoreKey =
-        context.select((KeychainCubit x) => x.state.canStoreKey);
+    final state = context.select((KeychainCubit x) => x.state);
+    final canStoreKey = state.canStoreKey;
+    final keyServerUp = state.keyServerUp;
+
+    // Don't show the button if keyserver is down
+    if (!keyServerUp) return const SizedBox.shrink();
+
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
       child: Column(
@@ -660,7 +679,8 @@ class _RecoverButton extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.canRecoverKey != current.canRecoverKey ||
           previous.loading != current.loading ||
-          previous.pageState != current.pageState,
+          previous.pageState != current.pageState ||
+          previous.keyServerUp != current.keyServerUp,
       builder: (context, state) {
         final canRecover = inputType == KeyChainInputType.backupKey
             ? state.canRecoverWithBckupKey
@@ -669,6 +689,25 @@ class _RecoverButton extends StatelessWidget {
         // Check if we're in the download flow by checking original state
         final isDownloadFlow = state.pageState == KeyChainPageState.download ||
             state.originalPageState == KeyChainPageState.download;
+
+        // Show only backup key option if server is down
+        if (!state.keyServerUp && inputType != KeyChainInputType.backupKey) {
+          return Column(
+            children: [
+              const BBText.bodySmall(
+                'Server is currently unavailable.\nPlease use your backup key to recover.',
+                textAlign: TextAlign.center,
+                isRed: true,
+              ),
+              const Gap(16),
+              BBButton.withColour(
+                fillWidth: true,
+                label: 'Switch to Backup Key',
+                onPressed: () => _switchToBackupKey(context),
+              ),
+            ],
+          );
+        }
 
         return Column(
           children: [
