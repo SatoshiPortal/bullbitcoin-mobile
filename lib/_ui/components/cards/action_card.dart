@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 enum _ButtonPosition { first, last, middle }
 
-class HomeRow extends StatelessWidget {
-  const HomeRow({super.key});
+class ActionCard extends StatelessWidget {
+  const ActionCard({super.key});
 
   @override
   Widget build(BuildContext context) {
