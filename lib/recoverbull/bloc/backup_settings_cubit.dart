@@ -92,6 +92,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   static const _kShuffleDelay = Duration(milliseconds: 500);
   static const _kMinBackupInterval = Duration(seconds: 5);
 
+  /// Gets the appropriate backup manager based on backup type
   IRecoverbullManager get _backupManager =>
       state.backupType == BackupType.googleDrive
           ? _googleDriveBackupManager
@@ -345,6 +346,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     _emitBackupState(seed);
   }
 
+  /// Recovers wallet data from encrypted backup
+  /// [encrypted] - Encrypted backup data
+  /// [backupKey] - Key used to decrypt the backup
   Future<void> recoverBackup(String encrypted, String backupKey) async {
     _emitSafe(
       state.copyWith(
@@ -397,6 +401,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
   }
 
+  /// Derives backup key from mnemonic phrase
+  /// [derivationPath] - BIP32 derivation path for key generation
   Future<void> recoverBackupKeyFromMnemonic(String? derivationPath) async {
     _emitSafe(state.copyWith(loadingBackups: true, errorLoadingBackups: ''));
 
@@ -441,7 +447,9 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     emit(state.copyWith(backupTested: false));
   }
 
-  Future<void> saveFileSystemBackup() async {
+  /// Saves encrypted backup to selected location (filesystem or Google Drive)
+  /// Handles backup key derivation and encryption process
+  Future<void> saveBackup() async {
     if (!_canStartBackup()) {
       _handleSaveError('Please wait before attempting another backup');
       return;
@@ -634,6 +642,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     emit(state.copyWith(testMnemonicOrder: testMnemonic));
   }
 
+  /// Handles word selection during backup verification
+  /// Validates word order and updates test state
   void wordClicked(int shuffledIdx) {
     emit(state.copyWith(errTestingBackup: ''));
     final testMnemonic = state.testMnemonicOrder.toList();
@@ -657,6 +667,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     emit(state.copyWith(testMnemonicOrder: testMnemonic));
   }
 
+  /// Creates or updates wallet with provided parameters
+  /// Returns the created/updated wallet or error
   Future<(Wallet?, Err?)> _addOrUpdateWallet(
     BBNetwork network,
     BaseWalletType layer,
@@ -721,6 +733,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
+  /// Checks if enough time has passed since last backup attempt
+  /// Prevents too frequent backup operations
   bool _canStartBackup() {
     final lastAttempt = state.lastBackupAttempt;
     if (lastAttempt != null) {
@@ -766,6 +780,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
+  /// Creates encrypted backups for all wallets
+  /// Returns list of wallet sensitive data for backup
   Future<List<WalletSensitiveData>> _createBackupsForAllWallets() async {
     final backups = <WalletSensitiveData>[];
 
@@ -782,6 +798,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
+  /// Creates backup data for a single wallet
+  /// Returns WalletSensitiveData containing encrypted wallet information
   Future<WalletSensitiveData?> _createBackupForWallet(Wallet wallet) async {
     try {
       final (seed, err) = await _loadWalletSeed(wallet);
@@ -936,6 +954,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         _ => null
       };
 
+  /// Error handling helpers
   void _handleLoadError(String message, {bool loading = false}) {
     _emitSafe(
       state.copyWith(
@@ -971,6 +990,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     );
   }
 
+  /// Loads seed data for given wallet
+  /// Returns seed or error if failed to load
   Future<(Seed?, Err?)> _loadWalletSeed(Wallet wallet) async {
     final (seed, err) = await _walletSensRepository.readSeed(
       fingerprintIndex: wallet.getRelatedSeedStorageString(),
@@ -978,6 +999,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     return (seed, err);
   }
 
+  /// Processes a single wallet backup during recovery
+  /// Creates or updates wallet with recovered data
   Future<Err?> _processBackupRecovery(WalletSensitiveData backup) async {
     final network = BBNetwork.fromString(backup.network);
     final layer = _getLayer(backup.layer);
@@ -1008,6 +1031,8 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     return err;
   }
 
+  /// Updates wallet backup testing status
+  /// Propagates changes to wallet services and UI
   Future<void> _updateWalletBackupStatus(Wallet updatedWallet) async {
     final service =
         _appWalletsRepository.getWalletServiceById(updatedWallet.id);
@@ -1027,6 +1052,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
     }
   }
 
+  /// Verification helper functions
   bool _verifyPassphrase(Seed seed, String password) {
     final storedPassphrase = seed
         .getPassphraseFromIndex(_currentWallet!.sourceFingerprint)
