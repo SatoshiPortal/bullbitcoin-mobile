@@ -18,6 +18,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
+/// Common constants
+const _kGapSmall = 8.0;
+const _kGapMedium = 16.0;
+const _kGapLarge = 24.0;
+const _kGapXLarge = 50.0;
+const _kHorizontalPadding = 32.0;
+
 class KeychainBackupPage extends StatelessWidget {
   KeychainBackupPage({
     super.key,
