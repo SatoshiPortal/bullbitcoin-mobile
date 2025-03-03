@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/_core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/models/swap_model.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
+import 'package:bb_mobile/_core/domain/entities/swap.dart' as swap;
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:boltz/boltz.dart';
 
@@ -83,7 +84,9 @@ abstract class BoltzDataSource {
     int absoluteFees,
     bool tryCooperate,
   );
+
   // Chain Swap
+  Future<ChainFeesAndLimits> getChainFeesAndLimits();
   Future<ChainSwap> createBtcToLbtcChainSwap(
     String mnemonic,
     BigInt index,
@@ -145,6 +148,21 @@ abstract class BoltzDataSource {
     String signedTxHex,
     bool broadcastViaBoltz,
   );
+
+  // Swap Actions
+  Future<swap.NextSwapAction> getBtcLnSwapAction(
+    BtcLnSwap btcLnSwap,
+    String status,
+  );
+  Future<swap.NextSwapAction> getLbtcLnSwapAction(
+    LbtcLnSwap lbtcLnSwap,
+    String status,
+  );
+  Future<swap.NextSwapAction> getChainSwapAction(
+    ChainSwap chainSwap,
+    String status,
+  );
+
   // Local Storage
   Future<void> store(SwapModel swap);
   Future<SwapModel?> get(String swapId);
@@ -577,6 +595,71 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       absFee: BigInt.from(absoluteFees),
       tryCooperate: tryCooperate,
     );
+  }
+
+  @override
+  Future<swap.NextSwapAction> getBtcLnSwapAction(
+    BtcLnSwap btcLnSwap,
+    String status,
+  ) async {
+    final action = await btcLnSwap.process(status: status);
+    switch (action) {
+      // TODO: abstract as a enum extention
+      case SwapAction.wait:
+        return swap.NextSwapAction.wait;
+      case SwapAction.coopSign:
+        return swap.NextSwapAction.coopSign;
+      case SwapAction.claim:
+        return swap.NextSwapAction.claim;
+      case SwapAction.refund:
+        return swap.NextSwapAction.refund;
+      case SwapAction.close:
+        return swap.NextSwapAction.close;
+    }
+  }
+
+  @override
+  Future<swap.NextSwapAction> getChainSwapAction(
+    ChainSwap chainSwap,
+    String status,
+  ) async {
+    // TODO: implement getChainSwapAction
+    final action = await chainSwap.process(status: status);
+    switch (action) {
+      // TODO: abstract as a enum extention
+      case SwapAction.wait:
+        return swap.NextSwapAction.wait;
+      case SwapAction.coopSign:
+        return swap.NextSwapAction.coopSign;
+      case SwapAction.claim:
+        return swap.NextSwapAction.claim;
+      case SwapAction.refund:
+        return swap.NextSwapAction.refund;
+      case SwapAction.close:
+        return swap.NextSwapAction.close;
+    }
+  }
+
+  @override
+  Future<swap.NextSwapAction> getLbtcLnSwapAction(
+    LbtcLnSwap lbtcLnSwap,
+    String status,
+  ) async {
+    // TODO: implement getLbtcLnSwapAction
+    final action = await lbtcLnSwap.process(status: status);
+    switch (action) {
+      // TODO: abstract as a enum extention
+      case SwapAction.wait:
+        return swap.NextSwapAction.wait;
+      case SwapAction.coopSign:
+        return swap.NextSwapAction.coopSign;
+      case SwapAction.claim:
+        return swap.NextSwapAction.claim;
+      case SwapAction.refund:
+        return swap.NextSwapAction.refund;
+      case SwapAction.close:
+        return swap.NextSwapAction.close;
+    }
   }
 }
 

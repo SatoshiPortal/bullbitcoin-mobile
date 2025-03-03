@@ -125,6 +125,20 @@ abstract class SwapRepository {
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });
+
+  // SWAP ACTION
+  Future<NextSwapAction> getNextBtcLnAction({
+    required String swapId,
+    required String status,
+  });
+  Future<NextSwapAction> getNextLbtcLnAction({
+    required String swapId,
+    required String status,
+  });
+  Future<NextSwapAction> getNextChainAction({
+    required String swapId,
+    required String status,
+  });
   // SWAP STORAGE UTILITY
   Future<void> updatePaidSendSwap({
     required String swapId,

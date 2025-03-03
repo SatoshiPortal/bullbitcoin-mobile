@@ -5,6 +5,8 @@ import 'package:bb_mobile/_core/data/models/swap_model.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
+// ignore: implementation_imports
+// TODO: is this okay?
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDataSource _boltz;
@@ -687,5 +689,32 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       txid: txid,
     );
     return txid;
+  }
+
+  @override
+  Future<NextSwapAction> getNextChainAction({
+    required String swapId,
+    required String status,
+  }) async {
+    final chainSwap = await _boltz.getChainSwap(swapId);
+    return await _boltz.getChainSwapAction(chainSwap, status);
+  }
+
+  @override
+  Future<NextSwapAction> getNextBtcLnAction({
+    required String swapId,
+    required String status,
+  }) async {
+    final btcLnSwap = await _boltz.getBtcLnSwap(swapId);
+    return await _boltz.getBtcLnSwapAction(btcLnSwap, status);
+  }
+
+  @override
+  Future<NextSwapAction> getNextLbtcLnAction({
+    required String swapId,
+    required String status,
+  }) async {
+    final btcLnSwap = await _boltz.getBtcLnSwap(swapId);
+    return await _boltz.getBtcLnSwapAction(btcLnSwap, status);
   }
 }
