@@ -80,7 +80,8 @@ class LnReceiveSwap with _$LnReceiveSwap {
 class LnSendSwap with _$LnSendSwap {
   const factory LnSendSwap({
     required String sendWalletId,
-    required String sendTxid,
+    required String invoice,
+    String? sendTxid,
     String? preimage,
     String? refundTxid,
     String? refundAddress,
