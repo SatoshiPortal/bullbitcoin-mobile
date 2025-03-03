@@ -12,6 +12,12 @@ import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 abstract class IRecoverbullManager {
+  /// Initialize connection and verify access
+  Future<(dynamic, Err?)> connect();
+
+  /// Clean up and disconnect
+  Future<void> disconnect();
+
   /// Encrypts a list of backups using BIP85 derivation
   Future<(({String key, BullBackup backup})?, Err?)> createEncryptedBackup({
     required List<WalletSensitiveData> wallets,

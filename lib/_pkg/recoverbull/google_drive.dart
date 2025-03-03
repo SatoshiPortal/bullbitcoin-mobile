@@ -23,6 +23,7 @@ class GoogleDriveBackupManager extends IRecoverbullManager {
 
   DriveApi? _api;
 
+  @override
   Future<(DriveApi?, Err?)> connect() async {
     GoogleSignInAccount? account;
     try {
@@ -51,6 +52,7 @@ class GoogleDriveBackupManager extends IRecoverbullManager {
     }
   }
 
+  @override
   Future<void> disconnect() async {
     await _google.disconnect();
     _api = null;
@@ -105,7 +107,7 @@ class GoogleDriveBackupManager extends IRecoverbullManager {
         final file = File()
           ..name = filename
           ..mimeType = 'application/json'
-          ..parents = ['appDataFolder'];
+          ..parents = [backupFolder];
 
         final jsonBackup = backup.toJson();
 
