@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_core/data/datasources/pdk_data_source.dart';
+import 'package:bb_mobile/_core/data/models/pdk_payjoin_model.dart';
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 
@@ -70,5 +71,33 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     );
 
     return payjoin as SendPayjoin;
+  }
+
+  @override
+  Future<List<Payjoin>> getAll({
+    int? offset,
+    int? limit,
+    bool? completed,
+  }) async {
+    final models = await _pdk.getAll();
+
+    final payjoins = models.map(
+      (model) {
+        if (model is PdkReceivePayjoinModel) {
+          return Payjoin.receive(
+            id: model.id,
+            walletId: model.walletId,
+          );
+        } else {
+          final sendModel = model as PdkSendPayjoinModel;
+          return Payjoin.send(
+            uri: sendModel.uri,
+            walletId: sendModel.walletId,
+          );
+        }
+      },
+    ).toList();
+
+    return payjoins;
   }
 }

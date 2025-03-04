@@ -15,5 +15,5 @@ abstract class PayjoinRepository {
     required String originalPsbt,
     required double networkFeesSatPerVb,
   });
-  //Future<List<Payjoin>> getPayjoins({int? offset, int? limit, bool? completed});
+  Future<List<Payjoin>> getAll({int? offset, int? limit, bool? completed});
 }
