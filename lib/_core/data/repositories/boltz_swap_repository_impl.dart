@@ -1,24 +1,28 @@
 import 'dart:math';
 
-import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_api_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/models/swap_model.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
-import 'package:boltz/boltz.dart' as boltzLib;
+import 'package:boltz/boltz.dart' as boltz_types;
 // ignore: implementation_imports
 // TODO: is this okay?
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
-  final BoltzDataSource _boltz;
+  final BoltzLibraryDataSource _boltzLib;
+  final BoltzStorageDataSource _boltzStore;
 
   BoltzSwapRepositoryImpl({
-    required BoltzDataSource boltz,
-  }) : _boltz = boltz;
+    required BoltzLibraryDataSource boltzLib,
+    required BoltzStorageDataSource boltzStore,
+  })  : _boltzLib = boltzLib,
+        _boltzStore = boltzStore;
 
   /// SWAP STREAM PROVIDER
   @override
-  Stream<boltzLib.SwapStreamStatus> get stream => _boltz.stream;
+  Stream<boltz_types.SwapStreamStatus> get stream => _boltzLib.stream;
 
   /// RECEIVE LN TO BTC
   @override
@@ -30,14 +34,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     Environment environment = Environment.mainnet,
   }) async {
     final index = await _nextRevKeyIndex(walletId);
-    final btcLnSwap = await _boltz.createBtcReverseSwap(
+    final btcLnSwap = await _boltzLib.createBtcReverseSwap(
       mnemonic,
       index,
       amountSat,
       environment,
       electrumUrl,
     );
-    await _boltz.storeBtcLnSwap(btcLnSwap);
+    await _boltzStore.storeBtcLnSwap(btcLnSwap);
     final swap = Swap(
       id: btcLnSwap.id,
       type: SwapType.lightningToBitcoin,
@@ -50,7 +54,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         invoice: btcLnSwap.invoice,
       ),
     );
-    await _boltz.store(SwapModel.fromEntity(swap));
+    await _boltzStore.store(SwapModel.fromEntity(swap));
     // add to stream?
     return swap;
   }
@@ -59,27 +63,27 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   Future<String> claimLightningToBitcoinSwap({
     required String bitcoinAddress,
     required bool broadcastViaBoltz,
-    required boltzLib.BtcLnSwap btcLnSwap,
+    required String swapId,
     required NetworkFees networkFees,
     required bool tryCooperate,
   }) async {
-    final signedTxHex = await _boltz.claimBtcReverseSwap(
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+    final signedTxHex = await _boltzLib.claimBtcReverseSwap(
       btcLnSwap,
       bitcoinAddress,
       networkFees,
       tryCooperate,
     );
-    final txid = await _boltz.broadcastBtcLnSwap(
+    final txid = await _boltzLib.broadcastBtcLnSwap(
       btcLnSwap,
       signedTxHex,
       broadcastViaBoltz,
     );
     await _updateClaimedReceiveSwap(
-      swapId: btcLnSwap.id,
+      swapId: swapId,
       receiveAddress: bitcoinAddress,
       txid: txid,
     );
-
     return txid;
   }
 
@@ -93,14 +97,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     Environment environment = Environment.mainnet,
   }) async {
     final index = await _nextRevKeyIndex(walletId);
-    final lbtcLnSwap = await _boltz.createLBtcReverseSwap(
+    final lbtcLnSwap = await _boltzLib.createLBtcReverseSwap(
       mnemonic,
       index,
       amountSat,
       environment,
       electrumUrl,
     );
-    await _boltz.storeLbtcLnSwap(lbtcLnSwap);
+    await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
 
     final swap = Swap(
       id: lbtcLnSwap.id,
@@ -114,25 +118,26 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         invoice: lbtcLnSwap.invoice,
       ),
     );
-    await _boltz.store(SwapModel.fromEntity(swap));
+    await _boltzStore.store(SwapModel.fromEntity(swap));
     return swap;
   }
 
   @override
   Future<String> claimLightningToLiquidSwap({
-    required boltzLib.LbtcLnSwap lbtcLnSwap,
+    required String swapId,
     required String liquidAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   }) async {
-    final signedTxHex = await _boltz.claimLBtcReverseSwap(
+    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+    final signedTxHex = await _boltzLib.claimLBtcReverseSwap(
       lbtcLnSwap,
       liquidAddress,
       networkFees,
       tryCooperate,
     );
-    final txid = await _boltz.broadcastLbtcLnSwap(
+    final txid = await _boltzLib.broadcastLbtcLnSwap(
       lbtcLnSwap,
       signedTxHex,
       broadcastViaBoltz,
@@ -155,14 +160,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     Environment environment = Environment.mainnet,
   }) async {
     final index = await _nextSubKeyIndex(walletId);
-    final btcLnSwap = await _boltz.createBtcSubmarineSwap(
+    final btcLnSwap = await _boltzLib.createBtcSubmarineSwap(
       mnemonic,
       index,
       invoice,
       environment,
       electrumUrl,
     );
-    await _boltz.storeBtcLnSwap(btcLnSwap);
+    await _boltzStore.storeBtcLnSwap(btcLnSwap);
     final swap = Swap(
       id: btcLnSwap.id,
       type: SwapType.bitcoinToLightning,
@@ -175,45 +180,49 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         invoice: invoice,
       ),
     );
-    await _boltz.store(SwapModel.fromEntity(swap));
+    await _boltzStore.store(SwapModel.fromEntity(swap));
     return swap;
   }
 
   @override
   Future<void> coopSignBitcoinToLightningSwap({
-    required boltzLib.BtcLnSwap btcLnSwap,
+    required String swapId,
   }) async {
-    await _boltz.coopSignBtcSubmarineSwap(
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+
+    await _boltzLib.coopSignBtcSubmarineSwap(
       btcLnSwap,
     );
     await _updateCompletedSendSwap(
-      swapId: btcLnSwap.id,
+      swapId: swapId,
     );
     return;
   }
 
   @override
   Future<String> refundBitcoinToLightningSwap({
-    required boltzLib.BtcLnSwap btcLnSwap,
+    required String swapId,
     required String bitcoinAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   }) async {
-    final signedTxHex = await _boltz.refundBtcSubmarineSwap(
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+
+    final signedTxHex = await _boltzLib.refundBtcSubmarineSwap(
       btcLnSwap,
       bitcoinAddress,
       networkFees,
       tryCooperate,
     );
     // TODO: if coop fails attempt script path spend
-    final txid = await _boltz.broadcastBtcLnSwap(
+    final txid = await _boltzLib.broadcastBtcLnSwap(
       btcLnSwap,
       signedTxHex,
       broadcastViaBoltz,
     );
     await _updateRefundedSendSwap(
-      swapId: btcLnSwap.id,
+      swapId: swapId,
       refundAddress: bitcoinAddress,
       txid: txid,
     );
@@ -231,14 +240,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     Environment environment = Environment.mainnet,
   }) async {
     final index = await _nextSubKeyIndex(walletId);
-    final lbtcLnSwap = await _boltz.createLbtcSubmarineSwap(
+    final lbtcLnSwap = await _boltzLib.createLbtcSubmarineSwap(
       mnemonic,
       index,
       invoice,
       environment,
       electrumUrl,
     );
-    await _boltz.storeLbtcLnSwap(lbtcLnSwap);
+    await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
     final swap = Swap(
       id: lbtcLnSwap.id,
       type: SwapType.liquidToLightning,
@@ -251,45 +260,49 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         invoice: invoice,
       ),
     );
-    await _boltz.store(SwapModel.fromEntity(swap));
+    await _boltzStore.store(SwapModel.fromEntity(swap));
     return swap;
   }
 
   @override
   Future<void> coopSignLiquidToLightningSwap({
-    required boltzLib.LbtcLnSwap lbtcLnSwap,
+    required String swapId,
   }) async {
-    await _boltz.coopSignLbtcSubmarineSwap(
+    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+
+    await _boltzLib.coopSignLbtcSubmarineSwap(
       lbtcLnSwap,
     );
     await _updateCompletedSendSwap(
-      swapId: lbtcLnSwap.id,
+      swapId: swapId,
     );
     return;
   }
 
   @override
   Future<String> refundLiquidToLightningSwap({
-    required boltzLib.LbtcLnSwap lbtcLnSwap,
+    required String swapId,
     required String liquidAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   }) async {
-    final signedTxHex = await _boltz.refundLbtcSubmarineSwap(
+    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+
+    final signedTxHex = await _boltzLib.refundLbtcSubmarineSwap(
       lbtcLnSwap,
       liquidAddress,
       networkFees,
       tryCooperate,
     );
     // TODO: if coop fails attempt script path spend
-    final txid = await _boltz.broadcastLbtcLnSwap(
+    final txid = await _boltzLib.broadcastLbtcLnSwap(
       lbtcLnSwap,
       signedTxHex,
       broadcastViaBoltz,
     );
     await _updateRefundedSendSwap(
-      swapId: lbtcLnSwap.id,
+      swapId: swapId,
       refundAddress: liquidAddress,
       txid: txid,
     );
@@ -311,7 +324,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   } // if toSelf is true
       ) async {
     final index = await _nextChainKeyIndex(sendWalletId);
-    final chainSwap = await _boltz.createBtcToLbtcChainSwap(
+    final chainSwap = await _boltzLib.createBtcToLbtcChainSwap(
       mnemonic,
       index,
       amountSat,
@@ -319,7 +332,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       btcElectrumUrl,
       lbtcElectrumUrl,
     );
-    await _boltz.storeChainSwap(chainSwap);
+    await _boltzStore.storeChainSwap(chainSwap);
     final swap = Swap(
       id: chainSwap.id,
       type: SwapType.bitcoinToLiquid,
@@ -334,7 +347,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         receiveAddress: receipientAddress,
       ),
     );
-    await _boltz.store(SwapModel.fromEntity(swap));
+    await _boltzStore.store(SwapModel.fromEntity(swap));
     return swap;
   }
 
@@ -351,7 +364,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     String? receipientAddress,
   }) async {
     final index = await _nextChainKeyIndex(sendWalletId);
-    final chainSwap = await _boltz.createLbtcToBtcChainSwap(
+    final chainSwap = await _boltzLib.createLbtcToBtcChainSwap(
       mnemonic,
       index,
       amountSat,
@@ -359,7 +372,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       btcElectrumUrl,
       lbtcElectrumUrl,
     );
-    await _boltz.storeChainSwap(chainSwap);
+    await _boltzStore.storeChainSwap(chainSwap);
     final swap = Swap(
       id: chainSwap.id,
       type: SwapType.liquidToBitcoin,
@@ -374,7 +387,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         receiveAddress: receipientAddress,
       ),
     );
-    await _boltz.store(SwapModel.fromEntity(swap));
+    await _boltzStore.store(SwapModel.fromEntity(swap));
     return swap;
   }
 
@@ -382,19 +395,20 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   Future<String> claimLiquidToBitcoinSwap({
     required String bitcoinClaimAddress,
     required bool broadcastViaBoltz,
-    required boltzLib.ChainSwap chainSwap,
+    required String swapId,
     required String liquidRefundAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
   }) async {
-    final signedTxHex = await _boltz.claimLbtcToBtcChainSwap(
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
+    final signedTxHex = await _boltzLib.claimLbtcToBtcChainSwap(
       chainSwap,
       bitcoinClaimAddress,
       liquidRefundAddress,
       networkFees,
       tryCooperate,
     );
-    final txid = await _boltz.broadcastChainSwapClaim(
+    final txid = await _boltzLib.broadcastChainSwapClaim(
       chainSwap,
       signedTxHex,
       broadcastViaBoltz,
@@ -411,25 +425,27 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   Future<String> claimBitcoinToLiquidSwap({
     required String bitcoinRefundAddress,
     required bool broadcastViaBoltz,
-    required boltzLib.ChainSwap chainSwap,
+    required String swapId,
     required String liquidClaimAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
   }) async {
-    final signedTxHex = await _boltz.claimBtcToLbtcChainSwap(
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
+
+    final signedTxHex = await _boltzLib.claimBtcToLbtcChainSwap(
       chainSwap,
       liquidClaimAddress,
       bitcoinRefundAddress,
       networkFees,
       tryCooperate,
     );
-    final txid = await _boltz.broadcastChainSwapClaim(
+    final txid = await _boltzLib.broadcastChainSwapClaim(
       chainSwap,
       signedTxHex,
       broadcastViaBoltz,
     );
     await _updateClaimedChainSwap(
-      swapId: chainSwap.id,
+      swapId: swapId,
       receiveAddress: liquidClaimAddress,
       txid: txid,
     );
@@ -440,24 +456,26 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   Future<String> refundBitcoinToLiquidSwap({
     required String bitcoinRefundAddress,
     required bool broadcastViaBoltz,
-    required boltzLib.ChainSwap chainSwap,
+    required String swapId,
     required NetworkFees networkFees,
     required bool tryCooperate,
   }) async {
-    final signedTxHex = await _boltz.refundBtcToLbtcChainSwap(
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
+
+    final signedTxHex = await _boltzLib.refundBtcToLbtcChainSwap(
       chainSwap,
       bitcoinRefundAddress,
       networkFees,
       tryCooperate,
     );
     // TODO: if coop fails attempt script path spend
-    final txid = await _boltz.broadcastChainSwapRefund(
+    final txid = await _boltzLib.broadcastChainSwapRefund(
       chainSwap,
       signedTxHex,
       broadcastViaBoltz,
     );
     await _updateRefundedSendSwap(
-      swapId: chainSwap.id,
+      swapId: swapId,
       refundAddress: bitcoinRefundAddress,
       txid: txid,
     );
@@ -466,20 +484,22 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   @override
   Future<String> refundLiquidToBitcoinSwap({
-    required boltzLib.ChainSwap chainSwap,
+    required String swapId,
     required String liquidRefundAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   }) async {
-    final signedTxHex = await _boltz.refundLbtcToBtcChainSwap(
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
+
+    final signedTxHex = await _boltzLib.refundLbtcToBtcChainSwap(
       chainSwap,
       liquidRefundAddress,
       networkFees,
       tryCooperate,
     );
     // TODO: if coop fails attempt script path spend
-    final txid = await _boltz.broadcastChainSwapRefund(
+    final txid = await _boltzLib.broadcastChainSwapRefund(
       chainSwap,
       signedTxHex,
       broadcastViaBoltz,
@@ -494,9 +514,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   // STORAGE
   @override
-  Future<Swap> getSwapById({required String swapId}) async {
+  Future<Swap> getSwap({required String swapId}) async {
     // TODO: implement getSwapById
-    final swapModel = await _boltz.get(swapId);
+    final swapModel = await _boltzStore.get(swapId);
     if (swapModel == null) {
       throw "No swap found";
     }
@@ -504,33 +524,45 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<(boltzLib.BtcLnSwap, NextSwapAction)> getBtcLnSwapAndAction({
+  Future<(Swap, NextSwapAction)> getBtcLnSwapAndAction({
     required String swapId,
     required String status,
   }) async {
-    final swap = await _boltz.getBtcLnSwap(swapId);
-    final action = await _boltz.getBtcLnSwapAction(swap, status);
-    return (swap, action);
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+    final action = await _boltzLib.getBtcLnSwapAction(btcLnSwap, status);
+    final swap = await _boltzStore.get(swapId);
+    if (swap == null) {
+      throw "No swap found";
+    }
+    return (swap.toEntity(), action);
   }
 
   @override
-  Future<(boltzLib.LbtcLnSwap, NextSwapAction)> getLbtcLnSwapAndAction({
+  Future<(Swap, NextSwapAction)> getLbtcLnSwapAndAction({
     required String swapId,
     required String status,
   }) async {
-    final swap = await _boltz.getLbtcLnSwap(swapId);
-    final action = await _boltz.getLbtcLnSwapAction(swap, status);
-    return (swap, action);
+    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+    final action = await _boltzLib.getLbtcLnSwapAction(lbtcLnSwap, status);
+    final swap = await _boltzStore.get(swapId);
+    if (swap == null) {
+      throw "No swap found";
+    }
+    return (swap.toEntity(), action);
   }
 
   @override
-  Future<(boltzLib.ChainSwap, NextSwapAction)> getChainSwapAndAction({
+  Future<(Swap, NextSwapAction)> getChainSwapAndAction({
     required String swapId,
     required String status,
   }) async {
-    final swap = await _boltz.getChainSwap(swapId);
-    final action = await _boltz.getChainSwapAction(swap, status);
-    return (swap, action);
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
+    final action = await _boltzLib.getChainSwapAction(chainSwap, status);
+    final swap = await _boltzStore.get(swapId);
+    if (swap == null) {
+      throw "No swap found";
+    }
+    return (swap.toEntity(), action);
   }
 
   /// STORAGE
@@ -539,7 +571,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String txid,
   }) async {
-    final swapModel = await _boltz.get(swapId);
+    final swapModel = await _boltzStore.get(swapId);
     if (swapModel == null) {
       throw "No swap model found";
     }
@@ -556,14 +588,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       sendSwapDetails: sendSwapDetails,
       status: SwapStatus.paid,
     );
-    await _boltz.store(SwapModel.fromEntity(updatedSwap));
+    await _boltzStore.store(SwapModel.fromEntity(updatedSwap));
   }
 
   @override
   Future<void> updateExpiredSwap({
     required String swapId,
   }) async {
-    final swapModel = await _boltz.get(swapId);
+    final swapModel = await _boltzStore.get(swapId);
     if (swapModel == null) {
       throw "No swap model found";
     }
@@ -574,14 +606,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     final updatedSwap = swap.copyWith(
       status: SwapStatus.expired,
     );
-    await _boltz.store(SwapModel.fromEntity(updatedSwap));
+    await _boltzStore.store(SwapModel.fromEntity(updatedSwap));
   }
 
   @override
   Future<void> updateFailedSwap({
     required String swapId,
   }) async {
-    final swapModel = await _boltz.get(swapId);
+    final swapModel = await _boltzStore.get(swapId);
     if (swapModel == null) {
       throw "No swap model found";
     }
@@ -592,7 +624,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     final updatedSwap = swap.copyWith(
       status: SwapStatus.failed,
     );
-    await _boltz.store(SwapModel.fromEntity(updatedSwap));
+    await _boltzStore.store(SwapModel.fromEntity(updatedSwap));
   }
 
   /// PRIVATE
@@ -601,7 +633,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String receiveAddress,
     required String txid,
   }) async {
-    final swapModel = await _boltz.get(swapId);
+    final swapModel = await _boltzStore.get(swapId);
     if (swapModel == null) {
       throw "No swap model found";
     }
@@ -619,7 +651,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       completionTime: DateTime.now(),
       status: SwapStatus.completed,
     );
-    await _boltz.store(SwapModel.fromEntity(updatedSwap));
+    await _boltzStore.store(SwapModel.fromEntity(updatedSwap));
   }
 
   Future<void> _updateClaimedChainSwap({
@@ -627,7 +659,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String receiveAddress,
     required String txid,
   }) async {
-    final swapModel = await _boltz.get(swapId);
+    final swapModel = await _boltzStore.get(swapId);
     if (swapModel == null) {
       throw "No swap model found";
     }
@@ -645,7 +677,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       completionTime: DateTime.now(),
       status: SwapStatus.completed,
     );
-    await _boltz.store(SwapModel.fromEntity(updatedSwap));
+    await _boltzStore.store(SwapModel.fromEntity(updatedSwap));
   }
 
   Future<void> _updateRefundedSendSwap({
@@ -653,7 +685,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String refundAddress,
     required String txid,
   }) async {
-    final swapModel = await _boltz.get(swapId);
+    final swapModel = await _boltzStore.get(swapId);
     if (swapModel == null) {
       throw "No swap model found";
     }
@@ -671,13 +703,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       completionTime: DateTime.now(),
       status: SwapStatus.refunded,
     );
-    await _boltz.store(SwapModel.fromEntity(updatedSwap));
+    await _boltzStore.store(SwapModel.fromEntity(updatedSwap));
   }
 
   Future<void> _updateCompletedSendSwap({
     required String swapId,
   }) async {
-    final swapModel = await _boltz.get(swapId);
+    final swapModel = await _boltzStore.get(swapId);
     if (swapModel == null) {
       throw "No swap model found";
     }
@@ -691,7 +723,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       completionTime: DateTime.now(),
       status: SwapStatus.completed,
     );
-    await _boltz.store(SwapModel.fromEntity(updatedSwap));
+    await _boltzStore.store(SwapModel.fromEntity(updatedSwap));
   }
 
   // TODO: next key index is specific for each swap type
@@ -705,7 +737,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   Future<List<Swap>> _getRevSwapsForWallet(String walletId) async {
-    return (await _boltz.getAll())
+    return (await _boltzStore.getAll())
         .map((swapModel) => swapModel.toEntity())
         .where(
           (swap) =>
@@ -723,7 +755,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   Future<List<Swap>> _getSubSwapsForWallet(String walletId) async {
-    return (await _boltz.getAll())
+    return (await _boltzStore.getAll())
         .map((swapModel) => swapModel.toEntity())
         .where(
           (swap) =>
@@ -741,7 +773,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   Future<List<Swap>> _getChainSwapsForWallet(String walletId) async {
-    return (await _boltz.getAll())
+    return (await _boltzStore.getAll())
         .map((swapModel) => swapModel.toEntity())
         .where(
           (swap) =>
@@ -752,7 +784,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   Future<List<Swap>> _getSwapsForWallet(String walletId) async {
-    return (await _boltz.getAll())
+    return (await _boltzStore.getAll())
         .map((swapModel) => swapModel.toEntity())
         .where((swap) => _swapBelongsToWallet(swap, walletId))
         .toList();
@@ -772,5 +804,10 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       return true;
     }
     return false;
+  }
+
+  @override
+  Future<void> updateSwap({required Swap swap}) async {
+    return _boltzStore.store(SwapModel.fromEntity(swap));
   }
 }

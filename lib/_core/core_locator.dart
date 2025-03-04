@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_core/data/datasources/bip32_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/bip39_word_list_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_api_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/descriptor_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/exchange_data_source.dart';
@@ -129,7 +130,8 @@ class CoreLocator {
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltz: BoltzDataSourceImpl(
+        boltzLib: BoltzLibraryDataSourceImpl(),
+        boltzStore: BoltzStorageDataSourceImpl(
           secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
             instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
           ),
@@ -144,8 +146,10 @@ class CoreLocator {
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltz: BoltzDataSourceImpl(
+        boltzLib: BoltzLibraryDataSourceImpl(
           url: ApiServiceConstants.boltzTestnetUrlPath,
+        ),
+        boltzStore: BoltzStorageDataSourceImpl(
           secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
             instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
           ),

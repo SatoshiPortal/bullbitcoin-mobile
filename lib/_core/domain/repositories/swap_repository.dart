@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
-import 'package:boltz/boltz.dart';
+import 'package:boltz/boltz.dart' as boltzLib;
 
 abstract class SwapRepository {
   // RECEIVE SWAPS
@@ -15,7 +15,7 @@ abstract class SwapRepository {
   // TODO: all claim/refund/coopsign methods can take swap objects instead of swapId strings
   // to avoid having to fetch the swap object again in the method when already done in the processSwap manager method
   Future<String> claimLightningToLiquidSwap({
-    required LbtcLnSwap lbtcLnSwap,
+    required String swapId,
     required String liquidAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
@@ -31,7 +31,7 @@ abstract class SwapRepository {
   });
 
   Future<String> claimLightningToBitcoinSwap({
-    required BtcLnSwap btcLnSwap,
+    required String swapId,
     required String bitcoinAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
@@ -46,10 +46,10 @@ abstract class SwapRepository {
     required String electrumUrl,
   });
   Future<void> coopSignBitcoinToLightningSwap({
-    required BtcLnSwap btcLnSwap,
+    required String swapId,
   });
   Future<String> refundBitcoinToLightningSwap({
-    required BtcLnSwap btcLnSwap,
+    required String swapId,
     required String bitcoinAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
@@ -63,10 +63,10 @@ abstract class SwapRepository {
     required String electrumUrl,
   });
   Future<void> coopSignLiquidToLightningSwap({
-    required LbtcLnSwap lbtcLnSwap,
+    required String swapId,
   });
   Future<String> refundLiquidToLightningSwap({
-    required LbtcLnSwap lbtcLnSwap,
+    required String swapId,
     required String liquidAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
@@ -96,7 +96,7 @@ abstract class SwapRepository {
   });
 
   Future<String> claimLiquidToBitcoinSwap({
-    required ChainSwap chainSwap,
+    required String swapId,
     required String bitcoinClaimAddress,
     required String liquidRefundAddress,
     required NetworkFees networkFees,
@@ -105,7 +105,7 @@ abstract class SwapRepository {
   });
 
   Future<String> claimBitcoinToLiquidSwap({
-    required ChainSwap chainSwap,
+    required String swapId,
     required String liquidClaimAddress,
     required String bitcoinRefundAddress,
     required NetworkFees networkFees,
@@ -114,7 +114,7 @@ abstract class SwapRepository {
   });
 
   Future<String> refundLiquidToBitcoinSwap({
-    required ChainSwap chainSwap,
+    required String swapId,
     required String liquidRefundAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
@@ -122,7 +122,7 @@ abstract class SwapRepository {
   });
 
   Future<String> refundBitcoinToLiquidSwap({
-    required ChainSwap chainSwap,
+    required String swapId,
     required String bitcoinRefundAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
@@ -130,6 +130,14 @@ abstract class SwapRepository {
   });
 
   // SWAP STORAGE UTILITY
+  Future<Swap> getSwap({
+    required String swapId,
+  });
+
+  Future<void> updateSwap({
+    required Swap swap,
+  });
+
   Future<void> updatePaidSendSwap({
     required String swapId,
     required String txid,
@@ -143,25 +151,21 @@ abstract class SwapRepository {
     required String swapId,
   });
 
-  Future<Swap> getSwapById({
-    required String swapId,
-  });
-
-  Future<(BtcLnSwap, NextSwapAction)> getBtcLnSwapAndAction({
+  Future<(Swap, NextSwapAction)> getBtcLnSwapAndAction({
     required String swapId,
     required String status,
   });
 
-  Future<(LbtcLnSwap, NextSwapAction)> getLbtcLnSwapAndAction({
+  Future<(Swap, NextSwapAction)> getLbtcLnSwapAndAction({
     required String swapId,
     required String status,
   });
 
-  Future<(ChainSwap, NextSwapAction)> getChainSwapAndAction({
+  Future<(Swap, NextSwapAction)> getChainSwapAndAction({
     required String swapId,
     required String status,
   });
 
   // STREAM
-  Stream<SwapStreamStatus> get stream;
+  Stream<boltzLib.SwapStreamStatus> get stream;
 }

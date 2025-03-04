@@ -2,7 +2,6 @@ import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dar
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/services/swap_manager_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
-import 'package:boltz/boltz.dart' as boltzLib;
 
 class SwapManagerServiceImpl implements SwapManagerService {
   final WalletManagerService _walletManager;
@@ -24,11 +23,11 @@ class SwapManagerServiceImpl implements SwapManagerService {
   }) async {
     print("Processing swap $swapId with status $status");
 
-    final swap = await _boltzRepo.getSwapById(swapId: swapId);
+    final swap = await _boltzRepo.getSwap(swapId: swapId);
     switch (swap.type) {
       case SwapType.lightningToBitcoin:
       case SwapType.bitcoinToLightning:
-        final (btcLnSwap, action) = await _boltzRepo.getBtcLnSwapAndAction(
+        final (swap, action) = await _boltzRepo.getBtcLnSwapAndAction(
           swapId: swapId,
           status: status,
         );
@@ -39,18 +38,18 @@ class SwapManagerServiceImpl implements SwapManagerService {
             await _processReceiveBtcClaim(
               bitcoinAddress: 'bc1k',
               networkFees: const NetworkFees.relative(1.0),
-              btcLnSwap: btcLnSwap,
+              swapId: swapId,
               tryCooperate: true,
             );
           case NextSwapAction.coopSign:
             await _processSendBtcCoopSign(
-              btcLnSwap: btcLnSwap,
+              swapId: swapId,
             );
           case NextSwapAction.refund:
             await _processSendBtcRefund(
               bitcoinAddress: 'bc1k',
               networkFees: const NetworkFees.relative(1.0),
-              btcLnSwap: btcLnSwap,
+              swapId: swapId,
               tryCooperate: true,
             );
           case NextSwapAction.close:
@@ -59,7 +58,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
         }
       case SwapType.lightningToLiquid:
       case SwapType.liquidToLightning:
-        final (lbtcLnSwap, action) = await _boltzRepo.getLbtcLnSwapAndAction(
+        final (swap, action) = await _boltzRepo.getLbtcLnSwapAndAction(
           swapId: swapId,
           status: status,
         );
@@ -70,18 +69,18 @@ class SwapManagerServiceImpl implements SwapManagerService {
             await _processReceiveLBtcClaim(
               liquidAddress: 'lq1k',
               networkFees: const NetworkFees.relative(1.0),
-              lbtcLnSwap: lbtcLnSwap,
+              swapId: swapId,
               tryCooperate: true,
             );
           case NextSwapAction.coopSign:
             await _processSendLbtcCoopSign(
-              lbtcLnSwap: lbtcLnSwap,
+              swapId: swapId,
             );
           case NextSwapAction.refund:
             await _processSendLbtcRefund(
               liquidAddress: 'lq1k',
               networkFees: const NetworkFees.relative(1.0),
-              lbtcLnSwap: lbtcLnSwap,
+              swapId: swapId,
               tryCooperate: true,
             );
           case NextSwapAction.close:
@@ -89,7 +88,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
           // TODO: Stop listening to swap ID in stream
         }
       case SwapType.liquidToBitcoin:
-        final (chainSwap, action) = await _boltzRepo.getChainSwapAndAction(
+        final (swap, action) = await _boltzRepo.getChainSwapAndAction(
           swapId: swapId,
           status: status,
         );
@@ -98,7 +97,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
             return;
           case NextSwapAction.claim:
             await _processChainBtcClaim(
-              chainSwap: chainSwap,
+              swapId: swapId,
               networkFees: const NetworkFees.relative(1.0),
               tryCooperate: true,
               bitcoinClaimAddress: 'bc1k',
@@ -108,7 +107,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
             return;
           case NextSwapAction.refund:
             await _processChainLbtcRefund(
-              chainSwap: chainSwap,
+              swapId: swapId,
               networkFees: const NetworkFees.relative(1.0),
               tryCooperate: true,
               liquidRefundAddress: 'lq1k',
@@ -118,7 +117,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
           // TODO: Stop listening to swap ID in stream
         }
       case SwapType.bitcoinToLiquid:
-        final (chainSwap, action) = await _boltzRepo.getChainSwapAndAction(
+        final (swap, action) = await _boltzRepo.getChainSwapAndAction(
           swapId: swapId,
           status: status,
         );
@@ -127,7 +126,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
             return;
           case NextSwapAction.claim:
             await _processChainLbtcClaim(
-              chainSwap: chainSwap,
+              swapId: swapId,
               networkFees: const NetworkFees.relative(1.0),
               tryCooperate: true,
               liquidClaimAddress: 'lq1k',
@@ -137,7 +136,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
             return;
           case NextSwapAction.refund:
             await _processChainBtcRefund(
-              chainSwap: chainSwap,
+              swapId: swapId,
               networkFees: const NetworkFees.relative(1.0),
               tryCooperate: true,
               bitcoinRefundAddress: 'bc1k',
@@ -152,7 +151,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
   }
 
   Future<void> _processReceiveBtcClaim({
-    required boltzLib.BtcLnSwap btcLnSwap,
+    required String swapId,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required String bitcoinAddress,
@@ -161,7 +160,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
     // TODO: add label to bitcoin address
     // TODO: get network fees
     final claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
-      btcLnSwap: btcLnSwap,
+      swapId: swapId,
       networkFees: networkFees,
       tryCooperate: tryCooperate,
       broadcastViaBoltz: false,
@@ -171,7 +170,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
   }
 
   Future<void> _processSendBtcRefund({
-    required boltzLib.BtcLnSwap btcLnSwap,
+    required String swapId,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required String bitcoinAddress,
@@ -180,7 +179,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
     // TODO: add label to bitcoin address
     // TODO: get network fees
     final refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
-      btcLnSwap: btcLnSwap,
+      swapId: swapId,
       bitcoinAddress: bitcoinAddress,
       networkFees: networkFees,
       tryCooperate: tryCooperate,
@@ -190,7 +189,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
   }
 
   Future<void> _processReceiveLBtcClaim({
-    required boltzLib.LbtcLnSwap lbtcLnSwap,
+    required String swapId,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required String liquidAddress,
@@ -199,7 +198,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
     // TODO: add label to liquid address
     // TODO: get network fees
     final claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
-      lbtcLnSwap: lbtcLnSwap,
+      swapId: swapId,
       networkFees: networkFees,
       tryCooperate: true,
       broadcastViaBoltz: false,
@@ -209,7 +208,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
   }
 
   Future<void> _processSendLbtcRefund({
-    required boltzLib.LbtcLnSwap lbtcLnSwap,
+    required String swapId,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required String liquidAddress,
@@ -218,7 +217,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
     // TODO: add label to liquid address
     // TODO: get network fees
     final refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
-      lbtcLnSwap: lbtcLnSwap,
+      swapId: swapId,
       liquidAddress: liquidAddress,
       networkFees: networkFees,
       tryCooperate: tryCooperate,
@@ -228,23 +227,23 @@ class SwapManagerServiceImpl implements SwapManagerService {
   }
 
   Future<void> _processSendBtcCoopSign({
-    required boltzLib.BtcLnSwap btcLnSwap,
+    required String swapId,
   }) async {
     await _boltzRepo.coopSignBitcoinToLightningSwap(
-      btcLnSwap: btcLnSwap,
+      swapId: swapId,
     );
   }
 
   Future<void> _processSendLbtcCoopSign({
-    required boltzLib.LbtcLnSwap lbtcLnSwap,
+    required String swapId,
   }) async {
     await _boltzRepo.coopSignLiquidToLightningSwap(
-      lbtcLnSwap: lbtcLnSwap,
+      swapId: swapId,
     );
   }
 
   Future<void> _processChainBtcClaim({
-    required boltzLib.ChainSwap chainSwap,
+    required String swapId,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required String bitcoinClaimAddress,
@@ -255,7 +254,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
     // TODO: add label to bitcoin claim address
     // TODO: get network fees
     final claimTxId = await _boltzRepo.claimLiquidToBitcoinSwap(
-      chainSwap: chainSwap,
+      swapId: swapId,
       networkFees: networkFees,
       tryCooperate: tryCooperate,
       broadcastViaBoltz: false,
@@ -266,7 +265,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
   }
 
   Future<void> _processChainBtcRefund({
-    required boltzLib.ChainSwap chainSwap,
+    required String swapId,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required String bitcoinRefundAddress,
@@ -275,7 +274,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
     // TODO: add label to bitcoin refund address
     // TODO: get network fees
     await _boltzRepo.refundBitcoinToLiquidSwap(
-      chainSwap: chainSwap,
+      swapId: swapId,
       networkFees: networkFees,
       tryCooperate: tryCooperate,
       broadcastViaBoltz: false,
@@ -285,7 +284,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
   }
 
   Future<void> _processChainLbtcClaim({
-    required boltzLib.ChainSwap chainSwap,
+    required String swapId,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required String liquidClaimAddress,
@@ -296,7 +295,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
     // TODO: add label to bitcoin claim address
     // TODO: get network fees
     final claimTxId = await _boltzRepo.claimBitcoinToLiquidSwap(
-      chainSwap: chainSwap,
+      swapId: swapId,
       networkFees: networkFees,
       tryCooperate: tryCooperate,
       broadcastViaBoltz: false,
@@ -307,7 +306,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
   }
 
   Future<void> _processChainLbtcRefund({
-    required boltzLib.ChainSwap chainSwap,
+    required String swapId,
     required NetworkFees networkFees,
     required bool tryCooperate,
     required String liquidRefundAddress,
@@ -316,7 +315,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
     // TODO: add label to liquid refund address
     // TODO: get network fees
     await _boltzRepo.refundLiquidToBitcoinSwap(
-      chainSwap: chainSwap,
+      swapId: swapId,
       networkFees: networkFees,
       tryCooperate: tryCooperate,
       broadcastViaBoltz: false,
