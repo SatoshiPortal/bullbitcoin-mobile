@@ -21,6 +21,9 @@ class Wallet with _$Wallet {
     required WalletSource source,
     required BigInt balanceSat,
     @Default([]) List<Transaction> recentTransactions,
+    // We should probably store lastSwapIndex here
+    // reason is that when we store wallet metadata as part of a backup, its easy to get the last index
+    // otherwise we have to store all swap metadata as part of the backup as well, which is not ideal
   }) = _Wallet;
   const Wallet._();
 }
