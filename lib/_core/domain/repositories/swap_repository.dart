@@ -12,8 +12,10 @@ abstract class SwapRepository {
     required String electrumUrl,
   });
 
+  // TODO: all claim/refund/coopsign methods can take swap objects instead of swapId strings
+  // to avoid having to fetch the swap object again in the method when already done in the processSwap manager method
   Future<String> claimLightningToLiquidSwap({
-    required String swapId,
+    required LbtcLnSwap lbtcLnSwap,
     required String liquidAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
@@ -29,7 +31,7 @@ abstract class SwapRepository {
   });
 
   Future<String> claimLightningToBitcoinSwap({
-    required String swapId,
+    required BtcLnSwap btcLnSwap,
     required String bitcoinAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
@@ -44,10 +46,10 @@ abstract class SwapRepository {
     required String electrumUrl,
   });
   Future<void> coopSignBitcoinToLightningSwap({
-    required String swapId,
+    required BtcLnSwap btcLnSwap,
   });
   Future<String> refundBitcoinToLightningSwap({
-    required String swapId,
+    required BtcLnSwap btcLnSwap,
     required String bitcoinAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
@@ -61,10 +63,10 @@ abstract class SwapRepository {
     required String electrumUrl,
   });
   Future<void> coopSignLiquidToLightningSwap({
-    required String swapId,
+    required LbtcLnSwap lbtcLnSwap,
   });
   Future<String> refundLiquidToLightningSwap({
-    required String swapId,
+    required LbtcLnSwap lbtcLnSwap,
     required String liquidAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
@@ -94,7 +96,7 @@ abstract class SwapRepository {
   });
 
   Future<String> claimLiquidToBitcoinSwap({
-    required String swapId,
+    required ChainSwap chainSwap,
     required String bitcoinClaimAddress,
     required String liquidRefundAddress,
     required NetworkFees networkFees,
@@ -103,7 +105,7 @@ abstract class SwapRepository {
   });
 
   Future<String> claimBitcoinToLiquidSwap({
-    required String swapId,
+    required ChainSwap chainSwap,
     required String liquidClaimAddress,
     required String bitcoinRefundAddress,
     required NetworkFees networkFees,
@@ -112,7 +114,7 @@ abstract class SwapRepository {
   });
 
   Future<String> refundLiquidToBitcoinSwap({
-    required String swapId,
+    required ChainSwap chainSwap,
     required String liquidRefundAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
@@ -120,7 +122,7 @@ abstract class SwapRepository {
   });
 
   Future<String> refundBitcoinToLiquidSwap({
-    required String swapId,
+    required ChainSwap chainSwap,
     required String bitcoinRefundAddress,
     required NetworkFees networkFees,
     required bool tryCooperate,
