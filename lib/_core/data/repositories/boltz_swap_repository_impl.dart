@@ -24,7 +24,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String electrumUrl,
     Environment environment = Environment.mainnet,
   }) async {
-    final index = await _nextKeyIndex(walletId);
+    final index = await _nextRevKeyIndex(walletId);
     final btcLnSwap = await _boltz.createBtcReverseSwap(
       mnemonic,
       index,
@@ -87,7 +87,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String electrumUrl,
     Environment environment = Environment.mainnet,
   }) async {
-    final index = await _nextKeyIndex(walletId);
+    final index = await _nextRevKeyIndex(walletId);
     final lbtcLnSwap = await _boltz.createLBtcReverseSwap(
       mnemonic,
       index,
@@ -150,7 +150,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String electrumUrl,
     Environment environment = Environment.mainnet,
   }) async {
-    final index = await _nextKeyIndex(walletId);
+    final index = await _nextSubKeyIndex(walletId);
     final btcLnSwap = await _boltz.createBtcSubmarineSwap(
       mnemonic,
       index,
@@ -228,7 +228,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String electrumUrl,
     Environment environment = Environment.mainnet,
   }) async {
-    final index = await _nextKeyIndex(walletId);
+    final index = await _nextSubKeyIndex(walletId);
     final lbtcLnSwap = await _boltz.createLbtcSubmarineSwap(
       mnemonic,
       index,
@@ -461,11 +461,58 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   // TODO: next key index is specific for each swap type
   // each swap uses a different account' path
   // we should have nextReverseIndex, nextSubmarineIndex, nextChainIndex
-  Future<int> _nextKeyIndex(String walletId) async {
-    final swaps = await _getSwapsForWallet(walletId);
+  Future<int> _nextRevKeyIndex(String walletId) async {
+    final swaps = await _getRevSwapsForWallet(walletId);
     final nextWalletIndex =
         swaps.isEmpty ? 0 : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
     return nextWalletIndex;
+  }
+
+  Future<List<Swap>> _getRevSwapsForWallet(String walletId) async {
+    return (await _boltz.getAll())
+        .map((swapModel) => swapModel.toEntity())
+        .where(
+          (swap) =>
+              swap.type == SwapType.lightningToBitcoin ||
+              swap.type == SwapType.lightningToLiquid,
+        )
+        .toList();
+  }
+
+  Future<int> _nextSubKeyIndex(String walletId) async {
+    final swaps = await _getSubSwapsForWallet(walletId);
+    final nextWalletIndex =
+        swaps.isEmpty ? 0 : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
+    return nextWalletIndex;
+  }
+
+  Future<List<Swap>> _getSubSwapsForWallet(String walletId) async {
+    return (await _boltz.getAll())
+        .map((swapModel) => swapModel.toEntity())
+        .where(
+          (swap) =>
+              swap.type == SwapType.bitcoinToLightning ||
+              swap.type == SwapType.liquidToLightning,
+        )
+        .toList();
+  }
+
+  Future<int> _nextChainKeyIndex(String walletId) async {
+    final swaps = await _getChainSwapsForWallet(walletId);
+    final nextWalletIndex =
+        swaps.isEmpty ? 0 : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
+    return nextWalletIndex;
+  }
+
+  Future<List<Swap>> _getChainSwapsForWallet(String walletId) async {
+    return (await _boltz.getAll())
+        .map((swapModel) => swapModel.toEntity())
+        .where(
+          (swap) =>
+              swap.type == SwapType.bitcoinToLiquid ||
+              swap.type == SwapType.liquidToBitcoin,
+        )
+        .toList();
   }
 
   Future<List<Swap>> _getSwapsForWallet(String walletId) async {
@@ -504,7 +551,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     String? receipientAddress,
   } // if toSelf is true
       ) async {
-    final index = await _nextKeyIndex(sendWalletId);
+    final index = await _nextChainKeyIndex(sendWalletId);
     final chainSwap = await _boltz.createBtcToLbtcChainSwap(
       mnemonic,
       index,
@@ -544,7 +591,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     String? receiveWalletId,
     String? receipientAddress,
   }) async {
-    final index = await _nextKeyIndex(sendWalletId);
+    final index = await _nextChainKeyIndex(sendWalletId);
     final chainSwap = await _boltz.createLbtcToBtcChainSwap(
       mnemonic,
       index,

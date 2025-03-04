@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/_core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/models/swap_model.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
-import 'package:bb_mobile/_core/domain/entities/swap.dart' as swap;
+import 'package:bb_mobile/_core/domain/entities/swap.dart' as swap_entity;
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:boltz/boltz.dart';
 
@@ -22,7 +22,7 @@ abstract class BoltzDataSource {
   Future<String> claimBtcReverseSwap(
     BtcLnSwap btcLnSwap,
     String claimAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   );
   Future<String> broadcastBtcLnSwap(
@@ -42,7 +42,7 @@ abstract class BoltzDataSource {
   Future<String> claimLBtcReverseSwap(
     LbtcLnSwap lbtcLnSwap,
     String claimAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   );
   Future<String> broadcastLbtcLnSwap(
@@ -65,7 +65,7 @@ abstract class BoltzDataSource {
   Future<String> refundBtcSubmarineSwap(
     BtcLnSwap btcLnSwap,
     String refundAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   );
   Future<LbtcLnSwap> createLbtcSubmarineSwap(
@@ -81,7 +81,7 @@ abstract class BoltzDataSource {
   Future<String> refundLbtcSubmarineSwap(
     LbtcLnSwap lbtcLnSwap,
     String refundAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   );
 
@@ -109,7 +109,7 @@ abstract class BoltzDataSource {
     ChainSwap chainSwap,
     String claimLiquidAddress,
     String refundBitcoinAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   );
 
@@ -118,7 +118,7 @@ abstract class BoltzDataSource {
     ChainSwap chainSwap,
     String claimBitcoinAddress,
     String refundLiquidAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   );
   Future<String> broadcastChainSwapClaim(
@@ -131,7 +131,7 @@ abstract class BoltzDataSource {
   Future<String> refundBtcToLbtcChainSwap(
     ChainSwap chainSwap,
     String refundBitcoinAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   );
 
@@ -139,7 +139,7 @@ abstract class BoltzDataSource {
   Future<String> refundLbtcToBtcChainSwap(
     ChainSwap chainSwap,
     String refundLiquidAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   );
 
@@ -150,15 +150,15 @@ abstract class BoltzDataSource {
   );
 
   // Swap Actions
-  Future<swap.NextSwapAction> getBtcLnSwapAction(
+  Future<swap_entity.NextSwapAction> getBtcLnSwapAction(
     BtcLnSwap btcLnSwap,
     String status,
   );
-  Future<swap.NextSwapAction> getLbtcLnSwapAction(
+  Future<swap_entity.NextSwapAction> getLbtcLnSwapAction(
     LbtcLnSwap lbtcLnSwap,
     String status,
   );
-  Future<swap.NextSwapAction> getChainSwapAction(
+  Future<swap_entity.NextSwapAction> getChainSwapAction(
     ChainSwap chainSwap,
     String status,
   );
@@ -226,7 +226,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> claimBtcReverseSwap(
     BtcLnSwap btcLnSwap,
     String claimAddress,
-    swap.NetworkFees fees,
+    swap_entity.NetworkFees fees,
     bool tryCooperate,
   ) async {
     return btcLnSwap.claim(
@@ -258,7 +258,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> claimLBtcReverseSwap(
     LbtcLnSwap lbtcLnSwap,
     String claimAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return lbtcLnSwap.claim(
@@ -333,7 +333,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> refundBtcSubmarineSwap(
     BtcLnSwap btcLnSwap,
     String refundAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return btcLnSwap.refund(
@@ -370,7 +370,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> refundLbtcSubmarineSwap(
     LbtcLnSwap lbtcLnSwap,
     String refundAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return lbtcLnSwap.refund(
@@ -452,7 +452,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     ChainSwap chainSwap,
     String claimLiquidAddress,
     String refundBitcoinAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return await chainSwap.claim(
@@ -468,7 +468,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     ChainSwap chainSwap,
     String claimBitcoinAddress,
     String refundLiquidAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return await chainSwap.claim(
@@ -500,7 +500,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> refundBtcToLbtcChainSwap(
     ChainSwap chainSwap,
     String refundBitcoinAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return await chainSwap.refund(
@@ -514,7 +514,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> refundLbtcToBtcChainSwap(
     ChainSwap chainSwap,
     String refundLiquidAddress,
-    swap.NetworkFees minerFee,
+    swap_entity.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return await chainSwap.refund(
@@ -525,62 +525,62 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   @override
-  Future<swap.NextSwapAction> getBtcLnSwapAction(
+  Future<swap_entity.NextSwapAction> getBtcLnSwapAction(
     BtcLnSwap btcLnSwap,
     String status,
   ) async {
     final action = await btcLnSwap.process(status: status);
     switch (action) {
       case SwapAction.wait:
-        return swap.NextSwapAction.wait;
+        return swap_entity.NextSwapAction.wait;
       case SwapAction.coopSign:
-        return swap.NextSwapAction.coopSign;
+        return swap_entity.NextSwapAction.coopSign;
       case SwapAction.claim:
-        return swap.NextSwapAction.claim;
+        return swap_entity.NextSwapAction.claim;
       case SwapAction.refund:
-        return swap.NextSwapAction.refund;
+        return swap_entity.NextSwapAction.refund;
       case SwapAction.close:
-        return swap.NextSwapAction.close;
+        return swap_entity.NextSwapAction.close;
     }
   }
 
   @override
-  Future<swap.NextSwapAction> getChainSwapAction(
+  Future<swap_entity.NextSwapAction> getChainSwapAction(
     ChainSwap chainSwap,
     String status,
   ) async {
     final action = await chainSwap.process(status: status);
     switch (action) {
       case SwapAction.wait:
-        return swap.NextSwapAction.wait;
+        return swap_entity.NextSwapAction.wait;
       case SwapAction.coopSign:
-        return swap.NextSwapAction.coopSign;
+        return swap_entity.NextSwapAction.coopSign;
       case SwapAction.claim:
-        return swap.NextSwapAction.claim;
+        return swap_entity.NextSwapAction.claim;
       case SwapAction.refund:
-        return swap.NextSwapAction.refund;
+        return swap_entity.NextSwapAction.refund;
       case SwapAction.close:
-        return swap.NextSwapAction.close;
+        return swap_entity.NextSwapAction.close;
     }
   }
 
   @override
-  Future<swap.NextSwapAction> getLbtcLnSwapAction(
+  Future<swap_entity.NextSwapAction> getLbtcLnSwapAction(
     LbtcLnSwap lbtcLnSwap,
     String status,
   ) async {
     final action = await lbtcLnSwap.process(status: status);
     switch (action) {
       case SwapAction.wait:
-        return swap.NextSwapAction.wait;
+        return swap_entity.NextSwapAction.wait;
       case SwapAction.coopSign:
-        return swap.NextSwapAction.coopSign;
+        return swap_entity.NextSwapAction.coopSign;
       case SwapAction.claim:
-        return swap.NextSwapAction.claim;
+        return swap_entity.NextSwapAction.claim;
       case SwapAction.refund:
-        return swap.NextSwapAction.refund;
+        return swap_entity.NextSwapAction.refund;
       case SwapAction.close:
-        return swap.NextSwapAction.close;
+        return swap_entity.NextSwapAction.close;
     }
   }
 
@@ -695,7 +695,7 @@ extension EnvironmentToChain on Environment {
   }
 }
 
-extension NetworkFeesX on swap.NetworkFees {
+extension NetworkFeesX on swap_entity.NetworkFees {
   TxFee toTxFee() {
     return when(
       absolute: (value) => TxFee.absolute(BigInt.from(value)),

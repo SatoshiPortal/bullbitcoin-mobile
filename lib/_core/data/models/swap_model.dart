@@ -1,7 +1,8 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'dart:convert';
 
 part 'swap_model.freezed.dart';
 part 'swap_model.g.dart';
