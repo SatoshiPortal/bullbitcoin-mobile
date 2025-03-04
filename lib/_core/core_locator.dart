@@ -111,7 +111,6 @@ class CoreLocator {
       () => WalletManagerServiceImpl(
         walletMetadataRepository: locator<WalletMetadataRepository>(),
         seedRepository: locator<SeedRepository>(),
-        payjoinRepository: locator<PayjoinRepository>(),
         electrumServerRepository: locator<ElectrumServerRepository>(),
       ),
     );

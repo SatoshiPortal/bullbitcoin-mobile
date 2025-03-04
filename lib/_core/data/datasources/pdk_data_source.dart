@@ -10,34 +10,23 @@ import 'package:payjoin_flutter/send.dart';
 import 'package:payjoin_flutter/uri.dart';
 
 abstract class PdkDataSource {
-  Stream<PdkReceivePayjoinModel> get payjoinRequestedStream;
-  Stream<PdkSendPayjoinModel> get proposalSentStream;
+  Stream<PdkReceivePayjoinModel> get requestedPayjoins;
+  Stream<PdkSendPayjoinModel> get sentProposals;
   Future<PdkReceivePayjoinModel> createReceiver({
     required String walletId,
     required String address,
     bool isTestnet = false,
     int? expireAfterSec,
   });
-  Future<Uri> parseBip21Uri(String bip21);
   Future<PdkSendPayjoinModel> createSender({
     required String walletId,
-    required Uri uri,
+    required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
   });
-
-  Future<PdkReceivePayjoinModel> processRequest({
-    required PdkReceivePayjoinModel payjoin,
-  });
-  Future<PdkSendPayjoinModel> processProposal({
-    required PdkSendPayjoinModel payjoin,
-  });
-
-  Future<void> store(PdkPayjoinModel payjoin);
   Future<PdkPayjoinModel?> get(String id);
   Future<List<PdkPayjoinModel>> getAll();
   Future<void> delete(String id);
-  Future<void> resumePayjoin(PdkPayjoinModel payjoin);
 }
 
 class PdkDataSourceImpl implements PdkDataSource {
@@ -61,11 +50,11 @@ class PdkDataSourceImpl implements PdkDataSource {
         _storage = storage;
 
   @override
-  Stream<PdkReceivePayjoinModel> get payjoinRequestedStream =>
+  Stream<PdkReceivePayjoinModel> get requestedPayjoins =>
       _payjoinRequestedController.stream.asBroadcastStream();
 
   @override
-  Stream<PdkSendPayjoinModel> get proposalSentStream =>
+  Stream<PdkSendPayjoinModel> get sentProposals =>
       _proposalSentController.stream.asBroadcastStream();
 
   @override
@@ -101,6 +90,8 @@ class PdkDataSourceImpl implements PdkDataSource {
         pjUrl: pjUrl.asString(),
       ) as PdkReceivePayjoinModel;
 
+      await _store(model);
+
       // TODO: Start listening for original psbt in isolate
 
       return model;
@@ -110,18 +101,14 @@ class PdkDataSourceImpl implements PdkDataSource {
   }
 
   @override
-  Future<Uri> parseBip21Uri(String bip21) async {
-    final uri = await Uri.fromStr(bip21);
-    return uri;
-  }
-
-  @override
   Future<PdkSendPayjoinModel> createSender({
     required String walletId,
-    required Uri uri,
+    required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
   }) async {
+    final uri = await Uri.fromStr(bip21);
+
     PjUri pjUri;
     try {
       pjUri = uri.checkPjSupported();
@@ -145,13 +132,14 @@ class PdkDataSourceImpl implements PdkDataSource {
       originalPsbt: originalPsbt,
     ) as PdkSendPayjoinModel;
 
+    await _store(model);
+
     // TODO: Start listening for proposals in isolate
 
     return model;
   }
 
-  @override
-  Future<void> store(PdkPayjoinModel model) async {
+  Future<void> _store(PdkPayjoinModel model) async {
     final value = jsonEncode(model.toJson());
     if (model is PdkReceivePayjoinModel) {
       await _storage.saveValue(key: model.id, value: value);
@@ -195,27 +183,7 @@ class PdkDataSourceImpl implements PdkDataSource {
     await _storage.deleteValue(id);
   }
 
-  @override
-  Future<PdkSendPayjoinModel> processProposal({
-    required PdkSendPayjoinModel payjoin,
-  }) async {
-    // TODO: implement processProposal
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<PdkReceivePayjoinModel> processRequest({
-    required PdkReceivePayjoinModel payjoin,
-  }) async {
-    // TODO: implement processRequest
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> resumePayjoin(PdkPayjoinModel payjoin) async {
-    // TODO: implement resumePayjoin by starting to listen in the isolate
-  }
-
+  /*
   Future<V2GetContext> _request({
     required Sender sender,
   }) async {
@@ -241,9 +209,11 @@ class PdkDataSourceImpl implements PdkDataSource {
     return getCtx;
   }
 
-  Future<UncheckedProposal?> _getRequest({
-    required Receiver receiver,
+  @override
+  Future<UncheckedProposal?> getRequest({
+    required PdkReceivePayjoinModel payjoin,
   }) async {
+    final receiver = Receiver.fromJson(payjoin.receiver);
     final (req, context) = await receiver.extractReq();
     final ohttpResponse = await _dio.post(
       req.url.asString(),
@@ -304,7 +274,7 @@ class PdkDataSourceImpl implements PdkDataSource {
     );
 
     return proposalPsbt;
-  }
+  }*/
 }
 
 class ReceiveCreationException implements Exception {
