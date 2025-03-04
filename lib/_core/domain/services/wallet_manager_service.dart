@@ -23,8 +23,8 @@ abstract class WalletManagerService {
   });
   Future<Wallet?> getWallet(String id);
   Future<List<Wallet>> getAllWallets({Environment? environment});
-  Future<void> sync({required String walletId});
-  Future<void> syncAll({Environment? environment});
+  Future<Wallet> sync({required String walletId});
+  Future<List<Wallet>> syncAll({Environment? environment});
   Future<Balance> getBalance({required String walletId});
   Future<Address> getAddressByIndex({
     required String walletId,
