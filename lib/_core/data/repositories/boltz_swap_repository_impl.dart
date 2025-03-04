@@ -13,7 +13,56 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   BoltzSwapRepositoryImpl({
     required BoltzDataSource boltz,
-  }) : _boltz = boltz;
+  }) : _boltz = boltz {
+    // _boltz.stream.listen((event) async {
+    //   print("BoltzSwapRepositoryImpl: $event");
+    //   // await processSwap(swapId: event.id, status: event.status.toString());
+    // });
+  }
+
+  /// SWAP PROCESS
+
+  // @override
+  // Future<void> processSwap({
+  //   required String swapId,
+  //   required String status,
+  // }) async {
+  //   final swapModel = await _boltz.get(swapId);
+  //   if (swapModel == null) {
+  //     throw "No swap model found";
+  //   }
+  //   final swap = swapModel.toEntity();
+  //   if (swap.type == SwapType.lightningToBitcoin ||
+  //       swap.type == SwapType.bitcoinToLightning) {
+  //     final btcLnSwap = await _boltz.getBtcLnSwap(swapId);
+  //     final action = await _boltz.getBtcLnSwapAction(btcLnSwap, status);
+  //     switch (action) {
+  //       case NextSwapAction.wait:
+  //         return;
+  //       case NextSwapAction.claim:
+  //         if (swap.type == SwapType.lightningToBitcoin) {
+  //           await claimLightningToBitcoinSwap(
+  //             swapId: swapId,
+  //             bitcoinAddress: '',
+  //             networkFees: networkFees,
+  //             tryCooperate: true,
+  //             broadcastViaBoltz: false,
+  //           );
+  //         } else {
+  //           throw "Cannot claim a bitcoin to lightning swap";
+  //         }
+  //       case NextSwapAction.coopSign:
+  //         // TODO: Handle this case.
+  //         throw UnimplementedError();
+  //       case NextSwapAction.refund:
+  //         // TODO: Handle this case.
+  //         throw UnimplementedError();
+  //       case NextSwapAction.close:
+  //         // TODO: Handle this case.
+  //         throw UnimplementedError();
+  //     }
+  //   }
+  // }
 
   /// RECEIVE LN TO BTC
   @override
@@ -46,6 +95,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       ),
     );
     await _boltz.store(SwapModel.fromEntity(swap));
+    // add to stream?
     return swap;
   }
 
@@ -736,32 +786,5 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       txid: txid,
     );
     return txid;
-  }
-
-  @override
-  Future<NextSwapAction> getNextChainAction({
-    required String swapId,
-    required String status,
-  }) async {
-    final chainSwap = await _boltz.getChainSwap(swapId);
-    return await _boltz.getChainSwapAction(chainSwap, status);
-  }
-
-  @override
-  Future<NextSwapAction> getNextBtcLnAction({
-    required String swapId,
-    required String status,
-  }) async {
-    final btcLnSwap = await _boltz.getBtcLnSwap(swapId);
-    return await _boltz.getBtcLnSwapAction(btcLnSwap, status);
-  }
-
-  @override
-  Future<NextSwapAction> getNextLbtcLnAction({
-    required String swapId,
-    required String status,
-  }) async {
-    final btcLnSwap = await _boltz.getBtcLnSwap(swapId);
-    return await _boltz.getBtcLnSwapAction(btcLnSwap, status);
   }
 }

@@ -36,8 +36,7 @@ abstract class BoltzDataSource {
     int outAmount,
     Environment environment,
     String electrumUrl,
-  );
-
+  );  
   /// Returns a signed tx hex which needs to be broadcasted
   Future<String> claimLBtcReverseSwap(
     LbtcLnSwap lbtcLnSwap,
@@ -163,10 +162,10 @@ abstract class BoltzDataSource {
     String status,
   );
   // Websocket
-  Future<BoltzStream> createStream();
-  void addSwapsToStream(BoltzStream stream, List<String> swapIds);
-  void removeSwapsFromStream(BoltzStream stream, List<String> swapIds);
-  void disposeStream(BoltzStream stream);
+  Stream<SwapStreamStatus> get stream;
+  void addSwapsToStream( List<String> swapIds);
+  void removeSwapsFromStream( List<String> swapIds);
+  void disposeStream();
 
   // Local Storage
   Future<void> store(SwapModel swap);
@@ -187,15 +186,19 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   final String _url;
   final KeyValueStorageDataSource<String> _localSwapStorage;
   final KeyValueStorageDataSource _secureSwapStorage;
-
+  late BoltzWebSocket _boltzWebSocket;
+  
   BoltzDataSourceImpl({
     required KeyValueStorageDataSource<String> localSwapStorage,
     required KeyValueStorageDataSource<String> secureSwapStorage,
     String url = ApiServiceConstants.boltzMainnetUrlPath,
   })  : _url = url,
         _localSwapStorage = localSwapStorage,
-        _secureSwapStorage = secureSwapStorage;
+        _secureSwapStorage = secureSwapStorage {
+    _boltzWebSocket = BoltzWebSocket.create(url);
+  }
 
+  Stream<SwapStreamStatus> get stream => _boltzWebSocket.stream;
   // REVERSE SWAPS
   @override
   Future<ReverseFeesAndLimits> getReverseFeesAndLimits() async {
@@ -585,25 +588,19 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   /// WEB SOCKET STREAM
-
   @override
-  Future<BoltzStream> createStream() async {
-    return await BoltzStream.create(_url);
+  void addSwapsToStream(List<String> swapIds) {
+    _boltzWebSocket.subscribe(swapIds);
   }
 
   @override
-  void addSwapsToStream(BoltzStream stream, List<String> swapIds) {
-    stream.subscribe(swapIds);
+  void disposeStream() {
+    _boltzWebSocket.dispose();
   }
 
   @override
-  void disposeStream(BoltzStream stream) {
-    stream.dispose();
-  }
-
-  @override
-  void removeSwapsFromStream(BoltzStream stream, List<String> swapIds) {
-    stream.unsubscribe(swapIds);
+  void removeSwapsFromStream(List<String> swapIds) {
+    _boltzWebSocket.unsubscribe(swapIds);
   }
 
   // LOCAL STORAGE

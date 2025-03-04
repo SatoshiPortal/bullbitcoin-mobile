@@ -131,7 +131,7 @@ packages:
     description:
       path: "."
       ref: develop
-      resolved-ref: ba6b479aeb95c2dc5dc5be93d4a6ece4634e18e3
+      resolved-ref: "1aa69b9ded541966790307706b7cff392f25dc2f"
       url: "https://github.com/SatoshiPortal/boltz-dart.git"
     source: git
     version: "0.1.8"
@@ -339,10 +339,10 @@ packages:
     dependency: "direct main"
     description:
       name: currency_text_input_formatter
-      sha256: "7ed954e38b0d89c068e29cbc7e9194cd5c36ec2940b8ef407c1425d8854ec45f"
+      sha256: cfa1267c65d154a302d80372b3d8e157a83c3f61ab87ad03294466bdfd5ced6f
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.8"
+    version: "2.2.9"
   dart_style:
     dependency: transitive
     description:
