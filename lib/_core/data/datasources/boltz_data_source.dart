@@ -226,7 +226,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   ) async {
     return btcLnSwap.claim(
       outAddress: claimAddress,
-      absFee: BigInt.from(absoluteFees),
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
       tryCooperate: tryCooperate,
     );
   }
@@ -258,7 +258,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   ) async {
     return lbtcLnSwap.claim(
       outAddress: '',
-      absFee: BigInt.from(absoluteFees),
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
       tryCooperate: tryCooperate,
     );
   }
@@ -333,7 +333,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   ) async {
     return btcLnSwap.refund(
       outAddress: refundAddress,
-      absFee: BigInt.from(absoluteFees),
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
       tryCooperate: tryCooperate,
     );
   }
@@ -370,7 +370,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   ) async {
     return lbtcLnSwap.refund(
       outAddress: refundAddress,
-      absFee: BigInt.from(absoluteFees),
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
       tryCooperate: tryCooperate,
     );
   }

@@ -131,7 +131,7 @@ packages:
     description:
       path: "."
       ref: develop
-      resolved-ref: e6e92cf0512ff16ae501b06a98fce4ab5da22b6c
+      resolved-ref: eb50720dc960b384e7c1961efe816f23cd3a6f47
       url: "https://github.com/SatoshiPortal/boltz-dart.git"
     source: git
     version: "0.1.8"
@@ -602,10 +602,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_plugin_android_lifecycle
-      sha256: "1c2b787f99bdca1f3718543f81d38aa1b124817dfeb9fb196201bea85b6134bf"
+      sha256: "5a1e6fb2c0561958d7e4c33574674bda7b77caaca7a33b758876956f2902eea3"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.26"
+    version: "2.0.27"
   flutter_rust_bridge:
     dependency: transitive
     description:
