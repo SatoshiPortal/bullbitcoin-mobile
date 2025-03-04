@@ -36,7 +36,8 @@ abstract class BoltzDataSource {
     int outAmount,
     Environment environment,
     String electrumUrl,
-  );  
+  );
+
   /// Returns a signed tx hex which needs to be broadcasted
   Future<String> claimLBtcReverseSwap(
     LbtcLnSwap lbtcLnSwap,
@@ -163,8 +164,8 @@ abstract class BoltzDataSource {
   );
   // Websocket
   Stream<SwapStreamStatus> get stream;
-  void addSwapsToStream( List<String> swapIds);
-  void removeSwapsFromStream( List<String> swapIds);
+  void addSwapsToStream(List<String> swapIds);
+  void removeSwapsFromStream(List<String> swapIds);
   void disposeStream();
 
   // Local Storage
@@ -187,7 +188,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   final KeyValueStorageDataSource<String> _localSwapStorage;
   final KeyValueStorageDataSource _secureSwapStorage;
   late BoltzWebSocket _boltzWebSocket;
-  
+
   BoltzDataSourceImpl({
     required KeyValueStorageDataSource<String> localSwapStorage,
     required KeyValueStorageDataSource<String> secureSwapStorage,

@@ -54,17 +54,17 @@ class Swap with _$Swap {
     required SwapStatus status,
     required Environment environment,
     required DateTime creationTime,
-    ChainSwap? chainSwapDetails,
-    LnReceiveSwap? receiveSwapDetails,
-    LnSendSwap? sendSwapDetails,
+    ChainSwapDetails? chainSwapDetails,
+    LnReceiveSwapDetails? receiveSwapDetails,
+    LnSendSwapDetails? sendSwapDetails,
     DateTime? completionTime,
   }) = _Swap;
   const Swap._();
 }
 
 @freezed
-class ChainSwap with _$ChainSwap {
-  const factory ChainSwap({
+class ChainSwapDetails with _$ChainSwapDetails {
+  const factory ChainSwapDetails({
     required bool toSelf,
     required String sendWalletId,
     String? sendTxid,
@@ -73,39 +73,39 @@ class ChainSwap with _$ChainSwap {
     String? receiveAddress,
     String? refundTxid,
     String? refundAddress,
-  }) = _ChainSwap;
-  const ChainSwap._();
+  }) = _ChainSwapDetails;
+  const ChainSwapDetails._();
 
-  factory ChainSwap.fromJson(Map<String, dynamic> json) =>
-      _$ChainSwapFromJson(json);
+  factory ChainSwapDetails.fromJson(Map<String, dynamic> json) =>
+      _$ChainSwapDetailsFromJson(json);
 }
 
 @freezed
-class LnReceiveSwap with _$LnReceiveSwap {
-  const factory LnReceiveSwap({
+class LnReceiveSwapDetails with _$LnReceiveSwapDetails {
+  const factory LnReceiveSwapDetails({
     required String receiveWalletId,
     required String invoice,
     String? receiveTxid,
     String? receiveAddress,
-  }) = _LnReceiveSwap;
-  const LnReceiveSwap._();
+  }) = _LnReceiveSwapDetails;
+  const LnReceiveSwapDetails._();
 
-  factory LnReceiveSwap.fromJson(Map<String, dynamic> json) =>
-      _$LnReceiveSwapFromJson(json);
+  factory LnReceiveSwapDetails.fromJson(Map<String, dynamic> json) =>
+      _$LnReceiveSwapDetailsFromJson(json);
 }
 
 @freezed
-class LnSendSwap with _$LnSendSwap {
-  const factory LnSendSwap({
+class LnSendSwapDetails with _$LnSendSwapDetails {
+  const factory LnSendSwapDetails({
     required String sendWalletId,
     required String invoice,
     String? sendTxid,
     String? preimage,
     String? refundTxid,
     String? refundAddress,
-  }) = _LnSendSwap;
-  const LnSendSwap._();
+  }) = _LnSendSwapDetails;
+  const LnSendSwapDetails._();
 
-  factory LnSendSwap.fromJson(Map<String, dynamic> json) =>
-      _$LnSendSwapFromJson(json);
+  factory LnSendSwapDetails.fromJson(Map<String, dynamic> json) =>
+      _$LnSendSwapDetailsFromJson(json);
 }

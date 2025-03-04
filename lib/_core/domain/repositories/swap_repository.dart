@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
+import 'package:boltz/boltz.dart';
 
 abstract class SwapRepository {
   // RECEIVE SWAPS
@@ -139,4 +140,26 @@ abstract class SwapRepository {
   Future<void> updateFailedSwap({
     required String swapId,
   });
+
+  Future<Swap> getSwapById({
+    required String swapId,
+  });
+
+  Future<(BtcLnSwap, NextSwapAction)> getBtcLnSwapAndAction({
+    required String swapId,
+    required String status,
+  });
+
+  Future<(LbtcLnSwap, NextSwapAction)> getLbtcLnSwapAndAction({
+    required String swapId,
+    required String status,
+  });
+
+  Future<(ChainSwap, NextSwapAction)> getChainSwapAndAction({
+    required String swapId,
+    required String status,
+  });
+
+  // STREAM
+  Stream<SwapStreamStatus> get stream;
 }

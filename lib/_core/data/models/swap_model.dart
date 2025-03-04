@@ -59,17 +59,17 @@ class SwapModel with _$SwapModel {
       keyIndex: keyIndex,
       chainSwapDetails: chainSwapJson == null
           ? null
-          : ChainSwap.fromJson(
+          : ChainSwapDetails.fromJson(
               jsonDecode(chainSwapJson!) as Map<String, dynamic>,
             ),
       receiveSwapDetails: lnReceiveSwapJson == null
           ? null
-          : LnReceiveSwap.fromJson(
+          : LnReceiveSwapDetails.fromJson(
               jsonDecode(lnReceiveSwapJson!) as Map<String, dynamic>,
             ),
       sendSwapDetails: lnSendSwapJson == null
           ? null
-          : LnSendSwap.fromJson(
+          : LnSendSwapDetails.fromJson(
               jsonDecode(lnSendSwapJson!) as Map<String, dynamic>,
             ),
     );

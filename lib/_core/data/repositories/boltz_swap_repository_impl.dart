@@ -5,6 +5,7 @@ import 'package:bb_mobile/_core/data/models/swap_model.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
+import 'package:boltz/boltz.dart' as boltzLib;
 // ignore: implementation_imports
 // TODO: is this okay?
 
@@ -13,56 +14,11 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   BoltzSwapRepositoryImpl({
     required BoltzDataSource boltz,
-  }) : _boltz = boltz {
-    // _boltz.stream.listen((event) async {
-    //   print("BoltzSwapRepositoryImpl: $event");
-    //   // await processSwap(swapId: event.id, status: event.status.toString());
-    // });
-  }
+  }) : _boltz = boltz;
 
-  /// SWAP PROCESS
-
-  // @override
-  // Future<void> processSwap({
-  //   required String swapId,
-  //   required String status,
-  // }) async {
-  //   final swapModel = await _boltz.get(swapId);
-  //   if (swapModel == null) {
-  //     throw "No swap model found";
-  //   }
-  //   final swap = swapModel.toEntity();
-  //   if (swap.type == SwapType.lightningToBitcoin ||
-  //       swap.type == SwapType.bitcoinToLightning) {
-  //     final btcLnSwap = await _boltz.getBtcLnSwap(swapId);
-  //     final action = await _boltz.getBtcLnSwapAction(btcLnSwap, status);
-  //     switch (action) {
-  //       case NextSwapAction.wait:
-  //         return;
-  //       case NextSwapAction.claim:
-  //         if (swap.type == SwapType.lightningToBitcoin) {
-  //           await claimLightningToBitcoinSwap(
-  //             swapId: swapId,
-  //             bitcoinAddress: '',
-  //             networkFees: networkFees,
-  //             tryCooperate: true,
-  //             broadcastViaBoltz: false,
-  //           );
-  //         } else {
-  //           throw "Cannot claim a bitcoin to lightning swap";
-  //         }
-  //       case NextSwapAction.coopSign:
-  //         // TODO: Handle this case.
-  //         throw UnimplementedError();
-  //       case NextSwapAction.refund:
-  //         // TODO: Handle this case.
-  //         throw UnimplementedError();
-  //       case NextSwapAction.close:
-  //         // TODO: Handle this case.
-  //         throw UnimplementedError();
-  //     }
-  //   }
-  // }
+  /// SWAP STREAM PROVIDER
+  @override
+  Stream<boltzLib.SwapStreamStatus> get stream => _boltz.stream;
 
   /// RECEIVE LN TO BTC
   @override
@@ -89,7 +45,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       environment: environment,
       creationTime: DateTime.now(),
       keyIndex: index,
-      receiveSwapDetails: LnReceiveSwap(
+      receiveSwapDetails: LnReceiveSwapDetails(
         receiveWalletId: walletId,
         invoice: btcLnSwap.invoice,
       ),
@@ -154,7 +110,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       environment: environment,
       creationTime: DateTime.now(),
       keyIndex: index,
-      receiveSwapDetails: LnReceiveSwap(
+      receiveSwapDetails: LnReceiveSwapDetails(
         receiveWalletId: walletId,
         invoice: lbtcLnSwap.invoice,
       ),
@@ -216,7 +172,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       environment: environment,
       creationTime: DateTime.now(),
       keyIndex: index,
-      sendSwapDetails: LnSendSwap(
+      sendSwapDetails: LnSendSwapDetails(
         sendWalletId: walletId,
         invoice: invoice,
       ),
@@ -294,7 +250,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       environment: environment,
       creationTime: DateTime.now(),
       keyIndex: index,
-      sendSwapDetails: LnSendSwap(
+      sendSwapDetails: LnSendSwapDetails(
         sendWalletId: walletId,
         invoice: invoice,
       ),
@@ -618,7 +574,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       environment: environment,
       creationTime: DateTime.now(),
       keyIndex: index,
-      chainSwapDetails: ChainSwap(
+      chainSwapDetails: ChainSwapDetails(
         sendWalletId: sendWalletId,
         toSelf: toSelf,
         receiveWalletId: receiveWalletId,
@@ -658,7 +614,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       environment: environment,
       creationTime: DateTime.now(),
       keyIndex: index,
-      chainSwapDetails: ChainSwap(
+      chainSwapDetails: ChainSwapDetails(
         sendWalletId: sendWalletId,
         toSelf: toSelf,
         receiveWalletId: receiveWalletId,
@@ -786,5 +742,46 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       txid: txid,
     );
     return txid;
+  }
+
+  // STORAGE
+  @override
+  Future<Swap> getSwapById({required String swapId}) async {
+    // TODO: implement getSwapById
+    final swapModel = await _boltz.get(swapId);
+    if (swapModel == null) {
+      throw "No swap found";
+    }
+    return swapModel.toEntity();
+  }
+
+  @override
+  Future<(boltzLib.BtcLnSwap, NextSwapAction)> getBtcLnSwapAndAction({
+    required String swapId,
+    required String status,
+  }) async {
+    final swap = await _boltz.getBtcLnSwap(swapId);
+    final action = await _boltz.getBtcLnSwapAction(swap, status);
+    return (swap, action);
+  }
+
+  @override
+  Future<(boltzLib.LbtcLnSwap, NextSwapAction)> getLbtcLnSwapAndAction({
+    required String swapId,
+    required String status,
+  }) async {
+    final swap = await _boltz.getLbtcLnSwap(swapId);
+    final action = await _boltz.getLbtcLnSwapAction(swap, status);
+    return (swap, action);
+  }
+
+  @override
+  Future<(boltzLib.ChainSwap, NextSwapAction)> getChainSwapAndAction({
+    required String swapId,
+    required String status,
+  }) async {
+    final swap = await _boltz.getChainSwap(swapId);
+    final action = await _boltz.getChainSwapAction(swap, status);
+    return (swap, action);
   }
 }
