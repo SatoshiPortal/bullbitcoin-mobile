@@ -1,5 +1,6 @@
+import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/wallet_manager_repository.dart';
+import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
@@ -12,12 +13,12 @@ class ReceiveLocator {
     // Use cases
     locator.registerFactory<GetReceiveAddressUseCase>(
       () => GetReceiveAddressUseCase(
-        walletManager: locator<WalletManagerRepository>(),
+        walletManager: locator<WalletManagerService>(),
       ),
     );
     locator.registerFactory<CreateReceiveSwapUseCase>(
       () => CreateReceiveSwapUseCase(
-        walletManager: locator<WalletManagerRepository>(),
+        walletManager: locator<WalletManagerService>(),
         swapRepository: locator<SwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
@@ -26,6 +27,7 @@ class ReceiveLocator {
           instanceName: LocatorInstanceNameConstants
               .boltzTestnetSwapRepositoryInstanceName,
         ),
+        seedRepository: locator<SeedRepository>(),
       ),
     );
 

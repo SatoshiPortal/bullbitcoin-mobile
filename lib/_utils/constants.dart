@@ -3,6 +3,7 @@ class SettingsConstants {
   static const bitcoinUnitKey = 'bitcoinUnit';
   static const languageKey = 'language';
   static const currencyKey = 'currency';
+  static const electrumServerKeyPrefix = 'electrumServer';
   static const defaultCurrencyCode = 'CAD';
 }
 
@@ -13,6 +14,7 @@ class SecureStorageKeyPrefixConstants {
 
 class HiveBoxNameConstants {
   static const settings = 'settings';
+  static const electrumServers = 'electrumServers';
   static const walletMetadata = 'walletMetadata';
   static const pdkPayjoins = 'pdkPayjoins';
   static const boltzSwaps = 'boltzSwaps';

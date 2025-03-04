@@ -7,14 +7,14 @@ This project follows a **feature-based** and **layered architecture** to ensure 
 The lib/ directory is organized into the following main sections:
 
 - [Core](lib/_core/): Contains fundamental **UI-independent** components that are **used across multiple features**. It has its own set of layers and a dependency locator:
-  - [Data](lib/_core/data/): Contains **data sources**, **models**, and concrete **repository implementations** that are shared across multiple features.
-  - [Domain](lib/_core/domain/): Contains **entities**, abstract **repository contracts**, **services**, and **use cases** that are shared across multiple features.
+  - [Data](lib/_core/data/): Contains **data sources**, **models**, and concrete **repository and service implementations** that are shared across multiple features.
+  - [Domain](lib/_core/domain/): Contains **entities**, abstract **repository and service contracts**, and **use cases** that are shared across multiple features.
   - [Presentation](lib/_core/presentation/): Contains **BLoCs** that are used in multiple features.
   - [Core Locator](lib/_core/): Manages **dependency injection setup** for the core layer.
 - [UI](lib/_ui/): Contains **shared UI components**, like widgets, fonts, colors and themes that are used across multiple features.
 - [Features](lib/): Each **feature** is self-contained and consists of its own set of **layers**, **locator**, and **routes**:
-  - Data (lib/`<feature>`/data/): Contains **feature-specific** data sources, models, and repository implementations.
-  - Domain (lib/`<feature>`/domain/): Contains **feature-specific** entities, repository contracts, services, and use cases.
+  - Data (lib/`<feature>`/data/): Contains **feature-specific** data sources, models, and repository and service implementations.
+  - Domain (lib/`<feature>`/domain/): Contains **feature-specific** entities, repository and service contracts, and use cases.
   - Presentation (lib/`<feature>`/presentation/): Contains **feature-specific** BLoCs.
   - UI (lib/`<feature>`/ui/): Contains **feature-specific** UI components, screens, widgets, themes and routes.
   - Locator (lib/`<feature>`/): Defines **dependency injection** setup for the feature.
@@ -36,10 +36,10 @@ This also enhances testability, maintainability, and scalability. While it may s
 
 ### Domain Layer
 
-The domain layer is the heart of the application. It consists of entities, repository interfaces/contracts, services and use cases that define the pure business logic of the application, making it independent of the data and presentation layers. This allows the business logic to be tested and reused without being tied to a specific data source or UI framework.
+The domain layer is the heart of the application. It consists of entities, repository and service interfaces/contracts and use cases that define the pure business logic of the application, making it independent of the data and presentation layers. This allows the business logic to be tested and reused without being tied to a specific data source or UI framework.
 
 > [!TIP]
-> You can think of the domain layer as the 'what' of the application. It defines what the application should permit the user to do, but not how it should be done or how it should be displayed.
+> You can think of the domain layer as the 'what' of the application. It defines what the application should permit the user to do, but not how it should be done or how it should be displayed. That's why repositories and services are not implemented here, but only defined as abstract classes.
 
 #### Entities
 
@@ -53,9 +53,9 @@ E.g. [`Wallet`](lib/_core/domain/entities/wallet.dart), [`UnlockAttempt`](lib/pi
 
 The interfaces (abstract classes) that define what is needed from the data layer to fulfill the business logic needs. Repositories in the [data layer](#data-layer) must implement these interfaces. They effectively decouple the domain layer from the data layer, making it possible to switch the data source or concrete repository implementation without changing the domain layer.
 
-E.g. [`PinCodeRepository`](lib/pin_code/domain/repositories/pin_code_repository.dart), [`WalletManagerRepository`](lib/_core/domain/repositories/wallet_manager_repository.dart).
+E.g. [`PinCodeRepository`](lib/pin_code/domain/repositories/pin_code_repository.dart), [`WalletManagerService`](lib/_core/domain/repositories/wallet_manager_repository.dart).
 
-#### Services
+#### Service contracts
 
 Services are helper classes that:
 
@@ -63,7 +63,9 @@ Services are helper classes that:
 - Separate and perform calculations, transformations, derivations or business rules not directly related to retrieving or storing data.
 - Typically include `Manager`, `Factory` or `Calculator` or other -er/-or suffixes in their names.
 
-E.g. [`MnemonicSeedFactory`](lib/_core/domain/services/mnemonic_seed_factory.dart), [`TimeoutCalculator`](lib/app_unlock/domain/services/timeout_calculator.dart).
+Just as for the repositories, the domain layer defines service contracts as abstract classes that are implemented in the data layer.
+
+E.g. [`WalletManagerService`](lib/_core/domain/services/wallet_manager_service.dart), [`MnemonicSeedFactory`](lib/_core/domain/services/mnemonic_seed_factory.dart), [`TimeoutCalculator`](lib/app_unlock/domain/services/timeout_calculator.dart).
 
 #### Use cases
 
@@ -81,6 +83,7 @@ The data layer is responsible for retrieving and storing data from and to differ
 #### Data sources
 
 Classes responsible for the actual retrieving or storing of the data that directly interact with APIs, databases, or local storage sources.
+They generally take in [models](#models) as parameters and return models as well.
 
 E.g. [`ExchangeDataSource`](lib/_core/data/datasources/exchange_data_source.dart), [`Bip39WordListDataSource`](lib/_core/data/datasources/bip39_word_list_data_source.dart).
 
@@ -90,11 +93,12 @@ Data structures as provided or expected by the data sources. They can be differe
 
 E.g. [`SeedModel`](lib/_core/data/models/seed_model.dart) [`WalletMetadataModel`](lib/_core/data/models/wallet_metadata_model.dart).
 
-#### Repository implementations
+#### Repository and service implementations
 
-The concrete implementations of the repository contracts to retrieve data from the data sources and map the models to entities defined in the domain.
+The concrete implementations of the repository and service contracts to retrieve data from the data sources and map the models to entities defined in the domain.
+Repositories convert models to entities and vice versa, while services use entities only, as they are not directly related to data retrieval or storage.
 
-E.g. [`WalletManagerRepositoryImpl`](lib/_core/data/repositories/wallet_manager_repository_impl.dart), [`SettingsRepositoryImpl`](lib/_core/data/repositories/settings_repository_impl.dart).
+E.g. [`WalletManagerServiceImpl`](lib/_core/data/repositories/wallet_manager_repository_impl.dart), [`SettingsRepositoryImpl`](lib/_core/data/repositories/settings_repository_impl.dart).
 
 ### Presentation Layer
 
@@ -113,7 +117,7 @@ In this project, BLoCs/Cubits are used for state management, but other solutions
 ✅ Layer dependencies:
 
 - The **domain layer** should be **completely independent** of the **data or presentation layer**. It should not import any classes from the data or presentation layer.
-- The **data layer** should **only depend on the domain layer**, never on the presentation layer. From the domain layer it should only import the repository contract abstract classes and entity classes, it should never import anything from the presentation layer.
+- The **data layer** should **only depend on the domain layer**, never on the presentation layer. From the domain layer it should only import the repository and service contract abstract classes and entity classes, it should never import anything from the presentation layer.
 - The **presentation layer** should **only depend on the domain layer**, never on the data layer. From the domain layer it should only import the use cases and entities, it should never import anything from the data layer directly.
 
 ✅ Dependency Injection flow:

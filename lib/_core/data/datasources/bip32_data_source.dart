@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_utils/uint_8_list_x.dart';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:bs58check/bs58check.dart' as base58;

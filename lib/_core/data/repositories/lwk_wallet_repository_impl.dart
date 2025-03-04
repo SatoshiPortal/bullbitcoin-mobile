@@ -1,19 +1,20 @@
-import 'package:bb_mobile/_core/data/datasources/wallets/liquid_wallet_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/wallets/wallet_data_source.dart';
-import 'package:bb_mobile/_core/data/models/address_model.dart';
-import 'package:bb_mobile/_core/data/models/balance_model.dart';
-import 'package:bb_mobile/_core/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/_core/domain/entities/address.dart';
+import 'package:bb_mobile/_core/domain/entities/balance.dart';
+import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/_core/domain/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/wallet_repository.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
-class LwkWalletDataSourceImpl
-    implements WalletDataSource, LiquidWalletDataSource {
+class LwkWalletRepositoryImpl
+    implements WalletRepository, LiquidWalletRepository {
   final lwk.Network _network;
   final lwk.Wallet _wallet;
   final String _electrumUrl;
   final bool _validateElectrumDomain;
 
-  LwkWalletDataSourceImpl({
+  LwkWalletRepositoryImpl({
     required lwk.Network network,
     required lwk.Wallet wallet,
     required String electrumUrl,
@@ -23,11 +24,11 @@ class LwkWalletDataSourceImpl
         _electrumUrl = electrumUrl,
         _validateElectrumDomain = validateDomain;
 
-  static Future<LwkWalletDataSourceImpl> public({
+  static Future<LwkWalletRepositoryImpl> public({
     required String ctDescriptor,
     required String dbPath,
     required bool isTestnet,
-    required ElectrumServerModel electrumServer,
+    required ElectrumServer electrumServer,
   }) async {
     final network = isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
 
@@ -41,7 +42,7 @@ class LwkWalletDataSourceImpl
       descriptor: descriptor,
     );
 
-    return LwkWalletDataSourceImpl(
+    return LwkWalletRepositoryImpl(
       network: network,
       wallet: wallet,
       electrumUrl: electrumServer.url,
@@ -49,11 +50,11 @@ class LwkWalletDataSourceImpl
     );
   }
 
-  static Future<LwkWalletDataSourceImpl> private({
+  static Future<LwkWalletRepositoryImpl> private({
     required String mnemonic,
     required String dbPath,
     required bool isTestnet,
-    required ElectrumServerModel electrumServer,
+    required ElectrumServer electrumServer,
   }) async {
     final network = isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
 
@@ -68,7 +69,7 @@ class LwkWalletDataSourceImpl
       descriptor: descriptor,
     );
 
-    return LwkWalletDataSourceImpl(
+    return LwkWalletRepositoryImpl(
       network: network,
       wallet: wallet,
       electrumUrl: electrumServer.url,
@@ -77,14 +78,14 @@ class LwkWalletDataSourceImpl
   }
 
   @override
-  Future<BalanceModel> getBalance() async {
+  Future<Balance> getBalance() async {
     final balances = await _wallet.balances();
 
     final lBtcAssetBalance = balances.firstWhere((balance) {
       return balance.assetId == _lBtcAssetId;
     }).value;
 
-    final balance = BalanceModel(
+    final balance = Balance(
       confirmedSat: BigInt.from(lBtcAssetBalance),
       immatureSat: BigInt.zero,
       trustedPendingSat: BigInt.zero,
@@ -97,48 +98,51 @@ class LwkWalletDataSourceImpl
   }
 
   @override
-  Future<AddressModel> getNewAddress() async {
+  Future<Address> getNewAddress() async {
     final lastUnusedAddressInfo = await _wallet.addressLastUnused();
     final newIndex = lastUnusedAddressInfo.index + 1;
     final addressInfo = await _wallet.address(index: newIndex);
 
-    final address = AddressModel(
+    final address = Address.liquid(
       index: addressInfo.index,
-      address: addressInfo.confidential,
+      standard: addressInfo.standard,
+      confidential: addressInfo.confidential,
     );
 
     return address;
   }
 
   @override
-  Future<AddressModel> getAddressByIndex(int index) async {
+  Future<Address> getAddressByIndex(int index) async {
     final addressInfo = await _wallet.address(index: index);
 
-    final address = AddressModel(
+    final address = Address.liquid(
       index: addressInfo.index,
-      address: addressInfo.confidential,
+      standard: addressInfo.standard,
+      confidential: addressInfo.confidential,
     );
 
     return address;
   }
 
   @override
-  Future<AddressModel> getLastUnusedAddress() async {
+  Future<Address> getLastUnusedAddress() async {
     final addressInfo = await _wallet.addressLastUnused();
 
-    final address = AddressModel(
+    final address = Address.liquid(
       index: addressInfo.index,
-      address: addressInfo.confidential,
+      standard: addressInfo.standard,
+      confidential: addressInfo.confidential,
     );
 
     return address;
   }
 
   @override
-  Future<void> sync() async {
+  Future<void> sync({required ElectrumServer electrumServer}) async {
     await _wallet.sync(
-      electrumUrl: _electrumUrl,
-      validateDomain: _validateElectrumDomain,
+      electrumUrl: electrumServer.url,
+      validateDomain: electrumServer.validateDomain,
     );
   }
 

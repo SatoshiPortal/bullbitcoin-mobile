@@ -5,21 +5,21 @@ import 'package:bb_mobile/_core/data/datasources/descriptor_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
-import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 
 abstract class WalletMetadataDataSource {
   Future<WalletMetadataModel> deriveFromSeed({
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
-    String label,
-    bool isDefault,
+    required String label,
+    required bool isDefault,
   });
   Future<WalletMetadataModel> deriveFromXpub({
     required String xpub,
     required Network network,
     required ScriptType scriptType,
-    String label,
+    required String label,
   });
   Future<void> store(
     WalletMetadataModel metadata,
@@ -47,8 +47,8 @@ class WalletMetadataDataSourceImpl implements WalletMetadataDataSource {
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
-    String label = '',
-    bool isDefault = true,
+    required String label,
+    required bool isDefault,
   }) async {
     final xpub = await _bip32.getAccountXpub(
       seedBytes: seed.seedBytes,

@@ -1,12 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/_core/data/models/address_model.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
-abstract class PayjoinWalletDataSource {
-  Future<AddressModel> getNewAddress();
+abstract class PayjoinWalletRepository {
   Future<bool> isMine(Uint8List scriptBytes);
-  // Todo: change bdk.LocalUtxo to a utxo model
+  // Todo: change bdk.LocalUtxo to a utxo entity
   Future<List<bdk.LocalUtxo>> listUnspent();
   Future<String> buildPsbt({
     required String address,
@@ -16,8 +14,6 @@ abstract class PayjoinWalletDataSource {
   });
   Future<String> signPsbt(String psbt);
   Future<String> getTxIdFromPsbt(String psbt);
-  Future<bool> isTxBroadcasted(String txId);
+  Future<bool> hasTransaction(String txId);
   Future<String> getTxIdFromTxBytes(List<int> bytes);
-  Future<String> broadcastTxFromBytes(List<int> bytes);
-  Future<String> broadcastPsbt(String psbt);
 }
