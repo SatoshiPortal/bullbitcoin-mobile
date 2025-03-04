@@ -162,6 +162,11 @@ abstract class BoltzDataSource {
     ChainSwap chainSwap,
     String status,
   );
+  // Websocket
+  Future<BoltzStream> createStream();
+  void addSwapsToStream(BoltzStream stream, List<String> swapIds);
+  void removeSwapsFromStream(BoltzStream stream, List<String> swapIds);
+  void disposeStream(BoltzStream stream);
 
   // Local Storage
   Future<void> store(SwapModel swap);
@@ -425,84 +430,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     );
   }
 
-  // LOCAL STORAGE
-  @override
-  Future<void> store(SwapModel swap) async {
-    final swapJsonMap = swap.toJson();
-    final jsonString = jsonEncode(swapJsonMap);
-    await _localSwapStorage.saveValue(key: swap.id, value: jsonString);
-  }
-
-  @override
-  Future<SwapModel?> get(String swapId) async {
-    final jsonString = await _localSwapStorage.getValue(swapId);
-    if (jsonString == null) {
-      return null;
-    }
-    final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
-    return SwapModel.fromJson(jsonMap);
-  }
-
-  @override
-  Future<List<SwapModel>> getAll() async {
-    final allEntries = await _localSwapStorage.getAll();
-    final swaps = <SwapModel>[];
-    for (final jsonString in allEntries.values) {
-      final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
-      final swap = SwapModel.fromJson(jsonMap);
-      swaps.add(swap);
-    }
-    return swaps;
-  }
-
-  @override
-  Future<void> delete(String swapId) async {
-    await _localSwapStorage.deleteValue(swapId);
-  }
-
-  // SECURE STORAGE
-  @override
-  Future<void> storeBtcLnSwap(BtcLnSwap swap) async {
-    final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
-    final jsonSwap = await swap.toJson();
-    await _secureSwapStorage.saveValue(key: key, value: jsonSwap);
-  }
-
-  @override
-  Future<void> storeLbtcLnSwap(LbtcLnSwap swap) async {
-    final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
-    final jsonSwap = await swap.toJson();
-    await _secureSwapStorage.saveValue(key: key, value: jsonSwap);
-  }
-
-  @override
-  Future<void> storeChainSwap(ChainSwap swap) async {
-    final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
-    final jsonSwap = await swap.toJson();
-    await _secureSwapStorage.saveValue(key: key, value: jsonSwap);
-  }
-
-  @override
-  Future<BtcLnSwap> getBtcLnSwap(String swapId) async {
-    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
-    final jsonSwap = await _secureSwapStorage.getValue(key) as String;
-    return BtcLnSwap.fromJson(jsonStr: jsonSwap);
-  }
-
-  @override
-  Future<LbtcLnSwap> getLbtcLnSwap(String swapId) async {
-    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
-    final jsonSwap = await _secureSwapStorage.getValue(key) as String;
-    return LbtcLnSwap.fromJson(jsonStr: jsonSwap);
-  }
-
-  @override
-  Future<ChainSwap> getChainSwap(String swapId) async {
-    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
-    final jsonSwap = await _secureSwapStorage.getValue(key) as String;
-    return ChainSwap.fromJson(jsonStr: jsonSwap);
-  }
-
   @override
   Future<String> broadcastChainSwapRefund(
     ChainSwap chainSwap,
@@ -604,7 +531,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   ) async {
     final action = await btcLnSwap.process(status: status);
     switch (action) {
-      // TODO: abstract as a enum extention
       case SwapAction.wait:
         return swap.NextSwapAction.wait;
       case SwapAction.coopSign:
@@ -623,10 +549,8 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     ChainSwap chainSwap,
     String status,
   ) async {
-    // TODO: implement getChainSwapAction
     final action = await chainSwap.process(status: status);
     switch (action) {
-      // TODO: abstract as a enum extention
       case SwapAction.wait:
         return swap.NextSwapAction.wait;
       case SwapAction.coopSign:
@@ -645,10 +569,8 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     LbtcLnSwap lbtcLnSwap,
     String status,
   ) async {
-    // TODO: implement getLbtcLnSwapAction
     final action = await lbtcLnSwap.process(status: status);
     switch (action) {
-      // TODO: abstract as a enum extention
       case SwapAction.wait:
         return swap.NextSwapAction.wait;
       case SwapAction.coopSign:
@@ -660,6 +582,106 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       case SwapAction.close:
         return swap.NextSwapAction.close;
     }
+  }
+
+  /// WEB SOCKET STREAM
+
+  @override
+  Future<BoltzStream> createStream() async {
+    return await BoltzStream.create(_url);
+  }
+
+  @override
+  void addSwapsToStream(BoltzStream stream, List<String> swapIds) {
+    stream.subscribe(swapIds);
+  }
+
+  @override
+  void disposeStream(BoltzStream stream) {
+    stream.dispose();
+  }
+
+  @override
+  void removeSwapsFromStream(BoltzStream stream, List<String> swapIds) {
+    stream.unsubscribe(swapIds);
+  }
+
+  // LOCAL STORAGE
+  @override
+  Future<void> store(SwapModel swap) async {
+    final swapJsonMap = swap.toJson();
+    final jsonString = jsonEncode(swapJsonMap);
+    await _localSwapStorage.saveValue(key: swap.id, value: jsonString);
+  }
+
+  @override
+  Future<SwapModel?> get(String swapId) async {
+    final jsonString = await _localSwapStorage.getValue(swapId);
+    if (jsonString == null) {
+      return null;
+    }
+    final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
+    return SwapModel.fromJson(jsonMap);
+  }
+
+  @override
+  Future<List<SwapModel>> getAll() async {
+    final allEntries = await _localSwapStorage.getAll();
+    final swaps = <SwapModel>[];
+    for (final jsonString in allEntries.values) {
+      final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
+      final swap = SwapModel.fromJson(jsonMap);
+      swaps.add(swap);
+    }
+    return swaps;
+  }
+
+  @override
+  Future<void> delete(String swapId) async {
+    await _localSwapStorage.deleteValue(swapId);
+  }
+
+  // SECURE STORAGE
+  @override
+  Future<void> storeBtcLnSwap(BtcLnSwap swap) async {
+    final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
+    final jsonSwap = await swap.toJson();
+    await _secureSwapStorage.saveValue(key: key, value: jsonSwap);
+  }
+
+  @override
+  Future<void> storeLbtcLnSwap(LbtcLnSwap swap) async {
+    final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
+    final jsonSwap = await swap.toJson();
+    await _secureSwapStorage.saveValue(key: key, value: jsonSwap);
+  }
+
+  @override
+  Future<void> storeChainSwap(ChainSwap swap) async {
+    final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
+    final jsonSwap = await swap.toJson();
+    await _secureSwapStorage.saveValue(key: key, value: jsonSwap);
+  }
+
+  @override
+  Future<BtcLnSwap> getBtcLnSwap(String swapId) async {
+    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
+    final jsonSwap = await _secureSwapStorage.getValue(key) as String;
+    return BtcLnSwap.fromJson(jsonStr: jsonSwap);
+  }
+
+  @override
+  Future<LbtcLnSwap> getLbtcLnSwap(String swapId) async {
+    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
+    final jsonSwap = await _secureSwapStorage.getValue(key) as String;
+    return LbtcLnSwap.fromJson(jsonStr: jsonSwap);
+  }
+
+  @override
+  Future<ChainSwap> getChainSwap(String swapId) async {
+    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
+    final jsonSwap = await _secureSwapStorage.getValue(key) as String;
+    return ChainSwap.fromJson(jsonStr: jsonSwap);
   }
 }
 
