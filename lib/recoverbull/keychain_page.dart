@@ -170,7 +170,7 @@ class _Screen extends StatelessWidget {
                 );
               } else {
                 context.read<BackupSettingsCubit>().recoverBackup(
-                      jsonEncode(backup),
+                      backup,
                       state.backupKey,
                     );
               }

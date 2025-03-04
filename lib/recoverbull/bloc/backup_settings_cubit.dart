@@ -312,7 +312,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   /// Recovers wallet data from encrypted backup
   /// [encrypted] - Encrypted backup data
   /// [backupKey] - Key used to decrypt the backup
-  Future<void> recoverBackup(String encrypted, String backupKey) async {
+  Future<void> recoverBackup(BullBackup encrypted, String backupKey) async {
     _emitSafe(
       state.copyWith(
         loadingBackups: true,
@@ -325,16 +325,17 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       return;
     }
 
-    if (!BullBackup.isValid(encrypted)) {
+    if (encrypted.ciphertext.isEmpty ||
+        encrypted.salt.isEmpty ||
+        encrypted.id.isEmpty ||
+        encrypted.path == null) {
       _handleLoadError('Invalid backup format');
       return;
     }
 
-    final backup = BullBackup.fromJson(encrypted);
-
     final (backups, decryptErr) =
         await _fileSystemBackupManager.restoreEncryptedBackup(
-      backup: backup,
+      backup: encrypted,
       backupKey: HEX.decode(backupKey),
     );
 
