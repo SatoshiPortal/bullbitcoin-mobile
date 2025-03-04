@@ -37,6 +37,15 @@ enum SwapStatus {
 }
 
 @freezed
+class NetworkFees with _$NetworkFees {
+  /// Represents a fee using an absolute integer value
+  const factory NetworkFees.absolute(int value) = Absolute;
+
+  /// Represents a fee using a relative double value
+  const factory NetworkFees.relative(double value) = Relative;
+}
+
+@freezed
 class Swap with _$Swap {
   const factory Swap({
     required String id,

@@ -24,7 +24,7 @@ class CreateReceiveSwapUseCase {
   Future<Swap> execute({
     required String walletId,
     required SwapType type,
-    required BigInt amountSat,
+    required int amountSat,
   }) async {
     try {
       final wallet = await _walletManager.getWallet(walletId);

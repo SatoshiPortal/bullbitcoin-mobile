@@ -131,7 +131,7 @@ packages:
     description:
       path: "."
       ref: develop
-      resolved-ref: eb50720dc960b384e7c1961efe816f23cd3a6f47
+      resolved-ref: ba6b479aeb95c2dc5dc5be93d4a6ece4634e18e3
       url: "https://github.com/SatoshiPortal/boltz-dart.git"
     source: git
     version: "0.1.8"

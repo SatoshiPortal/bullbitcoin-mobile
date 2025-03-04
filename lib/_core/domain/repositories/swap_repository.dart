@@ -6,7 +6,7 @@ abstract class SwapRepository {
   Future<Swap> createLightningToLiquidSwap({
     required String mnemonic,
     required String walletId,
-    required BigInt amountSat,
+    required int amountSat,
     required Environment environment,
     required String electrumUrl,
   });
@@ -14,7 +14,7 @@ abstract class SwapRepository {
   Future<String> claimLightningToLiquidSwap({
     required String swapId,
     required String liquidAddress,
-    required int absoluteFees,
+    required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });
@@ -22,7 +22,7 @@ abstract class SwapRepository {
   Future<Swap> createLightningToBitcoinSwap({
     required String mnemonic,
     required String walletId,
-    required BigInt amountSat,
+    required int amountSat,
     required Environment environment,
     required String electrumUrl,
   });
@@ -30,7 +30,7 @@ abstract class SwapRepository {
   Future<String> claimLightningToBitcoinSwap({
     required String swapId,
     required String bitcoinAddress,
-    required int absoluteFees,
+    required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });
@@ -48,7 +48,7 @@ abstract class SwapRepository {
   Future<String> refundBitcoinToLightningSwap({
     required String swapId,
     required String bitcoinAddress,
-    required int absoluteFees,
+    required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });
@@ -65,7 +65,7 @@ abstract class SwapRepository {
   Future<String> refundLiquidToLightningSwap({
     required String swapId,
     required String liquidAddress,
-    required int absoluteFees,
+    required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });
@@ -96,7 +96,7 @@ abstract class SwapRepository {
     required String swapId,
     required String bitcoinClaimAddress,
     required String liquidRefundAddress,
-    required int absoluteFees,
+    required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });
@@ -105,7 +105,7 @@ abstract class SwapRepository {
     required String swapId,
     required String liquidClaimAddress,
     required String bitcoinRefundAddress,
-    required int absoluteFees,
+    required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });
@@ -113,7 +113,7 @@ abstract class SwapRepository {
   Future<String> refundLiquidToBitcoinSwap({
     required String swapId,
     required String liquidRefundAddress,
-    required int absoluteFees,
+    required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });
@@ -121,7 +121,7 @@ abstract class SwapRepository {
   Future<String> refundBitcoinToLiquidSwap({
     required String swapId,
     required String bitcoinRefundAddress,
-    required int absoluteFees,
+    required NetworkFees networkFees,
     required bool tryCooperate,
     required bool broadcastViaBoltz,
   });

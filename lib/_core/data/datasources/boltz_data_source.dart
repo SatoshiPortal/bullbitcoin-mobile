@@ -12,8 +12,8 @@ abstract class BoltzDataSource {
   Future<ReverseFeesAndLimits> getReverseFeesAndLimits();
   Future<BtcLnSwap> createBtcReverseSwap(
     String mnemonic,
-    BigInt index,
-    BigInt outAmount,
+    int index,
+    int outAmount,
     Environment environment,
     String electrumUrl,
   );
@@ -22,7 +22,7 @@ abstract class BoltzDataSource {
   Future<String> claimBtcReverseSwap(
     BtcLnSwap btcLnSwap,
     String claimAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   );
   Future<String> broadcastBtcLnSwap(
@@ -32,8 +32,8 @@ abstract class BoltzDataSource {
   );
   Future<LbtcLnSwap> createLBtcReverseSwap(
     String mnemonic,
-    BigInt index,
-    BigInt outAmount,
+    int index,
+    int outAmount,
     Environment environment,
     String electrumUrl,
   );
@@ -42,7 +42,7 @@ abstract class BoltzDataSource {
   Future<String> claimLBtcReverseSwap(
     LbtcLnSwap lbtcLnSwap,
     String claimAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   );
   Future<String> broadcastLbtcLnSwap(
@@ -54,7 +54,7 @@ abstract class BoltzDataSource {
   Future<SubmarineFeesAndLimits> getSubmarineFeesAndLimits();
   Future<BtcLnSwap> createBtcSubmarineSwap(
     String mnemonic,
-    BigInt index,
+    int index,
     String invoice,
     Environment environment,
     String electrumUrl,
@@ -65,12 +65,12 @@ abstract class BoltzDataSource {
   Future<String> refundBtcSubmarineSwap(
     BtcLnSwap btcLnSwap,
     String refundAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   );
   Future<LbtcLnSwap> createLbtcSubmarineSwap(
     String mnemonic,
-    BigInt index,
+    int index,
     String invoice,
     Environment environment,
     String electrumUrl,
@@ -81,7 +81,7 @@ abstract class BoltzDataSource {
   Future<String> refundLbtcSubmarineSwap(
     LbtcLnSwap lbtcLnSwap,
     String refundAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   );
 
@@ -89,7 +89,7 @@ abstract class BoltzDataSource {
   Future<ChainFeesAndLimits> getChainFeesAndLimits();
   Future<ChainSwap> createBtcToLbtcChainSwap(
     String mnemonic,
-    BigInt index,
+    int index,
     int amountSat,
     Environment environment,
     String btcElectrumUrl,
@@ -97,7 +97,7 @@ abstract class BoltzDataSource {
   );
   Future<ChainSwap> createLbtcToBtcChainSwap(
     String mnemonic,
-    BigInt index,
+    int index,
     int amountSat,
     Environment environment,
     String btcElectrumUrl,
@@ -109,7 +109,7 @@ abstract class BoltzDataSource {
     ChainSwap chainSwap,
     String claimLiquidAddress,
     String refundBitcoinAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   );
 
@@ -118,7 +118,7 @@ abstract class BoltzDataSource {
     ChainSwap chainSwap,
     String claimBitcoinAddress,
     String refundLiquidAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   );
   Future<String> broadcastChainSwapClaim(
@@ -131,7 +131,7 @@ abstract class BoltzDataSource {
   Future<String> refundBtcToLbtcChainSwap(
     ChainSwap chainSwap,
     String refundBitcoinAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   );
 
@@ -139,7 +139,7 @@ abstract class BoltzDataSource {
   Future<String> refundLbtcToBtcChainSwap(
     ChainSwap chainSwap,
     String refundLiquidAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   );
 
@@ -202,15 +202,15 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   @override
   Future<BtcLnSwap> createBtcReverseSwap(
     String mnemonic,
-    BigInt index,
-    BigInt outAmount,
+    int index,
+    int outAmount,
     Environment environment,
     String electrumUrl,
   ) async {
     return BtcLnSwap.newReverse(
       mnemonic: mnemonic,
-      index: index,
-      outAmount: outAmount,
+      index: BigInt.from(index),
+      outAmount: BigInt.from(outAmount),
       network: environment.toBtcChain(),
       electrumUrl: electrumUrl,
       boltzUrl: _url,
@@ -221,12 +221,12 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> claimBtcReverseSwap(
     BtcLnSwap btcLnSwap,
     String claimAddress,
-    int absoluteFees,
+    swap.NetworkFees fees,
     bool tryCooperate,
   ) async {
     return btcLnSwap.claim(
       outAddress: claimAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+      minerFee: fees.toTxFee(),
       tryCooperate: tryCooperate,
     );
   }
@@ -234,15 +234,15 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   @override
   Future<LbtcLnSwap> createLBtcReverseSwap(
     String mnemonic,
-    BigInt index,
-    BigInt outAmount,
+    int index,
+    int outAmount,
     Environment environment,
     String electrumUrl,
   ) async {
     return LbtcLnSwap.newReverse(
       mnemonic: mnemonic,
-      index: index,
-      outAmount: outAmount,
+      index: BigInt.from(index),
+      outAmount: BigInt.from(outAmount),
       network: environment.toLbtcChain(),
       electrumUrl: electrumUrl,
       boltzUrl: _url,
@@ -253,12 +253,12 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> claimLBtcReverseSwap(
     LbtcLnSwap lbtcLnSwap,
     String claimAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return lbtcLnSwap.claim(
-      outAddress: '',
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+      outAddress: claimAddress,
+      minerFee: minerFee.toTxFee(),
       tryCooperate: tryCooperate,
     );
   }
@@ -304,14 +304,14 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   @override
   Future<BtcLnSwap> createBtcSubmarineSwap(
     String mnemonic,
-    BigInt index,
+    int index,
     String invoice,
     Environment environment,
     String electrumUrl,
   ) async {
     return BtcLnSwap.newSubmarine(
       mnemonic: mnemonic,
-      index: index,
+      index: BigInt.from(index),
       invoice: invoice,
       network: environment.toBtcChain(),
       electrumUrl: electrumUrl,
@@ -328,12 +328,12 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> refundBtcSubmarineSwap(
     BtcLnSwap btcLnSwap,
     String refundAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return btcLnSwap.refund(
       outAddress: refundAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+      minerFee: minerFee.toTxFee(),
       tryCooperate: tryCooperate,
     );
   }
@@ -341,14 +341,14 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   @override
   Future<LbtcLnSwap> createLbtcSubmarineSwap(
     String mnemonic,
-    BigInt index,
+    int index,
     String invoice,
     Environment environment,
     String electrumUrl,
   ) async {
     return LbtcLnSwap.newSubmarine(
       mnemonic: mnemonic,
-      index: index,
+      index: BigInt.from(index),
       invoice: invoice,
       network: environment.toBtcChain(),
       electrumUrl: electrumUrl,
@@ -365,12 +365,12 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> refundLbtcSubmarineSwap(
     LbtcLnSwap lbtcLnSwap,
     String refundAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return lbtcLnSwap.refund(
       outAddress: refundAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+      minerFee: minerFee.toTxFee(),
       tryCooperate: tryCooperate,
     );
   }
@@ -386,7 +386,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   @override
   Future<ChainSwap> createBtcToLbtcChainSwap(
     String mnemonic,
-    BigInt index,
+    int index,
     int amountSat,
     Environment environment,
     String btcElectrumUrl,
@@ -394,7 +394,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   ) async {
     return ChainSwap.newSwap(
       mnemonic: mnemonic,
-      index: index,
+      index: BigInt.from(index),
       boltzUrl: _url,
       direction: ChainSwapDirection.btcToLbtc,
       amount: BigInt.from(amountSat),
@@ -407,7 +407,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   @override
   Future<ChainSwap> createLbtcToBtcChainSwap(
     String mnemonic,
-    BigInt index,
+    int index,
     int amountSat,
     Environment environment,
     String btcElectrumUrl,
@@ -415,7 +415,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   ) async {
     return ChainSwap.newSwap(
       mnemonic: mnemonic,
-      index: index,
+      index: BigInt.from(index),
       boltzUrl: _url,
       direction: ChainSwapDirection.lbtcToBtc,
       amount: BigInt.from(amountSat),
@@ -525,13 +525,13 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     ChainSwap chainSwap,
     String claimLiquidAddress,
     String refundBitcoinAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return await chainSwap.claim(
       outAddress: claimLiquidAddress,
       refundAddress: refundBitcoinAddress,
-      absFee: BigInt.from(absoluteFees),
+      minerFee: minerFee.toTxFee(),
       tryCooperate: tryCooperate,
     );
   }
@@ -541,13 +541,13 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     ChainSwap chainSwap,
     String claimBitcoinAddress,
     String refundLiquidAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return await chainSwap.claim(
       outAddress: claimBitcoinAddress,
       refundAddress: refundLiquidAddress,
-      absFee: BigInt.from(absoluteFees),
+      minerFee: minerFee.toTxFee(),
       tryCooperate: tryCooperate,
     );
   }
@@ -573,12 +573,12 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> refundBtcToLbtcChainSwap(
     ChainSwap chainSwap,
     String refundBitcoinAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return await chainSwap.refund(
       refundAddress: refundBitcoinAddress,
-      absFee: BigInt.from(absoluteFees),
+      minerFee: minerFee.toTxFee(),
       tryCooperate: tryCooperate,
     );
   }
@@ -587,12 +587,12 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   Future<String> refundLbtcToBtcChainSwap(
     ChainSwap chainSwap,
     String refundLiquidAddress,
-    int absoluteFees,
+    swap.NetworkFees minerFee,
     bool tryCooperate,
   ) async {
     return await chainSwap.refund(
       refundAddress: refundLiquidAddress,
-      absFee: BigInt.from(absoluteFees),
+      minerFee: minerFee.toTxFee(),
       tryCooperate: tryCooperate,
     );
   }
@@ -670,5 +670,14 @@ extension EnvironmentToChain on Environment {
 
   Chain toLbtcChain() {
     return this == Environment.mainnet ? Chain.liquid : Chain.liquidTestnet;
+  }
+}
+
+extension NetworkFeesX on swap.NetworkFees {
+  TxFee toTxFee() {
+    return when(
+      absolute: (value) => TxFee.absolute(BigInt.from(value)),
+      relative: (value) => TxFee.relative(value),
+    );
   }
 }
