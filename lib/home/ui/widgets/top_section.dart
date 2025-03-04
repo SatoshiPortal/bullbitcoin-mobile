@@ -49,9 +49,12 @@ class _UI extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        Image.asset(
-          Assets.images2.bgRed.path,
-          fit: BoxFit.fitHeight,
+        Transform.rotate(
+          angle: 3.141,
+          child: Image.asset(
+            Assets.images2.bgRed.path,
+            fit: BoxFit.fitHeight,
+          ),
         ),
         const _Amounts(),
         const Positioned(
