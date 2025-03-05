@@ -118,6 +118,8 @@ abstract class SwapRepository {
     required String swapId,
   });
 
+  Future<List<Swap>> getOngoingSwaps();
+
   Future<void> updateSwap({
     required Swap swap,
   });
@@ -152,4 +154,13 @@ abstract class SwapRepository {
 
   // STREAM
   Stream<boltzLib.SwapStreamStatus> get stream;
+  void addSwapToStream({
+    required String swapId,
+  });
+  void removeSwapFromStream({
+    required String swapId,
+  });
+  void reinitializeStreamWithSwaps({
+    required List<String> swapIds,
+  });
 }

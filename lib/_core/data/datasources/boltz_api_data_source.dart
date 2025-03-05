@@ -160,9 +160,10 @@ abstract class BoltzLibraryDataSource {
   );
   // Websocket
   Stream<SwapStreamStatus> get stream;
-  void addSwapsToStream(List<String> swapIds);
-  void removeSwapsFromStream(List<String> swapIds);
-  void disposeStream();
+  void initializBoltzWebSocket();
+  void subscribeToSwaps(List<String> swapIds);
+  void unsubscribeToSwaps(List<String> swapIds);
+  void resetStream();
 }
 
 class BoltzLibraryDataSourceImpl implements BoltzLibraryDataSource {
@@ -173,10 +174,9 @@ class BoltzLibraryDataSourceImpl implements BoltzLibraryDataSource {
   BoltzLibraryDataSourceImpl({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
   }) : _url = url {
-    _boltzWebSocket = BoltzWebSocket.create(url);
+    initializBoltzWebSocket();
   }
 
-  Stream<SwapStreamStatus> get stream => _boltzWebSocket.stream;
   // REVERSE SWAPS
   @override
   Future<ReverseFeesAndLimits> getReverseFeesAndLimits() async {
@@ -567,17 +567,31 @@ class BoltzLibraryDataSourceImpl implements BoltzLibraryDataSource {
 
   /// WEB SOCKET STREAM
   @override
-  void addSwapsToStream(List<String> swapIds) {
+  Future<void> initializBoltzWebSocket() async {
+    try {
+      _boltzWebSocket = BoltzWebSocket.create(_url);
+    } catch (e) {
+      print('Error creating BoltzWebSocket: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Stream<SwapStreamStatus> get stream => _boltzWebSocket.stream;
+
+  @override
+  void resetStream() {
+    _boltzWebSocket.dispose();
+    initializBoltzWebSocket();
+  }
+
+  @override
+  void subscribeToSwaps(List<String> swapIds) {
     _boltzWebSocket.subscribe(swapIds);
   }
 
   @override
-  void disposeStream() {
-    _boltzWebSocket.dispose();
-  }
-
-  @override
-  void removeSwapsFromStream(List<String> swapIds) {
+  void unsubscribeToSwaps(List<String> swapIds) {
     _boltzWebSocket.unsubscribe(swapIds);
   }
 }
