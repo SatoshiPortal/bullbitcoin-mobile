@@ -816,4 +816,100 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
             swap.status == SwapStatus.pending || swap.status == SwapStatus.paid)
         .toList();
   }
+
+  @override
+  Future<ChainSwapFeesAndLimits> getChainSwapFeesAndLimits() async {
+    final fees = await _boltzLib.getChainFeesAndLimits();
+    return fees.toDomainEntity();
+  }
+
+  @override
+  Future<ReverseSwapFeesAndLimits> getReverseSwapFeesAndLimits() async {
+    final fees = await _boltzLib.getReverseFeesAndLimits();
+    return fees.toDomainEntity();
+  }
+
+  @override
+  Future<SubmarineSwapFeesAndLimits> getSubmarineSwapFeesAndLimits() async {
+    final fees = await _boltzLib.getSubmarineFeesAndLimits();
+    return fees.toDomainEntity();
+  }
+}
+
+/// Extension method to convert from Boltz library types to our domain entities
+extension ConvertReverseFeesAndLimits on boltz_types.ReverseFeesAndLimits {
+  ReverseSwapFeesAndLimits toDomainEntity() {
+    return ReverseSwapFeesAndLimits(
+      bitcoinLimits: SwapLimits(
+        min: btcLimits.minimal.toInt(),
+        max: btcLimits.maximal.toInt(),
+      ),
+      liquidLimits: SwapLimits(
+        min: lbtcLimits.minimal.toInt(),
+        max: lbtcLimits.maximal.toInt(),
+      ),
+      bitcoinFees: LightningSwapFees(
+        percentage: btcFees.percentage,
+        minerFees:
+            btcFees.minerFees.lockup.toInt() + btcFees.minerFees.claim.toInt(),
+      ),
+      liquidFees: LightningSwapFees(
+        percentage: lbtcFees.percentage,
+        minerFees: lbtcFees.minerFees.lockup.toInt() +
+            lbtcFees.minerFees.claim.toInt(),
+      ),
+    );
+  }
+}
+
+extension ConvertSubmarineFeesAndLimits on boltz_types.SubmarineFeesAndLimits {
+  SubmarineSwapFeesAndLimits toDomainEntity() {
+    return SubmarineSwapFeesAndLimits(
+      bitcoinLimits: SwapLimits(
+        min: btcLimits.minimal.toInt(),
+        max: btcLimits.maximal.toInt(),
+      ),
+      liquidLimits: SwapLimits(
+        min: lbtcLimits.minimal.toInt(),
+        max: lbtcLimits.maximal.toInt(),
+      ),
+      bitcoinFees: LightningSwapFees(
+        percentage: btcFees.percentage,
+        minerFees: btcFees.minerFees.toInt(),
+      ),
+      liquidFees: LightningSwapFees(
+        percentage: lbtcFees.percentage,
+        minerFees: lbtcFees.minerFees.toInt(),
+      ),
+    );
+  }
+}
+
+extension ConvertChainFeesAndLimits on boltz_types.ChainFeesAndLimits {
+  ChainSwapFeesAndLimits toDomainEntity() {
+    return ChainSwapFeesAndLimits(
+      bitcoinLimits: SwapLimits(
+        min: btcLimits.minimal.toInt(),
+        max: btcLimits.maximal.toInt(),
+      ),
+      liquidLimits: SwapLimits(
+        min: lbtcLimits.minimal.toInt(),
+        max: lbtcLimits.maximal.toInt(),
+      ),
+      bitcoinFees: ChainSwapFees(
+        percentage: btcFees.percentage,
+        minerFees: ChainMinerFees(
+          lockup: btcFees.userLockup.toInt(),
+          claim: btcFees.userClaim.toInt(),
+        ),
+      ),
+      liquidFees: ChainSwapFees(
+        percentage: lbtcFees.percentage,
+        minerFees: ChainMinerFees(
+          lockup: lbtcFees.userLockup.toInt(),
+          claim: lbtcFees.userClaim.toInt(),
+        ),
+      ),
+    );
+  }
 }

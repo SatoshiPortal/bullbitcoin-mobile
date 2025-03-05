@@ -488,7 +488,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
     for (int i = offset ?? 0; i <= maxIndex; i++) {
       final address = await wallet.getAddressByIndex(i);
 
-      // final balanceSat = await wallet.getAddressBalanceSat(address.address);
+      final balanceSat = await wallet.getAddressBalanceSat(address.address);
       if (wallet is LwkWalletRepositoryImpl) {
         addresses.add(
           Address.liquid(
@@ -497,7 +497,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
             confidential: address.confidential!,
             kind: AddressKind.external,
             state: AddressStatus.used,
-            // balanceSat: balanceSat,
+            balanceSat: balanceSat,
           ),
         );
       } else {
@@ -507,7 +507,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
             address: address.address,
             kind: AddressKind.external,
             state: AddressStatus.used,
-            // balanceSat: balanceSat,
+            balanceSat: balanceSat,
           ),
         );
       }
@@ -522,11 +522,11 @@ class WalletManagerServiceImpl implements WalletManagerService {
     AddressKind kind = AddressKind.external,
   }) async {
     final isUsed = await wallet.isAddressUsed(address.address);
-    // final balanceSat = await wallet.getAddressBalanceSat(address.address);
+    final balanceSat = await wallet.getAddressBalanceSat(address.address);
 
     final addressWithOptionalData = address.copyWith(
       state: isUsed ? AddressStatus.used : AddressStatus.unused,
-      // balanceSat: balanceSat,
+      balanceSat: balanceSat,
       kind: kind,
     );
 

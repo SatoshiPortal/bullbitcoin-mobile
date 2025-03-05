@@ -3,6 +3,11 @@ import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:boltz/boltz.dart' as boltzLib;
 
 abstract class SwapRepository {
+  // FEES
+  Future<ReverseSwapFees> getReverseSwapFees();
+  Future<SubmarineSwapFees> getSubmarineSwapFees();
+  Future<ChainSwapFees> getChainSwapFees();
+
   // RECEIVE SWAPS
   Future<Swap> createLightningToLiquidSwap({
     required String mnemonic,
