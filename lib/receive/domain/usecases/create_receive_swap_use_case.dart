@@ -25,6 +25,7 @@ class CreateReceiveSwapUseCase {
     required String walletId,
     required SwapType type,
     required int amountSat,
+    required LightningSwapFees fees,
   }) async {
     try {
       final wallet = await _walletManager.getWallet(walletId);
@@ -49,6 +50,13 @@ class CreateReceiveSwapUseCase {
 
       final swapRepository =
           wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
+      final btcElectrumUrl = wallet.network.isTestnet
+          ? ApiServiceConstants.bbElectrumTestUrlPath
+          : ApiServiceConstants.bbElectrumUrlPath;
+
+      final lbtcElectrumUrl = wallet.network.isTestnet
+          ? ApiServiceConstants.bbLiquidElectrumTestUrlPath
+          : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {
         case SwapType.lightningToBitcoin:
@@ -57,8 +65,8 @@ class CreateReceiveSwapUseCase {
             amountSat: amountSat,
             environment: environment,
             mnemonic: mnemonic.toString(),
-            electrumUrl: ApiServiceConstants
-                .bbElectrumUrlPath, // TODO: check if this should be test or mainnet following the environment
+            electrumUrl: btcElectrumUrl,
+            fees: fees,
           );
 
         case SwapType.lightningToLiquid:
@@ -67,8 +75,8 @@ class CreateReceiveSwapUseCase {
             amountSat: amountSat,
             environment: environment,
             mnemonic: mnemonic.toString(),
-            electrumUrl: ApiServiceConstants
-                .publicliquidElectrumTestUrlPath, // TODO: check if this should be test or mainnet following the environment
+            electrumUrl: lbtcElectrumUrl,
+            fees: fees,
           );
         default:
           throw Exception(

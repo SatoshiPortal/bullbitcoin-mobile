@@ -4,9 +4,9 @@ import 'package:boltz/boltz.dart' as boltzLib;
 
 abstract class SwapRepository {
   // FEES
-  Future<ReverseSwapFees> getReverseSwapFees();
-  Future<SubmarineSwapFees> getSubmarineSwapFees();
-  Future<ChainSwapFees> getChainSwapFees();
+  Future<ReverseSwapFeesAndLimits> getReverseSwapFeesAndLimits();
+  Future<SubmarineSwapFeesAndLimits> getSubmarineSwapFeesAndLimits();
+  Future<ChainSwapFeesAndLimits> getChainSwapFeesAndLimits();
 
   // RECEIVE SWAPS
   Future<Swap> createLightningToLiquidSwap({
@@ -15,6 +15,7 @@ abstract class SwapRepository {
     required int amountSat,
     required Environment environment,
     required String electrumUrl,
+    required LightningSwapFees fees,
   });
 
   // TODO: all claim/refund/coopsign methods can take swap objects instead of swapId strings
@@ -31,6 +32,7 @@ abstract class SwapRepository {
     required int amountSat,
     required Environment environment,
     required String electrumUrl,
+    required LightningSwapFees fees,
   });
 
   Future<String> claimLightningToBitcoinSwap({
@@ -45,6 +47,7 @@ abstract class SwapRepository {
     required String invoice,
     required Environment environment,
     required String electrumUrl,
+    required LightningSwapFees fees,
   });
   Future<void> coopSignBitcoinToLightningSwap({
     required String swapId,
@@ -60,6 +63,7 @@ abstract class SwapRepository {
     required String invoice,
     required Environment environment,
     required String electrumUrl,
+    required LightningSwapFees fees,
   });
   Future<void> coopSignLiquidToLightningSwap({
     required String swapId,
@@ -79,6 +83,7 @@ abstract class SwapRepository {
     required String lbtcElectrumUrl,
     String? receiveWalletId,
     String? receipientAddress,
+    required ChainSwapFees fees,
   });
 
   Future<Swap> createBitcoinToLiquidSwap({
@@ -90,6 +95,7 @@ abstract class SwapRepository {
     required String lbtcElectrumUrl,
     String? receiveWalletId,
     String? receipientAddress,
+    required ChainSwapFees fees,
   });
 
   Future<String> claimLiquidToBitcoinSwap({

@@ -31,6 +31,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required int amountSat,
     required String electrumUrl,
     Environment environment = Environment.mainnet,
+    required LightningSwapFees fees,
   }) async {
     final index = await _nextRevKeyIndex(walletId);
     final btcLnSwap = await _boltzLib.createBtcReverseSwap(
@@ -92,6 +93,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required int amountSat,
     required String electrumUrl,
     Environment environment = Environment.mainnet,
+    required LightningSwapFees fees,
   }) async {
     final index = await _nextRevKeyIndex(walletId);
     final lbtcLnSwap = await _boltzLib.createLBtcReverseSwap(
@@ -153,6 +155,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String invoice,
     required String electrumUrl,
     Environment environment = Environment.mainnet,
+    required LightningSwapFees fees,
   }) async {
     final index = await _nextSubKeyIndex(walletId);
     final btcLnSwap = await _boltzLib.createBtcSubmarineSwap(
@@ -231,6 +234,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String invoice,
     required String electrumUrl,
     Environment environment = Environment.mainnet,
+    required LightningSwapFees fees,
   }) async {
     final index = await _nextSubKeyIndex(walletId);
     final lbtcLnSwap = await _boltzLib.createLbtcSubmarineSwap(
@@ -311,6 +315,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String lbtcElectrumUrl,
     String? receiveWalletId,
     String? receipientAddress,
+    required ChainSwapFees fees,
   } // if toSelf is true
       ) async {
     final index = await _nextChainKeyIndex(sendWalletId);
@@ -350,6 +355,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String lbtcElectrumUrl,
     String? receiveWalletId,
     String? receipientAddress,
+    required ChainSwapFees fees,
   }) async {
     final index = await _nextChainKeyIndex(sendWalletId);
     final chainSwap = await _boltzLib.createLbtcToBtcChainSwap(
