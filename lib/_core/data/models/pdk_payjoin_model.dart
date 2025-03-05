@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:bb_mobile/_utils/uint_8_list_json_converter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'pdk_payjoin_model.freezed.dart';
@@ -10,16 +13,16 @@ sealed class PdkPayjoinModel with _$PdkPayjoinModel {
     required String receiver,
     required String walletId,
     required String pjUrl,
-    String? originalPsbt,
+    @Uint8ListJsonConverter() Uint8List? originalTxBytes,
     String? proposalPsbt,
-  }) = PdkReceivePayjoinModel;
+  }) = PdkPayjoinReceiverModel;
   const factory PdkPayjoinModel.send({
     required String uri,
     required String sender,
     required String walletId,
     required String originalPsbt,
     String? proposalPsbt,
-  }) = PdkSendPayjoinModel;
+  }) = PdkPayjoinSenderModel;
 
   factory PdkPayjoinModel.fromJson(Map<String, dynamic> json) =>
       _$PdkPayjoinModelFromJson(json);

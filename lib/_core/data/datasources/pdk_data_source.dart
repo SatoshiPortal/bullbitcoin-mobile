@@ -1,24 +1,28 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:isolate';
 
 import 'package:bb_mobile/_core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/models/pdk_input_pair_model.dart';
 import 'package:bb_mobile/_core/data/models/pdk_payjoin_model.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:payjoin_flutter/bitcoin_ffi.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:payjoin_flutter/receive.dart';
 import 'package:payjoin_flutter/send.dart';
 import 'package:payjoin_flutter/uri.dart';
 
 abstract class PdkDataSource {
-  Stream<PdkReceivePayjoinModel> get requestedPayjoins;
-  Stream<PdkSendPayjoinModel> get sentProposals;
-  Future<PdkReceivePayjoinModel> createReceiver({
+  Stream<PdkPayjoinReceiverModel> get requestedPayjoins;
+  Stream<PdkPayjoinSenderModel> get sentProposals;
+  Future<PdkPayjoinReceiverModel> createReceiver({
     required String walletId,
     required String address,
     bool isTestnet = false,
     int? expireAfterSec,
   });
-  Future<PdkSendPayjoinModel> createSender({
+  Future<PdkPayjoinSenderModel> createSender({
     required String walletId,
     required String bip21,
     required String originalPsbt,
@@ -27,6 +31,15 @@ abstract class PdkDataSource {
   Future<PdkPayjoinModel?> get(String id);
   Future<List<PdkPayjoinModel>> getAll();
   Future<void> delete(String id);
+  Future<PdkPayjoinReceiverModel> processRequest({
+    required String id,
+    required bool originalTxHasOwnedInputs,
+    bool originalTxHasSeenInputs = false,
+    required bool originalTxHasReceiverOutput,
+    required List<PdkInputPairModel> inputPairs,
+    required BigInt maxFeeRateSatPerVb,
+    required FutureOr<String> Function(String) processPsbt,
+  });
 }
 
 class PdkDataSourceImpl implements PdkDataSource {
@@ -34,10 +47,17 @@ class PdkDataSourceImpl implements PdkDataSource {
   final String _payjoinDirectoryUrl;
   final Dio _dio;
   final KeyValueStorageDataSource<String> _storage;
-  final StreamController<PdkReceivePayjoinModel> _payjoinRequestedController =
+  final StreamController<PdkPayjoinReceiverModel> _payjoinRequestedController =
       StreamController.broadcast();
-  final StreamController<PdkSendPayjoinModel> _proposalSentController =
+  final StreamController<PdkPayjoinSenderModel> _proposalSentController =
       StreamController.broadcast();
+
+  // Background processing
+  Isolate? _receiversIsolate;
+  Isolate? _sendersIsolate;
+  SendPort? _receiversIsolatePort;
+  SendPort? _sendersIsolatePort;
+  final Duration _pollingInterval = const Duration(seconds: 5);
 
   PdkDataSourceImpl({
     String ohttpRelayUrl = 'https://pj.bobspacebkk.com',
@@ -50,15 +70,15 @@ class PdkDataSourceImpl implements PdkDataSource {
         _storage = storage;
 
   @override
-  Stream<PdkReceivePayjoinModel> get requestedPayjoins =>
+  Stream<PdkPayjoinReceiverModel> get requestedPayjoins =>
       _payjoinRequestedController.stream.asBroadcastStream();
 
   @override
-  Stream<PdkSendPayjoinModel> get sentProposals =>
+  Stream<PdkPayjoinSenderModel> get sentProposals =>
       _proposalSentController.stream.asBroadcastStream();
 
   @override
-  Future<PdkReceivePayjoinModel> createReceiver({
+  Future<PdkPayjoinReceiverModel> createReceiver({
     required String walletId,
     required String address,
     bool isTestnet = false,
@@ -83,16 +103,24 @@ class PdkDataSourceImpl implements PdkDataSource {
       );
 
       final pjUrl = await receiver.pjUrl();
+      final receiverJson = receiver.toJson();
+
+      // Start listening for a payjoin request from the sender in an isolate
+      if (_receiversIsolate == null) {
+        await _startReceiversIsolate();
+      }
+      // We can just send the pdk receiver json, since it contains the id and
+      //  so everything we need to obtain the model as well.
+      _receiversIsolatePort?.send(receiverJson);
+
+      // Create and store the model to keep track of the payjoin session
       final model = PdkPayjoinModel.receive(
         id: receiver.id(),
-        receiver: receiver.toJson(),
+        receiver: receiverJson,
         walletId: walletId,
         pjUrl: pjUrl.asString(),
-      ) as PdkReceivePayjoinModel;
-
+      ) as PdkPayjoinReceiverModel;
       await _store(model);
-
-      // TODO: Start listening for original psbt in isolate
 
       return model;
     } catch (e) {
@@ -101,7 +129,7 @@ class PdkDataSourceImpl implements PdkDataSource {
   }
 
   @override
-  Future<PdkSendPayjoinModel> createSender({
+  Future<PdkPayjoinSenderModel> createSender({
     required String walletId,
     required String bip21,
     required String originalPsbt,
@@ -125,27 +153,29 @@ class PdkDataSourceImpl implements PdkDataSource {
       minFeeRate: minFeeRateSatPerKwu,
     );
 
+    final senderJson = sender.toJson();
+
+    // Create and store the model with the data needed to keep track of the
+    //  payjoin session
     final model = PdkPayjoinModel.send(
       uri: uri.asString(),
-      sender: sender.toJson(),
+      sender: senderJson,
       walletId: walletId,
       originalPsbt: originalPsbt,
-    ) as PdkSendPayjoinModel;
-
+    ) as PdkPayjoinSenderModel;
     await _store(model);
 
-    // TODO: Start listening for proposals in isolate
+    // Start listening for a payjoin proposal from the receiver in an isolate
+    if (_sendersIsolate == null) {
+      await _startSendersIsolate();
+    }
+    // We should send the PdkPayjoinSenderModel json to the senders isolate,
+    //  since just the pdk sender json does not contain the uri to identify
+    //  the payjoin and retrieve the model
+    final modelJson = jsonEncode(model.toJson());
+    _sendersIsolatePort?.send(modelJson);
 
     return model;
-  }
-
-  Future<void> _store(PdkPayjoinModel model) async {
-    final value = jsonEncode(model.toJson());
-    if (model is PdkReceivePayjoinModel) {
-      await _storage.saveValue(key: model.id, value: value);
-    } else if (model is PdkSendPayjoinModel) {
-      await _storage.saveValue(key: model.uri, value: value);
-    }
   }
 
   @override
@@ -156,9 +186,9 @@ class PdkDataSourceImpl implements PdkDataSource {
     }
     final json = jsonDecode(value) as Map<String, dynamic>;
     if (json['uri'] != null) {
-      return PdkSendPayjoinModel.fromJson(json);
+      return PdkPayjoinSenderModel.fromJson(json);
     } else {
-      return PdkReceivePayjoinModel.fromJson(json);
+      return PdkPayjoinReceiverModel.fromJson(json);
     }
   }
 
@@ -170,9 +200,9 @@ class PdkDataSourceImpl implements PdkDataSource {
     for (final value in entries.values) {
       final json = jsonDecode(value) as Map<String, dynamic>;
       if (json['uri'] != null) {
-        models.add(PdkSendPayjoinModel.fromJson(json));
+        models.add(PdkPayjoinSenderModel.fromJson(json));
       } else {
-        models.add(PdkReceivePayjoinModel.fromJson(json));
+        models.add(PdkPayjoinReceiverModel.fromJson(json));
       }
     }
     return models;
@@ -183,37 +213,255 @@ class PdkDataSourceImpl implements PdkDataSource {
     await _storage.deleteValue(id);
   }
 
-  /*
-  Future<V2GetContext> _request({
-    required Sender sender,
+  @override
+  Future<PdkPayjoinReceiverModel> processRequest({
+    required String id,
+    required bool originalTxHasOwnedInputs,
+    bool originalTxHasSeenInputs = false,
+    required bool originalTxHasReceiverOutput,
+    required List<PdkInputPairModel> inputPairs,
+    required BigInt maxFeeRateSatPerVb,
+    required FutureOr<String> Function(String) processPsbt,
   }) async {
-    final (req, context) = await sender.extractV2(
-      ohttpProxyUrl: await Url.fromStr(_ohttpRelayUrl),
-    );
+    final model = await get(id) as PdkPayjoinReceiverModel?;
 
-    final res = await _dio.post(
-      req.url.asString(),
-      data: req.body,
-      options: Options(
-        headers: {
-          'Content-Type': req.contentType,
-        },
-        responseType: ResponseType.bytes,
+    if (model == null) {
+      throw Exception('No model found');
+    }
+
+    final receiver = Receiver.fromJson(model.receiver);
+    final request = await _getRequest(receiver: receiver);
+
+    if (request == null) {
+      throw Exception('No request found');
+    }
+
+    final interactiveReceiver = await request.assumeInteractiveReceiver();
+    final inputsNotOwned = await interactiveReceiver.checkInputsNotOwned(
+      isOwned: (_) => originalTxHasOwnedInputs,
+    );
+    final inputsNotSeen = await inputsNotOwned.checkNoInputsSeenBefore(
+      isKnown: (_) => originalTxHasSeenInputs,
+    );
+    final receiverOutputs = await inputsNotSeen.identifyReceiverOutputs(
+      isReceiverOutput: (_) => originalTxHasReceiverOutput,
+    );
+    final committedOutputs = await receiverOutputs.commitOutputs();
+
+    final candidateInputs = await Future.wait(
+      inputPairs.map(
+        (input) async => await InputPair.newInstance(
+          TxIn(
+            previousOutput: OutPoint(txid: input.txId, vout: input.vout),
+            scriptSig: await Script.newInstance(
+              rawOutputScript: input.scriptSigRawOutputScript,
+            ),
+            sequence: input.sequence,
+            witness: input.witness,
+          ),
+          PsbtInput(
+            witnessUtxo:
+                TxOut(value: input.value, scriptPubkey: input.scriptPubkey),
+            redeemScript: await Script.newInstance(
+              rawOutputScript: input.redeemScriptRawOutputScript,
+            ),
+            witnessScript: await Script.newInstance(
+              rawOutputScript: input.witnessScriptRawOutputScript,
+            ),
+          ),
+        ),
       ),
     );
 
-    final getCtx = await context.processResponse(
-      response: res.data as List<int>,
+    // Try to select a privacy preserving input pair, else just stick with the
+    //  first possible input pair.
+    InputPair inputPair = candidateInputs.first;
+    try {
+      inputPair = await committedOutputs.tryPreservingPrivacy(
+        candidateInputs: candidateInputs,
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+
+    final inputsContributed =
+        await committedOutputs.contributeInputs(replacementInputs: [inputPair]);
+    final inputsCommitted = await inputsContributed.commitInputs();
+    final proposal = await inputsCommitted.finalizeProposal(
+      processPsbt: processPsbt,
+      maxFeeRateSatPerVb: maxFeeRateSatPerVb,
     );
 
-    return getCtx;
+    // Now that the request is processed and the proposal is ready, send it to
+    //  the sender through the payjoin directory
+    await _proposePayjoin(proposal);
+
+    // Update the model with the proposal psbt so it can be known a proposal has
+    //  been sent
+    final proposalPsbt = await proposal.psbt();
+    final updatedModel = model.copyWith(
+      receiver: receiver.toJson(),
+      proposalPsbt: proposalPsbt,
+    );
+    await _store(updatedModel);
+
+    return updatedModel;
   }
 
-  @override
-  Future<UncheckedProposal?> getRequest({
-    required PdkReceivePayjoinModel payjoin,
+  Future<void> _store(PdkPayjoinModel model) async {
+    final value = jsonEncode(model.toJson());
+    if (model is PdkPayjoinReceiverModel) {
+      await _storage.saveValue(key: model.id, value: value);
+    } else if (model is PdkPayjoinSenderModel) {
+      await _storage.saveValue(key: model.uri, value: value);
+    }
+  }
+
+  /// Starts the isolate to listen for payjoin requests.
+  Future<void> _startReceiversIsolate() async {
+    // Receive isolate
+    final receivePort = ReceivePort();
+    _receiversIsolate =
+        await Isolate.spawn(_receiversIsolateEntryPoint, receivePort.sendPort);
+    _receiversIsolatePort = await receivePort.first as SendPort;
+
+    // Listen for payjoin requests from the receive isolate
+    receivePort.listen((data) async {
+      final id = data as String;
+      final model = await get(id);
+      if (model != null) {
+        _payjoinRequestedController.add(model as PdkPayjoinReceiverModel);
+      }
+    });
+  }
+
+  /// Starts the isolate to request and listen for payjoin proposals.
+  Future<void> _startSendersIsolate() async {
+    // Senders isolate
+    final receivePort = ReceivePort();
+    _sendersIsolate =
+        await Isolate.spawn(_sendersIsolateEntryPoint, receivePort.sendPort);
+    _sendersIsolatePort = await receivePort.first as SendPort;
+
+    // Listen for payjoin proposals from the senders isolate
+    receivePort.listen((data) async {
+      final uri = data as String;
+      final model = await get(uri);
+      if (model != null) {
+        _proposalSentController.add(model as PdkPayjoinSenderModel);
+      }
+    });
+  }
+
+  Future<void> _receiversIsolateEntryPoint(SendPort sendPort) async {
+    final receivePort = ReceivePort();
+    sendPort.send(receivePort.sendPort);
+    final Map<String, Receiver> receivers = {};
+
+    // Listen for and register new receivers sent from the main isolate
+    receivePort.listen((data) async {
+      final receiverJson = data as String;
+      final receiver = Receiver.fromJson(receiverJson);
+      receivers[receiver.id()] = receiver;
+    });
+
+    Timer.periodic(
+      _pollingInterval,
+      (Timer timer) async {
+        for (final receiver in receivers.values) {
+          final id = receiver.id();
+          try {
+            final request = await _getRequest(receiver: receiver);
+            if (request != null) {
+              final model = await get(id) as PdkPayjoinReceiverModel?;
+              if (model == null) {
+                throw PdkPayjoinNotFoundException(
+                  'Payjoin receiver with id $id not found',
+                );
+              }
+
+              // The original tx bytes are needed in the main isolate for
+              //  further processing so extract them here and store them through
+              //  the model
+              final originalTxBytes =
+                  await request.extractTxToScheduleBroadcast();
+              final updatedModel = model.copyWith(
+                receiver: receiver.toJson(),
+                originalTxBytes: originalTxBytes,
+              );
+              await _store(updatedModel);
+
+              // Notify the main isolate so it can be processed further
+              sendPort.send(id);
+
+              // Remove the receiver from the map
+              receivers.remove(id);
+            }
+          } catch (e) {
+            debugPrint(e.toString());
+            continue;
+          }
+        }
+      },
+    );
+  }
+
+  Future<void> _sendersIsolateEntryPoint(SendPort sendPort) async {
+    final receivePort = ReceivePort();
+    sendPort.send(receivePort.sendPort);
+    final Map<String, V2GetContext> senderContexts = {};
+
+    // Listen for and register new receivers sent from the main isolate
+    receivePort.listen((data) async {
+      final senderModelJson =
+          jsonDecode(data as String) as Map<String, dynamic>;
+      final senderModel = PdkPayjoinSenderModel.fromJson(senderModelJson);
+      final sender = Sender.fromJson(senderModel.sender);
+      final context = await _request(sender: sender);
+      senderContexts[senderModel.uri] = context;
+    });
+
+    Timer.periodic(
+      _pollingInterval,
+      (Timer timer) async {
+        for (final entry in senderContexts.entries) {
+          final uri = entry.key;
+          final context = entry.value;
+          try {
+            final proposalPsbt = await _getProposalPsbt(context: context);
+            if (proposalPsbt != null) {
+              final model = await get(uri) as PdkPayjoinSenderModel?;
+              if (model == null) {
+                throw PdkPayjoinNotFoundException(
+                  'Payjoin sender for uri $uri not found',
+                );
+              }
+
+              // The proposal psbt is needed in the main isolate for
+              //  further processing so store it in the model
+              final updatedModel = model.copyWith(
+                proposalPsbt: proposalPsbt,
+              );
+              await _store(updatedModel);
+
+              // Notify the main isolate so the payjoin can be processed further
+              sendPort.send(uri);
+
+              // Remove the sender from the map
+              senderContexts.remove(uri);
+            }
+          } catch (e) {
+            debugPrint(e.toString());
+            continue;
+          }
+        }
+      },
+    );
+  }
+
+  Future<UncheckedProposal?> _getRequest({
+    required Receiver receiver,
   }) async {
-    final receiver = Receiver.fromJson(payjoin.receiver);
     final (req, context) = await receiver.extractReq();
     final ohttpResponse = await _dio.post(
       req.url.asString(),
@@ -253,6 +501,31 @@ class PdkDataSourceImpl implements PdkDataSource {
     );
   }
 
+  Future<V2GetContext> _request({
+    required Sender sender,
+  }) async {
+    final (req, context) = await sender.extractV2(
+      ohttpProxyUrl: await Url.fromStr(_ohttpRelayUrl),
+    );
+
+    final res = await _dio.post(
+      req.url.asString(),
+      data: req.body,
+      options: Options(
+        headers: {
+          'Content-Type': req.contentType,
+        },
+        responseType: ResponseType.bytes,
+      ),
+    );
+
+    final getCtx = await context.processResponse(
+      response: res.data as List<int>,
+    );
+
+    return getCtx;
+  }
+
   Future<String?> _getProposalPsbt({required V2GetContext context}) async {
     final (req, reqCtx) =
         await context.extractReq(ohttpRelay: await Url.fromStr(_ohttpRelayUrl));
@@ -274,7 +547,13 @@ class PdkDataSourceImpl implements PdkDataSource {
     );
 
     return proposalPsbt;
-  }*/
+  }
+}
+
+class PdkPayjoinNotFoundException implements Exception {
+  final String message;
+
+  PdkPayjoinNotFoundException(this.message);
 }
 
 class ReceiveCreationException implements Exception {

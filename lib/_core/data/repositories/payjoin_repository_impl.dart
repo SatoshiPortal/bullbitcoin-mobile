@@ -14,14 +14,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Stream<ReceivePayjoin> get requestedPayjoins => _pdk.requestedPayjoins.map(
-        (event) => Payjoin.receive(
+        (event) => Payjoin.receiver(
           id: event.id,
           walletId: event.walletId,
         ) as ReceivePayjoin,
       );
   @override
   Stream<SendPayjoin> get sentProposals => _pdk.sentProposals.map(
-        (event) => Payjoin.send(
+        (event) => Payjoin.sender(
           uri: event.uri,
           walletId: event.walletId,
         ) as SendPayjoin,
@@ -41,7 +41,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       expireAfterSec: expireAfterSec,
     );
 
-    final payjoin = Payjoin.receive(
+    final payjoin = Payjoin.receiver(
       id: model.id,
       walletId: walletId,
     );
@@ -65,7 +65,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     );
 
     // Return a payjoin entity with send details
-    final payjoin = Payjoin.send(
+    final payjoin = Payjoin.sender(
       uri: model.uri,
       walletId: walletId,
     );
@@ -83,14 +83,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     final payjoins = models.map(
       (model) {
-        if (model is PdkReceivePayjoinModel) {
-          return Payjoin.receive(
+        if (model is PdkPayjoinReceiverModel) {
+          return Payjoin.receiver(
             id: model.id,
             walletId: model.walletId,
           );
         } else {
-          final sendModel = model as PdkSendPayjoinModel;
-          return Payjoin.send(
+          final sendModel = model as PdkPayjoinSenderModel;
+          return Payjoin.sender(
             uri: sendModel.uri,
             walletId: sendModel.walletId,
           );

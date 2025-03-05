@@ -4,14 +4,14 @@ part 'payjoin.freezed.dart';
 
 @freezed
 sealed class Payjoin with _$Payjoin {
-  const factory Payjoin.receive({
+  const factory Payjoin.receiver({
     required String id,
     required String walletId,
     String? broadcastedTxId,
     @Default(false) bool isExpired,
     @Default(false) bool isCompleted,
   }) = ReceivePayjoin;
-  const factory Payjoin.send({
+  const factory Payjoin.sender({
     required String uri,
     required String walletId,
     String? broadcastedTxId,
@@ -21,7 +21,7 @@ sealed class Payjoin with _$Payjoin {
   const Payjoin._();
 
   String get id => when(
-        receive: (id, _, __, ___, ____) => id,
-        send: (uri, _, __, ___, ____) => uri,
+        receiver: (id, _, __, ___, ____) => id,
+        sender: (uri, _, __, ___, ____) => uri,
       );
 }
