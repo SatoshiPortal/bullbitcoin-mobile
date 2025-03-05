@@ -11,6 +11,7 @@ import 'package:payjoin_flutter/bitcoin_ffi.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:payjoin_flutter/receive.dart';
 import 'package:payjoin_flutter/send.dart';
+import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:payjoin_flutter/uri.dart';
 
 abstract class PdkDataSource {
@@ -354,6 +355,9 @@ class PdkDataSourceImpl implements PdkDataSource {
   }
 
   Future<void> _receiversIsolateEntryPoint(SendPort sendPort) async {
+    // Initialize core library in the isolate too for the native pdk library
+    await core.init();
+
     final receivePort = ReceivePort();
     sendPort.send(receivePort.sendPort);
     final Map<String, Receiver> receivers = {};
@@ -407,6 +411,9 @@ class PdkDataSourceImpl implements PdkDataSource {
   }
 
   Future<void> _sendersIsolateEntryPoint(SendPort sendPort) async {
+    // Initialize core library in the isolate too for the native pdk library
+    await core.init();
+
     final receivePort = ReceivePort();
     sendPort.send(receivePort.sendPort);
     final Map<String, V2GetContext> senderContexts = {};
