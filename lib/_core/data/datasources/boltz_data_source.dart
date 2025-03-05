@@ -1,9 +1,10 @@
+import 'package:bb_mobile/_core/data/datasources/boltz_storage_data_source.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart' as swap_entity;
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:boltz/boltz.dart';
 
-abstract class BoltzLibraryDataSource {
+abstract class BoltzDataSource {
   // Reverse Swaps
   Future<ReverseFeesAndLimits> getReverseFeesAndLimits();
   Future<BtcLnSwap> createBtcReverseSwap(
@@ -164,19 +165,25 @@ abstract class BoltzLibraryDataSource {
   void subscribeToSwaps(List<String> swapIds);
   void unsubscribeToSwaps(List<String> swapIds);
   void resetStream();
+  // STORAGE
+  BoltzStorageDataSourceImpl get storage;
 }
 
-class BoltzLibraryDataSourceImpl implements BoltzLibraryDataSource {
+class BoltzDataSourceImpl implements BoltzDataSource {
   final String _url;
 
   late BoltzWebSocket _boltzWebSocket;
+  final BoltzStorageDataSourceImpl _boltzStore;
 
-  BoltzLibraryDataSourceImpl({
+  BoltzDataSourceImpl({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
-  }) : _url = url {
+    required BoltzStorageDataSourceImpl boltzStore,
+  })  : _url = url,
+        _boltzStore = boltzStore {
     initializBoltzWebSocket();
   }
 
+  BoltzStorageDataSourceImpl get storage => _boltzStore;
   // REVERSE SWAPS
   @override
   Future<ReverseFeesAndLimits> getReverseFeesAndLimits() async {

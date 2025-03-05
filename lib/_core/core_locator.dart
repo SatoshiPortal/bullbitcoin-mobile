@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_core/data/datasources/bip32_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/bip39_word_list_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/boltz_api_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/boltz_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/descriptor_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_data_source.dart';
@@ -130,14 +130,16 @@ class CoreLocator {
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltzLib: BoltzLibraryDataSourceImpl(),
-        boltzStore: BoltzStorageDataSourceImpl(
-          secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
-            instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
-          ),
-          localSwapStorage: locator<KeyValueStorageDataSource<String>>(
-            instanceName: LocatorInstanceNameConstants
-                .boltzSwapsHiveStorageDataSourceInstanceName,
+        boltz: BoltzDataSourceImpl(
+          boltzStore: BoltzStorageDataSourceImpl(
+            secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
+              instanceName:
+                  LocatorInstanceNameConstants.secureStorageDataSource,
+            ),
+            localSwapStorage: locator<KeyValueStorageDataSource<String>>(
+              instanceName: LocatorInstanceNameConstants
+                  .boltzSwapsHiveStorageDataSourceInstanceName,
+            ),
           ),
         ),
       ),
@@ -146,16 +148,17 @@ class CoreLocator {
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltzLib: BoltzLibraryDataSourceImpl(
+        boltz: BoltzDataSourceImpl(
           url: ApiServiceConstants.boltzTestnetUrlPath,
-        ),
-        boltzStore: BoltzStorageDataSourceImpl(
-          secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
-            instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
-          ),
-          localSwapStorage: locator<KeyValueStorageDataSource<String>>(
-            instanceName: LocatorInstanceNameConstants
-                .boltzSwapsHiveStorageDataSourceInstanceName,
+          boltzStore: BoltzStorageDataSourceImpl(
+            secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
+              instanceName:
+                  LocatorInstanceNameConstants.secureStorageDataSource,
+            ),
+            localSwapStorage: locator<KeyValueStorageDataSource<String>>(
+              instanceName: LocatorInstanceNameConstants
+                  .boltzSwapsHiveStorageDataSourceInstanceName,
+            ),
           ),
         ),
       ),
