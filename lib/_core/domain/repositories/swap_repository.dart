@@ -147,12 +147,12 @@ abstract class SwapRepository {
     required String boltzStatus,
   });
 
-  Future<Swap> getLbtcLnSwapAndAction({
+  Future<Swap> updateLbtcLnSwapStatus({
     required String swapId,
     required String boltzStatus,
   });
 
-  Future<Swap> getChainSwapAndAction({
+  Future<Swap> updateChainSwapStatus({
     required String swapId,
     required String boltzStatus,
   });

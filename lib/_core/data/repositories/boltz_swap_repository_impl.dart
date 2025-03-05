@@ -52,7 +52,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       tryCooperate: true,
     );
 
-    // Broadcast the transaction
     return await _boltz.broadcastBtcLnSwap(
         swapId: swapId, signedTxHex: txid, broadcastViaBoltz: false);
   }
@@ -92,7 +91,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       tryCooperate: true,
     );
 
-    // Broadcast the transaction
     return await _boltz.broadcastLbtcLnSwap(
       swapId: swapId,
       signedTxHex: signedTxHex,
@@ -144,7 +142,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       tryCooperate: true,
     );
 
-    // Broadcast the transaction
     return await _boltz.broadcastBtcLnSwap(
       swapId: swapId,
       signedTxHex: signedTxHex,
@@ -196,7 +193,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       tryCooperate: true,
     );
 
-    // Broadcast the transaction
     return await _boltz.broadcastLbtcLnSwap(
       swapId: swapId,
       signedTxHex: signedTxHex,
@@ -273,7 +269,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       tryCooperate: true,
     );
 
-    // Broadcast the transaction
     return await _boltz.broadcastChainSwapClaim(
       swapId: swapId,
       signedTxHex: signedTxHex,
@@ -296,7 +291,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       tryCooperate: true,
     );
 
-    // Broadcast the transaction
     return await _boltz.broadcastChainSwapClaim(
       swapId: swapId,
       signedTxHex: signedTxHex,
@@ -317,7 +311,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       tryCooperate: true,
     );
 
-    // Broadcast the transaction
     return await _boltz.broadcastChainSwapRefund(
       swapId: swapId,
       signedTxHex: signedTxHex,
@@ -338,7 +331,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       tryCooperate: true,
     );
 
-    // Broadcast the transaction
     return await _boltz.broadcastChainSwapRefund(
       swapId: swapId,
       signedTxHex: signedTxHex,
@@ -366,7 +358,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       status: boltzStatus,
     );
 
-    // Return updated swap
     final swap = await _boltz.storage.get(swapId);
     if (swap == null) {
       throw "No swap found after status update";
@@ -375,7 +366,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<Swap> getLbtcLnSwapAndAction({
+  Future<Swap> updateLbtcLnSwapStatus({
     required String swapId,
     required String boltzStatus,
   }) async {
@@ -384,7 +375,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       status: boltzStatus,
     );
 
-    // Return updated swap
     final swap = await _boltz.storage.get(swapId);
     if (swap == null) {
       throw "No swap found after status update";
@@ -393,7 +383,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<Swap> getChainSwapAndAction({
+  Future<Swap> updateChainSwapStatus({
     required String swapId,
     required String boltzStatus,
   }) async {
@@ -402,7 +392,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       status: boltzStatus,
     );
 
-    // Return updated swap
     final swap = await _boltz.storage.get(swapId);
     if (swap == null) {
       throw "No swap found after status update";
@@ -571,7 +560,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  // Next key index utilities
   Future<int> _nextRevKeyIndex(String walletId) async {
     final swaps = await _getRevSwapsForWallet(walletId);
     final nextWalletIndex =
