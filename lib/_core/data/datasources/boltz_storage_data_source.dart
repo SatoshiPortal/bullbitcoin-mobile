@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:bb_mobile/_core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/models/swap_model.dart';
-import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:boltz/boltz.dart';
 
@@ -107,15 +106,5 @@ class BoltzStorageDataSourceImpl implements BoltzStorageDataSource {
     final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
     final jsonSwap = await _secureSwapStorage.getValue(key) as String;
     return ChainSwap.fromJson(jsonStr: jsonSwap);
-  }
-}
-
-extension EnvironmentToChain on Environment {
-  Chain toBtcChain() {
-    return this == Environment.mainnet ? Chain.bitcoin : Chain.bitcoinTestnet;
-  }
-
-  Chain toLbtcChain() {
-    return this == Environment.mainnet ? Chain.liquid : Chain.liquidTestnet;
   }
 }

@@ -836,7 +836,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 }
 
-/// Extension method to convert from Boltz library types to our domain entities
 extension ConvertReverseFeesAndLimits on boltz_types.ReverseFeesAndLimits {
   ReverseSwapFeesAndLimits toDomainEntity() {
     return ReverseSwapFeesAndLimits(
@@ -850,13 +849,11 @@ extension ConvertReverseFeesAndLimits on boltz_types.ReverseFeesAndLimits {
       ),
       bitcoinFees: LightningSwapFees(
         percentage: btcFees.percentage,
-        minerFees:
-            btcFees.minerFees.lockup.toInt() + btcFees.minerFees.claim.toInt(),
+        minerFees: btcFees.minerFees.lockup.toInt(),
       ),
       liquidFees: LightningSwapFees(
         percentage: lbtcFees.percentage,
-        minerFees: lbtcFees.minerFees.lockup.toInt() +
-            lbtcFees.minerFees.claim.toInt(),
+        minerFees: lbtcFees.minerFees.lockup.toInt(),
       ),
     );
   }

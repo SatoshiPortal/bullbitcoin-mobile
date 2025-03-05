@@ -4,13 +4,12 @@ import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dar
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
-import 'package:boltz/boltz.dart' as boltz_type;
 
 class SwapWatcherServiceImpl implements SwapWatcherService {
   final WalletManagerService _walletManager;
   final BoltzSwapRepositoryImpl _boltzRepo;
 
-  StreamSubscription<boltz_type.SwapStreamStatus>? _swapSubscription;
+  StreamSubscription<(String, String, String?)>? _swapSubscription;
 
   SwapWatcherServiceImpl({
     required WalletManagerService walletManager,
@@ -20,9 +19,18 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
 
   @override
   Future<void> startWatching() async {
-    _swapSubscription = _boltzRepo.stream.listen(
-      (event) async {
-        await _processSwap(swapId: event.id, status: event.status.toString());
+    _swapSubscription = _boltzRepo.stream
+        .map(
+      (swapStatus) =>
+          (swapStatus.id, swapStatus.status.toString(), swapStatus.error),
+    )
+        .listen(
+      (tuple) async {
+        // tuple is (String, String)
+        final swapId = tuple.$1;
+        final statusString = tuple.$2;
+
+        await _processSwap(swapId: swapId, status: statusString);
       },
       onError: (error) {
         print('Swap stream error: $error');
