@@ -18,8 +18,6 @@ abstract class SwapRepository {
     required String swapId,
     required String liquidAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
 
   Future<Swap> createLightningToBitcoinSwap({
@@ -34,8 +32,6 @@ abstract class SwapRepository {
     required String swapId,
     required String bitcoinAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
   // SEND SWAPS
   Future<Swap> createBitcoinToLightningSwap({
@@ -52,8 +48,6 @@ abstract class SwapRepository {
     required String swapId,
     required String bitcoinAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
   Future<Swap> createLiquidToLightningSwap({
     required String mnemonic,
@@ -69,8 +63,6 @@ abstract class SwapRepository {
     required String swapId,
     required String liquidAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
   // CHAIN SWAPS
   Future<Swap> createLiquidToBitcoinSwap({
@@ -80,8 +72,8 @@ abstract class SwapRepository {
     required Environment environment,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
-    required bool toSelf,
     String? receiveWalletId,
+    String? receipientAddress,
   });
 
   Future<Swap> createBitcoinToLiquidSwap({
@@ -91,8 +83,8 @@ abstract class SwapRepository {
     required Environment environment,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
-    required bool toSelf,
     String? receiveWalletId,
+    String? receipientAddress,
   });
 
   Future<String> claimLiquidToBitcoinSwap({
@@ -100,8 +92,6 @@ abstract class SwapRepository {
     required String bitcoinClaimAddress,
     required String liquidRefundAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
 
   Future<String> claimBitcoinToLiquidSwap({
@@ -109,24 +99,18 @@ abstract class SwapRepository {
     required String liquidClaimAddress,
     required String bitcoinRefundAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
 
   Future<String> refundLiquidToBitcoinSwap({
     required String swapId,
     required String liquidRefundAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
 
   Future<String> refundBitcoinToLiquidSwap({
     required String swapId,
     required String bitcoinRefundAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
 
   // SWAP STORAGE UTILITY

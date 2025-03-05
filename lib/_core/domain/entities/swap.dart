@@ -65,7 +65,6 @@ class Swap with _$Swap {
 @freezed
 class ChainSwapDetails with _$ChainSwapDetails {
   const factory ChainSwapDetails({
-    required bool toSelf,
     required String sendWalletId,
     String? sendTxid,
     String? receiveWalletId,
@@ -75,6 +74,8 @@ class ChainSwapDetails with _$ChainSwapDetails {
     String? refundAddress,
   }) = _ChainSwapDetails;
   const ChainSwapDetails._();
+
+  bool get toSelf => receiveWalletId == null && receiveAddress != null;
 
   factory ChainSwapDetails.fromJson(Map<String, dynamic> json) =>
       _$ChainSwapDetailsFromJson(json);

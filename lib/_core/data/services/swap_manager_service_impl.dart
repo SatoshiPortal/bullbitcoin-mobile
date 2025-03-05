@@ -36,11 +36,11 @@ class SwapManagerServiceImpl implements SwapManagerService {
           case NextSwapAction.wait:
             return;
           case NextSwapAction.claim:
-            await _processReceiveBtcClaim(swap: swap);
+            await _processReceiveLnToBitcoinClaim(swap: swap);
           case NextSwapAction.coopSign:
-            await _processSendBtcCoopSign(swap: swap);
+            await _processSendBitcoinToLnCoopSign(swap: swap);
           case NextSwapAction.refund:
-            await _processSendBtcRefund(swap: swap);
+            await _processSendBitcoinToLnRefund(swap: swap);
           case NextSwapAction.close:
           // TODO: Close swap repository method
           // TODO: Stop listening to swap ID in stream
@@ -55,11 +55,11 @@ class SwapManagerServiceImpl implements SwapManagerService {
           case NextSwapAction.wait:
             return;
           case NextSwapAction.claim:
-            await _processReceiveLbtcClaim(swap: swap);
+            await _processReceiveLnToLiquidClaim(swap: swap);
           case NextSwapAction.coopSign:
-            await _processSendLbtcCoopSign(swap: swap);
+            await _processSendLiquidToLnCoopSign(swap: swap);
           case NextSwapAction.refund:
-            await _processSendLbtcRefund(swap: swap);
+            await _processSendLiquidToLnRefund(swap: swap);
           case NextSwapAction.close:
           // TODO: Close swap repository method
           // TODO: Stop listening to swap ID in stream
@@ -73,11 +73,11 @@ class SwapManagerServiceImpl implements SwapManagerService {
           case NextSwapAction.wait:
             return;
           case NextSwapAction.claim:
-            await _processChainBtcClaim(swap: swap);
+            await _processChainLiquidToBitcoinClaim(swap: swap);
           case NextSwapAction.coopSign:
             return;
           case NextSwapAction.refund:
-            await _processChainLbtcRefund(swap: swap);
+            await _processChainLiquidToBitcoinRefund(swap: swap);
           case NextSwapAction.close:
           // TODO: Close swap repository method
           // TODO: Stop listening to swap ID in stream
@@ -91,11 +91,11 @@ class SwapManagerServiceImpl implements SwapManagerService {
           case NextSwapAction.wait:
             return;
           case NextSwapAction.claim:
-            await _processChainLbtcClaim(swap: swap);
+            await _processChainBitcoinToLiquidClaim(swap: swap);
           case NextSwapAction.coopSign:
             return;
           case NextSwapAction.refund:
-            await _processChainBtcRefund(swap: swap);
+            await _processChainBitcoinToLiquidRefund(swap: swap);
           // TODO: add label to txid
           case NextSwapAction.close:
           // TODO: Close swap repository method
@@ -105,7 +105,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
     return;
   }
 
-  Future<void> _processReceiveBtcClaim({
+  Future<void> _processReceiveLnToBitcoinClaim({
     required Swap swap,
   }) async {
     if (swap.receiveSwapDetails == null) {
@@ -123,14 +123,12 @@ class SwapManagerServiceImpl implements SwapManagerService {
     final claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
       swapId: swap.id,
       networkFees: networkFees,
-      tryCooperate: true,
-      broadcastViaBoltz: false,
       bitcoinAddress: address.address,
     );
     // TODO: add label to txid
   }
 
-  Future<void> _processSendBtcRefund({
+  Future<void> _processSendBitcoinToLnRefund({
     required Swap swap,
   }) async {
     if (swap.sendSwapDetails == null) {
@@ -148,13 +146,11 @@ class SwapManagerServiceImpl implements SwapManagerService {
       swapId: swap.id,
       bitcoinAddress: address.address,
       networkFees: networkFees,
-      tryCooperate: true,
-      broadcastViaBoltz: false,
     );
     // TODO: add label to txid
   }
 
-  Future<void> _processReceiveLbtcClaim({
+  Future<void> _processReceiveLnToLiquidClaim({
     required Swap swap,
   }) async {
     if (swap.receiveSwapDetails == null) {
@@ -171,14 +167,12 @@ class SwapManagerServiceImpl implements SwapManagerService {
     final claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
       swapId: swap.id,
       networkFees: networkFees,
-      tryCooperate: true,
-      broadcastViaBoltz: false,
       liquidAddress: address.address,
     );
     // TODO: add label to txid
   }
 
-  Future<void> _processSendLbtcRefund({
+  Future<void> _processSendLiquidToLnRefund({
     required Swap swap,
   }) async {
     if (swap.sendSwapDetails == null) {
@@ -196,13 +190,11 @@ class SwapManagerServiceImpl implements SwapManagerService {
       swapId: swap.id,
       liquidAddress: address.address,
       networkFees: networkFees,
-      tryCooperate: true,
-      broadcastViaBoltz: false,
     );
     // TODO: add label to txid
   }
 
-  Future<void> _processSendBtcCoopSign({
+  Future<void> _processSendBitcoinToLnCoopSign({
     required Swap swap,
   }) async {
     if (swap.sendSwapDetails == null) {
@@ -213,7 +205,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
     );
   }
 
-  Future<void> _processSendLbtcCoopSign({
+  Future<void> _processSendLiquidToLnCoopSign({
     required Swap swap,
   }) async {
     if (swap.sendSwapDetails == null) {
@@ -224,7 +216,7 @@ class SwapManagerServiceImpl implements SwapManagerService {
     );
   }
 
-  Future<void> _processChainBtcClaim({
+  Future<void> _processChainLiquidToBitcoinClaim({
     required Swap swap,
   }) async {
     if (swap.chainSwapDetails == null) {
@@ -247,15 +239,13 @@ class SwapManagerServiceImpl implements SwapManagerService {
     final claimTxId = await _boltzRepo.claimLiquidToBitcoinSwap(
       swapId: swap.id,
       networkFees: networkFees,
-      tryCooperate: true,
-      broadcastViaBoltz: false,
       bitcoinClaimAddress: claimAddress.address,
       liquidRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
   }
 
-  Future<void> _processChainBtcRefund({
+  Future<void> _processChainBitcoinToLiquidRefund({
     required Swap swap,
   }) async {
     if (swap.chainSwapDetails == null) {
@@ -272,14 +262,12 @@ class SwapManagerServiceImpl implements SwapManagerService {
     await _boltzRepo.refundBitcoinToLiquidSwap(
       swapId: swap.id,
       networkFees: networkFees,
-      tryCooperate: true,
-      broadcastViaBoltz: false,
       bitcoinRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
   }
 
-  Future<void> _processChainLbtcClaim({
+  Future<void> _processChainBitcoinToLiquidClaim({
     required Swap swap,
   }) async {
     if (swap.chainSwapDetails == null) {
@@ -302,15 +290,13 @@ class SwapManagerServiceImpl implements SwapManagerService {
     final claimTxId = await _boltzRepo.claimBitcoinToLiquidSwap(
       swapId: swap.id,
       networkFees: networkFees,
-      tryCooperate: true,
-      broadcastViaBoltz: false,
       liquidClaimAddress: claimAddress.address,
       bitcoinRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
   }
 
-  Future<void> _processChainLbtcRefund({
+  Future<void> _processChainLiquidToBitcoinRefund({
     required Swap swap,
   }) async {
     if (swap.chainSwapDetails == null) {
@@ -327,8 +313,6 @@ class SwapManagerServiceImpl implements SwapManagerService {
     await _boltzRepo.refundLiquidToBitcoinSwap(
       swapId: swap.id,
       networkFees: networkFees,
-      tryCooperate: true,
-      broadcastViaBoltz: false,
       liquidRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid

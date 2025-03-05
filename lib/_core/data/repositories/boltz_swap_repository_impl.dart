@@ -7,8 +7,7 @@ import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
 import 'package:boltz/boltz.dart' as boltz_types;
-// ignore: implementation_imports
-// TODO: is this okay?
+// TODO: fallback to script path spend if coop fails
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzLibraryDataSource _boltzLib;
@@ -62,22 +61,20 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<String> claimLightningToBitcoinSwap({
     required String bitcoinAddress,
-    required bool broadcastViaBoltz,
     required String swapId,
     required NetworkFees networkFees,
-    required bool tryCooperate,
   }) async {
     final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
     final signedTxHex = await _boltzLib.claimBtcReverseSwap(
       btcLnSwap,
       bitcoinAddress,
       networkFees,
-      tryCooperate,
+      true,
     );
     final txid = await _boltzLib.broadcastBtcLnSwap(
       btcLnSwap,
       signedTxHex,
-      broadcastViaBoltz,
+      false,
     );
     await _updateClaimedReceiveSwap(
       swapId: swapId,
@@ -127,20 +124,18 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String liquidAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   }) async {
     final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
     final signedTxHex = await _boltzLib.claimLBtcReverseSwap(
       lbtcLnSwap,
       liquidAddress,
       networkFees,
-      tryCooperate,
+      true,
     );
     final txid = await _boltzLib.broadcastLbtcLnSwap(
       lbtcLnSwap,
       signedTxHex,
-      broadcastViaBoltz,
+      false,
     );
     await _updateClaimedReceiveSwap(
       swapId: lbtcLnSwap.id,
@@ -204,8 +199,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String bitcoinAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   }) async {
     final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
 
@@ -213,13 +206,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       btcLnSwap,
       bitcoinAddress,
       networkFees,
-      tryCooperate,
+      true,
     );
     // TODO: if coop fails attempt script path spend
     final txid = await _boltzLib.broadcastBtcLnSwap(
       btcLnSwap,
       signedTxHex,
-      broadcastViaBoltz,
+      false,
     );
     await _updateRefundedSendSwap(
       swapId: swapId,
@@ -284,8 +277,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String liquidAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   }) async {
     final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
 
@@ -293,13 +284,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       lbtcLnSwap,
       liquidAddress,
       networkFees,
-      tryCooperate,
+      true,
     );
     // TODO: if coop fails attempt script path spend
     final txid = await _boltzLib.broadcastLbtcLnSwap(
       lbtcLnSwap,
       signedTxHex,
-      broadcastViaBoltz,
+      false,
     );
     await _updateRefundedSendSwap(
       swapId: swapId,
@@ -318,7 +309,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required Environment environment,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
-    required bool toSelf,
     String? receiveWalletId,
     String? receipientAddress,
   } // if toSelf is true
@@ -342,7 +332,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       keyIndex: index,
       chainSwapDetails: ChainSwapDetails(
         sendWalletId: sendWalletId,
-        toSelf: toSelf,
         receiveWalletId: receiveWalletId,
         receiveAddress: receipientAddress,
       ),
@@ -359,7 +348,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required Environment environment,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
-    required bool toSelf,
     String? receiveWalletId,
     String? receipientAddress,
   }) async {
@@ -382,7 +370,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       keyIndex: index,
       chainSwapDetails: ChainSwapDetails(
         sendWalletId: sendWalletId,
-        toSelf: toSelf,
         receiveWalletId: receiveWalletId,
         receiveAddress: receipientAddress,
       ),
@@ -394,11 +381,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<String> claimLiquidToBitcoinSwap({
     required String bitcoinClaimAddress,
-    required bool broadcastViaBoltz,
     required String swapId,
     required String liquidRefundAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
   }) async {
     final chainSwap = await _boltzStore.getChainSwap(swapId);
     final signedTxHex = await _boltzLib.claimLbtcToBtcChainSwap(
@@ -406,12 +391,12 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       bitcoinClaimAddress,
       liquidRefundAddress,
       networkFees,
-      tryCooperate,
+      true,
     );
     final txid = await _boltzLib.broadcastChainSwapClaim(
       chainSwap,
       signedTxHex,
-      broadcastViaBoltz,
+      false,
     );
     await _updateClaimedChainSwap(
       swapId: chainSwap.id,
@@ -424,11 +409,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<String> claimBitcoinToLiquidSwap({
     required String bitcoinRefundAddress,
-    required bool broadcastViaBoltz,
     required String swapId,
     required String liquidClaimAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
   }) async {
     final chainSwap = await _boltzStore.getChainSwap(swapId);
 
@@ -437,12 +420,12 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       liquidClaimAddress,
       bitcoinRefundAddress,
       networkFees,
-      tryCooperate,
+      true,
     );
     final txid = await _boltzLib.broadcastChainSwapClaim(
       chainSwap,
       signedTxHex,
-      broadcastViaBoltz,
+      false,
     );
     await _updateClaimedChainSwap(
       swapId: swapId,
@@ -455,10 +438,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<String> refundBitcoinToLiquidSwap({
     required String bitcoinRefundAddress,
-    required bool broadcastViaBoltz,
     required String swapId,
     required NetworkFees networkFees,
-    required bool tryCooperate,
   }) async {
     final chainSwap = await _boltzStore.getChainSwap(swapId);
 
@@ -466,13 +447,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       chainSwap,
       bitcoinRefundAddress,
       networkFees,
-      tryCooperate,
+      true,
     );
     // TODO: if coop fails attempt script path spend
     final txid = await _boltzLib.broadcastChainSwapRefund(
       chainSwap,
       signedTxHex,
-      broadcastViaBoltz,
+      false,
     );
     await _updateRefundedSendSwap(
       swapId: swapId,
@@ -487,8 +468,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String liquidRefundAddress,
     required NetworkFees networkFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   }) async {
     final chainSwap = await _boltzStore.getChainSwap(swapId);
 
@@ -496,13 +475,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       chainSwap,
       liquidRefundAddress,
       networkFees,
-      tryCooperate,
+      true,
     );
     // TODO: if coop fails attempt script path spend
     final txid = await _boltzLib.broadcastChainSwapRefund(
       chainSwap,
       signedTxHex,
-      broadcastViaBoltz,
+      false,
     );
     await _updateRefundedSendSwap(
       swapId: chainSwap.id,
