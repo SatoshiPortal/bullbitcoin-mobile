@@ -3,13 +3,13 @@ import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
 abstract class PayjoinRepository {
   Stream<ReceivePayjoin> get requestedPayjoins;
   Stream<SendPayjoin> get sentProposals;
-  Future<ReceivePayjoin> createReceivePayjoin({
+  Future<ReceivePayjoin> createPayjoinReceiver({
     required String walletId,
     required bool isTestnet,
     required String address,
     int? expireAfterSec,
   });
-  Future<SendPayjoin> createSendPayjoin({
+  Future<SendPayjoin> createPayjoinSender({
     required String walletId,
     required String bip21,
     required String originalPsbt,

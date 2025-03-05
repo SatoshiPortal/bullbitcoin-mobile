@@ -28,7 +28,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
 
   @override
-  Future<ReceivePayjoin> createReceivePayjoin({
+  Future<ReceivePayjoin> createPayjoinReceiver({
     required String walletId,
     required String address,
     required bool isTestnet,
@@ -50,7 +50,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   @override
-  Future<SendPayjoin> createSendPayjoin({
+  Future<SendPayjoin> createPayjoinSender({
     required String walletId,
     required String bip21,
     required String originalPsbt,

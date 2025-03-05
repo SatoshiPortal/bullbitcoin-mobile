@@ -24,7 +24,7 @@ abstract class PdkDataSource {
   Future<PdkPayjoinReceiverModel> createReceiver({
     required String walletId,
     required String address,
-    bool isTestnet = false,
+    required bool isTestnet,
     int? expireAfterSec,
   });
   Future<PdkPayjoinSenderModel> createSender({
@@ -88,7 +88,7 @@ class PdkDataSourceImpl implements PdkDataSource {
   Future<PdkPayjoinReceiverModel> createReceiver({
     required String walletId,
     required String address,
-    bool isTestnet = false,
+    required bool isTestnet,
     int? expireAfterSec,
   }) async {
     try {
