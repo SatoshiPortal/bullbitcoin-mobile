@@ -15,7 +15,11 @@ import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:payjoin_flutter/uri.dart';
 
 abstract class PdkDataSource {
+  // requestedPayjoins is a stream that emits a PdkPayjoinReceiverModel every
+  //  time a payjoin request (original tx psbt) is received from a sender.
   Stream<PdkPayjoinReceiverModel> get requestedPayjoins;
+  // sentProposals is a stream that emits a PdkPayjoinSenderModel every time a
+  //  payjoin proposal (payjoin tx psbt) was sent by a receiver.
   Stream<PdkPayjoinSenderModel> get sentProposals;
   Future<PdkPayjoinReceiverModel> createReceiver({
     required String walletId,
@@ -68,7 +72,9 @@ class PdkDataSourceImpl implements PdkDataSource {
   })  : _ohttpRelayUrl = ohttpRelayUrl,
         _payjoinDirectoryUrl = payjoinDirectoryUrl,
         _dio = dio,
-        _storage = storage;
+        _storage = storage {
+    _resumePayjoins();
+  }
 
   @override
   Stream<PdkPayjoinReceiverModel> get requestedPayjoins =>
@@ -554,6 +560,48 @@ class PdkDataSourceImpl implements PdkDataSource {
     );
 
     return proposalPsbt;
+  }
+
+  Future<void> _resumePayjoins() async {
+    final models = await getAll();
+    for (final model in models) {
+      if (model is PdkPayjoinReceiverModel) {
+        if (model.originalTxBytes == null) {
+          // If the original tx bytes are not present, it means the receiver
+          //  needs to listen for a payjoin request from the sender, we do this
+          //  in the isolate.
+          if (_receiversIsolate == null) {
+            // Start the isolate if it is not running yet
+            await _startReceiversIsolate();
+          }
+          _receiversIsolatePort?.send(model.receiver);
+        } else if (model.proposalPsbt == null) {
+          // If the original tx bytes are present but the proposal psbt is not,
+          //  it means the receiver has received a payjoin request and it should
+          //  be processed with help of upper layers, so we notify them through
+          //  the stream.
+          _payjoinRequestedController.add(model);
+        }
+      } else if (model is PdkPayjoinSenderModel) {
+        if (model.proposalPsbt == null) {
+          // If the proposal psbt is not present, it means no proposal has been
+          //  sent yet, so we need to request one from the receiver through the
+          //  payjoin directory. We do this and wait for the proposal in the
+          //  isolate.
+          if (_sendersIsolate == null) {
+            // Start the isolate if it is not running yet
+            await _startSendersIsolate();
+          }
+          final modelJson = jsonEncode(model.toJson());
+          _sendersIsolatePort?.send(modelJson);
+        } else {
+          // If the proposal psbt is present, it means a payjoin proposal was
+          //  sent by the receiver already and it should be processed and
+          //  broadcasted by upper layers, so we notify them through the stream.
+          _proposalSentController.add(model);
+        }
+      }
+    }
   }
 }
 

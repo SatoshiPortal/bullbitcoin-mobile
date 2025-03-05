@@ -15,6 +15,7 @@ sealed class PdkPayjoinModel with _$PdkPayjoinModel {
     required String pjUrl,
     @Uint8ListJsonConverter() Uint8List? originalTxBytes,
     String? proposalPsbt,
+    // TODO: bool? isExpired,
   }) = PdkPayjoinReceiverModel;
   const factory PdkPayjoinModel.send({
     required String uri,
@@ -22,6 +23,7 @@ sealed class PdkPayjoinModel with _$PdkPayjoinModel {
     required String walletId,
     required String originalPsbt,
     String? proposalPsbt,
+    // TODO: bool? isExpired,
   }) = PdkPayjoinSenderModel;
 
   factory PdkPayjoinModel.fromJson(Map<String, dynamic> json) =>
