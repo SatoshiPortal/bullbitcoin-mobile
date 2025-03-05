@@ -4,7 +4,6 @@ import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
 import 'package:bb_mobile/_core/data/models/swap_model.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
-import 'package:boltz/boltz.dart' as boltz_types;
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDataSource _boltz;
