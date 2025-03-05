@@ -17,6 +17,9 @@ class SwapModel with _$SwapModel {
     required int keyIndex,
     required int creationTime,
     int? completionTime,
+    int? boltzFees,
+    int? lockupFees,
+    int? claimFees,
     // Changed from Map<String, dynamic>? to String?
     String? chainSwapJson,
     String? lnReceiveSwapJson,

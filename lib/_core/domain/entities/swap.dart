@@ -30,20 +30,23 @@ enum NextSwapAction {
 enum SwapStatus {
   pending,
   paid,
+  claimable,
+  refundable,
+  canCoop,
   completed,
   refunded,
   expired,
   failed,
 }
 
-@freezed
-class NetworkFees with _$NetworkFees {
-  /// Represents a fee using an absolute integer value
-  const factory NetworkFees.absolute(int value) = Absolute;
+// @freezed
+// class NetworkFees with _$NetworkFees {
+//   /// Represents a fee using an absolute integer value
+//   const factory NetworkFees.absolute(int value) = Absolute;
 
-  /// Represents a fee using a relative double value
-  const factory NetworkFees.relative(double value) = Relative;
-}
+//   /// Represents a fee using a relative double value
+//   const factory NetworkFees.relative(double value) = Relative;
+// }
 
 @freezed
 class Swap with _$Swap {
@@ -114,85 +117,46 @@ class LnSendSwapDetails with _$LnSendSwapDetails {
       _$LnSendSwapDetailsFromJson(json);
 }
 
-@freezed
-class SwapLimits with _$SwapLimits {
-  const factory SwapLimits({
-    required int min,
-    required int max,
-  }) = _SwapLimits;
+// @freezed
+// class SwapLimits with _$SwapLimits {
+//   const factory SwapLimits({
+//     required int min,
+//     required int max,
+//   }) = _SwapLimits;
 
-  factory SwapLimits.fromJson(Map<String, dynamic> json) =>
-      _$SwapLimitsFromJson(json);
-}
+//   factory SwapLimits.fromJson(Map<String, dynamic> json) =>
+//       _$SwapLimitsFromJson(json);
+// }
 
-@freezed
-class LightningSwapFees with _$LightningSwapFees {
-  const factory LightningSwapFees({
-    required double percentage,
-    required int minerFees,
-  }) = _LightningSwapFees;
+// @freezed
+// class LightningSwapFees with _$LightningSwapFees {
+//   const factory LightningSwapFees({
+//     required double percentage,
+//     required int minerFees,
+//   }) = _LightningSwapFees;
 
-  factory LightningSwapFees.fromJson(Map<String, dynamic> json) =>
-      _$LightningSwapFeesFromJson(json);
-}
+//   factory LightningSwapFees.fromJson(Map<String, dynamic> json) =>
+//       _$LightningSwapFeesFromJson(json);
+// }
 
-@freezed
-class ChainMinerFees with _$ChainMinerFees {
-  const factory ChainMinerFees({
-    required int lockup,
-    required int claim,
-  }) = _ChainMinerFees;
+// @freezed
+// class ChainMinerFees with _$ChainMinerFees {
+//   const factory ChainMinerFees({
+//     required int lockup,
+//     required int claim,
+//   }) = _ChainMinerFees;
 
-  factory ChainMinerFees.fromJson(Map<String, dynamic> json) =>
-      _$ChainMinerFeesFromJson(json);
-}
+//   factory ChainMinerFees.fromJson(Map<String, dynamic> json) =>
+//       _$ChainMinerFeesFromJson(json);
+// }
 
-@freezed
-class ChainSwapFees with _$ChainSwapFees {
-  const factory ChainSwapFees({
-    required double percentage,
-    required ChainMinerFees minerFees,
-  }) = _ChainSwapFees;
+// @freezed
+// class ChainSwapFees with _$ChainSwapFees {
+//   const factory ChainSwapFees({
+//     required double percentage,
+//     required ChainMinerFees minerFees,
+//   }) = _ChainSwapFees;
 
-  factory ChainSwapFees.fromJson(Map<String, dynamic> json) =>
-      _$ChainSwapFeesFromJson(json);
-}
-
-@freezed
-class ReverseSwapFeesAndLimits with _$ReverseSwapFeesAndLimits {
-  const factory ReverseSwapFeesAndLimits({
-    required SwapLimits bitcoinLimits,
-    required SwapLimits liquidLimits,
-    required LightningSwapFees bitcoinFees,
-    required LightningSwapFees liquidFees,
-  }) = _ReverseSwapFeesAndLimits;
-
-  factory ReverseSwapFeesAndLimits.fromJson(Map<String, dynamic> json) =>
-      _$ReverseSwapFeesAndLimitsFromJson(json);
-}
-
-@freezed
-class SubmarineSwapFeesAndLimits with _$SubmarineSwapFeesAndLimits {
-  const factory SubmarineSwapFeesAndLimits({
-    required SwapLimits bitcoinLimits,
-    required SwapLimits liquidLimits,
-    required LightningSwapFees bitcoinFees,
-    required LightningSwapFees liquidFees,
-  }) = _SubmarineSwapFeesAndLimits;
-
-  factory SubmarineSwapFeesAndLimits.fromJson(Map<String, dynamic> json) =>
-      _$SubmarineSwapFeesAndLimitsFromJson(json);
-}
-
-@freezed
-class ChainSwapFeesAndLimits with _$ChainSwapFeesAndLimits {
-  const factory ChainSwapFeesAndLimits({
-    required SwapLimits bitcoinLimits,
-    required SwapLimits liquidLimits,
-    required ChainSwapFees bitcoinFees,
-    required ChainSwapFees liquidFees,
-  }) = _ChainSwapFeesAndLimits;
-
-  factory ChainSwapFeesAndLimits.fromJson(Map<String, dynamic> json) =>
-      _$ChainSwapFeesAndLimitsFromJson(json);
-}
+//   factory ChainSwapFees.fromJson(Map<String, dynamic> json) =>
+//       _$ChainSwapFeesFromJson(json);
+// }

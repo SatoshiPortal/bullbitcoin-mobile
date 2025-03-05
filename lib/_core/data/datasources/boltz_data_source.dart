@@ -1,164 +1,174 @@
+import 'dart:convert';
+
 import 'package:bb_mobile/_core/data/datasources/boltz_storage_data_source.dart';
-import 'package:bb_mobile/_core/domain/entities/settings.dart';
+import 'package:bb_mobile/_core/data/models/swap_model.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart' as swap_entity;
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:boltz/boltz.dart';
 
 abstract class BoltzDataSource {
   // Reverse Swaps
-  Future<ReverseFeesAndLimits> getReverseFeesAndLimits();
-  Future<BtcLnSwap> createBtcReverseSwap(
-    String mnemonic,
-    int index,
-    int outAmount,
-    Environment environment,
-    String electrumUrl,
-  );
+  Future<SwapModel> createBtcReverseSwap({
+    required String walletId,
+    required String mnemonic,
+    required int index,
+    required int outAmount,
+    required bool isTestnet,
+    required String electrumUrl,
+  });
 
   /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> claimBtcReverseSwap(
-    BtcLnSwap btcLnSwap,
-    String claimAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  );
-  Future<String> broadcastBtcLnSwap(
-    BtcLnSwap btcLnSwap,
-    String signedTxHex,
-    bool broadcastViaBoltz,
-  );
-  Future<LbtcLnSwap> createLBtcReverseSwap(
-    String mnemonic,
-    int index,
-    int outAmount,
-    Environment environment,
-    String electrumUrl,
-  );
+  Future<String> claimBtcReverseSwap({
+    required String swapId,
+    required String claimAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  });
+  Future<String> broadcastBtcLnSwap({
+    required String swapId,
+    required String signedTxHex,
+    required bool broadcastViaBoltz,
+  });
+  Future<SwapModel> createLBtcReverseSwap({
+    required String walletId,
+    required String mnemonic,
+    required int index,
+    required int outAmount,
+    required bool isTestnet,
+    required String electrumUrl,
+  });
 
   /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> claimLBtcReverseSwap(
-    LbtcLnSwap lbtcLnSwap,
-    String claimAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  );
-  Future<String> broadcastLbtcLnSwap(
-    LbtcLnSwap lbtcLnSwap,
-    String signedTxHex,
-    bool broadcastViaBoltz,
-  );
+  Future<String> claimLBtcReverseSwap({
+    required String swapId,
+    required String claimAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  });
+  Future<String> broadcastLbtcLnSwap({
+    required String swapId,
+    required String signedTxHex,
+    required bool broadcastViaBoltz,
+  });
   // Submarine Swaps
-  Future<SubmarineFeesAndLimits> getSubmarineFeesAndLimits();
-  Future<BtcLnSwap> createBtcSubmarineSwap(
-    String mnemonic,
-    int index,
-    String invoice,
-    Environment environment,
-    String electrumUrl,
-  );
-  Future<void> coopSignBtcSubmarineSwap(BtcLnSwap btcLnSwap);
+
+  Future<SwapModel> createBtcSubmarineSwap({
+    required String walletId,
+    required String mnemonic,
+    required int index,
+    required String invoice,
+    required bool isTestnet,
+    required String electrumUrl,
+  });
+  Future<void> coopSignBtcSubmarineSwap({required String swapId});
   // TODO: add function to get invoice preimage
   /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> refundBtcSubmarineSwap(
-    BtcLnSwap btcLnSwap,
-    String refundAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  );
-  Future<LbtcLnSwap> createLbtcSubmarineSwap(
-    String mnemonic,
-    int index,
-    String invoice,
-    Environment environment,
-    String electrumUrl,
-  );
-  Future<void> coopSignLbtcSubmarineSwap(LbtcLnSwap lbtcLnSwap);
+  Future<String> refundBtcSubmarineSwap({
+    required String swapId,
+    required String refundAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  });
+  Future<SwapModel> createLbtcSubmarineSwap({
+    required String walletId,
+    required String mnemonic,
+    required int index,
+    required String invoice,
+    required bool isTestnet,
+    required String electrumUrl,
+  });
+  Future<void> coopSignLbtcSubmarineSwap({required String swapId});
   // TODO: add function to get invoice preimage
   /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> refundLbtcSubmarineSwap(
-    LbtcLnSwap lbtcLnSwap,
-    String refundAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  );
+  Future<String> refundLbtcSubmarineSwap({
+    required String swapId,
+    required String refundAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  });
 
   // Chain Swap
-  Future<ChainFeesAndLimits> getChainFeesAndLimits();
-  Future<ChainSwap> createBtcToLbtcChainSwap(
-    String mnemonic,
-    int index,
-    int amountSat,
-    Environment environment,
-    String btcElectrumUrl,
-    String lbtcElectrumUrl,
-  );
-  Future<ChainSwap> createLbtcToBtcChainSwap(
-    String mnemonic,
-    int index,
-    int amountSat,
-    Environment environment,
-    String btcElectrumUrl,
-    String lbtcElectrumUrl,
-  );
+  Future<SwapModel> createBtcToLbtcChainSwap({
+    required String sendWalletId,
+    required String mnemonic,
+    required int index,
+    required int amountSat,
+    required bool isTestnet,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+    String? receiveWalletId,
+    String? externalRecipientAddress,
+  });
+  Future<SwapModel> createLbtcToBtcChainSwap({
+    required String sendWalletId,
+    required String mnemonic,
+    required int index,
+    required int amountSat,
+    required bool isTestnet,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+    String? receiveWalletId,
+    String? externalRecipientAddress,
+  });
 
   /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> claimBtcToLbtcChainSwap(
-    ChainSwap chainSwap,
-    String claimLiquidAddress,
-    String refundBitcoinAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  );
+  Future<String> claimBtcToLbtcChainSwap({
+    required String swapId,
+    required String claimLiquidAddress,
+    required String refundBitcoinAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  });
 
   /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> claimLbtcToBtcChainSwap(
-    ChainSwap chainSwap,
-    String claimBitcoinAddress,
-    String refundLiquidAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  );
-  Future<String> broadcastChainSwapClaim(
-    ChainSwap chainSwap,
-    String signedTxHex,
-    bool broadcastViaBoltz,
-  );
+  Future<String> claimLbtcToBtcChainSwap({
+    required String swapId,
+    required String claimBitcoinAddress,
+    required String refundLiquidAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  });
+  Future<String> broadcastChainSwapClaim({
+    required String swapId,
+    required String signedTxHex,
+    required bool broadcastViaBoltz,
+  });
 
   /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> refundBtcToLbtcChainSwap(
-    ChainSwap chainSwap,
-    String refundBitcoinAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  );
+  Future<String> refundBtcToLbtcChainSwap({
+    required String swapId,
+    required String refundBitcoinAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  });
 
   /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> refundLbtcToBtcChainSwap(
-    ChainSwap chainSwap,
-    String refundLiquidAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  );
+  Future<String> refundLbtcToBtcChainSwap({
+    required String swapId,
+    required String refundLiquidAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  });
 
-  Future<String> broadcastChainSwapRefund(
-    ChainSwap chainSwap,
-    String signedTxHex,
-    bool broadcastViaBoltz,
-  );
+  Future<String> broadcastChainSwapRefund({
+    required String swapId,
+    required String signedTxHex,
+    required bool broadcastViaBoltz,
+  });
 
   // Swap Actions
-  Future<swap_entity.NextSwapAction> getBtcLnSwapAction(
-    BtcLnSwap btcLnSwap,
-    String status,
-  );
-  Future<swap_entity.NextSwapAction> getLbtcLnSwapAction(
-    LbtcLnSwap lbtcLnSwap,
-    String status,
-  );
-  Future<swap_entity.NextSwapAction> getChainSwapAction(
-    ChainSwap chainSwap,
-    String status,
-  );
+  Future<void> updateBtcLnSwapStatus({
+    required String swapId,
+    required String status,
+  });
+  Future<void> updateLbtcLnSwapStatus({
+    required String swapId,
+    required String status,
+  });
+  Future<void> updateChainSwapStatus({
+    required String swapId,
+    required String status,
+  });
   // Websocket
   Stream<SwapStreamStatus> get stream;
   void initializBoltzWebSocket();
@@ -185,83 +195,136 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   BoltzStorageDataSourceImpl get storage => _boltzStore;
   // REVERSE SWAPS
-  @override
-  Future<ReverseFeesAndLimits> getReverseFeesAndLimits() async {
-    final fees = Fees(boltzUrl: _url);
-    final reverse = await fees.reverse();
-    return reverse;
-  }
+  // @override
+  // Future<swap_entity.ReverseSwapFeesAndLimits> getReverseFeesAndLimits() async {
+  //   final fees = Fees(boltzUrl: _url);
+  //   final reverse = await fees.reverse();
+  //   return reverse.toDomainEntity();
+  // }
 
   @override
-  Future<BtcLnSwap> createBtcReverseSwap(
-    String mnemonic,
-    int index,
-    int outAmount,
-    Environment environment,
-    String electrumUrl,
-  ) async {
-    return BtcLnSwap.newReverse(
+  Future<SwapModel> createBtcReverseSwap({
+    required String walletId,
+    required String mnemonic,
+    required int index,
+    required int outAmount,
+    required bool isTestnet,
+    required String electrumUrl,
+  }) async {
+    final fees = Fees(boltzUrl: _url);
+    final reverseFees = await fees.reverse();
+    final btcLnSwap = await BtcLnSwap.newReverse(
       mnemonic: mnemonic,
       index: BigInt.from(index),
       outAmount: BigInt.from(outAmount),
-      network: environment.toBtcChain(),
+      network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
       electrumUrl: electrumUrl,
       boltzUrl: _url,
     );
+    await _boltzStore.storeBtcLnSwap(btcLnSwap);
+    final swapModel = SwapModel(
+      id: btcLnSwap.id,
+      status: swap_entity.SwapStatus.pending.toString(),
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      type: swap_entity.SwapType.lightningToBitcoin.toString(),
+      keyIndex: index,
+      boltzFees: reverseFees.btcFees.percentage * outAmount ~/ 100,
+      lockupFees: reverseFees.btcFees.minerFees.lockup.toInt(),
+      claimFees: reverseFees.btcFees.minerFees.claim.toInt(),
+      lnReceiveSwapJson: jsonEncode(
+        swap_entity.LnReceiveSwapDetails(
+          receiveWalletId: walletId,
+          invoice: btcLnSwap.invoice,
+        ).toJson(),
+      ),
+    );
+    await _boltzStore.store(swapModel);
+    return swapModel;
   }
 
   @override
-  Future<String> claimBtcReverseSwap(
-    BtcLnSwap btcLnSwap,
-    String claimAddress,
-    swap_entity.NetworkFees fees,
-    bool tryCooperate,
-  ) async {
+  Future<String> claimBtcReverseSwap({
+    required String swapId,
+    required String claimAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+
     return btcLnSwap.claim(
       outAddress: claimAddress,
-      minerFee: fees.toTxFee(),
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
       tryCooperate: tryCooperate,
     );
   }
 
   @override
-  Future<LbtcLnSwap> createLBtcReverseSwap(
-    String mnemonic,
-    int index,
-    int outAmount,
-    Environment environment,
-    String electrumUrl,
-  ) async {
-    return LbtcLnSwap.newReverse(
+  Future<SwapModel> createLBtcReverseSwap({
+    required String walletId,
+    required String mnemonic,
+    required int index,
+    required int outAmount,
+    required bool isTestnet,
+    required String electrumUrl,
+  }) async {
+    final fees = Fees(boltzUrl: _url);
+    final reverseFees = await fees.reverse();
+    final lbtcLnSwap = await LbtcLnSwap.newReverse(
       mnemonic: mnemonic,
       index: BigInt.from(index),
       outAmount: BigInt.from(outAmount),
-      network: environment.toLbtcChain(),
+      network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
       electrumUrl: electrumUrl,
       boltzUrl: _url,
     );
+
+    await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
+
+    final swapModel = SwapModel(
+      id: lbtcLnSwap.id,
+      status: swap_entity.SwapStatus.pending.toString(),
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      type: swap_entity.SwapType.lightningToLiquid.toString(),
+      keyIndex: index,
+      boltzFees: reverseFees.lbtcFees.percentage * outAmount ~/ 100,
+      lockupFees: reverseFees.lbtcFees.minerFees.lockup.toInt(),
+      claimFees: reverseFees.lbtcFees.minerFees.claim.toInt(),
+      lnReceiveSwapJson: jsonEncode(
+        swap_entity.LnReceiveSwapDetails(
+          receiveWalletId: walletId,
+          invoice: lbtcLnSwap.invoice,
+        ).toJson(),
+      ),
+    );
+
+    await _boltzStore.store(swapModel);
+    return swapModel;
   }
 
   @override
-  Future<String> claimLBtcReverseSwap(
-    LbtcLnSwap lbtcLnSwap,
-    String claimAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  ) async {
+  Future<String> claimLBtcReverseSwap({
+    required String swapId,
+    required String claimAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+
     return lbtcLnSwap.claim(
       outAddress: claimAddress,
-      minerFee: minerFee.toTxFee(),
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
       tryCooperate: tryCooperate,
     );
   }
 
   @override
-  Future<String> broadcastBtcLnSwap(
-    BtcLnSwap btcLnSwap,
-    String signedTxHex,
-    bool broadcastViaBoltz,
-  ) {
+  Future<String> broadcastBtcLnSwap({
+    required String swapId,
+    required String signedTxHex,
+    required bool broadcastViaBoltz,
+  }) async {
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+
     return broadcastViaBoltz
         ? btcLnSwap.broadcastLocal(
             signedHex: signedTxHex,
@@ -272,11 +335,13 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   @override
-  Future<String> broadcastLbtcLnSwap(
-    LbtcLnSwap lbtcLnSwap,
-    String signedTxHex,
-    bool broadcastViaBoltz,
-  ) {
+  Future<String> broadcastLbtcLnSwap({
+    required String swapId,
+    required String signedTxHex,
+    required bool broadcastViaBoltz,
+  }) async {
+    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+
     return broadcastViaBoltz
         ? lbtcLnSwap.broadcastLocal(
             signedHex: signedTxHex,
@@ -287,143 +352,262 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   // SUBMARINE SWAPS
-  @override
-  Future<SubmarineFeesAndLimits> getSubmarineFeesAndLimits() async {
-    final fees = Fees(boltzUrl: _url);
-    final submarine = await fees.submarine();
-    return submarine;
-  }
+  // @override
+  // Future<swap_entity.SubmarineSwapFeesAndLimits>
+  //     getSubmarineFeesAndLimits() async {
+  //   final fees = Fees(boltzUrl: _url);
+  //   final submarine = await fees.submarine();
+  //   return submarine.toDomainEntity();
+  // }
 
   @override
-  Future<BtcLnSwap> createBtcSubmarineSwap(
-    String mnemonic,
-    int index,
-    String invoice,
-    Environment environment,
-    String electrumUrl,
-  ) async {
-    return BtcLnSwap.newSubmarine(
+  Future<SwapModel> createBtcSubmarineSwap({
+    required String walletId,
+    required String mnemonic,
+    required int index,
+    required String invoice,
+    required bool isTestnet,
+    required String electrumUrl,
+  }) async {
+    final fees = Fees(boltzUrl: _url);
+    final submarineFees = await fees.submarine();
+    final btcLnSwap = await BtcLnSwap.newSubmarine(
       mnemonic: mnemonic,
       index: BigInt.from(index),
       invoice: invoice,
-      network: environment.toBtcChain(),
+      network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
       electrumUrl: electrumUrl,
       boltzUrl: _url,
     );
+
+    await _boltzStore.storeBtcLnSwap(btcLnSwap);
+
+    final swapModel = SwapModel(
+      id: btcLnSwap.id,
+      status: swap_entity.SwapStatus.pending.toString(),
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      type: swap_entity.SwapType.bitcoinToLightning.toString(),
+      keyIndex: index,
+      boltzFees: submarineFees.btcFees.percentage *
+          (btcLnSwap.outAmount.toInt()) ~/
+          100,
+      lockupFees: submarineFees.btcFees.minerFees.toInt(),
+      claimFees: submarineFees.btcFees.minerFees.toInt(),
+      lnSendSwapJson: jsonEncode(
+        swap_entity.LnSendSwapDetails(
+          sendWalletId: walletId,
+          invoice: invoice,
+        ).toJson(),
+      ),
+    );
+
+    await _boltzStore.store(swapModel);
+    return swapModel;
   }
 
   @override
-  Future<void> coopSignBtcSubmarineSwap(BtcLnSwap btcLnSwap) async {
+  Future<void> coopSignBtcSubmarineSwap({required String swapId}) async {
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
     return btcLnSwap.coopCloseSubmarine();
   }
 
   @override
-  Future<String> refundBtcSubmarineSwap(
-    BtcLnSwap btcLnSwap,
-    String refundAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  ) async {
-    return btcLnSwap.refund(
-      outAddress: refundAddress,
-      minerFee: minerFee.toTxFee(),
-      tryCooperate: tryCooperate,
-    );
-  }
-
-  @override
-  Future<LbtcLnSwap> createLbtcSubmarineSwap(
-    String mnemonic,
-    int index,
-    String invoice,
-    Environment environment,
-    String electrumUrl,
-  ) async {
-    return LbtcLnSwap.newSubmarine(
-      mnemonic: mnemonic,
-      index: BigInt.from(index),
-      invoice: invoice,
-      network: environment.toBtcChain(),
-      electrumUrl: electrumUrl,
-      boltzUrl: _url,
-    );
-  }
-
-  @override
-  Future<void> coopSignLbtcSubmarineSwap(LbtcLnSwap lbtcLnSwap) async {
+  Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
+    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
     return lbtcLnSwap.coopCloseSubmarine();
   }
 
   @override
-  Future<String> refundLbtcSubmarineSwap(
-    LbtcLnSwap lbtcLnSwap,
-    String refundAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  ) async {
-    return lbtcLnSwap.refund(
+  Future<String> refundBtcSubmarineSwap({
+    required String swapId,
+    required String refundAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+    return btcLnSwap.refund(
       outAddress: refundAddress,
-      minerFee: minerFee.toTxFee(),
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
       tryCooperate: tryCooperate,
     );
   }
 
-  // CHAIN SWAPS
   @override
-  Future<ChainFeesAndLimits> getChainFeesAndLimits() async {
+  Future<SwapModel> createLbtcSubmarineSwap({
+    required String walletId,
+    required String mnemonic,
+    required int index,
+    required String invoice,
+    required bool isTestnet,
+    required String electrumUrl,
+  }) async {
     final fees = Fees(boltzUrl: _url);
-    final chain = await fees.chain();
-    return chain;
+    final submarineFees = await fees.submarine();
+    final lbtcLnSwap = await LbtcLnSwap.newSubmarine(
+      mnemonic: mnemonic,
+      index: BigInt.from(index),
+      invoice: invoice,
+      network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
+      electrumUrl: electrumUrl,
+      boltzUrl: _url,
+    );
+
+    await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
+
+    final swapModel = SwapModel(
+      id: lbtcLnSwap.id,
+      status: swap_entity.SwapStatus.pending.toString(),
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      type: swap_entity.SwapType.liquidToLightning.toString(),
+      keyIndex: index,
+      boltzFees: submarineFees.lbtcFees.percentage *
+          (lbtcLnSwap.outAmount.toInt()) ~/
+          100,
+      lockupFees: submarineFees.lbtcFees.minerFees.toInt(),
+      claimFees: submarineFees.lbtcFees.minerFees.toInt(),
+      lnSendSwapJson: jsonEncode(
+        swap_entity.LnSendSwapDetails(
+          sendWalletId: walletId,
+          invoice: invoice,
+        ).toJson(),
+      ),
+    );
+
+    await _boltzStore.store(swapModel);
+    return swapModel;
   }
 
   @override
-  Future<ChainSwap> createBtcToLbtcChainSwap(
-    String mnemonic,
-    int index,
-    int amountSat,
-    Environment environment,
-    String btcElectrumUrl,
-    String lbtcElectrumUrl,
-  ) async {
-    return ChainSwap.newSwap(
+  Future<String> refundLbtcSubmarineSwap({
+    required String swapId,
+    required String refundAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+    return lbtcLnSwap.refund(
+      outAddress: refundAddress,
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+      tryCooperate: tryCooperate,
+    );
+  }
+
+  // // CHAIN SWAPS
+  // @override
+  // Future<ChainFeesAndLimits> getChainFeesAndLimits() async {
+  //   final fees = Fees(boltzUrl: _url);
+  //   final chain = await fees.chain();
+  //   return chain;
+  // }
+
+  @override
+  Future<SwapModel> createBtcToLbtcChainSwap({
+    required String sendWalletId,
+    required String mnemonic,
+    required int index,
+    required int amountSat,
+    required bool isTestnet,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+    String? receiveWalletId,
+    String? externalRecipientAddress,
+  }) async {
+    final fees = Fees(boltzUrl: _url);
+    final chainFees = await fees.chain();
+    final chainSwap = await ChainSwap.newSwap(
       mnemonic: mnemonic,
       index: BigInt.from(index),
       boltzUrl: _url,
       direction: ChainSwapDirection.btcToLbtc,
       amount: BigInt.from(amountSat),
-      isTestnet: environment == Environment.testnet,
+      isTestnet: isTestnet,
       btcElectrumUrl: btcElectrumUrl,
       lbtcElectrumUrl: lbtcElectrumUrl,
     );
+
+    await _boltzStore.storeChainSwap(chainSwap);
+
+    final swapModel = SwapModel(
+      id: chainSwap.id,
+      status: swap_entity.SwapStatus.pending.toString(),
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      type: swap_entity.SwapType.bitcoinToLiquid.toString(),
+      keyIndex: index,
+      boltzFees: chainFees.lbtcFees.percentage * amountSat ~/ 100 +
+          chainFees.lbtcFees.server.toInt(),
+      lockupFees: chainFees.btcFees.userLockup.toInt(),
+      claimFees: chainFees.lbtcFees.userClaim.toInt(),
+      chainSwapJson: jsonEncode(
+        swap_entity.ChainSwapDetails(
+          sendWalletId: sendWalletId,
+          receiveWalletId: receiveWalletId,
+          receiveAddress: externalRecipientAddress,
+        ).toJson(),
+      ),
+    );
+
+    await _boltzStore.store(swapModel);
+    return swapModel;
   }
 
   @override
-  Future<ChainSwap> createLbtcToBtcChainSwap(
-    String mnemonic,
-    int index,
-    int amountSat,
-    Environment environment,
-    String btcElectrumUrl,
-    String lbtcElectrumUrl,
-  ) async {
-    return ChainSwap.newSwap(
+  Future<SwapModel> createLbtcToBtcChainSwap({
+    required String sendWalletId,
+    required String mnemonic,
+    required int index,
+    required int amountSat,
+    required bool isTestnet,
+    required String btcElectrumUrl,
+    required String lbtcElectrumUrl,
+    String? receiveWalletId,
+    String? externalRecipientAddress,
+  }) async {
+    final fees = Fees(boltzUrl: _url);
+    final chainFees = await fees.chain();
+
+    final chainSwap = await ChainSwap.newSwap(
       mnemonic: mnemonic,
       index: BigInt.from(index),
       boltzUrl: _url,
       direction: ChainSwapDirection.lbtcToBtc,
       amount: BigInt.from(amountSat),
-      isTestnet: environment == Environment.testnet,
+      isTestnet: isTestnet,
       btcElectrumUrl: btcElectrumUrl,
       lbtcElectrumUrl: lbtcElectrumUrl,
     );
+
+    await _boltzStore.storeChainSwap(chainSwap);
+
+    final swapModel = SwapModel(
+      id: chainSwap.id,
+      status: swap_entity.SwapStatus.pending.toString(),
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      type: swap_entity.SwapType.liquidToBitcoin.toString(),
+      keyIndex: index,
+      boltzFees: chainFees.btcFees.percentage * amountSat ~/ 100 +
+          chainFees.btcFees.server.toInt(),
+      lockupFees: chainFees.lbtcFees.userLockup.toInt(),
+      claimFees: chainFees.btcFees.userClaim.toInt(),
+      chainSwapJson: jsonEncode(
+        swap_entity.ChainSwapDetails(
+          sendWalletId: sendWalletId,
+          receiveWalletId: receiveWalletId,
+          receiveAddress: externalRecipientAddress,
+        ).toJson(),
+      ),
+    );
+
+    await _boltzStore.store(swapModel);
+    return swapModel;
   }
 
   @override
-  Future<String> broadcastChainSwapRefund(
-    ChainSwap chainSwap,
-    String signedTxHex,
-    bool broadcastViaBoltz,
-  ) {
+  Future<String> broadcastChainSwapRefund({
+    required String swapId,
+    required String signedTxHex,
+    required bool broadcastViaBoltz,
+  }) async {
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
     return broadcastViaBoltz
         ? chainSwap.broadcastLocal(
             signedHex: signedTxHex,
@@ -436,43 +620,46 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   @override
-  Future<String> claimBtcToLbtcChainSwap(
-    ChainSwap chainSwap,
-    String claimLiquidAddress,
-    String refundBitcoinAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  ) async {
+  Future<String> claimBtcToLbtcChainSwap({
+    required String swapId,
+    required String claimLiquidAddress,
+    required String refundBitcoinAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
     return await chainSwap.claim(
       outAddress: claimLiquidAddress,
       refundAddress: refundBitcoinAddress,
-      minerFee: minerFee.toTxFee(),
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
       tryCooperate: tryCooperate,
     );
   }
 
   @override
-  Future<String> claimLbtcToBtcChainSwap(
-    ChainSwap chainSwap,
-    String claimBitcoinAddress,
-    String refundLiquidAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  ) async {
+  Future<String> claimLbtcToBtcChainSwap({
+    required String swapId,
+    required String claimBitcoinAddress,
+    required String refundLiquidAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
     return await chainSwap.claim(
       outAddress: claimBitcoinAddress,
       refundAddress: refundLiquidAddress,
-      minerFee: minerFee.toTxFee(),
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
       tryCooperate: tryCooperate,
     );
   }
 
   @override
-  Future<String> broadcastChainSwapClaim(
-    ChainSwap chainSwap,
-    String signedTxHex,
-    bool broadcastViaBoltz,
-  ) {
+  Future<String> broadcastChainSwapClaim({
+    required String swapId,
+    required String signedTxHex,
+    required bool broadcastViaBoltz,
+  }) async {
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
     return broadcastViaBoltz
         ? chainSwap.broadcastLocal(
             signedHex: signedTxHex,
@@ -485,105 +672,137 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   @override
-  Future<String> refundBtcToLbtcChainSwap(
-    ChainSwap chainSwap,
-    String refundBitcoinAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  ) async {
+  Future<String> refundBtcToLbtcChainSwap({
+    required String swapId,
+    required String refundBitcoinAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
     return await chainSwap.refund(
       refundAddress: refundBitcoinAddress,
-      minerFee: minerFee.toTxFee(),
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
       tryCooperate: tryCooperate,
     );
   }
 
   @override
-  Future<String> refundLbtcToBtcChainSwap(
-    ChainSwap chainSwap,
-    String refundLiquidAddress,
-    swap_entity.NetworkFees minerFee,
-    bool tryCooperate,
-  ) async {
+  Future<String> refundLbtcToBtcChainSwap({
+    required String swapId,
+    required String refundLiquidAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
     return await chainSwap.refund(
       refundAddress: refundLiquidAddress,
-      minerFee: minerFee.toTxFee(),
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
       tryCooperate: tryCooperate,
     );
   }
 
   @override
-  Future<swap_entity.NextSwapAction> getBtcLnSwapAction(
-    BtcLnSwap btcLnSwap,
-    String status,
-  ) async {
+  Future<void> updateBtcLnSwapStatus({
+    required String swapId,
+    required String status,
+  }) async {
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
     final action = await btcLnSwap.process(status: status);
+    final swapModel = await _boltzStore.get(swapId);
+    if (swapModel == null) {
+      throw Exception('Swap not found');
+    }
     switch (action) {
       case SwapAction.wait:
-        return swap_entity.NextSwapAction.wait;
+        return;
       case SwapAction.coopSign:
-        return swap_entity.NextSwapAction.coopSign;
+        const status = swap_entity.SwapStatus.canCoop;
+        final updatedSwap = swapModel.copyWith(status: status.toString());
+        await _boltzStore.store(updatedSwap);
+        return;
       case SwapAction.claim:
-        return swap_entity.NextSwapAction.claim;
+        const status = swap_entity.SwapStatus.claimable;
+        final updatedSwap = swapModel.copyWith(status: status.toString());
+        await _boltzStore.store(updatedSwap);
+        return;
       case SwapAction.refund:
-        return swap_entity.NextSwapAction.refund;
+        const status = swap_entity.SwapStatus.refundable;
+        final updatedSwap = swapModel.copyWith(status: status.toString());
+        await _boltzStore.store(updatedSwap);
+        return;
       case SwapAction.close:
-        return swap_entity.NextSwapAction.close;
+        return;
     }
   }
 
   @override
-  Future<swap_entity.NextSwapAction> getChainSwapAction(
-    ChainSwap chainSwap,
-    String status,
-  ) async {
+  Future<void> updateChainSwapStatus({
+    required String swapId,
+    required String status,
+  }) async {
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
     final action = await chainSwap.process(status: status);
+    final swapModel = await _boltzStore.get(swapId);
+    if (swapModel == null) {
+      throw Exception('Swap not found');
+    }
     switch (action) {
       case SwapAction.wait:
-        return swap_entity.NextSwapAction.wait;
+        return;
       case SwapAction.coopSign:
-        return swap_entity.NextSwapAction.coopSign;
+        const status = swap_entity.SwapStatus.canCoop;
+        final updatedSwap = swapModel.copyWith(status: status.toString());
+        await _boltzStore.store(updatedSwap);
+        return;
       case SwapAction.claim:
-        return swap_entity.NextSwapAction.claim;
+        const status = swap_entity.SwapStatus.claimable;
+        final updatedSwap = swapModel.copyWith(status: status.toString());
+        await _boltzStore.store(updatedSwap);
+        return;
       case SwapAction.refund:
-        return swap_entity.NextSwapAction.refund;
+        const status = swap_entity.SwapStatus.refundable;
+        final updatedSwap = swapModel.copyWith(status: status.toString());
+        await _boltzStore.store(updatedSwap);
+        return;
       case SwapAction.close:
-        return swap_entity.NextSwapAction.close;
+        return;
     }
   }
 
   @override
-  Future<swap_entity.NextSwapAction> getLbtcLnSwapAction(
-    LbtcLnSwap lbtcLnSwap,
-    String status,
-  ) async {
+  Future<void> updateLbtcLnSwapStatus({
+    required String swapId,
+    required String status,
+  }) async {
+    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
     final action = await lbtcLnSwap.process(status: status);
+    final swapModel = await _boltzStore.get(swapId);
+    if (swapModel == null) {
+      throw Exception('Swap not found');
+    }
     switch (action) {
       case SwapAction.wait:
-        return swap_entity.NextSwapAction.wait;
+        return;
       case SwapAction.coopSign:
-        return swap_entity.NextSwapAction.coopSign;
+        const status = swap_entity.SwapStatus.canCoop;
+        final updatedSwap = swapModel.copyWith(status: status.toString());
+        await _boltzStore.store(updatedSwap);
+        return;
       case SwapAction.claim:
-        return swap_entity.NextSwapAction.claim;
+        const status = swap_entity.SwapStatus.claimable;
+        final updatedSwap = swapModel.copyWith(status: status.toString());
+        await _boltzStore.store(updatedSwap);
+        return;
       case SwapAction.refund:
-        return swap_entity.NextSwapAction.refund;
+        const status = swap_entity.SwapStatus.refundable;
+        final updatedSwap = swapModel.copyWith(status: status.toString());
+        await _boltzStore.store(updatedSwap);
+        return;
       case SwapAction.close:
-        return swap_entity.NextSwapAction.close;
+        return;
     }
   }
 
-  /// WEB SOCKET STREAM
-  @override
-  Future<void> initializBoltzWebSocket() async {
-    try {
-      _boltzWebSocket = BoltzWebSocket.create(_url);
-    } catch (e) {
-      print('Error creating BoltzWebSocket: $e');
-      rethrow;
-    }
-  }
-
-  @override
   Stream<SwapStreamStatus> get stream => _boltzWebSocket.stream;
 
   @override
@@ -601,23 +820,14 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   void unsubscribeToSwaps(List<String> swapIds) {
     _boltzWebSocket.unsubscribe(swapIds);
   }
-}
 
-extension EnvironmentToChain on Environment {
-  Chain toBtcChain() {
-    return this == Environment.mainnet ? Chain.bitcoin : Chain.bitcoinTestnet;
-  }
-
-  Chain toLbtcChain() {
-    return this == Environment.mainnet ? Chain.liquid : Chain.liquidTestnet;
-  }
-}
-
-extension NetworkFeesX on swap_entity.NetworkFees {
-  TxFee toTxFee() {
-    return when(
-      absolute: (value) => TxFee.absolute(BigInt.from(value)),
-      relative: (value) => TxFee.relative(value),
-    );
+  @override
+  void initializBoltzWebSocket() {
+    try {
+      _boltzWebSocket = BoltzWebSocket.create(_url);
+    } catch (e) {
+      print('Error creating BoltzWebSocket: $e');
+      rethrow;
+    }
   }
 }

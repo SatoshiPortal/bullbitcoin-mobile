@@ -25,7 +25,6 @@ class CreateReceiveSwapUseCase {
     required String walletId,
     required SwapType type,
     required int amountSat,
-    required LightningSwapFees fees,
   }) async {
     try {
       final wallet = await _walletManager.getWallet(walletId);
@@ -63,20 +62,18 @@ class CreateReceiveSwapUseCase {
           return swapRepository.createLightningToBitcoinSwap(
             walletId: walletId,
             amountSat: amountSat,
-            environment: environment,
+            isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic.toString(),
             electrumUrl: btcElectrumUrl,
-            fees: fees,
           );
 
         case SwapType.lightningToLiquid:
           return swapRepository.createLightningToLiquidSwap(
             walletId: walletId,
             amountSat: amountSat,
-            environment: environment,
+            isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic.toString(),
             electrumUrl: lbtcElectrumUrl,
-            fees: fees,
           );
         default:
           throw Exception(
