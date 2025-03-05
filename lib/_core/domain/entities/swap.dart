@@ -117,16 +117,16 @@ class LnSendSwapDetails with _$LnSendSwapDetails {
       _$LnSendSwapDetailsFromJson(json);
 }
 
-// @freezed
-// class SwapLimits with _$SwapLimits {
-//   const factory SwapLimits({
-//     required int min,
-//     required int max,
-//   }) = _SwapLimits;
+@freezed
+class SwapLimits with _$SwapLimits {
+  const factory SwapLimits({
+    required int min,
+    required int max,
+  }) = _SwapLimits;
 
-//   factory SwapLimits.fromJson(Map<String, dynamic> json) =>
-//       _$SwapLimitsFromJson(json);
-// }
+  factory SwapLimits.fromJson(Map<String, dynamic> json) =>
+      _$SwapLimitsFromJson(json);
+}
 
 // @freezed
 // class LightningSwapFees with _$LightningSwapFees {

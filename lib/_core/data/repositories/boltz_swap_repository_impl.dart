@@ -15,7 +15,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   /// SWAP STREAM PROVIDER
   @override
-  Stream<boltz_types.SwapStreamStatus> get stream => _boltz.stream;
+  Stream<(String, String)> get stream => _boltz.stream;
 
   /// RECEIVE LN TO BTC
   @override
@@ -644,5 +644,31 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         .where((swap) =>
             swap.status == SwapStatus.pending || swap.status == SwapStatus.paid)
         .toList();
+  }
+
+  @override
+  Future<SwapLimits> getSwapLimits({
+    required SwapType type,
+  }) async {
+    switch (type) {
+      case SwapType.lightningToBitcoin:
+        final (min, max) = await _boltz.getBtcReverseSwapLimits();
+        return SwapLimits(min: min, max: max);
+      case SwapType.lightningToLiquid:
+        final (min, max) = await _boltz.getLbtcReverseSwapLimits();
+        return SwapLimits(min: min, max: max);
+      case SwapType.liquidToLightning:
+        final (min, max) = await _boltz.getLbtcSubmarineSwapLimits();
+        return SwapLimits(min: min, max: max);
+      case SwapType.bitcoinToLightning:
+        final (min, max) = await _boltz.getBtcSubmarineSwapLimits();
+        return SwapLimits(min: min, max: max);
+      case SwapType.liquidToBitcoin:
+        final (min, max) = await _boltz.getLbtcToBtcChainSwapLimits();
+        return SwapLimits(min: min, max: max);
+      case SwapType.bitcoinToLiquid:
+        final (min, max) = await _boltz.getBtcToLbtcChainSwapLimits();
+        return SwapLimits(min: min, max: max);
+    }
   }
 }

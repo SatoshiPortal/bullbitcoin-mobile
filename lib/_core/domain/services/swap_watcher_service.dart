@@ -1,4 +1,4 @@
 abstract class SwapWatcherService {
-  Future<void> startWatching();
+  void startWatching();
   Future<void> restartWatcherWithOngoingSwaps();
 }

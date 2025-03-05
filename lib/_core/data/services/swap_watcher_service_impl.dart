@@ -9,22 +9,19 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   final WalletManagerService _walletManager;
   final BoltzSwapRepositoryImpl _boltzRepo;
 
-  StreamSubscription<(String, String, String?)>? _swapSubscription;
+  StreamSubscription<(String, String)>? _swapSubscription;
 
   SwapWatcherServiceImpl({
     required WalletManagerService walletManager,
     required BoltzSwapRepositoryImpl boltzRepo,
   })  : _walletManager = walletManager,
-        _boltzRepo = boltzRepo {}
+        _boltzRepo = boltzRepo {
+    startWatching();
+  }
 
   @override
-  Future<void> startWatching() async {
-    _swapSubscription = _boltzRepo.stream
-        .map(
-      (swapStatus) =>
-          (swapStatus.id, swapStatus.status.toString(), swapStatus.error),
-    )
-        .listen(
+  void startWatching() {
+    _swapSubscription = _boltzRepo.stream.listen(
       (tuple) async {
         // tuple is (String, String)
         final swapId = tuple.$1;
@@ -46,7 +43,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     final swaps = await _boltzRepo.getOngoingSwaps();
     final swapIdsToWatch = swaps.map((swap) => swap.id).toList();
     _boltzRepo.reinitializeStreamWithSwaps(swapIds: swapIdsToWatch);
-    await startWatching();
+    startWatching();
   }
 
   @override

@@ -8,6 +8,9 @@ import 'package:boltz/boltz.dart';
 
 abstract class BoltzDataSource {
   // Reverse Swaps
+  Future<(int, int)> getBtcReverseSwapLimits();
+  Future<(int, int)> getLbtcReverseSwapLimits();
+
   Future<SwapModel> createBtcReverseSwap({
     required String walletId,
     required String mnemonic,
@@ -51,6 +54,8 @@ abstract class BoltzDataSource {
     required bool broadcastViaBoltz,
   });
   // Submarine Swaps
+  Future<(int, int)> getBtcSubmarineSwapLimits();
+  Future<(int, int)> getLbtcSubmarineSwapLimits();
 
   Future<SwapModel> createBtcSubmarineSwap({
     required String walletId,
@@ -88,6 +93,9 @@ abstract class BoltzDataSource {
   });
 
   // Chain Swap
+  Future<(int, int)> getBtcToLbtcChainSwapLimits();
+  Future<(int, int)> getLbtcToBtcChainSwapLimits();
+
   Future<SwapModel> createBtcToLbtcChainSwap({
     required String sendWalletId,
     required String mnemonic,
@@ -170,7 +178,7 @@ abstract class BoltzDataSource {
     required String status,
   });
   // Websocket
-  Stream<SwapStreamStatus> get stream;
+  Stream<(String, String)> get stream;
   void initializBoltzWebSocket();
   void subscribeToSwaps(List<String> swapIds);
   void unsubscribeToSwaps(List<String> swapIds);
@@ -195,12 +203,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   BoltzStorageDataSourceImpl get storage => _boltzStore;
   // REVERSE SWAPS
-  // @override
-  // Future<swap_entity.ReverseSwapFeesAndLimits> getReverseFeesAndLimits() async {
-  //   final fees = Fees(boltzUrl: _url);
-  //   final reverse = await fees.reverse();
-  //   return reverse.toDomainEntity();
-  // }
 
   @override
   Future<SwapModel> createBtcReverseSwap({
@@ -803,7 +805,9 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     }
   }
 
-  Stream<SwapStreamStatus> get stream => _boltzWebSocket.stream;
+  Stream<(String, String)> get stream => _boltzWebSocket.stream.map(
+        (swapStatus) => (swapStatus.id, swapStatus.status.toString()),
+      );
 
   @override
   void resetStream() {
@@ -829,5 +833,59 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       print('Error creating BoltzWebSocket: $e');
       rethrow;
     }
+  }
+
+  @override
+  Future<(int, int)> getBtcReverseSwapLimits() async {
+    final fees = Fees(boltzUrl: _url);
+    final reverse = await fees.reverse();
+    return (
+      reverse.btcLimits.minimal.toInt(),
+      reverse.btcLimits.maximal.toInt()
+    );
+  }
+
+  @override
+  Future<(int, int)> getLbtcReverseSwapLimits() async {
+    final fees = Fees(boltzUrl: _url);
+    final reverse = await fees.reverse();
+    return (
+      reverse.lbtcLimits.minimal.toInt(),
+      reverse.lbtcLimits.maximal.toInt()
+    );
+  }
+
+  @override
+  Future<(int, int)> getBtcSubmarineSwapLimits() async {
+    final fees = Fees(boltzUrl: _url);
+    final submarine = await fees.submarine();
+    return (
+      submarine.btcLimits.minimal.toInt(),
+      submarine.btcLimits.maximal.toInt()
+    );
+  }
+
+  @override
+  Future<(int, int)> getLbtcSubmarineSwapLimits() async {
+    final fees = Fees(boltzUrl: _url);
+    final submarine = await fees.submarine();
+    return (
+      submarine.lbtcLimits.minimal.toInt(),
+      submarine.lbtcLimits.maximal.toInt()
+    );
+  }
+
+  @override
+  Future<(int, int)> getBtcToLbtcChainSwapLimits() async {
+    final fees = Fees(boltzUrl: _url);
+    final chain = await fees.chain();
+    return (chain.btcLimits.minimal.toInt(), chain.btcLimits.maximal.toInt());
+  }
+
+  @override
+  Future<(int, int)> getLbtcToBtcChainSwapLimits() async {
+    final fees = Fees(boltzUrl: _url);
+    final chain = await fees.chain();
+    return (chain.lbtcLimits.minimal.toInt(), chain.lbtcLimits.maximal.toInt());
   }
 }

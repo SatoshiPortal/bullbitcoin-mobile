@@ -1,12 +1,10 @@
-import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
-import 'package:boltz/boltz.dart' as boltzLib;
 
 abstract class SwapRepository {
   // LIMITS
-  // Future<ReverseSwapFeesAndLimits> getReverseSwapFeesAndLimits();
-  // Future<SubmarineSwapFeesAndLimits> getSubmarineSwapFeesAndLimits();
-  // Future<ChainSwapFeesAndLimits> getChainSwapFeesAndLimits();
+  Future<SwapLimits> getSwapLimits({
+    required SwapType type,
+  });
 
   // RECEIVE SWAPS
   Future<Swap> createLightningToLiquidSwap({
@@ -158,7 +156,8 @@ abstract class SwapRepository {
   });
 
   // STREAM
-  Stream<boltzLib.SwapStreamStatus> get stream;
+  Stream<(String, String)> get stream;
+
   void addSwapToStream({
     required String swapId,
   });

@@ -31,6 +31,22 @@ class CreateReceiveSwapUseCase {
       if (wallet == null) {
         throw Exception('Wallet not found');
       }
+      final swapRepository =
+          wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
+      final limits = await _swapRepository.getSwapLimits(
+        type: type,
+      );
+      if (amountSat < limits.min) {
+        throw Exception(
+          'Minimum Swap Amount: $limits.min sats',
+        );
+      }
+      if (amountSat > limits.max) {
+        throw Exception(
+          'Maximum Swap Amount: $limits.max sats',
+        );
+      }
+
       final mnemonic = await _seedRepository.get(wallet.masterFingerprint);
 
       if (wallet.network.isLiquid && type == SwapType.lightningToBitcoin) {
@@ -47,8 +63,6 @@ class CreateReceiveSwapUseCase {
       final environment =
           wallet.network.isTestnet ? Environment.testnet : Environment.mainnet;
 
-      final swapRepository =
-          wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
       final btcElectrumUrl = wallet.network.isTestnet
           ? ApiServiceConstants.bbElectrumTestUrlPath
           : ApiServiceConstants.bbElectrumUrlPath;
