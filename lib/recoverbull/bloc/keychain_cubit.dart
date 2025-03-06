@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_pkg/consts/configs.dart';
+import 'package:bb_mobile/_pkg/recoverbull/tor_connection.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -119,11 +120,9 @@ class KeychainCubit extends Cubit<KeychainState> {
       return;
     }
 
-    emit(state.copyWith(loading: true, error: ''));
-
     if (!isClosed) {
       await _handleServerOperation(
-        () async => await _currentService!.serverInfo(),
+        () async => await _currentService?.serverInfo(),
         'Key server status',
       );
     }
@@ -172,17 +171,19 @@ class KeychainCubit extends Cubit<KeychainState> {
 
     try {
       emit(state.copyWith(loading: true, error: ''));
-      final backupKey = await _currentService!.fetchBackupKey(
+      final backupKey = await _currentService?.fetchBackupKey(
         backupId: state.backupId,
         password: state.secret,
         salt: state.backupSalt,
       );
 
-      emit(state.copyWith(
-        backupKey: HEX.encode(backupKey),
-        loading: false,
-        keySecretState: KeySecretState.recovered,
-      ));
+      if (backupKey != null) {
+        emit(state.copyWith(
+          backupKey: HEX.encode(backupKey),
+          loading: false,
+          keySecretState: KeySecretState.recovered,
+        ));
+      }
     } catch (e) {
       debugPrint("Failed to recover backup key: $e");
       emit(state.copyWith(
@@ -228,7 +229,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     try {
       emit(state.copyWith(loading: true, error: ''));
 
-      await _currentService!.trashBackupKey(
+      await _currentService?.trashBackupKey(
         backupId: state.backupId,
         password: state.secret,
         salt: state.backupSalt,
@@ -258,7 +259,7 @@ class KeychainCubit extends Cubit<KeychainState> {
   Future<void> secureKey() async {
     if (!await _ensureServerStatus()) return;
     try {
-      await _currentService!.storeBackupKey(
+      await _currentService?.storeBackupKey(
         backupId: state.backupId,
         password: state.tempSecret,
         backupKey: HEX.decode(state.backupKey),
