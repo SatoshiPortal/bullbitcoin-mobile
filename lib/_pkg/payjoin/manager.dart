@@ -324,31 +324,44 @@ class PayjoinManager {
     final (senderSessions, senderErr) = await _payjoinStorage.readAllSenders();
     if (senderErr != null) throw senderErr;
 
+    debugPrint('Found ${receiverSessions.length} receiver sessions');
+    debugPrint('Found ${senderSessions.length} sender sessions');
+
     final filteredReceivers = receiverSessions
         .where((session) =>
             session.walletId == wallet.id &&
             session.status != PayjoinSessionStatus.success &&
             session.status != PayjoinSessionStatus.unrecoverable)
         .toList();
+    debugPrint('Filtered receivers: ${filteredReceivers.length}');
+
     final filteredSenders = senderSessions.where((session) {
       return session.walletId == wallet.id &&
           session.status != PayjoinSessionStatus.success &&
           session.status != PayjoinSessionStatus.unrecoverable;
     }).toList();
+    debugPrint('Filtered senders: ${filteredSenders.length}');
 
-    final spawnedReceivers = filteredReceivers.map((session) {
-      return spawnReceiver(
-        isTestnet: session.isTestnet,
-        receiver: session.receiver,
-        wallet: wallet,
+    var i = 0; // Use this to stagger the spawning of sessions
+    final spawnedReceivers = filteredReceivers.map((session) async {
+      return await Future.delayed(
+        Duration(seconds: 1 * i++),
+        () => spawnReceiver(
+          isTestnet: session.isTestnet,
+          receiver: session.receiver,
+          wallet: wallet,
+        ),
       );
     });
-    final spawnedSenders = filteredSenders.map((session) {
-      return spawnSender(
-        isTestnet: session.isTestnet,
-        sender: session.sender,
-        wallet: wallet,
-        pjUri: session.pjUri,
+    final spawnedSenders = filteredSenders.map((session) async {
+      return await Future.delayed(
+        Duration(seconds: 1 * i++),
+        () => spawnSender(
+          isTestnet: session.isTestnet,
+          sender: session.sender,
+          wallet: wallet,
+          pjUri: session.pjUri,
+        ),
       );
     });
 
