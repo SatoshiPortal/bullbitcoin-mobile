@@ -162,37 +162,34 @@ class KeychainCubit extends Cubit<KeychainState> {
 
   Future<void> clickRecover() async {
     if (state.backupKey.isNotEmpty) {
-      emit(
-        state.copyWith(
-          loading: false,
-          keySecretState: KeySecretState.recovered,
-        ),
-      );
+      emit(state.copyWith(
+        loading: false,
+        keySecretState: KeySecretState.recovered,
+      ));
       return;
     }
     if (!await _ensureServerStatus()) return;
 
     try {
       emit(state.copyWith(loading: true, error: ''));
-
-      final backupKey = await _keyService.fetchBackupKey(
+      final backupKey = await _currentService!.fetchBackupKey(
         backupId: state.backupId,
         password: state.secret,
         salt: state.backupSalt,
       );
 
-      emit(
-        state.copyWith(
-          backupKey: HEX.encode(backupKey),
-          loading: false,
-          keySecretState: KeySecretState.recovered,
-        ),
-      );
+      emit(state.copyWith(
+        backupKey: HEX.encode(backupKey),
+        loading: false,
+        keySecretState: KeySecretState.recovered,
+      ));
     } catch (e) {
       debugPrint("Failed to recover backup key: $e");
-      emit(
-        state.copyWith(loading: false, error: "Failed to recover backup key"),
-      );
+      emit(state.copyWith(
+        error: 'Failed to recover backup key',
+        loading: false,
+        keyServerUp: false,
+      ));
     }
   }
 
@@ -231,7 +228,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     try {
       emit(state.copyWith(loading: true, error: ''));
 
-      await _keyService.trashBackupKey(
+      await _currentService!.trashBackupKey(
         backupId: state.backupId,
         password: state.secret,
         salt: state.backupSalt,
@@ -261,7 +258,7 @@ class KeychainCubit extends Cubit<KeychainState> {
   Future<void> secureKey() async {
     if (!await _ensureServerStatus()) return;
     try {
-      await _keyService.storeBackupKey(
+      await _currentService!.storeBackupKey(
         backupId: state.backupId,
         password: state.tempSecret,
         backupKey: HEX.decode(state.backupKey),
