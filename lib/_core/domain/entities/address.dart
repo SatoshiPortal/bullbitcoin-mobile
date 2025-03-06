@@ -56,4 +56,8 @@ sealed class Address with _$Address {
                 ________) =>
             confidential,
       );
+
+  bool get isBitcoin => this is BitcoinAddress;
+
+  bool get isLiquid => this is LiquidAddress;
 }

@@ -494,7 +494,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
           Address.liquid(
             index: address.index,
             standard: address.address,
-            confidential: address.confidential,
+            confidential: address.confidential!,
             kind: AddressKind.external,
             state: AddressStatus.used,
             balanceSat: balanceSat,
