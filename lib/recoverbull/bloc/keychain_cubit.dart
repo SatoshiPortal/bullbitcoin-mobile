@@ -36,12 +36,14 @@ class KeychainCubit extends Cubit<KeychainState> {
 
   Future<void> keyServerStatus() async {
     if (state.isInCooldown) {
-      emit(state.copyWith(
-        keyServerUp: false,
-        error:
-            'Rate limited. Please wait ${state.remainingCooldownSeconds} seconds.',
-        loading: false,
-      ));
+      emit(
+        state.copyWith(
+          keyServerUp: false,
+          error:
+              'Rate limited. Please wait ${state.remainingCooldownSeconds} seconds.',
+          loading: false,
+        ),
+      );
       return;
     }
 
@@ -53,11 +55,14 @@ class KeychainCubit extends Cubit<KeychainState> {
         emit(state.copyWith(keyServerUp: true, loading: false));
       } catch (e) {
         debugPrint('Server status check failed: $e');
-        emit(state.copyWith(
+        emit(
+          state.copyWith(
             keyServerUp: false,
             loading: false,
             error:
-                'Unable to reach key server. This could be due to network issues or the server may be temporarily unavailable.'));
+                'Unable to reach key server. This could be due to network issues or the server may be temporarily unavailable.',
+          ),
+        );
       }
     }
   }

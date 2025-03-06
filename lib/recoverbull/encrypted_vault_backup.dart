@@ -47,7 +47,12 @@ enum BackupProvider {
   final Type manager;
 
   const BackupProvider(
-      this.manager, this.title, this.description, this.icon, this.disclaimer);
+    this.manager,
+    this.title,
+    this.description,
+    this.icon,
+    this.disclaimer,
+  );
 
   Future<void> handleBackup(BackupSettingsCubit cubit) async {
     await cubit.saveBackup(manager: manager);
@@ -596,7 +601,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                         ),
                       ),
                     },
-                  )
+                  ),
                 ],
               ),
             ),

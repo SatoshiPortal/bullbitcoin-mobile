@@ -255,7 +255,8 @@ GoRouter setupRouter() => GoRouter(
                           return EncryptedVaultRecoverPage(canPop: extra);
                         }
                         return EncryptedVaultRecoverPage(
-                            wallet: extra as String?);
+                          wallet: extra as String?,
+                        );
                       },
                       routes: [
                         GoRoute(
@@ -285,24 +286,26 @@ GoRouter setupRouter() => GoRouter(
                   },
                 ),
                 GoRoute(
-                    path: 'key',
-                    builder: (context, state) {
-                      return BackupKeyPage(
-                        wallet: state.extra! as String,
-                      );
-                    },
-                    routes: [
-                      GoRoute(
-                          path: 'options',
-                          builder: (context, state) {
-                            final (backupKey, recoveredBackup) =
-                                state.extra! as (String, BullBackup?);
-                            return BackupKeyOptionsPage(
-                              recoveredBackup: recoveredBackup,
-                              backupKey: backupKey,
-                            );
-                          })
-                    ]),
+                  path: 'key',
+                  builder: (context, state) {
+                    return BackupKeyPage(
+                      wallet: state.extra! as String,
+                    );
+                  },
+                  routes: [
+                    GoRoute(
+                      path: 'options',
+                      builder: (context, state) {
+                        final (backupKey, recoveredBackup) =
+                            state.extra! as (String, BullBackup?);
+                        return BackupKeyOptionsPage(
+                          recoveredBackup: recoveredBackup,
+                          backupKey: backupKey,
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ],
             ),
           ],
