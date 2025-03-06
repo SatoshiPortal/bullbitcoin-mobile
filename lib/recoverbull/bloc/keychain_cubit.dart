@@ -21,26 +21,94 @@ class KeychainCubit extends Cubit<KeychainState> {
     _initialize();
   }
 
-  late final KeyService _keyService;
+  Future<T?> _handleServerOperation<T>(
+    Future<T> Function() operation,
+    String operationName, {
+    bool emitState = true,
+  }) async {
+    try {
+      if (emitState) emit(state.copyWith(loading: true, error: ''));
+      final result = await _withRetries(() => operation(), operationName);
+      if (emitState) {
+        emit(state.copyWith(keyServerUp: true, loading: false));
+      }
+      return result;
+    } catch (e) {
+      debugPrint('$operationName failed: $e');
+      if (emitState) {
+        emit(state.copyWith(
+          keyServerUp: false, // Only set to false for server operations
+          loading: false,
+          error:
+              'Unable to complete $operationName. Please check your connection.',
+        ));
+      }
+      return null;
+    }
+  }
 
-  void _initialize() {
-    if (keyServerUrl.isEmpty) {
-      emit(
-        state.copyWith(error: 'keychain api is not set', keyServerUp: false),
+  Future<KeyService> _createKeyService() async {
+    if (!_connection.isInitialized) {
+      await _handleServerOperation(
+        () async {
+          await _connection.initialize();
+          await Future.delayed(const Duration(seconds: 5));
+        },
+        'Tor initialization',
+        emitState: false,
       );
+    }
+
+    final service = KeyService(
+      keyServer: Uri.parse(onionUrl),
+      keyServerPublicKey: keyServerPublicKey,
+      tor: _connection.tor,
+    );
+
+    await _handleServerOperation(
+      () async => await service.serverInfo(),
+      'Service verification',
+      emitState: false,
+    );
+
+    return service;
+  }
+
+  Future<void> _initialize() async {
+    if (keyServerUrl.isEmpty) {
+      emit(state.copyWith(
+        error: 'Keyserver connection failed',
+        loading: false,
+        keyServerUp: false,
+      ));
       return;
     }
 
-    _keyService = KeyService(
-      keyServer: Uri.parse(keyServerUrl),
-      keyServerPublicKey: keyServerPublicKey,
-    );
-
-    // Initial status check
-    keyServerStatus();
+    try {
+      emit(state.copyWith(loading: true, error: ''));
+      _currentService = await _createKeyService();
+      await _connection.ready;
+      await keyServerStatus();
+    } catch (e) {
+      debugPrint('KeychainCubit initialization error: $e');
+      emit(state.copyWith(
+        error: 'Keyserver connection failed',
+        loading: false,
+        keyServerUp: false,
+      ));
+    }
   }
 
   Future<void> keyServerStatus() async {
+    if (_currentService == null) {
+      emit(state.copyWith(
+        keyServerUp: false,
+        error: 'Connection not initialized',
+        loading: false,
+      ));
+      return;
+    }
+
     if (state.isInCooldown) {
       emit(state.copyWith(
         keyServerUp: false,
@@ -54,21 +122,17 @@ class KeychainCubit extends Cubit<KeychainState> {
     emit(state.copyWith(loading: true, error: ''));
 
     if (!isClosed) {
-      try {
-        await _keyService.serverInfo();
-        emit(state.copyWith(keyServerUp: true, loading: false));
-      } catch (e) {
-        debugPrint('Server status check failed: $e');
-        emit(state.copyWith(
-            keyServerUp: false,
-            loading: false,
-            error:
-                'Unable to reach key server. This could be due to network issues or the server may be temporarily unavailable.'));
-      }
+      await _handleServerOperation(
+        () async => await _currentService!.serverInfo(),
+        'Key server status',
+      );
     }
   }
 
   Future<bool> _ensureServerStatus() async {
+    if (_currentService == null) {
+      await _initialize();
+    }
     await keyServerStatus();
     return state.keyServerUp;
   }
