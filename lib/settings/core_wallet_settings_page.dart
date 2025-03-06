@@ -45,12 +45,8 @@ class _Screen extends StatelessWidget {
                 SecureBitcoinWallet(),
                 Gap(8),
                 InstantPaymentsWallet(),
-                // Gap(8),
-                // InformationButton(),
                 Gap(8),
                 _ButtonList(),
-                // ColdcardWallet(),
-                // Gap(80),
               ],
             ),
           ),
@@ -110,6 +106,24 @@ class InstantPaymentsWallet extends StatelessWidget {
         final wallet =
             context.read<AppWalletsRepository>().getMainInstantWallet(network);
         context.push('/wallet-settings', extra: wallet!.id);
+      },
+    );
+  }
+}
+
+class BackupBullButton extends StatelessWidget {
+  const BackupBullButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.textWithStatusAndRightArrow(
+      label: 'RecoverBull',
+      onPressed: () {
+        final network = context.read<NetworkRepository>().getBBNetwork;
+        final wallets = context
+            .read<AppWalletsRepository>()
+            .walletNotMainFromNetwork(network);
+        context.push('/recoverbull', extra: wallets);
       },
     );
   }

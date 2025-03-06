@@ -67,7 +67,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final InternalWalletsRepository _walletsRepository;
   final WalletSync _walletSync;
   final AppWalletsRepository _appWalletsRepository;
-  WalletService? _walletServiceFromTempWallets;
+  late WalletService? _walletServiceFromTempWallets;
 
   FutureOr<void> _removeInternalWallet(
     RemoveInternalWallet event,
@@ -87,6 +87,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     await _appWalletsRepository
         .getWalletServiceById(state.wallet.id)
         ?.syncWallet();
+  }
+
+  void updateWallet(Wallet updatedWallet) {
+    emit(state.copyWith(wallet: updatedWallet));
   }
 }
 

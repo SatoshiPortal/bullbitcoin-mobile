@@ -261,22 +261,35 @@ class WalletService {
           storageWallet = storageWallet!.copyWith(utxos: wallet.utxos);
 
         case UpdateWalletTypes.settings:
-          if (wallet.backupTested != storageWallet!.backupTested) {
+          if (wallet.physicalBackupTested !=
+              storageWallet!.physicalBackupTested) {
             storageWallet = storageWallet.copyWith(
-              backupTested: wallet.backupTested,
+              physicalBackupTested: wallet.physicalBackupTested,
             );
           }
-
+          if (wallet.vaultBackupTested != storageWallet.vaultBackupTested) {
+            storageWallet = storageWallet.copyWith(
+              vaultBackupTested: wallet.vaultBackupTested,
+            );
+          }
           if (wallet.name != storageWallet.name) {
             storageWallet = storageWallet.copyWith(
               name: wallet.name,
             );
           }
 
-          if (wallet.lastBackupTested != null &&
-              wallet.lastBackupTested != storageWallet.lastBackupTested) {
+          if (wallet.lastPhysicalBackupTested != null &&
+              wallet.lastPhysicalBackupTested !=
+                  storageWallet.lastPhysicalBackupTested) {
             storageWallet = storageWallet.copyWith(
-              lastBackupTested: wallet.lastBackupTested,
+              lastPhysicalBackupTested: wallet.lastPhysicalBackupTested,
+            );
+          }
+          if (wallet.lastVaultBackupTested != null &&
+              wallet.lastVaultBackupTested !=
+                  storageWallet.lastVaultBackupTested) {
+            storageWallet = storageWallet.copyWith(
+              lastVaultBackupTested: wallet.lastVaultBackupTested,
             );
           }
       }
@@ -387,5 +400,5 @@ enum UpdateWalletTypes {
   swaps,
   addresses,
   settings,
-  utxos
+  utxos,
 }

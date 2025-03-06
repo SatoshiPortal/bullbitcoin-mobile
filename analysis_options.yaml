@@ -8,6 +8,8 @@ linter:
     
 
 analyzer:
+  errors:
+    avoid_redundant_argument_values: ignore
   exclude:
     - lib/**/*.g.dart
     - lib/**/*.freezed.dart

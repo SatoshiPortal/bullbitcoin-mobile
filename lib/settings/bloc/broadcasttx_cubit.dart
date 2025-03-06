@@ -83,13 +83,15 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     await clearErrors();
     emit(state.copyWith(loadingFile: true, errLoadingFile: ''));
     final (file, err) = await _filePicker.pickFile();
-    if (err != null) {
+    if (err != null || file == null) {
       emit(state.copyWith(loadingFile: false, errLoadingFile: err.toString()));
       return;
     }
 
-    final tx =
-        file!.replaceAll('\n', '').replaceAll('\r', '').replaceAll(' ', '');
+    final tx = (await file.readAsString())
+        .replaceAll('\n', '')
+        .replaceAll('\r', '')
+        .replaceAll(' ', '');
     emit(state.copyWith(loadingFile: false, tx: tx));
   }
 

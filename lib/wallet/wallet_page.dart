@@ -62,8 +62,10 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backupTested =
-        context.select((WalletBloc x) => x.state.wallet.backupTested);
+    final physicalBackupTested =
+        context.select((WalletBloc x) => x.state.wallet.physicalBackupTested);
+    final vaultBackupTested =
+        context.select((WalletBloc x) => x.state.wallet.vaultBackupTested);
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -77,7 +79,7 @@ class _Screen extends StatelessWidget {
               children: <Widget>[
                 const WalletHeader(),
                 const ActionsRow(),
-                if (!backupTested) ...[
+                if (!physicalBackupTested && !vaultBackupTested) ...[
                   const Gap(24),
                   const BackupAlertBanner(),
                   // const Gap(24),
@@ -114,8 +116,8 @@ class ActionsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backupTested =
-        context.select((WalletBloc x) => x.state.wallet.backupTested);
+    final physicalBackupTested =
+        context.select((WalletBloc x) => x.state.wallet.physicalBackupTested);
     final watchonly =
         context.select((WalletBloc x) => x.state.wallet.watchOnly());
     final isInstant =
@@ -136,7 +138,7 @@ class ActionsRow extends StatelessWidget {
             BBButton.text(
               label: 'Backup',
               isBlue: false,
-              isRed: !backupTested,
+              isRed: !physicalBackupTested,
               onPressed: () {
                 final walletBloc = context.read<WalletBloc>();
                 context.push(

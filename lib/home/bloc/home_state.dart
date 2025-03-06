@@ -402,33 +402,41 @@ class HomeState with _$HomeState {
         : walletsWithEnoughBalance;
   }
 
-  Set<({String info, Wallet walletBloc})> homeWarnings(BBNetwork network) {
+  Set<({String info, Wallet walletBloc})> homeWarnings(
+    BBNetwork network,
+  ) {
     bool instantBalWarning(Wallet wb) {
       if (wb.isInstant() == false) return false;
       return wb.balanceSats() > 100000000;
     }
 
-    bool backupWarning(Wallet wb) => !wb.backupTested;
+    bool needsBackupWarning(Wallet wb) =>
+        !wb.physicalBackupTested && !wb.vaultBackupTested;
 
     final warnings = <({String info, Wallet walletBloc})>{};
-    final List<String> backupWalletFngrforBackupWarning = [];
+    final networkWallets = walletsFromNetwork(network);
 
-    for (final walletBloc in walletsFromNetwork(network)) {
+    // Check for any wallet needing backup
+    final walletNeedingBackup =
+        networkWallets.where(needsBackupWarning).firstOrNull;
+    if (walletNeedingBackup != null) {
+      warnings.add(
+        (
+          info: 'Backup needs to be tested!',
+          walletBloc: walletNeedingBackup,
+        ),
+      );
+    }
+
+    // Check for instant wallets with high balance
+    for (final walletBloc in networkWallets) {
       if (instantBalWarning(walletBloc)) {
         warnings.add(
-          (info: 'Instant wallet balance is high', walletBloc: walletBloc),
-        );
-      }
-      if (backupWarning(walletBloc)) {
-        final fngr = walletBloc.sourceFingerprint;
-        if (backupWalletFngrforBackupWarning.contains(fngr)) continue;
-        warnings.add(
           (
-            info: 'Back up your wallet! Tap to test backup.',
-            walletBloc: walletBloc
+            info: 'Instant wallet balance is high',
+            walletBloc: walletBloc,
           ),
         );
-        backupWalletFngrforBackupWarning.add(fngr);
       }
     }
 

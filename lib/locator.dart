@@ -11,6 +11,8 @@ import 'package:bb_mobile/_pkg/mempool_api.dart';
 import 'package:bb_mobile/_pkg/nfc.dart';
 import 'package:bb_mobile/_pkg/payjoin/manager.dart';
 import 'package:bb_mobile/_pkg/payjoin/storage.dart';
+import 'package:bb_mobile/_pkg/recoverbull/google_drive.dart';
+import 'package:bb_mobile/_pkg/recoverbull/local.dart';
 import 'package:bb_mobile/_pkg/storage/hive.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
@@ -132,6 +134,9 @@ Future _setupAppServices() async {
   );
 
   locator.registerSingleton<FileStorage>(FileStorage());
+  locator.registerSingleton<FileSystemBackupManager>(FileSystemBackupManager());
+  locator
+      .registerSingleton<GoogleDriveBackupManager>(GoogleDriveBackupManager());
 }
 
 Future _setupWalletServices() async {

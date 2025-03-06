@@ -14,12 +14,14 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:bb_mobile/network/listeners.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
+import 'package:bb_mobile/recoverbull/bloc/keychain_cubit.dart';
 import 'package:bb_mobile/routes.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/listeners.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
+import 'package:bip85/bip85.dart' as bip85;
 import 'package:boltz/boltz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,6 +42,7 @@ Future main({bool fromTest = false}) async {
     await core.init();
     await LibLwk.init();
     await LibBoltz.init();
+    bip85.LibBip85.init();
     await dotenv.load(isOptional: true);
     Bloc.observer = BBlocObserver();
     // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
@@ -62,6 +65,7 @@ class BullBitcoinWalletApp extends StatelessWidget {
         BlocProvider.value(value: locator<Logger>()),
         BlocProvider.value(value: locator<Lighting>()),
         BlocProvider.value(value: locator<NetworkBloc>()),
+        BlocProvider.value(value: KeychainCubit()),
         BlocProvider.value(value: locator<NetworkFeesCubit>()),
         BlocProvider.value(value: locator<CurrencyCubit>()),
         BlocProvider.value(value: locator<HomeBloc>()),
