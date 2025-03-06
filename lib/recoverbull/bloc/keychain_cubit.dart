@@ -327,4 +327,39 @@ class KeychainCubit extends Cubit<KeychainState> {
       ),
     );
   }
+
+  @override
+  Future<void> close() {
+    // Don't dispose of the connection manager here since it's shared
+    return super.close();
+  }
+
+  /// Executes an async operation with retry logic
+  ///
+  /// Parameters:
+  ///   - action: The async operation to execute
+  ///   - operationName: Name of the operation for logging purposes
+  ///
+  /// Returns the result of type T from the action if successful
+  /// Will attempt the operation up to [maxRetries] times with [retryDelay] between attempts
+  /// Logs each retry attempt and final failure if all attempts fail
+  Future<T> _withRetries<T>(
+      Future<T> Function() action, String operationName) async {
+    for (var attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        return await action();
+      } catch (e) {
+        final isLastAttempt = attempt == maxRetries - 1;
+        debugPrint(isLastAttempt
+            ? '$operationName failed after $maxRetries attempts: $e'
+            : 'Retrying $operationName (${attempt + 1}/$maxRetries)');
+
+        if (isLastAttempt) rethrow;
+        await Future.delayed(retryDelay);
+      }
+    }
+    // This return is only to satisfy Dart's control flow analysis
+    // The function will either return from the try block or rethrow in the catch
+    return await action();
+  }
 }
