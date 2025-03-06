@@ -61,8 +61,10 @@ class _BackupKeyPageState extends State<BackupKeyPage> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              const BBText.titleLarge('Where is your latest backup?',
-                  isBold: true),
+              const BBText.titleLarge(
+                'Where is your latest backup?',
+                isBold: true,
+              ),
               const Gap(20),
               ...BackupProvider.values.map(
                 (provider) => Padding(

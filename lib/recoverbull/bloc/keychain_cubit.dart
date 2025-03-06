@@ -111,12 +111,14 @@ class KeychainCubit extends Cubit<KeychainState> {
     }
 
     if (state.isInCooldown) {
-      emit(state.copyWith(
-        keyServerUp: false,
-        error:
-            'Rate limited. Please wait ${state.remainingCooldownSeconds} seconds.',
-        loading: false,
-      ));
+      emit(
+        state.copyWith(
+          keyServerUp: false,
+          error:
+              'Rate limited. Please wait ${state.remainingCooldownSeconds} seconds.',
+          loading: false,
+        ),
+      );
       return;
     }
 

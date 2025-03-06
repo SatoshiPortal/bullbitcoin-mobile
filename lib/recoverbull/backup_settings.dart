@@ -386,7 +386,7 @@ class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
                               ),
                               context.push(
                                 '/wallet-settings/backup-settings/recover-options/encrypted',
-                              )
+                              ),
                             },
                     ),
                     const Gap(20),
