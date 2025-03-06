@@ -52,7 +52,10 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     );
 
     return await _boltz.broadcastBtcLnSwap(
-        swapId: swapId, signedTxHex: txid, broadcastViaBoltz: false);
+      swapId: swapId,
+      signedTxHex: txid,
+      broadcastViaBoltz: false,
+    );
   }
 
   /// RECEIVE LN TO LBTC
@@ -414,13 +417,19 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       throw "Can only update status of a pending swap";
     }
 
-    final sendSwapDetails = swap.sendSwapDetails!.copyWith(
-      sendTxid: txid,
+    // Use the appropriate variant's copyWith method
+    final updatedSwap = swap.maybeMap(
+      lnSend: (lnSendSwap) => lnSendSwap.copyWith(
+        sendTxid: txid,
+        status: SwapStatus.paid,
+      ),
+      chain: (chainSwap) => chainSwap.copyWith(
+        sendTxid: txid,
+        status: SwapStatus.paid,
+      ),
+      orElse: () => throw "Only lnSend or chain swaps can be marked as paid",
     );
-    final updatedSwap = swap.copyWith(
-      sendSwapDetails: sendSwapDetails,
-      status: SwapStatus.paid,
-    );
+
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
@@ -475,15 +484,17 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     if (swap.status != SwapStatus.pending) {
       throw "Can only update status of a pending swap";
     }
-    final receiveSwapDetails = swap.receiveSwapDetails!.copyWith(
-      receiveAddress: receiveAddress,
-      receiveTxid: txid,
+
+    final updatedSwap = swap.maybeMap(
+      lnReceive: (lnReceiveSwap) => lnReceiveSwap.copyWith(
+        receiveAddress: receiveAddress,
+        receiveTxid: txid,
+        completionTime: DateTime.now(),
+        status: SwapStatus.completed,
+      ),
+      orElse: () => throw "Only lnReceive swaps can be claimed this way",
     );
-    final updatedSwap = swap.copyWith(
-      receiveSwapDetails: receiveSwapDetails,
-      completionTime: DateTime.now(),
-      status: SwapStatus.completed,
-    );
+
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
@@ -501,15 +512,17 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     if (swap.status != SwapStatus.paid) {
       throw "Can only update status of a paid swap";
     }
-    final chainSwapDetails = swap.chainSwapDetails!.copyWith(
-      receiveAddress: receiveAddress,
-      receiveTxid: txid,
+
+    final updatedSwap = swap.maybeMap(
+      chain: (chainSwap) => chainSwap.copyWith(
+        receiveAddress: receiveAddress,
+        receiveTxid: txid,
+        completionTime: DateTime.now(),
+        status: SwapStatus.completed,
+      ),
+      orElse: () => throw "Only chain swaps can be claimed this way",
     );
-    final updatedSwap = swap.copyWith(
-      chainSwapDetails: chainSwapDetails,
-      completionTime: DateTime.now(),
-      status: SwapStatus.completed,
-    );
+
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
@@ -527,15 +540,23 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     if (swap.status != SwapStatus.paid) {
       throw "Can only update status of a paid swap";
     }
-    final sendSwapDetails = swap.sendSwapDetails!.copyWith(
-      refundAddress: refundAddress,
-      refundTxid: txid,
+
+    final updatedSwap = swap.maybeMap(
+      lnSend: (lnSendSwap) => lnSendSwap.copyWith(
+        refundAddress: refundAddress,
+        refundTxid: txid,
+        completionTime: DateTime.now(),
+        status: SwapStatus.completed,
+      ),
+      chain: (chainSwap) => chainSwap.copyWith(
+        refundAddress: refundAddress,
+        refundTxid: txid,
+        completionTime: DateTime.now(),
+        status: SwapStatus.completed,
+      ),
+      orElse: () => throw "Only lnSend or chain swaps can be refunded",
     );
-    final updatedSwap = swap.copyWith(
-      sendSwapDetails: sendSwapDetails,
-      completionTime: DateTime.now(),
-      status: SwapStatus.refunded,
-    );
+
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
@@ -552,10 +573,22 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       throw "Can only update status of a paid swap";
     }
 
-    final updatedSwap = swap.copyWith(
-      completionTime: DateTime.now(),
-      status: SwapStatus.completed,
+    // Handle each type separately
+    final updatedSwap = swap.map(
+      lnReceive: (lnReceiveSwap) => lnReceiveSwap.copyWith(
+        completionTime: DateTime.now(),
+        status: SwapStatus.completed,
+      ),
+      lnSend: (lnSendSwap) => lnSendSwap.copyWith(
+        completionTime: DateTime.now(),
+        status: SwapStatus.completed,
+      ),
+      chain: (chainSwap) => chainSwap.copyWith(
+        completionTime: DateTime.now(),
+        status: SwapStatus.completed,
+      ),
     );
+
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
@@ -640,8 +673,11 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     final allSwaps =
         allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
     return allSwaps
-        .where((swap) =>
-            swap.status == SwapStatus.pending || swap.status == SwapStatus.paid)
+        .where(
+          (swap) =>
+              swap.status == SwapStatus.pending ||
+              swap.status == SwapStatus.paid,
+        )
         .toList();
   }
 

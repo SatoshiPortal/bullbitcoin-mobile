@@ -15,8 +15,6 @@ abstract class SwapRepository {
     required String electrumUrl,
   });
 
-  // TODO: all claim/refund/coopsign methods can take swap objects instead of swapId strings
-  // to avoid having to fetch the swap object again in the method when already done in the processSwap manager method
   Future<String> claimLightningToLiquidSwap({
     required String swapId,
     required String liquidAddress,

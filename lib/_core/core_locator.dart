@@ -83,10 +83,11 @@ class CoreLocator {
         await Hive.openBox<String>(HiveBoxNameConstants.electrumServers);
     locator.registerLazySingleton<ElectrumServerRepository>(
       () => ElectrumServerRepositoryImpl(
-          electrumServerDataSource: ElectrumServerDataSourceImpl(
-        electrumServerStorage:
-            HiveStorageDataSourceImpl<String>(electrumServersBox),
-      )),
+        electrumServerDataSource: ElectrumServerDataSourceImpl(
+          electrumServerStorage:
+              HiveStorageDataSourceImpl<String>(electrumServersBox),
+        ),
+      ),
     );
     locator.registerLazySingleton<SeedRepository>(
       () => SeedRepositoryImpl(

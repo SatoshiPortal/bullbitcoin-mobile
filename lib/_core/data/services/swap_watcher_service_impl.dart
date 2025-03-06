@@ -125,7 +125,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       case SwapStatus.pending:
       case SwapStatus.paid:
       case SwapStatus.completed:
-      case SwapStatus.refunded:
       case SwapStatus.expired:
       case SwapStatus.failed:
         return;
@@ -135,205 +134,241 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Future<void> _processReceiveLnToBitcoinClaim({
     required Swap swap,
   }) async {
-    if (swap.receiveSwapDetails == null) {
-      throw Exception('Swap does not have receive details');
-    }
-    final address = await _walletManager.getNewAddress(
-      walletId: swap.receiveSwapDetails!.receiveWalletId,
-    );
-    if (!address.isBitcoin) {
-      throw Exception('Claim Address is not a Bitcoin address');
-    }
-    // TODO: add label to bitcoin address
+    // Use maybeMap to ensure we're working with the correct variant
+    swap.maybeMap(
+      lnReceive: (lnReceiveSwap) async {
+        final address = await _walletManager.getNewAddress(
+          walletId: lnReceiveSwap.receiveWalletId,
+        );
+        if (!address.isBitcoin) {
+          throw Exception('Claim Address is not a Bitcoin address');
+        }
+        // TODO: add label to bitcoin address
 
-    final claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
-      swapId: swap.id,
-      absoluteFees: swap.claimFee!,
-      bitcoinAddress: address.address,
+        final claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
+          swapId: lnReceiveSwap.id,
+          absoluteFees: lnReceiveSwap.claimFee!,
+          bitcoinAddress: address.address,
+        );
+        // TODO: add label to txid
+      },
+      orElse: () =>
+          throw Exception('Invalid swap type for LN to Bitcoin claim'),
     );
-    // TODO: add label to txid
   }
 
   Future<void> _processSendBitcoinToLnRefund({
     required Swap swap,
   }) async {
-    if (swap.sendSwapDetails == null) {
-      throw Exception('Swap does not have send details');
-    }
-    final address = await _walletManager.getNewAddress(
-      walletId: swap.sendSwapDetails!.sendWalletId,
+    swap.maybeMap(
+      lnSend: (lnSendSwap) async {
+        final address = await _walletManager.getNewAddress(
+          walletId: lnSendSwap.sendWalletId,
+        );
+        if (!address.isBitcoin) {
+          throw Exception('Refund Address is not a Bitcoin address');
+        }
+        // TODO: add label to bitcoin address
+        final refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
+          swapId: lnSendSwap.id,
+          bitcoinAddress: address.address,
+          absoluteFees: lnSendSwap.claimFee!,
+        );
+        // TODO: add label to txid
+      },
+      orElse: () =>
+          throw Exception('Invalid swap type for Bitcoin to LN refund'),
     );
-    if (!address.isBitcoin) {
-      throw Exception('Refund Address is not a Bitcoin address');
-    }
-    // TODO: add label to bitcoin address
-    final refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
-      swapId: swap.id,
-      bitcoinAddress: address.address,
-      absoluteFees: swap.claimFee!,
-    );
-    // TODO: add label to txid
   }
 
   Future<void> _processReceiveLnToLiquidClaim({
     required Swap swap,
   }) async {
-    if (swap.receiveSwapDetails == null) {
-      throw Exception('Swap does not have receive details');
-    }
-    final address = await _walletManager.getNewAddress(
-      walletId: swap.receiveSwapDetails!.receiveWalletId,
+    swap.maybeMap(
+      lnReceive: (lnReceiveSwap) async {
+        final address = await _walletManager.getNewAddress(
+          walletId: lnReceiveSwap.receiveWalletId,
+        );
+        if (!address.isLiquid) {
+          throw Exception('Claim Address is not a Liquid address');
+        }
+        // TODO: add label to liquid address
+        final claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
+          swapId: lnReceiveSwap.id,
+          absoluteFees: lnReceiveSwap.claimFee!,
+          liquidAddress: address.address,
+        );
+        // TODO: add label to txid
+      },
+      orElse: () => throw Exception('Invalid swap type for LN to Liquid claim'),
     );
-    if (!address.isLiquid) {
-      throw Exception('Claim Address is not a Liquid address');
-    }
-    // TODO: add label to liquid address
-    final claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
-      swapId: swap.id,
-      absoluteFees: swap.claimFee!,
-      liquidAddress: address.address,
-    );
-    // TODO: add label to txid
   }
 
   Future<void> _processSendLiquidToLnRefund({
     required Swap swap,
   }) async {
-    if (swap.sendSwapDetails == null) {
-      throw Exception('Swap does not have send details');
-    }
-    final address = await _walletManager.getNewAddress(
-      walletId: swap.sendSwapDetails!.sendWalletId,
+    swap.maybeMap(
+      lnSend: (lnSendSwap) async {
+        final address = await _walletManager.getNewAddress(
+          walletId: lnSendSwap.sendWalletId,
+        );
+        if (!address.isLiquid) {
+          throw Exception('Refund Address is not a Liquid address');
+        }
+        // TODO: add label to liquid address
+        final refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
+          swapId: lnSendSwap.id,
+          liquidAddress: address.address,
+          absoluteFees: lnSendSwap.claimFee!,
+        );
+        // TODO: add label to txid
+      },
+      orElse: () =>
+          throw Exception('Invalid swap type for Liquid to LN refund'),
     );
-    if (!address.isLiquid) {
-      throw Exception('Refund Address is not a Liquid address');
-    }
-    // TODO: add label to liquid address
-    final refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
-      swapId: swap.id,
-      liquidAddress: address.address,
-      absoluteFees: swap.claimFee!,
-    );
-    // TODO: add label to txid
   }
 
   Future<void> _processSendBitcoinToLnCoopSign({
     required Swap swap,
   }) async {
-    if (swap.sendSwapDetails == null) {
-      throw Exception('Swap does not have send details');
-    }
-    await _boltzRepo.coopSignBitcoinToLightningSwap(
-      swapId: swap.id,
+    swap.maybeMap(
+      lnSend: (lnSendSwap) async {
+        await _boltzRepo.coopSignBitcoinToLightningSwap(
+          swapId: lnSendSwap.id,
+        );
+      },
+      orElse: () =>
+          throw Exception('Invalid swap type for Bitcoin to LN coop sign'),
     );
   }
 
   Future<void> _processSendLiquidToLnCoopSign({
     required Swap swap,
   }) async {
-    if (swap.sendSwapDetails == null) {
-      throw Exception('Swap does not have send details');
-    }
-    await _boltzRepo.coopSignLiquidToLightningSwap(
-      swapId: swap.id,
+    swap.maybeMap(
+      lnSend: (lnSendSwap) async {
+        await _boltzRepo.coopSignLiquidToLightningSwap(
+          swapId: lnSendSwap.id,
+        );
+      },
+      orElse: () =>
+          throw Exception('Invalid swap type for Liquid to LN coop sign'),
     );
   }
 
   Future<void> _processChainLiquidToBitcoinClaim({
     required Swap swap,
   }) async {
-    if (swap.chainSwapDetails == null) {
-      throw Exception('Swap does not have chain details');
-    }
-    final claimAddress = await _walletManager.getNewAddress(
-      walletId: swap.chainSwapDetails!.receiveWalletId!,
+    swap.maybeMap(
+      chain: (chainSwap) async {
+        if (chainSwap.receiveWalletId == null) {
+          throw Exception('Receive wallet ID is missing for chain swap claim');
+        }
+        final claimAddress = await _walletManager.getNewAddress(
+          walletId: chainSwap.receiveWalletId!,
+        );
+        if (!claimAddress.isBitcoin) {
+          throw Exception('Claim address is not a Bitcoin address');
+        }
+        final refundAddress = await _walletManager.getNewAddress(
+          walletId: chainSwap.sendWalletId,
+        );
+        if (!refundAddress.isLiquid) {
+          throw Exception('Refund address is not a Liquid address');
+        }
+        // TODO: add label to bitcoin claim address
+        final claimTxId = await _boltzRepo.claimLiquidToBitcoinSwap(
+          swapId: chainSwap.id,
+          absoluteFees: chainSwap.claimFee!,
+          bitcoinClaimAddress: claimAddress.address,
+          liquidRefundAddress: refundAddress.address,
+        );
+        // TODO: add label to txid
+      },
+      orElse: () =>
+          throw Exception('Invalid swap type for Liquid to Bitcoin claim'),
     );
-    if (!claimAddress.isBitcoin) {
-      throw Exception('Claim address is not a Bitcoin address');
-    }
-    final refundAddress = await _walletManager.getNewAddress(
-      walletId: swap.chainSwapDetails!.sendWalletId,
-    );
-    if (!refundAddress.isLiquid) {
-      throw Exception('Refund address is not a Liquid address');
-    }
-    // TODO: add label to bitcoin claim address
-    final claimTxId = await _boltzRepo.claimLiquidToBitcoinSwap(
-      swapId: swap.id,
-      absoluteFees: swap.claimFee!,
-      bitcoinClaimAddress: claimAddress.address,
-      liquidRefundAddress: refundAddress.address,
-    );
-    // TODO: add label to txid
   }
 
   Future<void> _processChainBitcoinToLiquidRefund({
     required Swap swap,
   }) async {
-    if (swap.chainSwapDetails == null) {
-      throw Exception('Swap does not have chain details');
-    }
-    final refundAddress = await _walletManager.getNewAddress(
-      walletId: swap.chainSwapDetails!.sendWalletId,
+    swap.maybeMap(
+      chain: (chainSwap) async {
+        final refundAddress = await _walletManager.getNewAddress(
+          walletId: chainSwap.sendWalletId,
+        );
+        if (!refundAddress.isBitcoin) {
+          throw Exception('Refund address is not a Bitcoin address');
+        }
+        // TODO: add label to bitcoin refund address
+        await _boltzRepo.refundBitcoinToLiquidSwap(
+          swapId: chainSwap.id,
+          absoluteFees: chainSwap.claimFee!,
+          bitcoinRefundAddress: refundAddress.address,
+        );
+        // TODO: add label to txid
+      },
+      orElse: () =>
+          throw Exception('Invalid swap type for Bitcoin to Liquid refund'),
     );
-    if (!refundAddress.isBitcoin) {
-      throw Exception('Refund address is not a Bitcoin address');
-    }
-    // TODO: add label to bitcoin refund address
-    await _boltzRepo.refundBitcoinToLiquidSwap(
-      swapId: swap.id,
-      absoluteFees: swap.claimFee!,
-      bitcoinRefundAddress: refundAddress.address,
-    );
-    // TODO: add label to txid
   }
 
   Future<void> _processChainBitcoinToLiquidClaim({
     required Swap swap,
   }) async {
-    if (swap.chainSwapDetails == null) {
-      throw Exception('Swap does not have chain details');
-    }
-    final claimAddress = await _walletManager.getNewAddress(
-      walletId: swap.chainSwapDetails!.receiveWalletId!,
+    swap.maybeMap(
+      chain: (chainSwap) async {
+        if (chainSwap.receiveWalletId == null) {
+          throw Exception('Receive wallet ID is missing for chain swap claim');
+        }
+        final claimAddress = await _walletManager.getNewAddress(
+          walletId: chainSwap.receiveWalletId!,
+        );
+        if (!claimAddress.isLiquid) {
+          throw Exception('Claim address is not a Liquid address');
+        }
+        final refundAddress = await _walletManager.getNewAddress(
+          walletId: chainSwap.sendWalletId,
+        );
+        if (!refundAddress.isBitcoin) {
+          throw Exception('Refund address is not a Bitcoin address');
+        }
+        // TODO: add label to bitcoin claim address
+        final claimTxId = await _boltzRepo.claimBitcoinToLiquidSwap(
+          swapId: chainSwap.id,
+          absoluteFees: chainSwap.claimFee!,
+          liquidClaimAddress: claimAddress.address,
+          bitcoinRefundAddress: refundAddress.address,
+        );
+        // TODO: add label to txid
+      },
+      orElse: () =>
+          throw Exception('Invalid swap type for Bitcoin to Liquid claim'),
     );
-    if (!claimAddress.isLiquid) {
-      throw Exception('Claim address is not a Liquid address');
-    }
-    final refundAddress = await _walletManager.getNewAddress(
-      walletId: swap.chainSwapDetails!.sendWalletId,
-    );
-    if (!refundAddress.isBitcoin) {
-      throw Exception('Refund address is not a Bitcoin address');
-    }
-    // TODO: add label to bitcoin claim address
-    final claimTxId = await _boltzRepo.claimBitcoinToLiquidSwap(
-      swapId: swap.id,
-      absoluteFees: swap.claimFee!,
-      liquidClaimAddress: claimAddress.address,
-      bitcoinRefundAddress: refundAddress.address,
-    );
-    // TODO: add label to txid
   }
 
   Future<void> _processChainLiquidToBitcoinRefund({
     required Swap swap,
   }) async {
-    if (swap.chainSwapDetails == null) {
-      throw Exception('Swap does not have chain details');
-    }
-    final refundAddress = await _walletManager.getNewAddress(
-      walletId: swap.chainSwapDetails!.sendWalletId,
+    swap.maybeMap(
+      chain: (chainSwap) async {
+        final refundAddress = await _walletManager.getNewAddress(
+          walletId: chainSwap.sendWalletId,
+        );
+        if (!refundAddress.isLiquid) {
+          throw Exception('Claim address is not a Liquid address');
+        }
+        // TODO: add label to liquid refund address
+        await _boltzRepo.refundLiquidToBitcoinSwap(
+          swapId: chainSwap.id,
+          absoluteFees: chainSwap.claimFee!,
+          liquidRefundAddress: refundAddress.address,
+        );
+        // TODO: add label to txid
+      },
+      orElse: () =>
+          throw Exception('Invalid swap type for Liquid to Bitcoin refund'),
     );
-    if (!refundAddress.isLiquid) {
-      throw Exception('Claim address is not a Liquid address');
-    }
-    // TODO: add label to liquid refund address
-    await _boltzRepo.refundLiquidToBitcoinSwap(
-      swapId: swap.id,
-      absoluteFees: swap.claimFee!,
-      liquidRefundAddress: refundAddress.address,
-    );
-    // TODO: add label to txid
   }
 }

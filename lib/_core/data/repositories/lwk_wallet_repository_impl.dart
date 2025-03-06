@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
-import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_repository.dart';

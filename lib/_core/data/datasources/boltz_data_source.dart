@@ -201,6 +201,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     initializBoltzWebSocket();
   }
 
+  @override
   BoltzStorageDataSourceImpl get storage => _boltzStore;
   // REVERSE SWAPS
 
@@ -224,21 +225,18 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       boltzUrl: _url,
     );
     await _boltzStore.storeBtcLnSwap(btcLnSwap);
-    final swapModel = SwapModel(
+    final swapModel = SwapModel.lnReceive(
       id: btcLnSwap.id,
-      status: swap_entity.SwapStatus.pending.toString(),
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      type: swap_entity.SwapType.lightningToBitcoin.toString(),
+      status: swap_entity.SwapStatus.pending.name,
+      type: swap_entity.SwapType.lightningToBitcoin.name,
+      isTestnet: isTestnet,
       keyIndex: index,
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      receiveWalletId: walletId,
+      invoice: btcLnSwap.invoice,
       boltzFees: reverseFees.btcFees.percentage * outAmount ~/ 100,
       lockupFees: reverseFees.btcFees.minerFees.lockup.toInt(),
       claimFees: reverseFees.btcFees.minerFees.claim.toInt(),
-      lnReceiveSwapJson: jsonEncode(
-        swap_entity.LnReceiveSwapDetails(
-          receiveWalletId: walletId,
-          invoice: btcLnSwap.invoice,
-        ).toJson(),
-      ),
     );
     await _boltzStore.store(swapModel);
     return swapModel;
@@ -282,21 +280,18 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
     await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
 
-    final swapModel = SwapModel(
+    final swapModel = SwapModel.lnReceive(
       id: lbtcLnSwap.id,
-      status: swap_entity.SwapStatus.pending.toString(),
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      type: swap_entity.SwapType.lightningToLiquid.toString(),
+      status: swap_entity.SwapStatus.pending.name,
+      type: swap_entity.SwapType.lightningToLiquid.name,
+      isTestnet: isTestnet,
       keyIndex: index,
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      receiveWalletId: walletId,
+      invoice: lbtcLnSwap.invoice,
       boltzFees: reverseFees.lbtcFees.percentage * outAmount ~/ 100,
       lockupFees: reverseFees.lbtcFees.minerFees.lockup.toInt(),
       claimFees: reverseFees.lbtcFees.minerFees.claim.toInt(),
-      lnReceiveSwapJson: jsonEncode(
-        swap_entity.LnReceiveSwapDetails(
-          receiveWalletId: walletId,
-          invoice: lbtcLnSwap.invoice,
-        ).toJson(),
-      ),
     );
 
     await _boltzStore.store(swapModel);
@@ -384,23 +379,20 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
     await _boltzStore.storeBtcLnSwap(btcLnSwap);
 
-    final swapModel = SwapModel(
+    final swapModel = SwapModel.lnSend(
       id: btcLnSwap.id,
-      status: swap_entity.SwapStatus.pending.toString(),
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      type: swap_entity.SwapType.bitcoinToLightning.toString(),
+      status: swap_entity.SwapStatus.pending.name,
+      type: swap_entity.SwapType.bitcoinToLightning.name,
+      isTestnet: isTestnet,
       keyIndex: index,
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      sendWalletId: walletId,
+      invoice: invoice,
       boltzFees: submarineFees.btcFees.percentage *
           (btcLnSwap.outAmount.toInt()) ~/
           100,
       lockupFees: submarineFees.btcFees.minerFees.toInt(),
       claimFees: submarineFees.btcFees.minerFees.toInt(),
-      lnSendSwapJson: jsonEncode(
-        swap_entity.LnSendSwapDetails(
-          sendWalletId: walletId,
-          invoice: invoice,
-        ).toJson(),
-      ),
     );
 
     await _boltzStore.store(swapModel);
@@ -456,23 +448,20 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
     await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
 
-    final swapModel = SwapModel(
+    final swapModel = SwapModel.lnSend(
       id: lbtcLnSwap.id,
-      status: swap_entity.SwapStatus.pending.toString(),
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      type: swap_entity.SwapType.liquidToLightning.toString(),
+      status: swap_entity.SwapStatus.pending.name,
+      type: swap_entity.SwapType.liquidToLightning.name,
+      isTestnet: isTestnet,
       keyIndex: index,
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      sendWalletId: walletId,
+      invoice: invoice,
       boltzFees: submarineFees.lbtcFees.percentage *
           (lbtcLnSwap.outAmount.toInt()) ~/
           100,
       lockupFees: submarineFees.lbtcFees.minerFees.toInt(),
       claimFees: submarineFees.lbtcFees.minerFees.toInt(),
-      lnSendSwapJson: jsonEncode(
-        swap_entity.LnSendSwapDetails(
-          sendWalletId: walletId,
-          invoice: invoice,
-        ).toJson(),
-      ),
     );
 
     await _boltzStore.store(swapModel);
@@ -529,23 +518,20 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
     await _boltzStore.storeChainSwap(chainSwap);
 
-    final swapModel = SwapModel(
+    final swapModel = SwapModel.chain(
       id: chainSwap.id,
-      status: swap_entity.SwapStatus.pending.toString(),
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      type: swap_entity.SwapType.bitcoinToLiquid.toString(),
+      status: swap_entity.SwapStatus.pending.name,
+      type: swap_entity.SwapType.bitcoinToLiquid.name,
+      isTestnet: isTestnet,
       keyIndex: index,
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      sendWalletId: sendWalletId,
+      receiveWalletId: receiveWalletId,
+      receiveAddress: externalRecipientAddress,
       boltzFees: chainFees.lbtcFees.percentage * amountSat ~/ 100 +
           chainFees.lbtcFees.server.toInt(),
       lockupFees: chainFees.btcFees.userLockup.toInt(),
       claimFees: chainFees.lbtcFees.userClaim.toInt(),
-      chainSwapJson: jsonEncode(
-        swap_entity.ChainSwapDetails(
-          sendWalletId: sendWalletId,
-          receiveWalletId: receiveWalletId,
-          receiveAddress: externalRecipientAddress,
-        ).toJson(),
-      ),
     );
 
     await _boltzStore.store(swapModel);
@@ -580,23 +566,20 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
     await _boltzStore.storeChainSwap(chainSwap);
 
-    final swapModel = SwapModel(
+    final swapModel = SwapModel.chain(
       id: chainSwap.id,
-      status: swap_entity.SwapStatus.pending.toString(),
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      type: swap_entity.SwapType.liquidToBitcoin.toString(),
+      status: swap_entity.SwapStatus.pending.name,
+      type: swap_entity.SwapType.liquidToBitcoin.name,
+      isTestnet: isTestnet,
       keyIndex: index,
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      sendWalletId: sendWalletId,
+      receiveWalletId: receiveWalletId,
+      receiveAddress: externalRecipientAddress,
       boltzFees: chainFees.btcFees.percentage * amountSat ~/ 100 +
           chainFees.btcFees.server.toInt(),
       lockupFees: chainFees.lbtcFees.userLockup.toInt(),
       claimFees: chainFees.btcFees.userClaim.toInt(),
-      chainSwapJson: jsonEncode(
-        swap_entity.ChainSwapDetails(
-          sendWalletId: sendWalletId,
-          receiveWalletId: receiveWalletId,
-          receiveAddress: externalRecipientAddress,
-        ).toJson(),
-      ),
     );
 
     await _boltzStore.store(swapModel);
@@ -805,6 +788,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     }
   }
 
+  @override
   Stream<(String, String)> get stream => _boltzWebSocket.stream.map(
         (swapStatus) => (swapStatus.id, swapStatus.status.toString()),
       );
