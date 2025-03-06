@@ -41,9 +41,7 @@ class TorConnection {
 
   Future<void> dispose() async {
     _keepAliveTimer?.cancel();
-    if (_tor != null) {
-      _tor!.stop();
-      _tor = null;
-    }
+    _tor?.stop();
+    _tor = null;
   }
 }
