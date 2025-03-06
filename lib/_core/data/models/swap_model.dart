@@ -25,7 +25,7 @@ sealed class SwapModel with _$SwapModel {
     int? boltzFees,
     int? lockupFees,
     int? claimFees,
-  }) = _LnReceiveSwapModel;
+  }) = LnReceiveSwapModel;
 
   // Lightning Send Swap (submarine swap)
   const factory SwapModel.lnSend({
@@ -45,7 +45,7 @@ sealed class SwapModel with _$SwapModel {
     int? boltzFees,
     int? lockupFees,
     int? claimFees,
-  }) = _LnSendSwapModel;
+  }) = LnSendSwapModel;
 
   // Chain Swap (between BTC and L-BTC)
   const factory SwapModel.chain({
@@ -66,7 +66,7 @@ sealed class SwapModel with _$SwapModel {
     int? boltzFees,
     int? lockupFees,
     int? claimFees,
-  }) = _ChainSwapModel;
+  }) = ChainSwapModel;
 
   const SwapModel._();
 

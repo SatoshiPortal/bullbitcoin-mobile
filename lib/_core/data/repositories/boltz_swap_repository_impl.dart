@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
@@ -10,11 +11,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   BoltzSwapRepositoryImpl({
     required BoltzDataSource boltz,
-  }) : _boltz = boltz;
-
-  /// SWAP STREAM PROVIDER
-  @override
-  Stream<(String, String)> get stream => _boltz.stream;
+  }) : _boltz = boltz {}
 
   /// RECEIVE LN TO BTC
   @override
@@ -350,58 +347,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     return swapModel.toEntity();
   }
 
-  @override
-  Future<Swap> updateBtcLnSwapStatus({
-    required String swapId,
-    required String boltzStatus,
-  }) async {
-    await _boltz.updateBtcLnSwapStatus(
-      swapId: swapId,
-      status: boltzStatus,
-    );
-
-    final swap = await _boltz.storage.get(swapId);
-    if (swap == null) {
-      throw "No swap found after status update";
-    }
-    return swap.toEntity();
-  }
-
-  @override
-  Future<Swap> updateLbtcLnSwapStatus({
-    required String swapId,
-    required String boltzStatus,
-  }) async {
-    await _boltz.updateLbtcLnSwapStatus(
-      swapId: swapId,
-      status: boltzStatus,
-    );
-
-    final swap = await _boltz.storage.get(swapId);
-    if (swap == null) {
-      throw "No swap found after status update";
-    }
-    return swap.toEntity();
-  }
-
-  @override
-  Future<Swap> updateChainSwapStatus({
-    required String swapId,
-    required String boltzStatus,
-  }) async {
-    await _boltz.updateChainSwapStatus(
-      swapId: swapId,
-      status: boltzStatus,
-    );
-
-    final swap = await _boltz.storage.get(swapId);
-    if (swap == null) {
-      throw "No swap found after status update";
-    }
-    return swap.toEntity();
-  }
-
-  /// STORAGE
   @override
   Future<void> updatePaidSendSwap({
     required String swapId,

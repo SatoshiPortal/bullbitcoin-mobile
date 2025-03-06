@@ -138,23 +138,7 @@ abstract class SwapRepository {
     required String swapId,
   });
 
-  Future<Swap> updateBtcLnSwapStatus({
-    required String swapId,
-    required String boltzStatus,
-  });
-
-  Future<Swap> updateLbtcLnSwapStatus({
-    required String swapId,
-    required String boltzStatus,
-  });
-
-  Future<Swap> updateChainSwapStatus({
-    required String swapId,
-    required String boltzStatus,
-  });
-
   // STREAM
-  Stream<(String, String)> get stream;
 
   void addSwapToStream({
     required String swapId,

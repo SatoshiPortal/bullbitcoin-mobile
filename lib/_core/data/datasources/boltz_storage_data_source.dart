@@ -9,6 +9,10 @@ abstract class BoltzStorageDataSource {
   // Local Storage
   Future<void> store(SwapModel swap);
   Future<SwapModel?> get(String swapId);
+  // Type-specific retrieval methods
+  Future<LnReceiveSwapModel?> getLnReceiveSwapModel(String swapId);
+  Future<LnSendSwapModel?> getLnSendSwapModel(String swapId);
+  Future<ChainSwapModel?> getChainSwapModel(String swapId);
   Future<List<SwapModel>> getAll();
   Future<void> delete(String swapId);
   // Secure Storage
@@ -46,6 +50,39 @@ class BoltzStorageDataSourceImpl implements BoltzStorageDataSource {
     }
     final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
     return SwapModel.fromJson(jsonMap);
+  }
+
+  @override
+  Future<LnReceiveSwapModel?> getLnReceiveSwapModel(String swapId) async {
+    final SwapModel? swap = await get(swapId);
+    if (swap == null) return null;
+
+    return swap.maybeMap(
+      lnReceive: (lnReceiveSwap) => lnReceiveSwap,
+      orElse: () => null,
+    );
+  }
+
+  @override
+  Future<LnSendSwapModel?> getLnSendSwapModel(String swapId) async {
+    final SwapModel? swap = await get(swapId);
+    if (swap == null) return null;
+
+    return swap.maybeMap(
+      lnSend: (lnSendSwap) => lnSendSwap,
+      orElse: () => null,
+    );
+  }
+
+  @override
+  Future<ChainSwapModel?> getChainSwapModel(String swapId) async {
+    final SwapModel? swap = await get(swapId);
+    if (swap == null) return null;
+
+    return swap.maybeMap(
+      chain: (chainSwap) => chainSwap,
+      orElse: () => null,
+    );
   }
 
   @override

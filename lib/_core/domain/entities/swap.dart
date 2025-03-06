@@ -50,7 +50,7 @@ sealed class Swap with _$Swap {
     int? lockupFee,
     int? claimFee,
     DateTime? completionTime,
-  }) = _LnReceiveSwap;
+  }) = LnReceiveSwap;
 
   // Lightning Send Swap (submarine swap)
   const factory Swap.lnSend({
@@ -70,7 +70,7 @@ sealed class Swap with _$Swap {
     int? lockupFee,
     int? claimFee,
     DateTime? completionTime,
-  }) = _LnSendSwap;
+  }) = LnSendSwap;
 
   // Chain Swap (between BTC and L-BTC)
   const factory Swap.chain({
@@ -91,14 +91,14 @@ sealed class Swap with _$Swap {
     int? lockupFee,
     int? claimFee,
     DateTime? completionTime,
-  }) = _ChainSwap;
+  }) = ChainSwap;
 
   const Swap._();
 
   // These getters can still be used across all types
-  bool get isLnReceiveSwap => this is _LnReceiveSwap;
-  bool get isLnSendSwap => this is _LnSendSwap;
-  bool get isChainSwap => this is _ChainSwap;
+  bool get isLnReceiveSwap => this is LnReceiveSwap;
+  bool get isLnSendSwap => this is LnSendSwap;
+  bool get isChainSwap => this is ChainSwap;
 
   // Helper to get the common fields regardless of type
   String get id => when(
