@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/_ui/app_bar.dart';
 import 'package:bb_mobile/_ui/components/button.dart';
 import 'package:bb_mobile/_ui/components/text.dart';
@@ -40,20 +38,14 @@ class KeychainBackupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<KeychainCubit>(
-          create: (context) => KeychainCubit()
-            ..setChainState(
-              _pState,
-              backup.id,
-              backupKey,
-              backup.salt,
-            )
-            ..keyServerStatus(),
-        ),
-        BlocProvider.value(value: createBackupSettingsCubit()),
-      ],
+    context.read<KeychainCubit>().setChainState(
+          _pState,
+          backup.id,
+          backupKey,
+          backup.salt,
+        );
+    return BlocProvider.value(
+      value: createBackupSettingsCubit(),
       child: _Screen(
         backupKey: backupKey,
         backup: backup,
