@@ -1065,9 +1065,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "0-22"
-      resolved-ref: "2c7fec23efc12a071e1a3f7a979c455ee15a26fa"
-      url: "https://github.com/DanGould/payjoin-flutter"
+      ref: expose-uri-params-label-message
+      resolved-ref: ae1aad291351ada3eaf9697e3475e37dce5347bb
+      url: "https://github.com/riverKanies/payjoin-flutter"
     source: git
     version: "0.22.0"
   permission_handler:

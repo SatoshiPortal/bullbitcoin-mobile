@@ -55,16 +55,7 @@ class PayjoinManager {
     String originalPsbt,
   ) async {
     try {
-      // TODO this is a super ugly hack because of ugliness in the bip21 module.
-      // Fix that and get rid of this.
-      final pjSubstring = pjUriString.substring(pjUriString.indexOf('pj=') + 3);
-      final capitalizedPjSubstring = pjSubstring.toUpperCase();
-      final pjUriStringWithCapitalizedPj =
-          pjUriString.substring(0, pjUriString.indexOf('pj=') + 3) +
-              capitalizedPjSubstring;
-      // This should already be done before letting payjoin be enabled for sending
-      final pjUri = (await pj_uri.Uri.fromStr(pjUriStringWithCapitalizedPj))
-          .checkPjSupported();
+      final pjUri = (await pj_uri.Uri.fromStr(pjUriString)).checkPjSupported();
       final minFeeRateSatPerKwu = BigInt.from(networkFeesSatPerVb * 250);
       final senderBuilder = await SenderBuilder.fromPsbtAndUri(
         psbtBase64: originalPsbt,

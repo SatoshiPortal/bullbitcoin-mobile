@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:bb_mobile/_pkg/wallet/bip21.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/network/bloc/event.dart';
 import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:flutter/material.dart';
 // import 'package:uni_links/uni_links.dart';
+import 'package:payjoin_flutter/uri.dart' as pj_uri;
 
 class DeepLink {
   StreamSubscription? _sub;
@@ -47,8 +47,8 @@ class DeepLink {
     try {
       // check auth
 
-      final bip21Obj = bip21.decode(link);
-      final address = bip21Obj.address;
+      final bitcoinUri = await pj_uri.Uri.fromStr(link);
+      final address = bitcoinUri.address();
       final isTestnet = isTestnetAddress(address);
       if (isTestnet == null) return Err('Invalid address');
       final currentIsTestnet = networkCubit.state.networkData.testnet;

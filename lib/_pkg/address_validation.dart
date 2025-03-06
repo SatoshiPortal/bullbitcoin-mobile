@@ -3,6 +3,7 @@ import 'package:bb_mobile/send/bloc/send_state.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:boltz/boltz.dart' as boltz;
 import 'package:lwk/lwk.dart' as lwk;
+import 'package:payjoin_flutter/uri.dart' as pj_uri;
 
 const lightningUri = 'lightning:';
 const bitcoinUri = 'bitcoin:';
@@ -59,7 +60,10 @@ Future<(AddressNetwork?, Err?)> checkIfValidBip21BitcoinUri(
   bdk.Network network,
 ) async {
   if (address.length > bitcoinUri.length) {
-    final addr = address.substring(bitcoinUri.length).split('?').first;
+    // final addr = address.substring(bitcoinUri.length).split('?').first;
+
+    final bitcoinUriObj = await pj_uri.Uri.fromStr(address);
+    final addr = bitcoinUriObj.address();
     final (_, err) = await checkIfValidBitcoinUri(addr, network);
 
     if (err == null) {

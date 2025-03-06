@@ -41,8 +41,8 @@ dependencies:
   path_provider: ^2.0.15
   payjoin_flutter:
     git:
-      url: https://github.com/DanGould/payjoin-flutter
-      ref: 0-22
+      url: https://github.com/riverKanies/payjoin-flutter
+      ref: expose-uri-params-label-message
   carousel_slider: ^4.2.1
   qr_flutter: ^4.1.0
   flutter_translate: ^4.0.3
