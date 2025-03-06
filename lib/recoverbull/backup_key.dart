@@ -16,6 +16,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:recoverbull/recoverbull.dart';
 
 class BackupKeyPage extends StatefulWidget {
   final String wallet;
@@ -108,7 +109,7 @@ class _BackupKeyPageState extends State<BackupKeyPage> {
               _cubit.clearError();
               return;
             }
-            if (state.latestRecoveredBackup.isNotEmpty) {
+            if (state.latestRecoveredBackup != null) {
               context.push(
                 '/wallet-settings/backup-settings/key/options',
                 extra: ('', state.latestRecoveredBackup),
@@ -141,11 +142,11 @@ class _BackupKeyPageState extends State<BackupKeyPage> {
 class BackupKeyOptionsPage extends StatefulWidget {
   const BackupKeyOptionsPage({
     super.key,
-    required this.recoveredBackup,
+    this.recoveredBackup,
     required this.backupKey,
   });
 
-  final Map<String, dynamic> recoveredBackup;
+  final BullBackup? recoveredBackup;
   final String backupKey;
 
   @override
@@ -244,10 +245,7 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
   @override
   Widget build(BuildContext context) {
     final recoveryFile = widget.recoveredBackup;
-    if (recoveryFile.isEmpty ||
-        recoveryFile['id'] == null ||
-        recoveryFile['ciphertext'] == null ||
-        recoveryFile['salt'] == null) {
+    if (recoveryFile == null) {
       return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -311,7 +309,7 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
                                 _buildInfoText(
                                   context,
                                   'Backup ID:',
-                                  '${recoveryFile['id']}',
+                                  recoveryFile.id,
                                 ),
                                 const Gap(8),
                                 _buildInfoText(
@@ -319,7 +317,7 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
                                   'Created at:',
                                   DateFormat('MMM dd, yyyy HH:mm:ss').format(
                                     DateTime.fromMillisecondsSinceEpoch(
-                                      recoveryFile['created_at'] as int,
+                                      recoveryFile.createdAt,
                                     ).toLocal(),
                                   ),
                                 ),
@@ -361,8 +359,7 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
                                   onPressed: () => context
                                       .read<BackupSettingsCubit>()
                                       .recoverBackupKeyFromMnemonic(
-                                        widget.recoveredBackup['path']
-                                            as String?,
+                                        widget.recoveredBackup?.path,
                                       ),
                                   fontSize: 12,
                                   label: keyState.keyServerUp

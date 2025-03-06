@@ -17,6 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:recoverbull/recoverbull.dart';
 
 /// Common constants
 const _kGapSmall = 8.0;
@@ -35,7 +36,7 @@ class KeychainBackupPage extends StatelessWidget {
 
   final String? backupKey;
   final KeyChainPageState _pState;
-  final Map<String, dynamic> backup;
+  final BullBackup backup;
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +46,9 @@ class KeychainBackupPage extends StatelessWidget {
           create: (context) => KeychainCubit()
             ..setChainState(
               _pState,
-              backup['id'] as String? ?? '',
+              backup.id,
               backupKey,
-              backup['salt'] as String? ?? '',
+              backup.salt,
             )
             ..keyServerStatus(),
         ),
@@ -66,7 +67,7 @@ class _Screen extends StatelessWidget {
   const _Screen({this.backupKey, required this.backup, required this.pState});
 
   final String? backupKey;
-  final Map<String, dynamic> backup;
+  final BullBackup backup;
   final KeyChainPageState pState;
   @override
   Widget build(BuildContext context) {
@@ -161,7 +162,6 @@ class _Screen extends StatelessWidget {
             if (state.keySecretState == KeySecretState.recovered &&
                 !state.loading &&
                 !state.hasError &&
-                backup.isNotEmpty &&
                 state.backupKey.isNotEmpty) {
               if (state.pageState == KeyChainPageState.download) {
                 context.push(
@@ -170,7 +170,7 @@ class _Screen extends StatelessWidget {
                 );
               } else {
                 context.read<BackupSettingsCubit>().recoverBackup(
-                      jsonEncode(backup),
+                      backup,
                       state.backupKey,
                     );
               }

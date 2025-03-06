@@ -19,6 +19,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:recoverbull/recoverbull.dart';
 
 const double _kSpacing = 15.0;
 
@@ -126,7 +127,12 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
               '/wallet-settings/backup-settings/keychain',
               extra: (
                 state.backupKey,
-                {'id': state.backupId, 'salt': state.backupSalt},
+                BullBackup(
+                  createdAt: DateTime.now().toUtc().millisecondsSinceEpoch,
+                  id: state.backupId,
+                  ciphertext: '',
+                  salt: state.backupSalt,
+                ),
                 KeyChainPageState.enter.name.toLowerCase()
               ),
             );
@@ -377,7 +383,7 @@ class _EncryptedVaultRecoverPageState extends State<EncryptedVaultRecoverPage> {
             _backupSettingsCubit.clearError();
             return;
           }
-          if (state.latestRecoveredBackup.isNotEmpty) {
+          if (state.latestRecoveredBackup != null) {
             context.push(
               '/wallet-settings/backup-settings/recover-options/encrypted/info',
               extra: state.latestRecoveredBackup,
@@ -413,7 +419,7 @@ class RecoveredBackupInfoPage extends StatefulWidget {
     required this.recoveredBackup,
   });
 
-  final Map<String, dynamic> recoveredBackup;
+  final BullBackup? recoveredBackup;
 
   @override
   State<RecoveredBackupInfoPage> createState() =>
@@ -482,19 +488,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
   @override
   Widget build(BuildContext context) {
     final recoveryFile = widget.recoveredBackup;
-    if (recoveryFile.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          flexibleSpace: BBAppBar(text: '', onBack: () => context.pop()),
-        ),
-        body: _buildErrorView(context),
-      );
-    } else if (recoveryFile['id'] == null ||
-        recoveryFile['ciphertext'] == null ||
-        recoveryFile['salt'] == null) {
+    if (recoveryFile == null) {
       return Scaffold(
         appBar: AppBar(
           elevation: 0,
@@ -552,7 +546,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                               .copyWith(fontWeight: FontWeight.bold),
                         ),
                         TextSpan(
-                          text: '${recoveryFile['id']}',
+                          text: recoveryFile.id,
                           style: context.font.bodyMedium!
                               .copyWith(fontWeight: FontWeight.bold),
                         ),
@@ -571,7 +565,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                         ),
                         TextSpan(
                           text:
-                              ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(recoveryFile['created_at'] as int).toLocal())}',
+                              ' ${DateFormat('MMM dd, yyyy HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(recoveryFile.createdAt).toLocal())}',
                           style: context.font.bodyMedium!
                               .copyWith(fontWeight: FontWeight.bold),
                         ),

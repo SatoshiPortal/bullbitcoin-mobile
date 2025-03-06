@@ -44,6 +44,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:recoverbull/recoverbull.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -260,8 +261,7 @@ GoRouter setupRouter() => GoRouter(
                         GoRoute(
                           path: 'info',
                           builder: (context, state) {
-                            final recoveredBackup =
-                                state.extra! as Map<String, dynamic>;
+                            final recoveredBackup = state.extra as BullBackup?;
                             return RecoveredBackupInfoPage(
                               recoveredBackup: recoveredBackup,
                             );
@@ -275,7 +275,7 @@ GoRouter setupRouter() => GoRouter(
                   path: 'keychain',
                   builder: (context, state) {
                     final (backupKey, backup, pState) =
-                        state.extra! as (String?, Map<String, dynamic>, String);
+                        state.extra! as (String?, BullBackup, String);
 
                     return KeychainBackupPage(
                       backupKey: backupKey,
@@ -296,7 +296,7 @@ GoRouter setupRouter() => GoRouter(
                           path: 'options',
                           builder: (context, state) {
                             final (backupKey, recoveredBackup) =
-                                state.extra! as (String, Map<String, dynamic>);
+                                state.extra! as (String, BullBackup?);
                             return BackupKeyOptionsPage(
                               recoveredBackup: recoveredBackup,
                               backupKey: backupKey,

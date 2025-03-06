@@ -98,8 +98,11 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
 
   IRecoverbullManager _getBackupManager(Type type) {
     if (type == GoogleDriveBackupManager) return _googleDriveBackupManager;
-    if (type == FileSystemBackupManager) return _fileSystemBackupManager;
-    throw Exception('Unknown backup manager');
+    if (type == FileSystemBackupManager) {
+      return _fileSystemBackupManager;
+    } else {
+      return _fileSystemBackupManager;
+    }
   }
 
   void changePassword(String password) {
@@ -198,7 +201,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         _emitSafe(
           state.copyWith(
             loadingBackups: false,
-            latestRecoveredBackup: loadedBackup.toMap(),
+            latestRecoveredBackup: loadedBackup,
             lastBackupAttempt: DateTime.now(),
           ),
         );
@@ -265,16 +268,10 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
           return;
         }
 
-        final backupMap = backup.toMap();
-        backupMap.addAll({
-          'source': 'drive',
-          'filename': latestBackup.name,
-        });
-
         _emitSafe(
           state.copyWith(
             loadingBackups: false,
-            latestRecoveredBackup: backupMap,
+            latestRecoveredBackup: backup,
             lastBackupAttempt: DateTime.now(),
             errorLoadingBackups: '',
           ),
@@ -315,7 +312,7 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   /// Recovers wallet data from encrypted backup
   /// [encrypted] - Encrypted backup data
   /// [backupKey] - Key used to decrypt the backup
-  Future<void> recoverBackup(String encrypted, String backupKey) async {
+  Future<void> recoverBackup(BullBackup encrypted, String backupKey) async {
     _emitSafe(
       state.copyWith(
         loadingBackups: true,
@@ -323,22 +320,22 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
         errorLoadingBackups: '',
       ),
     );
-
     if (backupKey.isEmpty) {
       _handleLoadError('Backup key is missing');
       return;
     }
 
-    if (!BullBackup.isValid(encrypted)) {
+    if (encrypted.ciphertext.isEmpty ||
+        encrypted.salt.isEmpty ||
+        encrypted.id.isEmpty ||
+        encrypted.path == null) {
       _handleLoadError('Invalid backup format');
       return;
     }
 
-    final backup = BullBackup.fromJson(encrypted);
-
     final (backups, decryptErr) =
         await _fileSystemBackupManager.restoreEncryptedBackup(
-      backup: backup,
+      backup: encrypted,
       backupKey: HEX.decode(backupKey),
     );
 

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_model/wallet_sensitive_data.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:recoverbull/recoverbull.dart';
 
 part 'backup_settings_state.freezed.dart';
 
@@ -26,7 +27,7 @@ class BackupSettingsState with _$BackupSettingsState {
     @Default('') String backupFolderPath,
     @Default('') String backupSalt,
     @Default('') String backupKey,
-    @Default({}) Map<String, dynamic> latestRecoveredBackup,
+    BullBackup? latestRecoveredBackup,
     @Default(null) DateTime? lastBackupAttempt,
   }) = _BackupSettingsState;
 
