@@ -10,8 +10,14 @@ import 'package:recoverbull/recoverbull.dart';
 class KeychainCubit extends Cubit<KeychainState> {
   static const pinMin = 6;
   static const pinMax = 8;
+  static const maxRetries = 2;
+  static const retryDelay = Duration(seconds: 1);
+  final TorConnection _connection;
+  KeyService? _currentService;
 
-  KeychainCubit() : super(const KeychainState()) {
+  KeychainCubit()
+      : _connection = TorConnection(),
+        super(const KeychainState()) {
     _initialize();
   }
 
