@@ -30,7 +30,16 @@ enum AppRoute {
   devHome('/dev-home'),
   devRecover('/dev-recover'),
   devCreate('/dev-create'),
-  devUnlock('/dev-unlock');
+  devUnlock('/dev-unlock'),
+  devSwap('/dev-swap'),
+  devSettingsBitcoin('/dev-settings-bitcoin'),
+  devSettingsSecurityPin('/dev-settings-security-pin'),
+  devSettingsLanguage('/dev-settings-language'),
+  devSettingsCurrency('/dev-settings-currency'),
+  devBackup('/dev-backup'),
+  devSettingsSwapHistory('/dev-settings-swap-history'),
+  devSettingsBackup('/dev-settings-backup'),
+  devSettingsTestBackup('/dev-settings-test-backup');
 
   final String path;
 
@@ -58,8 +67,9 @@ class AppRouter {
 
           return null;
         },
-        pageBuilder: (context, state) =>
-            const NoTransitionPage(child: HomeScreen()),
+        builder: (context, state) => const HomeScreen(),
+        // pageBuilder: (context, state) =>
+        // const NoTransitionPage(child: HomeScreen()),
       ),
       GoRoute(
         name: AppRoute.appUnlock.name,
@@ -118,6 +128,46 @@ class DevPages {
         DevPageData(
           route: AppRoute.devSettings.name,
           title: 'Settings',
+        ),
+        DevPageData(
+          route: AppRoute.devUnlock.name,
+          title: 'Unlock',
+        ),
+        DevPageData(
+          route: AppRoute.devSwap.name,
+          title: 'Swap',
+        ),
+        DevPageData(
+          route: AppRoute.devBackup.name,
+          title: 'Backup',
+        ),
+        DevPageData(
+          route: AppRoute.devSettingsBitcoin.name,
+          title: 'Settings Bitcoin',
+        ),
+        DevPageData(
+          route: AppRoute.devSettingsSecurityPin.name,
+          title: 'Settings Security Pin',
+        ),
+        DevPageData(
+          route: AppRoute.devSettingsLanguage.name,
+          title: 'Settings Language',
+        ),
+        DevPageData(
+          route: AppRoute.devSettingsCurrency.name,
+          title: 'Settings Currency',
+        ),
+        DevPageData(
+          route: AppRoute.devSettingsSwapHistory.name,
+          title: 'Settings Swap History',
+        ),
+        DevPageData(
+          route: AppRoute.devSettingsBackup.name,
+          title: 'Settings Backup',
+        ),
+        DevPageData(
+          route: AppRoute.devSettingsTestBackup.name,
+          title: 'Settings Test Backup',
         ),
       ],
     ),
