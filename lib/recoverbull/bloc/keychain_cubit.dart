@@ -61,7 +61,7 @@ class KeychainCubit extends Cubit<KeychainState> {
     }
 
     final service = KeyService(
-      keyServer: Uri.parse(onionUrl),
+      keyServer: Uri.parse(keyServer),
       keyServerPublicKey: keyServerPublicKey,
       tor: _connection.tor,
     );
