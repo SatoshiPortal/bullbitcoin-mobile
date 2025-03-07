@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_pkg/consts/passwords.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_cubit.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:recoverbull/recoverbull.dart';
 
 part 'keychain_state.freezed.dart';
 
@@ -33,14 +34,13 @@ class KeychainState with _$KeychainState {
     @Default(KeySecretState.none) KeySecretState keySecretState,
     @Default('') String secret,
     @Default('') String tempSecret,
-    @Default(false) bool obscure,
-    @Default('') String backupId,
-    @Default('') String backupKey,
-    @Default([]) List<int> backupSalt,
     @Default(false) bool isSecretConfirmed,
+    @Default(false) bool obscure,
+    @Default('') String backupKey,
     @Default('') String error,
     @Default(KeyChainPageState.enter) KeyChainPageState originalPageState,
     DateTime? lastRequestTime,
+    BullBackup? backupData,
     int? cooldownMinutes,
   }) = _KeychainState;
 
@@ -79,9 +79,9 @@ class KeychainState with _$KeychainState {
   bool get hasError => error.isNotEmpty;
   bool get isRecovering => pageState == KeyChainPageState.recovery;
   bool get canStoreKey => isValid && keyServerUp && !loading;
-  bool get canRecoverKey => backupId.isNotEmpty && keyServerUp && !loading;
-  bool get canRecoverWithBckupKey => backupId.isNotEmpty && !loading;
-  bool get canDeleteKey => backupId.isNotEmpty && keyServerUp && !loading;
+  bool get canRecoverKey => backupData != null && keyServerUp && !loading;
+  bool get canRecoverWithBckupKey => backupData != null && !loading;
+  bool get canDeleteKey => backupData != null && keyServerUp && !loading;
   bool validateSecret(String secret) => commonPasswordsTop1000.contains(secret);
 
   bool get isInCooldown {

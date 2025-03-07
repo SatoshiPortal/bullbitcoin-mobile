@@ -64,7 +64,7 @@ const bbVersion = '0.4.0-06';
 
 GetIt locator = GetIt.instance;
 
-Future setupLocator({bool fromTest = false}) async {
+Future<void> setupLocator({bool fromTest = false}) async {
   if (fromTest) return;
 
   locator.registerSingleton<Logger>(Logger());
