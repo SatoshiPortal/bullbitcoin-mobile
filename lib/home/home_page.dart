@@ -19,6 +19,7 @@ import 'package:bb_mobile/create/bloc/state.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
+import 'package:bb_mobile/home/new_ui/home_page_new.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_bloc.dart';
@@ -151,6 +152,8 @@ class _ScreenState extends State<_Screen> {
         ),
       );
     });
+
+    return const HomePageNew();
 
     return Scaffold(
       appBar: _buildAppBar(context),
