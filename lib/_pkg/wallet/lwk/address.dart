@@ -1,7 +1,7 @@
 import 'package:bb_mobile/_model/address.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:lwk_dart/lwk_dart.dart' as lwk;
+import 'package:lwk/lwk.dart' as lwk;
 
 class LWKAddress {
   Future<(String?, Err?)> peekIndex(lwk.Wallet lwkWallet, int idx) async {

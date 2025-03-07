@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:lwk_dart/lwk_dart.dart' as lwk;
+import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
 class LWKCreate {

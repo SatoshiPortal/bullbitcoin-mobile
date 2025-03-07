@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/wallet.dart';
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz/boltz.dart';
 
 extension LnSwapExt on SwapTx {
   BtcLnSwap toBtcLnSwap(LnSwapTxSensitive sensitive) {

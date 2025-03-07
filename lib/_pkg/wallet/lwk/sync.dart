@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:bb_mobile/_pkg/error.dart';
-import 'package:lwk_dart/lwk_dart.dart' as lwk;
+import 'package:lwk/lwk.dart' as lwk;
 
 Future<void> _syncLwkIsolate(List<dynamic> args) async {
   final sendPort = args[0] as SendPort;

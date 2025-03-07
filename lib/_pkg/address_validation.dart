@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/send/bloc/send_state.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:boltz_dart/boltz_dart.dart' as boltz;
-import 'package:lwk_dart/lwk_dart.dart' as lwk;
+import 'package:boltz/boltz.dart' as boltz;
+import 'package:lwk/lwk.dart' as lwk;
 
 const lightningUri = 'lightning:';
 const bitcoinUri = 'bitcoin:';

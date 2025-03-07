@@ -1,4 +1,4 @@
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz/boltz.dart';
 
 class WatchTxsEvent {}
 

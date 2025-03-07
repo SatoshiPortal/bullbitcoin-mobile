@@ -95,7 +95,7 @@ class WalletBlocListeners extends StatelessWidget {
         !mainWalletBloc.state.wallet!.watchOnly() &&
         mainWalletBloc.state.wallet!.isSecure()) {
       print(
-          'mainWalletBloc.state.wallet!.mainWallet: ${mainWalletBloc.state.wallet!.id}');
+          'mainWalletBloc.state.wallet!.mainWallet: ${mainWalletBloc.state.wallet!.id}',);
       walletChild = PayjoinLifecycleManager(
         wallet: mainWalletBloc.state.wallet!,
         payjoinManager: locator<PayjoinManager>(),

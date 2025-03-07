@@ -6,7 +6,7 @@ import 'package:bb_mobile/_pkg/wallet/bdk/sensitive_create.dart';
 import 'package:bb_mobile/_pkg/wallet/create.dart';
 import 'package:bb_mobile/_pkg/wallet/lwk/create.dart';
 import 'package:bb_mobile/_pkg/wallet/utils.dart';
-import 'package:lwk_dart/lwk_dart.dart' as lwk;
+import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
 class LWKSensitiveCreate {

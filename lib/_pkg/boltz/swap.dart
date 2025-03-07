@@ -9,7 +9,7 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/_pkg/storage/secure_storage.dart';
 import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/repository/network.dart';
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz/boltz.dart';
 import 'package:dio/dio.dart';
 
 class SwapBoltz {
@@ -54,9 +54,10 @@ class SwapBoltz {
     }
   }
 
-  Future<(BoltzApi?, Err?)> initializeBoltzApi(bool isTestnet) async {
+  Future<(BoltzWebSocket?, Err?)> initializeBoltzWebSocket(
+      bool isTestnet,) async {
     try {
-      final api = await BoltzApi.newBoltzApi(
+      final api = BoltzWebSocket.create(
         isTestnet ? boltzTestnetUrl : boltzMainnetUrl,
       );
 
@@ -293,13 +294,13 @@ class SwapBoltz {
         try {
           signedHex = await swap.claim(
             outAddress: address,
-            absFee: BigInt.from(swapTx.claimFees!),
+            minerFee: TxFee.absolute(BigInt.from(swapTx.claimFees!)),
             tryCooperate: tryCooperate,
           );
         } catch (e) {
           signedHex = await swap.claim(
             outAddress: address,
-            absFee: BigInt.from(swapTx.claimFees!),
+            minerFee: TxFee.absolute(BigInt.from(swapTx.claimFees!)),
             tryCooperate: false,
           );
         }
@@ -363,13 +364,13 @@ class SwapBoltz {
         try {
           signedHex = await swap.claim(
             outAddress: address,
-            absFee: claimFeesEstimate.claim,
+            minerFee: TxFee.absolute(claimFeesEstimate.claim),
             tryCooperate: tryCooperate,
           );
         } catch (e) {
           signedHex = await swap.claim(
             outAddress: address,
-            absFee: claimFeesEstimate.claim,
+            minerFee: TxFee.absolute(claimFeesEstimate.claim),
             tryCooperate: false,
           );
         }
@@ -442,13 +443,13 @@ class SwapBoltz {
         try {
           signedHex = await swap.refund(
             outAddress: address,
-            absFee: refundFeesEstimate,
+            minerFee: TxFee.absolute(refundFeesEstimate),
             tryCooperate: tryCooperate,
           );
         } catch (e) {
           signedHex = await swap.refund(
             outAddress: address,
-            absFee: refundFeesEstimate,
+            minerFee: TxFee.absolute(refundFeesEstimate),
             tryCooperate: false,
           );
         }
@@ -503,13 +504,13 @@ class SwapBoltz {
         try {
           signedHex = await swap.refund(
             outAddress: address,
-            absFee: refundFeesEstimate,
+            minerFee: TxFee.absolute(refundFeesEstimate),
             tryCooperate: tryCooperate,
           );
         } catch (e) {
           signedHex = await swap.refund(
             outAddress: address,
-            absFee: refundFeesEstimate,
+            minerFee: TxFee.absolute(refundFeesEstimate),
             tryCooperate: false,
           );
         }
@@ -612,13 +613,13 @@ class SwapBoltz {
       try {
         signedHex = await swap.refund(
           refundAddress: address,
-          absFee: refundFeesEstimate,
+          minerFee: TxFee.absolute(refundFeesEstimate),
           tryCooperate: tryCooperate,
         );
       } catch (e) {
         signedHex = await swap.refund(
           refundAddress: address,
-          absFee: refundFeesEstimate,
+          minerFee: TxFee.absolute(refundFeesEstimate),
           tryCooperate: false,
         );
       }
@@ -697,14 +698,14 @@ class SwapBoltz {
         signedHex = await updatedSwap.claim(
           outAddress: swapTx.claimAddress!,
           refundAddress: swapTx.refundAddress!,
-          absFee: claimFeesEstimate,
+          minerFee: TxFee.absolute(claimFeesEstimate),
           tryCooperate: tryCooperate,
         );
       } catch (e) {
         signedHex = await updatedSwap.claim(
           outAddress: swapTx.claimAddress!,
           refundAddress: swapTx.refundAddress!,
-          absFee: claimFeesEstimate,
+          minerFee: TxFee.absolute(claimFeesEstimate),
           tryCooperate: false,
         );
       }

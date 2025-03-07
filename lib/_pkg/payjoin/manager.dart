@@ -331,7 +331,7 @@ class PayjoinManager {
         .where((session) =>
             session.walletId == wallet.id &&
             session.status != PayjoinSessionStatus.success &&
-            session.status != PayjoinSessionStatus.unrecoverable)
+            session.status != PayjoinSessionStatus.unrecoverable,)
         .toList();
     debugPrint('Filtered receivers: ${filteredReceivers.length}');
 

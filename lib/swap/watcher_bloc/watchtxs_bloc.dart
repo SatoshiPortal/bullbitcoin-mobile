@@ -15,7 +15,7 @@ import 'package:bb_mobile/swap/watcher_bloc/watchtxs_state.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz/boltz.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -40,8 +40,8 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
   final HomeCubit _homeCubit;
   final NetworkCubit _networkCubit;
 
-  BoltzApi? _boltzMainnet;
-  BoltzApi? _boltzTestnet;
+  BoltzWebSocket? _boltzMainnet;
+  BoltzWebSocket? _boltzTestnet;
   StreamSubscription? _mainNetStream;
   StreamSubscription? _testNetStream;
 
@@ -110,16 +110,15 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
 
     if (isTestnet) {
       final (watcherTestnet, errTestnet) =
-          await _swapBoltz.initializeBoltzApi(true);
+          await _swapBoltz.initializeBoltzWebSocket(true);
       if (errTestnet != null) {
         emit(state.copyWith(errWatchingInvoice: errTestnet.message));
         return;
       }
 
       _boltzTestnet = watcherTestnet;
-
-      _testNetStream =
-          _boltzTestnet!.subscribeSwapStatus(swapTxsToWatch).listen(
+      _boltzTestnet!.subscribe(swapTxsToWatch);
+      _testNetStream = _boltzTestnet!.stream.listen(
         (event) {
           __swapStatusUpdated(
             emit,
@@ -129,16 +128,15 @@ class WatchTxsBloc extends Bloc<WatchTxsEvent, WatchTxsState> {
         },
       );
     } else {
-      final (watcher, err) = await _swapBoltz.initializeBoltzApi(false);
+      final (watcher, err) = await _swapBoltz.initializeBoltzWebSocket(false);
 
       if (err != null) {
         emit(state.copyWith(errWatchingInvoice: err.message));
         return;
       }
       _boltzMainnet = watcher;
-
-      _mainNetStream =
-          _boltzMainnet!.subscribeSwapStatus(swapTxsToWatch).listen(
+      _boltzMainnet!.subscribe(swapTxsToWatch);
+      _mainNetStream = _boltzMainnet!.stream.listen(
         (event) {
           __swapStatusUpdated(
             emit,

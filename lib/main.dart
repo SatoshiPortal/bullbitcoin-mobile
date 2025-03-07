@@ -17,16 +17,17 @@ import 'package:bb_mobile/settings/bloc/settings_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/listeners.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz/boltz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lwk_dart/lwk_dart.dart';
+import 'package:lwk/lwk.dart';
 import 'package:oktoast/oktoast.dart';
 
+// ignore: implementation_imports
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 
 Future main({bool fromTest = false}) async {

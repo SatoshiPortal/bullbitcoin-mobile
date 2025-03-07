@@ -29,8 +29,7 @@ import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/swap/watcher_bloc/watchtxs_bloc.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
-import 'package:boltz_dart/boltz_dart.dart' as boltz;
-import 'package:boltz_dart/boltz_dart.dart';
+import 'package:boltz/boltz.dart' as boltz;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -726,8 +725,8 @@ class ChainSwapForm extends StatelessWidget {
                     amount: amt,
                     refundAddress: refundAddress?.address ?? '',
                     direction: receiveWallet.isLiquid()
-                        ? ChainSwapDirection.btcToLbtc
-                        : ChainSwapDirection.lbtcToBtc,
+                        ? boltz.ChainSwapDirection.btcToLbtc
+                        : boltz.ChainSwapDirection.lbtcToBtc,
                     label: label,
                   );
             },
