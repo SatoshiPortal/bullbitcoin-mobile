@@ -13,7 +13,7 @@ class PayjoinServiceImpl implements PayjoinService {
   final ElectrumServerRepository _electrumServer;
   final SettingsRepository _settings;
   final WalletManagerService _walletManager;
-  late StreamController<Payjoin> _payjoinStreamController;
+  final StreamController<Payjoin> _payjoinStreamController;
 
   PayjoinServiceImpl({
     required PayjoinRepository payjoinRepository,
@@ -23,9 +23,8 @@ class PayjoinServiceImpl implements PayjoinService {
   })  : _payjoin = payjoinRepository,
         _electrumServer = electrumServerRepository,
         _settings = settingsRepository,
-        _walletManager = walletManagerService {
-    // Setup a stream controller to broadcast payjoin events
-    _payjoinStreamController = StreamController<Payjoin>.broadcast();
+        _walletManager = walletManagerService,
+        _payjoinStreamController = StreamController<Payjoin>.broadcast() {
     // Listen to payjoin events from the repository and process them
     _payjoin.requestsForReceivers.listen(
       (payjoin) => _processPayjoinRequest(
@@ -108,7 +107,9 @@ class PayjoinServiceImpl implements PayjoinService {
     final proposalPsbt = payjoin.proposalPsbt;
     final environment = await _settings.getEnvironment();
     final network = Network.fromEnvironment(
-        isTestnet: environment.isTestnet, isLiquid: false);
+      isTestnet: environment.isTestnet,
+      isLiquid: false,
+    );
     final electrumServer =
         await _electrumServer.getElectrumServer(network: network);
 
