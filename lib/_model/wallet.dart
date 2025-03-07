@@ -6,8 +6,8 @@ import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:crypto/crypto.dart';
-import 'package:lwk/lwk.dart' as lwk;
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:lwk/lwk.dart' as lwk;
 
 part 'wallet.freezed.dart';
 part 'wallet.g.dart';
@@ -325,9 +325,9 @@ class Wallet with _$Wallet {
     switch (type) {
       case BBWalletType.main:
         if (baseWalletType == BaseWalletType.Bitcoin) {
-          str = 'Bull Bitcoin Wallet';
+          str = 'Bull Bitcoin';
         } else {
-          str = 'Instant Payments Wallet';
+          str = 'Instant Payments';
         }
         if (hasPassphrase()) {
           str += '\n(Passphrase Protected)';
@@ -360,9 +360,9 @@ class Wallet with _$Wallet {
     switch (type) {
       case BBWalletType.main:
         if (baseWalletType == BaseWalletType.Bitcoin) {
-          str = 'Secure Bitcoin Wallet';
+          str = 'Secure Bitcoin';
         } else {
-          str = 'Instant Payments Wallet';
+          str = 'Instant Payments';
         }
       case BBWalletType.xpub:
         str = 'Xpub:${id.substring(0, 5)}';
