@@ -38,12 +38,7 @@ class KeychainBackupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<KeychainCubit>().setChainState(
-          _pState,
-          backup.id,
-          backupKey,
-          backup.salt,
-        );
+    context.read<KeychainCubit>().updateChainState(_pState, backupKey, backup);
     return BlocProvider.value(
       value: createBackupSettingsCubit(),
       child: _Screen(
