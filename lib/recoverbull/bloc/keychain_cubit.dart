@@ -140,37 +140,47 @@ class KeychainCubit extends Cubit<KeychainState> {
   void clickObscure() => emit(state.copyWith(obscure: !state.obscure));
 
   Future<void> clickRecover() async {
-    if (state.backupKey.isNotEmpty) {
-      emit(state.copyWith(
-        loading: false,
-        keySecretState: KeySecretState.recovered,
-      ));
-      return;
-    }
-    if (!await _ensureServerStatus()) return;
-
     try {
-      emit(state.copyWith(loading: true, error: ''));
-      final backupKey = await _currentService?.fetchBackupKey(
-        backupId: state.backupId,
-        password: state.secret,
-        salt: state.backupSalt,
-      );
-
-      if (backupKey != null) {
+      if (state.backupKey.isNotEmpty) {
         emit(state.copyWith(
-          backupKey: HEX.encode(backupKey),
           loading: false,
           keySecretState: KeySecretState.recovered,
         ));
+        return;
       }
+
+      if (!await _ensureServerStatus()) return;
+
+      final service = _currentService;
+      final backup = state.backupData;
+
+      if (service == null || backup == null) {
+        emit(state.copyWith(
+          error: 'Missing backup data or service connection',
+          loading: false,
+        ));
+        return;
+      }
+
+      emit(state.copyWith(loading: true, error: ''));
+
+      final backupKey = await service.fetchBackupKey(
+        backupId: backup.id,
+        password: state.secret,
+        salt: HEX.decode(backup.salt),
+      );
+
+      emit(state.copyWith(
+        backupKey: HEX.encode(backupKey),
+        loading: false,
+        keySecretState: KeySecretState.recovered,
+      ));
     } catch (e) {
-      debugPrint("Failed to recover backup key: $e");
       emit(state.copyWith(
         error: 'Failed to recover backup key',
         loading: false,
-        keyServerUp: false,
       ));
+      return;
     }
   }
 
@@ -204,30 +214,39 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   Future<void> deleteBackupKey() async {
-    if (!await _ensureServerStatus()) return;
-    if (!state.canDeleteKey) return;
     try {
+      if (!await _ensureServerStatus()) return;
+      if (!state.canDeleteKey) return;
+
+      final service = _currentService;
+      final backup = state.backupData;
+
+      if (service == null || backup == null) {
+        emit(state.copyWith(
+          error: 'Missing backup data or service connection',
+          loading: false,
+        ));
+        return;
+      }
+
       emit(state.copyWith(loading: true, error: ''));
 
-      await _currentService?.trashBackupKey(
-        backupId: state.backupId,
-        password: state.secret,
-        salt: state.backupSalt,
-      );
-      emit(
-        state.copyWith(
-          loading: false,
-          keySecretState: KeySecretState.deleted,
-        ),
-      );
+      await service.trashBackupKey(
+          backupId: backup.id,
+          password: state.secret,
+          salt: HEX.decode(backup.salt));
+
+      emit(state.copyWith(
+        loading: false,
+        keySecretState: KeySecretState.deleted,
+      ));
+      return;
     } catch (e) {
-      debugPrint('Failed to delete backup key: $e');
-      emit(
-        state.copyWith(
-          loading: false,
-          error: 'Failed to delete backup key',
-        ),
-      );
+      emit(state.copyWith(
+        error: 'Failed to delete backup key',
+        loading: false,
+      ));
+      return;
     }
   }
 
@@ -237,47 +256,60 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   Future<void> secureKey() async {
-    if (!await _ensureServerStatus()) return;
     try {
-      await _currentService?.storeBackupKey(
-        backupId: state.backupId,
+      if (!await _ensureServerStatus()) return;
+
+      final service = _currentService;
+      final backup = state.backupData;
+
+      if (service == null || backup == null) {
+        emit(state.copyWith(
+          error: 'Missing backup data or service connection',
+          loading: false,
+        ));
+        return;
+      }
+
+      if (state.backupKey.isEmpty || state.tempSecret.isEmpty) {
+        emit(state.copyWith(
+          error: 'Missing backup key or password',
+          loading: false,
+        ));
+        return;
+      }
+
+      emit(state.copyWith(loading: true, error: ''));
+      await service.storeBackupKey(
+        backupId: backup.id,
         password: state.tempSecret,
         backupKey: HEX.decode(state.backupKey),
-        salt: state.backupSalt,
+        salt: HEX.decode(backup.salt),
       );
-      emit(
-        state.copyWith(loading: false, keySecretState: KeySecretState.saved),
-      );
+
+      emit(state.copyWith(
+        loading: false,
+        keySecretState: KeySecretState.saved,
+      ));
     } catch (e) {
-      debugPrint('Failed to store backup key on server: $e');
-      emit(
-        state.copyWith(
-          loading: false,
-          error: 'Failed to store backup key on server',
-        ),
-      );
+      emit(state.copyWith(
+        loading: false,
+        error: 'Failed to store backup key',
+      ));
+      return;
     }
   }
 
-  void setBackupId(String id) {
-    if (id == state.backupId) return; // Avoid duplicate state
-    emit(state.copyWith(backupId: id));
-  }
-
-  void setChainState(
+  void updateChainState(
     KeyChainPageState keyChainPageState,
-    String backupId,
     String? backupKey,
-    String backupSalt,
+    BullBackup? backupData,
   ) {
     emit(
       state.copyWith(
-        pageState: keyChainPageState,
-        originalPageState: keyChainPageState, // Store original state
-        backupKey: backupKey ?? '',
-        backupId: backupId,
-        backupSalt: HEX.decode(backupSalt),
-      ),
+          pageState: keyChainPageState,
+          originalPageState: keyChainPageState, // Store original state
+          backupKey: backupKey ?? '',
+          backupData: backupData),
     );
   }
 
