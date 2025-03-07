@@ -5,21 +5,17 @@ function main.keys {
     local keytool_status=0 
     local pgp_status=0
 
-    # Check if key properties file exists
     if [ -e "$key_props" ]; then
         keytool_status=1
     fi
 
-    # Check if GPG_KEY_ID is set in the .env file
     if grep -q "GPG_KEY_ID=" "$BBM_OP_ENV"; then
         pgp_status=1
     fi
 
-    # Log the status of the keys to the user
     [ $keytool_status -eq 1 ] && win.log "Keytool keys are set." || err.log "Keytool keys are NOT set."
     [ $pgp_status -eq 1 ] && win.log "GPG keys are set." || err.log "GPG keys are NOT set."
 
-    # Ask the user which key they want to update
     echo "Select the key to update:"
     echo "1) Update keytool keys"
     echo "2) Update GPG keys"
@@ -32,7 +28,7 @@ function main.keys {
         "1") keytool.keys ;;
         "2") pgp.keys ;;
         "3") exit 0 ;;
-        *) err.log "Invalid selection." && main.keys ;;  # Recursive call on invalid input
+        *) err.log "Invalid selection." && main.keys ;;
     esac
 }
 
@@ -70,7 +66,6 @@ function keytool.keys {
 
     mkdir -p "$key_path" || { echo "Failed to create directory"; exit 1; }
     
-    # Generate the key store
     keytool -genkey -v \
         -keystore "$key_path/$key_alias.jks" \
         -keyalg RSA \
@@ -81,16 +76,13 @@ function keytool.keys {
         -keypass "$key_password" \
         -dname "CN=, OU=, O=, L=, S=, C="  # You should replace this with actual information
 
-    # Export the certificate
     keytool -export -rfc \
         -keystore "$key_path/$key_alias.jks" \
         -alias "$key_alias" \
         -file "$key_path/bullwallet_certificate.pem" \
         -storepass "$store_password"
 
-    # Check if the key store was created successfully
     if [ $? -eq 0 ]; then
-        # Create or overwrite key properties file
         {
             echo "storePassword=$store_password"
             echo "keyPassword=$key_password"
@@ -111,7 +103,6 @@ function pgp.keys {
     if [[ -n $GPG_KEY_ID ]]; then
         notice.log "A GPG key is already linked: $GPG_KEY_ID"
         if ! confirm.log "Do you want to proceed with a new key?"; then
-            # User chose not to proceed
             exit 0;
         fi
     fi
@@ -123,7 +114,6 @@ function pgp.keys {
         win.log "You have existing GPG keys:"
         win.log "$existing_keys"
         
-        # Ask user if they want to use one of the existing keys
         use_existing=$(input.form "Do you want to use any of the above keys? (y/N): ")
         if [[ $use_existing =~ ^[Yy]$ ]]; then
             gpg_key_id=$(input.form "Enter the key ID you want to use: ")
@@ -139,17 +129,14 @@ function pgp.keys {
     notice.log "GPG Key ID: $gpg_key_id"
 
 
-    # Check and replace GPG_KEY_ID in the .env file or add if it doesn't exist
     if grep -q "GPG_KEY_ID=" "$BBM_OP_ENV"; then
-        # If GPG_KEY_ID exists, replace it. Using eval to properly handle the command string with spaces
+
         eval "$SED_COMPAT"' "s/^GPG_KEY_ID=.*/GPG_KEY_ID='"$gpg_key_id"'/" '"$BBM_OP_ENV"
     else
-        # If GPG_KEY_ID does not exist, add it
         echo "GPG_KEY_ID=$gpg_key_id" >> "$BBM_OP_ENV"
     fi
 
 
-    # Configure git to use this GPG key
     git config --global user.signingkey "$gpg_key_id"
     git config --global commit.gpgSign true
 
@@ -157,17 +144,14 @@ function pgp.keys {
 }
 
 function new.pgp.keys {
-    # Instructions to create a new GPG key
     local email
     local new_key
     gpg --default-new-key-algo rsa4096 --gen-key
 
     email=$(input.form "Please enter the email you used for the key:")
 
-    # Retrieving the key ID for the newly generated key
     new_key=$(gpg --list-secret-keys --keyid-format=long | grep -B 1 "$email" | head -n 1 | awk '{print $2}' | cut -d'/' -f2)
 
-    # Exporting the new GPG key
     gpg --armor --export "$new_key"
     win.log "$new_key"
 }

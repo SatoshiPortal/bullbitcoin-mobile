@@ -107,7 +107,7 @@ packages:
     description:
       path: "."
       ref: develop
-      resolved-ref: fda45f32617d4d54685e3a3e820109cfebbf0b71
+      resolved-ref: "287dd564cd764d0f852c6c0ba5fe8148437a6b08"
       url: "https://github.com/SatoshiPortal/boltz-dart.git"
     source: git
     version: "0.1.8"
@@ -1018,10 +1018,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_android
-      sha256: "4adf4fd5423ec60a29506c76581bc05854c55e3a0b72d35bb28d661c9686edf2"
+      sha256: "0ca7359dad67fd7063cb2892ab0c0737b2daafd807cf1acecd62374c8fae6c12"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.15"
+    version: "2.2.16"
   path_provider_foundation:
     dependency: transitive
     description:
@@ -1432,10 +1432,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_android
-      sha256: "6fc2f56536ee873eeb867ad176ae15f304ccccc357848b351f6f0d8d4a40d193"
+      sha256: "1d0eae19bd7606ef60fe69ef3b312a437a16549476c42321d5dc1506c9ca3bf4"
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.14"
+    version: "6.3.15"
   url_launcher_ios:
     dependency: transitive
     description:

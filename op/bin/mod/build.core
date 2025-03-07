@@ -10,12 +10,10 @@ function main.build {
     
     file_path="$BBM_HOME/lib/import/bloc/import_cubit.dart"
 
-    # Check if the file exists
     if [[ -f $file_path ]]; then
-        # Look for the pattern in the file
+        # Disable useTestWallet
         if grep -q "bool useTestWallet = true" $file_path; then
             echo "'bool useTestWallet = true'. Updating to 'false'."
-            # Update the pattern to 'false'
             sed -i 's/bool useTestWallet = true/bool useTestWallet = false/' $file_path
             echo "The file has been updated."
         else

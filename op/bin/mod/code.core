@@ -2,7 +2,6 @@
 set -e
 
 function main.code {
-    # Check if the 'IDE' environment variable is not set or is empty.
     if [ -z "${IDE}" ]; then
         ide=$(input.form "Preferred IDE executable name (saved in .env): ")
 

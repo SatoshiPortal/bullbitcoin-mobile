@@ -19,7 +19,7 @@
         android:icon="@mipmap/launcher_icon"
         android:enableOnBackInvokedCallback="true">
         <activity
-            android:name=".MainActivity"
+            android:name="com.bullbitcoin.mobile.MainActivity"
             android:exported="true"
             android:launchMode="singleInstance"
             android:theme="@style/LaunchTheme"

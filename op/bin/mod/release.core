@@ -12,8 +12,6 @@ function main.release {
 
     zone_build=$BBM_OP_HOME/dev/$ZONE_NAME/builds/$repo_name.$version
     
-    # keepassxc
-
     GITHUB_TOKEN=$(secret.form "Enter Your Github Token:")
     br.log
     REPO_OWNER="SatoshiPortal"
@@ -25,14 +23,11 @@ function main.release {
     confirm.form 
     
     nvim "$RELEASE_NOTES"
-    # Markdown file containing release notes
 
-    # Read the content of the Markdown file into a variable
     RELEASE_BODY=$(<"$RELEASE_NOTES")
 
     RELEASE_BODY_JSON=$(printf '%s' "$RELEASE_BODY" | jq -s -R .)
 
-# Use a heredoc to provide the JSON data directly
     RELEASE_RESPONSE=$(curl -H "Authorization: token $GITHUB_TOKEN" -X POST "https://api.github.com/repos/$REPO_OWNER/$repo_name/releases" -d @- <<EOF
 {
     "tag_name": "$version",
@@ -45,10 +40,8 @@ function main.release {
 EOF
 )
     win.log "$RELEASE_RESPONSE"
-    # Extract the release ID from the response
     RELEASE_ID=$(echo "$RELEASE_RESPONSE" | jq -r '.id')
 
-    # Upload the zip file as an asset
     ASSET_UPLOAD_RESPONSE=$(curl -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/zip" --data-binary @"$zone_build.zip" "https://uploads.github.com/repos/$REPO_OWNER/$repo_name/releases/$RELEASE_ID/assets?name=bullbitcoin-mobile.$version.zip")
 
     win.log "$ASSET_UPLOAD_RESPONSE"

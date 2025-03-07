@@ -14,14 +14,12 @@ function flutter.deps {
         win.log "Flutter is already installed."
     fi
 
-    # Add Flutter to PATH
     if [[ ":$PATH:" != *":$FLUTTER_PATH/flutter/bin:"* ]]; then
-        echo "export PATH=\$PATH:$FLUTTER_PATH/flutter/bin" >> "$HOME/.bashrc"  # Adjust if using another shell
+        echo "export PATH=\$PATH:$FLUTTER_PATH/flutter/bin" >> "$HOME/.bashrc"
         source "$HOME/.bashrc"
         win.log "Added Flutter to PATH."
     fi
 
-    # Install Android SDK
     if [ ! -d "$ANDROID_SDK_PATH" ]; then
         mkdir -p "$ANDROID_SDK_PATH"
         cd "$ANDROID_SDK_PATH" || exit
@@ -29,11 +27,11 @@ function flutter.deps {
 
         sudo wget https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip
         sudo unzip commandlinetools-linux-7302050_latest.zip
-        yes | sudo ./cmdline-tools/bin/sdkmanager --licenses  # Accept licenses
+        yes | sudo ./cmdline-tools/bin/sdkmanager --licenses
 
         sudo ./cmdline-tools/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
 
-        cd - > /dev/null 2>&1 || exit  # Go back to the previous directory
+        cd - > /dev/null 2>&1 || exit
 
         win.log "Android SDK installed."
     else
