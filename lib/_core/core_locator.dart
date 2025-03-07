@@ -164,6 +164,8 @@ class CoreLocator {
             storage: HiveStorageDataSourceImpl<String>(pdkPayjoinsBox),
           ),
         ),
+        electrumServerRepository: locator<ElectrumServerRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
         walletManagerService: locator<WalletManagerService>(),
       ),
     );

@@ -15,16 +15,17 @@ import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:payjoin_flutter/uri.dart';
 
 abstract class PdkDataSource {
-  // requestedPayjoins is a stream that emits a PdkPayjoinReceiverModel every
+  // requestsForReceivers is a stream that emits a PdkPayjoinReceiverModel every
   //  time a payjoin request (original tx psbt) is received from a sender.
-  Stream<PdkPayjoinReceiverModel> get requestedPayjoins;
-  // sentProposals is a stream that emits a PdkPayjoinSenderModel every time a
-  //  payjoin proposal (payjoin tx psbt) was sent by a receiver.
-  Stream<PdkPayjoinSenderModel> get sentProposals;
+  Stream<PdkPayjoinReceiverModel> get requestsForReceivers;
+  // proposalsForSenders is a stream that emits a PdkPayjoinSenderModel every time a
+  //  payjoin proposal (payjoin tx psbt) was sent by a receiver for a sender.
+  Stream<PdkPayjoinSenderModel> get proposalsForSenders;
   Future<PdkPayjoinReceiverModel> createReceiver({
     required String walletId,
     required String address,
     required bool isTestnet,
+    required BigInt maxFeeRateSatPerVb,
     int? expireAfterSec,
   });
   Future<PdkPayjoinSenderModel> createSender({
@@ -38,12 +39,14 @@ abstract class PdkDataSource {
   Future<void> delete(String id);
   Future<PdkPayjoinReceiverModel> processRequest({
     required String id,
-    required bool originalTxHasOwnedInputs,
-    bool originalTxHasSeenInputs = false,
-    required bool originalTxHasReceiverOutput,
+    required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
+    required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
     required List<PdkInputPairModel> inputPairs,
-    required BigInt maxFeeRateSatPerVb,
     required FutureOr<String> Function(String) processPsbt,
+  });
+  Future<PdkPayjoinSenderModel> completeSender(
+    String uri, {
+    required String txId,
   });
 }
 
@@ -77,11 +80,11 @@ class PdkDataSourceImpl implements PdkDataSource {
   }
 
   @override
-  Stream<PdkPayjoinReceiverModel> get requestedPayjoins =>
+  Stream<PdkPayjoinReceiverModel> get requestsForReceivers =>
       _payjoinRequestedController.stream.asBroadcastStream();
 
   @override
-  Stream<PdkPayjoinSenderModel> get sentProposals =>
+  Stream<PdkPayjoinSenderModel> get proposalsForSenders =>
       _proposalSentController.stream.asBroadcastStream();
 
   @override
@@ -89,6 +92,7 @@ class PdkDataSourceImpl implements PdkDataSource {
     required String walletId,
     required String address,
     required bool isTestnet,
+    required BigInt maxFeeRateSatPerVb,
     int? expireAfterSec,
   }) async {
     try {
@@ -121,11 +125,12 @@ class PdkDataSourceImpl implements PdkDataSource {
       _receiversIsolatePort?.send(receiverJson);
 
       // Create and store the model to keep track of the payjoin session
-      final model = PdkPayjoinModel.receive(
+      final model = PdkPayjoinModel.receiver(
         id: receiver.id(),
         receiver: receiverJson,
         walletId: walletId,
         pjUrl: pjUrl.asString(),
+        maxFeeRateSatPerVb: maxFeeRateSatPerVb,
       ) as PdkPayjoinReceiverModel;
       await _store(model);
 
@@ -164,7 +169,7 @@ class PdkDataSourceImpl implements PdkDataSource {
 
     // Create and store the model with the data needed to keep track of the
     //  payjoin session
-    final model = PdkPayjoinModel.send(
+    final model = PdkPayjoinModel.sender(
       uri: uri.asString(),
       sender: senderJson,
       walletId: walletId,
@@ -223,11 +228,9 @@ class PdkDataSourceImpl implements PdkDataSource {
   @override
   Future<PdkPayjoinReceiverModel> processRequest({
     required String id,
-    required bool originalTxHasOwnedInputs,
-    bool originalTxHasSeenInputs = false,
-    required bool originalTxHasReceiverOutput,
+    required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
+    required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
     required List<PdkInputPairModel> inputPairs,
-    required BigInt maxFeeRateSatPerVb,
     required FutureOr<String> Function(String) processPsbt,
   }) async {
     final model = await get(id) as PdkPayjoinReceiverModel?;
@@ -245,13 +248,14 @@ class PdkDataSourceImpl implements PdkDataSource {
 
     final interactiveReceiver = await request.assumeInteractiveReceiver();
     final inputsNotOwned = await interactiveReceiver.checkInputsNotOwned(
-      isOwned: (_) => originalTxHasOwnedInputs,
+      isOwned: hasOwnedInputs,
     );
     final inputsNotSeen = await inputsNotOwned.checkNoInputsSeenBefore(
-      isKnown: (_) => originalTxHasSeenInputs,
+      isKnown: (_) =>
+          false, // Assume the wallet has not seen the inputs since it is an interactive wallet
     );
     final receiverOutputs = await inputsNotSeen.identifyReceiverOutputs(
-      isReceiverOutput: (_) => originalTxHasReceiverOutput,
+      isReceiverOutput: hasReceiverOutput,
     );
     final committedOutputs = await receiverOutputs.commitOutputs();
 
@@ -296,7 +300,7 @@ class PdkDataSourceImpl implements PdkDataSource {
     final inputsCommitted = await inputsContributed.commitInputs();
     final proposal = await inputsCommitted.finalizeProposal(
       processPsbt: processPsbt,
-      maxFeeRateSatPerVb: maxFeeRateSatPerVb,
+      maxFeeRateSatPerVb: model.maxFeeRateSatPerVb,
     );
 
     // Now that the request is processed and the proposal is ready, send it to
@@ -309,6 +313,27 @@ class PdkDataSourceImpl implements PdkDataSource {
     final updatedModel = model.copyWith(
       receiver: receiver.toJson(),
       proposalPsbt: proposalPsbt,
+      isCompleted: true, // Nothing more to do from the receiver side
+    );
+    await _store(updatedModel);
+
+    return updatedModel;
+  }
+
+  @override
+  Future<PdkPayjoinSenderModel> completeSender(
+    String uri, {
+    required String txId,
+  }) async {
+    final model = await get(uri) as PdkPayjoinSenderModel?;
+
+    if (model == null) {
+      throw Exception('No model found');
+    }
+
+    final updatedModel = model.copyWith(
+      txId: txId,
+      isCompleted: true, // Nothing more to do from the sender side
     );
     await _store(updatedModel);
 
@@ -565,6 +590,9 @@ class PdkDataSourceImpl implements PdkDataSource {
   Future<void> _resumePayjoins() async {
     final models = await getAll();
     for (final model in models) {
+      if (model.isCompleted || model.isExpired) {
+        continue;
+      }
       if (model is PdkPayjoinReceiverModel) {
         if (model.originalTxBytes == null) {
           // If the original tx bytes are not present, it means the receiver

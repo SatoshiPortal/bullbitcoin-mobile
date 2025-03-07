@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/_core/data/repositories/bdk_wallet_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/lwk_wallet_repository_impl.dart';
@@ -7,9 +8,12 @@ import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
+import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/_core/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/payjoin_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_repository.dart';
@@ -334,6 +338,57 @@ class WalletManagerServiceImpl implements WalletManagerService {
     return getAllWallets(environment: environment);
   }
 
+  @override
+  Future<List<Utxo>> getUnspentUtxos({required String walletId}) {
+    final wallet = _wallets[walletId];
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    return wallet.listUnspent();
+  }
+
+  @override
+  Future<bool> isOwnedByWallet({
+    required String walletId,
+    required Uint8List scriptBytes,
+  }) async {
+    final wallet = _wallets[walletId];
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    if (wallet is BitcoinWalletRepository) {
+      final bitcoinWallet = wallet as BitcoinWalletRepository;
+      return bitcoinWallet.isMine(scriptBytes);
+    }
+
+    throw UnsupportedError(
+      'Ability to check if an input is owned, is currently only supported for Bitcoin wallets',
+    );
+  }
+
+  @override
+  Future<String> signPsbt(
+      {required String walletId, required String psbt}) async {
+    final wallet = await _getWalletWithPrivateKey(walletId);
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    if (wallet is BitcoinWalletRepository) {
+      final bitcoinWallet = wallet as BitcoinWalletRepository;
+      return bitcoinWallet.signPsbt(psbt);
+    }
+
+    throw UnsupportedError(
+      'Ability to sign a PSBT is currently only supported for Bitcoin wallets',
+    );
+  }
+
   Future<WalletRepository?> _getWalletWithPrivateKey(String id) async {
     final walletMetadata = await _walletMetadata.get(id);
 
@@ -495,12 +550,6 @@ class WalletNotFoundException implements Exception {
   final String message;
 
   const WalletNotFoundException(this.message);
-}
-
-class PayjoinNotSupportedException implements Exception {
-  final String message;
-
-  const PayjoinNotSupportedException(this.message);
 }
 
 class MissingAmountException implements Exception {
