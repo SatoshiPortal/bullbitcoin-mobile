@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 
 abstract class WalletRepository {
   Future<void> sync({required ElectrumServer electrumServer});
@@ -10,4 +11,5 @@ abstract class WalletRepository {
   Future<Address> getNewAddress();
   Future<bool> isAddressUsed(String address);
   Future<BigInt> getAddressBalanceSat(String address);
+  Future<List<Utxo>> listUnspent();
 }

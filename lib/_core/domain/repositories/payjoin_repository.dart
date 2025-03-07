@@ -1,31 +1,37 @@
+import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
+import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 
 abstract class PayjoinRepository {
-  Stream<ReceivePayjoin> get payjoinRequestedStream;
-  Stream<SendPayjoin> get proposalSentStream;
-  Future<ReceivePayjoin> createReceivePayjoin({
+  Stream<PayjoinReceiver> get requestsForReceivers;
+  Stream<PayjoinSender> get proposalsForSenders;
+  Future<PayjoinReceiver> createPayjoinReceiver({
     required String walletId,
     required bool isTestnet,
     required String address,
+    required BigInt maxFeeRateSatPerVb,
     int? expireAfterSec,
   });
-  Future<SendPayjoin> createSendPayjoin({
+  Future<PayjoinSender> createPayjoinSender({
     required String walletId,
     required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
   });
-  Future<void> processPayjoinRequest(
-    ReceivePayjoin payjoin, {
-    // TODO: add callback functions to handle wallet and blockchain operations
-    required Future<bool> Function(Uint8List) isMine,
+  Future<List<Payjoin>> getAll({int? offset, int? limit, bool? completed});
+  Future<PayjoinReceiver> processRequest({
+    required String id,
+    required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
+    required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
+    required List<Utxo> unspentUtxos,
+    required FutureOr<String> Function(String) processPsbt,
   });
-  Future<void> processPayjoinProposal(
-    SendPayjoin payjoin,
-    // TODO: add callback functions to handle wallet and blockchain operations
-  );
-  Future<void> resumeSessions();
-  //Future<List<Payjoin>> getPayjoins({int? offset, int? limit, bool? completed});
+  Future<PayjoinSender> broadcastPsbt({
+    required String payjoinId,
+    required String finalizedPsbt,
+    required ElectrumServer electrumServer,
+  });
 }

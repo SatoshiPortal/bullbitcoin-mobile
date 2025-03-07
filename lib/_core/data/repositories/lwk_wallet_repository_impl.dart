@@ -1,7 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
-import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_repository.dart';
@@ -11,18 +13,12 @@ class LwkWalletRepositoryImpl
     implements WalletRepository, LiquidWalletRepository {
   final lwk.Network _network;
   final lwk.Wallet _wallet;
-  final String _electrumUrl;
-  final bool _validateElectrumDomain;
 
   LwkWalletRepositoryImpl({
     required lwk.Network network,
     required lwk.Wallet wallet,
-    required String electrumUrl,
-    required bool validateDomain,
   })  : _network = network,
-        _wallet = wallet,
-        _electrumUrl = electrumUrl,
-        _validateElectrumDomain = validateDomain;
+        _wallet = wallet;
 
   static Future<LwkWalletRepositoryImpl> public({
     required String ctDescriptor,
@@ -45,8 +41,6 @@ class LwkWalletRepositoryImpl
     return LwkWalletRepositoryImpl(
       network: network,
       wallet: wallet,
-      electrumUrl: electrumServer.url,
-      validateDomain: electrumServer.validateDomain,
     );
   }
 
@@ -72,8 +66,6 @@ class LwkWalletRepositoryImpl
     return LwkWalletRepositoryImpl(
       network: network,
       wallet: wallet,
-      electrumUrl: electrumServer.url,
-      validateDomain: electrumServer.validateDomain,
     );
   }
 
@@ -192,6 +184,24 @@ class LwkWalletRepositoryImpl
     ).catchError((_) => false); // To handle empty lists
 
     return isUsed;
+  }
+
+  @override
+  Future<List<Utxo>> listUnspent() async {
+    final utxos = await _wallet.utxos();
+
+    final unspent = utxos.map((utxo) {
+      return Utxo(
+        txId: utxo.outpoint.txid,
+        vout: utxo.outpoint.vout,
+        value: utxo.unblinded.value,
+        // TODO: The following conversion to Uint8List is probably not correct
+        //  but we don't need it for now.
+        scriptPubkey: Uint8List.fromList(utxo.scriptPubkey.codeUnits),
+      );
+    }).toList();
+
+    return unspent;
   }
 
   String get _lBtcAssetId =>

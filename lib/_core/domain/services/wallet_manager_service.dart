@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
+import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 
@@ -37,4 +40,11 @@ abstract class WalletManagerService {
   });
   Future<Address> getLastUnusedAddress({required String walletId});
   Future<Address> getNewAddress({required String walletId});
+  Future<List<Utxo>> getUnspentUtxos({required String walletId});
+  Future<bool> isOwnedByWallet({
+    required String walletId,
+    required Uint8List scriptBytes,
+  });
+
+  Future<String> signPsbt({required String walletId, required String psbt});
 }

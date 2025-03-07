@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_wallet_repository.dart';
@@ -208,9 +209,19 @@ class BdkWalletRepositoryImpl
   }
 
   @override
-  Future<List<bdk.LocalUtxo>> listUnspent() async {
-    // TODO: transform bdk.LocalUtxo to Utxo entity class and return a list of those
-    return _wallet.listUnspent();
+  Future<List<Utxo>> listUnspent() async {
+    final unspent = _wallet.listUnspent();
+    final utxos = unspent
+        .map(
+          (unspent) => Utxo(
+            scriptPubkey: unspent.txout.scriptPubkey.bytes,
+            txId: unspent.outpoint.txid,
+            vout: unspent.outpoint.vout,
+            value: unspent.txout.value,
+          ),
+        )
+        .toList();
+    return utxos;
   }
 
   @override

@@ -22,6 +22,19 @@ class ElectrumServerModel with _$ElectrumServerModel {
   factory ElectrumServerModel.fromJson(Map<String, dynamic> json) =>
       _$ElectrumServerModelFromJson(json);
 
+  factory ElectrumServerModel.fromEntity(ElectrumServer entity) {
+    return ElectrumServerModel(
+      url: entity.url,
+      socks5: entity.socks5,
+      retry: entity.retry,
+      timeout: entity.timeout,
+      stopGap: entity.stopGap,
+      validateDomain: entity.validateDomain,
+      isTestnet: entity.network.isTestnet,
+      isLiquid: entity.network.isLiquid,
+    );
+  }
+
   ElectrumServer toEntity() {
     // toEntity is always to a custom ElectrumServer, since only the custom ones
     //  should be stored as a model. The default ones are defined with constants
