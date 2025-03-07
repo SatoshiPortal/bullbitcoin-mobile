@@ -22,41 +22,16 @@ class KeychainCubit extends Cubit<KeychainState> {
     _initialize();
   }
 
-  Future<T?> _handleServerOperation<T>(
-    Future<T> Function() operation,
-    String operationName, {
-    bool emitState = true,
-  }) async {
-    try {
-      if (emitState) emit(state.copyWith(loading: true, error: ''));
-      final result = await _withRetries(() => operation(), operationName);
-      if (emitState) {
-        emit(state.copyWith(keyServerUp: true, loading: false));
-      }
-      return result;
-    } catch (e) {
-      debugPrint('$operationName failed: $e');
-      if (emitState) {
-        emit(state.copyWith(
-          keyServerUp: false, // Only set to false for server operations
-          loading: false,
-          error:
-              'Unable to complete $operationName. Please check your connection.',
-        ));
-      }
-      return null;
-    }
-  }
-
   Future<KeyService> _createKeyService() async {
     if (!_connection.isInitialized) {
+      // Initialize Tor with retry logic and delayed start
       await _handleServerOperation(
         () async {
           await _connection.initialize();
           await Future.delayed(const Duration(seconds: 5));
         },
         'Tor initialization',
-        emitState: false,
+        emitState: false, // Don't emit states during service creation
       );
     }
 
@@ -66,10 +41,11 @@ class KeychainCubit extends Cubit<KeychainState> {
       tor: _connection.tor,
     );
 
+    // Verify service can connect to server
     await _handleServerOperation(
       () async => await service.serverInfo(),
       'Service verification',
-      emitState: false,
+      emitState: false, // Don't emit states during service creation
     );
 
     return service;
@@ -123,9 +99,11 @@ class KeychainCubit extends Cubit<KeychainState> {
     }
 
     if (!isClosed) {
+      // Check server status with retry logic and state management
       await _handleServerOperation(
         () async => await _currentService?.serverInfo(),
         'Key server status',
+        // emitState: true (default) - Update UI with server status
       );
     }
   }
@@ -337,32 +315,47 @@ class KeychainCubit extends Cubit<KeychainState> {
     return super.close();
   }
 
-  /// Executes an async operation with retry logic
+  /// Handles server operations with retry logic and state management
   ///
-  /// Parameters:
-  ///   - action: The async operation to execute
-  ///   - operationName: Name of the operation for logging purposes
-  ///
-  /// Returns the result of type T from the action if successful
-  /// Will attempt the operation up to [maxRetries] times with [retryDelay] between attempts
-  /// Logs each retry attempt and final failure if all attempts fail
-  Future<T> _withRetries<T>(
-      Future<T> Function() action, String operationName) async {
-    for (var attempt = 0; attempt < maxRetries; attempt++) {
-      try {
-        return await action();
-      } catch (e) {
-        final isLastAttempt = attempt == maxRetries - 1;
-        debugPrint(isLastAttempt
-            ? '$operationName failed after $maxRetries attempts: $e'
-            : 'Retrying $operationName (${attempt + 1}/$maxRetries)');
+  /// Returns the operation result or null if all attempts fail
+  /// Updates keyServerUp status based on operation success/failure when emitState is true
+  /// Will attempt the operation multiple times with delay between attempts
+  Future<T?> _handleServerOperation<T>(
+    Future<T> Function() operation,
+    String operationName, {
+    bool emitState = true,
+    int maxAttempts = maxRetries,
+    Duration? delay,
+  }) async {
+    if (emitState) emit(state.copyWith(loading: true, error: ''));
 
-        if (isLastAttempt) rethrow;
-        await Future.delayed(retryDelay);
+    for (var attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        final result = await operation();
+        if (emitState) {
+          emit(state.copyWith(keyServerUp: true, loading: false));
+        }
+        return result;
+      } catch (e) {
+        final isLastAttempt = attempt == maxAttempts - 1;
+        debugPrint(isLastAttempt
+            ? '$operationName failed after $maxAttempts attempts: $e'
+            : 'Retrying $operationName (${attempt + 1}/$maxAttempts)');
+
+        if (isLastAttempt) {
+          if (emitState) {
+            emit(state.copyWith(
+              keyServerUp: false,
+              loading: false,
+              error:
+                  'Unable to complete $operationName. Please check your connection.',
+            ));
+          }
+          return null;
+        }
+        await Future.delayed(delay ?? retryDelay);
       }
     }
-    // This return is only to satisfy Dart's control flow analysis
-    // The function will either return from the try block or rethrow in the catch
-    return await action();
+    return null;
   }
 }
