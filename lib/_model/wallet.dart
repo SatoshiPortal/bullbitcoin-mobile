@@ -379,18 +379,19 @@ class Wallet with _$Wallet {
 
   String getWalletTypeStr({bool shorten = false}) {
     final isTestnet = network == BBNetwork.Testnet;
-    final networkStr = isTestnet ? 'Testnet ' : '';
+    final networkStr = isTestnet ? 'Testnet ' : 'on-chain ';
+    // const networkStr = '';
 
     switch (type) {
       case BBWalletType.main:
         if (baseWalletType == BaseWalletType.Bitcoin) {
-          return 'Bitcoin ${networkStr}Network';
+          return 'Bitcoin ${networkStr}network';
         } else {
-          return 'Liquid ${networkStr}Network';
+          return 'Liquid and Lightning Network';
         }
 
       case BBWalletType.words:
-        return 'Bitcoin ${networkStr}Network';
+        return 'Bitcoin ${networkStr}network';
       // return shorten
       //     ? 'Bitcoin $networkStr on-chain'
       //     : 'Regular on-chain $networkStr Network';
