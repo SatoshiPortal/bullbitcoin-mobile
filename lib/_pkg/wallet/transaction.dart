@@ -140,6 +140,7 @@ class WalletTx implements IWalletTransactions {
     required bool enableRbf,
     List<UTXO>? selectedUtxos,
     int? absFee,
+    bool isPayjoin = false,
   }) async {
     try {
       switch (wallet.baseWalletType) {
@@ -159,6 +160,7 @@ class WalletTx implements IWalletTransactions {
             selectedUtxos: selectedUtxos ?? [],
             note: note,
             absFee: absFee,
+            isPayjoin: isPayjoin,
           );
           if (err != null) throw err;
           final (tx, feeAmt, psbt) = buildResp!;
@@ -176,6 +178,15 @@ class WalletTx implements IWalletTransactions {
               bdkWallet: bdkSignerWallet!,
             );
             if (errSign != null) throw errSign;
+            if (isPayjoin) {
+              final signedTx = tx!.copyWith(psbt: signed!.$2);
+              final txs = wallet.transactions.toList();
+              txs.add(signedTx);
+              final (w, errAdd) = await addUnsignedTxToWallet(
+                  transaction: signedTx, wallet: wallet);
+              if (errAdd != null) throw errAdd;
+              return ((w, signedTx, feeAmt), null);
+            }
             return ((wallet, tx!.copyWith(psbt: signed!.$2), feeAmt), null);
           } else {
             final txs = wallet.transactions.toList();
