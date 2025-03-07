@@ -9,7 +9,6 @@ class TorConnection {
   TorConnection._internal();
 
   Tor? _tor;
-  Timer? _keepAliveTimer;
   final _connectionCompleter = Completer<void>();
 
   bool get isInitialized => _tor != null && _tor!.started;
@@ -40,7 +39,6 @@ class TorConnection {
   }
 
   Future<void> dispose() async {
-    _keepAliveTimer?.cancel();
     _tor?.stop();
     _tor = null;
   }
