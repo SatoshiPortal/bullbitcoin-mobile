@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_ui/screens/dev_page.dart';
 import 'package:bb_mobile/_ui/screens/route_error_screen.dart';
 import 'package:bb_mobile/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/app_unlock/ui/pin_code_unlock_screen.dart';
@@ -20,7 +21,16 @@ enum AppRoute {
   settings('/settings'),
   receiveBitcoin('/receive-bitcoin'),
   receiveLightning('/receive-lightning'),
-  receiveLiquid('/receive-liquid');
+  receiveLiquid('/receive-liquid'),
+
+  devStart('/dev-start'),
+  devReceive('/dev-receive'),
+  devSend('/dev-send'),
+  devSettings('/dev-settings'),
+  devHome('/dev-home'),
+  devRecover('/dev-recover'),
+  devCreate('/dev-create'),
+  devUnlock('/dev-unlock');
 
   final String path;
 
@@ -33,7 +43,7 @@ class AppRouter {
 
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: AppRoute.home.path,
+    initialLocation: AppRoute.devStart.path,
     routes: [
       GoRoute(
         name: AppRoute.home.name,
@@ -72,7 +82,44 @@ class AppRouter {
         routes: SettingsRouter.routes,
       ),
       ReceiveRouter.route,
+      DevPages.devStart,
     ],
     errorBuilder: (context, state) => const RouteErrorScreen(),
+  );
+}
+
+class DevPages {
+  static final devStart = GoRoute(
+    name: AppRoute.devStart.name,
+    path: AppRoute.devStart.path,
+    builder: (context, state) => DevPage(
+      title: 'Dev',
+      pages: [
+        DevPageData(
+          route: AppRoute.home.name,
+          title: 'Home',
+        ),
+        DevPageData(
+          route: AppRoute.devRecover.name,
+          title: 'Recover',
+        ),
+        DevPageData(
+          route: AppRoute.devCreate.name,
+          title: 'Create',
+        ),
+        DevPageData(
+          route: AppRoute.devSend.name,
+          title: 'Send',
+        ),
+        DevPageData(
+          route: AppRoute.devReceive.name,
+          title: 'Receive',
+        ),
+        DevPageData(
+          route: AppRoute.devSettings.name,
+          title: 'Settings',
+        ),
+      ],
+    ),
   );
 }

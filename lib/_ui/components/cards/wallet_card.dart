@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -9,16 +10,15 @@ class WalletCard extends StatelessWidget {
     required this.tagColor,
     required this.title,
     required this.description,
-    required this.balance,
-    required this.balanceFiat,
+    required this.wallet,
     required this.onTap,
   });
 
   final Color tagColor;
   final String title;
   final String description;
-  final String balance;
-  final String balanceFiat;
+  final Wallet wallet;
+
   final Function onTap;
 
   @override
@@ -64,13 +64,13 @@ class WalletCard extends StatelessWidget {
                 children: [
                   const Gap(16),
                   BBText(
-                    balance,
+                    '${wallet.balanceSat} sats',
                     style: context.font.bodyLarge,
                     color: context.colour.secondary,
                   ),
                   const Gap(4),
                   BBText(
-                    balanceFiat,
+                    '0 CAD',
                     style: context.font.labelMedium,
                     color: context.colour.outline,
                   ),

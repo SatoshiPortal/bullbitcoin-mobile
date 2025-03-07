@@ -49,41 +49,39 @@ class BBButton extends StatelessWidget {
         ? Icon(iconData, size: 20, color: textColor)
         : Image.asset(icon!, width: 20, height: 20, color: textColor);
 
-    return Expanded(
-      child: InkWell(
-        onTap: () => onPressed(),
-        borderRadius: radius,
-        child: Container(
-          height: 52,
-          width: size == _ButtonSize.large ? null : 160,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: !outlined ? bgColor : Colors.transparent,
-            border: outlined ? Border.all(color: bgColor) : null,
-            borderRadius: radius,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (iconFirst) ...[
-                image,
-                const Gap(10),
-                BBText(
-                  label,
-                  style: context.font.headlineLarge,
-                  color: textColor,
-                ),
-              ] else ...[
-                BBText(
-                  label,
-                  style: context.font.headlineLarge,
-                  color: textColor,
-                ),
-                const Gap(10),
-                image,
-              ],
+    return InkWell(
+      onTap: () => onPressed(),
+      borderRadius: radius,
+      child: Container(
+        height: 52,
+        width: size == _ButtonSize.large ? null : 160,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: !outlined ? bgColor : Colors.transparent,
+          border: outlined ? Border.all(color: bgColor) : null,
+          borderRadius: radius,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (iconFirst) ...[
+              image,
+              const Gap(10),
+              BBText(
+                label,
+                style: context.font.headlineLarge,
+                color: textColor,
+              ),
+            ] else ...[
+              BBText(
+                label,
+                style: context.font.headlineLarge,
+                color: textColor,
+              ),
+              const Gap(10),
+              image,
             ],
-          ),
+          ],
         ),
       ),
     );

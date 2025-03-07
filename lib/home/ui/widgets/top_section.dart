@@ -5,6 +5,7 @@ import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeTopSection extends StatelessWidget {
   const HomeTopSection({super.key});
@@ -151,7 +152,9 @@ class _TopNav extends StatelessWidget {
       children: [
         const Gap(8),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            context.pop();
+          },
           visualDensity: VisualDensity.compact,
           iconSize: 24,
           color: context.colour.onPrimary,

@@ -1,7 +1,9 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeBottomButtons extends StatelessWidget {
   const HomeBottomButtons({super.key});
@@ -11,22 +13,28 @@ class HomeBottomButtons extends StatelessWidget {
     return Row(
       // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        BBButton.big(
-          iconData: Icons.arrow_downward,
-          label: 'Receive',
-          iconFirst: true,
-          onPressed: () {},
-          bgColor: context.colour.secondary,
-          textColor: context.colour.onPrimary,
+        Expanded(
+          child: BBButton.big(
+            iconData: Icons.arrow_downward,
+            label: 'Receive',
+            iconFirst: true,
+            onPressed: () {
+              context.pushNamed(AppRoute.receiveBitcoin.name);
+            },
+            bgColor: context.colour.secondary,
+            textColor: context.colour.onPrimary,
+          ),
         ),
         const Gap(4),
-        BBButton.big(
-          iconData: Icons.crop_free,
-          label: 'Send',
-          iconFirst: true,
-          onPressed: () {},
-          bgColor: context.colour.secondary,
-          textColor: context.colour.onPrimary,
+        Expanded(
+          child: BBButton.big(
+            iconData: Icons.crop_free,
+            label: 'Send',
+            iconFirst: true,
+            onPressed: () {},
+            bgColor: context.colour.secondary,
+            textColor: context.colour.onPrimary,
+          ),
         ),
       ],
     );

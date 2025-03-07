@@ -1,6 +1,8 @@
 import 'package:bb_mobile/_ui/components/cards/wallet_card.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:bb_mobile/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class HomeWalletCards extends StatelessWidget {
@@ -8,28 +10,33 @@ class HomeWalletCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final card1 =
+        context.select((HomeBloc bloc) => bloc.state.defaultBitcoinWallet);
+    final card2 =
+        context.select((HomeBloc bloc) => bloc.state.defaultLiquidWallet);
+
     return Padding(
       padding: const EdgeInsets.all(13.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          WalletCard(
-            tagColor: context.colour.tertiary,
-            title: 'Instant payments wallet',
-            description: 'Liquid and Lightning network',
-            balance: '0 sats',
-            balanceFiat: '0 CAD',
-            onTap: () {},
-          ),
+          if (card2 != null)
+            WalletCard(
+              tagColor: context.colour.tertiary,
+              title: 'Instant payments wallet',
+              description: 'Liquid and Lightning network',
+              wallet: card2,
+              onTap: () {},
+            ),
           const Gap(8),
-          // WalletCard(
-          //   tagColor: Colors.amber,
-          //   title: 'Instant payments wallet',
-          //   description: 'Liquid and Lightning network',
-          //   balance: '0 sats',
-          //   balanceFiat: '0 CAD',
-          //   onTap: () {},
-          // ),
+          if (card1 != null)
+            WalletCard(
+              tagColor: context.colour.onTertiary,
+              title: 'Secure Bitcoin wallet',
+              description: 'Bitcoin network',
+              wallet: card1,
+              onTap: () {},
+            ),
         ],
       ),
     );
