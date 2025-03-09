@@ -57,6 +57,9 @@ class RecoverWalletInputScreen extends StatelessWidget {
                           // ),
                           const SizedBox(height: 33),
                           GridView.builder(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                            ),
                             physics:
                                 const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling
                             shrinkWrap:

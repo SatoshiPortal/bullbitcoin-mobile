@@ -8,12 +8,14 @@ class BBText extends StatelessWidget {
     required this.style,
     this.maxLines = 1,
     this.color,
+    this.textAlign,
   });
 
   final String text;
   final int maxLines;
   final TextStyle? style;
   final Color? color;
+  final TextAlign? textAlign;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class BBText extends StatelessWidget {
       text,
       style: style!.copyWith(color: color),
       maxLines: maxLines,
+      textAlign: textAlign,
     );
   }
 }

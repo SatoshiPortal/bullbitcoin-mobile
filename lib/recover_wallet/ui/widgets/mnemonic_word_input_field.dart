@@ -1,6 +1,9 @@
+import 'package:bb_mobile/_ui/components/text/text.dart';
+import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 
 class MnemonicWordInputField extends StatefulWidget {
   final int wordIndex;
@@ -69,9 +72,8 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
 
   OverlayEntry _createOverlayEntry() {
     final renderBox = context.findRenderObject()! as RenderBox;
-    final size = renderBox.size; // Size of the TextField
-    final offset =
-        renderBox.localToGlobal(Offset.zero); // Position of the TextField
+    final size = renderBox.size;
+    final offset = renderBox.localToGlobal(Offset.zero);
 
     final hintWords =
         context.read<RecoverWalletBloc>().state.hintWords[widget.wordIndex] ??
@@ -114,6 +116,10 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
     super.dispose();
   }
 
+  String _index(int idx) {
+    return idx < 10 ? '0$idx' : '$idx';
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<RecoverWalletBloc, RecoverWalletState>(
@@ -132,44 +138,41 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
         link: _layerLink,
         child: Row(
           children: [
-            SizedBox(
-              width: 24,
-              child: Text(
-                '${widget.wordIndex + 1}',
-              ),
+            BBText(
+              _index(widget.wordIndex + 1),
+              style: context.font.headlineMedium,
+              textAlign: TextAlign.right,
             ),
+            const Gap(12),
             Expanded(
               child: TextField(
                 controller: _controller,
                 focusNode: _focusNode,
+                clipBehavior: Clip.antiAliasWithSaveLayer,
                 onEditingComplete: _removeOverlay,
                 decoration: InputDecoration(
-                  hintText: 'Enter text...', // Placeholder text
-                  hintStyle: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  fillColor: context.colour.onPrimary,
+                  filled: true,
                   contentPadding: const EdgeInsets.symmetric(
-                    vertical: 12, // Vertical padding inside TextField
-                    horizontal: 10, // Horizontal padding inside TextField
+                    // vertical: 12,
+                    horizontal: 10,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8), // Rounded corners
-                    borderSide: const BorderSide(
-                      color: Colors.grey, // Border color
+                    borderRadius: BorderRadius.circular(4),
+                    borderSide: BorderSide(
+                      color: context.colour.secondary,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8), // Rounded corners
-                    borderSide: const BorderSide(
-                      color: Colors.grey, // Border color for enabled state
+                    borderRadius: BorderRadius.circular(4),
+                    borderSide: BorderSide(
+                      color: context.colour.secondary,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8), // Rounded corners
-                    borderSide: const BorderSide(
-                      color: Colors.blue, // Border color when focused
-                      width: 2.0,
+                    borderRadius: BorderRadius.circular(4),
+                    borderSide: BorderSide(
+                      color: context.colour.secondary,
                     ),
                   ),
                 ),
