@@ -116,6 +116,8 @@ flutter:
     - assets/i18n/
     - assets/images/
     - assets/
+    - assets/icons/
+    - assets/images2/
     # - assets/textlogo.png
     # - assets/nfc_scan.png
     # - assets/cc-logo.png

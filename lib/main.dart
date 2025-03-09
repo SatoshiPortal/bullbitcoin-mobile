@@ -129,6 +129,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         selector: (settings) => settings?.language,
         builder: (context, language) => MaterialApp.router(
           title: 'BullBitcoin Wallet',
+          debugShowCheckedModeBanner: false,
           routeInformationParser: router.routeInformationParser,
           routeInformationProvider: router.routeInformationProvider,
           routerDelegate: router.routerDelegate,
