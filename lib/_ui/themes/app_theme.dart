@@ -18,6 +18,10 @@ class AppTheme {
       scaffoldBackgroundColor: colours.secondaryFixed,
       fontFamily: fonts.fontFamily,
       textTheme: fonts.textTheme,
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.transparent,
+        foregroundColor: colours.primary,
+      ),
     );
   }
 }

@@ -27,8 +27,8 @@ class SegmentedSmall extends StatelessWidget {
         children: {
           for (final item in items)
             item: SizedBox(
-              height: 48,
-              width: 42,
+              height: 42,
+              width: 32,
               child: Center(
                 child: BBText(
                   item,

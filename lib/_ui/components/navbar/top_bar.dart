@@ -17,34 +17,44 @@ class TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        if (onBack != null) ...[
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => onBack!(),
-            iconSize: 24,
-            color: context.colour.secondary,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (onBack != null) ...[
+            IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => onBack!(),
+              iconSize: 24,
+              color: context.colour.secondary,
+              visualDensity: VisualDensity.compact,
+            ),
+          ] else if (onAction != null)
+            const Gap(40),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.only(bottom: 8),
+              alignment: Alignment.bottomCenter,
+              child: BBText(
+                title,
+                style: context.font.headlineMedium,
+                color: context.colour.secondary,
+              ),
+            ),
           ),
-        ] else if (onAction != null)
-          const Gap(24),
-        const Spacer(),
-        BBText(
-          title,
-          style: context.font.headlineMedium,
-          color: context.colour.secondary,
-        ),
-        const Spacer(),
-        if (onAction != null) ...[
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => onAction!(),
-            iconSize: 24,
-            color: context.colour.secondary,
-          ),
-        ] else if (onBack != null)
-          const Gap(24),
-      ],
+          if (onAction != null) ...[
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: () => onAction!(),
+              iconSize: 24,
+              color: context.colour.secondary,
+              visualDensity: VisualDensity.compact,
+            ),
+          ] else if (onBack != null)
+            const Gap(40),
+        ],
+      ),
     );
   }
 }
