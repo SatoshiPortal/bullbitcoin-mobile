@@ -1,10 +1,13 @@
+import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
+import 'package:bb_mobile/_ui/components/segment/segmented_small.dart';
 import 'package:bb_mobile/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
 import 'package:bb_mobile/recover_wallet/ui/widgets/label_input_field.dart';
 import 'package:bb_mobile/recover_wallet/ui/widgets/mnemonic_word_input_field.dart';
-import 'package:bb_mobile/recover_wallet/ui/widgets/mnemonic_words_count_selection.dart';
 import 'package:bb_mobile/recover_wallet/ui/widgets/passphrase_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class RecoverWalletInputScreen extends StatelessWidget {
   const RecoverWalletInputScreen({super.key});
@@ -12,9 +15,6 @@ class RecoverWalletInputScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Recover Wallet'),
-      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -30,11 +30,24 @@ class RecoverWalletInputScreen extends StatelessWidget {
                       builder: (context, wordsCount) {
                         return Column(
                           children: [
-                            const SizedBox(height: 20),
-                            MnemonicWordsCountSelection(
-                              selectedWordsCount: wordsCount,
+                            const Gap(16),
+
+                            TopBar(
+                              title: 'Recover Wallet',
+                              onBack: () {
+                                context.pop();
+                              },
                             ),
-                            const SizedBox(height: 40),
+                            const Gap(55),
+                            SegmentedSmall(
+                              items: const {'12', '24'},
+                              selected: '12',
+                              onSelected: (s) {},
+                            ),
+                            // MnemonicWordsCountSelection(
+                            //   selectedWordsCount: wordsCount,
+                            // ),
+                            const SizedBox(height: 33),
                             GridView.builder(
                               physics:
                                   const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling

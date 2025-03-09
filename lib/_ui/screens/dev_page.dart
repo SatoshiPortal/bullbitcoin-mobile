@@ -6,10 +6,12 @@ class DevPageData {
   const DevPageData({
     required this.route,
     required this.title,
+    this.done = false,
   });
 
   final String route;
   final String title;
+  final bool done;
 }
 
 class DevPage extends StatelessWidget {
@@ -40,7 +42,7 @@ class DevPage extends StatelessWidget {
                 BBButton.big(
                   label: page.title,
                   onPressed: () => context.pushNamed(page.route),
-                  bgColor: Colors.red,
+                  bgColor: page.done ? Colors.green : Colors.red,
                   textColor: Colors.white,
                   iconData: Icons.arrow_forward,
                 ),

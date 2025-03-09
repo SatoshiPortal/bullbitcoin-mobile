@@ -108,9 +108,10 @@ class DevPages {
         DevPageData(
           route: AppRoute.home.name,
           title: 'Home',
+          done: true,
         ),
         DevPageData(
-          route: AppRoute.devRecover.name,
+          route: AppRoute.recoverWallet.name,
           title: 'Recover',
         ),
         DevPageData(
