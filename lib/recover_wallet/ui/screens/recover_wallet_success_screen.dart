@@ -25,7 +25,7 @@ class RecoverWalletSuccessScreen extends StatelessWidget {
                   width: 200,
                   child: Gif(
                     image: AssetImage(
-                      Assets.icons.successTick.path,
+                      Assets.images2.successTick.path,
                     ),
                     autostart: Autostart.once,
                     height: 200,

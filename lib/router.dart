@@ -126,6 +126,7 @@ class DevPages {
         DevPageData(
           route: AppRoute.onboarding.name,
           title: 'Onboarding',
+          done: true,
         ),
         DevPageData(
           route: AppRoute.devCreate.name,

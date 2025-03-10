@@ -39,10 +39,6 @@ class $AssetsIconsGen {
   AssetGenImage get settingsLine =>
       const AssetGenImage('assets/icons/settings-line.png');
 
-  /// File path: assets/icons/success_tick.gif
-  AssetGenImage get successTick =>
-      const AssetGenImage('assets/icons/success_tick.gif');
-
   /// File path: assets/icons/swap.png
   AssetGenImage get swap => const AssetGenImage('assets/icons/swap.png');
 
@@ -52,7 +48,6 @@ class $AssetsIconsGen {
     dollar,
     rightArrow,
     settingsLine,
-    successTick,
     swap,
   ];
 }
@@ -105,8 +100,25 @@ class $AssetsImages2Gen {
   /// File path: assets/images2/bg-red.png
   AssetGenImage get bgRed => const AssetGenImage('assets/images2/bg-red.png');
 
+  /// File path: assets/images2/bg_long.png
+  AssetGenImage get bgLong => const AssetGenImage('assets/images2/bg_long.png');
+
+  /// File path: assets/images2/success_tick.gif
+  AssetGenImage get successTick =>
+      const AssetGenImage('assets/images2/success_tick.gif');
+
+  /// File path: assets/images2/whitebullwithtext.png
+  AssetGenImage get whitebullwithtext =>
+      const AssetGenImage('assets/images2/whitebullwithtext.png');
+
   /// List of all assets
-  List<AssetGenImage> get values => [bbLogoSmall, bgRed];
+  List<AssetGenImage> get values => [
+    bbLogoSmall,
+    bgRed,
+    bgLong,
+    successTick,
+    whitebullwithtext,
+  ];
 }
 
 class Assets {

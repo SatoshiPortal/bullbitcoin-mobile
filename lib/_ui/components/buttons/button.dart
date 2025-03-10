@@ -16,6 +16,7 @@ class BBButton extends StatelessWidget {
     this.iconData,
     this.iconFirst = false,
     this.outlined = false,
+    this.borderColor,
   }) : size = _ButtonSize.large;
 
   const BBButton.small({
@@ -28,6 +29,7 @@ class BBButton extends StatelessWidget {
     this.iconData,
     this.iconFirst = false,
     this.outlined = false,
+    this.borderColor,
   }) : size = _ButtonSize.small;
 
   final String? icon;
@@ -40,6 +42,7 @@ class BBButton extends StatelessWidget {
   final Function onPressed;
   final bool outlined;
   final _ButtonSize size;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +63,7 @@ class BBButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
           color: !outlined ? bgColor : Colors.transparent,
-          border: outlined ? Border.all(color: bgColor) : null,
+          border: outlined ? Border.all(color: textColor) : null,
           borderRadius: radius,
         ),
         child: Row(
