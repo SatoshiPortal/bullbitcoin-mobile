@@ -343,6 +343,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.8"
+  custom_sliding_segmented_control:
+    dependency: "direct main"
+    description:
+      name: custom_sliding_segmented_control
+      sha256: bc747b1500284bff36fc8c61774c9a3ca35c1dca4d570141c8a2569b4f984bf3
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.8.5"
   dart_style:
     dependency: transitive
     description:
@@ -749,6 +757,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.7.0"
+  gif:
+    dependency: "direct main"
+    description:
+      name: gif
+      sha256: ade95694f1471da737922806818ffade2814d1d7f8d10af38ebcf36ace012bc0
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
   glob:
     dependency: transitive
     description:
