@@ -25,6 +25,7 @@ class RecoverWalletInputScreen extends StatelessWidget {
           },
         ),
         automaticallyImplyLeading: false,
+        forceMaterialTransparency: true,
       ),
       body: SafeArea(
         child: Stack(

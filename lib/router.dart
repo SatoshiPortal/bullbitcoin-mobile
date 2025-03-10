@@ -3,6 +3,7 @@ import 'package:bb_mobile/_ui/screens/route_error_screen.dart';
 import 'package:bb_mobile/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/home/ui/home_screen.dart';
+import 'package:bb_mobile/onboarding/ui/onboarding_screen.dart';
 import 'package:bb_mobile/receive/ui/receive_router.dart';
 import 'package:bb_mobile/recover_wallet/ui/recover_wallet_flow.dart';
 import 'package:bb_mobile/settings/ui/screens/settings_screen.dart';
@@ -72,6 +73,13 @@ class AppRouter {
         // const NoTransitionPage(child: HomeScreen()),
       ),
       GoRoute(
+        name: AppRoute.onboarding.name,
+        path: AppRoute.onboarding.path,
+        builder: (context, state) {
+          return const OnboardingScreen();
+        },
+      ),
+      GoRoute(
         name: AppRoute.appUnlock.name,
         path: AppRoute.appUnlock.path,
         builder: (context, state) {
@@ -113,6 +121,11 @@ class DevPages {
         DevPageData(
           route: AppRoute.recoverWallet.name,
           title: 'Recover',
+          done: true,
+        ),
+        DevPageData(
+          route: AppRoute.onboarding.name,
+          title: 'Onboarding',
         ),
         DevPageData(
           route: AppRoute.devCreate.name,

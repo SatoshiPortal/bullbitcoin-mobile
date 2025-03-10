@@ -19,8 +19,12 @@ class AppTheme {
       fontFamily: fonts.fontFamily,
       textTheme: fonts.textTheme,
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
-        foregroundColor: colours.primary,
+        backgroundColor: colours.secondaryFixed,
+        // foregroundColor: colours.primary,
+        elevation: 0,
+        scrolledUnderElevation: 32,
+
+        // shadowColor: colours.secondaryFixed,
       ),
     );
   }
