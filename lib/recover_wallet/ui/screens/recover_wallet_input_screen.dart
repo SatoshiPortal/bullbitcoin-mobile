@@ -1,5 +1,7 @@
+import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/segment/segmented_small.dart';
+import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
 import 'package:bb_mobile/recover_wallet/ui/widgets/label_input_field.dart';
 import 'package:bb_mobile/recover_wallet/ui/widgets/mnemonic_word_input_field.dart';
@@ -83,10 +85,17 @@ class RecoverWalletInputScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  const SizedBox(height: 40),
-                  const PassphraseInputField(),
-                  const SizedBox(height: 40),
-                  const LabelInputField(),
+                  const Gap(54),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: PassphraseInputField(),
+                  ),
+                  const Gap(16),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: LabelInputField(),
+                  ),
+                  const Gap(54),
                   const SizedBox(height: 80),
                 ],
               ),
@@ -98,13 +107,18 @@ class RecoverWalletInputScreen extends StatelessWidget {
                 BlocSelector<RecoverWalletBloc, RecoverWalletState, bool>(
                   selector: (state) => state.hasAllValidWords,
                   builder: (context, hasAllValidWords) {
-                    return ElevatedButton(
-                      onPressed: hasAllValidWords
-                          ? () => context.read<RecoverWalletBloc>().add(
-                                const RecoverWalletConfirmed(),
-                              )
-                          : null,
-                      child: const Text('Next'),
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: BBButton.big(
+                        label: 'Recover',
+                        onPressed: () => hasAllValidWords
+                            ? () => context.read<RecoverWalletBloc>().add(
+                                  const RecoverWalletConfirmed(),
+                                )
+                            : null,
+                        bgColor: context.colour.secondary,
+                        textColor: context.colour.onPrimary,
+                      ),
                     );
                   },
                 ),

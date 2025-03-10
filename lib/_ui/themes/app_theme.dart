@@ -31,3 +31,42 @@ extension FontEx on BuildContext {
   TextTheme get font => theme.textTheme;
   ColorScheme get colour => theme.colorScheme;
 }
+
+class WidgetStyles {
+  static InputDecoration inputDecoration(
+    BuildContext context,
+    String hintText,
+  ) {
+    return InputDecoration(
+      fillColor: context.colour.onPrimary,
+      filled: true,
+      hintText: hintText,
+      hintStyle: context.font.bodyMedium!.copyWith(
+        color: context.colour.surfaceContainer,
+      ),
+      contentPadding: const EdgeInsets.symmetric(
+        vertical: 12,
+        horizontal: 10,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(4),
+        borderSide: BorderSide(
+          color: context.colour.secondaryFixedDim,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(4),
+        borderSide: BorderSide(
+          color: context.colour.secondaryFixedDim,
+        ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(
+          color: context.colour.secondaryFixedDim,
+          width: 2.0,
+        ),
+      ),
+    );
+  }
+}

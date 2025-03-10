@@ -47,7 +47,9 @@ class BBButton extends StatelessWidget {
 
     final image = iconData != null
         ? Icon(iconData, size: 20, color: textColor)
-        : Image.asset(icon!, width: 20, height: 20, color: textColor);
+        : icon != null
+            ? Image.asset(icon!, width: 20, height: 20, color: textColor)
+            : const SizedBox.shrink();
 
     return InkWell(
       onTap: () => onPressed(),
@@ -64,22 +66,30 @@ class BBButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (iconFirst) ...[
-              image,
-              const Gap(10),
+            if (iconData == null && icon == null) ...[
               BBText(
                 label,
                 style: context.font.headlineLarge,
                 color: textColor,
               ),
             ] else ...[
-              BBText(
-                label,
-                style: context.font.headlineLarge,
-                color: textColor,
-              ),
-              const Gap(10),
-              image,
+              if (iconFirst) ...[
+                image,
+                const Gap(10),
+                BBText(
+                  label,
+                  style: context.font.headlineLarge,
+                  color: textColor,
+                ),
+              ] else ...[
+                BBText(
+                  label,
+                  style: context.font.headlineLarge,
+                  color: textColor,
+                ),
+                const Gap(10),
+                image,
+              ],
             ],
           ],
         ),
