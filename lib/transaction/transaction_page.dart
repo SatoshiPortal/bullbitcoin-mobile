@@ -508,8 +508,8 @@ class _SwapDetails extends StatelessWidget {
       ),
     ];
 
-    final lockupFee = swap.isReverse() ? 0 : tx.fee;
-    final claimFee = swap.isReverse() ? tx.fee : swap.claimFees;
+    final lockupFee = swap.lockupFees;
+    final claimFee = swap.claimFees;
 
     return Padding(
       padding: const EdgeInsets.all(24.0),
