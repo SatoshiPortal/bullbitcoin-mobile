@@ -77,6 +77,8 @@ class _ReceivePageState extends State<ReceivePage> {
       defaultCurrencyCubit: context.read<CurrencyCubit>(),
     );
 
+    final network = context.read<NetworkCubit>().state.getBBNetwork();
+
     _receiveCubit = ReceiveCubit(
       walletAddress: locator<WalletAddress>(),
       walletsStorageRepository: locator<WalletsStorageRepository>(),
@@ -84,11 +86,12 @@ class _ReceivePageState extends State<ReceivePage> {
       payjoinManager: locator<PayjoinManager>(),
     );
 
-    final network = context.read<NetworkCubit>().state.getBBNetwork();
     final walletBloc = widget.walletBloc ??
         context.read<HomeCubit>().state.getMainInstantWallet(network);
 
-    if (walletBloc!.state.wallet!.isLiquid()) {
+    _receiveCubit.updateWalletBloc(walletBloc!);
+
+    if (walletBloc.state.wallet!.isLiquid()) {
       _receiveCubit.updateWalletType(
         PaymentNetwork.lightning,
         context.read<NetworkCubit>().state.testnet,
@@ -101,8 +104,6 @@ class _ReceivePageState extends State<ReceivePage> {
         onStart: true,
       );
     }
-
-    _receiveCubit.updateWalletBloc(walletBloc);
 
     super.initState();
   }
