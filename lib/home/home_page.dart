@@ -22,6 +22,7 @@ import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_bloc.dart';
+import 'package:bb_mobile/recoverbull/bloc/keychain_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
@@ -102,20 +103,20 @@ class _ScreenState extends State<_Screen> {
       (HomeBloc x) => x.state.loadingWallets,
     );
     final network = context.select((NetworkBloc x) => x.state.getBBNetwork());
-
     final wallets = context.select(
       (HomeBloc x) => x.state.walletsFromNetwork(network),
     );
 
     // final hasWallets = context.select((HomeBloc x) => x.state.hasWallets());
-    final hasMainWallets = context.select(
-      (HomeBloc x) => x.state.hasMainWallets(),
-    );
+    // final hasMainWallets = context.select(
+    //   (HomeBloc x) => x.state.hasMainWallets(),
+    // );
 
     // final walletBlocsLen =
     //     context.select((HomeBloc x) => x.state.lenWalletsFromNetwork(network));
 
-    if (!loading && (wallets.isEmpty || !hasMainWallets)) {
+    // Question: Do we need to check for mainWallets? since the recoverd wallet are not main wallets by default
+    if (!loading && (wallets.isEmpty)) {
       final isTestnet = network == BBNetwork.Testnet;
 
       Widget widget = Scaffold(
@@ -132,9 +133,11 @@ class _ScreenState extends State<_Screen> {
       return widget;
     }
 
-    final warningsSize =
-        context.select((HomeBloc x) => x.state.homeWarnings(network)).length *
-            40.0;
+    final keyServerUp = context.watch<KeychainCubit>().state.keyServerUp;
+    final warningBannerCount =
+        context.select((HomeBloc x) => x.state.homeWarnings(network)).length +
+            (!keyServerUp ? 1 : 0);
+    final warningsSize = warningBannerCount * 40.0;
 
     final h = _calculateHeight(wallets.length);
 
@@ -419,90 +422,95 @@ class CardItem extends StatelessWidget {
               ),
               child: Stack(
                 children: [
-                  /*
-                  // Uncomment to get settings button (3 dots) on top right
-                  TopRight(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: IconButton(
-                        onPressed: () {
-                          final walletBloc = context.read<WalletBloc>();
-                          context.push('/wallet-settings', extra: walletBloc);
-                        },
-                        color: context.colour.onPrimary,
-                        icon: const FaIcon(
-                          FontAwesomeIcons.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ),
-                  */
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  Row(
                     children: [
-                      const Gap(8),
-                      BBText.titleLarge(
-                        name ?? fingerprint,
-                        onSurface: true,
-                        fontSize: 20,
-                        compact: true,
-                      ),
-                      const Gap(4),
-                      Opacity(
-                        opacity: 0.7,
-                        child: BBText.bodySmall(
-                          walletStr,
-                          onSurface: true,
-                          isBold: true,
-                          fontSize: 12,
-                        ),
-                      ),
-                      const Spacer(),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          BBText.titleLarge(
-                            balance,
-                            onSurface: true,
-                            isBold: true,
-                            fontSize: 24,
-                            compact: true,
-                          ),
-                          const Gap(4),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 1),
-                            child: BBText.title(
-                              unit,
-                              onSurface: true,
-                              isBold: true,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (fiatCurrency != null) ...[
-                        Row(
+                      Expanded(
+                        flex: 9,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            BBText.bodySmall(
-                              '~$fiatAmt',
+                            const Gap(8),
+                            BBText.titleLarge(
+                              name ?? fingerprint,
                               onSurface: true,
-                              fontSize: 12,
+                              fontSize: 20,
+                              compact: true,
                             ),
                             const Gap(4),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 1),
+                            Opacity(
+                              opacity: 0.7,
                               child: BBText.bodySmall(
-                                fiatCurrency.shortName.toUpperCase(),
+                                walletStr,
                                 onSurface: true,
+                                isBold: true,
                                 fontSize: 12,
                               ),
                             ),
+                            const Spacer(),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                BBText.titleLarge(
+                                  balance,
+                                  onSurface: true,
+                                  isBold: true,
+                                  fontSize: 24,
+                                  compact: true,
+                                ),
+                                const Gap(4),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 1),
+                                  child: BBText.title(
+                                    unit,
+                                    onSurface: true,
+                                    isBold: true,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (fiatCurrency != null) ...[
+                              Row(
+                                children: [
+                                  BBText.bodySmall(
+                                    '~$fiatAmt',
+                                    onSurface: true,
+                                    fontSize: 12,
+                                  ),
+                                  const Gap(4),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 1),
+                                    child: BBText.bodySmall(
+                                      fiatCurrency.shortName.toUpperCase(),
+                                      onSurface: true,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                            const Gap(4),
                           ],
                         ),
-                      ],
-                      const Gap(4),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: !wallet.vaultBackupTested &&
+                                !wallet.physicalBackupTested
+                            ? IconButton(
+                                onPressed: () => context.push(
+                                      '/wallet-settings/backup-settings',
+                                      extra: wallet.id,
+                                    ),
+                                icon: Icon(
+                                  Icons.warning_rounded,
+                                  color: context.colour.error,
+                                  size: 20,
+                                ))
+                            : const SizedBox.shrink(),
+                      ),
                     ],
-                  ),
+                  )
                 ],
               ),
             ),
@@ -1026,10 +1034,23 @@ class HomeNoWalletsWithCreation extends StatelessWidget {
             ),
             const Gap(16),
             BBButton.text(
-              label: 'Recover wallet backup',
+              label: 'Recover wallet from Physical Backup',
               centered: true,
+              onSurface: true,
+              isBlue: false,
+              fontSize: 11,
+              onPressed: () => context1.push('/import-main'),
+            ),
+            BBButton.text(
+              label: 'Recover wallet from Encrypted Vault',
+              centered: true,
+              onSurface: true,
+              isBlue: false,
+              fontSize: 11,
               onPressed: () {
-                context1.push('/import-main');
+                context1.push(
+                  '/wallet-settings/backup-settings/recover-options/encrypted',
+                );
               },
             ),
           ],
@@ -1064,10 +1085,8 @@ class HomeNoWalletsView extends StatelessWidget {
       listener: (context3, state) async {
         if (state.saved) {
           if (state.savedWallets == null) return;
-          //if (state.mainWallet)
           await locator<WalletsStorageRepository>().sortWallets();
-          locator<HomeBloc>()
-              .add(LoadWalletsFromStorage()); //getWalletsFromStorage();
+          locator<HomeBloc>().add(LoadWalletsFromStorage());
           if (!context.mounted) return;
           context3.go('/home');
         }
@@ -1095,10 +1114,7 @@ class HomeNoWalletsView extends StatelessWidget {
                 ),
                 Text(
                   'OWN YOUR MONEY',
-                  style: font.copyWith(
-                    fontSize: 59,
-                    height: 0.8,
-                  ),
+                  style: font.copyWith(fontSize: 59, height: 0.8),
                 ),
                 const Gap(8),
                 SizedBox(
@@ -1119,15 +1135,23 @@ class HomeNoWalletsView extends StatelessWidget {
                     },
                   ),
                 ),
+                const Gap(20),
                 BBButton.text(
-                  label: 'Recover wallet backup',
+                  label: 'Recover wallet from Physical Backup',
                   centered: true,
                   onSurface: true,
                   isBlue: false,
                   fontSize: 11,
-                  onPressed: () {
-                    context.push('/import-main');
-                  },
+                  onPressed: () => context.push('/import-main'),
+                ),
+                BBButton.text(
+                  label: 'Recover wallet from Encrypted Vault',
+                  centered: true,
+                  onSurface: true,
+                  isBlue: false,
+                  fontSize: 11,
+                  onPressed: () => context.push(
+                      '/wallet-settings/backup-settings/recover-options/encrypted'),
                 ),
               ],
             ),
@@ -1147,19 +1171,16 @@ class HomeWarnings extends StatelessWidget {
     final network = context.select((NetworkBloc _) => _.state.getBBNetwork());
     final warnings =
         context.select((HomeBloc _) => _.state.homeWarnings(network));
-
+    final keyServerUp = context.watch<KeychainCubit>().state.keyServerUp;
     return Column(
       children: [
         for (final w in warnings)
           WarningBanner(
-            onTap: () {
-              context.push(
-                '/wallet-settings/open-backup',
-                extra: w.walletBloc.id,
-              );
-            },
+            onTap: () {},
             info: w.info,
           ),
+        if (!keyServerUp)
+          WarningBanner(onTap: () {}, info: 'Key server is down'),
       ],
     );
   }

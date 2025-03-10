@@ -6,12 +6,41 @@ import 'package:bb_mobile/_model/swap.dart';
 import 'package:bb_mobile/_model/transaction.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:crypto/crypto.dart';
+import 'package:lwk/lwk.dart' as lwk;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
 part 'wallet.g.dart';
 
-enum BBNetwork { Testnet, Mainnet }
+enum BBNetwork {
+  Testnet,
+
+  Mainnet;
+
+  static BBNetwork fromString(String network) {
+    return network.toLowerCase() == 'testnet'
+        ? BBNetwork.Testnet
+        : BBNetwork.Mainnet;
+  }
+
+  lwk.Network toLwkNetwork() {
+    switch (this) {
+      case BBNetwork.Testnet:
+        return lwk.Network.testnet;
+      case BBNetwork.Mainnet:
+        return lwk.Network.mainnet;
+    }
+  }
+
+  bdk.Network toBdkNetwork() {
+    switch (this) {
+      case BBNetwork.Testnet:
+        return bdk.Network.testnet;
+      case BBNetwork.Mainnet:
+        return bdk.Network.bitcoin;
+    }
+  }
+}
 
 enum BBWalletType { main, xpub, descriptors, words, coldcard }
 
@@ -46,8 +75,10 @@ class Wallet with _$Wallet {
     String? path,
     int? balance,
     Balance? fullBalance,
-    @Default(false) bool backupTested,
-    DateTime? lastBackupTested,
+    @Default(false) bool physicalBackupTested,
+    DateTime? lastPhysicalBackupTested,
+    @Default(false) bool vaultBackupTested,
+    DateTime? lastVaultBackupTested,
     @Default(false) bool hide,
     @Default(false) bool mainWallet,
     required BaseWalletType baseWalletType,
@@ -323,34 +354,10 @@ class Wallet with _$Wallet {
     return str;
   }
 
-  String defaultNameString() {
+  String defaultName() {
     String str = '';
 
     switch (type) {
-      case BBWalletType.main:
-        if (baseWalletType == BaseWalletType.Bitcoin) {
-          str = 'Secure:${id.substring(0, 5)}';
-        } else {
-          str = 'Instant:${id.substring(0, 5)}';
-        }
-      case BBWalletType.xpub:
-        str = 'Xpub:${id.substring(0, 5)}';
-      case BBWalletType.words:
-        str = 'Imported:${id.substring(0, 5)}';
-      case BBWalletType.coldcard:
-        str = 'Coldcard:${id.substring(0, 5)}';
-      case BBWalletType.descriptors:
-        str = 'Imported Descriptor:${id.substring(0, 5)}';
-    }
-
-    return str;
-  }
-
-  String creationName() {
-    String str = '';
-
-    switch (type) {
-      case BBWalletType.words:
       case BBWalletType.main:
         if (baseWalletType == BaseWalletType.Bitcoin) {
           str = 'Secure Bitcoin Wallet';
@@ -359,6 +366,8 @@ class Wallet with _$Wallet {
         }
       case BBWalletType.xpub:
         str = 'Xpub:${id.substring(0, 5)}';
+      case BBWalletType.words:
+        str = 'Imported:${id.substring(0, 5)}';
       case BBWalletType.coldcard:
         str = 'Coldcard:${id.substring(0, 5)}';
       case BBWalletType.descriptors:

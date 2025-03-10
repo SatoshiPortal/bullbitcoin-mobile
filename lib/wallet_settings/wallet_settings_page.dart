@@ -10,8 +10,8 @@ import 'package:bb_mobile/_ui/headers.dart';
 import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet_settings/addresses.dart';
-import 'package:bb_mobile/wallet_settings/bloc/state.dart';
 import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_cubit.dart';
+import 'package:bb_mobile/wallet_settings/bloc/wallet_settings_state.dart';
 import 'package:bb_mobile/wallet_settings/listeners.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/material.dart';
@@ -25,12 +25,7 @@ class WalletSettingsPage extends StatelessWidget {
   const WalletSettingsPage({
     super.key,
     required this.wallet,
-    // this.openTestBackup = false,
-    this.openBackup = false,
   });
-
-  // final bool openTestBackup;
-  final bool openBackup;
   final String wallet;
 
   @override
@@ -57,50 +52,24 @@ class WalletSettingsPage extends StatelessWidget {
           create: (BuildContext context) => createWalletSettingsCubit(wallet),
         ),
       ],
-      child: WalletSettingsListeners(
-        child: _Screen(
-          // openTestBackup: openTestBackup,
-          openBackup: openBackup,
-        ),
+      child: const WalletSettingsListeners(
+        child: _Screen(),
       ),
     );
   }
 }
 
 class _Screen extends StatefulWidget {
-  const _Screen({required this.openBackup});
-
-  // final bool openTestBackup;
-  final bool openBackup;
+  const _Screen();
 
   @override
   State<_Screen> createState() => _ScreenState();
 }
 
 class _ScreenState extends State<_Screen> {
-  // bool showPage = false;
   @override
   void initState() {
-    _init();
     super.initState();
-  }
-
-  void _init() {
-    scheduleMicrotask(() async {
-      if (widget.openBackup) {
-        // await Future.delayed(const Duration(milliseconds: 300));
-        await context.push(
-          '/wallet-settings/backup',
-          extra: context.read<WalletBloc>().state.wallet.id,
-          // (
-          //   context.read<WalletBloc>(),
-          //   context.read<WalletSettingsCubit>(),
-          // ),
-        );
-      } else {
-        // showPage = true;
-      }
-    });
   }
 
   @override
@@ -136,10 +105,8 @@ class _ScreenState extends State<_Screen> {
                   // const Balances(),
                   const Gap(24),
                   if (!watchOnly) ...[
-                    const BackupButton(),
+                    const BackupSettingsButton(),
                     const Gap(8),
-                    // const TestBackupButton(),
-                    // const Gap(8),
                   ],
                   // const PublicDescriptorButton(),
                   // const Gap(8),
@@ -433,62 +400,15 @@ class WalletDetailsButton extends StatelessWidget {
   }
 }
 
-class TestBackupButton extends StatelessWidget {
-  const TestBackupButton({super.key});
+class BackupSettingsButton extends StatelessWidget {
+  const BackupSettingsButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isTested =
-        context.select((WalletBloc x) => x.state.wallet.backupTested);
-
-    // if (isTested) return const SizedBox.shrink();
-    return BBButton.textWithStatusAndRightArrow(
-      label: 'Test Backup',
-      statusText: isTested ? 'Tested' : 'Not Tested',
-      isRed: !isTested,
-      onPressed: () async {
-        context.push(
-          '/wallet-settings/test-backup',
-          extra: context.read<WalletBloc>().state.wallet.id,
-          // (
-          //   context.read<Wallet>(),
-          //   context.read<WalletSettingsCubit>(),
-          // ),
-        );
-        // await TestBackupScreen.openPopup(context);
-      },
-    );
-    // return Row(
-    //   children: [
-    //     BBButton.textWithLeftArrow(
-    //       label: 'Test Backup',
-    //       onPressed: () async {
-    //         await TestBackupScreen.openPopup(context);
-    //       },
-    //     ),
-    //     const Spacer(),
-    //     BBText.body(
-    //       isTested ? 'Tested' : 'Not tested',
-    //       isGreen: isTested,
-    //       isRed: !isTested,
-    //     ),
-    //   ],
-    // );
-  }
-}
-
-class BackupButton extends StatelessWidget {
-  const BackupButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final isTested =
-        context.select((WalletBloc x) => x.state.wallet.backupTested);
-
     return BBButton.textWithStatusAndRightArrow(
       onPressed: () async {
         context.push(
-          '/wallet-settings/backup',
+          '/wallet-settings/backup-settings',
           extra: context.read<WalletBloc>().state.wallet.id,
           //  (
           //   context.read<Wallet>(),
@@ -497,9 +417,7 @@ class BackupButton extends StatelessWidget {
         );
         // await BackupScreen.openPopup(context);
       },
-      label: 'Backup',
-      statusText: isTested ? 'Tested' : 'Not Tested',
-      isRed: !isTested,
+      label: 'Backup Settings',
     );
   }
 }
@@ -539,7 +457,7 @@ class DeletePopUp extends StatelessWidget {
           listener: (context, state) {
             if (state.deleted) {
               // final walletBloc = settings.walletBloc;
-              // context.read<HomeBloc>().clearWallet(walletBloc);
+
               context.go('/home');
             }
           },

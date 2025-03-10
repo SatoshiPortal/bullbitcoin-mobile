@@ -1,17 +1,13 @@
+import 'package:bb_mobile/_model/wallet_sensitive_data.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:recoverbull/recoverbull.dart';
 
-part 'state.freezed.dart';
+part 'backup_settings_state.freezed.dart';
 
 @freezed
-class WalletSettingsState with _$WalletSettingsState {
-  const factory WalletSettingsState({
-    // required Wallet wallet,
-    @Default('') String name,
-    /**
-     * 
-     * SENSITIVE
-     * 
-     */
+class BackupSettingsState with _$BackupSettingsState {
+  const factory BackupSettingsState({
+    // Verification properties
     @Default([]) List<String> mnemonic,
     @Default('') String password,
     @Default([]) List<String> shuffledMnemonic,
@@ -19,34 +15,23 @@ class WalletSettingsState with _$WalletSettingsState {
     List<({String word, int shuffleIdx, int selectedActualIdx})>
         testMnemonicOrder,
     @Default('') String testBackupPassword,
-    /**
-     * 
-     * SENSITIVE
-     * 
-     */
-    @Default(false) bool backup,
     @Default(false) bool testingBackup,
     @Default('') String errTestingBackup,
     @Default(false) bool backupTested,
-    @Default(false) bool gettingAddresses,
-    @Default('') String errGettingAddresses,
-    @Default(false) bool savingName,
-    @Default('') String errSavingName,
-    @Default(false) bool savedName,
-    @Default(false) bool deleting,
-    @Default('') String errDeleting,
-    @Default(false) bool deleted,
-    @Default(false) bool savingFile,
-    @Default('') String errSavingFile,
-    @Default(false) bool savedFile,
-    @Default('') String errImporting,
-    @Default(false) bool importing,
-    @Default(false) bool imported,
-    @Default('') String errExporting,
-    @Default(false) bool exporting,
-    @Default(false) bool exported,
-  }) = _WalletSettingsState;
-  const WalletSettingsState._();
+    @Default(false) bool loadingBackups,
+    @Default([]) List<WalletSensitiveData> loadedBackups,
+    @Default('') String errorLoadingBackups,
+    @Default(false) bool savingBackups,
+    @Default('') String errorSavingBackups,
+    @Default('') String backupId,
+    @Default('') String backupFolderPath,
+    @Default('') String backupSalt,
+    @Default('') String backupKey,
+    BullBackup? latestRecoveredBackup,
+    @Default(null) DateTime? lastBackupAttempt,
+  }) = _BackupSettingsState;
+
+  const BackupSettingsState._();
 
   (String word, bool isSelected, int actualIdx) shuffleElementAt(
     int shuffleIdx,
@@ -61,6 +46,9 @@ class WalletSettingsState with _$WalletSettingsState {
     }
   }
 
+  bool _isSelected(int shuffleIdx) =>
+      testMnemonicOrder.where((w) => w.shuffleIdx == shuffleIdx).isNotEmpty;
+
   int _actualIdx(int shuffleIdx) {
     final word = shuffledMnemonic[shuffleIdx];
     final wordCount = mnemonic.where((w) => w == word).length;
@@ -73,9 +61,6 @@ class WalletSettingsState with _$WalletSettingsState {
     }
     return mnemonic.indexOf(word, testMnemonicOrder.length - 1);
   }
-
-  bool _isSelected(int shuffleIdx) =>
-      testMnemonicOrder.where((w) => w.shuffleIdx == shuffleIdx).isNotEmpty;
 
   String testMneString() => testMnemonicOrder.map((w) => w.word).join(' ');
 }

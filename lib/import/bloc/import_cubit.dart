@@ -350,7 +350,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       ),
     );
     final (file, err) = await _filePicker.pickFile();
-    if (err != null) {
+    if (err != null || file == null) {
       emit(
         state.copyWith(
           importStep: ImportSteps.importXpub,
@@ -361,7 +361,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       return;
     }
 
-    final ccObj = jsonDecode(file!) as Map<String, dynamic>;
+    final ccObj = jsonDecode(await file.readAsString()) as Map<String, dynamic>;
 
     final coldcard = ColdCard.fromJson(ccObj);
 
@@ -639,7 +639,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       );
     }
     var walletLabel = state.walletLabel ?? '';
-    if (state.mainWallet) walletLabel = selectedWallet.creationName();
+    if (state.mainWallet) walletLabel = selectedWallet.defaultName();
     final secureWallet = selectedWallet.copyWith(name: walletLabel);
 
     final err = await _walletsStorageRepository.newWallet(
@@ -691,7 +691,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
       return null;
     }
 
-    wallet = wallet!.copyWith(backupTested: true);
+    wallet = wallet!.copyWith(physicalBackupTested: true);
     if (state.mainWallet) {
       wallet = wallet.copyWith(
         mainWallet: true,
@@ -700,7 +700,7 @@ class ImportWalletCubit extends Cubit<ImportState> {
     }
 
     var walletLabel = state.walletLabel ?? '';
-    if (state.mainWallet) walletLabel = wallet.creationName();
+    if (state.mainWallet) walletLabel = wallet.defaultName();
     final updatedWallet = wallet.copyWith(name: walletLabel);
 
     final wsErr = await _walletsStorageRepository.newWallet(updatedWallet);

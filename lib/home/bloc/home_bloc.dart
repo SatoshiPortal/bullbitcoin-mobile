@@ -1,10 +1,14 @@
 import 'dart:async';
 
+import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_repository/app_wallets_repository.dart';
 import 'package:bb_mobile/_repository/network_repository.dart';
 import 'package:bb_mobile/_repository/wallet_service.dart';
 import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/bloc/home_state.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/network/bloc/event.dart';
+import 'package:bb_mobile/network/bloc/network_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -62,16 +66,44 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     WalletServicesUpdated event,
     Emitter<HomeState> emit,
   ) async {
-    debugPrint('wallet services updated: ${event.walletServices.length}');
     final walletServicesData = event.walletServices
         .map((_) => WalletServiceData(wallet: _.wallet))
         .toList();
-    emit(state.copyWith(wallets: walletServicesData));
 
-    // Listen to wallet data updates
-    for (final ws in event.walletServices) {
+    // Check for new wallets
+    final currentWalletIds = state.wallets.map((w) => w.wallet.id).toSet();
+    final newWalletIds = walletServicesData.map((w) => w.wallet.id).toSet();
+    final hasNewWallets = newWalletIds.difference(currentWalletIds).isNotEmpty;
+
+    // Only emit if we have changes
+    if (hasNewWallets || state.wallets != walletServicesData) {
+      emit(
+        state.copyWith(
+          wallets: walletServicesData,
+          updated: hasNewWallets,
+        ),
+      );
+    }
+
+    // Update subscriptions for wallet data changes
+    _updateWalletSubscriptions(event.walletServices);
+  }
+
+  void _updateWalletSubscriptions(List<WalletService> services) {
+    // Cancel old subscriptions that are no longer needed
+    final newIds = services.map((ws) => ws.wallet.id).toSet();
+    _walletServiceDataUpdateSubscriptions.keys
+        .where((id) => !newIds.contains(id))
+        .toList()
+        .forEach((id) {
+      _walletServiceDataUpdateSubscriptions[id]?.cancel();
+      _walletServiceDataUpdateSubscriptions.remove(id);
+    });
+
+    // Add or update subscriptions for current services
+    for (final ws in services) {
       if (_walletServiceDataUpdateSubscriptions.containsKey(ws.wallet.id)) {
-        _walletServiceDataUpdateSubscriptions[ws.wallet.id]!.cancel();
+        continue; // Skip if subscription already exists
       }
       _walletServiceDataUpdateSubscriptions[ws.wallet.id] =
           ws.dataStream.listen(
@@ -88,8 +120,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     emit(state.copyWith(loadingWallets: true));
+
     await _appWalletsRepository.getWalletsFromStorage();
     final wallets = _appWalletsRepository.allWallets;
+
+    // Check if any wallet is testnet and switch network if needed
+    if (wallets.isNotEmpty) {
+      final hasTestnetWallet = wallets.any((w) => w.isTestnet());
+      final currentNetwork = locator<NetworkBloc>().state.getBBNetwork();
+
+      if (hasTestnetWallet && currentNetwork != BBNetwork.Testnet) {
+        locator<NetworkBloc>().add(ToggleTestnet());
+      }
+    }
     emit(
       state.copyWith(
         wallets: wallets.map((_) => WalletServiceData(wallet: _)).toList(),

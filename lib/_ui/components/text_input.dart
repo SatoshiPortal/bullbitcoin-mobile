@@ -26,7 +26,8 @@ class BBTextInput extends StatefulWidget {
         onEnter = null,
         onDone = null,
         maxLength = null,
-        onlyNumbers = false;
+        onlyNumbers = false,
+        obscure = false;
 
   const BBTextInput.big({
     required this.onChanged,
@@ -39,6 +40,7 @@ class BBTextInput extends StatefulWidget {
     this.maxLength,
     this.uiKey,
     this.onEnter,
+    this.obscure = false,
   })  : type = _TextInputType.big,
         rightIcon = null,
         onRightTap = null,
@@ -55,6 +57,7 @@ class BBTextInput extends StatefulWidget {
     this.hint,
     this.uiKey,
     this.controller,
+    this.obscure = false,
   })  : type = _TextInputType.bigWithIcon,
         onEnter = null,
         onDone = null,
@@ -71,6 +74,7 @@ class BBTextInput extends StatefulWidget {
     this.hint,
     this.uiKey,
     this.controller,
+    this.obscure = false,
   })  : type = _TextInputType.bigWithIcon2,
         onEnter = null,
         onDone = null,
@@ -88,6 +92,7 @@ class BBTextInput extends StatefulWidget {
     this.controller,
     this.onEnter,
     this.onDone,
+    this.obscure = false,
   })  : type = _TextInputType.small,
         rightIcon = null,
         onRightTap = null,
@@ -110,6 +115,7 @@ class BBTextInput extends StatefulWidget {
   final Function(String)? onDone;
   final int? maxLength;
   final bool onlyNumbers;
+  final bool? obscure;
 
   @override
   State<BBTextInput> createState() => _BBTextInputState();
@@ -143,7 +149,7 @@ class _BBTextInputState extends State<BBTextInput> {
           controller: _editingController,
           enableIMEPersonalizedLearning: false,
           keyboardType: TextInputType.multiline,
-          maxLines: 5,
+          maxLines: widget.obscure ?? false ? 1 : 5,
           style: context.font.bodySmall!
               .copyWith(color: context.colour.onPrimaryContainer),
           onTap: () => widget.onEnter?.call(),
@@ -176,8 +182,8 @@ class _BBTextInputState extends State<BBTextInput> {
         widgett = SizedBox(
           height: height,
           child: TextField(
-            expands: true,
-            maxLines: null,
+            expands: !(widget.obscure ?? false),
+            maxLines: widget.obscure ?? false ? 1 : null,
             key: widget.uiKey,
             enabled: !widget.disabled,
             focusNode: widget.focusNode,
@@ -186,6 +192,7 @@ class _BBTextInputState extends State<BBTextInput> {
             enableIMEPersonalizedLearning: false,
             controller: _editingController,
             keyboardType: widget.onlyNumbers ? TextInputType.number : null,
+            obscureText: widget.obscure ?? false,
             onTap: () => widget.onEnter?.call(),
             decoration: InputDecoration(
               hintText: widget.hint,
@@ -225,14 +232,15 @@ class _BBTextInputState extends State<BBTextInput> {
         widgett = SizedBox(
           height: height,
           child: TextField(
-            expands: true,
-            maxLines: null,
+            expands: !(widget.obscure ?? false),
+            maxLines: widget.obscure ?? false ? 1 : null,
             focusNode: widget.focusNode,
             enabled: !widget.disabled,
             onChanged: widget.onChanged,
             controller: _editingController,
             enableIMEPersonalizedLearning: false,
             keyboardType: widget.onlyNumbers ? TextInputType.number : null,
+            obscureText: widget.obscure ?? false,
             onTap: () => widget.onEnter?.call(),
             decoration: InputDecoration(
               hintText: widget.hint,
@@ -271,8 +279,8 @@ class _BBTextInputState extends State<BBTextInput> {
         widgett = SizedBox(
           height: height,
           child: TextField(
-            expands: true,
-            maxLines: null,
+            expands: !(widget.obscure ?? false),
+            maxLines: widget.obscure ?? false ? 1 : null,
             focusNode: widget.focusNode,
             enabled: !widget.disabled,
             onChanged: widget.onChanged,
@@ -280,6 +288,7 @@ class _BBTextInputState extends State<BBTextInput> {
             enableIMEPersonalizedLearning: false,
             onTap: () => widget.onEnter?.call(),
             keyboardType: widget.onlyNumbers ? TextInputType.number : null,
+            obscureText: widget.obscure ?? false,
             decoration: InputDecoration(
               hintText: widget.hint,
               hintStyle: TextStyle(
@@ -324,7 +333,7 @@ class _BBTextInputState extends State<BBTextInput> {
             onChanged: widget.onChanged,
             controller: _editingController,
             keyboardType: widget.onlyNumbers ? TextInputType.number : null,
-
+            obscureText: widget.obscure ?? false,
             onSubmitted: (value) => widget.onDone?.call(value),
             // widget.onDone != null ? widget.onDone!(value) : null,
             onTap: () => widget.onEnter?.call(),
