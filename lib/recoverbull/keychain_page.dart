@@ -38,20 +38,9 @@ class KeychainBackupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<KeychainCubit>(
-          create: (context) => KeychainCubit()
-            ..setChainState(
-              _pState,
-              backup.id,
-              backupKey,
-              backup.salt,
-            )
-            ..keyServerStatus(),
-        ),
-        BlocProvider.value(value: createBackupSettingsCubit()),
-      ],
+    context.read<KeychainCubit>().updateChainState(_pState, backupKey, backup);
+    return BlocProvider.value(
+      value: createBackupSettingsCubit(),
       child: _Screen(
         backupKey: backupKey,
         backup: backup,

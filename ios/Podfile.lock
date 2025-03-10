@@ -96,6 +96,8 @@ PODS:
   - share_plus (0.0.1):
     - Flutter
   - SwiftyGif (5.4.5)
+  - tor (0.0.1):
+    - Flutter
   - url_launcher_ios (0.0.1):
     - Flutter
 
@@ -120,6 +122,7 @@ DEPENDENCIES:
   - payjoin_flutter (from `.symlinks/plugins/payjoin_flutter/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
+  - tor (from `.symlinks/plugins/tor/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
@@ -175,6 +178,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
+  tor:
+    :path: ".symlinks/plugins/tor/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
 
@@ -208,6 +213,7 @@ SPEC CHECKSUMS:
   SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
+  tor: 662a9f5b980b5c86decb8ba611de9bcd4c8286eb
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 
 PODFILE CHECKSUM: abb44964f6e7af954d7e0c7aafcfb6e7607dee25

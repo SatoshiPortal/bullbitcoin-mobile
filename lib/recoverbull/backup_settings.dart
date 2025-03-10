@@ -35,9 +35,6 @@ class _BackupSettingsState extends State<BackupSettings> {
           create: (BuildContext context) =>
               createBackupSettingsCubit(walletId: widget.wallet),
         ),
-        BlocProvider(
-          create: (context) => KeychainCubit(),
-        ),
       ],
       child: Scaffold(
         appBar: AppBar(

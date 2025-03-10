@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_pkg/consts/configs.dart';
+import 'package:bb_mobile/_pkg/recoverbull/tor_connection.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,31 +11,81 @@ import 'package:recoverbull/recoverbull.dart';
 class KeychainCubit extends Cubit<KeychainState> {
   static const pinMin = 6;
   static const pinMax = 8;
+  static const maxRetries = 2;
+  static const retryDelay = Duration(seconds: 1);
+  final TorConnection _connection;
+  KeyService? _currentService;
 
-  KeychainCubit() : super(const KeychainState()) {
+  KeychainCubit()
+      : _connection = TorConnection(),
+        super(const KeychainState()) {
     _initialize();
   }
 
-  late final KeyService _keyService;
-
-  void _initialize() {
-    if (keyServerUrl.isEmpty) {
-      emit(
-        state.copyWith(error: 'keychain api is not set', keyServerUp: false),
+  Future<KeyService> _createKeyService() async {
+    if (!_connection.isInitialized) {
+      // Initialize Tor with retry logic and delayed start
+      await _handleServerOperation(
+        () async {
+          await _connection.initialize();
+          await Future.delayed(const Duration(seconds: 5));
+        },
+        'Tor initialization',
+        emitState: false, // Don't emit states during service creation
       );
+    }
+
+    final service = KeyService(
+      keyServer: Uri.parse(keyServerUrl),
+      keyServerPublicKey: keyServerPublicKey,
+      tor: _connection.tor,
+    );
+
+    // Verify service can connect to server
+    await _handleServerOperation(
+      () async => await service.serverInfo(),
+      'Service verification',
+      emitState: false, // Don't emit states during service creation
+    );
+
+    return service;
+  }
+
+  Future<void> _initialize() async {
+    if (keyServerUrl.isEmpty) {
+      emit(state.copyWith(
+        error: 'Keyserver connection failed',
+        loading: false,
+        keyServerUp: false,
+      ));
       return;
     }
 
-    _keyService = KeyService(
-      keyServer: Uri.parse(keyServerUrl),
-      keyServerPublicKey: keyServerPublicKey,
-    );
-
-    // Initial status check
-    keyServerStatus();
+    try {
+      emit(state.copyWith(loading: true, error: ''));
+      _currentService = await _createKeyService();
+      await _connection.ready;
+      await keyServerStatus();
+    } catch (e) {
+      debugPrint('KeychainCubit initialization error: $e');
+      emit(state.copyWith(
+        error: 'Keyserver connection failed',
+        loading: false,
+        keyServerUp: false,
+      ));
+    }
   }
 
   Future<void> keyServerStatus() async {
+    if (_currentService == null) {
+      emit(state.copyWith(
+        keyServerUp: false,
+        error: 'Connection not initialized',
+        loading: false,
+      ));
+      return;
+    }
+
     if (state.isInCooldown) {
       emit(
         state.copyWith(
@@ -47,27 +98,20 @@ class KeychainCubit extends Cubit<KeychainState> {
       return;
     }
 
-    emit(state.copyWith(loading: true, error: ''));
-
     if (!isClosed) {
-      try {
-        await _keyService.serverInfo();
-        emit(state.copyWith(keyServerUp: true, loading: false));
-      } catch (e) {
-        debugPrint('Server status check failed: $e');
-        emit(
-          state.copyWith(
-            keyServerUp: false,
-            loading: false,
-            error:
-                'Unable to reach key server. This could be due to network issues or the server may be temporarily unavailable.',
-          ),
-        );
-      }
+      // Check server status with retry logic and state management
+      await _handleServerOperation(
+        () async => await _currentService?.serverInfo(),
+        'Key server status',
+        // emitState: true (default) - Update UI with server status
+      );
     }
   }
 
   Future<bool> _ensureServerStatus() async {
+    if (_currentService == null) {
+      await _initialize();
+    }
     await keyServerStatus();
     return state.keyServerUp;
   }
@@ -96,38 +140,47 @@ class KeychainCubit extends Cubit<KeychainState> {
   void clickObscure() => emit(state.copyWith(obscure: !state.obscure));
 
   Future<void> clickRecover() async {
-    if (state.backupKey.isNotEmpty) {
-      emit(
-        state.copyWith(
+    try {
+      if (state.backupKey.isNotEmpty) {
+        emit(state.copyWith(
           loading: false,
           keySecretState: KeySecretState.recovered,
-        ),
-      );
-      return;
-    }
-    if (!await _ensureServerStatus()) return;
+        ));
+        return;
+      }
 
-    try {
+      if (!await _ensureServerStatus()) return;
+
+      final service = _currentService;
+      final backup = state.backupData;
+
+      if (service == null || backup == null) {
+        emit(state.copyWith(
+          error: 'Missing backup data or service connection',
+          loading: false,
+        ));
+        return;
+      }
+
       emit(state.copyWith(loading: true, error: ''));
 
-      final backupKey = await _keyService.fetchBackupKey(
-        backupId: state.backupId,
+      final backupKey = await service.fetchBackupKey(
+        backupId: backup.id,
         password: state.secret,
-        salt: state.backupSalt,
+        salt: HEX.decode(backup.salt),
       );
 
-      emit(
-        state.copyWith(
-          backupKey: HEX.encode(backupKey),
-          loading: false,
-          keySecretState: KeySecretState.recovered,
-        ),
-      );
+      emit(state.copyWith(
+        backupKey: HEX.encode(backupKey),
+        loading: false,
+        keySecretState: KeySecretState.recovered,
+      ));
     } catch (e) {
-      debugPrint("Failed to recover backup key: $e");
-      emit(
-        state.copyWith(loading: false, error: "Failed to recover backup key"),
-      );
+      emit(state.copyWith(
+        error: 'Failed to recover backup key',
+        loading: false,
+      ));
+      return;
     }
   }
 
@@ -161,30 +214,39 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   Future<void> deleteBackupKey() async {
-    if (!await _ensureServerStatus()) return;
-    if (!state.canDeleteKey) return;
     try {
+      if (!await _ensureServerStatus()) return;
+      if (!state.canDeleteKey) return;
+
+      final service = _currentService;
+      final backup = state.backupData;
+
+      if (service == null || backup == null) {
+        emit(state.copyWith(
+          error: 'Missing backup data or service connection',
+          loading: false,
+        ));
+        return;
+      }
+
       emit(state.copyWith(loading: true, error: ''));
 
-      await _keyService.trashBackupKey(
-        backupId: state.backupId,
-        password: state.secret,
-        salt: state.backupSalt,
-      );
-      emit(
-        state.copyWith(
-          loading: false,
-          keySecretState: KeySecretState.deleted,
-        ),
-      );
+      await service.trashBackupKey(
+          backupId: backup.id,
+          password: state.secret,
+          salt: HEX.decode(backup.salt));
+
+      emit(state.copyWith(
+        loading: false,
+        keySecretState: KeySecretState.deleted,
+      ));
+      return;
     } catch (e) {
-      debugPrint('Failed to delete backup key: $e');
-      emit(
-        state.copyWith(
-          loading: false,
-          error: 'Failed to delete backup key',
-        ),
-      );
+      emit(state.copyWith(
+        error: 'Failed to delete backup key',
+        loading: false,
+      ));
+      return;
     }
   }
 
@@ -194,47 +256,60 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   Future<void> secureKey() async {
-    if (!await _ensureServerStatus()) return;
     try {
-      await _keyService.storeBackupKey(
-        backupId: state.backupId,
+      if (!await _ensureServerStatus()) return;
+
+      final service = _currentService;
+      final backup = state.backupData;
+
+      if (service == null || backup == null) {
+        emit(state.copyWith(
+          error: 'Missing backup data or service connection',
+          loading: false,
+        ));
+        return;
+      }
+
+      if (state.backupKey.isEmpty || state.tempSecret.isEmpty) {
+        emit(state.copyWith(
+          error: 'Missing backup key or password',
+          loading: false,
+        ));
+        return;
+      }
+
+      emit(state.copyWith(loading: true, error: ''));
+      await service.storeBackupKey(
+        backupId: backup.id,
         password: state.tempSecret,
         backupKey: HEX.decode(state.backupKey),
-        salt: state.backupSalt,
+        salt: HEX.decode(backup.salt),
       );
-      emit(
-        state.copyWith(loading: false, keySecretState: KeySecretState.saved),
-      );
+
+      emit(state.copyWith(
+        loading: false,
+        keySecretState: KeySecretState.saved,
+      ));
     } catch (e) {
-      debugPrint('Failed to store backup key on server: $e');
-      emit(
-        state.copyWith(
-          loading: false,
-          error: 'Failed to store backup key on server',
-        ),
-      );
+      emit(state.copyWith(
+        loading: false,
+        error: 'Failed to store backup key',
+      ));
+      return;
     }
   }
 
-  void setBackupId(String id) {
-    if (id == state.backupId) return; // Avoid duplicate state
-    emit(state.copyWith(backupId: id));
-  }
-
-  void setChainState(
+  void updateChainState(
     KeyChainPageState keyChainPageState,
-    String backupId,
     String? backupKey,
-    String backupSalt,
+    BullBackup? backupData,
   ) {
     emit(
       state.copyWith(
-        pageState: keyChainPageState,
-        originalPageState: keyChainPageState, // Store original state
-        backupKey: backupKey ?? '',
-        backupId: backupId,
-        backupSalt: HEX.decode(backupSalt),
-      ),
+          pageState: keyChainPageState,
+          originalPageState: keyChainPageState, // Store original state
+          backupKey: backupKey ?? '',
+          backupData: backupData),
     );
   }
 
@@ -264,5 +339,55 @@ class KeychainCubit extends Cubit<KeychainState> {
         isSecretConfirmed: false,
       ),
     );
+  }
+
+  @override
+  Future<void> close() {
+    // Don't dispose of the connection manager here since it's shared
+    return super.close();
+  }
+
+  /// Handles server operations with retry logic and state management
+  ///
+  /// Returns the operation result or null if all attempts fail
+  /// Updates keyServerUp status based on operation success/failure when emitState is true
+  /// Will attempt the operation multiple times with delay between attempts
+  Future<T?> _handleServerOperation<T>(
+    Future<T> Function() operation,
+    String operationName, {
+    bool emitState = true,
+    int maxAttempts = maxRetries,
+    Duration? delay,
+  }) async {
+    if (emitState) emit(state.copyWith(loading: true, error: ''));
+
+    for (var attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        final result = await operation();
+        if (emitState) {
+          emit(state.copyWith(keyServerUp: true, loading: false));
+        }
+        return result;
+      } catch (e) {
+        final isLastAttempt = attempt == maxAttempts - 1;
+        debugPrint(isLastAttempt
+            ? '$operationName failed after $maxAttempts attempts: $e'
+            : 'Retrying $operationName (${attempt + 1}/$maxAttempts)');
+
+        if (isLastAttempt) {
+          if (emitState) {
+            emit(state.copyWith(
+              keyServerUp: false,
+              loading: false,
+              error:
+                  'Unable to complete $operationName. Please check your connection.',
+            ));
+          }
+          return null;
+        }
+        await Future.delayed(delay ?? retryDelay);
+      }
+    }
+    return null;
   }
 }
