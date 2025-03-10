@@ -40,7 +40,7 @@ class PayjoinServiceImpl implements PayjoinService {
       _payjoinStreamController.stream.asBroadcastStream();
 
   @override
-  Future<Payjoin> createPayjoinReceiver({
+  Future<PayjoinReceiver> createPayjoinReceiver({
     required String walletId,
     required String address,
     required bool isTestnet,
@@ -61,7 +61,7 @@ class PayjoinServiceImpl implements PayjoinService {
   }
 
   @override
-  Future<Payjoin> createPayjoinSender({
+  Future<PayjoinSender> createPayjoinSender({
     required String walletId,
     required String bip21,
     required String originalPsbt,

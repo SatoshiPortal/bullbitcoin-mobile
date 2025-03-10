@@ -51,7 +51,8 @@ abstract class PdkDataSource {
 }
 
 class PdkDataSourceImpl implements PdkDataSource {
-  final String _ohttpRelayUrl;
+  static const String ohttpRelayUrl = 'https://pj.bobspacebkk.com';
+
   final String _payjoinDirectoryUrl;
   final Dio _dio;
   final KeyValueStorageDataSource<String> _storage;
@@ -65,17 +66,18 @@ class PdkDataSourceImpl implements PdkDataSource {
   Isolate? _sendersIsolate;
   SendPort? _receiversIsolatePort;
   SendPort? _sendersIsolatePort;
-  final Duration _pollingInterval = const Duration(seconds: 5);
+  final Completer _receiversIsolateReady;
+  final Completer _sendersIsolateReady;
 
   PdkDataSourceImpl({
-    String ohttpRelayUrl = 'https://pj.bobspacebkk.com',
     String payjoinDirectoryUrl = 'https://payjo.in',
     required Dio dio,
     required KeyValueStorageDataSource<String> storage,
-  })  : _ohttpRelayUrl = ohttpRelayUrl,
-        _payjoinDirectoryUrl = payjoinDirectoryUrl,
+  })  : _payjoinDirectoryUrl = payjoinDirectoryUrl,
         _dio = dio,
-        _storage = storage {
+        _storage = storage,
+        _receiversIsolateReady = Completer(),
+        _sendersIsolateReady = Completer() {
     _resumePayjoins();
   }
 
@@ -97,7 +99,7 @@ class PdkDataSourceImpl implements PdkDataSource {
   }) async {
     try {
       final payjoinDirectory = await Url.fromStr(_payjoinDirectoryUrl);
-      final ohttpRelay = await Url.fromStr(_ohttpRelayUrl);
+      final ohttpRelay = await Url.fromStr(ohttpRelayUrl);
       final ohttpKeys = await fetchOhttpKeys(
         ohttpRelay: ohttpRelay,
         payjoinDirectory: payjoinDirectory,
@@ -113,26 +115,25 @@ class PdkDataSourceImpl implements PdkDataSource {
             expireAfterSec == null ? null : BigInt.from(expireAfterSec),
       );
 
-      final pjUrl = await receiver.pjUrl();
-      final receiverJson = receiver.toJson();
-
-      // Start listening for a payjoin request from the sender in an isolate
-      if (_receiversIsolate == null) {
-        await _startReceiversIsolate();
-      }
-      // We can just send the pdk receiver json, since it contains the id and
-      //  so everything we need to obtain the model as well.
-      _receiversIsolatePort?.send(receiverJson);
-
       // Create and store the model to keep track of the payjoin session
       final model = PdkPayjoinModel.receiver(
         id: receiver.id(),
-        receiver: receiverJson,
+        receiver: receiver.toJson(),
         walletId: walletId,
-        pjUrl: pjUrl.asString(),
+        pjUri: receiver.pjUriBuilder().build().asString(),
         maxFeeRateSatPerVb: maxFeeRateSatPerVb,
       ) as PdkPayjoinReceiverModel;
       await _store(model);
+
+      // Start listening for a payjoin request from the sender in an isolate
+      if (_receiversIsolate == null) {
+        await _spawnReceiversIsolate();
+      }
+      // Make sure the isolate is ready and so messages can be send over the port
+      await _receiversIsolateReady.future;
+      // We send the model to the isolate so the isolate has all the information
+      //  it needs.
+      _receiversIsolatePort?.send(model.toJson());
 
       return model;
     } catch (e) {
@@ -179,13 +180,12 @@ class PdkDataSourceImpl implements PdkDataSource {
 
     // Start listening for a payjoin proposal from the receiver in an isolate
     if (_sendersIsolate == null) {
-      await _startSendersIsolate();
+      await _spawnSendersIsolate();
     }
-    // We should send the PdkPayjoinSenderModel json to the senders isolate,
-    //  since just the pdk sender json does not contain the uri to identify
-    //  the payjoin and retrieve the model
-    final modelJson = jsonEncode(model.toJson());
-    _sendersIsolatePort?.send(modelJson);
+    // Wait until the senders isolate is set to send messages to the port
+    await _sendersIsolateReady.future;
+    // Send the model so the isolate has all the info about the payjoin
+    _sendersIsolatePort?.send(model.toJson());
 
     return model;
   }
@@ -240,7 +240,7 @@ class PdkDataSourceImpl implements PdkDataSource {
     }
 
     final receiver = Receiver.fromJson(model.receiver);
-    final request = await _getRequest(receiver: receiver);
+    final request = await getRequest(receiver: receiver, dio: _dio);
 
     if (request == null) {
       throw Exception('No request found');
@@ -350,87 +350,95 @@ class PdkDataSourceImpl implements PdkDataSource {
   }
 
   /// Starts the isolate to listen for payjoin requests.
-  Future<void> _startReceiversIsolate() async {
+  Future<void> _spawnReceiversIsolate() async {
     // Receive isolate
     final receivePort = ReceivePort();
-    _receiversIsolate =
-        await Isolate.spawn(_receiversIsolateEntryPoint, receivePort.sendPort);
-    _receiversIsolatePort = await receivePort.first as SendPort;
 
-    // Listen for payjoin requests from the receive isolate
-    receivePort.listen((data) async {
-      final id = data as String;
-      final model = await get(id);
-      if (model != null) {
-        _payjoinRequestedController.add(model as PdkPayjoinReceiverModel);
+    // Listen to messages from the receive isolate
+    receivePort.listen((message) async {
+      if (message is SendPort) {
+        _receiversIsolatePort = message;
+        _receiversIsolateReady.complete();
+      } else if (message is Map<String, dynamic>) {
+        final model = PdkPayjoinReceiverModel.fromJson(message);
+        // Store the model received from the isolate
+        await _store(model);
+        // Send it to the higher repository layers for processing
+        _payjoinRequestedController.add(model);
       }
     });
+
+    // Spawn the isolate
+    _receiversIsolate =
+        await Isolate.spawn(_receiversIsolateEntryPoint, receivePort.sendPort);
   }
 
   /// Starts the isolate to request and listen for payjoin proposals.
-  Future<void> _startSendersIsolate() async {
+  Future<void> _spawnSendersIsolate() async {
     // Senders isolate
     final receivePort = ReceivePort();
-    _sendersIsolate =
-        await Isolate.spawn(_sendersIsolateEntryPoint, receivePort.sendPort);
-    _sendersIsolatePort = await receivePort.first as SendPort;
 
-    // Listen for payjoin proposals from the senders isolate
-    receivePort.listen((data) async {
-      final uri = data as String;
-      final model = await get(uri);
-      if (model != null) {
-        _proposalSentController.add(model as PdkPayjoinSenderModel);
+    // Listen for messages from the senders isolate
+    receivePort.listen((message) async {
+      if (message is SendPort) {
+        _sendersIsolatePort = message;
+        _sendersIsolateReady.complete();
+      } else if (message is Map<String, dynamic>) {
+        final model = PdkPayjoinSenderModel.fromJson(message);
+        // Store the model received from the isolate
+        await _store(model);
+        // Send it to the higher repository layers for processing
+        _proposalSentController.add(model);
       }
     });
+
+    _sendersIsolate =
+        await Isolate.spawn(_sendersIsolateEntryPoint, receivePort.sendPort);
   }
 
-  Future<void> _receiversIsolateEntryPoint(SendPort sendPort) async {
+  static Future<void> _receiversIsolateEntryPoint(SendPort sendPort) async {
+    debugPrint('[Isolate] Started _receiversIsolateEntryPoint');
     // Initialize core library in the isolate too for the native pdk library
     await core.init();
 
     final receivePort = ReceivePort();
     sendPort.send(receivePort.sendPort);
-    final Map<String, Receiver> receivers = {};
+    final Map<String, PdkPayjoinReceiverModel> receiverModels = {};
 
     // Listen for and register new receivers sent from the main isolate
     receivePort.listen((data) async {
-      final receiverJson = data as String;
-      final receiver = Receiver.fromJson(receiverJson);
-      receivers[receiver.id()] = receiver;
+      debugPrint('Received data in receivers isolate: $data');
+      final receiverModel =
+          PdkPayjoinReceiverModel.fromJson(data as Map<String, dynamic>);
+      receiverModels[receiverModel.id] = receiverModel;
     });
 
+    final dio = Dio();
     Timer.periodic(
-      _pollingInterval,
+      const Duration(seconds: 5),
       (Timer timer) async {
-        for (final receiver in receivers.values) {
-          final id = receiver.id();
+        for (final receiverModel in receiverModels.values) {
+          final id = receiverModel.id;
+          final receiver = Receiver.fromJson(receiverModel.receiver);
           try {
-            final request = await _getRequest(receiver: receiver);
+            final request = await getRequest(receiver: receiver, dio: dio);
             if (request != null) {
-              final model = await get(id) as PdkPayjoinReceiverModel?;
-              if (model == null) {
-                throw PdkPayjoinNotFoundException(
-                  'Payjoin receiver with id $id not found',
-                );
-              }
-
               // The original tx bytes are needed in the main isolate for
-              //  further processing so extract them here and store them through
+              //  further processing so extract them here and pass them through
               //  the model
               final originalTxBytes =
                   await request.extractTxToScheduleBroadcast();
-              final updatedModel = model.copyWith(
+              final updatedModel = receiverModel.copyWith(
                 receiver: receiver.toJson(),
                 originalTxBytes: originalTxBytes,
               );
-              await _store(updatedModel);
+              final updatedModelJson = jsonEncode(updatedModel.toJson());
 
               // Notify the main isolate so it can be processed further
-              sendPort.send(id);
+              sendPort.send(updatedModelJson);
 
               // Remove the receiver from the map
-              receivers.remove(id);
+              receiverModels.remove(id);
             }
           } catch (e) {
             debugPrint(e.toString());
@@ -441,51 +449,50 @@ class PdkDataSourceImpl implements PdkDataSource {
     );
   }
 
-  Future<void> _sendersIsolateEntryPoint(SendPort sendPort) async {
+  static Future<void> _sendersIsolateEntryPoint(SendPort sendPort) async {
     // Initialize core library in the isolate too for the native pdk library
     await core.init();
 
     final receivePort = ReceivePort();
     sendPort.send(receivePort.sendPort);
+    final Map<String, PdkPayjoinSenderModel> senderModels = {};
     final Map<String, V2GetContext> senderContexts = {};
 
+    final dio = Dio();
     // Listen for and register new receivers sent from the main isolate
     receivePort.listen((data) async {
-      final senderModelJson =
-          jsonDecode(data as String) as Map<String, dynamic>;
-      final senderModel = PdkPayjoinSenderModel.fromJson(senderModelJson);
+      final senderModel =
+          PdkPayjoinSenderModel.fromJson(data as Map<String, dynamic>);
+      senderModels[senderModel.uri] = senderModel;
       final sender = Sender.fromJson(senderModel.sender);
-      final context = await _request(sender: sender);
+      final context = await PdkDataSourceImpl.request(sender: sender, dio: dio);
       senderContexts[senderModel.uri] = context;
     });
 
     Timer.periodic(
-      _pollingInterval,
+      const Duration(seconds: 5),
       (Timer timer) async {
-        for (final entry in senderContexts.entries) {
-          final uri = entry.key;
-          final context = entry.value;
+        for (final senderEntry in senderModels.entries) {
+          final uri = senderEntry.key;
+          final senderModel = senderEntry.value;
+          final context = senderContexts[uri]!;
           try {
-            final proposalPsbt = await _getProposalPsbt(context: context);
+            final proposalPsbt = await PdkDataSourceImpl.getProposalPsbt(
+              context: context,
+              dio: dio,
+            );
             if (proposalPsbt != null) {
-              final model = await get(uri) as PdkPayjoinSenderModel?;
-              if (model == null) {
-                throw PdkPayjoinNotFoundException(
-                  'Payjoin sender for uri $uri not found',
-                );
-              }
-
               // The proposal psbt is needed in the main isolate for
-              //  further processing so store it in the model
-              final updatedModel = model.copyWith(
+              //  further processing so send it through the model
+              final updatedModel = senderModel.copyWith(
                 proposalPsbt: proposalPsbt,
               );
-              await _store(updatedModel);
 
               // Notify the main isolate so the payjoin can be processed further
-              sendPort.send(uri);
+              sendPort.send(updatedModel.toJson());
 
               // Remove the sender from the map
+              senderModels.remove(uri);
               senderContexts.remove(uri);
             }
           } catch (e) {
@@ -497,11 +504,12 @@ class PdkDataSourceImpl implements PdkDataSource {
     );
   }
 
-  Future<UncheckedProposal?> _getRequest({
+  static Future<UncheckedProposal?> getRequest({
     required Receiver receiver,
+    required Dio dio,
   }) async {
     final (req, context) = await receiver.extractReq();
-    final ohttpResponse = await _dio.post(
+    final ohttpResponse = await dio.post(
       req.url.asString(),
       data: req.body,
       options: Options(
@@ -539,14 +547,15 @@ class PdkDataSourceImpl implements PdkDataSource {
     );
   }
 
-  Future<V2GetContext> _request({
+  static Future<V2GetContext> request({
     required Sender sender,
+    required Dio dio,
   }) async {
     final (req, context) = await sender.extractV2(
-      ohttpProxyUrl: await Url.fromStr(_ohttpRelayUrl),
+      ohttpProxyUrl: await Url.fromStr(ohttpRelayUrl),
     );
 
-    final res = await _dio.post(
+    final res = await dio.post(
       req.url.asString(),
       data: req.body,
       options: Options(
@@ -564,11 +573,12 @@ class PdkDataSourceImpl implements PdkDataSource {
     return getCtx;
   }
 
-  Future<String?> _getProposalPsbt({required V2GetContext context}) async {
+  static Future<String?> getProposalPsbt(
+      {required V2GetContext context, required Dio dio}) async {
     final (req, reqCtx) =
-        await context.extractReq(ohttpRelay: await Url.fromStr(_ohttpRelayUrl));
+        await context.extractReq(ohttpRelay: await Url.fromStr(ohttpRelayUrl));
 
-    final res = await _dio.post(
+    final res = await dio.post(
       req.url.asString(),
       data: req.body,
       options: Options(
@@ -600,9 +610,10 @@ class PdkDataSourceImpl implements PdkDataSource {
           //  in the isolate.
           if (_receiversIsolate == null) {
             // Start the isolate if it is not running yet
-            await _startReceiversIsolate();
+            await _spawnReceiversIsolate();
           }
-          _receiversIsolatePort?.send(model.receiver);
+          await _receiversIsolateReady.future;
+          _receiversIsolatePort?.send(model.toJson());
         } else if (model.proposalPsbt == null) {
           // If the original tx bytes are present but the proposal psbt is not,
           //  it means the receiver has received a payjoin request and it should
@@ -618,10 +629,10 @@ class PdkDataSourceImpl implements PdkDataSource {
           //  isolate.
           if (_sendersIsolate == null) {
             // Start the isolate if it is not running yet
-            await _startSendersIsolate();
+            await _spawnSendersIsolate();
           }
-          final modelJson = jsonEncode(model.toJson());
-          _sendersIsolatePort?.send(modelJson);
+          await _sendersIsolateReady.future;
+          _sendersIsolatePort?.send(model.toJson());
         } else {
           // If the proposal psbt is present, it means a payjoin proposal was
           //  sent by the receiver already and it should be processed and

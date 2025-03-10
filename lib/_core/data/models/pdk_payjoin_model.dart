@@ -13,7 +13,7 @@ sealed class PdkPayjoinModel with _$PdkPayjoinModel {
     required String id,
     required String receiver,
     required String walletId,
-    required String pjUrl,
+    required String pjUri,
     required BigInt maxFeeRateSatPerVb,
     @Uint8ListJsonConverter() Uint8List? originalTxBytes,
     String? proposalPsbt,
@@ -42,11 +42,12 @@ sealed class PdkPayjoinModel with _$PdkPayjoinModel {
             ? PayjoinStatus.expired
             : proposalPsbt != null
                 ? PayjoinStatus.proposed
-                : PayjoinStatus.requested;
+                : PayjoinStatus.started;
     return map(
       receiver: (model) => Payjoin.receiver(
         status: status,
         id: model.id,
+        pjUri: model.pjUri,
         walletId: model.walletId,
         originalTxBytes: model.originalTxBytes,
         proposalPsbt: model.proposalPsbt,

@@ -13,7 +13,6 @@ import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/payjoin_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_repository.dart';

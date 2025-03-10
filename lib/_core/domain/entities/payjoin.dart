@@ -4,7 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'payjoin.freezed.dart';
 
-enum PayjoinStatus { requested, proposed, completed, expired }
+enum PayjoinStatus { started, requested, proposed, completed, expired }
 
 @freezed
 sealed class Payjoin with _$Payjoin {
@@ -12,6 +12,7 @@ sealed class Payjoin with _$Payjoin {
     @Default(PayjoinStatus.requested) PayjoinStatus status,
     required String id,
     required String walletId,
+    required String pjUri,
     Uint8List? originalTxBytes,
     String? proposalPsbt,
   }) = PayjoinReceiver;
@@ -26,7 +27,7 @@ sealed class Payjoin with _$Payjoin {
   const Payjoin._();
 
   String get id => when(
-        receiver: (_, id, __, ___, ____) => id,
+        receiver: (_, id, __, ___, ____, _____) => id,
         sender: (_, uri, __, ___, ____, _____) => uri,
       );
 

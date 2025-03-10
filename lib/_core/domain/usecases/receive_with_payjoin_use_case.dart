@@ -7,7 +7,7 @@ class ReceiveWithPayjoinUseCase {
   const ReceiveWithPayjoinUseCase({required PayjoinService payjoinService})
       : _payjoinService = payjoinService;
 
-  Future<Payjoin> execute({
+  Future<PayjoinReceiver> execute({
     required String walletId,
     required String address,
     required bool isTestnet,

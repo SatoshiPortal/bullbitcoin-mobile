@@ -313,24 +313,25 @@ class BdkWalletRepositoryImpl
 
   @override
   Future<bool> isAddressUsed(String address) async {
-    final txOutputLists = await Future.wait(
-      _wallet.listTransactions(includeRaw: false).map((tx) async {
-        return await tx.transaction?.output() ?? <bdk.TxOut>[];
-      }),
-    );
+    final transactions = _wallet.listTransactions(includeRaw: false);
 
-    final outputs = txOutputLists.expand((list) => list).toList();
-    final isUsed = await Future.any(
-      outputs.map((output) async {
-        final generatedAddress = await bdk.Address.fromScript(
-          script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
-          network: _wallet.network(),
-        );
-        return generatedAddress.asString() == address;
-      }),
-    ).catchError((_) => false); // To handle empty lists
+    for (final tx in transactions) {
+      final txOutputs = await tx.transaction?.output();
+      if (txOutputs != null) {
+        for (final output in txOutputs) {
+          final generatedAddress = await bdk.Address.fromScript(
+            script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
+            network: _wallet.network(),
+          );
 
-    return isUsed;
+          if (generatedAddress.asString() == address) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   @override
