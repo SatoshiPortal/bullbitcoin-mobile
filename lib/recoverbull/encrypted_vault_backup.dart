@@ -138,7 +138,7 @@ class _EncryptedVaultBackupPageState extends State<EncryptedVaultBackupPage> {
                   ciphertext: '',
                   salt: state.backupSalt,
                 ),
-                KeyChainPageState.enter.name.toLowerCase()
+                KeyChainFlow.enter.name.toLowerCase()
               ),
             );
             _cubit.clearError();
@@ -597,7 +597,7 @@ class _RecoveredBackupInfoPageState extends State<RecoveredBackupInfoPage> {
                         extra: (
                           '',
                           widget.recoveredBackup,
-                          KeyChainPageState.recovery.name.toLowerCase()
+                          KeyChainFlow.recovery.name.toLowerCase()
                         ),
                       ),
                     },
