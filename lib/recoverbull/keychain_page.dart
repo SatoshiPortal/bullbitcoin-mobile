@@ -666,7 +666,6 @@ class _SetButton extends StatelessWidget with _ButtonLogicMixin {
                 'Set ${authInputType == AuthInputType.pin ? 'PIN' : 'password'}',
             disabled: !canStoreKey,
             onPressed: () {
-              context.read<KeychainCubit>().keyServerStatus();
               if (canStoreKey) context.read<KeychainCubit>().confirmPressed();
             },
           ),
@@ -691,7 +690,6 @@ class _ConfirmButton extends StatelessWidget with _ButtonLogicMixin {
     return BBButton.withColour(
       fillWidth: true,
       onPressed: () {
-        context.read<KeychainCubit>().keyServerStatus();
         if (canStoreKey) context.read<KeychainCubit>().confirmPressed();
       },
       leftIcon: Icons.arrow_forward,
