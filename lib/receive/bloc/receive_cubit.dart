@@ -203,8 +203,7 @@ class ReceiveCubit extends Cubit<ReceiveState> {
 
     emit(
       state.copyWith(
-        loadingAddress: state
-            .isPayjoin, // Keep loading while the payjoin receiver is being initialized, if it's enabled.
+        loadingAddress: false,
         errLoadingAddress: '',
       ),
     );
