@@ -175,25 +175,6 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
     super.dispose();
   }
 
-  Future<void> _handleBackupAction(BuildContext context) async {
-    if (widget.backupKey.isNotEmpty) {
-      _showBackupKeyDialog(context, widget.backupKey);
-    } else {
-      _navigateToKeychain(context);
-    }
-  }
-
-  void _navigateToKeychain(BuildContext context) {
-    context.push(
-      '/wallet-settings/backup-settings/keychain',
-      extra: (
-        '',
-        widget.recoveredBackup,
-        KeyChainPageState.download.name.toLowerCase(),
-      ),
-    );
-  }
-
   void _showBackupKeyDialog(BuildContext context, String backupKey) {
     showDialog(
       context: context,
@@ -346,8 +327,7 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
                                     extra: (
                                       '',
                                       widget.recoveredBackup,
-                                      KeyChainPageState.delete.name
-                                          .toLowerCase()
+                                      KeyChainFlow.delete.name.toLowerCase()
                                     ),
                                   ),
                                 ),
