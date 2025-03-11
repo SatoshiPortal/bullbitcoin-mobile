@@ -46,10 +46,10 @@ class _KeychainBackupPageState extends State<KeychainBackupPage> {
     super.initState();
     // Initialize state once during widget creation
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<KeychainCubit>().updateChainState(
-            widget._pState,
-            widget.backupKey,
-            widget.backup,
+      context.read<KeychainCubit>().updateState(
+            keyChainFlow: widget._pState,
+            backupKey: widget.backupKey,
+            backupData: widget.backup,
           );
     });
   }
