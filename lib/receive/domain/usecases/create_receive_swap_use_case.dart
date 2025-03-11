@@ -58,7 +58,7 @@ class CreateReceiveSwapUseCase {
             environment: environment,
             mnemonic: mnemonic.toString(),
             electrumUrl: ApiServiceConstants
-                .bbElectrumUrlPath, // TODO: check if this should be test or mainnet following the environment
+                .bbElectrumUrl, // TODO: check if this should be test or mainnet following the environment
           );
 
         case SwapType.lightningToLiquid:

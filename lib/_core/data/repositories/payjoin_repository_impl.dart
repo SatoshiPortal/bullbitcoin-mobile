@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/_core/data/datasources/bdk_blockchain_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/pdk_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/payjoin/payjoin_data_source.dart';
 import 'package:bb_mobile/_core/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/_core/data/models/pdk_input_pair_model.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
@@ -11,19 +11,20 @@ import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
-  final PdkDataSource _pdk;
+  final PayjoinDataSource _source;
 
   PayjoinRepositoryImpl({
-    required PdkDataSource pdk,
-  }) : _pdk = pdk;
+    required PayjoinDataSource payjoinDataSource,
+  }) : _source = payjoinDataSource;
 
   @override
   Stream<PayjoinReceiver> get requestsForReceivers =>
-      _pdk.requestsForReceivers.map(
+      _source.requestsForReceivers.map(
         (pdkPayjoin) => pdkPayjoin.toEntity() as PayjoinReceiver,
       );
   @override
-  Stream<PayjoinSender> get proposalsForSenders => _pdk.proposalsForSenders.map(
+  Stream<PayjoinSender> get proposalsForSenders =>
+      _source.proposalsForSenders.map(
         (pdkPayjoin) => pdkPayjoin.toEntity() as PayjoinSender,
       );
 
@@ -35,7 +36,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required BigInt maxFeeRateSatPerVb,
     int? expireAfterSec,
   }) async {
-    final model = await _pdk.createReceiver(
+    final model = await _source.createReceiver(
       walletId: walletId,
       address: address,
       isTestnet: isTestnet,
@@ -56,7 +57,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required double networkFeesSatPerVb,
   }) async {
     // Create the payjoin sender session
-    final model = await _pdk.createSender(
+    final model = await _source.createSender(
       walletId: walletId,
       bip21: bip21,
       originalPsbt: originalPsbt,
@@ -75,7 +76,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     int? limit,
     bool? completed,
   }) async {
-    final models = await _pdk.getAll();
+    final models = await _source.getAll();
 
     final payjoins = models
         .map(
@@ -97,7 +98,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     final pdkInputPairs =
         unspentUtxos.map((utxo) => PdkInputPairModel.fromUtxo(utxo)).toList();
 
-    final model = await _pdk.processRequest(
+    final model = await _source.processRequest(
       id: id,
       hasOwnedInputs: hasOwnedInputs,
       hasReceiverOutput: hasReceiverOutput,
@@ -120,7 +121,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     final txId = await blockchain.broadcastPsbt(finalizedPsbt);
 
-    final model = await _pdk.completeSender(
+    final model = await _source.completeSender(
       payjoinId,
       txId: txId,
     );

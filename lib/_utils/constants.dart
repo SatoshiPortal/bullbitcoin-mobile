@@ -34,11 +34,11 @@ class ApiServiceConstants {
   // final bbExchangeUrlPath = 'pricer.bullbitcoin.dev/api';
 
   // Bitcoin Electrum servers
-  static const bbElectrumUrlPath = 'wes.bullbitcoin.com:50002';
-  static const publicElectrumUrlPath = 'blockstream.info:700';
+  static const bbElectrumUrl = 'ssl://wes.bullbitcoin.com:50002';
+  static const publicElectrumUrl = 'ssl://blockstream.info:700';
   // BB test currently not operational
-  static const bbElectrumTestUrlPath = 'wes.bullbitcoin.com:60002';
-  static const publicElectrumTestUrlPath = 'blockstream.info:993';
+  static const bbElectrumTestUrl = 'ssl://wes.bullbitcoin.com:60002';
+  static const publicElectrumTestUrl = 'ssl://blockstream.info:993';
 
   // Liquid Electrum servers
   static const bbLiquidElectrumUrlPath = 'les.bullbitcoin.com:995';

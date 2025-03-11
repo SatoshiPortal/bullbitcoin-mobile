@@ -7,6 +7,7 @@ import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_core/domain/services/payjoin_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
+import 'package:flutter/material.dart';
 
 class PayjoinServiceImpl implements PayjoinService {
   final PayjoinRepository _payjoin;
@@ -80,6 +81,7 @@ class PayjoinServiceImpl implements PayjoinService {
   }
 
   Future<void> _processPayjoinRequest(PayjoinReceiver payjoin) async {
+    debugPrint('Processing payjoin request: $payjoin}');
     final walletId = payjoin.walletId;
     final unspentUtxos =
         await _walletManager.getUnspentUtxos(walletId: walletId);
@@ -117,17 +119,21 @@ class PayjoinServiceImpl implements PayjoinService {
       return;
     }
 
-    final finalizedPsbt = await _walletManager.signPsbt(
-      walletId: walletId,
-      psbt: proposalPsbt,
-    );
+    try {
+      final finalizedPsbt = await _walletManager.signPsbt(
+        walletId: walletId,
+        psbt: proposalPsbt,
+      );
 
-    final processedPayjoin = await _payjoin.broadcastPsbt(
-      payjoinId: payjoin.id,
-      finalizedPsbt: finalizedPsbt,
-      electrumServer: electrumServer,
-    );
-
-    _payjoinStreamController.add(processedPayjoin);
+      final processedPayjoin = await _payjoin.broadcastPsbt(
+        payjoinId: payjoin.id,
+        finalizedPsbt: finalizedPsbt,
+        electrumServer: electrumServer,
+      );
+      _payjoinStreamController.add(processedPayjoin);
+    } catch (e) {
+      // TODO: Handle this, maybe by sending the original transaction instead
+      debugPrint('Error broadcasting payjoin: $e');
+    }
   }
 }

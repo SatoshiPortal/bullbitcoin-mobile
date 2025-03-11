@@ -36,16 +36,15 @@ sealed class PdkPayjoinModel with _$PdkPayjoinModel {
       _$PdkPayjoinModelFromJson(json);
 
   Payjoin toEntity() {
-    final status = isCompleted
-        ? PayjoinStatus.completed
-        : isExpired
-            ? PayjoinStatus.expired
-            : proposalPsbt != null
-                ? PayjoinStatus.proposed
-                : PayjoinStatus.started;
     return map(
       receiver: (model) => Payjoin.receiver(
-        status: status,
+        status: isCompleted
+            ? PayjoinStatus.completed
+            : isExpired
+                ? PayjoinStatus.expired
+                : proposalPsbt != null
+                    ? PayjoinStatus.proposed
+                    : PayjoinStatus.started,
         id: model.id,
         pjUri: model.pjUri,
         walletId: model.walletId,
@@ -53,7 +52,13 @@ sealed class PdkPayjoinModel with _$PdkPayjoinModel {
         proposalPsbt: model.proposalPsbt,
       ),
       sender: (model) => Payjoin.sender(
-        status: status,
+        status: isCompleted
+            ? PayjoinStatus.completed
+            : isExpired
+                ? PayjoinStatus.expired
+                : proposalPsbt != null
+                    ? PayjoinStatus.proposed
+                    : PayjoinStatus.requested,
         uri: model.uri,
         walletId: model.walletId,
         originalPsbt: model.originalPsbt,

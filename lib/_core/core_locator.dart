@@ -4,10 +4,10 @@ import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/descriptor_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/exchange_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_stores/impl/hive_storage_datasource_impl.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_stores/impl/secure_storage_data_source_impl.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/pdk_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/payjoin/impl/pdk_payjoin_data_source_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/seed_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
@@ -158,9 +158,8 @@ class CoreLocator {
     locator.registerLazySingleton<PayjoinService>(
       () => PayjoinServiceImpl(
         payjoinRepository: PayjoinRepositoryImpl(
-          pdk: PdkDataSourceImpl(
-            dio:
-                Dio(), // TODO: We could add a Dio instance with the payjoin directory URL here already
+          payjoinDataSource: PdkPayjoinDataSourceImpl(
+            dio: Dio(),
             storage: HiveStorageDataSourceImpl<String>(pdkPayjoinsBox),
           ),
         ),

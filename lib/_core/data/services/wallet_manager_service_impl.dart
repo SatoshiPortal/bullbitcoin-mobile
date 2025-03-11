@@ -370,8 +370,39 @@ class WalletManagerServiceImpl implements WalletManagerService {
   }
 
   @override
-  Future<String> signPsbt(
-      {required String walletId, required String psbt}) async {
+  Future<String> buildPsbt({
+    required String walletId,
+    required String address,
+    required BigInt amountSat,
+    BigInt? absoluteFeeSat,
+    double? feeRateSatPerVb,
+  }) async {
+    final wallet = await _getWalletWithPrivateKey(walletId);
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    if (wallet is BitcoinWalletRepository) {
+      final bitcoinWallet = wallet as BitcoinWalletRepository;
+      return bitcoinWallet.buildPsbt(
+        address: address,
+        amountSat: amountSat,
+        absoluteFeeSat: absoluteFeeSat,
+        feeRateSatPerVb: feeRateSatPerVb,
+      );
+    }
+
+    throw UnsupportedError(
+      'Ability to build a PSBT is only supported for Bitcoin wallets',
+    );
+  }
+
+  @override
+  Future<String> signPsbt({
+    required String walletId,
+    required String psbt,
+  }) async {
     final wallet = await _getWalletWithPrivateKey(walletId);
 
     if (wallet == null) {

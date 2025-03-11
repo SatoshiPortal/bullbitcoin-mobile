@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/_core/data/datasources/bip32_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/descriptor_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';

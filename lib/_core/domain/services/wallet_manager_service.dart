@@ -45,6 +45,12 @@ abstract class WalletManagerService {
     required String walletId,
     required Uint8List scriptBytes,
   });
-
+  Future<String> buildPsbt({
+    required String walletId,
+    required String address,
+    required BigInt amountSat,
+    BigInt? absoluteFeeSat,
+    double? feeRateSatPerVb,
+  });
   Future<String> signPsbt({required String walletId, required String psbt});
 }
