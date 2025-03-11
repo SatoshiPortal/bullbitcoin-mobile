@@ -134,8 +134,32 @@ class _Screen extends StatelessWidget {
           listenWhen: (previous, current) =>
               previous.isSecretConfirmed != current.isSecretConfirmed ||
               previous.secretStatus != current.secretStatus ||
+              (previous.torStatus != current.torStatus &&
+                  current.torStatus != TorStatus.connecting) ||
               previous.error != current.error,
           listener: (context, state) {
+            // Handle offline state only once
+            if (state.torStatus == TorStatus.offline &&
+                state.authInputType != AuthInputType.backupKey) {
+              context.read<KeychainCubit>().updatePageState(
+                    AuthInputType.backupKey,
+                    state.selectedKeyChainFlow,
+                  );
+              return;
+            }
+
+            // Only call secureKey if confirmed and not already processing
+            if (state.isSecretConfirmed &&
+                !state.loading &&
+                !state.hasError &&
+                state.secretStatus == SecretStatus.initial &&
+                state.torStatus == TorStatus.online) {
+              // Prevent multiple calls
+              if (!state.isSecretConfirmed) return;
+              context.read<KeychainCubit>().secureKey();
+              return; // Exit early after triggering secureKey
+            }
+
             if (state.selectedKeyChainFlow == KeyChainFlow.delete &&
                 state.secretStatus == SecretStatus.deleted &&
                 !state.loading &&
