@@ -24,6 +24,7 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
           } else if (state is AppStartupLoadingInProgress) {
             return const OnboardingScreen(loading: true);
           } else if (state is AppStartupSuccess) {
+            if (!state.hasDefaultWallets) return const OnboardingScreen();
             return widget.app;
           } else if (state is AppStartupFailure) {
             // TODO: return a failure page
@@ -47,13 +48,15 @@ class AppStartupListener extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<AppStartupBloc, AppStartupState>(
       listenWhen: (previous, current) =>
-          current is AppStartupSuccess &&
-          current.isPinCodeSet &&
-          previous != current,
+          current is AppStartupSuccess && previous != current,
       listener: (context, state) {
         if (state is AppStartupSuccess && state.isPinCodeSet) {
           AppRouter.router.go(AppRoute.appUnlock.path);
         }
+
+        // if (state is AppStartupSuccess && !state.hasDefaultWallets) {
+        //   AppRouter.router.go(AppRoute.onboarding.path);
+        // }
       },
       child: child,
     );
