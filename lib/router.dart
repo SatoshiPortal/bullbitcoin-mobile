@@ -53,7 +53,7 @@ class AppRouter {
 
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: AppRoute.devStart.path,
+    initialLocation: AppRoute.home.path,
     routes: [
       GoRoute(
         name: AppRoute.home.name,

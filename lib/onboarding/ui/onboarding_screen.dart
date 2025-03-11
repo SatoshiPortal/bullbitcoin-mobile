@@ -11,7 +11,10 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class OnboardingScreen extends StatelessWidget {
-  const OnboardingScreen({super.key});
+  const OnboardingScreen({super.key, this.loading = false});
+
+  final bool loading;
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -45,18 +48,26 @@ class OnboardingScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const CreateWalletButton(),
-                          const Gap(10),
-                          BBButton.big(
-                            label: 'Recover Wallet Backup',
-                            bgColor: Colors.transparent,
-                            textColor: context.colour.onPrimary,
-                            iconData: Icons.history_edu,
-                            outlined: true,
-                            onPressed: () async {
-                              context.pushNamed(AppRoute.recoverWallet.name);
-                            },
-                          ),
+                          if (loading)
+                            Center(
+                              child: CircularProgressIndicator(
+                                color: context.colour.onPrimary,
+                              ),
+                            )
+                          else ...[
+                            const CreateWalletButton(),
+                            const Gap(10),
+                            BBButton.big(
+                              label: 'Recover Wallet Backup',
+                              bgColor: Colors.transparent,
+                              textColor: context.colour.onPrimary,
+                              iconData: Icons.history_edu,
+                              outlined: true,
+                              onPressed: () async {
+                                context.pushNamed(AppRoute.recoverWallet.name);
+                              },
+                            ),
+                          ],
                         ],
                       ),
                     ),

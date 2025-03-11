@@ -46,7 +46,6 @@ class AppStartupLocator {
         checkForExistingDefaultWalletsUseCase:
             locator<CheckForExistingDefaultWalletsUseCase>(),
         initExistingWalletsUseCase: locator<InitExistingWalletsUseCase>(),
-        createDefaultWalletsUseCase: locator<CreateDefaultWalletsUseCase>(),
       ),
     );
   }

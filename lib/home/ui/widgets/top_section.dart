@@ -42,8 +42,24 @@ class HomeTopSection extends StatelessWidget {
   }
 }
 
-class _UI extends StatelessWidget {
+class _UI extends StatefulWidget {
   const _UI();
+
+  @override
+  State<_UI> createState() => _UIState();
+}
+
+class _UIState extends State<_UI> {
+  late Image image;
+
+  @override
+  void initState() {
+    image = Image.asset(
+      Assets.images2.bgRed.path,
+      fit: BoxFit.fitHeight,
+    );
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,10 +68,7 @@ class _UI extends StatelessWidget {
       children: [
         Transform.rotate(
           angle: 3.141,
-          child: Image.asset(
-            Assets.images2.bgRed.path,
-            fit: BoxFit.fitHeight,
-          ),
+          child: image,
         ),
         const _Amounts(),
         const Positioned(
