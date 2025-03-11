@@ -34,35 +34,7 @@ class SwapAppListener extends StatelessWidget {
               current.updatedSwapTx != null &&
               current.updatedSwapTx!.showAlert(),
           listener: (context, state) {
-            final route = context.read<NavName>().state;
-            final isReceivePage = route == '/receive';
-            final isSendPage = route == '/send';
-            final isSwapReceivePage = route == '/swap-receive';
-            final isOnchainSwapReceivePage = route == '/onchain-swap-progress';
-            if (isReceivePage ||
-                isSendPage ||
-                isSwapReceivePage ||
-                isOnchainSwapReceivePage) {
-              return;
-            }
-
-            final swapTx = state.updatedSwapTx!;
-            final isReverse = swapTx.isReverse();
-
-            //TODO:DEBUG
-            if (swapTx.isChainSwap()) return;
-
-            final amt =
-                isReverse ? swapTx.recievableAmount()! : swapTx.outAmount;
-            final amtStr =
-                context.read<CurrencyCubit>().state.getAmountInUnits(amt);
-            final prefix = swapTx.actionPrefixStr();
-
-            showToastWidget(
-              position: ToastPosition.top,
-              AlertUI(text: '$prefix $amtStr'),
-              animationCurve: Curves.decelerate,
-            );
+            return;
           },
         ),
       ],
