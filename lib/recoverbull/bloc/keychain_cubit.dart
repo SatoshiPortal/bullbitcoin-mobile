@@ -162,6 +162,7 @@ class KeychainCubit extends Cubit<KeychainState> {
 
   void clearSensitive() => updateState(resetState: true);
 
+  void clearError() => emit(state.copyWith(error: ''));
   void clickObscure() => emit(state.copyWith(obscure: !state.obscure));
 
   Future<void> clickRecover() async {
