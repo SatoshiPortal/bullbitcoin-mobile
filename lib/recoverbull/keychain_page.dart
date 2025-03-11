@@ -217,19 +217,6 @@ class _Screen extends StatelessWidget {
             }
           },
         ),
-        BlocListener<KeychainCubit, KeychainState>(
-          listenWhen: (previous, current) =>
-              previous.keyServerUp != current.keyServerUp,
-          listener: (context, state) {
-            if (!state.keyServerUp &&
-                state.authInputType != AuthInputType.backupKey) {
-              context.read<KeychainCubit>().updatePageState(
-                    AuthInputType.backupKey,
-                    state.selectedKeyChainFlow,
-                  );
-            }
-          },
-        ),
       ],
       child: BlocBuilder<KeychainCubit, KeychainState>(
         builder: (context, state) {
@@ -1019,8 +1006,10 @@ class _TitleText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (inputState, type) = context.select((KeychainCubit x) =>
-        (x.state.selectedKeyChainFlow, x.state.authInputType));
+    final (inputState, type) = context.select(
+      (KeychainCubit x) =>
+          (x.state.selectedKeyChainFlow, x.state.authInputType),
+    );
     final text = inputState == KeyChainFlow.enter
         ? 'Choose a backup ${type == AuthInputType.pin ? 'PIN' : 'password'}'
         : 'Confirm backup ${type == AuthInputType.pin ? 'PIN' : 'password'}';
