@@ -48,22 +48,12 @@ class KeychainCubit extends Cubit<KeychainState> {
     );
   }
 
-  // Core operations
-  Future<void> _initialize() async {
-    try {
-      _emitLoading();
-      if (_currentService == null || !_connection.isInitialized) {
-        _currentService = await _createKeyService();
-      }
-      await _connection.ready;
-    } catch (e) {
-      debugPrint('Failed to initialize keyserver connection: $e');
-      emit(state.copyWith(
-        error: 'Service unavailable. Please check your connection.',
-        loading: false,
-        torStatus: TorStatus.offline,
-      ));
+  Future<bool> _ensureServerStatus() async {
+    if (_currentService == null) {
+      await _initialize();
     }
+    await keyServerStatus();
+    return state.keyServerUp;
   }
 
   Future<KeyService> _createKeyService() async {
@@ -91,65 +81,88 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   Future<void> _initialize() async {
-    if (keyServerUrl.isEmpty) {
-      emit(
-        state.copyWith(
-          error: 'Keyserver connection failed',
-          loading: false,
-          keyServerUp: false,
-        ),
-      );
-      return;
-    }
-
     try {
-      emit(state.copyWith(loading: true, error: ''));
-      _currentService = await _createKeyService();
+      _emitLoading();
+      if (_currentService == null || !_connection.isInitialized) {
+        _currentService = await _createKeyService();
+      }
       await _connection.ready;
-      await keyServerStatus();
     } catch (e) {
-      debugPrint('KeychainCubit initialization error: $e');
+      debugPrint('Failed to initialize keyserver connection: $e');
       emit(
         state.copyWith(
-          error: 'Keyserver connection failed',
+          error: 'Service unavailable. Please check your connection.',
           loading: false,
-          keyServerUp: false,
+          torStatus: TorStatus.offline,
         ),
       );
     }
   }
 
-  Future<void> keyServerStatus() async {
-    if (_currentService == null) {
+  Future<T?> _handleServerOperation<T>(
+    Future<T> Function() operation,
+    String operationName, {
+    bool emitState = true,
+    int maxAttempts = maxRetries,
+    Duration? delay,
+  }) async {
+    if (emitState) {
       emit(
         state.copyWith(
-          keyServerUp: false,
-          error: 'Connection not initialized',
-          loading: false,
+          loading: true,
+          error: '',
+          torStatus: TorStatus.connecting,
         ),
       );
-      return;
     }
 
-    if (state.isInCooldown) {
-      emit(
-        state.copyWith(
-          error:
-              'Rate limited. Please wait ${state.remainingCooldownSeconds} seconds.',
-          loading: false,
-        ),
-      );
-      return;
-    }
+    for (var attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        final result = await operation();
+        if (emitState) {
+          emit(state.copyWith(torStatus: TorStatus.online, loading: false));
+        }
+        return result;
+      } catch (e) {
+        final isLastAttempt = attempt == maxAttempts - 1;
+        debugPrint(
+          isLastAttempt
+              ? '$operationName failed after $maxAttempts attempts: $e'
+              : 'Retrying $operationName (${attempt + 1}/$maxAttempts)',
+        );
 
-    if (!isClosed) {
-      // Check server status with retry logic and state management
-      await _handleServerOperation(
-        () async => await _currentService?.serverInfo(),
-        'get_server_status',
-      );
+        if (isLastAttempt) {
+          debugPrint(
+            'Unable to complete $operationName. Please check your connection.',
+          );
+          if (emitState) {
+            emit(
+              state.copyWith(
+                torStatus: TorStatus.offline,
+                loading: false,
+                error: 'Service unavailable. Please check your connection.',
+              ),
+            );
+          }
+          return null;
+        }
+        await Future.delayed(delay ?? retryDelay);
+      }
     }
+    return null;
   }
+
+  // Public methods (alphabetically ordered)
+  void backspacePressed() {
+    if (state.secret.isEmpty) return;
+    updateState(
+      secret: state.secret.substring(0, state.secret.length - 1),
+    );
+  }
+
+  void clearSensitive() => updateState(resetState: true);
+
+  void clickObscure() => emit(state.copyWith(obscure: !state.obscure));
 
   Future<void> clickRecover() async {
     try {
@@ -163,7 +176,7 @@ class KeychainCubit extends Cubit<KeychainState> {
         return;
       }
 
-    if (!await _ensureServerStatus()) return;
+      if (!await _ensureServerStatus()) return;
 
       final service = _currentService;
       final backup = state.backupData;
@@ -204,27 +217,38 @@ class KeychainCubit extends Cubit<KeychainState> {
     }
   }
 
-  Future<void> secureKey() async {
-    final backup = state.backupData;
-    if (backup == null || state.backupKey.isEmpty || state.tempSecret.isEmpty) {
-      _emitError('Missing backup data or credentials');
+  @override
+  Future<void> close() {
+    resetState();
+    return super.close();
+  }
+
+  Future confirmPressed() async {
+    if (!state.canStoreKey) return;
+    if (state.selectedKeyChainFlow == KeyChainFlow.enter) {
+      emit(
+        state.copyWith(
+          selectedKeyChainFlow: KeyChainFlow.confirm,
+          tempSecret: state.secret,
+          secret: '',
+        ),
+      );
       return;
     }
 
-    if (!await _ensureServerStatus()) return;
-
-    try {
-      _emitLoading();
-      await _currentService!.storeBackupKey(
-        backupId: backup.id,
-        password: state.tempSecret,
-        backupKey: HEX.decode(state.backupKey),
-        salt: HEX.decode(backup.salt),
+    if (state.secret != state.tempSecret) {
+      emit(
+        state.copyWith(
+          selectedKeyChainFlow: KeyChainFlow.enter,
+          error: 'Values do not match. Please try again.',
+          secret: '',
+          tempSecret: '',
+        ),
       );
-      _emitSuccess(keySecretState: SecretStatus.stored);
-    } catch (e) {
-      _emitError('Failed to store backup key: $e');
+      return;
     }
+
+    emit(state.copyWith(isSecretConfirmed: true));
   }
 
   Future<void> deleteBackupKey() async {
@@ -245,7 +269,7 @@ class KeychainCubit extends Cubit<KeychainState> {
         return;
       }
 
-    if (!await _ensureServerStatus()) return;
+      if (!await _ensureServerStatus()) return;
 
       await service.trashBackupKey(
         backupId: backup.id,
@@ -269,100 +293,96 @@ class KeychainCubit extends Cubit<KeychainState> {
       );
       return;
     }
-
-    emit(state.copyWith(isSecretConfirmed: true));
   }
 
   void keyPressed(String key) {
     if (state.secret.length >= pinMax) return;
-    emit(state.copyWith(secret: state.secret + key, error: ''));
+    updateState(secret: state.secret + key);
   }
 
-  Future<void> secureKey() async {
-    try {
-      if (!await _ensureServerStatus()) return;
-
-      final service = _currentService;
-      final backup = state.backupData;
-
-      if (service == null || backup == null) {
-        emit(
-          state.copyWith(
-            error: 'Missing backup data or service connection',
-            loading: false,
-          ),
-        );
-        return;
-      }
-
-      if (state.backupKey.isEmpty || state.tempSecret.isEmpty) {
-        emit(
-          state.copyWith(
-            error: 'Missing backup key or password',
-            loading: false,
-          ),
-        );
-        return;
-      }
-
-      emit(state.copyWith(loading: true, error: ''));
-      await service.storeBackupKey(
-        backupId: backup.id,
-        password: state.tempSecret,
-        backupKey: HEX.decode(state.backupKey),
-        salt: HEX.decode(backup.salt),
-      );
-
+  Future<void> keyServerStatus() async {
+    if (_currentService == null) {
       emit(
         state.copyWith(
+          torStatus: TorStatus.offline,
+          error: 'Service unavailable. Please check your connection.',
           loading: false,
-          keySecretState: KeySecretState.saved,
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          loading: false,
-          error: 'Failed to store backup key',
         ),
       );
       return;
     }
 
-    // Don't reset backupKey if it's a state change during backup flow
-    final isBackupFlow = keyChainFlow == KeyChainFlow.enter ||
-        keyChainFlow == KeyChainFlow.confirm;
-    final shouldKeepBackupKey = isBackupFlow && state.backupKey.isNotEmpty;
+    if (state.isInCooldown) {
+      emit(
+        state.copyWith(
+          error:
+              'Rate limited. Please wait ${state.remainingCooldownSeconds} seconds.',
+          loading: false,
+        ),
+      );
+      return;
+    }
 
-    emit(state.copyWith(
-      secret: resetState ? '' : (secret ?? state.secret),
-      // Keep backupKey if we're in backup flow
-      backupKey: shouldKeepBackupKey
-          ? state.backupKey
-          : (resetState ? '' : (backupKey ?? state.backupKey)),
-      selectedKeyChainFlow: keyChainFlow ?? state.selectedKeyChainFlow,
-      authInputType: authInputType ?? state.authInputType,
-      backupData: backupData ?? state.backupData,
-      // Only reset tempSecret if explicitly requested
-      tempSecret: resetState ? '' : state.tempSecret,
-      isSecretConfirmed: resetState && state.isSecretConfirmed,
-      error: '', // Always clear errors on state update
-    ));
+    if (!isClosed) {
+      // Check server status with retry logic and state management
+      await _handleServerOperation(
+        () async => await _currentService?.serverInfo(),
+        'get_server_status',
+      );
+    }
   }
 
-  void updateChainState(
-    KeyChainFlow keyChainPageState,
-    String? backupKey,
-    BullBackup? backupData,
-  ) {
+  void resetState() {
     emit(
       state.copyWith(
-        pageState: keyChainPageState,
-        originalPageState: keyChainPageState, // Store original state
-        backupKey: backupKey ?? '',
-        backupData: backupData,
+        secret: '',
+        tempSecret: '',
+        backupKey: '',
+        error: '',
+        isSecretConfirmed: false,
+        secretStatus: SecretStatus.initial,
+        selectedKeyChainFlow: KeyChainFlow.enter,
+        authInputType: AuthInputType.pin,
+        loading: false,
+        obscure: false,
       ),
     );
+  }
+
+  Future<void> secureKey() async {
+    // Prevent duplicate calls if already processing
+    if (state.loading || state.secretStatus != SecretStatus.initial) return;
+
+    final backup = state.backupData;
+    if (backup == null ||
+        backup.id.isEmpty ||
+        state.tempSecret.isEmpty ||
+        state.backupKey.isEmpty ||
+        backup.salt.isEmpty) {
+      if (backup == null) debugPrint('Missing backup data');
+      if (backup?.id.isEmpty ?? true) debugPrint('Missing backup ID');
+      if (state.tempSecret.isEmpty) debugPrint('Missing password');
+      if (state.backupKey.isEmpty) debugPrint('Missing backup key');
+      if (backup?.salt.isEmpty ?? true) debugPrint('Missing salt');
+      _emitError('Corrupt backup file');
+      return;
+    }
+
+    if (!await _ensureServerStatus()) return;
+
+    try {
+      _emitLoading();
+      await _currentService!.storeBackupKey(
+        backupId: backup.id,
+        password: state.tempSecret,
+        backupKey: HEX.decode(state.backupKey),
+        salt: HEX.decode(backup.salt),
+      );
+      _emitSuccess(keySecretState: SecretStatus.stored);
+    } catch (e) {
+      debugPrint('Failed to store backup key: $e');
+      _emitError('Failed to store backup key');
+    }
   }
 
   void updateBackupKey(String value) => updateState(backupKey: value);
@@ -380,92 +400,44 @@ class KeychainCubit extends Cubit<KeychainState> {
     );
   }
 
-  void clearSensitive() => updateState(resetState: true);
+  void updateState({
+    String? secret,
+    String? backupKey,
+    KeyChainFlow? keyChainFlow,
+    AuthInputType? authInputType,
+    BullBackup? backupData,
+    bool resetState = false,
+  }) {
+    // Prevent duplicate state updates
+    if (!resetState &&
+        secret == state.secret &&
+        backupKey == state.backupKey &&
+        keyChainFlow == state.selectedKeyChainFlow &&
+        authInputType == state.authInputType &&
+        backupData == state.backupData) {
+      return;
+    }
 
-  // Update other methods to use the new updateState
-  void backspacePressed() {
-    if (state.secret.isEmpty) return;
-    updateState(
-      secret: state.secret.substring(0, state.secret.length - 1),
+    // Don't reset backupKey if it's a state change during backup flow
+    final isBackupFlow = keyChainFlow == KeyChainFlow.enter ||
+        keyChainFlow == KeyChainFlow.confirm;
+    final shouldKeepBackupKey = isBackupFlow && state.backupKey.isNotEmpty;
+
+    emit(
+      state.copyWith(
+        secret: resetState ? '' : (secret ?? state.secret),
+        // Keep backupKey if we're in backup flow
+        backupKey: shouldKeepBackupKey
+            ? state.backupKey
+            : (resetState ? '' : (backupKey ?? state.backupKey)),
+        selectedKeyChainFlow: keyChainFlow ?? state.selectedKeyChainFlow,
+        authInputType: authInputType ?? state.authInputType,
+        backupData: backupData ?? state.backupData,
+        // Only reset tempSecret if explicitly requested
+        tempSecret: resetState ? '' : state.tempSecret,
+        isSecretConfirmed: resetState && state.isSecretConfirmed,
+        error: '', // Always clear errors on state update
+      ),
     );
-  }
-
-  void keyPressed(String key) {
-    if (state.secret.length >= pinMax) return;
-    updateState(secret: state.secret + key);
-  }
-
-  void clickObscure() => emit(state.copyWith(obscure: !state.obscure));
-
-  @override
-  Future<void> close() {
-    resetState();
-    return super.close();
-  }
-
-  /// Resets all sensitive state when leaving the page
-  void resetState() {
-    emit(state.copyWith(
-      secret: '',
-      tempSecret: '',
-      backupKey: '',
-      error: '',
-      isSecretConfirmed: false,
-      secretStatus: SecretStatus.initial,
-      selectedKeyChainFlow: KeyChainFlow.enter,
-      authInputType: AuthInputType.pin,
-      loading: false,
-      obscure: false,
-    ));
-  }
-
-  /// Handles server operations with retry logic and state management
-  Future<T?> _handleServerOperation<T>(
-    Future<T> Function() operation,
-    String operationName, {
-    bool emitState = true,
-    int maxAttempts = maxRetries,
-    Duration? delay,
-  }) async {
-    if (emitState) {
-      emit(state.copyWith(
-        loading: true,
-        error: '',
-        torStatus: TorStatus.connecting,
-      ));
-    }
-
-    for (var attempt = 0; attempt < maxAttempts; attempt++) {
-      try {
-        final result = await operation();
-        if (emitState) {
-          emit(state.copyWith(torStatus: TorStatus.online, loading: false));
-        }
-        return result;
-      } catch (e) {
-        final isLastAttempt = attempt == maxAttempts - 1;
-        debugPrint(
-          isLastAttempt
-              ? '$operationName failed after $maxAttempts attempts: $e'
-              : 'Retrying $operationName (${attempt + 1}/$maxAttempts)',
-        );
-
-        if (isLastAttempt) {
-          if (emitState) {
-            emit(
-              state.copyWith(
-                keyServerUp: false,
-                loading: false,
-                error:
-                    'Unable to complete $operationName. Please check your connection.',
-              ),
-            );
-          }
-          return null;
-        }
-        await Future.delayed(delay ?? retryDelay);
-      }
-    }
-    return null;
   }
 }
