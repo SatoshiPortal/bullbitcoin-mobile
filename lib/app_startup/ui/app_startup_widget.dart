@@ -1,6 +1,7 @@
 import 'package:bb_mobile/app_startup/presentation/bloc/app_startup_bloc.dart';
+import 'package:bb_mobile/app_unlock/ui/pin_code_unlock_screen.dart';
+import 'package:bb_mobile/home/ui/home_screen.dart';
 import 'package:bb_mobile/onboarding/ui/onboarding_screen.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,7 +26,9 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
             return const OnboardingScreen(loading: true);
           } else if (state is AppStartupSuccess) {
             if (!state.hasDefaultWallets) return const OnboardingScreen();
-            return widget.app;
+            if (state.isPinCodeSet) return const PinCodeUnlockScreen();
+            return const HomeScreen();
+            // return widget.app;
           } else if (state is AppStartupFailure) {
             // TODO: return a failure page
           }
@@ -50,9 +53,9 @@ class AppStartupListener extends StatelessWidget {
       listenWhen: (previous, current) =>
           current is AppStartupSuccess && previous != current,
       listener: (context, state) {
-        if (state is AppStartupSuccess && state.isPinCodeSet) {
-          AppRouter.router.go(AppRoute.appUnlock.path);
-        }
+        // if (state is AppStartupSuccess && state.isPinCodeSet) {
+        //   AppRouter.router.go(AppRoute.appUnlock.path);
+        // }
 
         // if (state is AppStartupSuccess && !state.hasDefaultWallets) {
         //   AppRouter.router.go(AppRoute.onboarding.path);
