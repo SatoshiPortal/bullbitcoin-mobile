@@ -24,7 +24,7 @@ const _kGapLarge = 24.0;
 const _kGapXLarge = 50.0;
 const _kHorizontalPadding = 32.0;
 
-class KeychainBackupPage extends StatelessWidget {
+class KeychainBackupPage extends StatefulWidget {
   KeychainBackupPage({
     super.key,
     this.backupKey,
@@ -35,6 +35,31 @@ class KeychainBackupPage extends StatelessWidget {
   final String? backupKey;
   final KeyChainPageState _pState;
   final BullBackup backup;
+
+  @override
+  State<KeychainBackupPage> createState() => _KeychainBackupPageState();
+}
+
+class _KeychainBackupPageState extends State<KeychainBackupPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize state once during widget creation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<KeychainCubit>().updateChainState(
+            widget._pState,
+            widget.backupKey,
+            widget.backup,
+          );
+    });
+  }
+
+  @override
+  void dispose() {
+    // Reset state when leaving the page
+    context.read<KeychainCubit>().resetState();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
