@@ -193,7 +193,7 @@ class _Screen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Gap(32),
-              if (signed && potentialSendSwap)...[
+              if (signed && potentialSendSwap) ...[
                 const WalletSelectionDropDown(),
                 if (potentialonchainSwap) ...[
                   const Gap(8),
@@ -474,7 +474,7 @@ class AdvancedOptions extends StatelessWidget {
     final addressReady =
         context.select((SendCubit _) => _.state.address.isNotEmpty);
 
-    if (isLn || !walletSelected || !addressReady || isLiquid == true) {
+    if (!walletSelected || !addressReady || isLiquid == true) {
       return const SizedBox.shrink();
     }
 
