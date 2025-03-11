@@ -175,17 +175,10 @@ class _Screen extends StatelessWidget {
                 !state.loading &&
                 !state.hasError &&
                 state.backupKey.isNotEmpty) {
-              if (state.pageState == KeyChainPageState.download) {
-                context.push(
-                  '/wallet-settings/backup-settings/key/options',
-                  extra: (state.backupKey, backup),
-                );
-              } else {
-                context.read<BackupSettingsCubit>().recoverBackup(
-                      backup,
-                      state.backupKey,
-                    );
-              }
+              context.read<BackupSettingsCubit>().recoverBackup(
+                    backup,
+                    state.backupKey,
+                  );
             }
 
             if (state.hasError && state.keyServerUp) {
@@ -261,11 +254,6 @@ class _Screen extends StatelessWidget {
       case KeyChainPageState.delete:
         return _DeletePage(
           key: const ValueKey('delete'),
-          inputType: state.inputType,
-        );
-      case KeyChainPageState.download:
-        return _RecoveryPage(
-          key: const ValueKey('view'),
           inputType: state.inputType,
         );
     }
@@ -720,10 +708,6 @@ class _RecoverButton extends StatelessWidget with _ButtonLogicMixin {
             ? state.canRecoverWithBckupKey
             : state.canRecoverKey;
 
-        // Check if we're in the download flow by checking original state
-        final isDownloadFlow = state.pageState == KeyChainPageState.download ||
-            state.originalPageState == KeyChainPageState.download;
-
         // Show only backup key option if server is down
         if (!state.keyServerUp && inputType != KeyChainInputType.backupKey) {
           return Column(
@@ -750,17 +734,6 @@ class _RecoverButton extends StatelessWidget with _ButtonLogicMixin {
               onTap: () => _switchInputType(context),
               child: BBText.bodySmall(_getSwitchButtonText(), isBold: true),
             ),
-            if (!isDownloadFlow &&
-                inputType != KeyChainInputType.backupKey) ...[
-              const Gap(20),
-              InkWell(
-                onTap: () => _switchToBackupKey(context),
-                child: const BBText.bodySmall(
-                  'Recover with backup key',
-                  isBold: true,
-                ),
-              ),
-            ],
             const Gap(10),
             BBButton.withColour(
               fillWidth: true,
@@ -975,10 +948,6 @@ class _SuccessDialog extends StatelessWidget {
     } else if (pageState == KeyChainPageState.delete) {
       title = 'Backup Key Deleted';
       message = 'Your backup key has been permanently deleted';
-      route = '/home';
-    } else {
-      title = 'Backup Downloaded';
-      message = 'Your backup has been downloaded successfully';
       route = '/home';
     }
 
