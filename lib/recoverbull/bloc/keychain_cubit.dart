@@ -70,8 +70,7 @@ class KeychainCubit extends Cubit<KeychainState> {
           await _connection.initialize();
           await Future.delayed(const Duration(seconds: 5));
         },
-        'Tor initialization',
-        emitState: false, // Don't emit states during service creation
+        'tor_initialization',
       );
     }
 
@@ -79,12 +78,9 @@ class KeychainCubit extends Cubit<KeychainState> {
       keyServer: Uri.parse(keyServerUrl),
       tor: _connection.tor,
     );
-
-    // Verify service can connect to server
     await _handleServerOperation(
       () async => await service.serverInfo(),
-      'Service verification',
-      emitState: false, // Don't emit states during service creation
+      'service_verification',
     );
 
     return service;
@@ -146,42 +142,10 @@ class KeychainCubit extends Cubit<KeychainState> {
       // Check server status with retry logic and state management
       await _handleServerOperation(
         () async => await _currentService?.serverInfo(),
-        'Key server status',
-        // emitState: true (default) - Update UI with server status
+        'get_server_status',
       );
     }
   }
-
-  Future<bool> _ensureServerStatus() async {
-    if (_currentService == null) {
-      await _initialize();
-    }
-    await keyServerStatus();
-    return state.keyServerUp;
-  }
-
-  void backspacePressed() {
-    if (state.secret.isEmpty) return;
-    emit(
-      state.copyWith(
-        secret: state.secret.substring(0, state.secret.length - 1),
-        error: '',
-      ),
-    );
-  }
-
-  void clearSensitive() {
-    emit(
-      state.copyWith(
-        secret: '',
-        tempSecret: '',
-        isSecretConfirmed: false,
-        error: '',
-      ),
-    );
-  }
-
-  void clickObscure() => emit(state.copyWith(obscure: !state.obscure));
 
   Future<void> clickRecover() async {
     try {
@@ -257,8 +221,6 @@ class KeychainCubit extends Cubit<KeychainState> {
     } catch (e) {
       _emitError('Failed to store backup key: $e');
     }
-
-    emit(state.copyWith(isSecretConfirmed: true));
   }
 
   Future<void> deleteBackupKey() async {
@@ -279,7 +241,7 @@ class KeychainCubit extends Cubit<KeychainState> {
         return;
       }
 
-      emit(state.copyWith(loading: true, error: ''));
+    if (!await _ensureServerStatus()) return;
 
       await service.trashBackupKey(
         backupId: backup.id,
@@ -454,10 +416,6 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   /// Handles server operations with retry logic and state management
-  ///
-  /// Returns the operation result or null if all attempts fail
-  /// Updates keyServerUp status based on operation success/failure when emitState is true
-  /// Will attempt the operation multiple times with delay between attempts
   Future<T?> _handleServerOperation<T>(
     Future<T> Function() operation,
     String operationName, {
