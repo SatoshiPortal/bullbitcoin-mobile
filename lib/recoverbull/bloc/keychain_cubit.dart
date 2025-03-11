@@ -37,7 +37,6 @@ class KeychainCubit extends Cubit<KeychainState> {
 
     final service = KeyService(
       keyServer: Uri.parse(keyServerUrl),
-      keyServerPublicKey: keyServerPublicKey,
       tor: _connection.tor,
     );
 
@@ -53,11 +52,13 @@ class KeychainCubit extends Cubit<KeychainState> {
 
   Future<void> _initialize() async {
     if (keyServerUrl.isEmpty) {
-      emit(state.copyWith(
-        error: 'Keyserver connection failed',
-        loading: false,
-        keyServerUp: false,
-      ));
+      emit(
+        state.copyWith(
+          error: 'Keyserver connection failed',
+          loading: false,
+          keyServerUp: false,
+        ),
+      );
       return;
     }
 
@@ -68,21 +69,25 @@ class KeychainCubit extends Cubit<KeychainState> {
       await keyServerStatus();
     } catch (e) {
       debugPrint('KeychainCubit initialization error: $e');
-      emit(state.copyWith(
-        error: 'Keyserver connection failed',
-        loading: false,
-        keyServerUp: false,
-      ));
+      emit(
+        state.copyWith(
+          error: 'Keyserver connection failed',
+          loading: false,
+          keyServerUp: false,
+        ),
+      );
     }
   }
 
   Future<void> keyServerStatus() async {
     if (_currentService == null) {
-      emit(state.copyWith(
-        keyServerUp: false,
-        error: 'Connection not initialized',
-        loading: false,
-      ));
+      emit(
+        state.copyWith(
+          keyServerUp: false,
+          error: 'Connection not initialized',
+          loading: false,
+        ),
+      );
       return;
     }
 
@@ -142,10 +147,12 @@ class KeychainCubit extends Cubit<KeychainState> {
   Future<void> clickRecover() async {
     try {
       if (state.backupKey.isNotEmpty) {
-        emit(state.copyWith(
-          loading: false,
-          keySecretState: KeySecretState.recovered,
-        ));
+        emit(
+          state.copyWith(
+            loading: false,
+            keySecretState: KeySecretState.recovered,
+          ),
+        );
         return;
       }
 
@@ -155,10 +162,12 @@ class KeychainCubit extends Cubit<KeychainState> {
       final backup = state.backupData;
 
       if (service == null || backup == null) {
-        emit(state.copyWith(
-          error: 'Missing backup data or service connection',
-          loading: false,
-        ));
+        emit(
+          state.copyWith(
+            error: 'Missing backup data or service connection',
+            loading: false,
+          ),
+        );
         return;
       }
 
@@ -170,16 +179,20 @@ class KeychainCubit extends Cubit<KeychainState> {
         salt: HEX.decode(backup.salt),
       );
 
-      emit(state.copyWith(
-        backupKey: HEX.encode(backupKey),
-        loading: false,
-        keySecretState: KeySecretState.recovered,
-      ));
+      emit(
+        state.copyWith(
+          backupKey: HEX.encode(backupKey),
+          loading: false,
+          keySecretState: KeySecretState.recovered,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        error: 'Failed to recover backup key',
-        loading: false,
-      ));
+      emit(
+        state.copyWith(
+          error: 'Failed to recover backup key',
+          loading: false,
+        ),
+      );
       return;
     }
   }
@@ -222,30 +235,37 @@ class KeychainCubit extends Cubit<KeychainState> {
       final backup = state.backupData;
 
       if (service == null || backup == null) {
-        emit(state.copyWith(
-          error: 'Missing backup data or service connection',
-          loading: false,
-        ));
+        emit(
+          state.copyWith(
+            error: 'Missing backup data or service connection',
+            loading: false,
+          ),
+        );
         return;
       }
 
       emit(state.copyWith(loading: true, error: ''));
 
       await service.trashBackupKey(
-          backupId: backup.id,
-          password: state.secret,
-          salt: HEX.decode(backup.salt));
+        backupId: backup.id,
+        password: state.secret,
+        salt: HEX.decode(backup.salt),
+      );
 
-      emit(state.copyWith(
-        loading: false,
-        keySecretState: KeySecretState.deleted,
-      ));
+      emit(
+        state.copyWith(
+          loading: false,
+          keySecretState: KeySecretState.deleted,
+        ),
+      );
       return;
     } catch (e) {
-      emit(state.copyWith(
-        error: 'Failed to delete backup key',
-        loading: false,
-      ));
+      emit(
+        state.copyWith(
+          error: 'Failed to delete backup key',
+          loading: false,
+        ),
+      );
       return;
     }
   }
@@ -263,18 +283,22 @@ class KeychainCubit extends Cubit<KeychainState> {
       final backup = state.backupData;
 
       if (service == null || backup == null) {
-        emit(state.copyWith(
-          error: 'Missing backup data or service connection',
-          loading: false,
-        ));
+        emit(
+          state.copyWith(
+            error: 'Missing backup data or service connection',
+            loading: false,
+          ),
+        );
         return;
       }
 
       if (state.backupKey.isEmpty || state.tempSecret.isEmpty) {
-        emit(state.copyWith(
-          error: 'Missing backup key or password',
-          loading: false,
-        ));
+        emit(
+          state.copyWith(
+            error: 'Missing backup key or password',
+            loading: false,
+          ),
+        );
         return;
       }
 
@@ -286,15 +310,19 @@ class KeychainCubit extends Cubit<KeychainState> {
         salt: HEX.decode(backup.salt),
       );
 
-      emit(state.copyWith(
-        loading: false,
-        keySecretState: KeySecretState.saved,
-      ));
+      emit(
+        state.copyWith(
+          loading: false,
+          keySecretState: KeySecretState.saved,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        loading: false,
-        error: 'Failed to store backup key',
-      ));
+      emit(
+        state.copyWith(
+          loading: false,
+          error: 'Failed to store backup key',
+        ),
+      );
       return;
     }
   }
@@ -306,10 +334,11 @@ class KeychainCubit extends Cubit<KeychainState> {
   ) {
     emit(
       state.copyWith(
-          pageState: keyChainPageState,
-          originalPageState: keyChainPageState, // Store original state
-          backupKey: backupKey ?? '',
-          backupData: backupData),
+        pageState: keyChainPageState,
+        originalPageState: keyChainPageState, // Store original state
+        backupKey: backupKey ?? '',
+        backupData: backupData,
+      ),
     );
   }
 
@@ -370,18 +399,22 @@ class KeychainCubit extends Cubit<KeychainState> {
         return result;
       } catch (e) {
         final isLastAttempt = attempt == maxAttempts - 1;
-        debugPrint(isLastAttempt
-            ? '$operationName failed after $maxAttempts attempts: $e'
-            : 'Retrying $operationName (${attempt + 1}/$maxAttempts)');
+        debugPrint(
+          isLastAttempt
+              ? '$operationName failed after $maxAttempts attempts: $e'
+              : 'Retrying $operationName (${attempt + 1}/$maxAttempts)',
+        );
 
         if (isLastAttempt) {
           if (emitState) {
-            emit(state.copyWith(
-              keyServerUp: false,
-              loading: false,
-              error:
-                  'Unable to complete $operationName. Please check your connection.',
-            ));
+            emit(
+              state.copyWith(
+                keyServerUp: false,
+                loading: false,
+                error:
+                    'Unable to complete $operationName. Please check your connection.',
+              ),
+            );
           }
           return null;
         }
