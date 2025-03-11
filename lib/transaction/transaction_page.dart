@@ -285,6 +285,11 @@ class _TxDetails extends StatelessWidget {
             const Gap(4),
             AmountValue(isReceived: isReceived, amtStr: amtStr, units: units),
             const Gap(24),
+            if (tx.isPayjoin) ...[
+              const Gap(24),
+              const BBText.title('Payjoin'),
+              const Gap(4),
+            ],
             if (!isSwapPending) ...[
               const BBText.title('Transaction ID'),
               const Gap(4),
