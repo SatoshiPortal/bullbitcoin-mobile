@@ -157,7 +157,7 @@ class KeychainCubit extends Cubit<KeychainState> {
         emit(
           state.copyWith(
             loading: false,
-            keySecretState: KeySecretState.recovered,
+            secretStatus: SecretStatus.recovered,
           ),
         );
         return;
@@ -190,7 +190,7 @@ class KeychainCubit extends Cubit<KeychainState> {
         state.copyWith(
           backupKey: HEX.encode(backupKey),
           loading: false,
-          keySecretState: KeySecretState.recovered,
+          secretStatus: SecretStatus.recovered,
         ),
       );
     } catch (e) {
@@ -256,7 +256,7 @@ class KeychainCubit extends Cubit<KeychainState> {
       emit(
         state.copyWith(
           loading: false,
-          keySecretState: KeySecretState.deleted,
+          secretStatus: SecretStatus.deleted,
         ),
       );
       return;
