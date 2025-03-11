@@ -138,7 +138,16 @@ class _Screen extends StatelessWidget {
                   current.torStatus != TorStatus.connecting) ||
               previous.error != current.error,
           listener: (context, state) {
-            // Handle offline state only once
+            if (state.hasError) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => _ErrorDialog(
+                  error: state.error,
+                  selectedKeyChainFlow: state.selectedKeyChainFlow,
+                ),
+              );
+            }
             if (state.torStatus == TorStatus.offline &&
                 state.authInputType != AuthInputType.backupKey) {
               context.read<KeychainCubit>().updatePageState(
@@ -202,18 +211,6 @@ class _Screen extends StatelessWidget {
                     backup,
                     state.backupKey,
                   );
-            }
-
-            if (state.hasError && state.keyServerUp) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => _ErrorDialog(
-                  error: state.error,
-                  isRecovery:
-                      state.selectedKeyChainFlow == KeyChainFlow.recovery,
-                ),
-              );
             }
           },
         ),
@@ -981,17 +978,25 @@ class _SuccessDialog extends StatelessWidget {
 }
 
 class _ErrorDialog extends StatelessWidget {
-  const _ErrorDialog({required this.error, this.isRecovery = false});
+  const _ErrorDialog({
+    required this.error,
+    this.selectedKeyChainFlow = KeyChainFlow.enter,
+  });
   final String error;
-  final bool isRecovery;
+  final KeyChainFlow selectedKeyChainFlow;
   @override
   Widget build(BuildContext context) {
     return _DialogBase(
       icon: Icons.error_outline,
-      title: isRecovery ? 'Recovery failed' : 'Backup failed',
+      title: selectedKeyChainFlow == KeyChainFlow.enter
+          ? 'Backup failed'
+          : selectedKeyChainFlow == KeyChainFlow.recovery
+              ? 'Recovery failed'
+              : 'Delete failed',
       message: error,
       buttonText: 'Continue',
       onButtonPressed: () {
+        context.read<KeychainCubit>().clearError();
         Navigator.of(context).pop();
       },
     );
