@@ -5,40 +5,40 @@ import 'package:recoverbull/recoverbull.dart';
 
 part 'keychain_state.freezed.dart';
 
-enum KeyChainPageState {
+enum KeyChainFlow {
   enter,
   confirm,
   recovery,
-  download,
   delete;
 
-  static KeyChainPageState fromString(String value) {
-    return KeyChainPageState.values.firstWhere(
+  static KeyChainFlow fromString(String value) {
+    return KeyChainFlow.values.firstWhere(
       (element) => element.name.toLowerCase() == value.toLowerCase(),
-      orElse: () => KeyChainPageState.enter,
+      orElse: () => KeyChainFlow.enter,
     );
   }
 }
 
-enum KeyChainInputType { pin, password, backupKey }
+enum AuthInputType { pin, password, backupKey }
 
-enum KeySecretState { none, saved, recovered, deleted }
+enum SecretStatus { initial, stored, recovered, deleted }
+
+enum TorStatus { online, offline, connecting, disconnecting }
 
 @freezed
 class KeychainState with _$KeychainState {
   const factory KeychainState({
     @Default(false) bool loading,
-    @Default(true) bool keyServerUp,
-    @Default(KeyChainPageState.enter) KeyChainPageState pageState,
-    @Default(KeyChainInputType.pin) KeyChainInputType inputType,
-    @Default(KeySecretState.none) KeySecretState keySecretState,
+    @Default(TorStatus.online) TorStatus torStatus,
+    @Default(KeyChainFlow.enter) KeyChainFlow selectedKeyChainFlow,
+    @Default(AuthInputType.pin) AuthInputType authInputType,
+    @Default(SecretStatus.initial) SecretStatus secretStatus,
     @Default('') String secret,
     @Default('') String tempSecret,
     @Default(false) bool isSecretConfirmed,
     @Default(false) bool obscure,
     @Default('') String backupKey,
     @Default('') String error,
-    @Default(KeyChainPageState.enter) KeyChainPageState originalPageState,
     DateTime? lastRequestTime,
     BullBackup? backupData,
     int? cooldownMinutes,
@@ -50,15 +50,14 @@ class KeychainState with _$KeychainState {
 
   String? getValidationError() {
     // Skip validation during recovery, delete or download
-    if (pageState == KeyChainPageState.recovery ||
-        pageState == KeyChainPageState.download ||
-        pageState == KeyChainPageState.delete) {
+    if (selectedKeyChainFlow == KeyChainFlow.recovery ||
+        selectedKeyChainFlow == KeyChainFlow.delete) {
       return null;
     }
 
     if (secret.isEmpty) return null;
 
-    if (inputType == KeyChainInputType.pin) {
+    if (authInputType == AuthInputType.pin) {
       const pinMin = KeychainCubit.pinMin;
       const pinMax = KeychainCubit.pinMax;
 
@@ -77,11 +76,12 @@ class KeychainState with _$KeychainState {
   bool get isValid => getValidationError() == null;
 
   bool get hasError => error.isNotEmpty;
-  bool get isRecovering => pageState == KeyChainPageState.recovery;
-  bool get canStoreKey => isValid && keyServerUp && !loading;
-  bool get canRecoverKey => backupData != null && keyServerUp && !loading;
+  bool get isRecovering => selectedKeyChainFlow == KeyChainFlow.recovery;
+  bool get canStoreKey => isValid && !loading;
+  bool get canRecoverKey => backupData != null && !loading;
   bool get canRecoverWithBckupKey => backupData != null && !loading;
-  bool get canDeleteKey => backupData != null && keyServerUp && !loading;
+  bool get canDeleteKey => backupData != null && !loading;
+  bool get keyServerUp => torStatus == TorStatus.online;
   bool validateSecret(String secret) => commonPasswordsTop1000.contains(secret);
 
   bool get isInCooldown {
