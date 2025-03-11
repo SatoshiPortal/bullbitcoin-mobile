@@ -1,6 +1,5 @@
 import 'package:bb_mobile/_ui/screens/dev_page.dart';
 import 'package:bb_mobile/_ui/screens/route_error_screen.dart';
-import 'package:bb_mobile/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/home/ui/home_screen.dart';
 import 'package:bb_mobile/onboarding/ui/onboarding_screen.dart';
@@ -9,7 +8,6 @@ import 'package:bb_mobile/recover_wallet/ui/recover_wallet_flow.dart';
 import 'package:bb_mobile/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/settings/ui/settings_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 // These are the main routes of the app, the ones that are not nested in other
@@ -48,27 +46,29 @@ enum AppRoute {
 }
 
 class AppRouter {
-  static final GlobalKey<NavigatorState> rootNavigatorKey =
-      GlobalKey<NavigatorState>();
+  // static final GlobalKey<NavigatorState> rootNavigatorKey =
+  //     GlobalKey<NavigatorState>();
 
   static final router = GoRouter(
-    navigatorKey: rootNavigatorKey,
+    // navigatorKey: rootNavigatorKey,
     initialLocation: AppRoute.home.path,
     routes: [
       GoRoute(
         name: AppRoute.home.name,
         path: AppRoute.home.path,
-        redirect: (context, state) {
-          // Check AppStartupState to skip onboarding if user has existing wallets
-          final appStartupState = context.read<AppStartupBloc>().state;
-          if (appStartupState is AppStartupSuccess &&
-              appStartupState.isPinCodeSet) {
-            return AppRoute.appUnlock.path;
-          }
+        // redirect: (context, state) {
+        //   // Check AppStartupState to skip onboarding if user has existing wallets
+        //   // final appStartupState = context.read<AppStartupBloc>().state;
+        //   // if (appStartupState is AppStartupSuccess &&
+        //   //     appStartupState.isPinCodeSet) {
+        //   //   return AppRoute.appUnlock.path;
+        //   // }
 
-          return null;
+        //   return null;
+        // },
+        builder: (context, state) {
+          return const HomeScreen();
         },
-        builder: (context, state) => const HomeScreen(),
         // pageBuilder: (context, state) =>
         // const NoTransitionPage(child: HomeScreen()),
       ),

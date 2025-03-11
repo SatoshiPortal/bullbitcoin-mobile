@@ -6,7 +6,6 @@ import 'package:bb_mobile/_l10n/generated/i18n/app_localizations.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/app_startup/ui/app_startup_widget.dart';
-import 'package:bb_mobile/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/locator.dart';
@@ -49,7 +48,7 @@ class BullBitcoinWalletApp extends StatefulWidget {
 
 class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   late final AppLifecycleListener _listener;
-  final router = AppRouter.router;
+  // final router = AppRouter.router;
 
   @override
   void initState() {
@@ -89,14 +88,14 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   void _onResumed() {
     debugPrint('resumed');
-    locator<CheckPinCodeExistsUseCase>().execute().then((exists) {
-      if (exists) {
-        router.pushNamed(
-          AppRoute.appUnlock.name,
-          extra: () => router.pop(),
-        );
-      }
-    });
+    // locator<CheckPinCodeExistsUseCase>().execute().then((exists) {
+    //   if (exists) {
+    //     AppRouter.router.pushNamed(
+    //       AppRoute.appUnlock.name,
+    //       extra: () => AppRouter.router.pop(),
+    //     );
+    //   }
+    // });
   }
 
   void _onInactive() => debugPrint('inactive');
@@ -130,9 +129,10 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         builder: (context, language) => MaterialApp.router(
           title: 'BullBitcoin Wallet',
           debugShowCheckedModeBanner: false,
-          routeInformationParser: router.routeInformationParser,
-          routeInformationProvider: router.routeInformationProvider,
-          routerDelegate: router.routerDelegate,
+          routerConfig: AppRouter.router,
+          // routeInformationParser: router.routeInformationParser,
+          // routeInformationProvider: router.routeInformationProvider,
+          // routerDelegate: router.routerDelegate,
           theme: AppTheme.themeData(AppThemeType.light),
           locale: language?.locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
