@@ -134,7 +134,6 @@ class KeychainCubit extends Cubit<KeychainState> {
     if (state.isInCooldown) {
       emit(
         state.copyWith(
-          keyServerUp: false,
           error:
               'Rate limited. Please wait ${state.remainingCooldownSeconds} seconds.',
           loading: false,
@@ -196,7 +195,7 @@ class KeychainCubit extends Cubit<KeychainState> {
         return;
       }
 
-      if (!await _ensureServerStatus()) return;
+    if (!await _ensureServerStatus()) return;
 
       final service = _currentService;
       final backup = state.backupData;
@@ -363,10 +362,30 @@ class KeychainCubit extends Cubit<KeychainState> {
       );
       return;
     }
+
+    // Don't reset backupKey if it's a state change during backup flow
+    final isBackupFlow = keyChainFlow == KeyChainFlow.enter ||
+        keyChainFlow == KeyChainFlow.confirm;
+    final shouldKeepBackupKey = isBackupFlow && state.backupKey.isNotEmpty;
+
+    emit(state.copyWith(
+      secret: resetState ? '' : (secret ?? state.secret),
+      // Keep backupKey if we're in backup flow
+      backupKey: shouldKeepBackupKey
+          ? state.backupKey
+          : (resetState ? '' : (backupKey ?? state.backupKey)),
+      selectedKeyChainFlow: keyChainFlow ?? state.selectedKeyChainFlow,
+      authInputType: authInputType ?? state.authInputType,
+      backupData: backupData ?? state.backupData,
+      // Only reset tempSecret if explicitly requested
+      tempSecret: resetState ? '' : state.tempSecret,
+      isSecretConfirmed: resetState && state.isSecretConfirmed,
+      error: '', // Always clear errors on state update
+    ));
   }
 
   void updateChainState(
-    KeyChainPageState keyChainPageState,
+    KeyChainFlow keyChainPageState,
     String? backupKey,
     BullBackup? backupData,
   ) {
@@ -380,33 +399,37 @@ class KeychainCubit extends Cubit<KeychainState> {
     );
   }
 
-  void updateBackupKey(String value) {
-    if (value == state.backupKey) return; // Avoid duplicate state
-    emit(state.copyWith(backupKey: value, error: ''));
-  }
+  void updateBackupKey(String value) => updateState(backupKey: value);
 
-  void updateInput(String value) {
-    if (state.inputType == KeyChainInputType.pin && value.length > 6) return;
-    if (value == state.secret) return; // Avoid duplicate state
-
-    emit(state.copyWith(secret: value, error: ''));
-  }
+  void updateInput(String value) => updateState(secret: value);
 
   void updatePageState(
-    KeyChainInputType keyChainInputType,
-    KeyChainPageState keyChainPageState,
+    AuthInputType keyChainInputType,
+    KeyChainFlow keyChainPageState,
   ) {
-    emit(
-      state.copyWith(
-        inputType: keyChainInputType,
-        pageState: keyChainPageState,
-        error: '',
-        secret: '',
-        tempSecret: '',
-        isSecretConfirmed: false,
-      ),
+    updateState(
+      authInputType: keyChainInputType,
+      keyChainFlow: keyChainPageState,
+      resetState: true, // Reset sensitive data
     );
   }
+
+  void clearSensitive() => updateState(resetState: true);
+
+  // Update other methods to use the new updateState
+  void backspacePressed() {
+    if (state.secret.isEmpty) return;
+    updateState(
+      secret: state.secret.substring(0, state.secret.length - 1),
+    );
+  }
+
+  void keyPressed(String key) {
+    if (state.secret.length >= pinMax) return;
+    updateState(secret: state.secret + key);
+  }
+
+  void clickObscure() => emit(state.copyWith(obscure: !state.obscure));
 
   @override
   Future<void> close() {
@@ -426,13 +449,19 @@ class KeychainCubit extends Cubit<KeychainState> {
     int maxAttempts = maxRetries,
     Duration? delay,
   }) async {
-    if (emitState) emit(state.copyWith(loading: true, error: ''));
+    if (emitState) {
+      emit(state.copyWith(
+        loading: true,
+        error: '',
+        torStatus: TorStatus.connecting,
+      ));
+    }
 
     for (var attempt = 0; attempt < maxAttempts; attempt++) {
       try {
         final result = await operation();
         if (emitState) {
-          emit(state.copyWith(keyServerUp: true, loading: false));
+          emit(state.copyWith(torStatus: TorStatus.online, loading: false));
         }
         return result;
       } catch (e) {
