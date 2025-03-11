@@ -24,12 +24,14 @@ class KeychainCubit extends Cubit<KeychainState> {
 
   // Helper methods for common state updates
   void _emitError(String error) {
-    emit(state.copyWith(
-      error: error,
-      loading: false,
-      // Reset error state when new error occurs
-      secretStatus: SecretStatus.initial,
-    ));
+    emit(
+      state.copyWith(
+        error: error,
+        loading: false,
+        // Reset error state when new error occurs
+        secretStatus: SecretStatus.initial,
+      ),
+    );
   }
 
   void _emitLoading() {
@@ -37,11 +39,13 @@ class KeychainCubit extends Cubit<KeychainState> {
   }
 
   void _emitSuccess({SecretStatus? keySecretState}) {
-    emit(state.copyWith(
-      loading: false,
-      error: '', // Clear any errors
-      secretStatus: keySecretState ?? state.secretStatus,
-    ));
+    emit(
+      state.copyWith(
+        loading: false,
+        error: '', // Clear any errors
+        secretStatus: keySecretState ?? state.secretStatus,
+      ),
+    );
   }
 
   // Core operations
