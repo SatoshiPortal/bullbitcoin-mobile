@@ -177,7 +177,9 @@ class _Screen extends StatelessWidget {
     final potentialonchainSwap = context.select(
       (SendCubit x) => x.state.couldBeOnchainSwap(),
     );
-
+    final potentialSendSwap = context.select(
+      (SendCubit x) => x.state.couldBeSendSwap(),
+    );
     if (showWarning && !walletIsLiquid && potentialonchainSwap == false) {
       return const _Warnings();
     }
@@ -191,6 +193,31 @@ class _Screen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Gap(32),
+              if (signed && potentialSendSwap)...[
+                const WalletSelectionDropDown(),
+                if (potentialonchainSwap) ...[
+                  const Gap(8),
+                  const BBText.body(
+                    'Onchain swap',
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+                const Gap(24),
+                const AddressField(),
+                const Gap(24),
+                const AmountField(),
+                if (!isLn) const SendAllOption(),
+                const Gap(24),
+                if (isPj) const SendPayjoinOption(),
+                const Gap(24),
+                const DescriptionField(),
+                if (!isLn) ...[
+                  const Gap(24),
+                  const NetworkFees(),
+                ],
+                const Gap(8),
+                const AdvancedOptions(),
+              ],
               if (!signed) ...[
                 const WalletSelectionDropDown(),
                 if (potentialonchainSwap) ...[

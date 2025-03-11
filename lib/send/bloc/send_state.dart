@@ -249,6 +249,16 @@ class SendState with _$SendState {
 
     return false;
   }
+  
+  bool couldBeSendSwap() {
+    if (couldBeOnchainSwap()) return true;
+        if (
+        paymentNetwork == AddressNetwork.lightning || 
+         paymentNetwork == AddressNetwork.bip21Lightning) {
+      return true;
+    }   
+    return false;
+  }
 
   String getSendButtonLabel(bool sending) {
     if (couldBeOnchainSwap() == true) return 'Create Swap';
