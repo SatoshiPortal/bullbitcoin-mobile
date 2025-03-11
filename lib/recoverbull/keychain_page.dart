@@ -63,7 +63,6 @@ class _KeychainBackupPageState extends State<KeychainBackupPage> {
 
   @override
   Widget build(BuildContext context) {
-    context.read<KeychainCubit>().updateChainState(_pState, backupKey, backup);
     return BlocProvider.value(
       value: createBackupSettingsCubit(),
       child: _Screen(
