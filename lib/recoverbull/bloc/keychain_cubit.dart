@@ -433,8 +433,24 @@ class KeychainCubit extends Cubit<KeychainState> {
 
   @override
   Future<void> close() {
-    // Don't dispose of the connection manager here since it's shared
+    resetState();
     return super.close();
+  }
+
+  /// Resets all sensitive state when leaving the page
+  void resetState() {
+    emit(state.copyWith(
+      secret: '',
+      tempSecret: '',
+      backupKey: '',
+      error: '',
+      isSecretConfirmed: false,
+      secretStatus: SecretStatus.initial,
+      selectedKeyChainFlow: KeyChainFlow.enter,
+      authInputType: AuthInputType.pin,
+      loading: false,
+      obscure: false,
+    ));
   }
 
   /// Handles server operations with retry logic and state management
