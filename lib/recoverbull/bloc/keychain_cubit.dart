@@ -22,6 +22,46 @@ class KeychainCubit extends Cubit<KeychainState> {
     _initialize();
   }
 
+  // Helper methods for common state updates
+  void _emitError(String error) {
+    emit(state.copyWith(
+      error: error,
+      loading: false,
+      // Reset error state when new error occurs
+      secretStatus: SecretStatus.initial,
+    ));
+  }
+
+  void _emitLoading() {
+    emit(state.copyWith(loading: true, error: ''));
+  }
+
+  void _emitSuccess({SecretStatus? keySecretState}) {
+    emit(state.copyWith(
+      loading: false,
+      error: '', // Clear any errors
+      secretStatus: keySecretState ?? state.secretStatus,
+    ));
+  }
+
+  // Core operations
+  Future<void> _initialize() async {
+    try {
+      _emitLoading();
+      if (_currentService == null || !_connection.isInitialized) {
+        _currentService = await _createKeyService();
+      }
+      await _connection.ready;
+    } catch (e) {
+      debugPrint('Failed to initialize keyserver connection: $e');
+      emit(state.copyWith(
+        error: 'Service unavailable. Please check your connection.',
+        loading: false,
+        torStatus: TorStatus.offline,
+      ));
+    }
+  }
+
   Future<KeyService> _createKeyService() async {
     if (!_connection.isInitialized) {
       // Initialize Tor with retry logic and delayed start
@@ -197,30 +237,26 @@ class KeychainCubit extends Cubit<KeychainState> {
     }
   }
 
-  Future confirmPressed() async {
-    if (!await _ensureServerStatus()) return;
-    if (!state.canStoreKey) return;
-    if (state.pageState == KeyChainPageState.enter) {
-      emit(
-        state.copyWith(
-          pageState: KeyChainPageState.confirm,
-          tempSecret: state.secret,
-          secret: '',
-        ),
-      );
+  Future<void> secureKey() async {
+    final backup = state.backupData;
+    if (backup == null || state.backupKey.isEmpty || state.tempSecret.isEmpty) {
+      _emitError('Missing backup data or credentials');
       return;
     }
 
-    if (state.secret != state.tempSecret) {
-      emit(
-        state.copyWith(
-          pageState: KeyChainPageState.enter,
-          error: 'Values do not match. Please try again.',
-          secret: '',
-          tempSecret: '',
-        ),
+    if (!await _ensureServerStatus()) return;
+
+    try {
+      _emitLoading();
+      await _currentService!.storeBackupKey(
+        backupId: backup.id,
+        password: state.tempSecret,
+        backupKey: HEX.decode(state.backupKey),
+        salt: HEX.decode(backup.salt),
       );
-      return;
+      _emitSuccess(keySecretState: SecretStatus.stored);
+    } catch (e) {
+      _emitError('Failed to store backup key: $e');
     }
 
     emit(state.copyWith(isSecretConfirmed: true));
@@ -268,6 +304,8 @@ class KeychainCubit extends Cubit<KeychainState> {
       );
       return;
     }
+
+    emit(state.copyWith(isSecretConfirmed: true));
   }
 
   void keyPressed(String key) {
