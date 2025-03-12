@@ -16,7 +16,7 @@ import 'package:bb_mobile/_core/data/repositories/seed_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/settings_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/wallet_metadata_repository_impl.dart';
 import 'package:bb_mobile/_core/data/services/mnemonic_seed_factory_impl.dart';
-import 'package:bb_mobile/_core/data/services/payjoin_service_impl.dart';
+import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart';
 import 'package:bb_mobile/_core/data/services/wallet_manager_service_impl.dart';
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
@@ -27,7 +27,7 @@ import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/_core/domain/services/payjoin_service.dart';
+import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_use_case.dart';
@@ -62,7 +62,7 @@ void main() {
   late ElectrumServerRepository electrumServerRepository;
   late SettingsRepository settingsRepository;
   late WalletManagerService walletManagerService;
-  late PayjoinService payjoinService;
+  late PayjoinWatcherService payjoinWatcherService;
   late SetEnvironmentUseCase setEnvironmentUseCase;
   late RecoverWalletUseCase recoverWalletUseCase;
   late ReceiveWithPayjoinUseCase receiveWithPayjoinUseCase;
@@ -131,7 +131,7 @@ void main() {
       seedRepository: seedRepository,
       electrumServerRepository: electrumServerRepository,
     );
-    payjoinService = PayjoinServiceImpl(
+    payjoinWatcherService = PayjoinWatcherServiceImpl(
       payjoinRepository: payjoinRepository,
       electrumServerRepository: electrumServerRepository,
       settingsRepository: settingsRepository,
@@ -150,10 +150,10 @@ void main() {
       walletManager: walletManagerService,
     );
     receiveWithPayjoinUseCase = ReceiveWithPayjoinUseCase(
-      payjoinService: payjoinService,
+      payjoinRepository: payjoinRepository,
     );
     sendWithPayjoinUseCase = SendWithPayjoinUseCase(
-      payjoinService: payjoinService,
+      payjoinRepository: payjoinRepository,
     );
 
     receiverWallet = await recoverWalletUseCase.execute(
@@ -203,30 +203,22 @@ void main() {
   group('Payjoin Integration Tests', () {
     group('with one receive and one send', () {
       late StreamSubscription<Payjoin> payjoinSubscription;
-      late Completer<bool> payjoinReceiverStartedEvent;
-      late Completer<bool> payjoinSenderRequestedEvent;
       late Completer<bool> payjoinReceiverCompletedEvent;
       late Completer<bool> payjoinSenderCompletedEvent;
 
       setUp(() async {
-        payjoinReceiverStartedEvent = Completer();
-        payjoinSenderRequestedEvent = Completer();
         payjoinReceiverCompletedEvent = Completer();
         payjoinSenderCompletedEvent = Completer();
 
-        payjoinSubscription = payjoinService.payjoins.listen((payjoin) {
+        payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
           debugPrint('Payjoin event: $payjoin');
           switch (payjoin) {
             case PayjoinReceiver _:
-              if (payjoin.status == PayjoinStatus.started) {
-                payjoinReceiverStartedEvent.complete(true);
-              } else if (payjoin.status == PayjoinStatus.completed) {
+              if (payjoin.status == PayjoinStatus.completed) {
                 payjoinReceiverCompletedEvent.complete(true);
               }
             case PayjoinSender _:
-              if (payjoin.status == PayjoinStatus.requested) {
-                payjoinSenderRequestedEvent.complete(true);
-              } else if (payjoin.status == PayjoinStatus.completed) {
+              if (payjoin.status == PayjoinStatus.completed) {
                 payjoinSenderCompletedEvent.complete(true);
               }
           }
@@ -256,16 +248,6 @@ void main() {
         expect(pjUri.queryParameters.containsKey('pj'), true);
         expect(pjUri.queryParameters['pjos'], '0');
 
-        // The payjoin receiver having started the payjoin should have emitted an event,
-        //  wait for it to be received to be sure it is emitted correctly.
-        final didReceiverStart = await Future.any(
-          [
-            payjoinReceiverStartedEvent.future,
-            Future.delayed(const Duration(seconds: 5), () => false),
-          ],
-        );
-        expect(didReceiverStart, true);
-
         // Build the psbt with the sender wallet
         const networkFeesSatPerVb = 1000.0;
         final originalPsbt = await walletManagerService.buildPsbt(
@@ -284,21 +266,11 @@ void main() {
         debugPrint('Payjoin sender created: $payjoinSender');
         expect(payjoinSender.status, PayjoinStatus.requested);
 
-        // The payjoin sender having requested the payjoin should have emitted an event,
-        //  wait for it to be received to be sure it is emitted correctly
-        final didSenderRequestPayjoin = await Future.any(
-          [
-            payjoinSenderRequestedEvent.future,
-            // TODO: make a constant for the payjoin polling interval and take a multiple of it for the timeout here
-            Future.delayed(const Duration(seconds: 15), () => false),
-          ],
-        );
-        expect(didSenderRequestPayjoin, true);
-
-        // Once the request is send by the sender, the receiver should fetch it
-        //  in the next poll, create a proposal and send it back to the payjoin directory.
-        // That completes the tasks of the receiver and should also emit an event.
-        //  Wait for it to be sure it is emitted correctly.
+        // Once the request is sent by the sender, it is automatically fetched
+        //  by the receiver the next time it polls the payjoin directory.
+        //  The receiver will process the request automatically and sends a
+        //  payjoin proposal back to the payjoin directory which should complete
+        //  the payjoin session for the receiver's side.
         final didReceiverComplete = await Future.any(
           [
             payjoinReceiverCompletedEvent.future,
@@ -308,8 +280,11 @@ void main() {
         );
         expect(didReceiverComplete, true);
 
-        // The sender now should fetch the proposal at the next poll and complete the payjoin.
-        //  This should again emit an event, wait for it to be sure it is emitted correctly.
+        // Once the proposal is sent by the receiver, it is automatically fetched
+        //  by the sender the next time it polls the payjoin directory.
+        // The sender will process the proposal automatically and broadcast the
+        //  final transaction to the network which should complete the payjoin
+        //  session for the sender's side.
         final didSenderComplete = await Future.any(
           [
             payjoinSenderCompletedEvent.future,

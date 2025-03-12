@@ -1,15 +1,16 @@
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
-import 'package:bb_mobile/_core/domain/services/payjoin_service.dart';
+import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 
 class GetPayjoinUpdatesUseCase {
-  final PayjoinService _payjoinService;
+  final PayjoinWatcherService _payjoinWatcher;
 
-  const GetPayjoinUpdatesUseCase({required PayjoinService payjoinService})
-      : _payjoinService = payjoinService;
+  const GetPayjoinUpdatesUseCase({
+    required PayjoinWatcherService payjoinWatcher,
+  }) : _payjoinWatcher = payjoinWatcher;
 
   Stream<Payjoin> execute({List<String>? ids}) {
     try {
-      return _payjoinService.payjoins.where(
+      return _payjoinWatcher.payjoins.where(
         (payjoin) {
           if (ids == null) {
             return true;

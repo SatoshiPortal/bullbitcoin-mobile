@@ -1,11 +1,12 @@
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
-import 'package:bb_mobile/_core/domain/services/payjoin_service.dart';
+import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 
 class SendWithPayjoinUseCase {
-  final PayjoinService _payjoinService;
+  final PayjoinRepository _payjoinRepository;
 
-  const SendWithPayjoinUseCase({required PayjoinService payjoinService})
-      : _payjoinService = payjoinService;
+  const SendWithPayjoinUseCase({required PayjoinRepository payjoinRepository})
+      : _payjoinRepository = payjoinRepository;
 
   Future<Payjoin> execute({
     required String walletId,
@@ -14,7 +15,7 @@ class SendWithPayjoinUseCase {
     required double networkFeesSatPerVb,
   }) {
     try {
-      return _payjoinService.createPayjoinSender(
+      return _payjoinRepository.createPayjoinSender(
         walletId: walletId,
         bip21: bip21,
         originalPsbt: originalPsbt,

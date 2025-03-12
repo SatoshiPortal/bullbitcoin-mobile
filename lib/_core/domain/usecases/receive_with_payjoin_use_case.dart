@@ -1,11 +1,12 @@
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
-import 'package:bb_mobile/_core/domain/services/payjoin_service.dart';
+import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 
 class ReceiveWithPayjoinUseCase {
-  final PayjoinService _payjoinService;
+  final PayjoinRepository _payjoinRepository;
 
-  const ReceiveWithPayjoinUseCase({required PayjoinService payjoinService})
-      : _payjoinService = payjoinService;
+  const ReceiveWithPayjoinUseCase(
+      {required PayjoinRepository payjoinRepository})
+      : _payjoinRepository = payjoinRepository;
 
   Future<PayjoinReceiver> execute({
     required String walletId,
@@ -14,7 +15,7 @@ class ReceiveWithPayjoinUseCase {
     int? expireAfterSec,
   }) {
     try {
-      return _payjoinService.createPayjoinReceiver(
+      return _payjoinRepository.createPayjoinReceiver(
         walletId: walletId,
         address: address,
         isTestnet: isTestnet,

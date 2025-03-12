@@ -18,7 +18,7 @@ import 'package:bb_mobile/_core/data/repositories/settings_repository_impl.dart'
 import 'package:bb_mobile/_core/data/repositories/wallet_metadata_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/word_list_repository_impl.dart';
 import 'package:bb_mobile/_core/data/services/mnemonic_seed_factory_impl.dart';
-import 'package:bb_mobile/_core/data/services/payjoin_service_impl.dart';
+import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart';
 import 'package:bb_mobile/_core/data/services/wallet_manager_service_impl.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
@@ -27,7 +27,7 @@ import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/word_list_repository.dart';
 import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
-import 'package:bb_mobile/_core/domain/services/payjoin_service.dart';
+import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
@@ -155,8 +155,8 @@ class CoreLocator {
     );
     final pdkPayjoinsBox =
         await Hive.openBox<String>(HiveBoxNameConstants.pdkPayjoins);
-    locator.registerLazySingleton<PayjoinService>(
-      () => PayjoinServiceImpl(
+    locator.registerLazySingleton<PayjoinWatcherService>(
+      () => PayjoinWatcherServiceImpl(
         payjoinRepository: PayjoinRepositoryImpl(
           payjoinDataSource: PdkPayjoinDataSourceImpl(
             dio: Dio(),
