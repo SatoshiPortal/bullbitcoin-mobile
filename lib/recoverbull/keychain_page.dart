@@ -166,16 +166,19 @@ class _Screen extends StatelessWidget {
               return;
             }
 
-            // Only call secureKey if confirmed and not already processing
-            if (state.isSecretConfirmed &&
-                !state.loading &&
-                !state.hasError &&
-                state.secretStatus == SecretStatus.initial &&
-                state.torStatus == TorStatus.online) {
-              // Prevent multiple calls
-              if (!state.isSecretConfirmed) return;
-              context.read<KeychainCubit>().secureKey();
-              return; // Exit early after triggering secureKey
+            // Handle errors - don't show errors for offline state when in backup key mode
+            if (state.hasError &&
+                !(state.torStatus == TorStatus.offline &&
+                    state.authInputType == AuthInputType.backupKey)) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => _ErrorDialog(
+                  error: state.error,
+                  selectedKeyChainFlow: state.selectedKeyChainFlow,
+                ),
+              );
+              return; // Stop here after showing error
             }
 
             if (state.selectedKeyChainFlow == KeyChainFlow.delete &&
@@ -191,6 +194,7 @@ class _Screen extends StatelessWidget {
                   selectedKeyChainFlow: pState,
                 ),
               );
+              return; // Stop after handling delete
             }
 
             if (state.isSecretConfirmed &&
@@ -198,6 +202,7 @@ class _Screen extends StatelessWidget {
                 !state.hasError &&
                 state.secretStatus == SecretStatus.initial) {
               context.read<KeychainCubit>().secureKey();
+              return; // Stop here to prevent multiple calls
             }
 
             if (state.secretStatus == SecretStatus.stored &&
@@ -211,6 +216,7 @@ class _Screen extends StatelessWidget {
                   selectedKeyChainFlow: pState,
                 ),
               );
+              return; // Stop after success
             }
             if (state.secretStatus == SecretStatus.recovered &&
                 !state.loading &&
@@ -220,6 +226,7 @@ class _Screen extends StatelessWidget {
                     backup,
                     state.backupKey,
                   );
+              return; // Stop after recovery
             }
           },
         ),
