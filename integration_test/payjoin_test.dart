@@ -269,6 +269,8 @@ void main() {
         );
         debugPrint('Payjoin sender created: $payjoinSender');
         expect(payjoinSender.status, PayjoinStatus.requested);
+
+        // TODO: add timeouts so the tests fail if the payjoin steps do not complete
         await payjoinSenderRequestedEvent.future;
         expect(payjoinSenderRequestedEvent.isCompleted, true);
 

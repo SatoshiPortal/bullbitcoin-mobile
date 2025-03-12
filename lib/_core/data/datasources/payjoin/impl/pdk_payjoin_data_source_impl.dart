@@ -385,7 +385,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
 
       // Start checking for a payjoin request from the sender periodically
       Timer.periodic(
-        const Duration(seconds: 60),
+        const Duration(seconds: 5),
         (Timer timer) async {
           log('[Receivers Isolate] Checking for request in receivers isolate');
           try {
@@ -438,7 +438,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
 
       // Periodically check for a proposal from the receiver
       Timer.periodic(
-        const Duration(seconds: 60),
+        const Duration(seconds: 5),
         (Timer timer) async {
           log('[Senders Isolate]Checking for proposal in senders isolate');
           try {
