@@ -131,12 +131,18 @@ class _Screen extends StatelessWidget {
           },
         ),
         BlocListener<KeychainCubit, KeychainState>(
-          listenWhen: (previous, current) =>
-              previous.isSecretConfirmed != current.isSecretConfirmed ||
-              previous.secretStatus != current.secretStatus ||
-              (previous.torStatus != current.torStatus &&
-                  current.torStatus != TorStatus.connecting) ||
-              previous.error != current.error,
+          listenWhen: (previous, current) {
+            // Don't trigger for connecting state or non-meaningful changes
+            if (current.torStatus == TorStatus.connecting) {
+              return false;
+            }
+
+            // Only listen for significant state changes
+            return previous.isSecretConfirmed != current.isSecretConfirmed ||
+                previous.secretStatus != current.secretStatus ||
+                (previous.torStatus != current.torStatus) ||
+                (previous.error.isEmpty && current.error.isNotEmpty);
+          },
           listener: (context, state) {
             if (state.hasError) {
               showDialog(
