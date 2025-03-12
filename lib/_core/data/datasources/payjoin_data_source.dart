@@ -6,6 +6,7 @@ import 'dart:isolate';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/_core/data/models/payjoin_model.dart';
+import 'package:bb_mobile/_utils/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:payjoin_flutter/bitcoin_ffi.dart';
@@ -70,8 +71,6 @@ class NoValidPayjoinBip21Exception implements Exception {
 }
 
 class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
-  static const String ohttpRelayUrl = 'https://pj.bobspacebkk.com';
-
   final String _payjoinDirectoryUrl;
   final Dio _dio;
   final KeyValueStorageDataSource<String> _storage;
@@ -89,7 +88,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
   final Completer _sendersIsolateReady;
 
   PdkPayjoinDataSourceImpl({
-    String payjoinDirectoryUrl = 'https://payjo.in',
+    String payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
     required Dio dio,
     required KeyValueStorageDataSource<String> storage,
   })  : _payjoinDirectoryUrl = payjoinDirectoryUrl,
@@ -118,7 +117,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
   }) async {
     try {
       final payjoinDirectory = await Url.fromStr(_payjoinDirectoryUrl);
-      final ohttpRelay = await Url.fromStr(ohttpRelayUrl);
+      final ohttpRelay = await Url.fromStr(PayjoinConstants.ohttpRelayUrl);
       final ohttpKeys = await fetchOhttpKeys(
         ohttpRelay: ohttpRelay,
         payjoinDirectory: payjoinDirectory,
@@ -442,7 +441,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
 
       // Start checking for a payjoin request from the sender periodically
       Timer.periodic(
-        const Duration(seconds: 5),
+        const Duration(seconds: PayjoinConstants.directoryPollingInterval),
         (Timer timer) async {
           log('[Receivers Isolate] Checking for request in receivers isolate');
           try {
@@ -495,7 +494,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
 
       // Periodically check for a proposal from the receiver
       Timer.periodic(
-        const Duration(seconds: 5),
+        const Duration(seconds: PayjoinConstants.directoryPollingInterval),
         (Timer timer) async {
           log('[Senders Isolate]Checking for proposal in senders isolate');
           try {
@@ -518,7 +517,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
               timer.cancel();
             }
           } catch (e) {
-            log('[Senders Isolate] periodic timer exception: ${e}');
+            log('[Senders Isolate] periodic timer exception: $e');
           }
         },
       );
@@ -573,7 +572,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
     required Dio dio,
   }) async {
     final (req, context) = await sender.extractV2(
-      ohttpProxyUrl: await Url.fromStr(ohttpRelayUrl),
+      ohttpProxyUrl: await Url.fromStr(PayjoinConstants.ohttpRelayUrl),
     );
 
     final res = await dio.post(
@@ -598,8 +597,9 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
     required V2GetContext context,
     required Dio dio,
   }) async {
-    final (req, reqCtx) =
-        await context.extractReq(ohttpRelay: await Url.fromStr(ohttpRelayUrl));
+    final (req, reqCtx) = await context.extractReq(
+      ohttpRelay: await Url.fromStr(PayjoinConstants.ohttpRelayUrl),
+    );
 
     final res = await dio.post(
       req.url.asString(),

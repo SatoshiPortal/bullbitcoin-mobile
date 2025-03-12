@@ -8,6 +8,7 @@ import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_use_case.dart';
+import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/settings/domain/usecases/set_environment_usecase.dart';
@@ -171,8 +172,12 @@ void main() {
         final didReceiverComplete = await Future.any(
           [
             payjoinReceiverCompletedEvent.future,
-            // TODO: make a constant for the payjoin polling interval and take a multiple of it for the timeout here
-            Future.delayed(const Duration(seconds: 15), () => false),
+            Future.delayed(
+              const Duration(
+                seconds: PayjoinConstants.directoryPollingInterval * 3,
+              ),
+              () => false,
+            ),
           ],
         );
         expect(didReceiverComplete, true);
@@ -185,8 +190,12 @@ void main() {
         final didSenderComplete = await Future.any(
           [
             payjoinSenderCompletedEvent.future,
-            // TODO: make a constant for the payjoin polling interval and take a multiple of it for the timeout here
-            Future.delayed(const Duration(seconds: 15), () => false),
+            Future.delayed(
+              const Duration(
+                seconds: PayjoinConstants.directoryPollingInterval * 3,
+              ),
+              () => false,
+            ),
           ],
         );
         expect(didSenderComplete, true);

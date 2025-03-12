@@ -20,6 +20,12 @@ class HiveBoxNameConstants {
   static const boltzSwaps = 'boltzSwaps';
 }
 
+class PayjoinConstants {
+  static const String ohttpRelayUrl = 'https://pj.bobspacebkk.com';
+  static const String directoryUrl = 'https://payjo.in';
+  static const directoryPollingInterval = 5;
+}
+
 class ApiServiceConstants {
   // Bitcoin mempool
   static const bbMempoolUrlPath = 'mempool.bullbitcoin.com';
