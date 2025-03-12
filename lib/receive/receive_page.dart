@@ -1097,6 +1097,7 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
     String receiveAddressLabel = 'Payment invoice';
 
     final isPayjoin = context.select((ReceiveCubit _) => _.state.isPayjoin);
+    final isBitcoin = paymentNetwork == PaymentNetwork.bitcoin;
 
     if (paymentNetwork == PaymentNetwork.bitcoin) {
       receiveAddressLabel = isPayjoin ? 'Payjoin address' : 'Bitcoin address';
@@ -1179,7 +1180,7 @@ class _ReceiveDisplayAddressState extends State<ReceiveDisplayAddress> {
               ),
             ],
           ),
-          if (isPjReceiver != null)
+          if (isPjReceiver != null && isBitcoin)
             Row(
               children: [
                 Expanded(
