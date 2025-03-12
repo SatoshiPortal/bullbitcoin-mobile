@@ -180,13 +180,11 @@ class _Screen extends StatelessWidget {
               );
               return; // Stop here after showing error
             }
-
             if (state.selectedKeyChainFlow == KeyChainFlow.delete &&
                 state.secretStatus == SecretStatus.deleted &&
                 !state.loading &&
                 !state.hasError) {
               context.read<KeychainCubit>().clearSensitive();
-
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -196,7 +194,6 @@ class _Screen extends StatelessWidget {
               );
               return; // Stop after handling delete
             }
-
             if (state.isSecretConfirmed &&
                 !state.loading &&
                 !state.hasError &&
@@ -1061,8 +1058,9 @@ class _ConfirmTitleText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (selectedKeyChainFlow, authInputType) = context.select(
-        (KeychainCubit x) =>
-            (x.state.selectedKeyChainFlow, x.state.authInputType));
+      (KeychainCubit x) =>
+          (x.state.selectedKeyChainFlow, x.state.authInputType),
+    );
     final text =
         'Confirm backup ${authInputType == AuthInputType.pin ? 'PIN' : 'password'}';
 
