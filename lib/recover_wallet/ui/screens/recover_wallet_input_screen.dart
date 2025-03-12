@@ -33,9 +33,7 @@ class RecoverWalletInputScreen extends StatelessWidget {
 }
 
 class _Screen extends StatelessWidget {
-  const _Screen({
-    super.key,
-  });
+  const _Screen();
 
   @override
   Widget build(BuildContext context) {
@@ -122,32 +120,51 @@ class _Screen extends StatelessWidget {
               ],
             ),
           ),
-          Column(
+          const Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              BlocSelector<RecoverWalletBloc, RecoverWalletState, bool>(
-                selector: (state) => state.hasAllValidWords,
-                builder: (context, hasAllValidWords) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: BBButton.big(
-                      label: 'Recover',
-                      onPressed: () => hasAllValidWords
-                          ? () => context.read<RecoverWalletBloc>().add(
-                                const RecoverWalletConfirmed(),
-                              )
-                          : null,
-                      bgColor: context.colour.secondary,
-                      textColor: context.colour.onPrimary,
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
+              _Button(),
+              SizedBox(height: 20),
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _Button extends StatelessWidget {
+  const _Button();
+
+  @override
+  Widget build(BuildContext context) {
+    final hasAllValidWords =
+        context.select((RecoverWalletBloc _) => _.state.hasAllValidWords);
+
+    final creating = context.select(
+      (RecoverWalletBloc _) => _.state.isCreating,
+    );
+
+    if (creating) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: BBButton.big(
+        label: 'Recover',
+        onPressed: () {
+          if (hasAllValidWords) {
+            context
+                .read<RecoverWalletBloc>()
+                .add(const RecoverWalletConfirmed());
+          }
+        },
+        bgColor: context.colour.secondary,
+        textColor: context.colour.onPrimary,
       ),
     );
   }

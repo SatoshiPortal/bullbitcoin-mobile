@@ -36,6 +36,7 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
                 RecoverWalletWordChanged(
                   index: widget.wordIndex,
                   word: _controller.text,
+                  tapped: true,
                 ),
               );
         }
@@ -52,6 +53,13 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
         }
       },
     );
+
+    final wordAtIdx =
+        context.read<RecoverWalletBloc>().state.validWords[widget.wordIndex];
+
+    if (wordAtIdx != null) {
+      _controller.text = wordAtIdx;
+    }
   }
 
   void _showOverlay() {
@@ -73,7 +81,7 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
   OverlayEntry _createOverlayEntry() {
     final renderBox = context.findRenderObject()! as RenderBox;
     final size = renderBox.size;
-    final offset = renderBox.localToGlobal(Offset.zero);
+    // final offset = renderBox.localToGlobal(Offset.zero);
 
     final hintWords =
         context.read<RecoverWalletBloc>().state.hintWords[widget.wordIndex] ??
@@ -167,19 +175,21 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
                     textAlign: TextAlign.right,
                   ),
                 ),
-                const Gap(12),
+                const Gap(4),
                 Expanded(
                   child: TextField(
                     controller: _controller,
                     focusNode: _focusNode,
                     clipBehavior: Clip.antiAliasWithSaveLayer,
                     onEditingComplete: _removeOverlay,
+                    enableSuggestions: false,
                     decoration: const InputDecoration(
                       // fillColor: context.colour.onPrimary,
                       // filled: true,
-                      contentPadding: EdgeInsets.symmetric(
+                      contentPadding: EdgeInsets.only(
+                        right: 8,
                         // vertical: 12,
-                        horizontal: 10,
+                        // horizontal: 10,
                       ),
                       border: OutlineInputBorder(
                         // borderRadius: BorderRadius.circular(4),

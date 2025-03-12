@@ -13,10 +13,12 @@ class RecoverWalletWordsCountChanged extends RecoverWalletEvent {
 class RecoverWalletWordChanged extends RecoverWalletEvent {
   final int index;
   final String word;
+  final bool tapped;
 
   const RecoverWalletWordChanged({
     required this.index,
     required this.word,
+    required this.tapped,
   });
 }
 
@@ -42,6 +44,15 @@ class RecoverWalletConfirmed extends RecoverWalletEvent {
   const RecoverWalletConfirmed();
 }
 
+class ClearUntappedWords extends RecoverWalletEvent {
+  const ClearUntappedWords();
+}
+
 class RecoverFromOnboarding extends RecoverWalletEvent {
   const RecoverFromOnboarding();
+}
+
+class ImportTestableWallet extends RecoverWalletEvent {
+  final bool useTestWallet;
+  const ImportTestableWallet({required this.useTestWallet});
 }

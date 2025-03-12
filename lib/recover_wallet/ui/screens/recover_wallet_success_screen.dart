@@ -2,9 +2,11 @@ import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/gen/assets.gen.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
+import 'package:go_router/go_router.dart';
 
 class RecoverWalletSuccessScreen extends StatelessWidget {
   const RecoverWalletSuccessScreen({super.key});
@@ -46,16 +48,11 @@ class RecoverWalletSuccessScreen extends StatelessWidget {
                 label: 'Got it',
                 bgColor: context.colour.secondary,
                 textColor: context.colour.onPrimary,
-                onPressed: () {},
+                onPressed: () {
+                  context.goNamed(AppRoute.home.name);
+                },
               ),
             ),
-
-            // ElevatedButton(
-            //   onPressed: () {
-            //     context.pop();
-            //   },
-            //   child: const Text('Start using wallet'),
-            // ),
           ],
         ),
       ),
