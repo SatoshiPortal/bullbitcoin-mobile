@@ -142,7 +142,7 @@ class ActionsRow extends StatelessWidget {
               onPressed: () {
                 final walletBloc = context.read<WalletBloc>();
                 context.push(
-                  '/wallet-settings/open-backup',
+                  '/wallet-settings/backup-settings/backup-options/physical',
                   extra: walletBloc.state.wallet.id,
                 );
               },
