@@ -123,6 +123,29 @@ class KeychainCubit extends Cubit<KeychainState> {
           emit(state.copyWith(torStatus: TorStatus.online, loading: false));
         }
         return result;
+      } on KeyServiceException catch (e) {
+        final isLastAttempt = attempt == maxAttempts - 1;
+        debugPrint(
+          isLastAttempt
+              ? '$operationName failed after $maxAttempts attempts: ${e.toDetailedError()}'
+              : 'Retrying $operationName (${attempt + 1}/$maxAttempts)',
+        );
+
+        if (isLastAttempt) {
+          debugPrint(
+              'Unable to complete $operationName: ${e.toDetailedError()}');
+          if (emitState) {
+            emit(
+              state.copyWith(
+                torStatus: TorStatus.offline,
+                loading: false,
+                error: e.appMessage,
+              ),
+            );
+          }
+          return null;
+        }
+        await Future.delayed(delay ?? retryDelay);
       } catch (e) {
         final isLastAttempt = attempt == maxAttempts - 1;
         debugPrint(
@@ -132,9 +155,7 @@ class KeychainCubit extends Cubit<KeychainState> {
         );
 
         if (isLastAttempt) {
-          debugPrint(
-            'Unable to complete $operationName. Please check your connection.',
-          );
+          debugPrint('Unable to complete $operationName: $e');
           if (emitState) {
             emit(
               state.copyWith(
@@ -286,7 +307,17 @@ class KeychainCubit extends Cubit<KeychainState> {
         ),
       );
       return;
+    } on KeyServiceException catch (e) {
+      debugPrint('failed to delete backupkey: ${e.toDetailedError()}');
+      emit(
+        state.copyWith(
+          error: e.appMessage,
+          loading: false,
+        ),
+      );
+      return;
     } catch (e) {
+      debugPrint('failed to delete backup key: $e');
       emit(
         state.copyWith(
           error: 'Failed to delete backup key',
@@ -381,6 +412,9 @@ class KeychainCubit extends Cubit<KeychainState> {
         salt: HEX.decode(backup.salt),
       );
       _emitSuccess(keySecretState: SecretStatus.stored);
+    } on KeyServiceException catch (e) {
+      debugPrint('failed to store backup key: ${e.toDetailedError()}');
+      _emitError(e.appMessage);
     } catch (e) {
       debugPrint('Failed to store backup key: $e');
       _emitError('Failed to store backup key');
