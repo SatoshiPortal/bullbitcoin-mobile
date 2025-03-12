@@ -1,40 +1,40 @@
 import 'dart:async';
 
-import 'package:bb_mobile/_core/data/models/pdk_input_pair_model.dart';
-import 'package:bb_mobile/_core/data/models/pdk_payjoin_model.dart';
+import 'package:bb_mobile/_core/data/models/payjoin_input_pair_model.dart';
+import 'package:bb_mobile/_core/data/models/payjoin_model.dart';
 import 'package:flutter/foundation.dart';
 
 abstract class PayjoinDataSource {
-  // requestsForReceivers is a stream that emits a PdkPayjoinReceiverModel every
+  // requestsForReceivers is a stream that emits a PayjoinReceiverModel every
   //  time a payjoin request (original tx psbt) is received from a sender.
-  Stream<PdkPayjoinReceiverModel> get requestsForReceivers;
-  // proposalsForSenders is a stream that emits a PdkPayjoinSenderModel every time a
+  Stream<PayjoinReceiverModel> get requestsForReceivers;
+  // proposalsForSenders is a stream that emits a PayjoinSenderModel every time a
   //  payjoin proposal (payjoin tx psbt) was sent by a receiver for a sender.
-  Stream<PdkPayjoinSenderModel> get proposalsForSenders;
-  Future<PdkPayjoinReceiverModel> createReceiver({
+  Stream<PayjoinSenderModel> get proposalsForSenders;
+  Future<PayjoinReceiverModel> createReceiver({
     required String walletId,
     required String address,
     required bool isTestnet,
     required BigInt maxFeeRateSatPerVb,
     int? expireAfterSec,
   });
-  Future<PdkPayjoinSenderModel> createSender({
+  Future<PayjoinSenderModel> createSender({
     required String walletId,
     required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
   });
-  Future<PdkPayjoinModel?> get(String id);
-  Future<List<PdkPayjoinModel>> getAll();
+  Future<PayjoinModel?> get(String id);
+  Future<List<PayjoinModel>> getAll();
   Future<void> delete(String id);
-  Future<PdkPayjoinReceiverModel> processRequest({
+  Future<PayjoinReceiverModel> processRequest({
     required String id,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
     required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
-    required List<PdkInputPairModel> inputPairs,
+    required List<PayjoinInputPairModel> inputPairs,
     required FutureOr<String> Function(String) processPsbt,
   });
-  Future<PdkPayjoinSenderModel> completeSender(
+  Future<PayjoinSenderModel> completeSender(
     String uri, {
     required String txId,
   });

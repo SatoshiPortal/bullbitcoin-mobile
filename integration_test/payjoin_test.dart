@@ -165,18 +165,55 @@ void main() {
       scriptType: ScriptType.bip84,
     );
 
+    // Sync the wallets before starting the tests
+    await walletManagerService.syncAll();
+
     debugPrint('Setup completed');
   });
 
-  group('WalletRepositoryManager Integration Tests', () {
-    group('Payjoin end-2-end', () {
-      late StreamSubscription<Payjoin> payjoinSubscription;
-      final Completer<bool> payjoinReceiverStartedEvent = Completer();
-      final Completer<bool> payjoinSenderRequestedEvent = Completer();
-      final Completer<bool> payjoinReceiverCompletedEvent = Completer();
-      final Completer<bool> payjoinSenderCompletedEvent = Completer();
+  test('Wallets have funds to payjoin', () async {
+    final senderBalance = await walletManagerService.getBalance(
+      walletId: senderWallet.id,
+    );
+    final receiverBalance = await walletManagerService.getBalance(
+      walletId: receiverWallet.id,
+    );
+    debugPrint('Sender balance: $senderBalance');
+    debugPrint('Receiver balance: $receiverBalance');
 
-      setUpAll(() {
+    if (senderBalance.totalSat == BigInt.zero) {
+      final address = await walletManagerService.getNewAddress(
+        walletId: senderWallet.id,
+      );
+      debugPrint(
+          'Send some funds to ${address.address} before running the integration test again');
+    }
+    if (receiverBalance.totalSat == BigInt.zero) {
+      final address = await walletManagerService.getNewAddress(
+        walletId: receiverWallet.id,
+      );
+      debugPrint(
+          'Send some funds to ${address.address} before running the integration test again');
+    }
+
+    expect(senderBalance.totalSat.toInt(), greaterThan(0));
+    expect(receiverBalance.totalSat.toInt(), greaterThan(0));
+  });
+
+  group('Payjoin Integration Tests', () {
+    group('with one receive and one send', () {
+      late StreamSubscription<Payjoin> payjoinSubscription;
+      late Completer<bool> payjoinReceiverStartedEvent;
+      late Completer<bool> payjoinSenderRequestedEvent;
+      late Completer<bool> payjoinReceiverCompletedEvent;
+      late Completer<bool> payjoinSenderCompletedEvent;
+
+      setUp(() async {
+        payjoinReceiverStartedEvent = Completer();
+        payjoinSenderRequestedEvent = Completer();
+        payjoinReceiverCompletedEvent = Completer();
+        payjoinSenderCompletedEvent = Completer();
+
         payjoinSubscription = payjoinService.payjoins.listen((payjoin) {
           debugPrint('Payjoin event: $payjoin');
           switch (payjoin) {
@@ -196,38 +233,7 @@ void main() {
         });
       });
 
-      test('sender and receiver have funds', () async {
-        await walletManagerService.syncAll();
-
-        final senderBalance = await walletManagerService.getBalance(
-          walletId: senderWallet.id,
-        );
-        final receiverBalance = await walletManagerService.getBalance(
-          walletId: receiverWallet.id,
-        );
-        debugPrint('Sender balance: $senderBalance');
-        debugPrint('Receiver balance: $receiverBalance');
-
-        if (senderBalance.totalSat == BigInt.zero) {
-          final address = await walletManagerService.getNewAddress(
-            walletId: senderWallet.id,
-          );
-          debugPrint(
-              'Send some funds to ${address.address} before running the integration test again');
-        }
-        if (receiverBalance.totalSat == BigInt.zero) {
-          final address = await walletManagerService.getNewAddress(
-            walletId: receiverWallet.id,
-          );
-          debugPrint(
-              'Send some funds to ${address.address} before running the integration test again');
-        }
-
-        expect(senderBalance.totalSat.toInt(), greaterThan(0));
-        expect(receiverBalance.totalSat.toInt(), greaterThan(0));
-      });
-
-      test('receive and send', () async {
+      test('should work', () async {
         // Generate receiver address
         final address = await walletManagerService.getNewAddress(
           walletId: receiverWallet.id,
@@ -249,8 +255,16 @@ void main() {
         expect(pjUri.path, address.address);
         expect(pjUri.queryParameters.containsKey('pj'), true);
         expect(pjUri.queryParameters['pjos'], '0');
-        await payjoinReceiverStartedEvent.future;
-        expect(payjoinReceiverStartedEvent.isCompleted, true);
+
+        // The payjoin receiver having started the payjoin should have emitted an event,
+        //  wait for it to be received to be sure it is emitted correctly.
+        final didReceiverStart = await Future.any(
+          [
+            payjoinReceiverStartedEvent.future,
+            Future.delayed(const Duration(seconds: 5), () => false),
+          ],
+        );
+        expect(didReceiverStart, true);
 
         // Build the psbt with the sender wallet
         const networkFeesSatPerVb = 1000.0;
@@ -270,20 +284,62 @@ void main() {
         debugPrint('Payjoin sender created: $payjoinSender');
         expect(payjoinSender.status, PayjoinStatus.requested);
 
-        // TODO: add timeouts so the tests fail if the payjoin steps do not complete
-        await payjoinSenderRequestedEvent.future;
-        expect(payjoinSenderRequestedEvent.isCompleted, true);
+        // The payjoin sender having requested the payjoin should have emitted an event,
+        //  wait for it to be received to be sure it is emitted correctly
+        final didSenderRequestPayjoin = await Future.any(
+          [
+            payjoinSenderRequestedEvent.future,
+            // TODO: make a constant for the payjoin polling interval and take a multiple of it for the timeout here
+            Future.delayed(const Duration(seconds: 15), () => false),
+          ],
+        );
+        expect(didSenderRequestPayjoin, true);
 
-        await payjoinReceiverCompletedEvent.future;
-        expect(payjoinReceiverCompletedEvent.isCompleted, true);
+        // Once the request is send by the sender, the receiver should fetch it
+        //  in the next poll, create a proposal and send it back to the payjoin directory.
+        // That completes the tasks of the receiver and should also emit an event.
+        //  Wait for it to be sure it is emitted correctly.
+        final didReceiverComplete = await Future.any(
+          [
+            payjoinReceiverCompletedEvent.future,
+            // TODO: make a constant for the payjoin polling interval and take a multiple of it for the timeout here
+            Future.delayed(const Duration(seconds: 15), () => false),
+          ],
+        );
+        expect(didReceiverComplete, true);
 
-        await payjoinSenderCompletedEvent.future;
-        expect(payjoinSenderCompletedEvent.isCompleted, true);
+        // The sender now should fetch the proposal at the next poll and complete the payjoin.
+        //  This should again emit an event, wait for it to be sure it is emitted correctly.
+        final didSenderComplete = await Future.any(
+          [
+            payjoinSenderCompletedEvent.future,
+            // TODO: make a constant for the payjoin polling interval and take a multiple of it for the timeout here
+            Future.delayed(const Duration(seconds: 15), () => false),
+          ],
+        );
+        expect(didSenderComplete, true);
       });
 
-      tearDownAll(() {
+      test('should successfully resume after a restart', () {});
+
+      test('should fail if the receiver does not have enough funds', () {});
+
+      test('should fail if the sender does not have enough funds', () {});
+
+      test(
+        'should broadcast the original transaction if the payjoin is expired',
+        () {},
+      );
+
+      test(
+        'should broadcast the original transaction if the payjoin fails',
+        () {},
+      );
+      tearDown(() {
         payjoinSubscription.cancel();
       });
     });
+
+    group('with multiple ongoing payjoins', () {});
   });
 }

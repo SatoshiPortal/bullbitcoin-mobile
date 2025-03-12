@@ -5,8 +5,8 @@ import 'dart:isolate';
 
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/payjoin/payjoin_data_source.dart';
-import 'package:bb_mobile/_core/data/models/pdk_input_pair_model.dart';
-import 'package:bb_mobile/_core/data/models/pdk_payjoin_model.dart';
+import 'package:bb_mobile/_core/data/models/payjoin_input_pair_model.dart';
+import 'package:bb_mobile/_core/data/models/payjoin_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:payjoin_flutter/bitcoin_ffi.dart';
@@ -22,9 +22,9 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
   final String _payjoinDirectoryUrl;
   final Dio _dio;
   final KeyValueStorageDataSource<String> _storage;
-  final StreamController<PdkPayjoinReceiverModel> _payjoinRequestedController =
+  final StreamController<PayjoinReceiverModel> _payjoinRequestedController =
       StreamController.broadcast();
-  final StreamController<PdkPayjoinSenderModel> _proposalSentController =
+  final StreamController<PayjoinSenderModel> _proposalSentController =
       StreamController.broadcast();
 
   // Background processing
@@ -48,15 +48,15 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
   }
 
   @override
-  Stream<PdkPayjoinReceiverModel> get requestsForReceivers =>
+  Stream<PayjoinReceiverModel> get requestsForReceivers =>
       _payjoinRequestedController.stream.asBroadcastStream();
 
   @override
-  Stream<PdkPayjoinSenderModel> get proposalsForSenders =>
+  Stream<PayjoinSenderModel> get proposalsForSenders =>
       _proposalSentController.stream.asBroadcastStream();
 
   @override
-  Future<PdkPayjoinReceiverModel> createReceiver({
+  Future<PayjoinReceiverModel> createReceiver({
     required String walletId,
     required String address,
     required bool isTestnet,
@@ -82,13 +82,13 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
       );
 
       // Create and store the model to keep track of the payjoin session
-      final model = PdkPayjoinModel.receiver(
+      final model = PayjoinModel.receiver(
         id: receiver.id(),
         receiver: receiver.toJson(),
         walletId: walletId,
         pjUri: receiver.pjUriBuilder().build().asString(),
         maxFeeRateSatPerVb: maxFeeRateSatPerVb,
-      ) as PdkPayjoinReceiverModel;
+      ) as PayjoinReceiverModel;
       await _store(model);
 
       // Start listening for a payjoin request from the sender in an isolate
@@ -108,7 +108,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
   }
 
   @override
-  Future<PdkPayjoinSenderModel> createSender({
+  Future<PayjoinSenderModel> createSender({
     required String walletId,
     required String bip21,
     required String originalPsbt,
@@ -136,12 +136,12 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
 
     // Create and store the model with the data needed to keep track of the
     //  payjoin session
-    final model = PdkPayjoinModel.sender(
+    final model = PayjoinModel.sender(
       uri: uri.asString(),
       sender: senderJson,
       walletId: walletId,
       originalPsbt: originalPsbt,
-    ) as PdkPayjoinSenderModel;
+    ) as PayjoinSenderModel;
     await _store(model);
 
     // Start listening for a payjoin proposal from the receiver in an isolate
@@ -157,30 +157,30 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
   }
 
   @override
-  Future<PdkPayjoinModel?> get(String id) async {
+  Future<PayjoinModel?> get(String id) async {
     final value = await _storage.getValue(id);
     if (value == null) {
       return null;
     }
     final json = jsonDecode(value) as Map<String, dynamic>;
     if (json['uri'] != null) {
-      return PdkPayjoinSenderModel.fromJson(json);
+      return PayjoinSenderModel.fromJson(json);
     } else {
-      return PdkPayjoinReceiverModel.fromJson(json);
+      return PayjoinReceiverModel.fromJson(json);
     }
   }
 
   @override
-  Future<List<PdkPayjoinModel>> getAll() async {
+  Future<List<PayjoinModel>> getAll() async {
     final entries = await _storage.getAll();
-    final models = <PdkPayjoinModel>[];
+    final models = <PayjoinModel>[];
 
     for (final value in entries.values) {
       final json = jsonDecode(value) as Map<String, dynamic>;
       if (json['uri'] != null) {
-        models.add(PdkPayjoinSenderModel.fromJson(json));
+        models.add(PayjoinSenderModel.fromJson(json));
       } else {
-        models.add(PdkPayjoinReceiverModel.fromJson(json));
+        models.add(PayjoinReceiverModel.fromJson(json));
       }
     }
     return models;
@@ -192,14 +192,14 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
   }
 
   @override
-  Future<PdkPayjoinReceiverModel> processRequest({
+  Future<PayjoinReceiverModel> processRequest({
     required String id,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
     required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
-    required List<PdkInputPairModel> inputPairs,
+    required List<PayjoinInputPairModel> inputPairs,
     required FutureOr<String> Function(String) processPsbt,
   }) async {
-    final model = await get(id) as PdkPayjoinReceiverModel?;
+    final model = await get(id) as PayjoinReceiverModel?;
 
     if (model == null) {
       throw Exception('No model found');
@@ -291,11 +291,11 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
   }
 
   @override
-  Future<PdkPayjoinSenderModel> completeSender(
+  Future<PayjoinSenderModel> completeSender(
     String uri, {
     required String txId,
   }) async {
-    final model = await get(uri) as PdkPayjoinSenderModel?;
+    final model = await get(uri) as PayjoinSenderModel?;
 
     if (model == null) {
       throw Exception('No model found');
@@ -310,11 +310,11 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
     return updatedModel;
   }
 
-  Future<void> _store(PdkPayjoinModel model) async {
+  Future<void> _store(PayjoinModel model) async {
     final value = jsonEncode(model.toJson());
-    if (model is PdkPayjoinReceiverModel) {
+    if (model is PayjoinReceiverModel) {
       await _storage.saveValue(key: model.id, value: value);
-    } else if (model is PdkPayjoinSenderModel) {
+    } else if (model is PayjoinSenderModel) {
       await _storage.saveValue(key: model.uri, value: value);
     }
   }
@@ -333,7 +333,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
         debugPrint(
           'Received message of found payjoin request in main isolate: $message',
         );
-        final model = PdkPayjoinReceiverModel.fromJson(message);
+        final model = PayjoinReceiverModel.fromJson(message);
         // Store the model received from the isolate
         await _store(model);
         // Send it to the higher repository layers for processing
@@ -358,7 +358,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
         _sendersIsolatePort = message;
         _sendersIsolateReady.complete();
       } else if (message is Map<String, dynamic>) {
-        final model = PdkPayjoinSenderModel.fromJson(message);
+        final model = PayjoinSenderModel.fromJson(message);
         // Store the model received from the isolate
         await _store(model);
         // Send it to the higher repository layers for processing
@@ -384,7 +384,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
     receivePort.listen((data) async {
       log('[Receivers Isolate] Received data in receivers isolate: $data');
       final receiverModel =
-          PdkPayjoinReceiverModel.fromJson(data as Map<String, dynamic>);
+          PayjoinReceiverModel.fromJson(data as Map<String, dynamic>);
       final receiver = Receiver.fromJson(receiverModel.receiver);
 
       // Start checking for a payjoin request from the sender periodically
@@ -433,7 +433,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
     receivePort.listen((data) async {
       log('[Senders Isolate] Received data in senders isolate: $data');
       final senderModel =
-          PdkPayjoinSenderModel.fromJson(data as Map<String, dynamic>);
+          PayjoinSenderModel.fromJson(data as Map<String, dynamic>);
       final sender = Sender.fromJson(senderModel.sender);
       log('[Senders Isolate] Requesting payjoin...');
       final context =
@@ -573,7 +573,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
       if (model.isCompleted || model.isExpired) {
         continue;
       }
-      if (model is PdkPayjoinReceiverModel) {
+      if (model is PayjoinReceiverModel) {
         if (model.originalTxBytes == null) {
           // If the original tx bytes are not present, it means the receiver
           //  needs to listen for a payjoin request from the sender, we do this
@@ -591,7 +591,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
           //  the stream.
           _payjoinRequestedController.add(model);
         }
-      } else if (model is PdkPayjoinSenderModel) {
+      } else if (model is PayjoinSenderModel) {
         if (model.proposalPsbt == null) {
           // If the proposal psbt is not present, it means no proposal has been
           //  sent yet, so we need to request one from the receiver through the

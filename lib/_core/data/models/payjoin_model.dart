@@ -4,12 +4,12 @@ import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/_utils/uint_8_list_json_converter.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'pdk_payjoin_model.freezed.dart';
-part 'pdk_payjoin_model.g.dart';
+part 'payjoin_model.freezed.dart';
+part 'payjoin_model.g.dart';
 
 @freezed
-sealed class PdkPayjoinModel with _$PdkPayjoinModel {
-  const factory PdkPayjoinModel.receiver({
+sealed class PayjoinModel with _$PayjoinModel {
+  const factory PayjoinModel.receiver({
     required String id,
     required String receiver,
     required String walletId,
@@ -19,8 +19,8 @@ sealed class PdkPayjoinModel with _$PdkPayjoinModel {
     String? proposalPsbt,
     @Default(false) bool isExpired,
     @Default(false) bool isCompleted,
-  }) = PdkPayjoinReceiverModel;
-  const factory PdkPayjoinModel.sender({
+  }) = PayjoinReceiverModel;
+  const factory PayjoinModel.sender({
     required String uri,
     required String sender,
     required String walletId,
@@ -29,11 +29,11 @@ sealed class PdkPayjoinModel with _$PdkPayjoinModel {
     String? txId,
     @Default(false) bool isExpired,
     @Default(false) bool isCompleted,
-  }) = PdkPayjoinSenderModel;
-  const PdkPayjoinModel._();
+  }) = PayjoinSenderModel;
+  const PayjoinModel._();
 
-  factory PdkPayjoinModel.fromJson(Map<String, dynamic> json) =>
-      _$PdkPayjoinModelFromJson(json);
+  factory PayjoinModel.fromJson(Map<String, dynamic> json) =>
+      _$PayjoinModelFromJson(json);
 
   Payjoin toEntity() {
     return map(

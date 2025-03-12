@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/_core/data/datasources/bdk_blockchain_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/payjoin/payjoin_data_source.dart';
 import 'package:bb_mobile/_core/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/_core/data/models/pdk_input_pair_model.dart';
+import 'package:bb_mobile/_core/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/_core/domain/entities/utxo.dart';
@@ -20,12 +20,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   @override
   Stream<PayjoinReceiver> get requestsForReceivers =>
       _source.requestsForReceivers.map(
-        (pdkPayjoin) => pdkPayjoin.toEntity() as PayjoinReceiver,
+        (payjoinModel) => payjoinModel.toEntity() as PayjoinReceiver,
       );
   @override
   Stream<PayjoinSender> get proposalsForSenders =>
       _source.proposalsForSenders.map(
-        (pdkPayjoin) => pdkPayjoin.toEntity() as PayjoinSender,
+        (payjoinModel) => payjoinModel.toEntity() as PayjoinSender,
       );
 
   @override
@@ -95,8 +95,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required List<Utxo> unspentUtxos,
     required FutureOr<String> Function(String) processPsbt,
   }) async {
-    final pdkInputPairs =
-        unspentUtxos.map((utxo) => PdkInputPairModel.fromUtxo(utxo)).toList();
+    final pdkInputPairs = unspentUtxos
+        .map((utxo) => PayjoinInputPairModel.fromUtxo(utxo))
+        .toList();
 
     final model = await _source.processRequest(
       id: id,

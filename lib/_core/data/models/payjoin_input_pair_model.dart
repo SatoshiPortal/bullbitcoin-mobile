@@ -3,11 +3,11 @@ import 'dart:typed_data';
 import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'pdk_input_pair_model.freezed.dart';
+part 'payjoin_input_pair_model.freezed.dart';
 
 @freezed
-class PdkInputPairModel with _$PdkInputPairModel {
-  const factory PdkInputPairModel({
+class PayjoinInputPairModel with _$PayjoinInputPairModel {
+  const factory PayjoinInputPairModel({
     required String txId,
     required int vout,
     @Default([]) List<int> scriptSigRawOutputScript,
@@ -18,11 +18,11 @@ class PdkInputPairModel with _$PdkInputPairModel {
     @Default([]) List<int> redeemScriptRawOutputScript,
     @Default([]) List<int> witnessScriptRawOutputScript,
     required,
-  }) = _PdkInputPairModel;
-  const PdkInputPairModel._();
+  }) = _PayjoinInputPairModel;
+  const PayjoinInputPairModel._();
 
-  factory PdkInputPairModel.fromUtxo(Utxo utxo) {
-    return PdkInputPairModel(
+  factory PayjoinInputPairModel.fromUtxo(Utxo utxo) {
+    return PayjoinInputPairModel(
       txId: utxo.txId,
       vout: utxo.vout,
       value: utxo.value,
