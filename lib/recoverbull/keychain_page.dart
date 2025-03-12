@@ -997,24 +997,43 @@ class _ErrorDialog extends StatelessWidget {
   const _ErrorDialog({
     required this.error,
     this.selectedKeyChainFlow = KeyChainFlow.enter,
+    this.onButtonPressed,
   });
   final String error;
   final KeyChainFlow selectedKeyChainFlow;
+  final void Function()? onButtonPressed;
+
   @override
   Widget build(BuildContext context) {
+    final isOfflineError = error.toLowerCase().contains('unavailable') ||
+        error.toLowerCase().contains('offline') ||
+        error.toLowerCase().contains('connection');
+
+    // Only show backup key option if it's an offline error AND we're not on the delete flow to avoid the backup key option during deletion
+
+    final showBackupKeyOption =
+        isOfflineError && selectedKeyChainFlow != KeyChainFlow.delete;
+
+    // Use appropriate dialog title based on error type
+    final dialogTitle = isOfflineError
+        ? 'Server Offline'
+        : selectedKeyChainFlow == KeyChainFlow.enter
+            ? 'Backup Failed'
+            : selectedKeyChainFlow == KeyChainFlow.recovery
+                ? 'Recovery Failed'
+                : 'Delete Failed';
+
     return _DialogBase(
-      icon: Icons.error_outline,
-      title: selectedKeyChainFlow == KeyChainFlow.enter
-          ? 'Backup failed'
-          : selectedKeyChainFlow == KeyChainFlow.recovery
-              ? 'Recovery failed'
-              : 'Delete failed',
+      icon: isOfflineError ? Icons.wifi_off : Icons.error_outline,
+      title: dialogTitle,
       message: error,
-      buttonText: 'Continue',
-      onButtonPressed: () {
-        context.read<KeychainCubit>().clearError();
-        Navigator.of(context).pop();
-      },
+      buttonText: showBackupKeyOption ? 'Use Backup Key' : 'Continue',
+      onButtonPressed: onButtonPressed ??
+          (() {
+            // Only clear error and close dialog - the listener handles the state transition
+            context.read<KeychainCubit>().clearError();
+            Navigator.of(context).pop();
+          }),
     );
   }
 }
