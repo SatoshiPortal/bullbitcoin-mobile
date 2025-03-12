@@ -100,7 +100,7 @@ dependencies:
   recoverbull:
     git:
       url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
-      ref: main
+      ref: 270e5a3c5a6689847f2a7b6c9678cca1b169179e
   bip85: ^1.0.3
 
 
