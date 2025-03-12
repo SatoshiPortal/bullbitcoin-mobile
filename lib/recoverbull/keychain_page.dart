@@ -144,22 +144,25 @@ class _Screen extends StatelessWidget {
                 (previous.error.isEmpty && current.error.isNotEmpty);
           },
           listener: (context, state) {
-            if (state.hasError) {
+            // Handle server offline state - only switch to backup key if we're not already
+            // in the recovery flow with backup key mode
+            if (state.torStatus == TorStatus.offline &&
+                state.authInputType != AuthInputType.backupKey) {
               showDialog(
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => _ErrorDialog(
-                  error: state.error,
+                  error: 'Server is offline. Please use your backup key.',
                   selectedKeyChainFlow: state.selectedKeyChainFlow,
+                  onButtonPressed: () {
+                    context.read<KeychainCubit>().updatePageState(
+                          AuthInputType.backupKey,
+                          state.selectedKeyChainFlow,
+                        );
+                    Navigator.of(context).pop();
+                  },
                 ),
               );
-            }
-            if (state.torStatus == TorStatus.offline &&
-                state.authInputType != AuthInputType.backupKey) {
-              context.read<KeychainCubit>().updatePageState(
-                    AuthInputType.backupKey,
-                    state.selectedKeyChainFlow,
-                  );
               return;
             }
 
