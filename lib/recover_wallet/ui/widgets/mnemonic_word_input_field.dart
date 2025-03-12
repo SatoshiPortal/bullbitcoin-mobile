@@ -136,49 +136,78 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
       },
       child: CompositedTransformTarget(
         link: _layerLink,
-        child: Row(
-          children: [
-            BBText(
-              _index(widget.wordIndex + 1),
-              style: context.font.headlineMedium,
-              textAlign: TextAlign.right,
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(
+                color: context.colour.secondary,
+              ),
             ),
-            const Gap(12),
-            Expanded(
-              child: TextField(
-                controller: _controller,
-                focusNode: _focusNode,
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                onEditingComplete: _removeOverlay,
-                decoration: InputDecoration(
-                  fillColor: context.colour.onPrimary,
-                  filled: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                    // vertical: 12,
-                    horizontal: 10,
-                  ),
-                  border: OutlineInputBorder(
+            height: 41,
+            child: Row(
+              children: [
+                Container(
+                  height: 34,
+                  width: 34,
+                  alignment: Alignment.center,
+                  // padding: const EdgeInsets.symmetric(
+                  //   vertical: 8,
+                  //   horizontal: 8,
+                  // ),
+                  decoration: BoxDecoration(
+                    color: context.colour.secondary,
                     borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(
-                      color: context.colour.secondary,
-                    ),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(
-                      color: context.colour.secondary,
-                    ),
+                  child: BBText(
+                    _index(widget.wordIndex + 1),
+                    style: context.font.headlineMedium,
+                    color: context.colour.onPrimary,
+                    textAlign: TextAlign.right,
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                    borderSide: BorderSide(
-                      color: context.colour.secondary,
+                ),
+                const Gap(12),
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                    onEditingComplete: _removeOverlay,
+                    decoration: const InputDecoration(
+                      // fillColor: context.colour.onPrimary,
+                      // filled: true,
+                      contentPadding: EdgeInsets.symmetric(
+                        // vertical: 12,
+                        horizontal: 10,
+                      ),
+                      border: OutlineInputBorder(
+                        // borderRadius: BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                          color: Colors.transparent,
+                          // color: context.colour.secondary,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        // borderRadius: BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                          color: Colors.transparent,
+                          // color: context.colour.secondary,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        // borderRadius: BorderRadius.circular(4),
+                        borderSide: BorderSide(
+                          color: Colors.transparent,
+                          // color: context.colour.secondary,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

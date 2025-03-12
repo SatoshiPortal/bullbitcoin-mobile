@@ -5,6 +5,7 @@ enum RecoverWalletStatus { inProgress, success }
 @freezed
 sealed class RecoverWalletState implements _$RecoverWalletState {
   const factory RecoverWalletState({
+    @Default(false) bool fromOnboarding,
     @Default(RecoverWalletStatus.inProgress) RecoverWalletStatus status,
     @Default(12) int wordsCount,
     @Default({}) Map<int, String> validWords,

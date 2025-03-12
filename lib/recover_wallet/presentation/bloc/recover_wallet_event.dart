@@ -41,3 +41,7 @@ class RecoverWalletScriptTypeChanged extends RecoverWalletEvent {
 class RecoverWalletConfirmed extends RecoverWalletEvent {
   const RecoverWalletConfirmed();
 }
+
+class RecoverFromOnboarding extends RecoverWalletEvent {
+  const RecoverFromOnboarding();
+}

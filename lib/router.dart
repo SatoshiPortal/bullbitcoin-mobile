@@ -17,6 +17,8 @@ enum AppRoute {
   home('/'),
   appUnlock('/app-unlock'),
   recoverWallet('/recover-wallet'),
+  recoverImportWallet('/recover-wallet-import'),
+
   settings('/settings'),
   receiveBitcoin('/receive-bitcoin'),
   receiveLightning('/receive-lightning'),
@@ -91,7 +93,15 @@ class AppRouter {
       GoRoute(
         name: AppRoute.recoverWallet.name,
         path: AppRoute.recoverWallet.path,
-        builder: (context, state) => const RecoverWalletFlow(),
+        builder: (context, state) =>
+            const RecoverWalletFlow(fromOnboarding: true),
+      ),
+      GoRoute(
+        name: AppRoute.recoverImportWallet.name,
+        path: AppRoute.recoverImportWallet.path,
+        builder: (context, state) => const RecoverWalletFlow(
+          fromOnboarding: false,
+        ),
       ),
       GoRoute(
         name: AppRoute.settings.name,

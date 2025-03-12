@@ -20,10 +20,18 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     on<RecoverWalletPassphraseChanged>(_onPassphraseChanged);
     on<RecoverWalletLabelChanged>(_onLabelChanged);
     on<RecoverWalletConfirmed>(_onConfirmed);
+    on<RecoverFromOnboarding>(_onRecoverFromOnboarding);
   }
 
   final FindMnemonicWordsUseCase _findMnemonicWordsUseCase;
   final RecoverWalletUseCase _recoverWalletUseCase;
+
+  void _onRecoverFromOnboarding(
+    RecoverFromOnboarding event,
+    Emitter<RecoverWalletState> emit,
+  ) {
+    emit(state.copyWith(fromOnboarding: true));
+  }
 
   void _onWordsCountChanged(
     RecoverWalletWordsCountChanged event,

@@ -27,29 +27,46 @@ class RecoverWalletInputScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         forceMaterialTransparency: true,
       ),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  BlocSelector<RecoverWalletBloc, RecoverWalletState, int>(
-                    selector: (state) => state.wordsCount,
-                    builder: (context, wordsCount) {
-                      return Column(
-                        children: [
-                          // Padding(
-                          //   padding: const EdgeInsets.symmetric(horizontal: 8),
-                          //   child: TopBar(
-                          //     title: 'Recover Wallet',
-                          //     onBack: () {
-                          //       context.pop();
-                          //     },
-                          //   ),
-                          // ),
-                          const Gap(55),
+      body: const _Screen(),
+    );
+  }
+}
+
+class _Screen extends StatelessWidget {
+  const _Screen({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fromOnboarding =
+        context.select((RecoverWalletBloc _) => _.state.fromOnboarding);
+
+    return SafeArea(
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                BlocSelector<RecoverWalletBloc, RecoverWalletState, int>(
+                  selector: (state) => state.wordsCount,
+                  builder: (context, wordsCount) {
+                    return Column(
+                      children: [
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(horizontal: 8),
+                        //   child: TopBar(
+                        //     title: 'Recover Wallet',
+                        //     onBack: () {
+                        //       context.pop();
+                        //     },
+                        //   ),
+                        // ),
+                        const Gap(40),
+
+                        if (!fromOnboarding) ...[
                           SegmentedSmall(
                             items: const {'12', '24'},
                             selected: '12',
@@ -58,34 +75,37 @@ class RecoverWalletInputScreen extends StatelessWidget {
                           // MnemonicWordsCountSelection(
                           //   selectedWordsCount: wordsCount,
                           // ),
-                          const SizedBox(height: 33),
-                          GridView.builder(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                            ),
-                            physics:
-                                const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling
-                            shrinkWrap:
-                                true, // Allow GridView to take the height it needs
-                            itemCount: wordsCount,
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              mainAxisSpacing: 16,
-                              crossAxisSpacing: 32,
-                              childAspectRatio: 4,
-                            ),
 
-                            itemBuilder: (context, index) {
-                              return MnemonicWordInputField(
-                                wordIndex: index,
-                              );
-                            },
-                          ),
+                          const SizedBox(height: 33),
                         ],
-                      );
-                    },
-                  ),
+                        GridView.builder(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                          ),
+                          physics:
+                              const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling
+                          shrinkWrap:
+                              true, // Allow GridView to take the height it needs
+                          itemCount: wordsCount,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 32,
+                            childAspectRatio: 3.5,
+                          ),
+
+                          itemBuilder: (context, index) {
+                            return MnemonicWordInputField(
+                              wordIndex: index,
+                            );
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                if (!fromOnboarding) ...[
                   const Gap(54),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
@@ -97,37 +117,37 @@ class RecoverWalletInputScreen extends StatelessWidget {
                     child: LabelInputField(),
                   ),
                   const Gap(54),
-                  const SizedBox(height: 80),
                 ],
-              ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                BlocSelector<RecoverWalletBloc, RecoverWalletState, bool>(
-                  selector: (state) => state.hasAllValidWords,
-                  builder: (context, hasAllValidWords) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: BBButton.big(
-                        label: 'Recover',
-                        onPressed: () => hasAllValidWords
-                            ? () => context.read<RecoverWalletBloc>().add(
-                                  const RecoverWalletConfirmed(),
-                                )
-                            : null,
-                        bgColor: context.colour.secondary,
-                        textColor: context.colour.onPrimary,
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 80),
               ],
             ),
-          ],
-        ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              BlocSelector<RecoverWalletBloc, RecoverWalletState, bool>(
+                selector: (state) => state.hasAllValidWords,
+                builder: (context, hasAllValidWords) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: BBButton.big(
+                      label: 'Recover',
+                      onPressed: () => hasAllValidWords
+                          ? () => context.read<RecoverWalletBloc>().add(
+                                const RecoverWalletConfirmed(),
+                              )
+                          : null,
+                      bgColor: context.colour.secondary,
+                      textColor: context.colour.onPrimary,
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ],
       ),
     );
   }
