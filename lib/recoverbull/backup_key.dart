@@ -175,25 +175,6 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
     super.dispose();
   }
 
-  Future<void> _handleBackupAction(BuildContext context) async {
-    if (widget.backupKey.isNotEmpty) {
-      _showBackupKeyDialog(context, widget.backupKey);
-    } else {
-      _navigateToKeychain(context);
-    }
-  }
-
-  void _navigateToKeychain(BuildContext context) {
-    context.push(
-      '/wallet-settings/backup-settings/keychain',
-      extra: (
-        '',
-        widget.recoveredBackup,
-        KeyChainPageState.download.name.toLowerCase(),
-      ),
-    );
-  }
-
   void _showBackupKeyDialog(BuildContext context, String backupKey) {
     showDialog(
       context: context,
@@ -325,18 +306,16 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
                                 ),
                                 const Gap(20),
                                 BBButton.withColour(
-                                  fillWidth: true,
-                                  label: widget.backupKey.isNotEmpty
-                                      ? 'View Backup Key'
-                                      : 'Download Backup Key',
-                                  disabled: !keyState.keyServerUp,
-                                  leftIcon: widget.backupKey.isNotEmpty
-                                      ? CupertinoIcons.eye_fill
-                                      : CupertinoIcons.cloud_download_fill,
-                                  onPressed: () => keyState.keyServerUp
-                                      ? _handleBackupAction(context)
-                                      : () {},
-                                ),
+                                    fillWidth: true,
+                                    label: 'Show Backup Key',
+                                    leftIcon: widget.backupKey.isNotEmpty
+                                        ? CupertinoIcons.eye_fill
+                                        : CupertinoIcons.cloud_download_fill,
+                                    onPressed: () => context
+                                        .read<BackupSettingsCubit>()
+                                        .recoverBackupKeyFromMnemonic(
+                                          widget.recoveredBackup?.path,
+                                        )),
                                 const Gap(10),
                                 BBButton.withColour(
                                   fillWidth: true,
@@ -348,25 +327,9 @@ class _BackupKeyInfoPage extends State<BackupKeyOptionsPage> {
                                     extra: (
                                       '',
                                       widget.recoveredBackup,
-                                      KeyChainPageState.delete.name
-                                          .toLowerCase()
+                                      KeyChainFlow.delete.name.toLowerCase()
                                     ),
                                   ),
-                                ),
-                                const Gap(10),
-                                BBButton.text(
-                                  center: true,
-                                  centered: true,
-                                  isBlue: false,
-                                  onPressed: () => context
-                                      .read<BackupSettingsCubit>()
-                                      .recoverBackupKeyFromMnemonic(
-                                        widget.recoveredBackup?.path,
-                                      ),
-                                  fontSize: 12,
-                                  label: keyState.keyServerUp
-                                      ? 'Forgot your secret? Click to recover.'
-                                      : 'Server unreachable? Click to recover.',
                                 ),
                                 const Gap(10),
                               ],

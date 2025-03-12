@@ -456,9 +456,29 @@ class KeyServerWarnings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final keyServerUp = context.watch<KeychainCubit>().state.keyServerUp;
-    return !keyServerUp
-        ? WarningBanner(onTap: () {}, info: 'Key server is down')
-        : const SizedBox.shrink();
+    return BlocBuilder<KeychainCubit, KeychainState>(
+      buildWhen: (previous, current) => previous.torStatus != current.torStatus,
+      builder: (context, state) {
+        switch (state.torStatus) {
+          case TorStatus.offline:
+            return WarningBanner(
+              onTap: () {},
+              info: 'Key server is offline',
+            );
+          case TorStatus.connecting:
+            return WarningBanner(
+              onTap: () {},
+              info: 'Connecting to the tor server...',
+            );
+          case TorStatus.online:
+            return const SizedBox.shrink();
+          case TorStatus.disconnecting:
+            return WarningBanner(
+              onTap: () {},
+              info: 'Disconnecting from tor server...',
+            );
+        }
+      },
+    );
   }
 }

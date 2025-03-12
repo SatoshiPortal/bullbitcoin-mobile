@@ -22,6 +22,7 @@ import 'package:bb_mobile/home/bloc/home_event.dart';
 import 'package:bb_mobile/home/transactions.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/network/bloc/network_bloc.dart';
+import 'package:bb_mobile/recoverbull/backup_settings.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_cubit.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
@@ -1171,7 +1172,6 @@ class HomeWarnings extends StatelessWidget {
     final network = context.select((NetworkBloc _) => _.state.getBBNetwork());
     final warnings =
         context.select((HomeBloc _) => _.state.homeWarnings(network));
-    final keyServerUp = context.watch<KeychainCubit>().state.keyServerUp;
     return Column(
       children: [
         for (final w in warnings)
@@ -1179,8 +1179,7 @@ class HomeWarnings extends StatelessWidget {
             onTap: () {},
             info: w.info,
           ),
-        if (!keyServerUp)
-          WarningBanner(onTap: () {}, info: 'Key server is down'),
+        const KeyServerWarnings(),
       ],
     );
   }

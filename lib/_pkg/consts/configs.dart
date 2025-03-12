@@ -30,8 +30,6 @@ const liquidMempoolTestnet = 'https://liquid.network/testnet';
 const liquidMainnetAssetId = lwk.lBtcAssetId;
 const liquidTestnetAssetId = lwk.lTestAssetId;
 
-//Backups
-final keyServerPublicKey = dotenv.env['KEY_SERVER_PUBLIC_KEY'] ??
-    '6a04ab98d9e4774ad806e302dddeb63bea16b5cb5f223ee77478e861bb583eb3';
+//recoverbull
 final keyServerUrl = dotenv.env['KEY_SERVER'] ?? 'http://localhost:80';
 const defaultBackupPath = 'backups';

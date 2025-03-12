@@ -24,27 +24,51 @@ const _kGapLarge = 24.0;
 const _kGapXLarge = 50.0;
 const _kHorizontalPadding = 32.0;
 
-class KeychainBackupPage extends StatelessWidget {
+class KeychainBackupPage extends StatefulWidget {
   KeychainBackupPage({
     super.key,
     this.backupKey,
     required String pState,
     required this.backup,
-  }) : _pState = KeyChainPageState.fromString(pState);
+  }) : _pState = KeyChainFlow.fromString(pState);
 
   final String? backupKey;
-  final KeyChainPageState _pState;
+  final KeyChainFlow _pState;
   final BullBackup backup;
 
   @override
+  State<KeychainBackupPage> createState() => _KeychainBackupPageState();
+}
+
+class _KeychainBackupPageState extends State<KeychainBackupPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Initialize state once during widget creation
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<KeychainCubit>().updateState(
+            keyChainFlow: widget._pState,
+            backupKey: widget.backupKey,
+            backupData: widget.backup,
+          );
+    });
+  }
+
+  @override
+  void dispose() {
+    // Reset state when leaving the page
+    context.read<KeychainCubit>().resetState();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    context.read<KeychainCubit>().updateChainState(_pState, backupKey, backup);
     return BlocProvider.value(
       value: createBackupSettingsCubit(),
       child: _Screen(
-        backupKey: backupKey,
-        backup: backup,
-        pState: _pState,
+        backupKey: widget.backupKey,
+        backup: widget.backup,
+        pState: widget._pState,
       ),
     );
   }
@@ -55,7 +79,7 @@ class _Screen extends StatelessWidget {
 
   final String? backupKey;
   final BullBackup backup;
-  final KeyChainPageState pState;
+  final KeyChainFlow pState;
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -100,7 +124,7 @@ class _Screen extends StatelessWidget {
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => _SuccessDialog(
-                  pageState: pState,
+                  selectedKeyChainFlow: pState,
                 ),
               );
             }
@@ -109,11 +133,44 @@ class _Screen extends StatelessWidget {
         BlocListener<KeychainCubit, KeychainState>(
           listenWhen: (previous, current) =>
               previous.isSecretConfirmed != current.isSecretConfirmed ||
-              previous.keySecretState != current.keySecretState ||
+              previous.secretStatus != current.secretStatus ||
+              (previous.torStatus != current.torStatus &&
+                  current.torStatus != TorStatus.connecting) ||
               previous.error != current.error,
           listener: (context, state) {
-            if (state.pageState == KeyChainPageState.delete &&
-                state.keySecretState == KeySecretState.deleted &&
+            if (state.hasError) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => _ErrorDialog(
+                  error: state.error,
+                  selectedKeyChainFlow: state.selectedKeyChainFlow,
+                ),
+              );
+            }
+            if (state.torStatus == TorStatus.offline &&
+                state.authInputType != AuthInputType.backupKey) {
+              context.read<KeychainCubit>().updatePageState(
+                    AuthInputType.backupKey,
+                    state.selectedKeyChainFlow,
+                  );
+              return;
+            }
+
+            // Only call secureKey if confirmed and not already processing
+            if (state.isSecretConfirmed &&
+                !state.loading &&
+                !state.hasError &&
+                state.secretStatus == SecretStatus.initial &&
+                state.torStatus == TorStatus.online) {
+              // Prevent multiple calls
+              if (!state.isSecretConfirmed) return;
+              context.read<KeychainCubit>().secureKey();
+              return; // Exit early after triggering secureKey
+            }
+
+            if (state.selectedKeyChainFlow == KeyChainFlow.delete &&
+                state.secretStatus == SecretStatus.deleted &&
                 !state.loading &&
                 !state.hasError) {
               context.read<KeychainCubit>().clearSensitive();
@@ -122,7 +179,7 @@ class _Screen extends StatelessWidget {
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => _SuccessDialog(
-                  pageState: pState,
+                  selectedKeyChainFlow: pState,
                 ),
               );
             }
@@ -130,11 +187,11 @@ class _Screen extends StatelessWidget {
             if (state.isSecretConfirmed &&
                 !state.loading &&
                 !state.hasError &&
-                state.keySecretState == KeySecretState.none) {
+                state.secretStatus == SecretStatus.initial) {
               context.read<KeychainCubit>().secureKey();
             }
 
-            if (state.keySecretState == KeySecretState.saved &&
+            if (state.secretStatus == SecretStatus.stored &&
                 !state.loading &&
                 !state.hasError) {
               context.read<KeychainCubit>().clearSensitive();
@@ -142,48 +199,17 @@ class _Screen extends StatelessWidget {
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => _SuccessDialog(
-                  pageState: pState,
+                  selectedKeyChainFlow: pState,
                 ),
               );
             }
-            if (state.keySecretState == KeySecretState.recovered &&
+            if (state.secretStatus == SecretStatus.recovered &&
                 !state.loading &&
                 !state.hasError &&
                 state.backupKey.isNotEmpty) {
-              if (state.pageState == KeyChainPageState.download) {
-                context.push(
-                  '/wallet-settings/backup-settings/key/options',
-                  extra: (state.backupKey, backup),
-                );
-              } else {
-                context.read<BackupSettingsCubit>().recoverBackup(
-                      backup,
-                      state.backupKey,
-                    );
-              }
-            }
-
-            if (state.hasError && state.keyServerUp) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => _ErrorDialog(
-                  error: state.error,
-                  isRecovery: state.pageState == KeyChainPageState.recovery,
-                ),
-              );
-            }
-          },
-        ),
-        BlocListener<KeychainCubit, KeychainState>(
-          listenWhen: (previous, current) =>
-              previous.keyServerUp != current.keyServerUp,
-          listener: (context, state) {
-            if (!state.keyServerUp &&
-                state.inputType != KeyChainInputType.backupKey) {
-              context.read<KeychainCubit>().updatePageState(
-                    KeyChainInputType.backupKey,
-                    state.pageState,
+              context.read<BackupSettingsCubit>().recoverBackup(
+                    backup,
+                    state.backupKey,
                   );
             }
           },
@@ -217,31 +243,26 @@ class _Screen extends StatelessWidget {
   }
 
   Widget _buildPageContent(KeychainState state) {
-    switch (state.pageState) {
-      case KeyChainPageState.recovery:
+    switch (state.selectedKeyChainFlow) {
+      case KeyChainFlow.recovery:
         return _RecoveryPage(
           key: const ValueKey('recovery'),
-          inputType: state.inputType,
+          authInputType: state.authInputType,
         );
-      case KeyChainPageState.enter:
+      case KeyChainFlow.enter:
         return _EnterPage(
           key: const ValueKey('enter'),
-          inputType: state.inputType,
+          authInputType: state.authInputType,
         );
-      case KeyChainPageState.confirm:
+      case KeyChainFlow.confirm:
         return _ConfirmPage(
           key: const ValueKey('confirm'),
-          inputType: state.inputType,
+          authInputType: state.authInputType,
         );
-      case KeyChainPageState.delete:
+      case KeyChainFlow.delete:
         return _DeletePage(
           key: const ValueKey('delete'),
-          inputType: state.inputType,
-        );
-      case KeyChainPageState.download:
-        return _RecoveryPage(
-          key: const ValueKey('view'),
-          inputType: state.inputType,
+          authInputType: state.authInputType,
         );
     }
   }
@@ -278,15 +299,15 @@ class _PageLayout extends StatelessWidget {
 
 /// Shared input section widget
 class _InputSection extends StatelessWidget {
-  const _InputSection({required this.inputType});
+  const _InputSection({required this.authInputType});
 
-  final KeyChainInputType inputType;
+  final AuthInputType authInputType;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (inputType == KeyChainInputType.pin) ...[
+        if (authInputType == AuthInputType.pin) ...[
           _PinField(),
           const KeyPad(),
         ] else
@@ -298,20 +319,20 @@ class _InputSection extends StatelessWidget {
 
 // Optimize page type widgets
 class _EnterPage extends StatelessWidget {
-  const _EnterPage({super.key, required this.inputType});
-  final KeyChainInputType inputType;
+  const _EnterPage({super.key, required this.authInputType});
+  final AuthInputType authInputType;
 
   @override
   Widget build(BuildContext context) {
     return _PageLayout(
-      bottomChild: _SetButton(inputType: inputType),
+      bottomChild: _SetButton(authInputType: authInputType),
       children: [
         const Gap(_kGapXLarge),
         const _TitleText(),
         const Gap(_kGapSmall),
         const _SubtitleText(),
         const Gap(_kGapXLarge),
-        _InputSection(inputType: inputType),
+        _InputSection(authInputType: authInputType),
         const Gap(_kGapLarge),
       ],
     );
@@ -319,13 +340,13 @@ class _EnterPage extends StatelessWidget {
 }
 
 class _ConfirmPage extends StatelessWidget {
-  const _ConfirmPage({super.key, required this.inputType});
-  final KeyChainInputType inputType;
+  const _ConfirmPage({super.key, required this.authInputType});
+  final AuthInputType authInputType;
 
   @override
   Widget build(BuildContext context) {
     return _PageLayout(
-      bottomChild: _ConfirmButton(inputType: inputType),
+      bottomChild: _ConfirmButton(authInputType: authInputType),
       bottomHeight: MediaQuery.of(context).size.height * 0.11,
       children: [
         const Gap(20),
@@ -333,7 +354,7 @@ class _ConfirmPage extends StatelessWidget {
         const Gap(_kGapSmall),
         const _ConfirmSubtitleText(),
         const Gap(48),
-        _InputSection(inputType: inputType),
+        _InputSection(authInputType: authInputType),
         const Gap(24),
       ],
     );
@@ -341,53 +362,53 @@ class _ConfirmPage extends StatelessWidget {
 }
 
 class _RecoveryPage extends StatelessWidget {
-  const _RecoveryPage({super.key, required this.inputType});
-  final KeyChainInputType inputType;
+  const _RecoveryPage({super.key, required this.authInputType});
+  final AuthInputType authInputType;
 
   @override
   Widget build(BuildContext context) {
     return _PageLayout(
-      bottomChild: _RecoverButton(inputType: inputType),
+      bottomChild: _RecoverButton(authInputType: authInputType),
       bottomHeight: MediaQuery.of(context).size.height * 0.16,
       children: [
         const Gap(_kGapXLarge),
         BBText.titleLarge(
-          'Enter Recovery ${_getInputTypeText(inputType)}',
+          'Enter Recovery ${_getInputTypeText(authInputType)}',
           textAlign: TextAlign.center,
           isBold: true,
         ),
         const Gap(_kGapSmall),
         BBText.bodySmall(
-          'Enter the ${_getInputTypeText(inputType).toLowerCase()} you used to backup your keychain',
+          'Enter the ${_getInputTypeText(authInputType).toLowerCase()} you used to backup your keychain',
           textAlign: TextAlign.center,
         ),
         const Gap(_kGapXLarge),
-        _InputSection(inputType: inputType),
+        _InputSection(authInputType: authInputType),
         const Gap(_kGapLarge),
       ],
     );
   }
 
-  String _getInputTypeText(KeyChainInputType type) {
+  String _getInputTypeText(AuthInputType type) {
     switch (type) {
-      case KeyChainInputType.pin:
+      case AuthInputType.pin:
         return 'PIN';
-      case KeyChainInputType.password:
+      case AuthInputType.password:
         return 'Password';
-      case KeyChainInputType.backupKey:
+      case AuthInputType.backupKey:
         return 'Key';
     }
   }
 }
 
 class _DeletePage extends StatelessWidget {
-  const _DeletePage({super.key, required this.inputType});
-  final KeyChainInputType inputType;
+  const _DeletePage({super.key, required this.authInputType});
+  final AuthInputType authInputType;
 
   @override
   Widget build(BuildContext context) {
     return _PageLayout(
-      bottomChild: _DeleteButton(inputType: inputType),
+      bottomChild: _DeleteButton(authInputType: authInputType),
       bottomHeight: MediaQuery.of(context).size.height * 0.11,
       children: [
         const Gap(_kGapXLarge),
@@ -398,11 +419,11 @@ class _DeletePage extends StatelessWidget {
         ),
         const Gap(_kGapSmall),
         BBText.bodySmall(
-          'Enter your ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to delete this backup key',
+          'Enter your ${authInputType == AuthInputType.pin ? 'PIN' : 'password'} to delete this backup key',
           textAlign: TextAlign.center,
         ),
         const Gap(_kGapXLarge),
-        _InputSection(inputType: inputType),
+        _InputSection(authInputType: authInputType),
         const Gap(_kGapLarge),
       ],
     );
@@ -465,11 +486,11 @@ class _PasswordField extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.secret != current.secret ||
           previous.obscure != current.obscure ||
-          previous.inputType != current.inputType ||
+          previous.authInputType != current.authInputType ||
           previous.backupKey != current.backupKey ||
           previous.error != current.error,
       builder: (context, state) {
-        final isBackupKeyMode = state.inputType == KeyChainInputType.backupKey;
+        final isBackupKeyMode = state.authInputType == AuthInputType.backupKey;
         final value = isBackupKeyMode ? state.backupKey : state.secret;
         final error = state.getValidationError();
 
@@ -598,8 +619,8 @@ mixin _ButtonLogicMixin {
 }
 
 class _SetButton extends StatelessWidget with _ButtonLogicMixin {
-  final KeyChainInputType inputType;
-  const _SetButton({required this.inputType});
+  final AuthInputType authInputType;
+  const _SetButton({required this.authInputType});
   @override
   Widget build(BuildContext context) {
     final state = context.select((KeychainCubit x) => x.state);
@@ -616,20 +637,20 @@ class _SetButton extends StatelessWidget with _ButtonLogicMixin {
           InkWell(
             onTap: () {
               final cubit = context.read<KeychainCubit>();
-              if (inputType == KeyChainInputType.pin) {
+              if (authInputType == AuthInputType.pin) {
                 cubit.updatePageState(
-                  KeyChainInputType.password,
-                  KeyChainPageState.enter,
+                  AuthInputType.password,
+                  KeyChainFlow.enter,
                 );
               } else {
                 cubit.updatePageState(
-                  KeyChainInputType.pin,
-                  KeyChainPageState.enter,
+                  AuthInputType.pin,
+                  KeyChainFlow.enter,
                 );
               }
             },
             child: BBText.bodySmall(
-              inputType == KeyChainInputType.pin
+              authInputType == AuthInputType.pin
                   ? 'Use a password instead of a pin'
                   : 'Use a PIN instead of a password',
               isBold: true,
@@ -639,10 +660,9 @@ class _SetButton extends StatelessWidget with _ButtonLogicMixin {
           BBButton.withColour(
             fillWidth: true,
             label:
-                'Set ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}',
+                'Set ${authInputType == AuthInputType.pin ? 'PIN' : 'password'}',
             disabled: !canStoreKey,
             onPressed: () {
-              context.read<KeychainCubit>().keyServerStatus();
               if (canStoreKey) context.read<KeychainCubit>().confirmPressed();
             },
           ),
@@ -653,34 +673,33 @@ class _SetButton extends StatelessWidget with _ButtonLogicMixin {
 }
 
 class _ConfirmButton extends StatelessWidget with _ButtonLogicMixin {
-  const _ConfirmButton({required this.inputType});
-  final KeyChainInputType inputType;
+  const _ConfirmButton({required this.authInputType});
+  final AuthInputType authInputType;
   @override
   Widget build(BuildContext context) {
     final canStoreKey =
         context.select((KeychainCubit x) => x.state.canStoreKey);
     final err = context.select((KeychainCubit x) => x.state.error);
 
-    if (err.isNotEmpty && inputType == KeyChainInputType.password) {
+    if (err.isNotEmpty && authInputType == AuthInputType.password) {
       return Center(child: BBText.errorSmall(err));
     }
     return BBButton.withColour(
       fillWidth: true,
       onPressed: () {
-        context.read<KeychainCubit>().keyServerStatus();
         if (canStoreKey) context.read<KeychainCubit>().confirmPressed();
       },
       leftIcon: Icons.arrow_forward,
       label:
-          'Confirm ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}',
+          'Confirm ${authInputType == AuthInputType.pin ? 'PIN' : 'password'}',
       disabled: !canStoreKey,
     );
   }
 }
 
 class _RecoverButton extends StatelessWidget with _ButtonLogicMixin {
-  const _RecoverButton({required this.inputType});
-  final KeyChainInputType inputType;
+  const _RecoverButton({required this.authInputType});
+  final AuthInputType authInputType;
 
   @override
   Widget build(BuildContext context) {
@@ -688,19 +707,15 @@ class _RecoverButton extends StatelessWidget with _ButtonLogicMixin {
       buildWhen: (previous, current) =>
           previous.canRecoverKey != current.canRecoverKey ||
           previous.loading != current.loading ||
-          previous.pageState != current.pageState ||
+          previous.selectedKeyChainFlow != current.selectedKeyChainFlow ||
           previous.keyServerUp != current.keyServerUp,
       builder: (context, state) {
-        final canRecover = inputType == KeyChainInputType.backupKey
+        final canRecover = authInputType == AuthInputType.backupKey
             ? state.canRecoverWithBckupKey
             : state.canRecoverKey;
 
-        // Check if we're in the download flow by checking original state
-        final isDownloadFlow = state.pageState == KeyChainPageState.download ||
-            state.originalPageState == KeyChainPageState.download;
-
         // Show only backup key option if server is down
-        if (!state.keyServerUp && inputType != KeyChainInputType.backupKey) {
+        if (!state.keyServerUp && authInputType != AuthInputType.backupKey) {
           return Column(
             children: [
               const BBText.bodySmall(
@@ -725,17 +740,6 @@ class _RecoverButton extends StatelessWidget with _ButtonLogicMixin {
               onTap: () => _switchInputType(context),
               child: BBText.bodySmall(_getSwitchButtonText(), isBold: true),
             ),
-            if (!isDownloadFlow &&
-                inputType != KeyChainInputType.backupKey) ...[
-              const Gap(20),
-              InkWell(
-                onTap: () => _switchToBackupKey(context),
-                child: const BBText.bodySmall(
-                  'Recover with backup key',
-                  isBold: true,
-                ),
-              ),
-            ],
             const Gap(10),
             BBButton.withColour(
               fillWidth: true,
@@ -753,45 +757,45 @@ class _RecoverButton extends StatelessWidget with _ButtonLogicMixin {
 
   void _switchInputType(BuildContext context) {
     final cubit = context.read<KeychainCubit>();
-    final newType = inputType == KeyChainInputType.pin
-        ? KeyChainInputType.password
-        : KeyChainInputType.pin;
-    cubit.updatePageState(newType, KeyChainPageState.recovery);
+    final newType = authInputType == AuthInputType.pin
+        ? AuthInputType.password
+        : AuthInputType.pin;
+    cubit.updatePageState(newType, KeyChainFlow.recovery);
   }
 
   void _switchToBackupKey(BuildContext context) {
     context.read<KeychainCubit>().updatePageState(
-          KeyChainInputType.backupKey,
-          KeyChainPageState.recovery,
+          AuthInputType.backupKey,
+          KeyChainFlow.recovery,
         );
   }
 
   String _getSwitchButtonText() {
-    switch (inputType) {
-      case KeyChainInputType.pin:
+    switch (authInputType) {
+      case AuthInputType.pin:
         return 'Use a password instead of a PIN';
-      case KeyChainInputType.password:
+      case AuthInputType.password:
         return 'Use a PIN instead of a password';
-      case KeyChainInputType.backupKey:
+      case AuthInputType.backupKey:
         return 'Use a PIN instead of a backup key';
     }
   }
 
   String _getInputTypeText() {
-    switch (inputType) {
-      case KeyChainInputType.pin:
+    switch (authInputType) {
+      case AuthInputType.pin:
         return 'PIN';
-      case KeyChainInputType.password:
+      case AuthInputType.password:
         return 'password';
-      case KeyChainInputType.backupKey:
+      case AuthInputType.backupKey:
         return 'backup key';
     }
   }
 }
 
 class _DeleteButton extends StatelessWidget with _ButtonLogicMixin {
-  const _DeleteButton({required this.inputType});
-  final KeyChainInputType inputType;
+  const _DeleteButton({required this.authInputType});
+  final AuthInputType authInputType;
 
   @override
   Widget build(BuildContext context) {
@@ -926,9 +930,9 @@ class _DialogBase extends StatelessWidget {
 }
 
 class _SuccessDialog extends StatelessWidget {
-  const _SuccessDialog({required this.pageState});
+  const _SuccessDialog({required this.selectedKeyChainFlow});
 
-  final KeyChainPageState pageState;
+  final KeyChainFlow selectedKeyChainFlow;
 
   @override
   Widget build(BuildContext context) {
@@ -937,23 +941,20 @@ class _SuccessDialog extends StatelessWidget {
     String route;
     dynamic extra;
 
-    if (pageState == KeyChainPageState.recovery) {
+    if (selectedKeyChainFlow == KeyChainFlow.recovery) {
       title = 'Recovery Successful';
       message = 'Your wallet has been recovered successfully';
       route = '/home';
-    } else if (pageState == KeyChainPageState.enter) {
+    } else if (selectedKeyChainFlow == KeyChainFlow.enter ||
+        selectedKeyChainFlow == KeyChainFlow.confirm) {
       title = 'Backup Successful';
       message =
           'Your wallet has been backed up successfully \n Please test your backup';
       route = '/wallet-settings/backup-settings/recover-options/encrypted';
       extra = false;
-    } else if (pageState == KeyChainPageState.delete) {
+    } else {
       title = 'Backup Key Deleted';
       message = 'Your backup key has been permanently deleted';
-      route = '/home';
-    } else {
-      title = 'Backup Downloaded';
-      message = 'Your backup has been downloaded successfully';
       route = '/home';
     }
 
@@ -963,6 +964,8 @@ class _SuccessDialog extends StatelessWidget {
       message: message,
       buttonText: 'Continue',
       onButtonPressed: () {
+        // Reset state before navigation
+        context.read<KeychainCubit>().resetState();
         Navigator.of(context).pop();
         if (extra != null) {
           context.push(route, extra: extra);
@@ -975,17 +978,25 @@ class _SuccessDialog extends StatelessWidget {
 }
 
 class _ErrorDialog extends StatelessWidget {
-  const _ErrorDialog({required this.error, this.isRecovery = false});
+  const _ErrorDialog({
+    required this.error,
+    this.selectedKeyChainFlow = KeyChainFlow.enter,
+  });
   final String error;
-  final bool isRecovery;
+  final KeyChainFlow selectedKeyChainFlow;
   @override
   Widget build(BuildContext context) {
     return _DialogBase(
       icon: Icons.error_outline,
-      title: isRecovery ? 'Recovery failed' : 'Backup failed',
+      title: selectedKeyChainFlow == KeyChainFlow.enter
+          ? 'Backup failed'
+          : selectedKeyChainFlow == KeyChainFlow.recovery
+              ? 'Recovery failed'
+              : 'Delete failed',
       message: error,
       buttonText: 'Continue',
       onButtonPressed: () {
+        context.read<KeychainCubit>().clearError();
         Navigator.of(context).pop();
       },
     );
@@ -998,11 +1009,13 @@ class _TitleText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (inputState, type) = context
-        .select((KeychainCubit x) => (x.state.pageState, x.state.inputType));
-    final text = inputState == KeyChainPageState.enter
-        ? 'Choose a backup ${type == KeyChainInputType.pin ? 'PIN' : 'password'}'
-        : 'Confirm backup ${type == KeyChainInputType.pin ? 'PIN' : 'password'}';
+    final (inputState, type) = context.select(
+      (KeychainCubit x) =>
+          (x.state.selectedKeyChainFlow, x.state.authInputType),
+    );
+    final text = inputState == KeyChainFlow.enter
+        ? 'Choose a backup ${type == AuthInputType.pin ? 'PIN' : 'password'}'
+        : 'Confirm backup ${type == AuthInputType.pin ? 'PIN' : 'password'}';
     return BBText.titleLarge(textAlign: TextAlign.center, text, isBold: true);
   }
 }
@@ -1012,10 +1025,11 @@ class _ConfirmTitleText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (pageState, inputType) = context
-        .select((KeychainCubit x) => (x.state.pageState, x.state.inputType));
+    final (selectedKeyChainFlow, authInputType) = context.select(
+        (KeychainCubit x) =>
+            (x.state.selectedKeyChainFlow, x.state.authInputType));
     final text =
-        'Confirm backup ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'}';
+        'Confirm backup ${authInputType == AuthInputType.pin ? 'PIN' : 'password'}';
 
     return BBText.titleLarge(textAlign: TextAlign.center, text, isBold: true);
   }
@@ -1026,10 +1040,11 @@ class _ConfirmSubtitleText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final inputType = context.select((KeychainCubit x) => x.state.inputType);
+    final authInputType =
+        context.select((KeychainCubit x) => x.state.authInputType);
     return BBText.bodySmall(
       textAlign: TextAlign.center,
-      'Enter the ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} again to confirm',
+      'Enter the ${authInputType == AuthInputType.pin ? 'PIN' : 'password'} again to confirm',
     );
   }
 }
@@ -1039,9 +1054,10 @@ class _SubtitleText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final inputType = context.select((KeychainCubit x) => x.state.inputType);
+    final authInputType =
+        context.select((KeychainCubit x) => x.state.authInputType);
     final text =
-        'You must memorize this ${inputType == KeyChainInputType.pin ? 'PIN' : 'password'} to recover access to your wallet. It must be at least ${KeychainCubit.pinMin} digits.';
+        'You must memorize this ${authInputType == AuthInputType.pin ? 'PIN' : 'password'} to recover access to your wallet. It must be at least ${KeychainCubit.pinMin} digits.';
     return BBText.bodySmall(textAlign: TextAlign.center, text);
   }
 }
