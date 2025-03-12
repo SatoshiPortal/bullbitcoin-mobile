@@ -249,14 +249,13 @@ class SendState with _$SendState {
 
     return false;
   }
-  
+
   bool couldBeSendSwap() {
     if (couldBeOnchainSwap()) return true;
-        if (
-        paymentNetwork == AddressNetwork.lightning || 
-         paymentNetwork == AddressNetwork.bip21Lightning) {
+    if (paymentNetwork == AddressNetwork.lightning ||
+        paymentNetwork == AddressNetwork.bip21Lightning) {
       return true;
-    }   
+    }
     return false;
   }
 
@@ -273,7 +272,7 @@ class SendState with _$SendState {
                 ? payjoinSender != null
                     ? 'Payjoining'
                     : 'Broadcasting'
-                : payjoinSender != null
+                : togglePayjoin
                     ? 'Confirm Payjoin'
                     : 'Confirm'
             : sending
