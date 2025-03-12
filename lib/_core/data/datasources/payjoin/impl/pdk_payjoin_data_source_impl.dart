@@ -239,12 +239,16 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
           PsbtInput(
             witnessUtxo:
                 TxOut(value: input.value, scriptPubkey: input.scriptPubkey),
-            redeemScript: await Script.newInstance(
-              rawOutputScript: input.redeemScriptRawOutputScript,
-            ),
-            witnessScript: await Script.newInstance(
-              rawOutputScript: input.witnessScriptRawOutputScript,
-            ),
+            redeemScript: input.redeemScriptRawOutputScript.isEmpty
+                ? null
+                : await Script.newInstance(
+                    rawOutputScript: input.redeemScriptRawOutputScript,
+                  ),
+            witnessScript: input.witnessScriptRawOutputScript.isEmpty
+                ? null
+                : await Script.newInstance(
+                    rawOutputScript: input.witnessScriptRawOutputScript,
+                  ),
           ),
         ),
       ),

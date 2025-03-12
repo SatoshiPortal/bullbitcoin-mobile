@@ -174,7 +174,7 @@ void main() {
       final Completer<bool> payjoinReceiverStartedEvent = Completer();
       final Completer<bool> payjoinSenderRequestedEvent = Completer();
       final Completer<bool> payjoinReceiverCompletedEvent = Completer();
-      final Completer<bool> payjoinSenderProposedCompletedEvent = Completer();
+      final Completer<bool> payjoinSenderCompletedEvent = Completer();
 
       setUpAll(() {
         payjoinSubscription = payjoinService.payjoins.listen((payjoin) {
@@ -189,15 +189,15 @@ void main() {
             case PayjoinSender _:
               if (payjoin.status == PayjoinStatus.requested) {
                 payjoinSenderRequestedEvent.complete(true);
-              } else if (payjoin.status == PayjoinStatus.proposed) {
-                payjoinSenderProposedCompletedEvent.complete(true);
+              } else if (payjoin.status == PayjoinStatus.completed) {
+                payjoinSenderCompletedEvent.complete(true);
               }
           }
         });
       });
 
       test('sender and receiver have funds', () async {
-        await walletManagerService.syncAll(environment: Environment.testnet);
+        await walletManagerService.syncAll();
 
         final senderBalance = await walletManagerService.getBalance(
           walletId: senderWallet.id,
@@ -242,9 +242,9 @@ void main() {
         );
         debugPrint('Payjoin receiver created: $payjoin');
 
+        expect(payjoin.status, PayjoinStatus.started);
         // Check that the payjoin uri is correct
         final pjUri = Uri.parse(payjoin.pjUri);
-        expect(payjoin.status, PayjoinStatus.started);
         expect(pjUri.scheme, 'bitcoin');
         expect(pjUri.path, address.address);
         expect(pjUri.queryParameters.containsKey('pj'), true);
@@ -253,7 +253,7 @@ void main() {
         expect(payjoinReceiverStartedEvent.isCompleted, true);
 
         // Build the psbt with the sender wallet
-        const networkFeesSatPerVb = 10000.0;
+        const networkFeesSatPerVb = 1000.0;
         final originalPsbt = await walletManagerService.buildPsbt(
           walletId: senderWallet.id,
           address: address.address,
@@ -277,21 +277,13 @@ void main() {
         await payjoinReceiverCompletedEvent.future;
         expect(payjoinReceiverCompletedEvent.isCompleted, true);
 
-        await payjoinSenderProposedCompletedEvent.future;
-        expect(payjoinSenderProposedCompletedEvent.isCompleted, true);
+        await payjoinSenderCompletedEvent.future;
+        expect(payjoinSenderCompletedEvent.isCompleted, true);
       });
 
       tearDownAll(() {
         payjoinSubscription.cancel();
       });
     });
-  });
-
-  tearDownAll(() async {
-    await pdkPayjoinsBox.close();
-    await electrumServersBox.close();
-    await settingsBox.close();
-    await walletMetadataBox.close();
-    await Hive.close();
   });
 }
