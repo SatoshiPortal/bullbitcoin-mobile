@@ -208,6 +208,7 @@ class KeychainCubit extends Cubit<KeychainState> {
         ),
       );
     } catch (e) {
+      debugPrint('Failed to recover backup key: $e');
       emit(
         state.copyWith(
           error: 'Failed to recover backup key',
