@@ -19,6 +19,7 @@ import 'package:bb_mobile/_core/data/services/mnemonic_seed_factory_impl.dart';
 import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart';
 import 'package:bb_mobile/_core/data/services/wallet_manager_service_impl.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
@@ -32,7 +33,10 @@ import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_payjoin_updates_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_use_case.dart';
+import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_use_case.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
@@ -106,6 +110,16 @@ class CoreLocator {
         dataSource: Bip39EnglishWordListDataSourceImpl(),
       ),
     );
+    final pdkPayjoinsBox =
+        await Hive.openBox<String>(HiveBoxNameConstants.pdkPayjoins);
+    locator.registerLazySingleton<PayjoinRepository>(
+      () => PayjoinRepositoryImpl(
+        payjoinDataSource: PdkPayjoinDataSourceImpl(
+          dio: Dio(),
+          storage: HiveStorageDataSourceImpl<String>(pdkPayjoinsBox),
+        ),
+      ),
+    );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
         boltz: BoltzDataSourceImpl(
@@ -149,16 +163,9 @@ class CoreLocator {
         electrumServerRepository: locator<ElectrumServerRepository>(),
       ),
     );
-    final pdkPayjoinsBox =
-        await Hive.openBox<String>(HiveBoxNameConstants.pdkPayjoins);
     locator.registerLazySingleton<PayjoinWatcherService>(
       () => PayjoinWatcherServiceImpl(
-        payjoinRepository: PayjoinRepositoryImpl(
-          payjoinDataSource: PdkPayjoinDataSourceImpl(
-            dio: Dio(),
-            storage: HiveStorageDataSourceImpl<String>(pdkPayjoinsBox),
-          ),
-        ),
+        payjoinRepository: locator<PayjoinRepository>(),
         electrumServerRepository: locator<ElectrumServerRepository>(),
         settingsRepository: locator<SettingsRepository>(),
         walletManagerService: locator<WalletManagerService>(),
@@ -195,6 +202,21 @@ class CoreLocator {
       () => GetWalletsUseCase(
         settingsRepository: locator<SettingsRepository>(),
         walletManager: locator<WalletManagerService>(),
+      ),
+    );
+    locator.registerFactory<ReceiveWithPayjoinUseCase>(
+      () => ReceiveWithPayjoinUseCase(
+        payjoinRepository: locator<PayjoinRepository>(),
+      ),
+    );
+    locator.registerFactory<SendWithPayjoinUseCase>(
+      () => SendWithPayjoinUseCase(
+        payjoinRepository: locator<PayjoinRepository>(),
+      ),
+    );
+    locator.registerFactory<GetPayjoinUpdatesUseCase>(
+      () => GetPayjoinUpdatesUseCase(
+        payjoinWatcherService: locator<PayjoinWatcherService>(),
       ),
     );
   }

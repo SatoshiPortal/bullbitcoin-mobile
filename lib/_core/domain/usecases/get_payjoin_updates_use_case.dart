@@ -5,8 +5,8 @@ class GetPayjoinUpdatesUseCase {
   final PayjoinWatcherService _payjoinWatcher;
 
   const GetPayjoinUpdatesUseCase({
-    required PayjoinWatcherService payjoinWatcher,
-  }) : _payjoinWatcher = payjoinWatcher;
+    required PayjoinWatcherService payjoinWatcherService,
+  }) : _payjoinWatcher = payjoinWatcherService;
 
   Stream<Payjoin> execute({List<String>? ids}) {
     try {

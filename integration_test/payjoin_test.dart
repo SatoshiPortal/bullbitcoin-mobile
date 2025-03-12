@@ -1,73 +1,30 @@
 import 'dart:async';
 
-import 'package:bb_mobile/_core/data/datasources/electrum_server_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/seed_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
-import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
-import 'package:bb_mobile/_core/data/repositories/payjoin_repository_impl.dart';
-import 'package:bb_mobile/_core/data/repositories/seed_repository_impl.dart';
-import 'package:bb_mobile/_core/data/repositories/settings_repository_impl.dart';
-import 'package:bb_mobile/_core/data/repositories/wallet_metadata_repository_impl.dart';
-import 'package:bb_mobile/_core/data/services/mnemonic_seed_factory_impl.dart';
-import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart';
-import 'package:bb_mobile/_core/data/services/wallet_manager_service_impl.dart';
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_use_case.dart';
-import 'package:bb_mobile/_utils/constants.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
-import 'package:bb_mobile/settings/domain/usecases/set_testnet_mode_usecase.dart';
-import 'package:dio/dio.dart';
+import 'package:bb_mobile/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:test/test.dart';
 
 void main() {
-  late Box<String> pdkPayjoinsBox;
-  late KeyValueStorageDataSource<String> pdkStorage;
-  late Box<String> electrumServersBox;
-  late KeyValueStorageDataSource<String> electrumServerStorage;
-  late Box<String> settingsBox;
-  late KeyValueStorageDataSource<String> settingsStorage;
-  late Box<String> walletMetadataBox;
-  late KeyValueStorageDataSource<String> walletMetadataStorage;
-  late WalletMetadataDataSource walletMetadataDataSource;
-  late WalletMetadataRepository walletMetadataRepository;
-  late KeyValueStorageDataSource<String> seedStorage;
-  late SeedDataSource seedDataSource;
-  late SeedRepository seedRepository;
-  late Dio dio;
-  late PayjoinDataSource pdkDataSource;
-  late PayjoinRepository payjoinRepository;
-  late ElectrumServerDataSource electrumServerDataSource;
-  late ElectrumServerRepository electrumServerRepository;
-  late SettingsRepository settingsRepository;
   late WalletManagerService walletManagerService;
   late PayjoinWatcherService payjoinWatcherService;
-  late SetEnvironmentUseCase setEnvironmentUseCase;
-  late RecoverWalletUseCase recoverWalletUseCase;
   late ReceiveWithPayjoinUseCase receiveWithPayjoinUseCase;
   late SendWithPayjoinUseCase sendWithPayjoinUseCase;
   late Wallet receiverWallet;
   late Wallet senderWallet;
 
-  // TODO: move these to github secrets so the testnet coins for our integration
+  // TODO: Change and move these to github secrets so the testnet coins for our integration
   //  tests are not at risk of being used by others.
   const receiverMnemonic =
       'model float claim feature convince exchange truck cream assume fancy swamp offer';
@@ -80,90 +37,33 @@ void main() {
       core.init(),
     ]);
 
-    pdkPayjoinsBox =
-        await Hive.openBox<String>(HiveBoxNameConstants.pdkPayjoins);
-    pdkStorage = HiveStorageDataSourceImpl<String>(pdkPayjoinsBox);
-    electrumServersBox =
-        await Hive.openBox<String>(HiveBoxNameConstants.electrumServers);
-    electrumServerStorage =
-        HiveStorageDataSourceImpl<String>(electrumServersBox);
-    dio = Dio();
-    pdkDataSource = PdkPayjoinDataSourceImpl(storage: pdkStorage, dio: dio);
-    payjoinRepository = PayjoinRepositoryImpl(payjoinDataSource: pdkDataSource);
+    await AppLocator.setup();
 
-    electrumServerDataSource = ElectrumServerDataSourceImpl(
-      electrumServerStorage: electrumServerStorage,
-    );
-    electrumServerRepository = ElectrumServerRepositoryImpl(
-      electrumServerDataSource: electrumServerDataSource,
-    );
-    settingsBox = await Hive.openBox<String>(HiveBoxNameConstants.settings);
-    settingsStorage = HiveStorageDataSourceImpl<String>(settingsBox);
-    settingsRepository = SettingsRepositoryImpl(
-      storage: settingsStorage,
-    );
-    walletMetadataBox =
-        await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
-    walletMetadataStorage =
-        HiveStorageDataSourceImpl<String>(walletMetadataBox);
-    walletMetadataDataSource = WalletMetadataDataSourceImpl(
-      walletMetadataStorage: walletMetadataStorage,
-    );
-    walletMetadataRepository = WalletMetadataRepositoryImpl(
-      source: walletMetadataDataSource,
-    );
-    seedStorage = SecureStorageDataSourceImpl(
-      const FlutterSecureStorage(),
-    );
-    seedDataSource = SeedDataSourceImpl(
-      secureStorage: seedStorage,
-    );
-    seedRepository = SeedRepositoryImpl(
-      source: seedDataSource,
-    );
-    walletManagerService = WalletManagerServiceImpl(
-      walletMetadataRepository: walletMetadataRepository,
-      seedRepository: seedRepository,
-      electrumServerRepository: electrumServerRepository,
-    );
-    payjoinWatcherService = PayjoinWatcherServiceImpl(
-      payjoinRepository: payjoinRepository,
-      electrumServerRepository: electrumServerRepository,
-      settingsRepository: settingsRepository,
-      walletManagerService: walletManagerService,
-    );
-
-    setEnvironmentUseCase = SetEnvironmentUseCase(
-      settingsRepository: settingsRepository,
-    );
     // Make sure we are running in testnet environment
-    await setEnvironmentUseCase.execute(Environment.testnet);
+    await locator<SetEnvironmentUseCase>().execute(Environment.testnet);
 
-    recoverWalletUseCase = RecoverWalletUseCase(
-      settingsRepository: settingsRepository,
-      mnemonicSeedFactory: const MnemonicSeedFactoryImpl(),
-      walletManager: walletManagerService,
-    );
-    receiveWithPayjoinUseCase = ReceiveWithPayjoinUseCase(
-      payjoinRepository: payjoinRepository,
-    );
-    sendWithPayjoinUseCase = SendWithPayjoinUseCase(
-      payjoinRepository: payjoinRepository,
-    );
+    walletManagerService = locator<WalletManagerService>();
+    payjoinWatcherService = locator<PayjoinWatcherService>();
+    receiveWithPayjoinUseCase = locator<ReceiveWithPayjoinUseCase>();
+    sendWithPayjoinUseCase = locator<SendWithPayjoinUseCase>();
 
-    receiverWallet = await recoverWalletUseCase.execute(
+    receiverWallet = await locator<RecoverWalletUseCase>().execute(
       mnemonicWords: receiverMnemonic.split(' '),
       scriptType: ScriptType.bip84,
     );
-    senderWallet = await recoverWalletUseCase.execute(
+    senderWallet = await locator<RecoverWalletUseCase>().execute(
       mnemonicWords: senderMnemonic.split(' '),
       scriptType: ScriptType.bip84,
     );
 
-    // Sync the wallets before starting the tests
+    debugPrint('Wallets created');
+  });
+
+  setUp(() async {
+    // Sync the wallets before every other test
     await walletManagerService.syncAll();
 
-    debugPrint('Setup completed');
+    debugPrint('Wallets synced');
   });
 
   test('Wallets have funds to payjoin', () async {
