@@ -20,10 +20,9 @@ class _SecurityOverlayState extends State<SecurityOverlay>
 
   final sensitivePaths = [
     '/import',
-    '/open-backup',
     '/backup',
     '/test-backup',
-    '/open-backup',
+    '/backup-options/physical',
     '/backup',
     '/test-backup',
     '/import-main',
