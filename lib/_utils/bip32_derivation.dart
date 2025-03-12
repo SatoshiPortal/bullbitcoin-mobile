@@ -5,24 +5,8 @@ import 'package:bb_mobile/_utils/uint_8_list_x.dart';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:bs58check/bs58check.dart' as base58;
 
-abstract class Bip32DataSource {
-  Future<bip32.BIP32> getAccountXpub({
-    required Uint8List seedBytes,
-    required ScriptType scriptType,
-    required Network network,
-    int accountIndex,
-  });
-
-  String getXprvFromSeed(Uint8List seedBytes, Network network);
-
-  bip32.BIP32 getBip32Xpub(String xpub);
-}
-
-class Bip32DataSourceImpl implements Bip32DataSource {
-  const Bip32DataSourceImpl();
-
-  @override
-  Future<bip32.BIP32> getAccountXpub({
+class Bip32Derivation {
+  static Future<bip32.BIP32> getAccountXpub({
     required Uint8List seedBytes,
     required ScriptType scriptType,
     required Network network,
@@ -35,8 +19,7 @@ class Bip32DataSourceImpl implements Bip32DataSource {
     return derivedAccountKey.neutered();
   }
 
-  @override
-  String getXprvFromSeed(Uint8List seedBytes, Network network) {
+  static String getXprvFromSeed(Uint8List seedBytes, Network network) {
     final nw = network == Network.bitcoinTestnet
         ? bip32.NetworkType(
             wif: 0x80,
@@ -47,8 +30,7 @@ class Bip32DataSourceImpl implements Bip32DataSource {
     return root.toBase58();
   }
 
-  @override
-  bip32.BIP32 getBip32Xpub(String xpub) {
+  static bip32.BIP32 getBip32Xpub(String xpub) {
     final decoded = base58.decode(xpub);
     final keyBytes = decoded.sublist(4); // Remove xpub version bytes
     // Add xpub version bytes, since the bip32 library expects them like that

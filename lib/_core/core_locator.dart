@@ -1,13 +1,11 @@
-import 'package:bb_mobile/_core/data/datasources/bip32_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/bip39_word_list_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/descriptor_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/exchange_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/payjoin/impl/pdk_payjoin_data_source_impl.dart';
+import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/seed_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
@@ -72,8 +70,6 @@ class CoreLocator {
     locator.registerLazySingleton<WalletMetadataRepository>(
       () => WalletMetadataRepositoryImpl(
         source: WalletMetadataDataSourceImpl(
-          bip32: const Bip32DataSourceImpl(),
-          descriptor: const DescriptorDataSourceImpl(),
           walletMetadataStorage:
               HiveStorageDataSourceImpl<String>(walletMetadataBox),
         ),

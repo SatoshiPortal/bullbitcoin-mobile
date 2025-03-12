@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/domain/entities/seed.dart';
+import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:test/test.dart';
 
 class SeedTestCase {

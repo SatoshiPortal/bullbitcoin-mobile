@@ -1,13 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/_core/data/datasources/bip32_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/descriptor_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/payjoin/impl/pdk_payjoin_data_source_impl.dart';
-import 'package:bb_mobile/_core/data/datasources/payjoin/payjoin_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/seed_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
@@ -38,8 +35,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:test/test.dart';
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
+import 'package:test/test.dart';
 
 void main() {
   late Box<String> pdkPayjoinsBox;
@@ -110,8 +107,6 @@ void main() {
     walletMetadataStorage =
         HiveStorageDataSourceImpl<String>(walletMetadataBox);
     walletMetadataDataSource = WalletMetadataDataSourceImpl(
-      bip32: const Bip32DataSourceImpl(),
-      descriptor: const DescriptorDataSourceImpl(),
       walletMetadataStorage: walletMetadataStorage,
     );
     walletMetadataRepository = WalletMetadataRepositoryImpl(
@@ -186,14 +181,16 @@ void main() {
         walletId: senderWallet.id,
       );
       debugPrint(
-          'Send some funds to ${address.address} before running the integration test again');
+        'Send some funds to ${address.address} before running the integration test again',
+      );
     }
     if (receiverBalance.totalSat == BigInt.zero) {
       final address = await walletManagerService.getNewAddress(
         walletId: receiverWallet.id,
       );
       debugPrint(
-          'Send some funds to ${address.address} before running the integration test again');
+        'Send some funds to ${address.address} before running the integration test again',
+      );
     }
 
     expect(senderBalance.totalSat.toInt(), greaterThan(0));

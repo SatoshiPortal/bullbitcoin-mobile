@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
-import 'package:bb_mobile/core/data/repositories/settings_repository_impl.dart';
-import 'package:bb_mobile/core/domain/entities/settings.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/repositories/settings_repository_impl.dart';
+import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/_core/data/datasources/bdk_blockchain_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/payjoin/payjoin_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/bitcoin_blockchain_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
 import 'package:bb_mobile/_core/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/_core/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
