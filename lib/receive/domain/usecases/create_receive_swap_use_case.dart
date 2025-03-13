@@ -21,7 +21,7 @@ class CreateReceiveSwapUseCase {
         _swapRepositoryTestnet = swapRepositoryTestnet,
         _seedRepository = seedRepository;
 
-  Future<Swap> execute({
+  Future<LnReceiveSwap> execute({
     required String walletId,
     required SwapType type,
     required int amountSat,
@@ -70,20 +70,20 @@ class CreateReceiveSwapUseCase {
 
       switch (type) {
         case SwapType.lightningToBitcoin:
-          return swapRepository.createLightningToBitcoinSwap(
+          return await swapRepository.createLightningToBitcoinSwap(
             walletId: walletId,
             amountSat: amountSat,
             isTestnet: wallet.network.isTestnet,
-            mnemonic: mnemonic.toString(),
+            mnemonic: mnemonic.asString,
             electrumUrl: btcElectrumUrl,
           );
 
         case SwapType.lightningToLiquid:
-          return swapRepository.createLightningToLiquidSwap(
+          return await swapRepository.createLightningToLiquidSwap(
             walletId: walletId,
             amountSat: amountSat,
             isTestnet: wallet.network.isTestnet,
-            mnemonic: mnemonic.toString(),
+            mnemonic: mnemonic.asString,
             electrumUrl: lbtcElectrumUrl,
           );
         default:

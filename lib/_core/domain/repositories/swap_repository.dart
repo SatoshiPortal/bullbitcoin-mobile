@@ -7,7 +7,7 @@ abstract class SwapRepository {
   });
 
   // RECEIVE SWAPS
-  Future<Swap> createLightningToLiquidSwap({
+  Future<LnReceiveSwap> createLightningToLiquidSwap({
     required String mnemonic,
     required String walletId,
     required int amountSat,
@@ -21,7 +21,7 @@ abstract class SwapRepository {
     required int absoluteFees,
   });
 
-  Future<Swap> createLightningToBitcoinSwap({
+  Future<LnReceiveSwap> createLightningToBitcoinSwap({
     required String mnemonic,
     required String walletId,
     required int amountSat,

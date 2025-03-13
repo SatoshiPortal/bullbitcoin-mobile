@@ -266,4 +266,8 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     );
     // TODO: add label to txid
   }
+
+  @override
+  // TODO: implement swapSubscription
+  StreamSubscription<Swap>? get swapSubscription => _swapSubscription;
 }

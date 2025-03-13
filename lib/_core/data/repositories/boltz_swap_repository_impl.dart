@@ -15,7 +15,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   /// RECEIVE LN TO BTC
   @override
-  Future<Swap> createLightningToBitcoinSwap({
+  Future<LnReceiveSwap> createLightningToBitcoinSwap({
     required String mnemonic,
     required String walletId,
     required int amountSat,
@@ -31,7 +31,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       isTestnet: isTestnet,
       electrumUrl: electrumUrl,
     );
-    return btcLnSwap.toEntity();
+    return btcLnSwap.toEntity() as LnReceiveSwap;
   }
 
   @override
@@ -56,7 +56,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   /// RECEIVE LN TO LBTC
   @override
-  Future<Swap> createLightningToLiquidSwap({
+  Future<LnReceiveSwap> createLightningToLiquidSwap({
     required String mnemonic,
     required String walletId,
     required int amountSat,
@@ -73,7 +73,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       electrumUrl: electrumUrl,
     );
 
-    return lbtcLnSwap.toEntity();
+    return lbtcLnSwap.toEntity() as LnReceiveSwap;
   }
 
   @override
@@ -98,7 +98,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   /// SEND BTC TO LN
   @override
-  Future<Swap> createBitcoinToLightningSwap({
+  Future<LnSendSwap> createBitcoinToLightningSwap({
     required String mnemonic,
     required String walletId,
     required String invoice,
@@ -115,7 +115,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       electrumUrl: electrumUrl,
     );
 
-    return btcLnSwap.toEntity();
+    return btcLnSwap.toEntity() as LnSendSwap;
   }
 
   @override
@@ -149,7 +149,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   /// SEND LBTC TO LN
   @override
-  Future<Swap> createLiquidToLightningSwap({
+  Future<LnSendSwap> createLiquidToLightningSwap({
     required String mnemonic,
     required String walletId,
     required String invoice,
@@ -166,7 +166,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       electrumUrl: electrumUrl,
     );
 
-    return lbtcLnSwap.toEntity();
+    return lbtcLnSwap.toEntity() as LnSendSwap;
   }
 
   @override

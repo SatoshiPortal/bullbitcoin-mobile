@@ -182,7 +182,8 @@ abstract class BoltzDataSource {
 }
 
 class BoltzDataSourceImpl implements BoltzDataSource {
-  final String _url;
+  final String _baseUrl;
+  late String _httpsUrl;
 
   late BoltzWebSocket _boltzWebSocket;
   final BoltzStorageDataSourceImpl _boltzStore;
@@ -199,8 +200,9 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   BoltzDataSourceImpl({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
     required BoltzStorageDataSourceImpl boltzStore,
-  })  : _url = url,
+  })  : _baseUrl = url,
         _boltzStore = boltzStore {
+    _httpsUrl = 'https://$_baseUrl';
     _initializeBoltzWebSocket();
   }
 
@@ -224,7 +226,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     required bool isTestnet,
     required String electrumUrl,
   }) async {
-    final fees = Fees(boltzUrl: _url);
+    final fees = Fees(boltzUrl: _httpsUrl);
     final reverseFees = await fees.reverse();
     final btcLnSwap = await BtcLnSwap.newReverse(
       mnemonic: mnemonic,
@@ -232,7 +234,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       outAmount: BigInt.from(outAmount),
       network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
       electrumUrl: electrumUrl,
-      boltzUrl: _url,
+      boltzUrl: _httpsUrl,
     );
     await _boltzStore.storeBtcLnSwap(btcLnSwap);
     final swapModel = SwapModel.lnReceive(
@@ -277,35 +279,40 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     required bool isTestnet,
     required String electrumUrl,
   }) async {
-    final fees = Fees(boltzUrl: _url);
-    final reverseFees = await fees.reverse();
-    final lbtcLnSwap = await LbtcLnSwap.newReverse(
-      mnemonic: mnemonic,
-      index: BigInt.from(index),
-      outAmount: BigInt.from(outAmount),
-      network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
-      electrumUrl: electrumUrl,
-      boltzUrl: _url,
-    );
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final reverseFees = await fees.reverse();
+      final lbtcLnSwap = await LbtcLnSwap.newReverse(
+        mnemonic: mnemonic,
+        index: BigInt.from(index),
+        outAmount: BigInt.from(outAmount),
+        network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
+        electrumUrl: electrumUrl,
+        boltzUrl: _httpsUrl,
+      );
 
-    await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
+      await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
 
-    final swapModel = SwapModel.lnReceive(
-      id: lbtcLnSwap.id,
-      status: swap_entity.SwapStatus.pending.name,
-      type: swap_entity.SwapType.lightningToLiquid.name,
-      isTestnet: isTestnet,
-      keyIndex: index,
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      receiveWalletId: walletId,
-      invoice: lbtcLnSwap.invoice,
-      boltzFees: reverseFees.lbtcFees.percentage * outAmount ~/ 100,
-      lockupFees: reverseFees.lbtcFees.minerFees.lockup.toInt(),
-      claimFees: reverseFees.lbtcFees.minerFees.claim.toInt(),
-    );
+      final swapModel = SwapModel.lnReceive(
+        id: lbtcLnSwap.id,
+        status: swap_entity.SwapStatus.pending.name,
+        type: swap_entity.SwapType.lightningToLiquid.name,
+        isTestnet: isTestnet,
+        keyIndex: index,
+        creationTime: DateTime.now().millisecondsSinceEpoch,
+        receiveWalletId: walletId,
+        invoice: lbtcLnSwap.invoice,
+        boltzFees: reverseFees.lbtcFees.percentage * outAmount ~/ 100,
+        lockupFees: reverseFees.lbtcFees.minerFees.lockup.toInt(),
+        claimFees: reverseFees.lbtcFees.minerFees.claim.toInt(),
+      );
 
-    await _boltzStore.store(swapModel);
-    return swapModel;
+      await _boltzStore.store(swapModel);
+      return swapModel;
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 
   @override
@@ -376,7 +383,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     required bool isTestnet,
     required String electrumUrl,
   }) async {
-    final fees = Fees(boltzUrl: _url);
+    final fees = Fees(boltzUrl: _httpsUrl);
     final submarineFees = await fees.submarine();
     final btcLnSwap = await BtcLnSwap.newSubmarine(
       mnemonic: mnemonic,
@@ -384,7 +391,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       invoice: invoice,
       network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
       electrumUrl: electrumUrl,
-      boltzUrl: _url,
+      boltzUrl: _httpsUrl,
     );
 
     await _boltzStore.storeBtcLnSwap(btcLnSwap);
@@ -445,7 +452,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     required bool isTestnet,
     required String electrumUrl,
   }) async {
-    final fees = Fees(boltzUrl: _url);
+    final fees = Fees(boltzUrl: _httpsUrl);
     final submarineFees = await fees.submarine();
     final lbtcLnSwap = await LbtcLnSwap.newSubmarine(
       mnemonic: mnemonic,
@@ -453,7 +460,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       invoice: invoice,
       network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
       electrumUrl: electrumUrl,
-      boltzUrl: _url,
+      boltzUrl: _httpsUrl,
     );
 
     await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
@@ -513,12 +520,12 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
-    final fees = Fees(boltzUrl: _url);
+    final fees = Fees(boltzUrl: _httpsUrl);
     final chainFees = await fees.chain();
     final chainSwap = await ChainSwap.newSwap(
       mnemonic: mnemonic,
       index: BigInt.from(index),
-      boltzUrl: _url,
+      boltzUrl: _httpsUrl,
       direction: ChainSwapDirection.btcToLbtc,
       amount: BigInt.from(amountSat),
       isTestnet: isTestnet,
@@ -560,13 +567,13 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
-    final fees = Fees(boltzUrl: _url);
+    final fees = Fees(boltzUrl: _httpsUrl);
     final chainFees = await fees.chain();
 
     final chainSwap = await ChainSwap.newSwap(
       mnemonic: mnemonic,
       index: BigInt.from(index),
-      boltzUrl: _url,
+      boltzUrl: _httpsUrl,
       direction: ChainSwapDirection.lbtcToBtc,
       amount: BigInt.from(amountSat),
       isTestnet: isTestnet,
@@ -698,27 +705,37 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   @override
   Future<(int, int)> getBtcReverseSwapLimits() async {
-    final fees = Fees(boltzUrl: _url);
-    final reverse = await fees.reverse();
-    return (
-      reverse.btcLimits.minimal.toInt(),
-      reverse.btcLimits.maximal.toInt()
-    );
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final reverse = await fees.reverse();
+      return (
+        reverse.btcLimits.minimal.toInt(),
+        reverse.btcLimits.maximal.toInt()
+      );
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
   }
 
   @override
   Future<(int, int)> getLbtcReverseSwapLimits() async {
-    final fees = Fees(boltzUrl: _url);
-    final reverse = await fees.reverse();
-    return (
-      reverse.lbtcLimits.minimal.toInt(),
-      reverse.lbtcLimits.maximal.toInt()
-    );
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final reverse = await fees.reverse();
+      return (
+        reverse.lbtcLimits.minimal.toInt(),
+        reverse.lbtcLimits.maximal.toInt()
+      );
+    } catch (e) {
+      print(e.toString());
+      rethrow;
+    }
   }
 
   @override
   Future<(int, int)> getBtcSubmarineSwapLimits() async {
-    final fees = Fees(boltzUrl: _url);
+    final fees = Fees(boltzUrl: _httpsUrl);
     final submarine = await fees.submarine();
     return (
       submarine.btcLimits.minimal.toInt(),
@@ -728,7 +745,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   @override
   Future<(int, int)> getLbtcSubmarineSwapLimits() async {
-    final fees = Fees(boltzUrl: _url);
+    final fees = Fees(boltzUrl: _httpsUrl);
     final submarine = await fees.submarine();
     return (
       submarine.lbtcLimits.minimal.toInt(),
@@ -738,21 +755,21 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   @override
   Future<(int, int)> getBtcToLbtcChainSwapLimits() async {
-    final fees = Fees(boltzUrl: _url);
+    final fees = Fees(boltzUrl: _httpsUrl);
     final chain = await fees.chain();
     return (chain.btcLimits.minimal.toInt(), chain.btcLimits.maximal.toInt());
   }
 
   @override
   Future<(int, int)> getLbtcToBtcChainSwapLimits() async {
-    final fees = Fees(boltzUrl: _url);
+    final fees = Fees(boltzUrl: _httpsUrl);
     final chain = await fees.chain();
     return (chain.lbtcLimits.minimal.toInt(), chain.lbtcLimits.maximal.toInt());
   }
 
   void _initializeBoltzWebSocket() {
     try {
-      _boltzWebSocket = BoltzWebSocket.create(_url);
+      _boltzWebSocket = BoltzWebSocket.create(_baseUrl);
       _isConnected = true;
       _reconnectAttempts = 0;
 

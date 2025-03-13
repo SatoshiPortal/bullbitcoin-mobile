@@ -11,6 +11,9 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
 
   StreamSubscription<Swap>? _swapSubscription;
 
+  @override
+  StreamSubscription<Swap>? get swapSubscription => _swapSubscription;
+
   SwapWatcherServiceImpl({
     required WalletManagerService walletManager,
     required BoltzSwapRepositoryImpl boltzRepo,
