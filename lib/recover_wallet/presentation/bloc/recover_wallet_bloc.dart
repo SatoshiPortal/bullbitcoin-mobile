@@ -1,7 +1,6 @@
-import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
-import 'package:bb_mobile/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
+import 'package:bb_mobile/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -13,10 +12,10 @@ part 'recover_wallet_state.dart';
 class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
   RecoverWalletBloc({
     required FindMnemonicWordsUseCase findMnemonicWordsUseCase,
-    required RecoverWalletUseCase recoverWalletUseCase,
+    required CreateDefaultWalletsUseCase createDefaultWalletsUseCase,
     bool useTestWallet = false,
   })  : _findMnemonicWordsUseCase = findMnemonicWordsUseCase,
-        _recoverWalletUseCase = recoverWalletUseCase,
+        _createDefaultWalletsUseCase = createDefaultWalletsUseCase,
         super(const RecoverWalletState()) {
     on<RecoverWalletWordsCountChanged>(_onWordsCountChanged);
     on<RecoverWalletWordChanged>(_onWordChanged);
@@ -33,7 +32,8 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
   }
 
   final FindMnemonicWordsUseCase _findMnemonicWordsUseCase;
-  final RecoverWalletUseCase _recoverWalletUseCase;
+
+  final CreateDefaultWalletsUseCase _createDefaultWalletsUseCase;
 
   void _importTestableWallet(
     ImportTestableWallet event,
@@ -125,12 +125,9 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
   ) async {
     try {
       emit(state.copyWith(isCreating: true));
-      await _recoverWalletUseCase.execute(
+      await _createDefaultWalletsUseCase.execute(
         mnemonicWords: state.validWords.values.toList(),
         passphrase: state.passphrase,
-        scriptType: state.scriptType,
-        label: state.label,
-        isDefault: state.fromOnboarding,
       );
 
       emit(
