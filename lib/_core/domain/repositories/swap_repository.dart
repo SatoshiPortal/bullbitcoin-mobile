@@ -1,13 +1,17 @@
-import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 
 abstract class SwapRepository {
+  // LIMITS
+  Future<SwapLimits> getSwapLimits({
+    required SwapType type,
+  });
+
   // RECEIVE SWAPS
   Future<Swap> createLightningToLiquidSwap({
     required String mnemonic,
     required String walletId,
-    required BigInt amountSat,
-    required Environment environment,
+    required int amountSat,
+    required bool isTestnet,
     required String electrumUrl,
   });
 
@@ -15,15 +19,13 @@ abstract class SwapRepository {
     required String swapId,
     required String liquidAddress,
     required int absoluteFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
 
   Future<Swap> createLightningToBitcoinSwap({
     required String mnemonic,
     required String walletId,
-    required BigInt amountSat,
-    required Environment environment,
+    required int amountSat,
+    required bool isTestnet,
     required String electrumUrl,
   });
 
@@ -31,15 +33,13 @@ abstract class SwapRepository {
     required String swapId,
     required String bitcoinAddress,
     required int absoluteFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
   // SEND SWAPS
   Future<Swap> createBitcoinToLightningSwap({
     required String mnemonic,
     required String walletId,
     required String invoice,
-    required Environment environment,
+    required bool isTestnet,
     required String electrumUrl,
   });
   Future<void> coopSignBitcoinToLightningSwap({
@@ -49,14 +49,12 @@ abstract class SwapRepository {
     required String swapId,
     required String bitcoinAddress,
     required int absoluteFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
   Future<Swap> createLiquidToLightningSwap({
     required String mnemonic,
     required String walletId,
     required String invoice,
-    required Environment environment,
+    required bool isTestnet,
     required String electrumUrl,
   });
   Future<void> coopSignLiquidToLightningSwap({
@@ -66,30 +64,28 @@ abstract class SwapRepository {
     required String swapId,
     required String liquidAddress,
     required int absoluteFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
   // CHAIN SWAPS
   Future<Swap> createLiquidToBitcoinSwap({
     required String mnemonic,
     required String sendWalletId,
     required int amountSat,
-    required Environment environment,
+    required bool isTestnet,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
-    required bool toSelf,
     String? receiveWalletId,
+    String? externalRecipientAddress,
   });
 
   Future<Swap> createBitcoinToLiquidSwap({
     required String mnemonic,
     required String sendWalletId,
     required int amountSat,
-    required Environment environment,
+    required bool isTestnet,
     required String btcElectrumUrl,
     required String lbtcElectrumUrl,
-    required bool toSelf,
     String? receiveWalletId,
+    String? externalRecipientAddress,
   });
 
   Future<String> claimLiquidToBitcoinSwap({
@@ -97,8 +93,6 @@ abstract class SwapRepository {
     required String bitcoinClaimAddress,
     required String liquidRefundAddress,
     required int absoluteFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
 
   Future<String> claimBitcoinToLiquidSwap({
@@ -106,50 +100,48 @@ abstract class SwapRepository {
     required String liquidClaimAddress,
     required String bitcoinRefundAddress,
     required int absoluteFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
 
   Future<String> refundLiquidToBitcoinSwap({
     required String swapId,
     required String liquidRefundAddress,
     required int absoluteFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
 
   Future<String> refundBitcoinToLiquidSwap({
     required String swapId,
     required String bitcoinRefundAddress,
     required int absoluteFees,
-    required bool tryCooperate,
-    required bool broadcastViaBoltz,
   });
 
-  // SWAP ACTION
-  Future<NextSwapAction> getNextBtcLnAction({
-    required String swapId,
-    required String status,
-  });
-  Future<NextSwapAction> getNextLbtcLnAction({
-    required String swapId,
-    required String status,
-  });
-  Future<NextSwapAction> getNextChainAction({
-    required String swapId,
-    required String status,
-  });
   // SWAP STORAGE UTILITY
+  Future<Swap> getSwap({
+    required String swapId,
+  });
+
+  Future<List<Swap>> getOngoingSwaps();
+
+  Future<void> updateSwap({
+    required Swap swap,
+  });
+
   Future<void> updatePaidSendSwap({
     required String swapId,
     required String txid,
   });
 
-  Future<void> updateExpiredSwap({
+  // STREAM
+
+  void addSwapToStream({
     required String swapId,
+  });
+  void removeSwapFromStream({
+    required String swapId,
+  });
+  void reinitializeStreamWithSwaps({
+    required List<String> swapIds,
   });
 
-  Future<void> updateFailedSwap({
-    required String swapId,
-  });
+  // Add a method to subscribe to swap updates
+  Stream<Swap> get swapUpdatesStream;
 }

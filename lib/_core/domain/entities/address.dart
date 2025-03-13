@@ -56,4 +56,16 @@ sealed class Address with _$Address {
                 ________) =>
             confidential,
       );
+
+  /// Returns true if this is a Bitcoin address
+  bool get isBitcoin => maybeMap(
+        bitcoin: (_) => true,
+        orElse: () => false,
+      );
+
+  /// Returns true if this is a Liquid address
+  bool get isLiquid => maybeMap(
+        liquid: (_) => true,
+        orElse: () => false,
+      );
 }
