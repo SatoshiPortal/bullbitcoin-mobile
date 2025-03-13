@@ -21,16 +21,32 @@ class CreateReceiveSwapUseCase {
         _swapRepositoryTestnet = swapRepositoryTestnet,
         _seedRepository = seedRepository;
 
-  Future<Swap> execute({
+  Future<LnReceiveSwap> execute({
     required String walletId,
     required SwapType type,
-    required BigInt amountSat,
+    required int amountSat,
   }) async {
     try {
       final wallet = await _walletManager.getWallet(walletId);
       if (wallet == null) {
         throw Exception('Wallet not found');
       }
+      final swapRepository =
+          wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
+      final limits = await _swapRepository.getSwapLimits(
+        type: type,
+      );
+      if (amountSat < limits.min) {
+        throw Exception(
+          'Minimum Swap Amount: $limits.min sats',
+        );
+      }
+      if (amountSat > limits.max) {
+        throw Exception(
+          'Maximum Swap Amount: $limits.max sats',
+        );
+      }
+
       final mnemonic = await _seedRepository.get(wallet.masterFingerprint);
 
       if (wallet.network.isLiquid && type == SwapType.lightningToBitcoin) {
@@ -44,31 +60,31 @@ class CreateReceiveSwapUseCase {
         );
       }
 
-      final environment =
-          wallet.network.isTestnet ? Environment.testnet : Environment.mainnet;
+      final btcElectrumUrl = wallet.network.isTestnet
+          ? ApiServiceConstants.bbElectrumTestUrl
+          : ApiServiceConstants.bbElectrumUrl;
 
-      final swapRepository =
-          wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
+      final lbtcElectrumUrl = wallet.network.isTestnet
+          ? ApiServiceConstants.bbLiquidElectrumTestUrlPath
+          : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {
         case SwapType.lightningToBitcoin:
-          return swapRepository.createLightningToBitcoinSwap(
+          return await swapRepository.createLightningToBitcoinSwap(
             walletId: walletId,
             amountSat: amountSat,
-            environment: environment,
-            mnemonic: mnemonic.toString(),
-            electrumUrl: ApiServiceConstants
-                .bbElectrumUrl, // TODO: check if this should be test or mainnet following the environment
+            isTestnet: wallet.network.isTestnet,
+            mnemonic: mnemonic.asString,
+            electrumUrl: btcElectrumUrl,
           );
 
         case SwapType.lightningToLiquid:
-          return swapRepository.createLightningToLiquidSwap(
+          return await swapRepository.createLightningToLiquidSwap(
             walletId: walletId,
             amountSat: amountSat,
-            environment: environment,
-            mnemonic: mnemonic.toString(),
-            electrumUrl: ApiServiceConstants
-                .publicliquidElectrumTestUrlPath, // TODO: check if this should be test or mainnet following the environment
+            isTestnet: wallet.network.isTestnet,
+            mnemonic: mnemonic.asString,
+            electrumUrl: lbtcElectrumUrl,
           );
         default:
           throw Exception(

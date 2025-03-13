@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_core/data/datasources/bip39_word_list_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/exchange_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
@@ -17,6 +18,7 @@ import 'package:bb_mobile/_core/data/repositories/wallet_metadata_repository_imp
 import 'package:bb_mobile/_core/data/repositories/word_list_repository_impl.dart';
 import 'package:bb_mobile/_core/data/services/mnemonic_seed_factory_impl.dart';
 import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart';
+import 'package:bb_mobile/_core/data/services/swap_watcher_impl.dart';
 import 'package:bb_mobile/_core/data/services/wallet_manager_service_impl.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
@@ -27,6 +29,7 @@ import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.d
 import 'package:bb_mobile/_core/domain/repositories/word_list_repository.dart';
 import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
+import 'package:bb_mobile/_core/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
@@ -39,6 +42,7 @@ import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_use_case.da
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_use_case.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
@@ -123,33 +127,62 @@ class CoreLocator {
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
         boltz: BoltzDataSourceImpl(
-          secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
-            instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
-          ),
-          localSwapStorage: locator<KeyValueStorageDataSource<String>>(
-            instanceName: LocatorInstanceNameConstants
-                .boltzSwapsHiveStorageDataSourceInstanceName,
+          boltzStore: BoltzStorageDataSourceImpl(
+            secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
+              instanceName:
+                  LocatorInstanceNameConstants.secureStorageDataSource,
+            ),
+            localSwapStorage: locator<KeyValueStorageDataSource<String>>(
+              instanceName: LocatorInstanceNameConstants
+                  .boltzSwapsHiveStorageDataSourceInstanceName,
+            ),
           ),
         ),
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
     );
+    // add swap watcher service
+    locator.registerLazySingleton<SwapWatcherService>(
+      () => SwapWatcherServiceImpl(
+        walletManager: locator<WalletManagerService>(),
+        boltzRepo: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ) as BoltzSwapRepositoryImpl,
+      ),
+      instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
+    );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
         boltz: BoltzDataSourceImpl(
           url: ApiServiceConstants.boltzTestnetUrlPath,
-          secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
-            instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
-          ),
-          localSwapStorage: locator<KeyValueStorageDataSource<String>>(
-            instanceName: LocatorInstanceNameConstants
-                .boltzSwapsHiveStorageDataSourceInstanceName,
+          boltzStore: BoltzStorageDataSourceImpl(
+            secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
+              instanceName:
+                  LocatorInstanceNameConstants.secureStorageDataSource,
+            ),
+            localSwapStorage: locator<KeyValueStorageDataSource<String>>(
+              instanceName: LocatorInstanceNameConstants
+                  .boltzSwapsHiveStorageDataSourceInstanceName,
+            ),
           ),
         ),
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
+    );
+    // add swap watcher service
+    locator.registerLazySingleton<SwapWatcherService>(
+      () => SwapWatcherServiceImpl(
+        walletManager: locator<WalletManagerService>(),
+        boltzRepo: locator<SwapRepository>(
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
+        ) as BoltzSwapRepositoryImpl,
+      ),
+      instanceName:
+          LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
     );
 
     // Factories, managers or services responsible for handling specific logic
@@ -217,6 +250,22 @@ class CoreLocator {
     locator.registerFactory<GetPayjoinUpdatesUseCase>(
       () => GetPayjoinUpdatesUseCase(
         payjoinWatcherService: locator<PayjoinWatcherService>(),
+      ),
+    );
+
+    // Register CreateReceiveSwapUseCase
+    locator.registerFactory<CreateReceiveSwapUseCase>(
+      () => CreateReceiveSwapUseCase(
+        walletManager: locator<WalletManagerService>(),
+        swapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        swapRepositoryTestnet: locator<SwapRepository>(
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
+        ),
+        seedRepository: locator<SeedRepository>(),
       ),
     );
   }

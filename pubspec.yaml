@@ -73,14 +73,14 @@ dependencies:
   decimal: ^2.3.3
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  boltz:
-    git:
-      url: https://github.com/SatoshiPortal/boltz-dart.git
-      ref: develop
-  lwk:
-    git:
-      url: https://github.com/SatoshiPortal/lwk-dart.git
-      ref: develop
+  boltz: 0.1.9
+    # git:
+    #   url: https://github.com/SatoshiPortal/boltz-dart.git
+    #   ref: main
+  lwk: 0.1.7
+    # git:
+    #   url: https://github.com/SatoshiPortal/lwk-dart.git
+    #   ref: main
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter

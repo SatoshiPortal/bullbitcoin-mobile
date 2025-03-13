@@ -2,13 +2,8 @@ import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap.freezed.dart';
-part 'swap.g.dart';
 
 // These types are different than the ones from Boltz to decouple the app from the Boltz API
-// In case the Boltz API changes or Boltz starts using new swap technique instead of submarine swaps,
-//  or in case we want to add another swaps provider than Boltz,
-//  we should be able to do so without changing the domain layer and the rest of the app,
-//  only the data layer would need changes.
 enum SwapType {
   lightningToBitcoin,
   lightningToLiquid,
@@ -18,85 +13,249 @@ enum SwapType {
   bitcoinToLiquid,
 }
 
-enum NextSwapAction {
-  wait,
-  claim,
-  coopSign,
-  refund,
-  close,
-}
-
-// TODO: add/change to statusses that make sense for the application (so not just the same Boltz swap states, unless it is a status we need in the app to manage or show)
 enum SwapStatus {
   pending,
   paid,
+  claimable,
+  refundable,
+  canCoop,
   completed,
-  refunded,
   expired,
   failed,
 }
 
 @freezed
-class Swap with _$Swap {
-  const factory Swap({
+sealed class Swap with _$Swap {
+  // Lightning Receive Swap (reverse swap)
+  const factory Swap.lnReceive({
     required String id,
-    required int keyIndex, // keys used for swap at swap path
+    required int keyIndex,
     required SwapType type,
     required SwapStatus status,
     required Environment environment,
     required DateTime creationTime,
-    ChainSwap? chainSwapDetails,
-    LnReceiveSwap? receiveSwapDetails,
-    LnSendSwap? sendSwapDetails,
-    DateTime? completionTime,
-  }) = _Swap;
-  const Swap._();
-}
-
-@freezed
-class ChainSwap with _$ChainSwap {
-  const factory ChainSwap({
-    required bool toSelf,
-    required String sendWalletId,
-    String? sendTxid,
-    String? receiveWalletId,
-    String? receiveTxid,
-    String? receiveAddress,
-    String? refundTxid,
-    String? refundAddress,
-  }) = _ChainSwap;
-  const ChainSwap._();
-
-  factory ChainSwap.fromJson(Map<String, dynamic> json) =>
-      _$ChainSwapFromJson(json);
-}
-
-@freezed
-class LnReceiveSwap with _$LnReceiveSwap {
-  const factory LnReceiveSwap({
     required String receiveWalletId,
     required String invoice,
-    String? receiveTxid,
     String? receiveAddress,
-  }) = _LnReceiveSwap;
-  const LnReceiveSwap._();
+    String? receiveTxid,
+    int? boltzFee,
+    int? lockupFee,
+    int? claimFee,
+    DateTime? completionTime,
+  }) = LnReceiveSwap;
 
-  factory LnReceiveSwap.fromJson(Map<String, dynamic> json) =>
-      _$LnReceiveSwapFromJson(json);
-}
-
-@freezed
-class LnSendSwap with _$LnSendSwap {
-  const factory LnSendSwap({
+  // Lightning Send Swap (submarine swap)
+  const factory Swap.lnSend({
+    required String id,
+    required int keyIndex,
+    required SwapType type,
+    required SwapStatus status,
+    required Environment environment,
+    required DateTime creationTime,
     required String sendWalletId,
     required String invoice,
     String? sendTxid,
     String? preimage,
-    String? refundTxid,
     String? refundAddress,
-  }) = _LnSendSwap;
-  const LnSendSwap._();
+    String? refundTxid,
+    int? boltzFee,
+    int? lockupFee,
+    int? claimFee,
+    DateTime? completionTime,
+  }) = LnSendSwap;
 
-  factory LnSendSwap.fromJson(Map<String, dynamic> json) =>
-      _$LnSendSwapFromJson(json);
+  // Chain Swap (between BTC and L-BTC)
+  const factory Swap.chain({
+    required String id,
+    required int keyIndex,
+    required SwapType type,
+    required SwapStatus status,
+    required Environment environment,
+    required DateTime creationTime,
+    required String sendWalletId,
+    String? sendTxid,
+    String? receiveWalletId,
+    String? receiveAddress,
+    String? receiveTxid,
+    String? refundAddress,
+    String? refundTxid,
+    int? boltzFee,
+    int? lockupFee,
+    int? claimFee,
+    DateTime? completionTime,
+  }) = ChainSwap;
+
+  const Swap._();
+
+  // These getters can still be used across all types
+  bool get isLnReceiveSwap => this is LnReceiveSwap;
+  bool get isLnSendSwap => this is LnSendSwap;
+  bool get isChainSwap => this is ChainSwap;
+
+  // Helper to get the common fields regardless of type
+  String get id => when(
+        lnReceive: (id,
+                _,
+                __,
+                ___,
+                ____,
+                _____,
+                ______,
+                _______,
+                ________,
+                _________,
+                __________,
+                ___________,
+                ____________,
+                _____________) =>
+            id,
+        lnSend: (id,
+                _,
+                __,
+                ___,
+                ____,
+                _____,
+                ______,
+                _______,
+                ________,
+                _________,
+                __________,
+                ___________,
+                ____________,
+                _____________,
+                ______________,
+                _______________) =>
+            id,
+        chain: (id,
+                _,
+                __,
+                ___,
+                ____,
+                _____,
+                ______,
+                _______,
+                ________,
+                _________,
+                __________,
+                ___________,
+                ____________,
+                _____________,
+                ______________,
+                _______________,
+                ________________) =>
+            id,
+      );
+
+  SwapType get type => when(
+        lnReceive: (_,
+                __,
+                type,
+                ___,
+                ____,
+                _____,
+                ______,
+                _______,
+                ________,
+                _________,
+                __________,
+                ___________,
+                ____________,
+                _____________) =>
+            type,
+        lnSend: (_,
+                __,
+                type,
+                ___,
+                ____,
+                _____,
+                ______,
+                _______,
+                ________,
+                _________,
+                __________,
+                ___________,
+                ____________,
+                _____________,
+                ______________,
+                _______________) =>
+            type,
+        chain: (_,
+                __,
+                type,
+                ___,
+                ____,
+                _____,
+                ______,
+                _______,
+                ________,
+                _________,
+                __________,
+                ___________,
+                ____________,
+                _____________,
+                ______________,
+                _______________,
+                ________________) =>
+            type,
+      );
+
+  SwapStatus get status => when(
+        lnReceive: (_,
+                __,
+                ___,
+                status,
+                ____,
+                _____,
+                ______,
+                _______,
+                ________,
+                _________,
+                __________,
+                ___________,
+                ____________,
+                _____________) =>
+            status,
+        lnSend: (_,
+                __,
+                ___,
+                status,
+                ____,
+                _____,
+                ______,
+                _______,
+                ________,
+                _________,
+                __________,
+                ___________,
+                ____________,
+                _____________,
+                ______________,
+                _______________) =>
+            status,
+        chain: (_,
+                __,
+                ___,
+                status,
+                ____,
+                _____,
+                ______,
+                _______,
+                ________,
+                _________,
+                __________,
+                ___________,
+                ____________,
+                _____________,
+                ______________,
+                _______________,
+                ________________) =>
+            status,
+      );
+}
+
+class SwapLimits {
+  final int min;
+  final int max;
+
+  const SwapLimits({required this.min, required this.max});
 }
