@@ -128,89 +128,31 @@ abstract class IRecoverbullManager {
   Future<(String?, Err?)> removeEncryptedBackup({required String path});
 }
 
-extension ToUserDisplay on KeyServiceException {
-  /// Returns true if this exception represents a rate limiting error
-  bool get isRateLimited => code == 429;
-
-  /// Returns true if this exception represents an authentication error
-  bool get isAuthenticationError => code == 401;
-
-  /// Returns true if this exception represents a validation error
-  bool get isValidationError => code == 400;
-
-  /// Returns true if this exception represents a duplicate key error
-  bool get isDuplicateKey => code == 403;
-
-  /// Gets how long to wait before retrying (in minutes), or 0 if unknown
-  int get waitTimeInMinutes => cooldownInMinutes ?? 0;
-
-  /// Gets a user-friendly error message based on server error codes and messages
+// Rename from ToUserDisplay to KeyServiceErrorMessages
+extension KeyServiceErrorMessages on KeyServiceException {
+  /// Gets a user-friendly error message based on server error codes
   String get appMessage {
-    if (isRateLimited) {
-      // Status Code 429: "Too many attempts"
-      return 'Too many attempts. Please try again after $waitTimeInMinutes minutes.';
-    } else if (isAuthenticationError) {
-      // Status Code 401: "Invalid identifier/authentication_key"
-      return 'Invalid credentials provided. Please check your identifier and password.';
-    } else if (isValidationError) {
-      // Status Code 400: Various validation errors
-      if (message?.contains('not 256 bits HEX hashes') ?? false) {
-        return 'Invalid data format provided. The identifier or authentication key is not properly formatted.';
-      } else if (message?.contains('encrypted_secret is empty') ?? false) {
-        return 'Secret cannot be empty. Please provide a secret to store.';
-      } else if (message?.contains('base64') ?? false) {
-        return 'Invalid data encoding. The encrypted secret must be base64 encoded.';
-      } else if (message?.contains('exceeds the limit') ?? false) {
-        return 'Secret is too large. Please provide a smaller secret.';
-      }
-      return 'Invalid data. Please check your request parameters.';
-    } else if (isDuplicateKey) {
-      // Status Code 403: Duplicate entry (no specific message from server)
-      return 'This key already exists.';
+    if (code == null && message == null) {
+      return 'Service unavailable. Please check your connection.';
+    } else if (code == 401) {
+      return 'Wrong password for this backup file. Please check your password.';
+    } else if (code == 429) {
+      return cooldownInMinutes != null
+          ? 'Rate-limited. Retry in $cooldownInMinutes minutes'
+          : 'Rate-limited. Try again later';
+    } else if (code != null && code! >= 400 && code! < 500) {
+      return 'Rejected by the Key Server';
     } else {
-      // Unknown errors
-      switch (code) {
-        case 500:
-          return 'Server error. Please try again later.';
-        case 503:
-          return 'Service unavailable. Please try again later.';
-        default:
-          return message ?? 'An unknown error occurred.';
-      }
+      return 'Service unavailable. Please check your connection.';
     }
-  }
-
-  /// Comprehensive error code explanation
-  String get errorCodeExplanation {
-    switch (code) {
-      case 400:
-        return 'Bad Request: The server cannot process the request due to invalid data.';
-      case 401:
-        return 'Unauthorized: The provided authentication credentials are invalid.';
-      case 403:
-        return 'Forbidden: You are not allowed to perform this operation (duplicate key).';
-      case 429:
-        return 'Too Many Requests: You have exceeded the rate limit. Try again later.';
-      case 500:
-        return 'Internal Server Error: The server encountered an unexpected condition.';
-      default:
-        return '';
-    }
-  }
-
-  /// Returns a user-friendly display message
-  String toUserDisplay() {
-    if (isRateLimited && cooldownInMinutes != null) {
-      return 'Too many attempts. Please wait for $waitTimeInMinutes minutes before trying again.';
-    }
-    return appMessage;
   }
 
   /// Returns a detailed technical error for logging
   String toDetailedError() {
-    return '${code != null ? "Error: ($code):" : ""} $message\n'
-        '${errorCodeExplanation.isNotEmpty ? "Error Type: $errorCodeExplanation\n" : ""}'
-        '${requestedAt != null ? "Requested at: $requestedAt\n" : ""}'
-        '${cooldownInMinutes != null ? "Cooldown: $cooldownInMinutes minutes" : ""}';
+    return '''
+Error (${code ?? 'unknown'}): $message
+${requestedAt != null ? "Requested at: $requestedAt" : ""}
+${cooldownInMinutes != null ? "Cooldown: $cooldownInMinutes minutes" : ""}
+''';
   }
 }
