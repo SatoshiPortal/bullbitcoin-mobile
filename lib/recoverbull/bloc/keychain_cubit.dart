@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_pkg/consts/configs.dart';
+import 'package:bb_mobile/_pkg/recoverbull/_interface.dart';
 import 'package:bb_mobile/_pkg/recoverbull/tor_connection.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
@@ -123,6 +124,30 @@ class KeychainCubit extends Cubit<KeychainState> {
           emit(state.copyWith(torStatus: TorStatus.online, loading: false));
         }
         return result;
+      } on KeyServiceException catch (e) {
+        final isLastAttempt = attempt == maxAttempts - 1;
+        debugPrint(
+          isLastAttempt
+              ? '$operationName failed after $maxAttempts attempts: ${e.toDetailedError()}'
+              : 'Retrying $operationName (${attempt + 1}/$maxAttempts)',
+        );
+
+        if (isLastAttempt) {
+          debugPrint(
+            'Unable to complete $operationName: ${e.toDetailedError()}',
+          );
+          if (emitState) {
+            emit(
+              state.copyWith(
+                torStatus: TorStatus.offline,
+                loading: false,
+                error: e.appMessage,
+              ),
+            );
+          }
+          return null;
+        }
+        await Future.delayed(delay ?? retryDelay);
       } catch (e) {
         final isLastAttempt = attempt == maxAttempts - 1;
         debugPrint(
@@ -132,9 +157,7 @@ class KeychainCubit extends Cubit<KeychainState> {
         );
 
         if (isLastAttempt) {
-          debugPrint(
-            'Unable to complete $operationName. Please check your connection.',
-          );
+          debugPrint('Unable to complete $operationName: $e');
           if (emitState) {
             emit(
               state.copyWith(
@@ -207,7 +230,19 @@ class KeychainCubit extends Cubit<KeychainState> {
           secretStatus: SecretStatus.recovered,
         ),
       );
+    } on KeyServiceException catch (e) {
+      debugPrint('Recovery failed: ${e.toDetailedError()}');
+      emit(
+        state.copyWith(
+          loading: false,
+          error: e.appMessage,
+          cooldownMinutes: e.code == 429 ? e.cooldownInMinutes : null,
+          lastRequestTime: e.code == 429 ? DateTime.now() : null,
+        ),
+      );
+      return;
     } catch (e) {
+      debugPrint('Recovery failed: $e');
       emit(
         state.copyWith(
           error: 'Failed to recover backup key',
@@ -285,14 +320,24 @@ class KeychainCubit extends Cubit<KeychainState> {
         ),
       );
       return;
+    } on KeyServiceException catch (e) {
+      debugPrint('Delete failed: ${e.toDetailedError()}');
+      emit(
+        state.copyWith(
+          loading: false,
+          error: e.appMessage,
+          cooldownMinutes: e.code == 429 ? e.cooldownInMinutes : null,
+          lastRequestTime: e.code == 429 ? DateTime.now() : null,
+        ),
+      );
     } catch (e) {
+      debugPrint('Delete failed: $e');
       emit(
         state.copyWith(
           error: 'Failed to delete backup key',
           loading: false,
         ),
       );
-      return;
     }
   }
 
@@ -307,17 +352,6 @@ class KeychainCubit extends Cubit<KeychainState> {
         state.copyWith(
           torStatus: TorStatus.offline,
           error: 'Service unavailable. Please check your connection.',
-          loading: false,
-        ),
-      );
-      return;
-    }
-
-    if (state.isInCooldown) {
-      emit(
-        state.copyWith(
-          error:
-              'Rate limited. Please wait ${state.remainingCooldownSeconds} seconds.',
           loading: false,
         ),
       );
@@ -380,6 +414,9 @@ class KeychainCubit extends Cubit<KeychainState> {
         salt: HEX.decode(backup.salt),
       );
       _emitSuccess(keySecretState: SecretStatus.stored);
+    } on KeyServiceException catch (e) {
+      debugPrint('Failed to store backup key: ${e.toDetailedError()}');
+      _emitError(e.appMessage);
     } catch (e) {
       debugPrint('Failed to store backup key: $e');
       _emitError('Failed to store backup key');

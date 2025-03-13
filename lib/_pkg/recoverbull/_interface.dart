@@ -127,3 +127,32 @@ abstract class IRecoverbullManager {
 
   Future<(String?, Err?)> removeEncryptedBackup({required String path});
 }
+
+// Rename from ToUserDisplay to KeyServiceErrorMessages
+extension KeyServiceErrorMessages on KeyServiceException {
+  /// Gets a user-friendly error message based on server error codes
+  String get appMessage {
+    if (code == null && message == null) {
+      return 'Service unavailable. Please check your connection.';
+    } else if (code == 401) {
+      return 'Wrong password for this backup file. Please check your password.';
+    } else if (code == 429) {
+      return cooldownInMinutes != null
+          ? 'Rate-limited. Retry in $cooldownInMinutes minutes'
+          : 'Rate-limited. Try again later';
+    } else if (code != null && code! >= 400 && code! < 500) {
+      return 'Rejected by the Key Server';
+    } else {
+      return 'Service unavailable. Please check your connection.';
+    }
+  }
+
+  /// Returns a detailed technical error for logging
+  String toDetailedError() {
+    return '''
+Error (${code ?? 'unknown'}): $message
+${requestedAt != null ? "Requested at: $requestedAt" : ""}
+${cooldownInMinutes != null ? "Cooldown: $cooldownInMinutes minutes" : ""}
+''';
+  }
+}

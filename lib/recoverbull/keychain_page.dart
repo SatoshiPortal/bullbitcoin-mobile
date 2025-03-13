@@ -131,14 +131,45 @@ class _Screen extends StatelessWidget {
           },
         ),
         BlocListener<KeychainCubit, KeychainState>(
-          listenWhen: (previous, current) =>
-              previous.isSecretConfirmed != current.isSecretConfirmed ||
-              previous.secretStatus != current.secretStatus ||
-              (previous.torStatus != current.torStatus &&
-                  current.torStatus != TorStatus.connecting) ||
-              previous.error != current.error,
+          listenWhen: (previous, current) {
+            // Don't trigger for connecting state or non-meaningful changes
+            if (current.torStatus == TorStatus.connecting) {
+              return false;
+            }
+
+            // Only listen for significant state changes
+            return previous.isSecretConfirmed != current.isSecretConfirmed ||
+                previous.secretStatus != current.secretStatus ||
+                (previous.torStatus != current.torStatus) ||
+                (previous.error.isEmpty && current.error.isNotEmpty);
+          },
           listener: (context, state) {
-            if (state.hasError) {
+            // Handle server offline state - only switch to backup key if we're not already
+            // in the recovery flow with backup key mode
+            if (state.torStatus == TorStatus.offline &&
+                state.authInputType != AuthInputType.backupKey) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => _ErrorDialog(
+                  error: 'Server is offline. Please use your backup key.',
+                  selectedKeyChainFlow: state.selectedKeyChainFlow,
+                  onButtonPressed: () {
+                    context.read<KeychainCubit>().updatePageState(
+                          AuthInputType.backupKey,
+                          state.selectedKeyChainFlow,
+                        );
+                    Navigator.of(context).pop();
+                  },
+                ),
+              );
+              return;
+            }
+
+            // Handle errors - don't show errors for offline state when in backup key mode
+            if (state.hasError &&
+                !(state.torStatus == TorStatus.offline &&
+                    state.authInputType == AuthInputType.backupKey)) {
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -147,34 +178,13 @@ class _Screen extends StatelessWidget {
                   selectedKeyChainFlow: state.selectedKeyChainFlow,
                 ),
               );
+              return; // Stop here after showing error
             }
-            if (state.torStatus == TorStatus.offline &&
-                state.authInputType != AuthInputType.backupKey) {
-              context.read<KeychainCubit>().updatePageState(
-                    AuthInputType.backupKey,
-                    state.selectedKeyChainFlow,
-                  );
-              return;
-            }
-
-            // Only call secureKey if confirmed and not already processing
-            if (state.isSecretConfirmed &&
-                !state.loading &&
-                !state.hasError &&
-                state.secretStatus == SecretStatus.initial &&
-                state.torStatus == TorStatus.online) {
-              // Prevent multiple calls
-              if (!state.isSecretConfirmed) return;
-              context.read<KeychainCubit>().secureKey();
-              return; // Exit early after triggering secureKey
-            }
-
             if (state.selectedKeyChainFlow == KeyChainFlow.delete &&
                 state.secretStatus == SecretStatus.deleted &&
                 !state.loading &&
                 !state.hasError) {
               context.read<KeychainCubit>().clearSensitive();
-
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -182,13 +192,14 @@ class _Screen extends StatelessWidget {
                   selectedKeyChainFlow: pState,
                 ),
               );
+              return; // Stop after handling delete
             }
-
             if (state.isSecretConfirmed &&
                 !state.loading &&
                 !state.hasError &&
                 state.secretStatus == SecretStatus.initial) {
               context.read<KeychainCubit>().secureKey();
+              return; // Stop here to prevent multiple calls
             }
 
             if (state.secretStatus == SecretStatus.stored &&
@@ -202,6 +213,7 @@ class _Screen extends StatelessWidget {
                   selectedKeyChainFlow: pState,
                 ),
               );
+              return; // Stop after success
             }
             if (state.secretStatus == SecretStatus.recovered &&
                 !state.loading &&
@@ -211,6 +223,7 @@ class _Screen extends StatelessWidget {
                     backup,
                     state.backupKey,
                   );
+              return; // Stop after recovery
             }
           },
         ),
@@ -981,24 +994,43 @@ class _ErrorDialog extends StatelessWidget {
   const _ErrorDialog({
     required this.error,
     this.selectedKeyChainFlow = KeyChainFlow.enter,
+    this.onButtonPressed,
   });
   final String error;
   final KeyChainFlow selectedKeyChainFlow;
+  final void Function()? onButtonPressed;
+
   @override
   Widget build(BuildContext context) {
+    final isOfflineError = error.toLowerCase().contains('unavailable') ||
+        error.toLowerCase().contains('offline') ||
+        error.toLowerCase().contains('connection');
+
+    // Only show backup key option if it's an offline error AND we're not on the delete flow to avoid the backup key option during deletion
+
+    final showBackupKeyOption =
+        isOfflineError && selectedKeyChainFlow != KeyChainFlow.delete;
+
+    // Use appropriate dialog title based on error type
+    final dialogTitle = isOfflineError
+        ? 'Server Offline'
+        : selectedKeyChainFlow == KeyChainFlow.enter
+            ? 'Backup Failed'
+            : selectedKeyChainFlow == KeyChainFlow.recovery
+                ? 'Recovery Failed'
+                : 'Delete Failed';
+
     return _DialogBase(
-      icon: Icons.error_outline,
-      title: selectedKeyChainFlow == KeyChainFlow.enter
-          ? 'Backup failed'
-          : selectedKeyChainFlow == KeyChainFlow.recovery
-              ? 'Recovery failed'
-              : 'Delete failed',
+      icon: isOfflineError ? Icons.wifi_off : Icons.error_outline,
+      title: dialogTitle,
       message: error,
-      buttonText: 'Continue',
-      onButtonPressed: () {
-        context.read<KeychainCubit>().clearError();
-        Navigator.of(context).pop();
-      },
+      buttonText: showBackupKeyOption ? 'Use Backup Key' : 'Continue',
+      onButtonPressed: onButtonPressed ??
+          (() {
+            // Only clear error and close dialog - the listener handles the state transition
+            context.read<KeychainCubit>().clearError();
+            Navigator.of(context).pop();
+          }),
     );
   }
 }
@@ -1026,8 +1058,9 @@ class _ConfirmTitleText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (selectedKeyChainFlow, authInputType) = context.select(
-        (KeychainCubit x) =>
-            (x.state.selectedKeyChainFlow, x.state.authInputType));
+      (KeychainCubit x) =>
+          (x.state.selectedKeyChainFlow, x.state.authInputType),
+    );
     final text =
         'Confirm backup ${authInputType == AuthInputType.pin ? 'PIN' : 'password'}';
 

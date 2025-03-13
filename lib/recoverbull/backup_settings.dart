@@ -374,20 +374,9 @@ class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
                       title: 'Encrypted vault',
                       description:
                           "Restore your wallet using the encrypted backup stored in your cloud account. You'll need your PIN to access the decryption key from the password manager.",
-                      onTap: () => state.keyServerUp
-                          ? context.push(
-                              '/wallet-settings/backup-settings/recover-options/encrypted',
-                            )
-                          : {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                context.showToast(
-                                  state.error,
-                                ),
-                              ),
-                              context.push(
-                                '/wallet-settings/backup-settings/recover-options/encrypted',
-                              ),
-                            },
+                      onTap: () => context.push(
+                        '/wallet-settings/backup-settings/recover-options/encrypted',
+                      ),
                     ),
                     const Gap(20),
                     _renderBackupSetting(

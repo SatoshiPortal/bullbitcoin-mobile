@@ -339,8 +339,13 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       backupKey: HEX.decode(backupKey),
     );
 
-    if (decryptErr != null || backups == null || backups.isEmpty) {
-      _handleLoadError(decryptErr?.message ?? 'No wallets found in backup');
+    if (decryptErr != null) {
+      debugPrint('Error restoring backup: ${decryptErr.message}');
+      _handleLoadError('Error decrypting backup');
+      return;
+    }
+    if (backups == null || backups.isEmpty) {
+      _handleLoadError('No backups found');
       return;
     }
 
