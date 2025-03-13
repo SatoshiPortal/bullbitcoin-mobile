@@ -94,6 +94,15 @@ dependencies:
   animated_svg: ^2.1.0
   dart_bip21: ^1.0.0
 
+  
+  googleapis: ^13.2.0
+  google_sign_in: ^6.2.2
+  extension_google_sign_in_as_googleapis_auth: ^2.0.12
+  recoverbull:
+    git:
+      url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
+      ref: main
+  bip85: ^1.0.3
 
 dev_dependencies:
   build_runner: ^2.4.9
