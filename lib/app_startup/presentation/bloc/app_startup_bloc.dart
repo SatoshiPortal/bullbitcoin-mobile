@@ -52,6 +52,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
         //  there from a previous install.
         //  (e.g. secure storage data on iOS like the pin code)
         await _resetAppDataUseCase.execute();
+
+        // TODO: StartTorUseCase.execute()
       }
 
       emit(
