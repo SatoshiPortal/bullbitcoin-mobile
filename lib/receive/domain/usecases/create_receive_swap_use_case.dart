@@ -60,9 +60,6 @@ class CreateReceiveSwapUseCase {
         );
       }
 
-      final environment =
-          wallet.network.isTestnet ? Environment.testnet : Environment.mainnet;
-
       final btcElectrumUrl = wallet.network.isTestnet
           ? ApiServiceConstants.bbElectrumTestUrl
           : ApiServiceConstants.bbElectrumUrl;
