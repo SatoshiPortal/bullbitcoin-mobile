@@ -5,12 +5,31 @@ import 'package:bb_mobile/recover_wallet/ui/screens/recover_wallet_success_scree
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class RecoverWalletFlow extends StatelessWidget {
-  const RecoverWalletFlow({super.key});
+class RecoverWalletFlow extends StatefulWidget {
+  const RecoverWalletFlow({super.key, required this.fromOnboarding});
+
+  final bool fromOnboarding;
+
+  @override
+  State<RecoverWalletFlow> createState() => _RecoverWalletFlowState();
+}
+
+class _RecoverWalletFlowState extends State<RecoverWalletFlow> {
+  late RecoverWalletBloc recoverWalletBloc;
+
+  @override
+  void initState() {
+    recoverWalletBloc = locator<RecoverWalletBloc>();
+    if (widget.fromOnboarding) {
+      recoverWalletBloc.add(const RecoverFromOnboarding());
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider<RecoverWalletBloc>(
-      create: (_) => locator<RecoverWalletBloc>(),
+      create: (_) => recoverWalletBloc,
       child: BlocSelector<RecoverWalletBloc, RecoverWalletState,
           RecoverWalletStatus>(
         selector: (state) => state.status,

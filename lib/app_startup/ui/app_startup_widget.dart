@@ -1,4 +1,6 @@
 import 'package:bb_mobile/app_startup/presentation/bloc/app_startup_bloc.dart';
+import 'package:bb_mobile/onboarding/ui/onboarding_screen.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -14,22 +16,55 @@ class AppStartupWidget extends StatefulWidget {
 class _AppStartupWidgetState extends State<AppStartupWidget> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppStartupBloc, AppStartupState>(
-      builder: (context, state) {
-        if (state is AppStartupInitial) {
-          // TODO: return a splash or loading screen
-        } else if (state is AppStartupLoadingInProgress) {
-          // TODO: return a loading screen
-        } else if (state is AppStartupSuccess) {
-          return widget.app;
-        } else if (state is AppStartupFailure) {
-          // TODO: return a failure page
-        }
+    return AppStartupListener(
+      child: BlocBuilder<AppStartupBloc, AppStartupState>(
+        builder: (context, state) {
+          if (state is AppStartupInitial) {
+            return const OnboardingScreen(loading: true);
+          } else if (state is AppStartupLoadingInProgress) {
+            return const OnboardingScreen(loading: true);
+          } else if (state is AppStartupSuccess) {
+            // if (!state.hasDefaultWallets) return const OnboardingScreen();
+            // if (state.isPinCodeSet) return const PinCodeUnlockScreen();
+            // return const HomeScreen();
+            return widget.app;
+          } else if (state is AppStartupFailure) {
+            // TODO: return a failure page
+          }
 
-        // TODO: remove this when all states are handled and return the
-        //  appropriate widget
-        return const SizedBox.shrink();
-      },
+          // TODO: remove this when all states are handled and return the
+          //  appropriate widget
+          return const SizedBox.shrink();
+        },
+      ),
+    );
+  }
+}
+
+class AppStartupListener extends StatelessWidget {
+  const AppStartupListener({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AppStartupBloc, AppStartupState>(
+          listenWhen: (previous, current) =>
+              current is AppStartupSuccess && previous != current,
+          listener: (context, state) {
+            if (state is AppStartupSuccess && state.isPinCodeSet) {
+              AppRouter.router.go(AppRoute.appUnlock.path);
+            }
+
+            if (state is AppStartupSuccess && !state.hasDefaultWallets) {
+              AppRouter.router.go(AppRoute.onboarding.path);
+            }
+          },
+        ),
+      ],
+      child: child,
     );
   }
 }

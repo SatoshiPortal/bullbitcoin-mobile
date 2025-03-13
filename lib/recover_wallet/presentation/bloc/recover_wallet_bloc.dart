@@ -1,7 +1,7 @@
-import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
-import 'package:bb_mobile/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
+import 'package:bb_mobile/onboarding/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -12,19 +12,50 @@ part 'recover_wallet_state.dart';
 class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
   RecoverWalletBloc({
     required FindMnemonicWordsUseCase findMnemonicWordsUseCase,
-    required RecoverWalletUseCase recoverWalletUseCase,
+    required CreateDefaultWalletsUseCase createDefaultWalletsUseCase,
+    bool useTestWallet = false,
   })  : _findMnemonicWordsUseCase = findMnemonicWordsUseCase,
-        _recoverWalletUseCase = recoverWalletUseCase,
+        _createDefaultWalletsUseCase = createDefaultWalletsUseCase,
         super(const RecoverWalletState()) {
     on<RecoverWalletWordsCountChanged>(_onWordsCountChanged);
     on<RecoverWalletWordChanged>(_onWordChanged);
     on<RecoverWalletPassphraseChanged>(_onPassphraseChanged);
     on<RecoverWalletLabelChanged>(_onLabelChanged);
     on<RecoverWalletConfirmed>(_onConfirmed);
+    on<RecoverFromOnboarding>(_onRecoverFromOnboarding);
+    on<ImportTestableWallet>(_importTestableWallet);
+    on<ClearUntappedWords>(_clearUntappedWords);
+
+    if (!kReleaseMode) {
+      add(ImportTestableWallet(useTestWallet: useTestWallet));
+    }
   }
 
   final FindMnemonicWordsUseCase _findMnemonicWordsUseCase;
-  final RecoverWalletUseCase _recoverWalletUseCase;
+
+  final CreateDefaultWalletsUseCase _createDefaultWalletsUseCase;
+
+  void _importTestableWallet(
+    ImportTestableWallet event,
+    Emitter<RecoverWalletState> emit,
+  ) {
+    if (event.useTestWallet) {
+      final words = importWords(secureTN1);
+      for (int i = 0; i < words.length; i++) {
+        final word = words[i] ?? '';
+        add(RecoverWalletWordChanged(index: i, word: word, tapped: true));
+      }
+
+      return;
+    }
+  }
+
+  void _onRecoverFromOnboarding(
+    RecoverFromOnboarding event,
+    Emitter<RecoverWalletState> emit,
+  ) {
+    emit(state.copyWith(fromOnboarding: true));
+  }
 
   void _onWordsCountChanged(
     RecoverWalletWordsCountChanged event,
@@ -32,9 +63,7 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
   ) {
     final words = Map<int, String>.from(state.validWords);
     final hintWords = Map<int, List<String>>.from(state.hintWords);
-    // Remove words that are not needed anymore if the wordsCount is decreased,
-    //  keep the rest so the user should not re-enter them if started with
-    //  a wrong wordsCount.
+
     words.removeWhere((index, _) => index >= event.wordsCount);
     hintWords.removeWhere((index, _) => index >= event.wordsCount);
     emit(
@@ -55,15 +84,11 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     final validWords = Map<int, String>.from(state.validWords);
     final hintWords = Map<int, List<String>>.from(state.hintWords);
 
-    // Update the hint words for the entered word
     hintWords[wordIndex] = await _findMnemonicWordsUseCase.execute(word);
 
     if (hintWords[wordIndex]?.contains(word) == true) {
-      // A valid mnemonic word was entered,so add it to validWords
       validWords[event.index] = event.word;
     } else {
-      // Word is not in the list of valid words, so remove any previous
-      //  valid word at the same index
       validWords.remove(event.index);
     }
 
@@ -74,6 +99,11 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
       ),
     );
   }
+
+  Future<void> _clearUntappedWords(
+    ClearUntappedWords event,
+    Emitter<RecoverWalletState> emit,
+  ) async {}
 
   void _onPassphraseChanged(
     RecoverWalletPassphraseChanged event,
@@ -94,23 +124,23 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     Emitter<RecoverWalletState> emit,
   ) async {
     try {
-      final wallet = await _recoverWalletUseCase.execute(
+      emit(state.copyWith(isCreating: true));
+      await _createDefaultWalletsUseCase.execute(
         mnemonicWords: state.validWords.values.toList(),
         passphrase: state.passphrase,
-        scriptType: state.scriptType,
-        label: state.label,
       );
 
       emit(
         state.copyWith(
           status: RecoverWalletStatus.success,
-          recoveredWallet: wallet,
+          isCreating: false,
         ),
       );
     } catch (e) {
       emit(
         state.copyWith(
           error: e,
+          isCreating: false,
         ),
       );
     }

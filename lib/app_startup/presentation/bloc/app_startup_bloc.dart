@@ -1,5 +1,4 @@
 import 'package:bb_mobile/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
-import 'package:bb_mobile/app_startup/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/app_startup/domain/usecases/init_wallets_usecase.dart';
 import 'package:bb_mobile/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
@@ -18,10 +17,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     required CheckForExistingDefaultWalletsUseCase
         checkForExistingDefaultWalletsUseCase,
     required InitExistingWalletsUseCase initExistingWalletsUseCase,
-    required CreateDefaultWalletsUseCase createDefaultWalletsUseCase,
   })  : _resetAppDataUseCase = resetAppDataUseCase,
         _checkPinCodeExistsUseCase = checkPinCodeExistsUseCase,
-        _createDefaultWalletsUseCase = createDefaultWalletsUseCase,
         _checkForExistingDefaultWalletsUseCase =
             checkForExistingDefaultWalletsUseCase,
         _initExistingWalletsUseCase = initExistingWalletsUseCase,
@@ -33,8 +30,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   final CheckPinCodeExistsUseCase _checkPinCodeExistsUseCase;
   final CheckForExistingDefaultWalletsUseCase
       _checkForExistingDefaultWalletsUseCase;
-
-  final CreateDefaultWalletsUseCase _createDefaultWalletsUseCase;
 
   final InitExistingWalletsUseCase _initExistingWalletsUseCase;
 
@@ -57,14 +52,12 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
         //  there from a previous install.
         //  (e.g. secure storage data on iOS like the pin code)
         await _resetAppDataUseCase.execute();
-
-        // Create the default wallets
-        await _createDefaultWalletsUseCase.execute();
       }
 
       emit(
         AppStartupState.success(
           isPinCodeSet: isPinCodeSet,
+          hasDefaultWallets: doDefaultWalletsExist,
         ),
       );
     } catch (e) {

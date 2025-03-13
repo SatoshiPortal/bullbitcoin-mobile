@@ -22,6 +22,31 @@ class $AssetsI18nGen {
   List<String> get values => [en, fr];
 }
 
+class $AssetsIconsGen {
+  const $AssetsIconsGen();
+
+  /// File path: assets/icons/btc.png
+  AssetGenImage get btc => const AssetGenImage('assets/icons/btc.png');
+
+  /// File path: assets/icons/dollar.png
+  AssetGenImage get dollar => const AssetGenImage('assets/icons/dollar.png');
+
+  /// File path: assets/icons/right-arrow.png
+  AssetGenImage get rightArrow =>
+      const AssetGenImage('assets/icons/right-arrow.png');
+
+  /// File path: assets/icons/settings-line.png
+  AssetGenImage get settingsLine =>
+      const AssetGenImage('assets/icons/settings-line.png');
+
+  /// File path: assets/icons/swap.png
+  AssetGenImage get swap => const AssetGenImage('assets/icons/swap.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values =>
+      [btc, dollar, rightArrow, settingsLine, swap];
+}
+
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
@@ -54,6 +79,32 @@ class $AssetsImagesGen {
       [arrowDown, arrowDownWhite, iconBtc, iconLbtc, swapIcon, swapIconWhite];
 }
 
+class $AssetsImages2Gen {
+  const $AssetsImages2Gen();
+
+  /// File path: assets/images2/bb-logo-small.png
+  AssetGenImage get bbLogoSmall =>
+      const AssetGenImage('assets/images2/bb-logo-small.png');
+
+  /// File path: assets/images2/bg-red.png
+  AssetGenImage get bgRed => const AssetGenImage('assets/images2/bg-red.png');
+
+  /// File path: assets/images2/bg_long.png
+  AssetGenImage get bgLong => const AssetGenImage('assets/images2/bg_long.png');
+
+  /// File path: assets/images2/success_tick.gif
+  AssetGenImage get successTick =>
+      const AssetGenImage('assets/images2/success_tick.gif');
+
+  /// File path: assets/images2/whitebullwithtext.png
+  AssetGenImage get whitebullwithtext =>
+      const AssetGenImage('assets/images2/whitebullwithtext.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values =>
+      [bbLogoSmall, bgRed, bgLong, successTick, whitebullwithtext];
+}
+
 class Assets {
   const Assets._();
 
@@ -78,7 +129,9 @@ class Assets {
   static const AssetGenImage iconnewRed =
       AssetGenImage('assets/iconnew-red.png');
   static const AssetGenImage iconnew = AssetGenImage('assets/iconnew.png');
+  static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
+  static const $AssetsImages2Gen images2 = $AssetsImages2Gen();
   static const String loaderanimation = 'assets/loaderanimation.json';
   static const String newAddress = 'assets/new-address.svg';
   static const AssetGenImage nfcScan = AssetGenImage('assets/nfc_scan.png');
