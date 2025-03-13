@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:bb_mobile/_core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_utils/constants.dart';

@@ -1,34 +1,33 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/_core/data/datasources/wallets/bitcoin_wallet_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/wallets/payjoin_wallet_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/wallets/wallet_data_source.dart';
-import 'package:bb_mobile/_core/data/models/address_model.dart';
-import 'package:bb_mobile/_core/data/models/balance_model.dart';
-import 'package:bb_mobile/_core/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/entities/address.dart';
+import 'package:bb_mobile/_core/domain/entities/balance.dart';
+import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/_core/domain/entities/utxo.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/_core/domain/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/payjoin_wallet_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/wallet_repository.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:flutter/material.dart';
 
-class BdkWalletDataSourceImpl
+class BdkWalletRepositoryImpl
     implements
-        WalletDataSource,
-        BitcoinWalletDataSource,
-        PayjoinWalletDataSource {
+        WalletRepository,
+        BitcoinWalletRepository,
+        PayjoinWalletRepository {
   final bdk.Wallet _wallet;
-  final bdk.Blockchain _blockchain;
 
-  BdkWalletDataSourceImpl({
+  BdkWalletRepositoryImpl({
     required bdk.Wallet wallet,
-    required bdk.Blockchain blockchain,
-  })  : _wallet = wallet,
-        _blockchain = blockchain;
+  }) : _wallet = wallet;
 
-  static Future<BdkWalletDataSourceImpl> public({
+  static Future<BdkWalletRepositoryImpl> public({
     required String externalDescriptor,
     required String internalDescriptor,
     required bool isTestnet,
     required String dbPath,
-    required ElectrumServerModel electrumServer,
   }) async {
     final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
@@ -52,32 +51,17 @@ class BdkWalletDataSourceImpl
       databaseConfig: dbConfig,
     );
 
-    final blockchain = await bdk.Blockchain.create(
-      config: bdk.BlockchainConfig.electrum(
-        config: bdk.ElectrumConfig(
-          url: electrumServer.url,
-          socks5: electrumServer.socks5,
-          retry: electrumServer.retry,
-          timeout: electrumServer.timeout,
-          stopGap: BigInt.from(electrumServer.stopGap),
-          validateDomain: electrumServer.validateDomain,
-        ),
-      ),
-    );
-
-    return BdkWalletDataSourceImpl(
+    return BdkWalletRepositoryImpl(
       wallet: wallet,
-      blockchain: blockchain,
     );
   }
 
-  static Future<BdkWalletDataSourceImpl> private({
+  static Future<BdkWalletRepositoryImpl> private({
     required ScriptType scriptType,
     required String mnemonic,
     String? passphrase,
     required bool isTestnet,
     required String dbPath,
-    required ElectrumServerModel electrumServer,
   }) async {
     final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
@@ -138,30 +122,16 @@ class BdkWalletDataSourceImpl
       databaseConfig: dbConfig,
     );
 
-    final blockchain = await bdk.Blockchain.create(
-      config: bdk.BlockchainConfig.electrum(
-        config: bdk.ElectrumConfig(
-          url: electrumServer.url,
-          socks5: electrumServer.socks5,
-          retry: electrumServer.retry,
-          timeout: electrumServer.timeout,
-          stopGap: BigInt.from(electrumServer.stopGap),
-          validateDomain: electrumServer.validateDomain,
-        ),
-      ),
-    );
-
-    return BdkWalletDataSourceImpl(
+    return BdkWalletRepositoryImpl(
       wallet: wallet,
-      blockchain: blockchain,
     );
   }
 
   @override
-  Future<BalanceModel> getBalance() async {
+  Future<Balance> getBalance() async {
     final balanceInfo = _wallet.getBalance();
 
-    final balance = BalanceModel(
+    final balance = Balance(
       confirmedSat: balanceInfo.confirmed,
       immatureSat: balanceInfo.immature,
       trustedPendingSat: balanceInfo.trustedPending,
@@ -174,17 +144,29 @@ class BdkWalletDataSourceImpl
   }
 
   @override
-  Future<void> sync() async {
-    await _wallet.sync(blockchain: _blockchain);
+  Future<void> sync({required ElectrumServer electrumServer}) async {
+    final blockchain = await bdk.Blockchain.create(
+      config: bdk.BlockchainConfig.electrum(
+        config: bdk.ElectrumConfig(
+          url: electrumServer.url,
+          socks5: electrumServer.socks5,
+          retry: electrumServer.retry,
+          timeout: electrumServer.timeout,
+          stopGap: BigInt.from(electrumServer.stopGap),
+          validateDomain: electrumServer.validateDomain,
+        ),
+      ),
+    );
+    await _wallet.sync(blockchain: blockchain);
   }
 
   @override
-  Future<AddressModel> getNewAddress() async {
+  Future<Address> getNewAddress() async {
     final addressInfo = _wallet.getAddress(
       addressIndex: const bdk.AddressIndex.increase(),
     );
 
-    final address = AddressModel(
+    final address = Address.bitcoin(
       address: addressInfo.address.asString(),
       index: addressInfo.index,
     );
@@ -193,12 +175,12 @@ class BdkWalletDataSourceImpl
   }
 
   @override
-  Future<AddressModel> getAddressByIndex(int index) async {
+  Future<Address> getAddressByIndex(int index) async {
     final addressInfo = _wallet.getAddress(
       addressIndex: bdk.AddressIndex.peek(index: index),
     );
 
-    final address = AddressModel(
+    final address = Address.bitcoin(
       address: addressInfo.address.asString(),
       index: addressInfo.index,
     );
@@ -207,12 +189,12 @@ class BdkWalletDataSourceImpl
   }
 
   @override
-  Future<AddressModel> getLastUnusedAddress() async {
+  Future<Address> getLastUnusedAddress() async {
     final addressInfo = _wallet.getAddress(
       addressIndex: const bdk.AddressIndex.lastUnused(),
     );
 
-    final address = AddressModel(
+    final address = Address.bitcoin(
       address: addressInfo.address.asString(),
       index: addressInfo.index,
     );
@@ -229,9 +211,19 @@ class BdkWalletDataSourceImpl
   }
 
   @override
-  Future<List<bdk.LocalUtxo>> listUnspent() async {
-    // TODO: transform bdk.LocalUtxo to Utxo entity class and return a list of those
-    return _wallet.listUnspent();
+  Future<List<Utxo>> listUnspent() async {
+    final unspent = _wallet.listUnspent();
+    final utxos = unspent
+        .map(
+          (unspent) => Utxo(
+            scriptPubkey: unspent.txout.scriptPubkey.bytes,
+            txId: unspent.outpoint.txid,
+            vout: unspent.outpoint.vout,
+            value: unspent.txout.value,
+          ),
+        )
+        .toList();
+    return utxos;
   }
 
   @override
@@ -268,7 +260,9 @@ class BdkWalletDataSourceImpl
       ),
     );
     if (!isFinalized) {
-      throw FailedToSignPsbtException('Failed to sign the transaction');
+      debugPrint('The built PSBT is not a finalized one');
+    } else {
+      debugPrint('The built PSBT is finalized');
     }
 
     return psbt.asString();
@@ -285,12 +279,14 @@ class BdkWalletDataSourceImpl
         allowAllSighashes: false,
         removePartialSigs: true,
         tryFinalize: true,
-        signWithTapInternalKey: true,
-        allowGrinding: false,
+        signWithTapInternalKey: false,
+        allowGrinding: true,
       ),
     );
     if (!isFinalized) {
-      throw FailedToSignPsbtException('Failed to sign the transaction');
+      debugPrint('Signed PSBT is not finalized');
+    } else {
+      debugPrint('Signed PSBT is finalized');
     }
 
     return partiallySignedTransaction.asString();
@@ -308,7 +304,7 @@ class BdkWalletDataSourceImpl
   }
 
   @override
-  Future<bool> isTxBroadcasted(String txId) async {
+  Future<bool> hasTransaction(String txId) async {
     final txs = _wallet.listTransactions(includeRaw: false);
 
     return txs.any((tx) => tx.txid == txId);
@@ -322,56 +318,27 @@ class BdkWalletDataSourceImpl
   }
 
   @override
-  Future<String> broadcastTxFromBytes(List<int> bytes) async {
-    final tx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
-
-    return _blockchain.broadcast(transaction: tx);
-  }
-
-  @override
   Future<bool> isAddressUsed(String address) async {
-    final txOutputLists = await Future.wait(
-      _wallet.listTransactions(includeRaw: false).map((tx) async {
-        return await tx.transaction?.output() ?? <bdk.TxOut>[];
-      }),
-    );
+    final transactions = _wallet.listTransactions(includeRaw: false);
 
-    final outputs = txOutputLists.expand((list) => list).toList();
-    final isUsed = await Future.any(
-      outputs.map((output) async {
-        final generatedAddress = await bdk.Address.fromScript(
-          script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
-          network: _wallet.network(),
-        );
-        return generatedAddress.asString() == address;
-      }),
-    ).catchError((_) => false); // To handle empty lists
+    // TODO: Use future.wait to parallelize the loop and improve performance
+    for (final tx in transactions) {
+      final txOutputs = await tx.transaction?.output();
+      if (txOutputs != null) {
+        for (final output in txOutputs) {
+          final generatedAddress = await bdk.Address.fromScript(
+            script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
+            network: _wallet.network(),
+          );
 
-    return isUsed;
-  }
-
-  @override
-  Future<String> broadcastPsbt(String psbt) async {
-    final partiallySignedTransaction =
-        await bdk.PartiallySignedTransaction.fromString(psbt);
-    final finalized = await _wallet.sign(
-      psbt: partiallySignedTransaction,
-      signOptions: const bdk.SignOptions(
-        trustWitnessUtxo: true,
-        allowAllSighashes: false,
-        removePartialSigs: true,
-        tryFinalize: true,
-        signWithTapInternalKey: true,
-        allowGrinding: false,
-      ),
-    );
-    if (!finalized) {
-      throw FailedToSignPsbtException('Failed to sign the transaction');
+          if (generatedAddress.asString() == address) {
+            return true;
+          }
+        }
+      }
     }
 
-    return _blockchain.broadcast(
-      transaction: partiallySignedTransaction.extractTx(),
-    );
+    return false;
   }
 
   @override

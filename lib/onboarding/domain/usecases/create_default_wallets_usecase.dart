@@ -1,18 +1,18 @@
-import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/wallet_manager_repository.dart';
 import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
+import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:flutter/material.dart';
 
 class CreateDefaultWalletsUseCase {
   final SettingsRepository _settingsRepository;
   final MnemonicSeedFactory _mnemonicSeedFactory;
-  final WalletManagerRepository _walletManager;
+  final WalletManagerService _walletManager;
 
   CreateDefaultWalletsUseCase({
     required SettingsRepository settingsRepository,
     required MnemonicSeedFactory mnemonicSeedFactory,
-    required WalletManagerRepository walletManager,
+    required WalletManagerService walletManager,
   })  : _settingsRepository = settingsRepository,
         _mnemonicSeedFactory = mnemonicSeedFactory,
         _walletManager = walletManager;

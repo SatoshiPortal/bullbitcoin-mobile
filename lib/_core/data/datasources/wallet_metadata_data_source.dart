@@ -1,25 +1,25 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/_core/data/datasources/bip32_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/descriptor_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_stores/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
-import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/_utils/bip32_derivation.dart';
+import 'package:bb_mobile/_utils/descriptor_derivation.dart';
 
 abstract class WalletMetadataDataSource {
   Future<WalletMetadataModel> deriveFromSeed({
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
-    String label,
-    bool isDefault,
+    required String label,
+    required bool isDefault,
   });
   Future<WalletMetadataModel> deriveFromXpub({
     required String xpub,
     required Network network,
     required ScriptType scriptType,
-    String label,
+    required String label,
   });
   Future<void> store(
     WalletMetadataModel metadata,
@@ -30,27 +30,21 @@ abstract class WalletMetadataDataSource {
 }
 
 class WalletMetadataDataSourceImpl implements WalletMetadataDataSource {
-  final Bip32DataSource _bip32;
-  final DescriptorDataSource _descriptor;
   final KeyValueStorageDataSource<String> _walletMetadataStorage;
 
   const WalletMetadataDataSourceImpl({
-    required Bip32DataSource bip32,
-    required DescriptorDataSource descriptor,
     required KeyValueStorageDataSource<String> walletMetadataStorage,
-  })  : _bip32 = bip32,
-        _descriptor = descriptor,
-        _walletMetadataStorage = walletMetadataStorage;
+  }) : _walletMetadataStorage = walletMetadataStorage;
 
   @override
   Future<WalletMetadataModel> deriveFromSeed({
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
-    String label = '',
-    bool isDefault = true,
+    required String label,
+    required bool isDefault,
   }) async {
-    final xpub = await _bip32.getAccountXpub(
+    final xpub = await Bip32Derivation.getAccountXpub(
       seedBytes: seed.seedBytes,
       network: network,
       scriptType: scriptType,
@@ -59,14 +53,15 @@ class WalletMetadataDataSourceImpl implements WalletMetadataDataSource {
     String descriptor;
     String changeDescriptor;
     if (network.isBitcoin) {
-      final xprv = _bip32.getXprvFromSeed(seed.seedBytes, network);
-      descriptor = await _descriptor.derivePublicBitcoinDescriptorFromXpriv(
+      final xprv = Bip32Derivation.getXprvFromSeed(seed.seedBytes, network);
+      descriptor =
+          await DescriptorDerivation.derivePublicBitcoinDescriptorFromXpriv(
         xprv,
         scriptType: scriptType,
         isTestnet: network.isTestnet,
       );
       changeDescriptor =
-          await _descriptor.derivePublicBitcoinDescriptorFromXpriv(
+          await DescriptorDerivation.derivePublicBitcoinDescriptorFromXpriv(
         xprv,
         scriptType: scriptType,
         isTestnet: network.isTestnet,
@@ -79,7 +74,8 @@ class WalletMetadataDataSourceImpl implements WalletMetadataDataSource {
         );
       }
 
-      descriptor = await _descriptor.derivePublicLiquidDescriptorFromMnemonic(
+      descriptor =
+          await DescriptorDerivation.derivePublicLiquidDescriptorFromMnemonic(
         seed.mnemonicWords.join(' '),
         scriptType: scriptType,
         isTestnet: network.isTestnet,
@@ -117,17 +113,19 @@ class WalletMetadataDataSourceImpl implements WalletMetadataDataSource {
       );
     }
 
-    final bip32Xpub = _bip32.getBip32Xpub(xpub);
+    final bip32Xpub = Bip32Derivation.getBip32Xpub(xpub);
     final xpubBase58 = bip32Xpub.toBase58();
     final fingerprint = bip32Xpub.fingerprintHex;
 
-    final descriptor = await _descriptor.deriveBitcoinDescriptorFromXpub(
+    final descriptor =
+        await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
       xpubBase58,
       fingerprint: fingerprint,
       scriptType: scriptType,
       isTestnet: network.isTestnet,
     );
-    final changeDescriptor = await _descriptor.deriveBitcoinDescriptorFromXpub(
+    final changeDescriptor =
+        await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
       xpubBase58,
       fingerprint: fingerprint,
       scriptType: scriptType,

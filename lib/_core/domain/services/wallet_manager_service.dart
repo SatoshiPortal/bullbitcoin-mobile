@@ -1,11 +1,14 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
-import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
+import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 
-abstract class WalletManagerRepository {
+abstract class WalletManagerService {
   Future<bool> doDefaultWalletsExist({required Environment environment});
   Future<void> initExistingWallets();
   Future<Wallet> createWallet({
@@ -23,8 +26,8 @@ abstract class WalletManagerRepository {
   });
   Future<Wallet?> getWallet(String id);
   Future<List<Wallet>> getAllWallets({Environment? environment});
-  Future<void> sync({required String walletId});
-  Future<void> syncAll({Environment? environment});
+  Future<Wallet> sync({required String walletId});
+  Future<List<Wallet>> syncAll({Environment? environment});
   Future<Balance> getBalance({required String walletId});
   Future<Address> getAddressByIndex({
     required String walletId,
@@ -37,16 +40,17 @@ abstract class WalletManagerRepository {
   });
   Future<Address> getLastUnusedAddress({required String walletId});
   Future<Address> getNewAddress({required String walletId});
-  Future<Seed> getSeed({required String walletId});
-  Future<Payjoin> receivePayjoin({
+  Future<List<Utxo>> getUnspentUtxos({required String walletId});
+  Future<bool> isOwnedByWallet({
     required String walletId,
-    String? address,
-    int? expireAfterSec,
+    required Uint8List scriptBytes,
   });
-  Future<Payjoin> sendPayjoin({
+  Future<String> buildPsbt({
     required String walletId,
-    required String bip21,
-    BigInt? amountSat,
-    required double networkFeesSatPerVb,
+    required String address,
+    required BigInt amountSat,
+    BigInt? absoluteFeeSat,
+    double? feeRateSatPerVb,
   });
+  Future<String> signPsbt({required String walletId, required String psbt});
 }

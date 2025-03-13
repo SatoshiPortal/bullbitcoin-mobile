@@ -1,25 +1,24 @@
-import 'dart:convert';
-
-import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
-import 'package:bb_mobile/core/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/data/repositories/hive_wallet_metadata_repository_impl.dart';
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
+import 'package:bb_mobile/_core/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/_core/data/repositories/wallet_metadata_repository_impl.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockKeyValueStorage extends Mock
-    implements KeyValueStorageDataSource<String> {}
+class MockWalletMetadataSource extends Mock
+    implements WalletMetadataDataSource {}
 
 void main() {
-  late HiveWalletMetadataRepositoryImpl repository;
-  late MockKeyValueStorage mockStorage;
+  late MockWalletMetadataSource mockDataSource;
+  late WalletMetadataRepositoryImpl repository;
 
   setUp(() {
-    mockStorage = MockKeyValueStorage();
-    repository = HiveWalletMetadataRepositoryImpl(mockStorage);
+    mockDataSource = MockWalletMetadataSource();
+    repository = WalletMetadataRepositoryImpl(source: mockDataSource);
   });
 
   const testMetadata = WalletMetadata(
+    id: 'fd13aac9:bitcoin:mainnet',
     masterFingerprint: '73c5da0a',
     xpubFingerprint: 'fd13aac9',
     network: Network.bitcoinMainnet,
@@ -34,40 +33,38 @@ void main() {
     isDefault: true,
   );
 
-  final testJson =
-      jsonEncode(WalletMetadataModel.fromEntity(testMetadata).toJson());
-
   group('HiveWalletMetadataRepositoryImpl - storeWalletMetadata', () {
     test('stores wallet metadata correctly', () async {
-      when(() => mockStorage.saveValue(
-            key: testMetadata.id,
-            value: testJson,
+      when(() => mockDataSource.store(
+            WalletMetadataModel.fromEntity(testMetadata),
           )).thenAnswer((_) async {});
 
-      await repository.storeWalletMetadata(testMetadata);
+      await repository.store(testMetadata);
 
-      verify(() => mockStorage.saveValue(
-            key: testMetadata.id,
-            value: testJson,
-          )).called(1);
+      verify(
+        () => mockDataSource.store(
+          WalletMetadataModel.fromEntity(testMetadata),
+        ),
+      ).called(1);
     });
   });
 
   group('HiveWalletMetadataRepositoryImpl - getWalletMetadata', () {
     test('returns wallet metadata if found', () async {
-      when(() => mockStorage.getValue(testMetadata.id))
-          .thenAnswer((_) async => testJson);
+      when(() => mockDataSource.get(testMetadata.id)).thenAnswer(
+        (_) async => WalletMetadataModel.fromEntity(testMetadata),
+      );
 
-      final result = await repository.getWalletMetadata(testMetadata.id);
+      final result = await repository.get(testMetadata.id);
 
       expect(result, equals(testMetadata));
     });
 
     test('returns null if wallet metadata is not found', () async {
-      when(() => mockStorage.getValue(testMetadata.id))
+      when(() => mockDataSource.get('unknown-id'))
           .thenAnswer((_) async => null);
 
-      final result = await repository.getWalletMetadata(testMetadata.id);
+      final result = await repository.get('unknown-id');
 
       expect(result, isNull);
     });
@@ -75,22 +72,20 @@ void main() {
 
   group('HiveWalletMetadataRepositoryImpl - getAllWalletsMetadata', () {
     test('returns a list of all wallet metadata', () async {
-      final testData = {
-        testMetadata.id: testJson,
-      };
+      when(() => mockDataSource.getAll()).thenAnswer((_) async => [
+            WalletMetadataModel.fromEntity(testMetadata),
+          ]);
 
-      when(() => mockStorage.getAll()).thenAnswer((_) async => testData);
-
-      final result = await repository.getAllWalletsMetadata();
+      final result = await repository.getAll();
 
       expect(result, contains(testMetadata));
       expect(result.length, equals(1));
     });
 
     test('returns an empty list if no wallets exist', () async {
-      when(() => mockStorage.getAll()).thenAnswer((_) async => {});
+      when(() => mockDataSource.getAll()).thenAnswer((_) async => []);
 
-      final result = await repository.getAllWalletsMetadata();
+      final result = await repository.getAll();
 
       expect(result, isEmpty);
     });
@@ -98,12 +93,12 @@ void main() {
 
   group('HiveWalletMetadataRepositoryImpl - deleteWalletMetadata', () {
     test('deletes wallet metadata correctly', () async {
-      when(() => mockStorage.deleteValue(testMetadata.id))
+      when(() => mockDataSource.delete(testMetadata.id))
           .thenAnswer((_) async {});
 
-      await repository.deleteWalletMetadata(testMetadata.id);
+      await repository.delete(testMetadata.id);
 
-      verify(() => mockStorage.deleteValue(testMetadata.id)).called(1);
+      verify(() => mockDataSource.delete(testMetadata.id)).called(1);
     });
   });
 }

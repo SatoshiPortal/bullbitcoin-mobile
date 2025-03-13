@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lwk/lwk.dart';
+import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 
 Future main() async {
   runZonedGuarded(() async {
@@ -25,6 +26,7 @@ Future main() async {
       Hive.initFlutter(),
       LibLwk.init(),
       BoltzCore.init(),
+      core.init(),
     ]);
 
     // The Locator setup might depend on the initialization of the libraries above
