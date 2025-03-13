@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -33,12 +32,12 @@ sealed class ElectrumServer with _$ElectrumServer {
     switch (network) {
       case Network.bitcoinMainnet:
         return ElectrumServer.bullBitcoin(
-          url: ApiServiceConstants.bbElectrumUrlPath,
+          url: ApiServiceConstants.bbElectrumUrl,
           network: network,
         );
       case Network.bitcoinTestnet:
         return ElectrumServer.bullBitcoin(
-          url: ApiServiceConstants.bbElectrumTestUrlPath,
+          url: ApiServiceConstants.bbElectrumTestUrl,
           network: network,
         );
       case Network.liquidMainnet:
@@ -49,6 +48,33 @@ sealed class ElectrumServer with _$ElectrumServer {
       case Network.liquidTestnet:
         return ElectrumServer.bullBitcoin(
           url: ApiServiceConstants.bbLiquidElectrumTestUrlPath,
+          network: network,
+        );
+    }
+  }
+
+  factory ElectrumServer.publicFromNetwork({
+    required Network network,
+  }) {
+    switch (network) {
+      case Network.bitcoinMainnet:
+        return ElectrumServer.custom(
+          url: ApiServiceConstants.publicElectrumUrl,
+          network: network,
+        );
+      case Network.bitcoinTestnet:
+        return ElectrumServer.custom(
+          url: ApiServiceConstants.publicElectrumTestUrl,
+          network: network,
+        );
+      case Network.liquidMainnet:
+        return ElectrumServer.custom(
+          url: ApiServiceConstants.publicLiquidElectrumUrlPath,
+          network: network,
+        );
+      case Network.liquidTestnet:
+        return ElectrumServer.custom(
+          url: ApiServiceConstants.publicliquidElectrumTestUrlPath,
           network: network,
         );
     }

@@ -17,7 +17,7 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
       network: network,
     );
     if (model == null) {
-      return ElectrumServer.bullBitcoinFromNetwork(
+      return ElectrumServer.publicFromNetwork(
         network: network,
       );
     }

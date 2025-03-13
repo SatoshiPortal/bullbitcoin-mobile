@@ -6,14 +6,13 @@ import 'package:bb_mobile/_core/data/repositories/bdk_wallet_repository_impl.dar
 import 'package:bb_mobile/_core/data/repositories/lwk_wallet_repository_impl.dart';
 import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
-import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
+import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
+import 'package:bb_mobile/_core/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/payjoin_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_repository.dart';
@@ -23,21 +22,15 @@ import 'package:path_provider/path_provider.dart';
 class WalletManagerServiceImpl implements WalletManagerService {
   final WalletMetadataRepository _walletMetadata;
   final SeedRepository _seed;
-  final PayjoinRepository _payjoin;
   final ElectrumServerRepository _electrum;
   final Map<String, WalletRepository> _wallets = {};
-
-  late StreamSubscription<ReceivePayjoin> _requestedPayjoinSubscription;
-  late StreamSubscription<SendPayjoin> _sentPayjoinProposalSubscription;
 
   WalletManagerServiceImpl({
     required WalletMetadataRepository walletMetadataRepository,
     required SeedRepository seedRepository,
-    required PayjoinRepository payjoinRepository,
     required ElectrumServerRepository electrumServerRepository,
   })  : _walletMetadata = walletMetadataRepository,
         _seed = seedRepository,
-        _payjoin = payjoinRepository,
         _electrum = electrumServerRepository;
 
   @override
@@ -87,45 +80,6 @@ class WalletManagerServiceImpl implements WalletManagerService {
           await _createPublicWalletRepository(walletMetadata: metadata);
       await _registerWalletRepository(id: metadata.id, wallet: wallet);
     }
-
-    // Subscribe to and handle payjoin events and resume any existing payjoin sessions as well
-    await _initPayjoin();
-
-    // TODO: resume any existing swap sessions
-  }
-
-  Future<void> _initPayjoin() async {
-    _requestedPayjoinSubscription = _payjoin.payjoinRequestedStream.listen(
-      (event) async {
-        // Payjoin requires signing capabilities, so we need to make sure the wallet has private keys
-        final wallet = await _getWalletWithPrivateKey(event.walletId);
-        if (wallet == null || wallet is! PayjoinWalletRepository) {
-          return;
-        }
-
-        final payjoinWallet = wallet as PayjoinWalletRepository;
-
-        await _payjoin.processPayjoinRequest(
-          event,
-          isMine: (Uint8List scriptBytes) => payjoinWallet.isMine(scriptBytes),
-        );
-      },
-    );
-
-    _sentPayjoinProposalSubscription = _payjoin.proposalSentStream.listen(
-      (event) async {
-        final wallet = _wallets[event.walletId];
-        if (wallet == null || wallet is! PayjoinWalletRepository) {
-          return;
-        }
-
-        await _payjoin.processPayjoinProposal(
-          event,
-        );
-      },
-    );
-
-    await _payjoin.resumeSessions();
   }
 
   @override
@@ -383,6 +337,88 @@ class WalletManagerServiceImpl implements WalletManagerService {
     return getAllWallets(environment: environment);
   }
 
+  @override
+  Future<List<Utxo>> getUnspentUtxos({required String walletId}) {
+    final wallet = _wallets[walletId];
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    return wallet.listUnspent();
+  }
+
+  @override
+  Future<bool> isOwnedByWallet({
+    required String walletId,
+    required Uint8List scriptBytes,
+  }) async {
+    final wallet = _wallets[walletId];
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    if (wallet is BitcoinWalletRepository) {
+      final bitcoinWallet = wallet as BitcoinWalletRepository;
+      return bitcoinWallet.isMine(scriptBytes);
+    }
+
+    throw UnsupportedError(
+      'Ability to check if an input is owned, is currently only supported for Bitcoin wallets',
+    );
+  }
+
+  @override
+  Future<String> buildPsbt({
+    required String walletId,
+    required String address,
+    required BigInt amountSat,
+    BigInt? absoluteFeeSat,
+    double? feeRateSatPerVb,
+  }) async {
+    final wallet = await _getWalletWithPrivateKey(walletId);
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    if (wallet is BitcoinWalletRepository) {
+      final bitcoinWallet = wallet as BitcoinWalletRepository;
+      return bitcoinWallet.buildPsbt(
+        address: address,
+        amountSat: amountSat,
+        absoluteFeeSat: absoluteFeeSat,
+        feeRateSatPerVb: feeRateSatPerVb,
+      );
+    }
+
+    throw UnsupportedError(
+      'Ability to build a PSBT is only supported for Bitcoin wallets',
+    );
+  }
+
+  @override
+  Future<String> signPsbt({
+    required String walletId,
+    required String psbt,
+  }) async {
+    final wallet = await _getWalletWithPrivateKey(walletId);
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+
+    if (wallet is BitcoinWalletRepository) {
+      final bitcoinWallet = wallet as BitcoinWalletRepository;
+      return bitcoinWallet.signPsbt(psbt);
+    }
+
+    throw UnsupportedError(
+      'Ability to sign a PSBT is currently only supported for Bitcoin wallets',
+    );
+  }
+
   Future<WalletRepository?> _getWalletWithPrivateKey(String id) async {
     final walletMetadata = await _walletMetadata.get(id);
 
@@ -544,12 +580,6 @@ class WalletNotFoundException implements Exception {
   final String message;
 
   const WalletNotFoundException(this.message);
-}
-
-class PayjoinNotSupportedException implements Exception {
-  final String message;
-
-  const PayjoinNotSupportedException(this.message);
 }
 
 class MissingAmountException implements Exception {

@@ -2,32 +2,8 @@ import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:lwk/lwk.dart' as lwk;
 
-abstract class DescriptorDataSource {
-  Future<String> derivePublicBitcoinDescriptorFromXpriv(
-    String xprv, {
-    required ScriptType scriptType,
-    required bool isTestnet,
-    bool isInternalKeychain = false,
-  });
-  Future<String> deriveBitcoinDescriptorFromXpub(
-    String xpub, {
-    required String fingerprint,
-    required ScriptType scriptType,
-    required bool isTestnet,
-    bool isInternalKeychain = false,
-  });
-  Future<String> derivePublicLiquidDescriptorFromMnemonic(
-    String mnemonic, {
-    required ScriptType scriptType,
-    required bool isTestnet,
-  });
-}
-
-class DescriptorDataSourceImpl implements DescriptorDataSource {
-  const DescriptorDataSourceImpl();
-
-  @override
-  Future<String> derivePublicBitcoinDescriptorFromXpriv(
+class DescriptorDerivation {
+  static Future<String> derivePublicBitcoinDescriptorFromXpriv(
     String xprv, {
     required ScriptType scriptType,
     required bool isTestnet,
@@ -65,8 +41,7 @@ class DescriptorDataSourceImpl implements DescriptorDataSource {
     return descriptor.asString();
   }
 
-  @override
-  Future<String> derivePublicLiquidDescriptorFromMnemonic(
+  static Future<String> derivePublicLiquidDescriptorFromMnemonic(
     String mnemonic, {
     required ScriptType scriptType,
     required bool isTestnet,
@@ -80,8 +55,7 @@ class DescriptorDataSourceImpl implements DescriptorDataSource {
     return confidentialDescriptor.ctDescriptor;
   }
 
-  @override
-  Future<String> deriveBitcoinDescriptorFromXpub(
+  static Future<String> deriveBitcoinDescriptorFromXpub(
     String xpub, {
     required String fingerprint,
     required ScriptType scriptType,

@@ -1,13 +1,16 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_repository.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:flutter/material.dart';
 
 class BdkWalletRepositoryImpl
     implements
@@ -208,9 +211,19 @@ class BdkWalletRepositoryImpl
   }
 
   @override
-  Future<List<bdk.LocalUtxo>> listUnspent() async {
-    // TODO: transform bdk.LocalUtxo to Utxo entity class and return a list of those
-    return _wallet.listUnspent();
+  Future<List<Utxo>> listUnspent() async {
+    final unspent = _wallet.listUnspent();
+    final utxos = unspent
+        .map(
+          (unspent) => Utxo(
+            scriptPubkey: unspent.txout.scriptPubkey.bytes,
+            txId: unspent.outpoint.txid,
+            vout: unspent.outpoint.vout,
+            value: unspent.txout.value,
+          ),
+        )
+        .toList();
+    return utxos;
   }
 
   @override
@@ -247,7 +260,9 @@ class BdkWalletRepositoryImpl
       ),
     );
     if (!isFinalized) {
-      throw FailedToSignPsbtException('Failed to sign the transaction');
+      debugPrint('The built PSBT is not a finalized one');
+    } else {
+      debugPrint('The built PSBT is finalized');
     }
 
     return psbt.asString();
@@ -264,12 +279,14 @@ class BdkWalletRepositoryImpl
         allowAllSighashes: false,
         removePartialSigs: true,
         tryFinalize: true,
-        signWithTapInternalKey: true,
-        allowGrinding: false,
+        signWithTapInternalKey: false,
+        allowGrinding: true,
       ),
     );
     if (!isFinalized) {
-      throw FailedToSignPsbtException('Failed to sign the transaction');
+      debugPrint('Signed PSBT is not finalized');
+    } else {
+      debugPrint('Signed PSBT is finalized');
     }
 
     return partiallySignedTransaction.asString();
@@ -302,24 +319,26 @@ class BdkWalletRepositoryImpl
 
   @override
   Future<bool> isAddressUsed(String address) async {
-    final txOutputLists = await Future.wait(
-      _wallet.listTransactions(includeRaw: false).map((tx) async {
-        return await tx.transaction?.output() ?? <bdk.TxOut>[];
-      }),
-    );
+    final transactions = _wallet.listTransactions(includeRaw: false);
 
-    final outputs = txOutputLists.expand((list) => list).toList();
-    final isUsed = await Future.any(
-      outputs.map((output) async {
-        final generatedAddress = await bdk.Address.fromScript(
-          script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
-          network: _wallet.network(),
-        );
-        return generatedAddress.asString() == address;
-      }),
-    ).catchError((_) => false); // To handle empty lists
+    // TODO: Use future.wait to parallelize the loop and improve performance
+    for (final tx in transactions) {
+      final txOutputs = await tx.transaction?.output();
+      if (txOutputs != null) {
+        for (final output in txOutputs) {
+          final generatedAddress = await bdk.Address.fromScript(
+            script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
+            network: _wallet.network(),
+          );
 
-    return isUsed;
+          if (generatedAddress.asString() == address) {
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
   }
 
   @override
