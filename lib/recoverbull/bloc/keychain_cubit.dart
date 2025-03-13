@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_pkg/consts/configs.dart';
+import 'package:bb_mobile/_pkg/recoverbull/_interface.dart';
 import 'package:bb_mobile/_pkg/recoverbull/tor_connection.dart';
 import 'package:bb_mobile/recoverbull/bloc/keychain_state.dart';
 import 'package:flutter/material.dart';
@@ -133,7 +134,8 @@ class KeychainCubit extends Cubit<KeychainState> {
 
         if (isLastAttempt) {
           debugPrint(
-              'Unable to complete $operationName: ${e.toDetailedError()}');
+            'Unable to complete $operationName: ${e.toDetailedError()}',
+          );
           if (emitState) {
             emit(
               state.copyWith(
@@ -228,8 +230,19 @@ class KeychainCubit extends Cubit<KeychainState> {
           secretStatus: SecretStatus.recovered,
         ),
       );
+    } on KeyServiceException catch (e) {
+      debugPrint('Recovery failed: ${e.toDetailedError()}');
+      emit(
+        state.copyWith(
+          loading: false,
+          error: e.appMessage,
+          cooldownMinutes: e.code == 429 ? e.cooldownInMinutes : null,
+          lastRequestTime: e.code == 429 ? DateTime.now() : null,
+        ),
+      );
+      return;
     } catch (e) {
-      debugPrint('Failed to recover backup key: $e');
+      debugPrint('Recovery failed: $e');
       emit(
         state.copyWith(
           error: 'Failed to recover backup key',
@@ -308,23 +321,23 @@ class KeychainCubit extends Cubit<KeychainState> {
       );
       return;
     } on KeyServiceException catch (e) {
-      debugPrint('failed to delete backupkey: ${e.toDetailedError()}');
+      debugPrint('Delete failed: ${e.toDetailedError()}');
       emit(
         state.copyWith(
-          error: e.appMessage,
           loading: false,
+          error: e.appMessage,
+          cooldownMinutes: e.code == 429 ? e.cooldownInMinutes : null,
+          lastRequestTime: e.code == 429 ? DateTime.now() : null,
         ),
       );
-      return;
     } catch (e) {
-      debugPrint('failed to delete backup key: $e');
+      debugPrint('Delete failed: $e');
       emit(
         state.copyWith(
           error: 'Failed to delete backup key',
           loading: false,
         ),
       );
-      return;
     }
   }
 
@@ -339,17 +352,6 @@ class KeychainCubit extends Cubit<KeychainState> {
         state.copyWith(
           torStatus: TorStatus.offline,
           error: 'Service unavailable. Please check your connection.',
-          loading: false,
-        ),
-      );
-      return;
-    }
-
-    if (state.isInCooldown) {
-      emit(
-        state.copyWith(
-          error:
-              'Rate limited. Please wait ${state.remainingCooldownSeconds} seconds.',
           loading: false,
         ),
       );
@@ -413,7 +415,7 @@ class KeychainCubit extends Cubit<KeychainState> {
       );
       _emitSuccess(keySecretState: SecretStatus.stored);
     } on KeyServiceException catch (e) {
-      debugPrint('failed to store backup key: ${e.toDetailedError()}');
+      debugPrint('Failed to store backup key: ${e.toDetailedError()}');
       _emitError(e.appMessage);
     } catch (e) {
       debugPrint('Failed to store backup key: $e');
