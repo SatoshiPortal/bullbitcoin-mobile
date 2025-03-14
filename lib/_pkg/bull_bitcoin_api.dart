@@ -1,11 +1,13 @@
 // ignore_for_file: constant_identifier_names
 
+import 'dart:math';
+
 import 'package:bb_mobile/_model/currency.dart';
 import 'package:bb_mobile/_pkg/consts/configs.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:dio/dio.dart';
 
-const INR_USD = 88;
+const INR_USD = 91;
 const CRC_USD = 540;
 
 class BullBitcoinAPI {
@@ -21,15 +23,17 @@ class BullBitcoinAPI {
       final resp = await http.post(
         url,
         data: {
-          'id': 0,
+          'id': 1,
           'jsonrpc': '2.0',
           'method': 'getRate',
           'params': {
-            'from': 'BTC',
-            'to': toCurrency.toUpperCase() == 'INR' ||
-                    toCurrency.toUpperCase() == 'CRC'
-                ? 'USD'
-                : toCurrency.toUpperCase(),
+            'element': {
+              'fromCurrency': 'BTC',
+              'toCurrency': toCurrency.toUpperCase() == 'INR' ||
+                      toCurrency.toUpperCase() == 'CRC'
+                  ? 'USD'
+                  : toCurrency.toUpperCase(),
+            }
           },
         },
       );
@@ -37,12 +41,18 @@ class BullBitcoinAPI {
       if (resp.statusCode == null || resp.statusCode != 200) {
         throw 'Error Occured.';
       }
+
+      // Parse the response data correctly
       final data = resp.data as Map<String, dynamic>;
       final result = data['result'] as Map<String, dynamic>;
+      final element = result['element'] as Map<String, dynamic>;
 
-      final rateDouble = (result['indexPrice'] as num).toDouble();
-      // final toPrecision = result['to']['precision'] as int;
-      // final rateDouble = rate / pow(10, toPrecision);
+      // Extract price and precision
+      final price = (element['price'] as num).toDouble();
+      final precision = element['precision'] as int? ?? 2;
+
+      // Convert price based on precision (e.g., if price is 11751892 and precision is 2, actual price is 117518.92)
+      final rateDouble = price / pow(10, precision);
 
       final currency = Currency(
         name: toCurrency,

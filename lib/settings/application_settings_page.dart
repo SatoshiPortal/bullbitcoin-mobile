@@ -46,7 +46,6 @@ class _Screen extends StatelessWidget {
                 ChangePin(),
                 Gap(8),
                 LightingButton(),
-
                 Gap(8),
                 // TODO: LanguageDropDown(),
                 Gap(80),
