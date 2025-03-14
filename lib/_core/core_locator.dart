@@ -37,6 +37,7 @@ import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_default_wallet_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_payjoin_updates_use_case.dart';
@@ -227,6 +228,12 @@ class CoreLocator {
     );
 
     // Use cases
+    locator.registerFactory<GetDefaultWalletUseCase>(
+      () => GetDefaultWalletUseCase(
+        walletManager: locator<WalletManagerService>(),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
     locator.registerFactory<FindMnemonicWordsUseCase>(
       () => FindMnemonicWordsUseCase(
         wordListRepository: locator<WordListRepository>(),
