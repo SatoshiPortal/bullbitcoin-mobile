@@ -196,8 +196,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   StreamController<SwapModel> get swapUpdatesController =>
       _swapUpdatesController;
 
-  final List<String> _activeSwapIds = [];
-
   BoltzDataSourceImpl({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
     required BoltzStorageDataSourceImpl boltzStore,
@@ -790,6 +788,19 @@ class BoltzDataSourceImpl implements BoltzDataSource {
               print('No swap found for id: $swapId');
               return;
             }
+            // Check if swap is already in terminal state
+            final swapCompleted =
+                swapModel.status == swap_entity.SwapStatus.completed.name;
+            final swapFailed =
+                swapModel.status == swap_entity.SwapStatus.failed.name;
+            final swapExpired =
+                swapModel.status == swap_entity.SwapStatus.expired.name;
+
+            if (swapCompleted || swapFailed || swapExpired) {
+              // Unsubscribe from the swap if it's in a terminal state
+              unsubscribeToSwaps([swapId]);
+              return;
+            }
             // Process the event
             SwapModel? updatedSwapModel;
             switch (boltzStatus) {
@@ -1009,22 +1020,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                   'Updated swap $swapId from ${swapModel.status} to ${updatedSwapModel.status}');
               _swapUpdatesController.add(updatedSwapModel);
             }
-            // Check if swap is already in terminal state
-            final swapCompleted = updatedSwapModel?.status ==
-                    swap_entity.SwapStatus.completed.name ||
-                swapModel.status == swap_entity.SwapStatus.completed.name;
-            final swapFailed = updatedSwapModel?.status ==
-                    swap_entity.SwapStatus.failed.name ||
-                swapModel.status == swap_entity.SwapStatus.failed.name;
-            final swapExpired = updatedSwapModel?.status ==
-                    swap_entity.SwapStatus.expired.name ||
-                swapModel.status == swap_entity.SwapStatus.expired.name;
-
-            if (swapCompleted || swapFailed || swapExpired) {
-              // Unsubscribe from the swap if it's in a terminal state
-              unsubscribeToSwaps([swapId]);
-              return;
-            }
           } catch (e) {
             print('Error processing swap status update: $e');
           }
@@ -1036,10 +1031,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
         onDone: () {},
       );
 
-      if (_activeSwapIds.isNotEmpty) {
-        subscribeToSwaps(_activeSwapIds);
-        // _swapUpdatesController.add(updatedSwapModel);
-      }
       print('Started Boltz WebSocket');
     } catch (e) {
       print('Error initializing BoltzWebSocket: $e');
@@ -1070,10 +1061,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   @override
   void subscribeToSwaps(List<String> swapIds) {
-    _activeSwapIds.addAll(swapIds);
-    final uniqueIds = _activeSwapIds.toSet().toList();
-    _activeSwapIds.clear();
-    _activeSwapIds.addAll(uniqueIds);
     try {
       _boltzWebSocket.subscribe(swapIds);
     } catch (e) {
@@ -1083,8 +1070,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   @override
   void unsubscribeToSwaps(List<String> swapIds) {
-    _activeSwapIds.removeWhere((id) => swapIds.contains(id));
-
     try {
       _boltzWebSocket.unsubscribe(swapIds);
     } catch (e) {

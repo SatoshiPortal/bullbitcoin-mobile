@@ -125,19 +125,19 @@ void main() {
           }
         });
       });
-      test(
-        'Test Storage Persistence',
-        () async {
-          final ongoingSwaps = await swapRepositoryMainnet.getOngoingSwaps();
-          for (final swap in ongoingSwaps) {
-            debugPrint('${swap.id}:${swap.status}');
-          }
-          swapRepositoryMainnet.reinitializeStreamWithSwaps(
-            swapIds: ongoingSwaps.map((swap) => swap.id).toList(),
-          );
-        },
-        // skip: 'No swaps started',
-      );
+      // test(
+      //   'Intialize Stream with Ongoing Swaps',
+      //   () async {
+      //     final ongoingSwaps = await swapRepositoryMainnet.getOngoingSwaps();
+      //     for (final swap in ongoingSwaps) {
+      //       debugPrint('${swap.id}:${swap.status}');
+      //     }
+      //     swapRepositoryMainnet.reinitializeStreamWithSwaps(
+      //       swapIds: ongoingSwaps.map((swap) => swap.id).toList(),
+      //     );
+      //   },
+      //   // skip: 'No swaps started',
+      // );
       test('Create Liquid Swap. REQUIRED: Pay Invoice', () async {
         final swap = await receiveSwapUseCase.execute(
           walletId: instantWallet.id,
@@ -179,7 +179,27 @@ void main() {
         expect(
           isComplete,
           isTrue,
-          reason: 'Liquid receive swap did not complete',
+          reason: 'Liquid receive swap completed',
+        );
+      });
+      test('Check Liquid Swap Status', () async {
+        final receiveSwap = await swapRepositoryMainnet.getSwap(
+          swapId: receiveLbtcSwapId,
+        ) as LnReceiveSwap;
+        expect(
+          receiveSwap.status,
+          SwapStatus.completed,
+          reason: 'Swap should be completed',
+        );
+        expect(
+          receiveSwap.receiveTxid != null,
+          true,
+          reason: 'Swap should have a receive txid',
+        );
+        expect(
+          receiveSwap.receiveAddress != null,
+          true,
+          reason: 'Swap should have a receive address',
         );
       });
       test('Check Liquid Balance After Swap', () async {
