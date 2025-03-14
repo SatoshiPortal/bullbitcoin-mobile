@@ -8,12 +8,14 @@ import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_s
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/seed_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/tor_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/payjoin_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/seed_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/settings_repository_impl.dart';
+import 'package:bb_mobile/_core/data/repositories/tor_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/wallet_metadata_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/word_list_repository_impl.dart';
 import 'package:bb_mobile/_core/data/services/mnemonic_seed_factory_impl.dart';
@@ -25,6 +27,7 @@ import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/tor_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/word_list_repository.dart';
 import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
@@ -194,6 +197,13 @@ class CoreLocator {
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
+    );
+
+    // Register TorRepository after TorDataSource is registered
+    // Use waitFor to ensure TorDataSource is ready before TorRepository is created
+    locator.registerSingletonWithDependencies<TorRepository>(
+      () => TorRepositoryImpl(locator<TorDataSource>()),
+      dependsOn: [TorDataSource],
     );
 
     // Factories, managers or services responsible for handling specific logic
