@@ -9,8 +9,8 @@ abstract class Bip85DataSource {
   String generateBackupKeyPath();
 }
 
-class Bip85RepositoryImpl implements Bip85DataSource {
-  Bip85RepositoryImpl();
+class Bip85DataSourceImpl implements Bip85DataSource {
+  Bip85DataSourceImpl();
 
   @override
   List<int> derive(String xprv, String path) {
