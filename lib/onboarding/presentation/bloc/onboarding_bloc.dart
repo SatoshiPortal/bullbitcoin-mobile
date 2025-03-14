@@ -11,12 +11,19 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   OnboardingBloc({
     required CreateDefaultWalletsUseCase createDefaultWalletsUseCase,
     required FindMnemonicWordsUseCase findMnemonicWordsUseCase,
+    required bool initLoading,
   })  : _createDefaultWalletsUseCase = createDefaultWalletsUseCase,
         _findMnemonicWordsUseCase = findMnemonicWordsUseCase,
-        super(const OnboardingState()) {
+        super(OnboardingState(initLoading: initLoading)) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoveryWordChanged>(_onRecoveryWordChanged);
     on<OnboardingRecoverWalletClicked>(_onRecoverWalletClicked);
+    on<OnboardingGoToRecoverStep>((event, emit) {
+      emit(state.copyWith(step: OnboardingStep.recoveryWords));
+    });
+    on<OnboardingGoBack>((event, emit) {
+      emit(state.copyWith(step: OnboardingStep.splash));
+    });
   }
 
   final CreateDefaultWalletsUseCase _createDefaultWalletsUseCase;
@@ -65,7 +72,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     Emitter<OnboardingState> emit,
   ) async {
     try {
-      emit(state.copyWith(creating: true, error: null));
+      emit(state.copyWith(creating: true, error: null, hintWords: {}));
       await _createDefaultWalletsUseCase.execute(
         mnemonicWords: state.validWords.values.toList(),
       );

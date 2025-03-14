@@ -3,22 +3,20 @@ import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/gen/assets.gen.dart';
 import 'package:bb_mobile/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/onboarding/ui/widgets/create_wallet_button.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({
     super.key,
-    required this.loading,
   });
-
-  final bool loading;
 
   @override
   Widget build(BuildContext context) {
+    final initLoading =
+        context.select((OnboardingBloc _) => _.state.initLoading);
+
     return Stack(
       children: [
         const _BG(),
@@ -38,7 +36,7 @@ class OnboardingSplash extends StatelessWidget {
                   right: 16,
                   bottom: 40,
                 ),
-                child: _Actions(loading: loading),
+                child: _Actions(loading: initLoading),
               ),
             ],
           ),
@@ -79,7 +77,10 @@ class _Actions extends StatelessWidget {
             iconData: Icons.history_edu,
             outlined: true,
             onPressed: () async {
-              context.pushNamed(AppRoute.recoverWallet.name);
+              context
+                  .read<OnboardingBloc>()
+                  .add(const OnboardingGoToRecoverStep());
+              // context.pushNamed(AppRoute.recoverWallet.name);
             },
           ),
         ],

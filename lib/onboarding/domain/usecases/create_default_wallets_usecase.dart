@@ -21,38 +21,47 @@ class CreateDefaultWalletsUseCase {
     List<String>? mnemonicWords,
     String? passphrase,
   }) async {
-    // Generate a mnemonic seed if the user creates a new wallet
-    //  or use the provided mnemonic words in case of recovery.
-    final mnemonicSeed = mnemonicWords == null
-        ? await _mnemonicSeedFactory.generate(passphrase: passphrase)
-        : _mnemonicSeedFactory.fromWords(mnemonicWords, passphrase: passphrase);
+    try {
+      // Generate a mnemonic seed if the user creates a new wallet
+      //  or use the provided mnemonic words in case of recovery.
+      final mnemonicSeed = mnemonicWords == null
+          ? await _mnemonicSeedFactory.generate(passphrase: passphrase)
+          : _mnemonicSeedFactory.fromWords(
+              mnemonicWords,
+              passphrase: passphrase,
+            );
 
-    // The current default script type for the wallets is BIP84
-    const scriptType = ScriptType.bip84;
+      // The current default script type for the wallets is BIP84
+      const scriptType = ScriptType.bip84;
 
-    // Get the current environment to determine the network
-    final environment = await _settingsRepository.getEnvironment();
-    final bitcoinNetwork =
-        environment.isMainnet ? Network.bitcoinMainnet : Network.bitcoinTestnet;
-    final liquidNetwork =
-        environment.isMainnet ? Network.liquidMainnet : Network.liquidTestnet;
+      // Get the current environment to determine the network
+      final environment = await _settingsRepository.getEnvironment();
+      final bitcoinNetwork = environment.isMainnet
+          ? Network.bitcoinMainnet
+          : Network.bitcoinTestnet;
+      final liquidNetwork =
+          environment.isMainnet ? Network.liquidMainnet : Network.liquidTestnet;
 
-    // The default wallets should be 1 Bitcoin and 1 Liquid wallet.
-    await Future.wait([
-      _walletManager.createWallet(
-        seed: mnemonicSeed,
-        network: bitcoinNetwork,
-        scriptType: scriptType,
-        isDefault: true,
-      ),
-      _walletManager.createWallet(
-        seed: mnemonicSeed,
-        network: liquidNetwork,
-        scriptType: scriptType,
-        isDefault: true,
-      ),
-    ]);
+      // The default wallets should be 1 Bitcoin and 1 Liquid wallet.
+      await Future.wait([
+        _walletManager.createWallet(
+          seed: mnemonicSeed,
+          network: bitcoinNetwork,
+          scriptType: scriptType,
+          isDefault: true,
+        ),
+        _walletManager.createWallet(
+          seed: mnemonicSeed,
+          network: liquidNetwork,
+          scriptType: scriptType,
+          isDefault: true,
+        ),
+      ]);
 
-    debugPrint('Default wallets created');
+      debugPrint('Default wallets created');
+    } catch (e) {
+      //TODO: Handle error - delete all wallets
+      rethrow;
+    }
   }
 }

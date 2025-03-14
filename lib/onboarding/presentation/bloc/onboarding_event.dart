@@ -8,6 +8,10 @@ class OnboardingGoToRecoverStep extends OnboardingEvent {
   const OnboardingGoToRecoverStep();
 }
 
+class OnboardingGoBack extends OnboardingEvent {
+  const OnboardingGoBack();
+}
+
 class OnboardingCreateNewWallet extends OnboardingEvent {
   const OnboardingCreateNewWallet();
 }

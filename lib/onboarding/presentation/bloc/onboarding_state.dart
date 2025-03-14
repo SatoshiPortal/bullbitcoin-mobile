@@ -5,6 +5,7 @@ enum OnboardingStep { splash, createSucess, recoveryWords, recoverySuccess }
 @freezed
 sealed class OnboardingState with _$OnboardingState {
   const factory OnboardingState({
+    required bool initLoading,
     @Default(OnboardingStep.splash) OnboardingStep step,
     @Default({}) Map<int, String> validWords,
     @Default({}) Map<int, List<String>> hintWords,
@@ -20,6 +21,5 @@ sealed class OnboardingState with _$OnboardingState {
     return null;
   }
 
-  bool hasAllValidWords(int wordsCount) =>
-      validWords.length == wordsCount && !creating;
+  bool hasAllValidWords() => validWords.length == 12 && !creating;
 }
