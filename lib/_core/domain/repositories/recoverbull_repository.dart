@@ -1,6 +1,13 @@
+import 'package:bb_mobile/_core/domain/entities/seed.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
+
 abstract class RecoverBullRepository {
   // Returning BullBackup could be helpful for the frontend that
-  Future<String> createBackupFile(String masterFingerprint);
+  Future<String> createBackupFile({
+    required List<int> backupKey,
+    required Seed seed,
+    required List<WalletMetadata> wallets,
+  });
 
   void restoreBackupFile(String backupFile, String backupKey);
 
