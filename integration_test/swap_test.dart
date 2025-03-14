@@ -1,4 +1,4 @@
-@Timeout(Duration(seconds: 120))
+@Timeout(Duration(minutes: 30))
 
 import 'dart:async';
 
@@ -131,7 +131,7 @@ void main() {
         },
         // skip: 'No swaps started',
       );
-      test('Create Liquid Swap, Pay and Wait for Completion', () async {
+      test('Create Liquid Swap. REQUIRED: Pay Invoice', () async {
         final swap = await receiveSwapUseCase.execute(
           walletId: instantWallet.id,
           type: SwapType.lightningToLiquid,
@@ -145,7 +145,21 @@ void main() {
         debugPrint("SwapID: ${swap.id}");
         debugPrint('\n\n\n');
       });
-      test('Wait for Completion', () async {
+      test('Create Bitcoin Swap. REQUIRED: Pay Invoice', () async {
+        final swap = await receiveSwapUseCase.execute(
+          walletId: secureWallet.id,
+          type: SwapType.lightningToBitcoin,
+          amountSat: 25001,
+        );
+        expect(swap, isNotNull);
+
+        expect(swap.status, SwapStatus.pending);
+        debugPrint("Pay invoice:\n");
+        debugPrint(swap.invoice);
+        debugPrint("SwapID: ${swap.id}");
+        debugPrint('\n\n\n');
+      });
+      test('Wait for Liquid Swap to Complete', () async {
         final isComplete = await liquidReceiveCompletedEvent.future;
         expect(
           isComplete,
@@ -153,6 +167,15 @@ void main() {
           reason: 'Liquid receive swap did not complete',
         );
       });
+      test('Wait for Bitcoin Swap to Complete', () async {
+        final isComplete = await bitcoinReceiveCompletedEvent.future;
+        expect(
+          isComplete,
+          isTrue,
+          reason: 'Liquid receive swap did not complete',
+        );
+      });
+
       tearDownAll(() {
         swapSubscription.cancel();
       });

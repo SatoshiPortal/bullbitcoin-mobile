@@ -828,6 +828,11 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                       status: swap_entity.SwapStatus.claimable.name,
                     );
                   }
+                  if (type == swap_entity.SwapType.lightningToBitcoin.name) {
+                    updatedSwapModel = swapModel.copyWith(
+                      status: swap_entity.SwapStatus.paid.name,
+                    );
+                  }
                 }
 
               case SwapStatus.txnConfirmed:
