@@ -120,6 +120,7 @@ abstract class SwapRepository {
   });
 
   Future<List<Swap>> getOngoingSwaps();
+  Future<List<Swap>> getAllSwaps();
 
   Future<void> updateSwap({
     required Swap swap,
@@ -131,14 +132,7 @@ abstract class SwapRepository {
   });
 
   // STREAM
-
-  void addSwapToStream({
-    required String swapId,
-  });
-  void removeSwapFromStream({
-    required String swapId,
-  });
-  void reinitializeStreamWithSwaps({
+  Future<void> reinitializeStreamWithSwaps({
     required List<String> swapIds,
   });
 

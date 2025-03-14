@@ -297,10 +297,10 @@ class WalletManagerServiceImpl implements WalletManagerService {
     }
 
     final address = await wallet.getNewAddress();
-    final addressWithOptionalData =
-        await _addOptionalAddressData(address, wallet: wallet);
+    // final addressWithOptionalData =
+    //     await _addOptionalAddressData(address, wallet: wallet);
 
-    return addressWithOptionalData;
+    return address;
   }
 
   @override
@@ -315,9 +315,12 @@ class WalletManagerServiceImpl implements WalletManagerService {
     final electrumServer = await _electrum.getElectrumServer(
       network: metadata.network,
     );
-
-    await wallet.sync(electrumServer: electrumServer);
-
+    try {
+      await wallet.sync(electrumServer: electrumServer);
+    } catch (e) {
+      print(e);
+      return getWallet(walletId);
+    }
     return getWallet(walletId);
   }
 

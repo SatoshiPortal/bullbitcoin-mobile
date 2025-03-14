@@ -173,11 +173,11 @@ abstract class BoltzDataSource {
 
   // Expose a standardized stream for the repository layer
   Stream<SwapModel> get swapUpdatesStream;
+  StreamController<SwapModel> get swapUpdatesController;
   // STORAGE
   BoltzStorageDataSourceImpl get storage;
 
   // Add connection management methods
-  bool get isConnected;
   Future<void> reconnect();
 }
 
@@ -190,11 +190,10 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   final _swapUpdatesController = StreamController<SwapModel>.broadcast();
 
-  // Connection state tracking
-  bool _isConnected = false;
-  Timer? _reconnectTimer;
-  int _reconnectAttempts = 0;
-  final _maxReconnectAttempts = 10;
+  @override
+  StreamController<SwapModel> get swapUpdatesController =>
+      _swapUpdatesController;
+
   final List<String> _activeSwapIds = [];
 
   BoltzDataSourceImpl({
@@ -205,9 +204,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     _httpsUrl = 'https://$_baseUrl';
     _initializeBoltzWebSocket();
   }
-
-  @override
-  bool get isConnected => _isConnected;
 
   @override
   BoltzStorageDataSourceImpl get storage => _boltzStore;
@@ -251,6 +247,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       claimFees: reverseFees.btcFees.minerFees.claim.toInt(),
     );
     await _boltzStore.store(swapModel);
+    subscribeToSwaps([swapModel.id]);
     return swapModel;
   }
 
@@ -308,6 +305,8 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       );
 
       await _boltzStore.store(swapModel);
+      subscribeToSwaps([swapModel.id]);
+
       return swapModel;
     } catch (e) {
       print(e);
@@ -411,36 +410,10 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       lockupFees: submarineFees.btcFees.minerFees.toInt(),
       claimFees: submarineFees.btcFees.minerFees.toInt(),
     );
-
     await _boltzStore.store(swapModel);
+    subscribeToSwaps([swapModel.id]);
+
     return swapModel;
-  }
-
-  @override
-  Future<void> coopSignBtcSubmarineSwap({required String swapId}) async {
-    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
-    return btcLnSwap.coopCloseSubmarine();
-  }
-
-  @override
-  Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
-    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
-    return lbtcLnSwap.coopCloseSubmarine();
-  }
-
-  @override
-  Future<String> refundBtcSubmarineSwap({
-    required String swapId,
-    required String refundAddress,
-    required int absoluteFees,
-    required bool tryCooperate,
-  }) async {
-    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
-    return btcLnSwap.refund(
-      outAddress: refundAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
-      tryCooperate: tryCooperate,
-    );
   }
 
   @override
@@ -482,7 +455,36 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     );
 
     await _boltzStore.store(swapModel);
+    subscribeToSwaps([swapModel.id]);
+
     return swapModel;
+  }
+
+  @override
+  Future<void> coopSignBtcSubmarineSwap({required String swapId}) async {
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+    return btcLnSwap.coopCloseSubmarine();
+  }
+
+  @override
+  Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
+    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+    return lbtcLnSwap.coopCloseSubmarine();
+  }
+
+  @override
+  Future<String> refundBtcSubmarineSwap({
+    required String swapId,
+    required String refundAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+    return btcLnSwap.refund(
+      outAddress: refundAddress,
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+      tryCooperate: tryCooperate,
+    );
   }
 
   @override
@@ -550,8 +552,8 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       lockupFees: chainFees.btcFees.userLockup.toInt(),
       claimFees: chainFees.lbtcFees.userClaim.toInt(),
     );
-
     await _boltzStore.store(swapModel);
+    subscribeToSwaps([swapModel.id]);
     return swapModel;
   }
 
@@ -598,8 +600,9 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       lockupFees: chainFees.lbtcFees.userLockup.toInt(),
       claimFees: chainFees.btcFees.userClaim.toInt(),
     );
-
     await _boltzStore.store(swapModel);
+    subscribeToSwaps([swapModel.id]);
+
     return swapModel;
   }
 
@@ -770,8 +773,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   void _initializeBoltzWebSocket() {
     try {
       _boltzWebSocket = BoltzWebSocket.create(_baseUrl);
-      _isConnected = true;
-      _reconnectAttempts = 0;
 
       _boltzWebSocket.stream.listen(
         (event) async {
@@ -783,21 +784,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
               print('No swap found for id: $swapId');
               return;
             }
-
-            // Check if swap is already in terminal state
-            final swapCompleted =
-                swapModel.status == swap_entity.SwapStatus.completed.name;
-            final swapFailed =
-                swapModel.status == swap_entity.SwapStatus.failed.name;
-            final swapExpired =
-                swapModel.status == swap_entity.SwapStatus.expired.name;
-
-            if (swapCompleted || swapFailed || swapExpired) {
-              // Unsubscribe from the swap if it's in a terminal state
-              unsubscribeToSwaps([swapId]);
-              return;
-            }
-
             // Process the event
             SwapModel? updatedSwapModel;
             switch (boltzStatus) {
@@ -821,7 +807,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                 // Invoice settled for reverse swaps
                 if (swapModel is LnReceiveSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.claimable.name,
+                    status: swap_entity.SwapStatus.completed.name,
                   );
                 }
 
@@ -1013,51 +999,42 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                   'Updated swap $swapId from ${swapModel.status} to ${updatedSwapModel.status}');
               _swapUpdatesController.add(updatedSwapModel);
             }
+            // Check if swap is already in terminal state
+            final swapCompleted = updatedSwapModel?.status ==
+                    swap_entity.SwapStatus.completed.name ||
+                swapModel.status == swap_entity.SwapStatus.completed.name;
+            final swapFailed = updatedSwapModel?.status ==
+                    swap_entity.SwapStatus.failed.name ||
+                swapModel.status == swap_entity.SwapStatus.failed.name;
+            final swapExpired = updatedSwapModel?.status ==
+                    swap_entity.SwapStatus.expired.name ||
+                swapModel.status == swap_entity.SwapStatus.expired.name;
+
+            if (swapCompleted || swapFailed || swapExpired) {
+              // Unsubscribe from the swap if it's in a terminal state
+              unsubscribeToSwaps([swapId]);
+              return;
+            }
           } catch (e) {
             print('Error processing swap status update: $e');
           }
         },
         onError: (error) {
           print('Boltz WebSocket error: $error');
-          _isConnected = false;
           _swapUpdatesController.addError(error as Error);
-          _scheduleReconnect();
         },
-        onDone: () {
-          print('Boltz WebSocket connection closed');
-          _isConnected = false;
-          _scheduleReconnect();
-        },
+        onDone: () {},
       );
 
-      // If we have active swap IDs, resubscribe after reconnection
       if (_activeSwapIds.isNotEmpty) {
         subscribeToSwaps(_activeSwapIds);
+        // _swapUpdatesController.add(updatedSwapModel);
       }
+      print('Started Boltz WebSocket');
     } catch (e) {
-      _isConnected = false;
       print('Error initializing BoltzWebSocket: $e');
-      _scheduleReconnect();
       // Don't rethrow here to allow for graceful recovery
     }
-  }
-
-  void _scheduleReconnect() {
-    _reconnectTimer?.cancel();
-    if (_reconnectAttempts >= _maxReconnectAttempts) {
-      print('Max reconnect attempts reached. Giving up.');
-      return;
-    }
-    // Exponential backoff strategy
-    final delay =
-        Duration(milliseconds: 1000 * pow(2, _reconnectAttempts).round());
-    print(
-        'Scheduling reconnect attempt ${_reconnectAttempts + 1} in ${delay.inSeconds} seconds');
-
-    _reconnectTimer = Timer(delay, () {
-      _reconnectAttempts++;
-      reconnect();
-    });
   }
 
   @override
@@ -1067,7 +1044,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       resetStream();
     } catch (e) {
       print('Failed to reconnect: $e');
-      _scheduleReconnect();
     }
   }
 
@@ -1075,6 +1051,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   void resetStream() {
     try {
       _boltzWebSocket.dispose();
+      print('Boltz WebSocket connection closed');
     } catch (e) {
       print('Error disposing WebSocket: $e');
     }
@@ -1087,50 +1064,21 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     final uniqueIds = _activeSwapIds.toSet().toList();
     _activeSwapIds.clear();
     _activeSwapIds.addAll(uniqueIds);
-
-    if (!_isConnected) {
-      print(
-        'Cannot subscribe to swaps: WebSocket not connected. Will subscribe on reconnect.',
-      );
-      _scheduleReconnect();
-      return;
-    }
-
     try {
       _boltzWebSocket.subscribe(swapIds);
     } catch (e) {
       print('Error subscribing to swaps: $e');
-      _isConnected = false;
-      _scheduleReconnect();
     }
   }
 
   @override
   void unsubscribeToSwaps(List<String> swapIds) {
     _activeSwapIds.removeWhere((id) => swapIds.contains(id));
-    if (!_isConnected) {
-      print(
-        'Cannot subscribe to swaps: WebSocket not connected. Will subscribe on reconnect.',
-      );
-      _scheduleReconnect();
-      return;
-    }
+
     try {
       _boltzWebSocket.unsubscribe(swapIds);
     } catch (e) {
       print('Error unsubscribing from swaps: $e');
-      _isConnected = false;
-      _scheduleReconnect();
-    }
-  }
-
-  void dispose() {
-    _reconnectTimer?.cancel();
-    _swapUpdatesController.close();
-    try {
-      _boltzWebSocket.dispose();
-    } catch (e) {
-      print('Error disposing WebSocket: $e');
     }
   }
 }

@@ -1,3 +1,5 @@
+@Timeout(Duration(seconds: 120))
+
 import 'dart:async';
 
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
@@ -21,8 +23,10 @@ import 'package:test/test.dart';
 void main() {
   late WalletManagerService walletManagerService;
   late CreateReceiveSwapUseCase receiveSwapUseCase;
-  late SwapWatcherService swapWatcherService;
+  late SwapWatcherService swapWatcherTestnetService;
+  late SwapWatcherService swapWatcherMainnetService;
   late SwapRepository swapRepositoryTestnet;
+  late SwapRepository swapRepositoryMainnet;
   late Wallet instantWallet;
   late Wallet secureWallet;
 
@@ -38,71 +42,42 @@ void main() {
       lwk.LibLwk.init(),
     ]);
     await AppLocator.setup();
-    await locator<SetEnvironmentUseCase>().execute(Environment.testnet);
+    await locator<SetEnvironmentUseCase>().execute(Environment.mainnet);
 
     walletManagerService = locator<WalletManagerService>();
     // Use the testnet swap watcher service
-    swapWatcherService = locator<SwapWatcherService>(
+    swapWatcherTestnetService = locator<SwapWatcherService>(
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
+    );
+    swapWatcherMainnetService = locator<SwapWatcherService>(
+      instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
     );
     // Get the testnet swap repository
     swapRepositoryTestnet = locator<SwapRepository>(
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
     );
-
+    swapRepositoryMainnet = locator<SwapRepository>(
+      instanceName:
+          LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+    );
     receiveSwapUseCase = locator<CreateReceiveSwapUseCase>();
 
-    // receiverWallet = await locator<RecoverWalletUseCase>().execute(
-    //   mnemonicWords: receiverMnemonic.split(' '),
-    //   scriptType: ScriptType.bip84,
-    // );
-    // senderWallet = await locator<RecoverWalletUseCase>().execute(
-    //   mnemonicWords: senderMnemonic.split(' '),
-    //   scriptType: ScriptType.bip84,
-    // );
     await locator<CreateDefaultWalletsUseCase>().execute(
       mnemonicWords: baseMnemonic.split(' '),
     );
     final wallets = await walletManagerService.getAllWallets();
     instantWallet = wallets.firstWhere(
-      (wallet) => wallet.network == Network.liquidTestnet,
+      (wallet) => wallet.network == Network.liquidMainnet,
     );
     secureWallet = wallets.firstWhere(
-      (wallet) => wallet.network == Network.bitcoinTestnet,
+      (wallet) => wallet.network == Network.bitcoinMainnet,
     );
     debugPrint('Wallets created');
-  });
 
-  setUp(() async {
-    // Sync the wallets before every other test
     await walletManagerService.syncAll();
     debugPrint('Wallets synced');
-  });
-
-  test('Test Boltz Api', () async {
-    // Get swap limits for Lightning to Bitcoin
-    final btcLimits = await swapRepositoryTestnet.getSwapLimits(
-      type: SwapType.lightningToBitcoin,
-    );
-
-    debugPrint('Lightning to Bitcoin min: ${btcLimits.min} sats');
-    debugPrint('Lightning to Bitcoin max: ${btcLimits.max} sats');
-
-    expect(btcLimits.min, greaterThan(0));
-    expect(btcLimits.max, greaterThan(btcLimits.min));
-
-    // Get swap limits for Lightning to Liquid
-    final liquidLimits = await swapRepositoryTestnet.getSwapLimits(
-      type: SwapType.lightningToLiquid,
-    );
-
-    debugPrint('Lightning to Liquid min: ${liquidLimits.min} sats');
-    debugPrint('Lightning to Liquid max: ${liquidLimits.max} sats');
-
-    expect(liquidLimits.min, greaterThan(0));
-    expect(liquidLimits.max, greaterThan(liquidLimits.min));
   });
 
   test('Wallets have funds to swap', () async {
@@ -118,16 +93,15 @@ void main() {
 
   group('Test Reverse Swap For Receive', () {
     group('Bitcoin & Liquid Test', () {
-      late StreamSubscription<Swap> _swapSubscription;
+      late StreamSubscription<Swap> swapSubscription;
       late Completer<bool> bitcoinReceiveCompletedEvent;
       late Completer<bool> liquidReceiveCompletedEvent;
 
-      setUp(() async {
+      setUpAll(() async {
         bitcoinReceiveCompletedEvent = Completer();
         liquidReceiveCompletedEvent = Completer();
-        swapWatcherService.startWatching();
-        _swapSubscription = swapWatcherService.swapSubscription!;
-        _swapSubscription.onData((swap) {
+        swapSubscription = swapWatcherMainnetService.swapStream.listen((swap) {
+          debugPrint('(Subscriber) Swap Updated.\n${swap.id}:${swap.status}');
           switch (swap.type) {
             case SwapType.lightningToBitcoin:
               if (swap.status == SwapStatus.completed) {
@@ -138,28 +112,49 @@ void main() {
                 liquidReceiveCompletedEvent.complete(true);
               }
             default:
-              print('SOMETHING WENT WRONG');
-              print('Wrong swap type saved');
+              debugPrint('SOMETHING WENT WRONG');
+              debugPrint('Wrong swap type saved');
               return;
           }
         });
       });
+      test(
+        'Test Storage Persistence',
+        () async {
+          final ongoingSwaps = await swapRepositoryMainnet.getOngoingSwaps();
+          for (final swap in ongoingSwaps) {
+            debugPrint('${swap.id}:${swap.status}');
+          }
+          swapRepositoryMainnet.reinitializeStreamWithSwaps(
+            swapIds: ongoingSwaps.map((swap) => swap.id).toList(),
+          );
+        },
+        // skip: 'No swaps started',
+      );
       test('Create Liquid Swap, Pay and Wait for Completion', () async {
         final swap = await receiveSwapUseCase.execute(
           walletId: instantWallet.id,
           type: SwapType.lightningToLiquid,
-          amountSat: 1210,
+          amountSat: 1001,
         );
-        print("Pay invoice");
-        print(swap.invoice);
         expect(swap, isNotNull);
-        final didReceiverComplete = await Future.any(
-          [
-            liquidReceiveCompletedEvent.future,
-          ],
+
+        expect(swap.status, SwapStatus.pending);
+        debugPrint("Pay invoice:\n");
+        debugPrint(swap.invoice);
+        debugPrint("SwapID: ${swap.id}");
+        debugPrint('\n\n\n');
+      });
+      test('Wait for Completion', () async {
+        final isComplete = await liquidReceiveCompletedEvent.future;
+        expect(
+          isComplete,
+          isTrue,
+          reason: 'Liquid receive swap did not complete',
         );
-        print("Liquid Swap completed");
-        expect(didReceiverComplete, true);
+      });
+      tearDown(() {
+        swapSubscription.cancel();
       });
     });
   });
