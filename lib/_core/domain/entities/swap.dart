@@ -259,3 +259,15 @@ class SwapLimits {
 
   const SwapLimits({required this.min, required this.max});
 }
+
+class Invoice {
+  final int sats;
+  final bool isExpired;
+  final String? magicBip21;
+
+  const Invoice({
+    required this.sats,
+    required this.isExpired,
+    this.magicBip21,
+  });
+}

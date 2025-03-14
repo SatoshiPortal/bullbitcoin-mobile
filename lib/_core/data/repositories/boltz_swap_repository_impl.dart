@@ -666,4 +666,15 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         return SwapLimits(min: min, max: max);
     }
   }
+
+  @override
+  Future<Invoice> decodeInvoice({required String invoice}) async {
+    // TODO: implement decodeInvoice
+    final (sats, expired, bip21) = await _boltz.decodeInvoice(invoice);
+    return Invoice(
+      sats: sats,
+      isExpired: expired,
+      magicBip21: bip21,
+    );
+  }
 }

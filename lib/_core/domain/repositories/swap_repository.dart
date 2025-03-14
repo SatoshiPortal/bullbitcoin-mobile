@@ -114,6 +114,10 @@ abstract class SwapRepository {
     required int absoluteFees,
   });
 
+  Future<Invoice> decodeInvoice({
+    required String invoice,
+  });
+
   // SWAP STORAGE UTILITY
   Future<Swap> getSwap({
     required String swapId,
