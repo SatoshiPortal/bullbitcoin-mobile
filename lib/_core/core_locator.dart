@@ -50,6 +50,17 @@ import 'package:hive/hive.dart';
 class CoreLocator {
   static Future<void> setup() async {
     // Data sources
+
+    // - Tor
+    if (!locator.isRegistered<TorDataSource>()) {
+      // Register TorDataSource as a singleton async
+      // This ensures Tor is properly initialized before it's used
+      locator.registerSingletonAsync<TorDataSource>(
+        // This will initialize Tor, start it, and make sure it's ready
+        () async => await TorDataSourceImpl.init(),
+        signalsReady: true, // Signal when it's ready for use
+      );
+    }
     //  - Secure storage
     locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
       () => SecureStorageDataSourceImpl(
