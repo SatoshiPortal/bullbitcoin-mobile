@@ -18,52 +18,36 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
   });
 
   @override
-  Future<String> createBackupFile(String masterFingerprint) async {
-    final wallets = await walletMetadataDataSource.getAll();
+  Future<String> createBackupFile({
+    required List<int> backupKey,
+    required Seed seed,
+    required List<WalletMetadata> wallets,
+  }) async {
+    if (wallets.isEmpty) {
+      throw "No wallets found to back up";
+    }
+
     final List<(String, String)> backups = [];
+    // Collect all wallet and seed pairs
     for (final wallet in wallets) {
-      final seed = await seedDataSource.get(wallet.masterFingerprint);
       backups.add(
-        (jsonEncode(seed.toJson()), jsonEncode(wallet.toJson())),
+        (
+          jsonEncode(SeedModel.fromEntity(seed).toJson()),
+          jsonEncode(WalletMetadataModel.fromEntity(wallet).toJson())
+        ),
       );
     }
-    late SeedModel masterSeed;
-    final doesMasterFingerPrintSeedExist =
-        await seedDataSource.exists(masterFingerprint);
-    if (doesMasterFingerPrintSeedExist) {
-      masterSeed = await seedDataSource.get(masterFingerprint);
-    } else {
-      debugPrint('Master seed not found, trying to fetch first seed for ');
-      masterSeed = await seedDataSource.get(
-        wallets
-            .firstWhere((e) => e.isBitcoin, orElse: () => wallets.first)
-            .masterFingerprint,
-      );
-    }
-    final masterSeedEntity = masterSeed.toEntity();
-    final masterWallet = wallets.firstWhere(
-      (e) => e.masterFingerprint == masterSeedEntity.masterFingerprint,
-    );
 
-    final xprv = Bip32Derivation.getXprvFromSeed(
-      masterSeedEntity.seedBytes,
-      masterWallet.isMainnet ? Network.bitcoinMainnet : Network.bitcoinTestnet,
-    );
+    // Ensure we have at least one successful backup
+    if (backups.isEmpty) {
+      throw "Failed to create any wallet backups";
+    }
     final plaintext = json.encode(backups.map((i) => jsonEncode(i)).toList());
-
-    // derive a backup key from a random bip85 path
-    final derivationPath = bip85dataSource.generateBackupKeyPath();
-    final backupKey =
-        bip85dataSource.derive(xprv, derivationPath).sublist(0, 32);
 
     final jsonBackup =
         localDataSource.createBackup(utf8.encode(plaintext), backupKey);
 
-    // append the path to the backup file
-    final mapBackup = json.decode(jsonBackup);
-    mapBackup['path'] = derivationPath;
-
-    return json.encode(mapBackup);
+    return jsonBackup;
   }
 
   @override
@@ -99,7 +83,8 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
       return walletBackups;
     } catch (e) {
       debugPrint('Error restoring backup: $e');
-      throw Exception('Failed to restore backup: $e');
+
+      rethrow;
     }
   }
 
