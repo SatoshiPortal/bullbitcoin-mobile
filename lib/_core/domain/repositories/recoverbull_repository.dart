@@ -9,7 +9,10 @@ abstract class RecoverBullRepository {
     required List<WalletMetadata> wallets,
   });
 
-  void restoreBackupFile(String backupFile, String backupKey);
+  Future<List<(Seed, WalletMetadata)>> restoreBackupFile(
+    String backupFile,
+    String backupKey,
+  );
 
   Future<void> storeBackupKey(
     String identifier, // encoded as hex in the file

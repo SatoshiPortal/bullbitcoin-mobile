@@ -51,7 +51,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
   }
 
   @override
-  Future<List<(SeedModel, WalletMetadataModel)>> restoreBackupFile(
+  Future<List<(Seed, WalletMetadata)>> restoreBackupFile(
     String backupFile,
     String backupKey,
   ) async {
@@ -67,15 +67,16 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
 
       // Parse the JSON array from the plaintext
       final rawBackups = json.decode(plaintext) as List<(String, String)>;
-      final List<(SeedModel, WalletMetadataModel)> walletBackups = [];
+      final List<(Seed, WalletMetadata)> walletBackups = [];
 
       // Process each backup entry
       for (final backup in rawBackups) {
         final seed =
-            SeedModel.fromJson(json.decode(backup.$1) as Map<String, dynamic>);
+            SeedModel.fromJson(json.decode(backup.$1) as Map<String, dynamic>)
+                .toEntity();
         final wallet = WalletMetadataModel.fromJson(
           json.decode(backup.$2) as Map<String, dynamic>,
-        );
+        ).toEntity();
 
         walletBackups.add((seed, wallet));
       }
