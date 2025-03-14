@@ -26,19 +26,42 @@ abstract class RecoverBullRemoteDataSource {
 
 class RecoverBullRemoteDataSourceImpl implements RecoverBullRemoteDataSource {
   final KeyServer _keyServer;
+  final TorRepository _torRepository;
 
-  RecoverBullRemoteDataSourceImpl._(this._keyServer);
+  RecoverBullRemoteDataSourceImpl._({
+    required KeyServer keyServer,
+    required TorRepository torRepository,
+  })  : _keyServer = keyServer,
+        _torRepository = torRepository;
 
   static Future<RecoverBullRemoteDataSource> init(Uri address) async {
-    final torDataSource = await TorDataSourceImpl.init();
-    final tor = torDataSource.getTorClient();
+    // Get the TorRepository from the locator
+    final torRepository = locator<TorRepository>();
+
+    // Make sure Tor is ready
+    final isTorReady = await torRepository.isTorReady();
+    if (!isTorReady) {
+      // If Tor isn't ready, initialize it, or should we  use an completer to handle the tor initalization?
+      throw Exception('Tor is not ready');
+    }
+
     final keyServer = KeyServer(address: address);
-    return RecoverBullRemoteDataSourceImpl._(keyServer);
+
+    return RecoverBullRemoteDataSourceImpl._(
+      keyServer: keyServer,
+      torRepository: torRepository,
+    );
   }
 
   @override
   Future<void> info() async {
-    await _keyServer.infos();
+    final socket = await _torRepository.createSocket();
+    try {
+      await _keyServer.infos(socks: socket);
+    } on Exception catch (e) {
+      debugPrint('serverinfo error: $e');
+      rethrow;
+    }
   }
 
   @override
