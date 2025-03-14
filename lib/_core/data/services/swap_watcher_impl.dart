@@ -95,6 +95,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       case SwapStatus.completed:
       case SwapStatus.expired:
       case SwapStatus.failed:
+        _swapStreamController.add(swap);
         return;
     }
   }

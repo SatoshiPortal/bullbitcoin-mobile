@@ -153,7 +153,7 @@ void main() {
           reason: 'Liquid receive swap did not complete',
         );
       });
-      tearDown(() {
+      tearDownAll(() {
         swapSubscription.cancel();
       });
     });
