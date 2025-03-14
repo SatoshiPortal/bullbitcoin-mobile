@@ -1,6 +1,6 @@
 abstract class RecoverBullRepository {
   // Returning BullBackup could be helpful for the frontend that
-  Future<String> createBackupFile(String xprv);
+  Future<String> createBackupFile(String masterFingerprint);
 
   void restoreBackupFile(String backupFile, String backupKey);
 
