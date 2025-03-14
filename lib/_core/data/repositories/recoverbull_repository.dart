@@ -1,30 +1,20 @@
 import 'dart:convert';
-import 'package:bb_mobile/_core/data/datasources/bip85_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/recoverbull_local_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/recoverbull_remote_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/seed_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
 import 'package:bb_mobile/_core/data/models/seed_model.dart';
 import 'package:bb_mobile/_core/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
-import 'package:bb_mobile/_utils/bip32_derivation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 
 class RecoverBullRepositoryImpl implements RecoverBullRepository {
   final RecoverBullLocalDataSource localDataSource;
   final RecoverBullRemoteDataSource remoteDataSource;
-  final Bip85DataSource bip85dataSource;
-  final SeedDataSource seedDataSource;
-  final WalletMetadataDataSource walletMetadataDataSource;
-  //todo; add the wallet repository here
   RecoverBullRepositoryImpl({
-    required this.seedDataSource,
     required this.localDataSource,
     required this.remoteDataSource,
-    required this.bip85dataSource,
-    required this.walletMetadataDataSource,
   });
 
   @override
