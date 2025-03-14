@@ -1,25 +1,54 @@
 import 'package:recoverbull/recoverbull.dart';
 
 abstract class TorDataSource {
+  /// Get the Tor client instance
   Tor getTorClient();
-  void kill();
+
+  /// Check if Tor is ready (bootstrapped and has valid port)
+  Future<bool> get isReady;
+
+  /// Get the port number Tor is using
+  int get port;
+
+  /// Kill the Tor client
+  Future<void> kill();
 }
 
 class TorDataSourceImpl implements TorDataSource {
   final Tor _tor;
 
-  TorDataSourceImpl(this._tor);
+  TorDataSourceImpl._(this._tor);
 
-  static Future<TorDataSource> init() async {
+  static Future<TorDataSourceImpl> init() async {
     await Tor.init();
-    await Tor.instance.start();
-    await Tor.instance.isReady();
-    return TorDataSourceImpl(Tor.instance);
+    final instance = Tor.instance;
+    // Start Tor service
+    await instance.start();
+    // Wait for Tor to be ready
+    await instance.isReady();
+
+    // // Return initialized data source with Tor instance
+    return TorDataSourceImpl._(instance);
+  }
+
+  @override
+  int get port => _tor.port;
+
+  @override
+  Future<bool> get isReady async {
+    try {
+      await _tor.isReady();
+      return _tor.bootstrapped && _tor.port > 0;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
   Tor getTorClient() => _tor;
 
   @override
-  void kill() => _tor.stop();
+  Future<void> kill() async {
+    await _tor.stop();
+  }
 }
