@@ -1,4 +1,6 @@
-import 'package:bb_mobile/_core/data/datasources/tor_data_source.dart';
+import 'package:bb_mobile/_core/domain/repositories/tor_repository.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:recoverbull/recoverbull.dart';
 
 abstract class RecoverBullRemoteDataSource {
@@ -71,12 +73,19 @@ class RecoverBullRemoteDataSourceImpl implements RecoverBullRemoteDataSource {
     List<int> salt,
     List<int> backupKey,
   ) async {
-    _keyServer.storeBackupKey(
-      backupId: backupId,
-      password: password,
-      backupKey: backupKey,
-      salt: salt,
-    );
+    final socket = await _torRepository.createSocket();
+    try {
+      await _keyServer.storeBackupKey(
+        backupId: backupId,
+        password: password,
+        backupKey: backupKey,
+        salt: salt,
+        socks: socket,
+      );
+    } catch (e) {
+      debugPrint('storeBackupKey error: $e');
+      rethrow;
+    }
   }
 
   @override
@@ -85,11 +94,18 @@ class RecoverBullRemoteDataSourceImpl implements RecoverBullRemoteDataSource {
     List<int> password,
     List<int> salt,
   ) async {
-    return await _keyServer.fetchBackupKey(
-      backupId: backupId,
-      password: password,
-      salt: salt,
-    );
+    final socket = await _torRepository.createSocket();
+    try {
+      return await _keyServer.fetchBackupKey(
+        backupId: backupId,
+        password: password,
+        salt: salt,
+        socks: socket,
+      );
+    } catch (e) {
+      debugPrint('fetchBackupKey error: $e');
+      rethrow;
+    }
   }
 
   @override
@@ -98,10 +114,17 @@ class RecoverBullRemoteDataSourceImpl implements RecoverBullRemoteDataSource {
     List<int> password,
     List<int> salt,
   ) async {
-    await _keyServer.trashBackupKey(
-      backupId: backupId,
-      password: password,
-      salt: salt,
-    );
+    final socket = await _torRepository.createSocket();
+    try {
+      await _keyServer.trashBackupKey(
+        backupId: backupId,
+        password: password,
+        salt: salt,
+        socks: socket,
+      );
+    } catch (e) {
+      debugPrint('trashBackupKey error: $e');
+      rethrow;
+    }
   }
 }
