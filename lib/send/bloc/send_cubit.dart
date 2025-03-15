@@ -1222,7 +1222,7 @@ class SendCubit extends Cubit<SendState> {
       if (!isLn) {
         final fees = _networkFeesCubit.state.selectedOrFirst(false);
         await baseLayerBuild(networkFees: fees);
-        if (state.togglePayjoin) {
+        if (state.togglePayjoin && state.hasPjParam()) {
           await payjoinBuild(
             networkFees: fees,
             originalPsbt: state.psbtSigned!,
@@ -1250,7 +1250,7 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
 
-    if (state.togglePayjoin) {
+    if (state.togglePayjoin && state.hasPjParam()) {
       await payjoinSend(wallet);
       return;
     }

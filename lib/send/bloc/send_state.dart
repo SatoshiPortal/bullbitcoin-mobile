@@ -272,7 +272,7 @@ class SendState with _$SendState {
                 ? payjoinSender != null
                     ? 'Payjoining'
                     : 'Broadcasting'
-                : togglePayjoin
+                : togglePayjoin && hasPjParam()
                     ? 'Confirm Payjoin'
                     : 'Confirm'
             : sending
