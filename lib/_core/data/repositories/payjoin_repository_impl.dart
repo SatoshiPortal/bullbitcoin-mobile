@@ -1,14 +1,17 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:bb_mobile/_core/data/datasources/bitcoin_blockchain_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
 import 'package:bb_mobile/_core/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/_core/data/models/payjoin_input_pair_model.dart';
+import 'package:bb_mobile/_core/data/models/payjoin_model.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
+import 'package:bb_mobile/_core/domain/entities/tx_input.dart';
 import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/_utils/transaction_parsing.dart';
+import 'package:flutter/foundation.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final PayjoinDataSource _source;
@@ -27,6 +30,28 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       _source.proposalsForSenders.map(
         (payjoinModel) => payjoinModel.toEntity() as PayjoinSender,
       );
+
+  @override
+  Future<List<TxInput>> getInputsFromOngoingPayjoins() async {
+    final inputs = <TxInput>[];
+    final payjoins = await _source.getAll();
+    for (final payjoin in payjoins) {
+      String? psbt;
+      switch (payjoin) {
+        case final PayjoinReceiverModel receiver:
+          psbt = receiver.proposalPsbt;
+        case final PayjoinSenderModel sender:
+          psbt = sender.originalPsbt;
+      }
+      if (psbt != null) {
+        // Extract the inputs from the proposal psbt
+        final psbtInputs = await TransactionParsing.extractInputsFromPsbt(psbt);
+        inputs.addAll(psbtInputs);
+      }
+    }
+
+    return inputs;
+  }
 
   @override
   Future<PayjoinReceiver> createPayjoinReceiver({
@@ -95,9 +120,29 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required List<Utxo> unspentUtxos,
     required FutureOr<String> Function(String) processPsbt,
   }) async {
+    debugPrint('unspentUtxos: $unspentUtxos');
+    // Make sure the inputs to select from for the proposal are not used by
+    //  ongoing payjoins already
+    final lockedInputs = await getInputsFromOngoingPayjoins();
+
     final pdkInputPairs = unspentUtxos
+        .where((utxo) {
+          final isUtxoLocked = lockedInputs.any((input) {
+            return input.txId == utxo.txId && input.vout == utxo.vout;
+          });
+
+          return !isUtxoLocked;
+        })
         .map((utxo) => PayjoinInputPairModel.fromUtxo(utxo))
         .toList();
+
+    debugPrint('pdkInputPairs: $pdkInputPairs');
+
+    if (pdkInputPairs.isEmpty) {
+      throw const NoInputsToPayjoinException(
+        message: 'No inputs available to create a new payjoin proposal',
+      );
+    }
 
     final model = await _source.processRequest(
       id: id,
@@ -129,4 +174,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     return model.toEntity() as PayjoinSender;
   }
+}
+
+class NoInputsToPayjoinException implements Exception {
+  final String? message;
+
+  const NoInputsToPayjoinException({this.message});
 }

@@ -4,6 +4,7 @@ import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
+import 'package:bb_mobile/_core/domain/entities/tx_input.dart';
 import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
@@ -48,9 +49,11 @@ abstract class WalletManagerService {
   Future<String> buildPsbt({
     required String walletId,
     required String address,
-    required BigInt amountSat,
+    BigInt? amountSat,
     BigInt? absoluteFeeSat,
     double? feeRateSatPerVb,
+    List<TxInput>? unspendableInputs,
+    bool? drain,
   });
   Future<String> signPsbt({required String walletId, required String psbt});
 }

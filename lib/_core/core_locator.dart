@@ -31,6 +31,7 @@ import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/_core/domain/usecases/build_psbt_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
@@ -266,6 +267,12 @@ class CoreLocator {
               .boltzTestnetSwapRepositoryInstanceName,
         ),
         seedRepository: locator<SeedRepository>(),
+      ),
+    );
+    locator.registerFactory<BuildPsbtUseCase>(
+      () => BuildPsbtUseCase(
+        payjoin: locator<PayjoinRepository>(),
+        walletManager: locator<WalletManagerService>(),
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/_core/domain/usecases/build_psbt_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_use_case.dart';
 import 'package:bb_mobile/_utils/constants.dart';
@@ -22,14 +23,15 @@ void main() {
   late PayjoinWatcherService payjoinWatcherService;
   late ReceiveWithPayjoinUseCase receiveWithPayjoinUseCase;
   late SendWithPayjoinUseCase sendWithPayjoinUseCase;
+  late BuildPsbtUseCase buildPsbtUseCase;
   late Wallet receiverWallet;
   late Wallet senderWallet;
 
   // TODO: Change and move these to github secrets so the testnet coins for our integration
   //  tests are not at risk of being used by others.
-  const receiverMnemonic =
-      'model float claim feature convince exchange truck cream assume fancy swamp offer';
   const senderMnemonic =
+      'model float claim feature convince exchange truck cream assume fancy swamp offer';
+  const receiverMnemonic =
       'duty tattoo frown crazy pelican aisle area wrist robot stove taxi material';
 
   setUpAll(() async {
@@ -47,6 +49,7 @@ void main() {
     payjoinWatcherService = locator<PayjoinWatcherService>();
     receiveWithPayjoinUseCase = locator<ReceiveWithPayjoinUseCase>();
     sendWithPayjoinUseCase = locator<SendWithPayjoinUseCase>();
+    buildPsbtUseCase = locator<BuildPsbtUseCase>();
 
     receiverWallet = await locator<RecoverWalletUseCase>().execute(
       mnemonicWords: receiverMnemonic.split(' '),
@@ -148,7 +151,7 @@ void main() {
 
         // Build the psbt with the sender wallet
         const networkFeesSatPerVb = 1000.0;
-        final originalPsbt = await walletManagerService.buildPsbt(
+        final originalPsbt = await buildPsbtUseCase.execute(
           walletId: senderWallet.id,
           address: address.address,
           amountSat: BigInt.from(1000),
@@ -216,11 +219,112 @@ void main() {
         'should broadcast the original transaction if the payjoin fails',
         () {},
       );
+
       tearDown(() {
         payjoinSubscription.cancel();
       });
     });
 
-    group('with multiple ongoing payjoins', () {});
+    group('with multiple ongoing payjoins', () {
+      const numberOfPayjoins = 2;
+      const networkFeesSatPerVb = 500.0;
+      final List<String> receiverAddresses = [];
+      final List<Uri> payjoinUris = [];
+      final Map<String, Completer<bool>> payjoinCompleters = {};
+      late StreamSubscription<Payjoin> payjoinSubscription;
+
+      setUp(() async {
+        payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
+          debugPrint('Payjoin event: $payjoin');
+          switch (payjoin) {
+            case PayjoinReceiver _:
+              if (payjoin.status == PayjoinStatus.completed) {
+                payjoinCompleters[payjoin.id]!.complete(true);
+              }
+            case PayjoinSender _:
+              if (payjoin.status == PayjoinStatus.completed) {
+                payjoinCompleters[payjoin.id]!.complete(true);
+              }
+          }
+        });
+      });
+
+      group("and enough utxo's", () {
+        test('should work', () async {
+          // Make sure the wallets have a different utxo for every payjoin
+          // Set up multiple receiver sessions
+          for (int i = 0; i < numberOfPayjoins; i++) {
+            // Generate receiver address
+            final address = await walletManagerService.getNewAddress(
+              walletId: receiverWallet.id,
+            );
+            debugPrint('Receive address generated: ${address.address}');
+
+            // Start a receiver session
+            final payjoin = await receiveWithPayjoinUseCase.execute(
+              walletId: receiverWallet.id,
+              address: address.address,
+              isTestnet: true,
+            );
+            debugPrint('Payjoin receiver created: $payjoin');
+
+            expect(payjoin.status, PayjoinStatus.started);
+            // Check that the payjoin uri is correct
+            final pjUri = Uri.parse(payjoin.pjUri);
+            expect(pjUri.scheme, 'bitcoin');
+            expect(pjUri.path, address.address);
+            expect(pjUri.queryParameters.containsKey('pj'), true);
+            expect(pjUri.queryParameters['pjos'], '0');
+
+            // Cache the address and payjoin uri
+            receiverAddresses.add(address.address);
+            payjoinUris.add(pjUri);
+            // Set a completer to check it completes successfully
+            payjoinCompleters[payjoin.id] = Completer();
+          }
+
+          // Set up multiple sender sessions
+          for (int i = 0; i < numberOfPayjoins; i++) {
+            // Build the psbt with the sender wallet
+            final originalPsbt = await buildPsbtUseCase.execute(
+              walletId: senderWallet.id,
+              address: receiverAddresses[i],
+              amountSat: BigInt.from(1000),
+              feeRateSatPerVb: networkFeesSatPerVb,
+            );
+
+            final payjoinSender = await sendWithPayjoinUseCase.execute(
+              walletId: senderWallet.id,
+              bip21: payjoinUris[i].toString(),
+              originalPsbt: originalPsbt,
+              networkFeesSatPerVb: networkFeesSatPerVb,
+            );
+            debugPrint('Payjoin sender created: $payjoinSender');
+            expect(payjoinSender.status, PayjoinStatus.requested);
+
+            // Store completers for the sender sessions
+            payjoinCompleters[payjoinSender.id] = Completer();
+          }
+
+          final didAllComplete = await Future.any(
+            [
+              Future.wait(payjoinCompleters.values.map((e) => e.future)),
+              Future.delayed(
+                const Duration(
+                    seconds:
+                        3600 //PayjoinConstants.directoryPollingInterval * 3,
+                    ),
+                () => false,
+              ),
+            ],
+          );
+          expect(didAllComplete, true);
+        });
+      });
+
+      tearDown(() {
+        payjoinSubscription.cancel();
+      });
+    });
   });
 }

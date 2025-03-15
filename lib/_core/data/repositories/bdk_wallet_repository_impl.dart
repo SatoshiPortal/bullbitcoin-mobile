@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/_core/domain/entities/tx_input.dart';
 import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/bitcoin_wallet_repository.dart';
@@ -229,25 +229,63 @@ class BdkWalletRepositoryImpl
   @override
   Future<String> buildPsbt({
     required String address,
-    required BigInt amountSat,
+    BigInt? amountSat,
     BigInt? absoluteFeeSat,
     double? feeRateSatPerVb,
+    List<TxInput>? unspendableInputs,
+    bool? drain,
   }) async {
+    bdk.TxBuilder txBuilder;
+
+    // Get the scriptPubkey from the address
     final bdkAddress = await bdk.Address.fromString(
       s: address,
       network: _wallet.network(),
     );
     final script = bdkAddress.scriptPubkey();
 
-    bdk.TxBuilder builder = bdk.TxBuilder().addRecipient(script, amountSat);
-    if (absoluteFeeSat != null) {
-      builder = builder.feeAbsolute(absoluteFeeSat);
-    } else if (feeRateSatPerVb != null) {
-      builder = builder.feeRate(feeRateSatPerVb);
+    // Check if the transaction is a drain transaction
+    if (drain == true) {
+      txBuilder = bdk.TxBuilder().drainWallet().drainTo(script);
+    } else {
+      if (amountSat == null) {
+        throw ArgumentError('amountSat is required');
+      }
+      txBuilder = bdk.TxBuilder().addRecipient(script, amountSat);
     }
 
-    final (psbt, _) = await builder.finish(_wallet);
+    // Set the fee rate or absolute fee
+    if (absoluteFeeSat != null) {
+      txBuilder = txBuilder.feeAbsolute(absoluteFeeSat);
+    } else if (feeRateSatPerVb != null) {
+      txBuilder = txBuilder.feeRate(feeRateSatPerVb);
+    }
 
+    // Make sure utxos that are unspendable are not used
+    final unspendableOutPoints = unspendableInputs
+        ?.map((input) => bdk.OutPoint(txid: input.txId, vout: input.vout))
+        .toList();
+    if (unspendableOutPoints != null && unspendableOutPoints.isNotEmpty) {
+      // Check if there are unspents that are not in unspendableOutpoints so a transaction can be built
+      final unspents = _wallet.listUnspent();
+      final unspendableOutPointsSet = unspendableOutPoints.toSet();
+      final unspendableUtxos = unspents.where((utxo) {
+        return unspendableOutPointsSet.contains(utxo.outpoint);
+      }).toList();
+
+      if (unspendableUtxos.length == unspents.length) {
+        throw NoSpendableUtxoException(
+          'All unspents are unspendable',
+        );
+      }
+
+      txBuilder = txBuilder.unSpendable(unspendableOutPoints);
+    }
+
+    // Finish the transaction building process
+    final (psbt, _) = await txBuilder.finish(_wallet);
+
+    // Sign the transaction
     final isFinalized = await _wallet.sign(
       psbt: psbt,
       signOptions: const bdk.SignOptions(
@@ -265,6 +303,7 @@ class BdkWalletRepositoryImpl
       debugPrint('The built PSBT is finalized');
     }
 
+    // Return the signed PSBT
     return psbt.asString();
   }
 
@@ -397,4 +436,10 @@ class UnsupportedBdkNetworkException implements Exception {
   final String message;
 
   UnsupportedBdkNetworkException(this.message);
+}
+
+class NoSpendableUtxoException implements Exception {
+  final String message;
+
+  NoSpendableUtxoException(this.message);
 }

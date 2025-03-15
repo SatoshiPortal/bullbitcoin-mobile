@@ -37,7 +37,7 @@ abstract class PayjoinDataSource {
     required double networkFeesSatPerVb,
   });
   Future<PayjoinModel?> get(String id);
-  Future<List<PayjoinModel>> getAll();
+  Future<List<PayjoinModel>> getAll({bool onlyOngoing = true});
   Future<void> delete(String id);
   Future<PayjoinReceiverModel> processRequest({
     required String id,
@@ -223,16 +223,24 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
   }
 
   @override
-  Future<List<PayjoinModel>> getAll() async {
+  Future<List<PayjoinModel>> getAll({bool onlyOngoing = true}) async {
     final entries = await _storage.getAll();
     final models = <PayjoinModel>[];
 
     for (final value in entries.values) {
       final json = jsonDecode(value) as Map<String, dynamic>;
       if (json['uri'] != null) {
-        models.add(PayjoinSenderModel.fromJson(json));
+        final senderModel = PayjoinSenderModel.fromJson(json);
+        if (senderModel.isCompleted || senderModel.isExpired) {
+          continue;
+        }
+        models.add(senderModel);
       } else {
-        models.add(PayjoinReceiverModel.fromJson(json));
+        final receiverModel = PayjoinReceiverModel.fromJson(json);
+        if (receiverModel.isCompleted || receiverModel.isExpired) {
+          continue;
+        }
+        models.add(receiverModel);
       }
     }
     return models;
