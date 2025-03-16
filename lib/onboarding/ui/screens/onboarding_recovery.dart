@@ -2,6 +2,7 @@ import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/components/inputs/seed_word.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/onboarding/ui/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -11,29 +12,32 @@ class OnboardingRecovery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SafeArea(
-      child: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
+    return const Scaffold(
+      appBar: OnboardingAppBar(),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Gap(40),
+                  _WordGrid(),
+                  Gap(80),
+                ],
+              ),
+            ),
+            Column(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Gap(40),
-                _WordGrid(),
-                Gap(80),
+                _Button(),
+                SizedBox(height: 20),
               ],
             ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _Button(),
-              SizedBox(height: 20),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

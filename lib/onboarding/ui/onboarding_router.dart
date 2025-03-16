@@ -1,6 +1,5 @@
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:bb_mobile/onboarding/ui/onboarding_screen.dart';
 import 'package:bb_mobile/onboarding/ui/screens/onboarding_recovery.dart';
 import 'package:bb_mobile/onboarding/ui/screens/onboarding_recovery_success.dart';
 import 'package:bb_mobile/onboarding/ui/screens/onboarding_splash.dart';
@@ -29,7 +28,7 @@ class OnboardingRouter {
     navigatorKey: rootNavigatorKey,
     builder: (context, state, child) => BlocProvider<OnboardingBloc>(
       create: (_) => locator<OnboardingBloc>(),
-      child: OnboardingScaffold(body: child),
+      child: child,
     ),
     routes: [
       ShellRoute(

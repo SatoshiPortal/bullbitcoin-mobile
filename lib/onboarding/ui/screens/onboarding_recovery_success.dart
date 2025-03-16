@@ -13,46 +13,48 @@ class OnboardingRecoverySuccess extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          const Spacer(),
-          Column(
-            children: [
-              SizedBox(
-                height: 200,
-                width: 200,
-                child: Gif(
-                  image: AssetImage(
-                    Assets.images2.successTick.path,
-                  ),
-                  autostart: Autostart.once,
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            const Spacer(),
+            Column(
+              children: [
+                SizedBox(
                   height: 200,
                   width: 200,
+                  child: Gif(
+                    image: AssetImage(
+                      Assets.images2.successTick.path,
+                    ),
+                    autostart: Autostart.once,
+                    height: 200,
+                    width: 200,
+                  ),
                 ),
-              ),
-              const Gap(8),
-              BBText(
-                'Wallet imported successfully',
-                style: context.font.headlineLarge,
-              ),
-            ],
-          ),
-          const Spacer(flex: 2),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 24),
-            child: BBButton.big(
-              label: 'Got it',
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onPrimary,
-              onPressed: () {
-                context.goNamed(AppRoute.home.name);
-              },
+                const Gap(8),
+                BBText(
+                  'Wallet imported successfully',
+                  style: context.font.headlineLarge,
+                ),
+              ],
             ),
-          ),
-        ],
+            const Spacer(flex: 2),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: BBButton.big(
+                label: 'Got it',
+                bgColor: context.colour.secondary,
+                textColor: context.colour.onPrimary,
+                onPressed: () {
+                  context.goNamed(AppRoute.home.name);
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
