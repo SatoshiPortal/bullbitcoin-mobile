@@ -83,7 +83,7 @@ class WalletCard extends StatelessWidget {
                 color: context.colour.outline,
                 size: 24,
               ),
-              const Gap(16),
+              const Gap(8),
             ],
           ),
         ),

@@ -13,14 +13,14 @@ sealed class HomeState with _$HomeState {
   }) = _HomeState;
   const HomeState._();
 
-  Wallet? get defaultLiquidWallet => wallets.isEmpty
+  Wallet? defaultLiquidWallet() => wallets.isEmpty
       ? null
       : wallets
           .where(
             (wallet) => wallet.isDefault && wallet.network.isLiquid,
           )
           .firstOrNull;
-  Wallet? get defaultBitcoinWallet => wallets.isEmpty
+  Wallet? defaultBitcoinWallet() => wallets.isEmpty
       ? null
       : wallets
           .where(
@@ -28,6 +28,11 @@ sealed class HomeState with _$HomeState {
           )
           .firstOrNull;
 
-  List<Wallet> get nonDefaultWallets =>
+  List<Wallet> nonDefaultWallets() =>
       wallets.where((wallet) => !wallet.isDefault).toList();
+
+  int totalBalance() => wallets.fold<int>(
+        0,
+        (previousValue, element) => previousValue + element.balanceSat.toInt(),
+      );
 }

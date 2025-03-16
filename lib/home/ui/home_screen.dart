@@ -3,7 +3,7 @@ import 'package:bb_mobile/_ui/components/navbar/bottom_navbar.dart';
 import 'package:bb_mobile/home/presentation/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/ui/widgets/home_bottom_buttons.dart';
 import 'package:bb_mobile/home/ui/widgets/top_section.dart';
-import 'package:bb_mobile/home/ui/widgets/wallet_card.dart';
+import 'package:bb_mobile/home/ui/widgets/wallet_cards.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
