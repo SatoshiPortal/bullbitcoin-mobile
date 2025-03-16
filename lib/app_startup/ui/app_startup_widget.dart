@@ -1,5 +1,5 @@
 import 'package:bb_mobile/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/onboarding/ui/onboarding_screen.dart';
+import 'package:bb_mobile/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,9 +22,9 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
         child: BlocBuilder<AppStartupBloc, AppStartupState>(
           builder: (context, state) {
             if (state is AppStartupInitial) {
-              return const OnboardingScreen(loading: true);
+              return const OnboardingSplash(loading: true);
             } else if (state is AppStartupLoadingInProgress) {
-              return const OnboardingScreen(loading: true);
+              return const OnboardingSplash(loading: true);
             } else if (state is AppStartupSuccess) {
               // if (!state.hasDefaultWallets) return const OnboardingScreen();
               // if (state.isPinCodeSet) return const PinCodeUnlockScreen();

@@ -23,9 +23,6 @@ class CreateWalletButton extends StatelessWidget {
         if (creating) return;
         context.read<OnboardingBloc>().add(const OnboardingCreateNewWallet());
       },
-      // child: isCreationInProgress
-      // ? const CircularProgressIndicator()
-      // : Text(context.loc.onboardingCreateWalletButtonLabel),
     );
   }
 }

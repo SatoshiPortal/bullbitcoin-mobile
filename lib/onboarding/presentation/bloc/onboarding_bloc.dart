@@ -11,10 +11,9 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   OnboardingBloc({
     required CreateDefaultWalletsUseCase createDefaultWalletsUseCase,
     required FindMnemonicWordsUseCase findMnemonicWordsUseCase,
-    required bool initLoading,
   })  : _createDefaultWalletsUseCase = createDefaultWalletsUseCase,
         _findMnemonicWordsUseCase = findMnemonicWordsUseCase,
-        super(OnboardingState(initLoading: initLoading)) {
+        super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoveryWordChanged>(_onRecoveryWordChanged);
     on<OnboardingRecoverWalletClicked>(_onRecoverWalletClicked);
