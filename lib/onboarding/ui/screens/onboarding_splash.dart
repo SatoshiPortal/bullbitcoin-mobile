@@ -10,13 +10,13 @@ import 'package:gap/gap.dart';
 class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({
     super.key,
+    this.loading = false,
   });
+
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
-    final initLoading =
-        context.select((OnboardingBloc _) => _.state.initLoading);
-
     return Stack(
       children: [
         const _BG(),
@@ -36,7 +36,13 @@ class OnboardingSplash extends StatelessWidget {
                   right: 16,
                   bottom: 40,
                 ),
-                child: _Actions(loading: initLoading),
+                child: loading
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: context.colour.onPrimary,
+                        ),
+                      )
+                    : const _Actions(),
               ),
             ],
           ),
@@ -47,11 +53,7 @@ class OnboardingSplash extends StatelessWidget {
 }
 
 class _Actions extends StatelessWidget {
-  const _Actions({
-    required this.loading,
-  });
-
-  final bool loading;
+  const _Actions();
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +63,7 @@ class _Actions extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (loading || creating)
+        if (creating)
           Center(
             child: CircularProgressIndicator(
               color: context.colour.onPrimary,

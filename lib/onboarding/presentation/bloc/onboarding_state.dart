@@ -5,7 +5,7 @@ enum OnboardingStep { splash, createSucess, recoveryWords, recoverySuccess }
 @freezed
 sealed class OnboardingState with _$OnboardingState {
   const factory OnboardingState({
-    required bool initLoading,
+    // required bool initLoading,
     @Default(OnboardingStep.splash) OnboardingStep step,
     @Default({}) Map<int, String> validWords,
     @Default({}) Map<int, List<String>> hintWords,
@@ -15,11 +15,6 @@ sealed class OnboardingState with _$OnboardingState {
   const OnboardingState._();
 
   bool creatingOnSplash() => step == OnboardingStep.splash && creating;
-
-  OnboardingStep? goBackStep() {
-    if (step == OnboardingStep.recoveryWords) return OnboardingStep.splash;
-    return null;
-  }
 
   bool hasAllValidWords() => validWords.length == 12 && !creating;
 }
