@@ -1,8 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/_core/data/models/seed_model.dart';
-import 'package:bb_mobile/_core/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/_core/domain/entities/seed.dart';
+import 'package:bb_mobile/_core/domain/entities/recoverbull_wallet.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
@@ -38,33 +36,16 @@ class CreateEncryptedBackupUsecase {
           Bip85Derivation.deriveBackupKey(defaultXprv, derivationPath);
 
       final walletsMetadata = await _walletMetadataRepository.getAll();
+      final List<RecoverBullWallet> toBackup = [];
 
-      // Collect all wallet and seed pairs
-      final List<({SeedModel seed, WalletMetadataModel metadata})> toBackup =
-          [];
-      for (final walletMetadata in walletsMetadata) {
-        final seed =
-            await _seedRepository.get(walletMetadata.masterFingerprint);
-        final seedModel = SeedModel.fromEntity(seed);
-        final metadataModel = WalletMetadataModel.fromEntity(walletMetadata);
-        toBackup.add((seed: seedModel, metadata: metadataModel));
+      for (final metadata in walletsMetadata) {
+        final seed = await _seedRepository.get(metadata.masterFingerprint);
+        toBackup.add(
+          RecoverBullWallet(seed: seed.seedBytes, metadata: metadata),
+        );
       }
 
-      // Ensure we have at least one successful backup
-      if (toBackup.isEmpty) throw "Failed to create any wallet backups";
-
-      final List<Map<String, dynamic>> toBackupMap = toBackup
-          .map(
-            (entry) => {
-              'seed': entry.seed.toJson(),
-              'metadata': entry.metadata.toJson(),
-            },
-          )
-          .toList();
-
-      final plaintext = json.encode(toBackupMap);
-
-      // final plaintext = json.encode(backups.map((i) => jsonEncode(i)).toList());
+      final plaintext = json.encode(toBackup.map((e) => e.toJson()).toList());
 
       final encryptedBackup = _recoverBullRepository.createBackupFile(
         backupKey,
