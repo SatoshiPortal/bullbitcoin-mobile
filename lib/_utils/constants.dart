@@ -3,6 +3,7 @@ class SettingsConstants {
   static const bitcoinUnitKey = 'bitcoinUnit';
   static const languageKey = 'language';
   static const currencyKey = 'currency';
+  static const hideAmountsKey = 'hideAmounts';
   static const electrumServerKeyPrefix = 'electrumServer';
   static const defaultCurrencyCode = 'CAD';
 }

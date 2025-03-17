@@ -74,4 +74,19 @@ class SettingsRepositoryImpl implements SettingsRepository {
         SettingsConstants.defaultCurrencyCode;
     return currency;
   }
+
+  @override
+  Future<void> setHideAmounts(bool hide) async {
+    return _storage.saveValue(
+      key: SettingsConstants.hideAmountsKey,
+      value: hide.toString(),
+    );
+  }
+
+  @override
+  Future<bool> getHideAmounts() async {
+    final hide =
+        await _storage.getValue(SettingsConstants.hideAmountsKey) ?? 'false';
+    return hide == 'true';
+  }
 }

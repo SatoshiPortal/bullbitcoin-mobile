@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:bb_mobile/bitcoin_price/ui/currency_text.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -63,14 +64,16 @@ class WalletCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   const Gap(16),
-                  BBText(
-                    '${wallet.balanceSat} sats',
+                  CurrencyText(
+                    wallet.balanceSat.toInt(),
+                    showFiat: false,
                     style: context.font.bodyLarge,
                     color: context.colour.secondary,
                   ),
                   const Gap(4),
-                  BBText(
-                    '0 CAD',
+                  CurrencyText(
+                    wallet.balanceSat.toInt(),
+                    showFiat: true,
                     style: context.font.labelMedium,
                     color: context.colour.outline,
                   ),
@@ -83,7 +86,7 @@ class WalletCard extends StatelessWidget {
                 color: context.colour.outline,
                 size: 24,
               ),
-              const Gap(16),
+              const Gap(8),
             ],
           ),
         ),

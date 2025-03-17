@@ -11,7 +11,7 @@ class LanguageSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SettingsCubit, Settings?>(
+    return BlocListener<SettingsCubit, SettingsState?>(
       listenWhen: (previous, current) =>
           current?.language != previous?.language,
       listener: (context, state) => context.pop(),

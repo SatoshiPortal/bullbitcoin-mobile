@@ -2,12 +2,14 @@ import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_hide_amounts_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/settings/domain/usecases/set_currency_usecase.dart';
-import 'package:bb_mobile/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/settings/domain/usecases/set_environment_usecase.dart';
+import 'package:bb_mobile/settings/domain/usecases/set_hide_amounts_usecase.dart';
+import 'package:bb_mobile/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/settings/presentation/bloc/settings_cubit.dart';
 
 class SettingsLocator {
@@ -33,6 +35,11 @@ class SettingsLocator {
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
+    locator.registerFactory<SetHideAmountsUseCase>(
+      () => SetHideAmountsUseCase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
 
     // Bloc
     locator.registerFactory<SettingsCubit>(
@@ -45,6 +52,8 @@ class SettingsLocator {
         getLanguageUseCase: locator<GetLanguageUseCase>(),
         getCurrencyUseCase: locator<GetCurrencyUseCase>(),
         setCurrencyUseCase: locator<SetCurrencyUseCase>(),
+        setHideAmountsUseCase: locator<SetHideAmountsUseCase>(),
+        getHideAmountsUseCase: locator<GetHideAmountsUseCase>(),
       ),
     );
   }

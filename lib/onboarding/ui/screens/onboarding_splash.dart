@@ -17,37 +17,39 @@ class OnboardingSplash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const _BG(),
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              const Spacer(),
-              Image.asset(
-                Assets.images2.whitebullwithtext.path,
-                height: 127,
-              ),
-              const Spacer(flex: 2),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 16,
-                  right: 16,
-                  bottom: 40,
+    return Scaffold(
+      body: Stack(
+        children: [
+          const _BG(),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                const Spacer(),
+                Image.asset(
+                  Assets.images2.whitebullwithtext.path,
+                  height: 127,
                 ),
-                child: loading
-                    ? Center(
-                        child: CircularProgressIndicator(
-                          color: context.colour.onPrimary,
-                        ),
-                      )
-                    : const _Actions(),
-              ),
-            ],
+                const Spacer(flex: 2),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    bottom: 40,
+                  ),
+                  child: loading
+                      ? Center(
+                          child: CircularProgressIndicator(
+                            color: context.colour.onPrimary,
+                          ),
+                        )
+                      : const _Actions(),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
