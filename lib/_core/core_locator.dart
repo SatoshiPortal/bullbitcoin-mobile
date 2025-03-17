@@ -14,17 +14,20 @@ import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_imp
 import 'package:bb_mobile/_core/data/repositories/payjoin_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/seed_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/settings_repository_impl.dart';
+import 'package:bb_mobile/_core/data/repositories/tor_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/wallet_metadata_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/word_list_repository_impl.dart';
 import 'package:bb_mobile/_core/data/services/mnemonic_seed_factory_impl.dart';
 import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart';
 import 'package:bb_mobile/_core/data/services/swap_watcher_impl.dart';
 import 'package:bb_mobile/_core/data/services/wallet_manager_service_impl.dart';
+import 'package:bb_mobile/_core/domain/repositories/bip85_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/tor_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/word_list_repository.dart';
 import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
@@ -35,6 +38,7 @@ import 'package:bb_mobile/_core/domain/usecases/build_psbt_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_default_wallet_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_hide_amounts_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
@@ -52,6 +56,21 @@ import 'package:hive/hive.dart';
 class CoreLocator {
   static Future<void> setup() async {
     // Data sources
+
+    // - Tor
+    if (!locator.isRegistered<TorDataSource>()) {
+      // Register TorDataSource as a singleton async
+      // This ensures Tor is properly initialized before it's used
+      locator.registerSingletonAsync<TorDataSource>(
+        // This will initialize Tor, start it, and make sure it's ready
+        () async => await TorDataSourceImpl.init(),
+        signalsReady: true, // Signal when it's ready for use
+      );
+    }
+    // - Bip85
+    locator.registerLazySingleton<Bip85DataSource>(
+      () => Bip85DataSourceImpl(),
+    );
     //  - Secure storage
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
       () => SecureStorageDatasourceImpl(
@@ -75,6 +94,7 @@ class CoreLocator {
     );
 
     // Repositories
+
     final walletMetadataBox =
         await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
     locator.registerLazySingleton<WalletMetadataRepository>(
@@ -185,6 +205,17 @@ class CoreLocator {
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
+    );
+
+    // Register TorRepository after TorDataSource is registered
+    // Use waitFor to ensure TorDataSource is ready before TorRepository is created
+    locator.registerSingletonWithDependencies<TorRepository>(
+      () => TorRepositoryImpl(locator<TorDataSource>()),
+      dependsOn: [TorDataSource],
+    );
+
+    locator.registerSingletonWithDependencies<Bip85Repository>(
+      () => Bip85RepositoryImpl(locator<Bip85DataSource>()),
     );
 
     // Factories, managers or services responsible for handling specific logic
