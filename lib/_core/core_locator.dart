@@ -1,5 +1,4 @@
 import 'package:bb_mobile/_core/data/datasources/bip39_word_list_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/bip85_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/boltz_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_data_source.dart';
@@ -11,7 +10,6 @@ import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/seed_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/tor_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
-import 'package:bb_mobile/_core/data/repositories/bip85_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/payjoin_repository_impl.dart';
@@ -24,7 +22,6 @@ import 'package:bb_mobile/_core/data/services/mnemonic_seed_factory_impl.dart';
 import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart';
 import 'package:bb_mobile/_core/data/services/swap_watcher_impl.dart';
 import 'package:bb_mobile/_core/data/services/wallet_manager_service_impl.dart';
-import 'package:bb_mobile/_core/domain/repositories/bip85_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
@@ -68,10 +65,6 @@ class CoreLocator {
         signalsReady: true, // Signal when it's ready for use
       );
     }
-    // - Bip85
-    locator.registerLazySingleton<Bip85DataSource>(
-      () => Bip85DataSourceImpl(),
-    );
     //  - Secure storage
     locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
       () => SecureStorageDataSourceImpl(
@@ -213,10 +206,6 @@ class CoreLocator {
     locator.registerSingletonWithDependencies<TorRepository>(
       () => TorRepositoryImpl(locator<TorDataSource>()),
       dependsOn: [TorDataSource],
-    );
-
-    locator.registerSingletonWithDependencies<Bip85Repository>(
-      () => Bip85RepositoryImpl(locator<Bip85DataSource>()),
     );
 
     // Factories, managers or services responsible for handling specific logic
