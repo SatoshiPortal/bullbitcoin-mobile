@@ -8,7 +8,6 @@ import 'package:bb_mobile/_pkg/error.dart';
 import 'package:dio/dio.dart';
 
 const INR_USD = 91;
-const CRC_USD = 540;
 
 class BullBitcoinAPI {
   BullBitcoinAPI(this.http);
@@ -29,8 +28,7 @@ class BullBitcoinAPI {
           'params': {
             'element': {
               'fromCurrency': 'BTC',
-              'toCurrency': toCurrency.toUpperCase() == 'INR' ||
-                      toCurrency.toUpperCase() == 'CRC'
+              'toCurrency': toCurrency.toUpperCase() == 'INR'
                   ? 'USD'
                   : toCurrency.toUpperCase(),
             }
@@ -59,9 +57,7 @@ class BullBitcoinAPI {
         shortName: toCurrency,
         price: toCurrency.toUpperCase() == 'INR'
             ? double.parse((rateDouble * INR_USD).toStringAsFixed(2))
-            : toCurrency.toUpperCase() == 'CRC'
-                ? double.parse((rateDouble * CRC_USD).toStringAsFixed(2))
-                : double.parse(rateDouble.toStringAsFixed(2)),
+            : double.parse(rateDouble.toStringAsFixed(2)),
       );
 
       return (currency, null);
