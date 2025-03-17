@@ -48,7 +48,7 @@ class BullBitcoinAPI {
       final element = result['element'] as Map<String, dynamic>;
 
       // Extract price and precision
-      final price = (element['price'] as num).toDouble();
+      final price = (element['indexPrice'] as num).toDouble();
       final precision = element['precision'] as int? ?? 2;
 
       // Convert price based on precision (e.g., if price is 11751892 and precision is 2, actual price is 117518.92)
