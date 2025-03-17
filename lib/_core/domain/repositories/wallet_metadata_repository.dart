@@ -21,4 +21,5 @@ abstract class WalletMetadataRepository {
   Future<WalletMetadata?> get(String walletId);
   Future<List<WalletMetadata>> getAll();
   Future<void> delete(String walletId);
+  Future<WalletMetadata> getDefault();
 }
