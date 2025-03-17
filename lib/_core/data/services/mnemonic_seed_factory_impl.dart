@@ -11,9 +11,7 @@ class MnemonicSeedFactoryImpl implements MnemonicSeedFactory {
       final mnemonic = await bdk.Mnemonic.create(bdk.WordCount.words12);
 
       final mnemonicWords = mnemonic.asString().split(' ');
-      return MnemonicSeed(
-        mnemonicWords: mnemonicWords,
-      );
+      return MnemonicSeed(mnemonicWords: mnemonicWords, passphrase: passphrase);
     } catch (e) {
       throw FailedToGenerateMnemonicSeedException(e.toString());
     }
