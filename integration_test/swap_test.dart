@@ -40,6 +40,16 @@ void main() {
   const baseMnemonic =
       'model float claim feature convince exchange truck cream assume fancy swamp offer';
 
+  /*
+   * 
+   * 
+   * INVOICES MUST BE UPDATED FOR EVERY TEST OF SUBMARINE SEND SWAPS
+   * 
+   * 
+   */
+  const liquidSendInvoice = '';
+  const bitcoinSendInvoice = '';
+
   setUpAll(() async {
     await Future.wait([
       Hive.initFlutter(),
@@ -98,157 +108,177 @@ void main() {
     initBitcoinBalance = bitcoinBalance.totalSat.toInt();
   });
 
-  group('Test Reverse Swap For Receive', () {
-    group('Bitcoin & Liquid Test', () {
-      late StreamSubscription<Swap> swapSubscription;
-      late Completer<bool> bitcoinReceiveCompletedEvent;
-      late Completer<bool> liquidReceiveCompletedEvent;
+  group('Test All Swaps', () {
+    late StreamSubscription<Swap> swapSubscription;
+    late Completer<bool> bitcoinReceiveCompletedEvent;
+    late Completer<bool> liquidReceiveCompletedEvent;
+    late Completer<bool> bitcoinSendCompletedEvent;
+    late Completer<bool> liquidSendCompletedEvent;
 
-      setUpAll(() async {
-        bitcoinReceiveCompletedEvent = Completer();
-        liquidReceiveCompletedEvent = Completer();
-        swapSubscription = swapWatcherMainnetService.swapStream.listen((swap) {
-          debugPrint('(Subscriber) Swap Updated.\n${swap.id}:${swap.status}');
-          switch (swap.type) {
-            case SwapType.lightningToBitcoin:
-              if (swap.status == SwapStatus.completed) {
-                bitcoinReceiveCompletedEvent.complete(true);
-              }
-            case SwapType.lightningToLiquid:
-              if (swap.status == SwapStatus.completed) {
-                liquidReceiveCompletedEvent.complete(true);
-              }
-            default:
-              debugPrint('SOMETHING WENT WRONG');
-              debugPrint('Wrong swap type saved');
-              return;
-          }
-        });
+    setUpAll(() async {
+      bitcoinReceiveCompletedEvent = Completer();
+      liquidReceiveCompletedEvent = Completer();
+      bitcoinSendCompletedEvent = Completer();
+      liquidSendCompletedEvent = Completer();
+      swapSubscription = swapWatcherMainnetService.swapStream.listen((swap) {
+        debugPrint(
+            '(Subscriber) Swap Updated.\n${swap.id}:${swap.status}:${swap.type}');
+        switch (swap.type) {
+          case SwapType.lightningToBitcoin:
+            if (swap.status == SwapStatus.completed) {
+              bitcoinReceiveCompletedEvent.complete(true);
+            }
+          case SwapType.lightningToLiquid:
+            if (swap.status == SwapStatus.completed) {
+              liquidReceiveCompletedEvent.complete(true);
+            }
+          case SwapType.liquidToLightning:
+            if (swap.status == SwapStatus.completed) {
+              liquidSendCompletedEvent.complete(true);
+            }
+          case SwapType.bitcoinToLightning:
+            if (swap.status == SwapStatus.completed) {
+              bitcoinSendCompletedEvent.complete(true);
+            }
+          case SwapType.liquidToBitcoin:
+          case SwapType.bitcoinToLiquid:
+            return;
+        }
       });
-      // test(
-      //   'Intialize Stream with Ongoing Swaps',
-      //   () async {
-      //     final ongoingSwaps = await swapRepositoryMainnet.getOngoingSwaps();
-      //     for (final swap in ongoingSwaps) {
-      //       debugPrint('${swap.id}:${swap.status}');
-      //     }
-      //     swapRepositoryMainnet.reinitializeStreamWithSwaps(
-      //       swapIds: ongoingSwaps.map((swap) => swap.id).toList(),
-      //     );
-      //   },
-      //   // skip: 'No swaps started',
-      // );
-      test('Create Liquid Swap. REQUIRED: Pay Invoice', () async {
+    });
+
+    test('Create Liquid Receive Swap. REQUIRED: Pay Invoice', () async {
+      final swap = await receiveSwapUseCase.execute(
+        walletId: instantWallet.id,
+        type: SwapType.lightningToLiquid,
+        amountSat: 1001,
+      );
+      debugPrint('Fees:\n');
+      debugPrint('Boltz Fee: ${swap.boltzFee}\n');
+      debugPrint('Lockup Fee: ${swap.lockupFee}\n');
+      debugPrint('Claim Fee: ${swap.claimFee}\n');
+      expect(swap, isNotNull);
+      receiveLbtcSwapId = swap.id;
+      expect(swap.status, SwapStatus.pending);
+      debugPrint("Pay invoice:\n");
+      debugPrint(swap.invoice);
+      debugPrint("SwapID: ${swap.id}");
+      debugPrint('\n\n\n');
+    });
+    test(
+      'Create Bitcoin Receive Swap. REQUIRED: Pay Invoice',
+      () async {
         final swap = await receiveSwapUseCase.execute(
-          walletId: instantWallet.id,
-          type: SwapType.lightningToLiquid,
-          amountSat: 1001,
+          walletId: secureWallet.id,
+          type: SwapType.lightningToBitcoin,
+          amountSat: 25001,
         );
-        debugPrint('Fees:\n');
-        debugPrint('Boltz Fee: ${swap.boltzFee}\n');
-        debugPrint('Lockup Fee: ${swap.lockupFee}\n');
-        debugPrint('Claim Fee: ${swap.claimFee}\n');
         expect(swap, isNotNull);
-        receiveLbtcSwapId = swap.id;
+        receiveBtcSwapId = swap.id;
         expect(swap.status, SwapStatus.pending);
         debugPrint("Pay invoice:\n");
         debugPrint(swap.invoice);
         debugPrint("SwapID: ${swap.id}");
         debugPrint('\n\n\n');
-      });
-      test(
-        'Create Bitcoin Swap. REQUIRED: Pay Invoice',
-        () async {
-          final swap = await receiveSwapUseCase.execute(
-            walletId: secureWallet.id,
-            type: SwapType.lightningToBitcoin,
-            amountSat: 25001,
-          );
-          expect(swap, isNotNull);
-          receiveBtcSwapId = swap.id;
-          expect(swap.status, SwapStatus.pending);
-          debugPrint("Pay invoice:\n");
-          debugPrint(swap.invoice);
-          debugPrint("SwapID: ${swap.id}");
-          debugPrint('\n\n\n');
-        },
-        skip: 'Bitcoin swap takes very long to complete',
+      },
+      skip: 'Bitcoin swap takes very long to complete',
+    );
+    test('Wait for Liquid Receive Swap to Complete', () async {
+      final isComplete = await liquidReceiveCompletedEvent.future;
+      expect(
+        isComplete,
+        isTrue,
+        reason: 'Liquid receive swap completed',
       );
-      test('Wait for Liquid Swap to Complete', () async {
-        final isComplete = await liquidReceiveCompletedEvent.future;
+    });
+    test('Check Liquid Receive Swap Status', () async {
+      final receiveSwap = await swapRepositoryMainnet.getSwap(
+        swapId: receiveLbtcSwapId,
+      ) as LnReceiveSwap;
+      expect(
+        receiveSwap.status,
+        SwapStatus.completed,
+        reason: 'Swap should be completed',
+      );
+      expect(
+        receiveSwap.receiveTxid != null,
+        true,
+        reason: 'Swap should have a receive txid',
+      );
+      expect(
+        receiveSwap.receiveAddress != null,
+        true,
+        reason: 'Swap should have a receive address',
+      );
+    });
+    // TODO: Instead of checking balance; check transactions, match by txid and check transaction amount
+    test('Check Liquid Balance After Receive Swap', () async {
+      debugPrint(
+          'Waiting 60 seconds for transaction to confirm to check balances');
+      await Future.delayed(const Duration(seconds: 60));
+      await walletManagerService.sync(walletId: instantWallet.id);
+      final liquidBalance = await walletManagerService.getBalance(
+        walletId: instantWallet.id,
+      );
+      final receiveSwap = await swapRepositoryMainnet.getSwap(
+        swapId: receiveLbtcSwapId,
+      ) as LnReceiveSwap;
+      final totalSwapFees = receiveSwap.boltzFee! +
+          receiveSwap.claimFee! +
+          receiveSwap.lockupFee!;
+      debugPrint('Total Swap Fees: $totalSwapFees');
+      final decodedInvoice = await swapRepositoryMainnet.decodeInvoice(
+        invoice: receiveSwap.invoice,
+      );
+      final receivableAmount = decodedInvoice.sats - totalSwapFees;
+      debugPrint('Receivable Amount: $receivableAmount');
+      final expectedLiquidBalanceAfterSwap =
+          initLiquidBalance + receivableAmount;
+      debugPrint('Expected Balance: $expectedLiquidBalanceAfterSwap');
+      debugPrint(
+          'Liquid Balance (totalSat): ${liquidBalance.totalSat.toInt()}');
+      expect(
+        expectedLiquidBalanceAfterSwap,
+        liquidBalance.totalSat.toInt(),
+        reason: 'Liquid balance should increment by (invoice amount - fees)',
+      );
+    });
+    test(
+      'Wait for Bitcoin Receive Swap to Complete',
+      () async {
+        final isComplete = await bitcoinReceiveCompletedEvent.future;
         expect(
           isComplete,
           isTrue,
-          reason: 'Liquid receive swap completed',
+          reason: 'Liquid receive swap did not complete',
         );
-      });
-      test('Check Liquid Swap Status', () async {
-        final receiveSwap = await swapRepositoryMainnet.getSwap(
-          swapId: receiveLbtcSwapId,
-        ) as LnReceiveSwap;
-        expect(
-          receiveSwap.status,
-          SwapStatus.completed,
-          reason: 'Swap should be completed',
-        );
-        expect(
-          receiveSwap.receiveTxid != null,
-          true,
-          reason: 'Swap should have a receive txid',
-        );
-        expect(
-          receiveSwap.receiveAddress != null,
-          true,
-          reason: 'Swap should have a receive address',
-        );
-      });
-      test('Check Liquid Balance After Swap', () async {
-        debugPrint(
-            'Waiting 60 seconds for transaction to confirm to check balances');
-        await Future.delayed(const Duration(seconds: 60));
-        await walletManagerService.sync(walletId: instantWallet.id);
-        final liquidBalance = await walletManagerService.getBalance(
-          walletId: instantWallet.id,
-        );
-        final receiveSwap = await swapRepositoryMainnet.getSwap(
-          swapId: receiveLbtcSwapId,
-        ) as LnReceiveSwap;
-        final totalSwapFees = receiveSwap.boltzFee! +
-            receiveSwap.claimFee! +
-            receiveSwap.lockupFee!;
-        debugPrint('Total Swap Fees: $totalSwapFees');
-        final decodedInvoice = await swapRepositoryMainnet.decodeInvoice(
-          invoice: receiveSwap.invoice,
-        );
-        final receivableAmount = decodedInvoice.sats - totalSwapFees;
-        debugPrint('Receivable Amount: $receivableAmount');
-        final expectedLiquidBalanceAfterSwap =
-            initLiquidBalance + receivableAmount;
-        debugPrint('Expected Balance: $expectedLiquidBalanceAfterSwap');
-        debugPrint(
-            'Liquid Balance (totalSat): ${liquidBalance.totalSat.toInt()}');
-        expect(
-          expectedLiquidBalanceAfterSwap,
-          liquidBalance.totalSat.toInt(),
-          reason: 'Liquid balance should increment by (invoice amount - fees)',
-        );
-      });
-      test(
-        'Wait for Bitcoin Swap to Complete',
-        () async {
-          final isComplete = await bitcoinReceiveCompletedEvent.future;
-          expect(
-            isComplete,
-            isTrue,
-            reason: 'Liquid receive swap did not complete',
-          );
-        },
-        skip: 'Bitcoin swap takes very long to complete',
-      );
+      },
+      skip: 'Bitcoin swap takes very long to complete',
+    );
 
-      tearDownAll(() {
-        swapSubscription.cancel();
-      });
+    test('Check Bitcoin Receive Swap Status', () async {
+      final receiveSwap = await swapRepositoryMainnet.getSwap(
+        swapId: receiveBtcSwapId,
+      ) as LnReceiveSwap;
+      expect(
+        receiveSwap.status,
+        SwapStatus.completed,
+        reason: 'Swap should be completed',
+      );
+      expect(
+        receiveSwap.receiveTxid != null,
+        true,
+        reason: 'Swap should have a receive txid',
+      );
+      expect(
+        receiveSwap.receiveAddress != null,
+        true,
+        reason: 'Swap should have a receive address',
+      );
+    });
+
+    tearDownAll(() {
+      swapSubscription.cancel();
     });
   });
 }

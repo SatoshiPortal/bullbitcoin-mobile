@@ -21,8 +21,6 @@ abstract class BoltzDataSource {
     required bool isTestnet,
     required String electrumUrl,
   });
-
-  /// Returns a signed tx hex which needs to be broadcasted
   Future<String> claimBtcReverseSwap({
     required String swapId,
     required String claimAddress,
@@ -192,10 +190,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   final _swapUpdatesController = StreamController<SwapModel>.broadcast();
 
-  @override
-  StreamController<SwapModel> get swapUpdatesController =>
-      _swapUpdatesController;
-
   BoltzDataSourceImpl({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
     required BoltzStorageDataSourceImpl boltzStore,
@@ -210,6 +204,10 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   @override
   Stream<SwapModel> get swapUpdatesStream => _swapUpdatesController.stream;
+
+  @override
+  StreamController<SwapModel> get swapUpdatesController =>
+      _swapUpdatesController;
 
   // REVERSE SWAPS
 
