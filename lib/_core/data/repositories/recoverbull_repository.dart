@@ -1,42 +1,92 @@
 import 'dart:convert';
 import 'package:bb_mobile/_core/data/datasources/recoverbull_local_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/recoverbull_remote_data_source.dart';
+import 'package:bb_mobile/_core/data/models/seed_model.dart';
+import 'package:bb_mobile/_core/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/_core/domain/entities/seed.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
-import 'package:bb_mobile/_utils/bip85_derivation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
-import 'package:recoverbull/recoverbull.dart';
 
 class RecoverBullRepositoryImpl implements RecoverBullRepository {
   final RecoverBullLocalDataSource localDataSource;
   final RecoverBullRemoteDataSource remoteDataSource;
-
   RecoverBullRepositoryImpl({
     required this.localDataSource,
     required this.remoteDataSource,
   });
 
   @override
-  Future<String> createBackupFile(String xprv) async {
-    const plaintext = <int>[]; // wallets
+  Future<String> createBackupFile({
+    required List<int> backupKey,
+    required Seed seed,
+    required List<WalletMetadata> wallets,
+  }) async {
+    if (wallets.isEmpty) {
+      throw "No wallets found to back up";
+    }
 
-    // derive a backup key from a random bip85 path
-    final derivationPath = Bip85Derivation.generateBackupKeyPath();
-    final backupKey =
-        Bip85Derivation.derive(xprv, derivationPath).sublist(0, 32);
+    final List<(String, String)> backups = [];
+    // Collect all wallet and seed pairs
+    for (final wallet in wallets) {
+      backups.add(
+        (
+          jsonEncode(SeedModel.fromEntity(seed).toJson()),
+          jsonEncode(WalletMetadataModel.fromEntity(wallet).toJson())
+        ),
+      );
+    }
 
-    final jsonBackup = localDataSource.createBackup(plaintext, backupKey);
+    // Ensure we have at least one successful backup
+    if (backups.isEmpty) {
+      throw "Failed to create any wallet backups";
+    }
+    final plaintext = json.encode(backups.map((i) => jsonEncode(i)).toList());
 
-    // append the path to the backup file
-    final mapBackup = json.decode(jsonBackup);
-    mapBackup['path'] = derivationPath;
+    final jsonBackup =
+        localDataSource.createBackup(utf8.encode(plaintext), backupKey);
 
-    return json.encode(mapBackup);
+    return jsonBackup;
   }
 
   @override
-  void restoreBackupFile(String backupFile, String backupKey) {
-    localDataSource.restoreBackup(backupFile, HEX.decode(backupKey));
-    // TODO: overwrite wallets etc…
+  Future<List<(Seed, WalletMetadata)>> restoreBackupFile(
+    String backupFile,
+    String backupKey,
+  ) async {
+    try {
+      // Restore the encrypted backup using the provided key
+      final decryptedBytes = localDataSource.restoreBackup(
+        backupFile,
+        HEX.decode(backupKey),
+      );
+
+      // Convert the decrypted bytes to a string
+      final plaintext = utf8.decode(decryptedBytes);
+
+      // Parse the JSON array from the plaintext
+      final rawBackups = json.decode(plaintext) as List<(String, String)>;
+      final List<(Seed, WalletMetadata)> walletBackups = [];
+
+      // Process each backup entry
+      for (final backup in rawBackups) {
+        final seed =
+            SeedModel.fromJson(json.decode(backup.$1) as Map<String, dynamic>)
+                .toEntity();
+        final wallet = WalletMetadataModel.fromJson(
+          json.decode(backup.$2) as Map<String, dynamic>,
+        ).toEntity();
+
+        walletBackups.add((seed, wallet));
+      }
+
+      return walletBackups;
+    } catch (e) {
+      debugPrint('Error restoring backup: $e');
+
+      rethrow;
+    }
   }
 
   @override
@@ -46,11 +96,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String salt,
     String backupKey,
   ) async {
-    SOCKSSocket?
-        socks; // TODO: should be replaced by a Tor repository to get the Socks
-
     await remoteDataSource.store(
-      socks,
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),
@@ -64,11 +110,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String password,
     String salt,
   ) async {
-    SOCKSSocket?
-        socks; // TODO: should be replaced by a Tor repository to get the Socks
-
     final backupKey = await remoteDataSource.fetch(
-      socks,
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),
@@ -82,11 +124,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String password,
     String salt,
   ) async {
-    SOCKSSocket?
-        socks; // TODO: should be replaced by a Tor repository to get the Socks
-
     await remoteDataSource.trash(
-      socks,
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),
