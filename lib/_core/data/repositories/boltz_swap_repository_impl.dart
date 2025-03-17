@@ -11,7 +11,12 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   BoltzSwapRepositoryImpl({
     required BoltzDataSource boltz,
-  }) : _boltz = boltz {}
+  }) : _boltz = boltz;
+
+  @override
+  Stream<Swap> get swapUpdatesStream => _boltz.swapUpdatesStream.map(
+        (swapModel) => swapModel.toEntity(),
+      );
 
   /// RECEIVE LN TO BTC
   @override
@@ -596,19 +601,21 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  void addSwapToStream({required String swapId}) {
-    _boltz.subscribeToSwaps([swapId]);
-  }
-
-  @override
-  void removeSwapFromStream({required String swapId}) {
-    _boltz.unsubscribeToSwaps([swapId]);
-  }
-
-  @override
-  void reinitializeStreamWithSwaps({required List<String> swapIds}) {
+  Future<void> reinitializeStreamWithSwaps({required List<String> swapIds}) {
     _boltz.resetStream();
     _boltz.subscribeToSwaps(swapIds);
+    final allSwapsToWatch = swapIds.map((swapId) async {
+      final swap = await _boltz.storage.get(swapId);
+      return swap?.toEntity();
+    });
+    // add to the swapUpdateStream
+    return Future.wait(allSwapsToWatch).then((swaps) {
+      for (final swap in swaps) {
+        if (swap != null) {
+          _boltz.swapUpdatesController.add(SwapModel.fromEntity(swap));
+        }
+      }
+    });
   }
 
   @override
@@ -619,10 +626,19 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     return allSwaps
         .where(
           (swap) =>
-              swap.status == SwapStatus.pending ||
-              swap.status == SwapStatus.paid,
+              swap.status != SwapStatus.completed ||
+              swap.status != SwapStatus.expired ||
+              swap.status != SwapStatus.failed,
         )
         .toList();
+  }
+
+  @override
+  Future<List<Swap>> getAllSwaps() async {
+    final allSwapModels = await _boltz.storage.getAll();
+    final allSwaps =
+        allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
+    return allSwaps;
   }
 
   @override
@@ -652,7 +668,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Stream<Swap> get swapUpdatesStream => _boltz.swapUpdatesStream.map(
-        (swapModel) => swapModel.toEntity(),
-      );
+  Future<Invoice> decodeInvoice({required String invoice}) async {
+    // TODO: implement decodeInvoice
+    final (sats, expired, bip21) = await _boltz.decodeInvoice(invoice);
+    return Invoice(
+      sats: sats,
+      isExpired: expired,
+      magicBip21: bip21,
+    );
+  }
 }

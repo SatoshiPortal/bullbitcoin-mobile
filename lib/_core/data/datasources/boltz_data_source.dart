@@ -21,8 +21,6 @@ abstract class BoltzDataSource {
     required bool isTestnet,
     required String electrumUrl,
   });
-
-  /// Returns a signed tx hex which needs to be broadcasted
   Future<String> claimBtcReverseSwap({
     required String swapId,
     required String claimAddress,
@@ -166,6 +164,8 @@ abstract class BoltzDataSource {
     required bool broadcastViaBoltz,
   });
 
+  Future<(int, bool, String?)> decodeInvoice(String invoice);
+
   // WebSocket stream handling - replace the old methods with these
   void subscribeToSwaps(List<String> swapIds);
   void unsubscribeToSwaps(List<String> swapIds);
@@ -173,11 +173,11 @@ abstract class BoltzDataSource {
 
   // Expose a standardized stream for the repository layer
   Stream<SwapModel> get swapUpdatesStream;
+  StreamController<SwapModel> get swapUpdatesController;
   // STORAGE
   BoltzStorageDataSourceImpl get storage;
 
   // Add connection management methods
-  bool get isConnected;
   Future<void> reconnect();
 }
 
@@ -190,13 +190,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   final _swapUpdatesController = StreamController<SwapModel>.broadcast();
 
-  // Connection state tracking
-  bool _isConnected = false;
-  Timer? _reconnectTimer;
-  int _reconnectAttempts = 0;
-  final _maxReconnectAttempts = 10;
-  final List<String> _activeSwapIds = [];
-
   BoltzDataSourceImpl({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
     required BoltzStorageDataSourceImpl boltzStore,
@@ -207,13 +200,14 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   @override
-  bool get isConnected => _isConnected;
-
-  @override
   BoltzStorageDataSourceImpl get storage => _boltzStore;
 
   @override
   Stream<SwapModel> get swapUpdatesStream => _swapUpdatesController.stream;
+
+  @override
+  StreamController<SwapModel> get swapUpdatesController =>
+      _swapUpdatesController;
 
   // REVERSE SWAPS
 
@@ -246,11 +240,12 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       creationTime: DateTime.now().millisecondsSinceEpoch,
       receiveWalletId: walletId,
       invoice: btcLnSwap.invoice,
-      boltzFees: reverseFees.btcFees.percentage * outAmount ~/ 100,
+      boltzFees: (reverseFees.btcFees.percentage * outAmount / 100).ceil(),
       lockupFees: reverseFees.btcFees.minerFees.lockup.toInt(),
       claimFees: reverseFees.btcFees.minerFees.claim.toInt(),
     );
     await _boltzStore.store(swapModel);
+    subscribeToSwaps([swapModel.id]);
     return swapModel;
   }
 
@@ -302,12 +297,14 @@ class BoltzDataSourceImpl implements BoltzDataSource {
         creationTime: DateTime.now().millisecondsSinceEpoch,
         receiveWalletId: walletId,
         invoice: lbtcLnSwap.invoice,
-        boltzFees: reverseFees.lbtcFees.percentage * outAmount ~/ 100,
+        boltzFees: (reverseFees.lbtcFees.percentage * outAmount / 100).ceil(),
         lockupFees: reverseFees.lbtcFees.minerFees.lockup.toInt(),
         claimFees: reverseFees.lbtcFees.minerFees.claim.toInt(),
       );
 
       await _boltzStore.store(swapModel);
+      subscribeToSwaps([swapModel.id]);
+
       return swapModel;
     } catch (e) {
       print(e);
@@ -405,42 +402,17 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       creationTime: DateTime.now().millisecondsSinceEpoch,
       sendWalletId: walletId,
       invoice: invoice,
-      boltzFees: submarineFees.btcFees.percentage *
-          (btcLnSwap.outAmount.toInt()) ~/
-          100,
+      boltzFees: (submarineFees.btcFees.percentage *
+              (btcLnSwap.outAmount.toInt()) /
+              100)
+          .ceil(),
       lockupFees: submarineFees.btcFees.minerFees.toInt(),
       claimFees: submarineFees.btcFees.minerFees.toInt(),
     );
-
     await _boltzStore.store(swapModel);
+    subscribeToSwaps([swapModel.id]);
+
     return swapModel;
-  }
-
-  @override
-  Future<void> coopSignBtcSubmarineSwap({required String swapId}) async {
-    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
-    return btcLnSwap.coopCloseSubmarine();
-  }
-
-  @override
-  Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
-    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
-    return lbtcLnSwap.coopCloseSubmarine();
-  }
-
-  @override
-  Future<String> refundBtcSubmarineSwap({
-    required String swapId,
-    required String refundAddress,
-    required int absoluteFees,
-    required bool tryCooperate,
-  }) async {
-    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
-    return btcLnSwap.refund(
-      outAddress: refundAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
-      tryCooperate: tryCooperate,
-    );
   }
 
   @override
@@ -474,15 +446,45 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       creationTime: DateTime.now().millisecondsSinceEpoch,
       sendWalletId: walletId,
       invoice: invoice,
-      boltzFees: submarineFees.lbtcFees.percentage *
-          (lbtcLnSwap.outAmount.toInt()) ~/
-          100,
+      boltzFees: (submarineFees.lbtcFees.percentage *
+              (lbtcLnSwap.outAmount.toInt()) /
+              100)
+          .ceil(),
       lockupFees: submarineFees.lbtcFees.minerFees.toInt(),
       claimFees: submarineFees.lbtcFees.minerFees.toInt(),
     );
 
     await _boltzStore.store(swapModel);
+    subscribeToSwaps([swapModel.id]);
+
     return swapModel;
+  }
+
+  @override
+  Future<void> coopSignBtcSubmarineSwap({required String swapId}) async {
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+    return btcLnSwap.coopCloseSubmarine();
+  }
+
+  @override
+  Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
+    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+    return lbtcLnSwap.coopCloseSubmarine();
+  }
+
+  @override
+  Future<String> refundBtcSubmarineSwap({
+    required String swapId,
+    required String refundAddress,
+    required int absoluteFees,
+    required bool tryCooperate,
+  }) async {
+    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+    return btcLnSwap.refund(
+      outAddress: refundAddress,
+      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+      tryCooperate: tryCooperate,
+    );
   }
 
   @override
@@ -545,13 +547,14 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       sendWalletId: sendWalletId,
       receiveWalletId: receiveWalletId,
       receiveAddress: externalRecipientAddress,
-      boltzFees: chainFees.lbtcFees.percentage * amountSat ~/ 100 +
+      boltzFees: (chainFees.lbtcFees.percentage * amountSat / 100).ceil(),
+      lockupFees: chainFees.btcFees.userLockup.toInt() +
+          chainFees.btcFees.server.toInt() +
           chainFees.lbtcFees.server.toInt(),
-      lockupFees: chainFees.btcFees.userLockup.toInt(),
       claimFees: chainFees.lbtcFees.userClaim.toInt(),
     );
-
     await _boltzStore.store(swapModel);
+    subscribeToSwaps([swapModel.id]);
     return swapModel;
   }
 
@@ -593,13 +596,15 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       sendWalletId: sendWalletId,
       receiveWalletId: receiveWalletId,
       receiveAddress: externalRecipientAddress,
-      boltzFees: chainFees.btcFees.percentage * amountSat ~/ 100 +
-          chainFees.btcFees.server.toInt(),
-      lockupFees: chainFees.lbtcFees.userLockup.toInt(),
+      boltzFees: (chainFees.btcFees.percentage * amountSat / 100).ceil(),
+      lockupFees: chainFees.lbtcFees.userLockup.toInt() +
+          chainFees.btcFees.server.toInt() +
+          chainFees.lbtcFees.server.toInt(),
       claimFees: chainFees.btcFees.userClaim.toInt(),
     );
-
     await _boltzStore.store(swapModel);
+    subscribeToSwaps([swapModel.id]);
+
     return swapModel;
   }
 
@@ -770,8 +775,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   void _initializeBoltzWebSocket() {
     try {
       _boltzWebSocket = BoltzWebSocket.create(_baseUrl);
-      _isConnected = true;
-      _reconnectAttempts = 0;
 
       _boltzWebSocket.stream.listen(
         (event) async {
@@ -783,7 +786,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
               print('No swap found for id: $swapId');
               return;
             }
-
             // Check if swap is already in terminal state
             final swapCompleted =
                 swapModel.status == swap_entity.SwapStatus.completed.name;
@@ -797,7 +799,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
               unsubscribeToSwaps([swapId]);
               return;
             }
-
             // Process the event
             SwapModel? updatedSwapModel;
             switch (boltzStatus) {
@@ -821,7 +822,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                 // Invoice settled for reverse swaps
                 if (swapModel is LnReceiveSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.claimable.name,
+                    status: swap_entity.SwapStatus.completed.name,
                   );
                 }
 
@@ -842,12 +843,16 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                       status: swap_entity.SwapStatus.claimable.name,
                     );
                   }
+                  if (type == swap_entity.SwapType.lightningToBitcoin.name) {
+                    updatedSwapModel = swapModel.copyWith(
+                      status: swap_entity.SwapStatus.paid.name,
+                    );
+                  }
                 }
 
               case SwapStatus.txnConfirmed:
                 // For reverse swaps on Bitcoin or chain swaps
-                if (swapModel is LnReceiveSwapModel ||
-                    swapModel is ChainSwapModel) {
+                if (swapModel is LnReceiveSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.claimable.name,
                   );
@@ -892,11 +897,11 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                 if (swapModel is ChainSwapModel ||
                     swapModel is LnSendSwapModel) {
                   final hasSentFunds = swapModel is ChainSwapModel
-                      ? (swapModel as ChainSwapModel).sendTxid != null
+                      ? swapModel.sendTxid != null
                       : (swapModel as LnSendSwapModel).sendTxid != null;
 
                   final hasRefunded = swapModel is ChainSwapModel
-                      ? (swapModel as ChainSwapModel).refundTxid != null
+                      ? swapModel.refundTxid != null
                       : (swapModel as LnSendSwapModel).refundTxid != null;
 
                   if (hasSentFunds && !hasRefunded) {
@@ -916,11 +921,11 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                 if (swapModel is ChainSwapModel ||
                     swapModel is LnSendSwapModel) {
                   final hasSentFunds = swapModel is ChainSwapModel
-                      ? (swapModel as ChainSwapModel).sendTxid != null
+                      ? swapModel.sendTxid != null
                       : (swapModel as LnSendSwapModel).sendTxid != null;
 
                   final hasRefunded = swapModel is ChainSwapModel
-                      ? (swapModel as ChainSwapModel).refundTxid != null
+                      ? swapModel.refundTxid != null
                       : (swapModel as LnSendSwapModel).refundTxid != null;
 
                   if (hasSentFunds && !hasRefunded) {
@@ -942,7 +947,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                 if (swapModel is ChainSwapModel ||
                     swapModel is LnSendSwapModel) {
                   final hasRefunded = swapModel is ChainSwapModel
-                      ? (swapModel as ChainSwapModel).refundTxid != null
+                      ? swapModel.refundTxid != null
                       : (swapModel as LnSendSwapModel).refundTxid != null;
 
                   if (!hasRefunded) {
@@ -962,11 +967,11 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                 if (swapModel is ChainSwapModel ||
                     swapModel is LnSendSwapModel) {
                   final hasSentFunds = swapModel is ChainSwapModel
-                      ? (swapModel as ChainSwapModel).sendTxid != null
+                      ? swapModel.sendTxid != null
                       : (swapModel as LnSendSwapModel).sendTxid != null;
 
                   final hasRefunded = swapModel is ChainSwapModel
-                      ? (swapModel as ChainSwapModel).refundTxid != null
+                      ? swapModel.refundTxid != null
                       : (swapModel as LnSendSwapModel).refundTxid != null;
 
                   if (hasSentFunds && !hasRefunded) {
@@ -1019,45 +1024,16 @@ class BoltzDataSourceImpl implements BoltzDataSource {
         },
         onError: (error) {
           print('Boltz WebSocket error: $error');
-          _isConnected = false;
           _swapUpdatesController.addError(error as Error);
-          _scheduleReconnect();
         },
-        onDone: () {
-          print('Boltz WebSocket connection closed');
-          _isConnected = false;
-          _scheduleReconnect();
-        },
+        onDone: () {},
       );
 
-      // If we have active swap IDs, resubscribe after reconnection
-      if (_activeSwapIds.isNotEmpty) {
-        subscribeToSwaps(_activeSwapIds);
-      }
+      print('Started Boltz WebSocket');
     } catch (e) {
-      _isConnected = false;
       print('Error initializing BoltzWebSocket: $e');
-      _scheduleReconnect();
       // Don't rethrow here to allow for graceful recovery
     }
-  }
-
-  void _scheduleReconnect() {
-    _reconnectTimer?.cancel();
-    if (_reconnectAttempts >= _maxReconnectAttempts) {
-      print('Max reconnect attempts reached. Giving up.');
-      return;
-    }
-    // Exponential backoff strategy
-    final delay =
-        Duration(milliseconds: 1000 * pow(2, _reconnectAttempts).round());
-    print(
-        'Scheduling reconnect attempt ${_reconnectAttempts + 1} in ${delay.inSeconds} seconds');
-
-    _reconnectTimer = Timer(delay, () {
-      _reconnectAttempts++;
-      reconnect();
-    });
   }
 
   @override
@@ -1067,7 +1043,6 @@ class BoltzDataSourceImpl implements BoltzDataSource {
       resetStream();
     } catch (e) {
       print('Failed to reconnect: $e');
-      _scheduleReconnect();
     }
   }
 
@@ -1075,6 +1050,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   void resetStream() {
     try {
       _boltzWebSocket.dispose();
+      print('Boltz WebSocket connection closed');
     } catch (e) {
       print('Error disposing WebSocket: $e');
     }
@@ -1083,54 +1059,31 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
   @override
   void subscribeToSwaps(List<String> swapIds) {
-    _activeSwapIds.addAll(swapIds);
-    final uniqueIds = _activeSwapIds.toSet().toList();
-    _activeSwapIds.clear();
-    _activeSwapIds.addAll(uniqueIds);
-
-    if (!_isConnected) {
-      print(
-        'Cannot subscribe to swaps: WebSocket not connected. Will subscribe on reconnect.',
-      );
-      _scheduleReconnect();
-      return;
-    }
-
     try {
       _boltzWebSocket.subscribe(swapIds);
     } catch (e) {
       print('Error subscribing to swaps: $e');
-      _isConnected = false;
-      _scheduleReconnect();
     }
   }
 
   @override
   void unsubscribeToSwaps(List<String> swapIds) {
-    _activeSwapIds.removeWhere((id) => swapIds.contains(id));
-    if (!_isConnected) {
-      print(
-        'Cannot subscribe to swaps: WebSocket not connected. Will subscribe on reconnect.',
-      );
-      _scheduleReconnect();
-      return;
-    }
     try {
       _boltzWebSocket.unsubscribe(swapIds);
     } catch (e) {
       print('Error unsubscribing from swaps: $e');
-      _isConnected = false;
-      _scheduleReconnect();
     }
   }
 
-  void dispose() {
-    _reconnectTimer?.cancel();
-    _swapUpdatesController.close();
-    try {
-      _boltzWebSocket.dispose();
-    } catch (e) {
-      print('Error disposing WebSocket: $e');
-    }
+  @override
+  Future<(int, bool, String?)> decodeInvoice(String invoice) async {
+    // TODO: implement decodeInvoice
+    final decoded = await DecodedInvoice.fromString(
+      s: invoice,
+      boltzUrl: _httpsUrl,
+    );
+    // convert decoded.msats to sats by dividing by 1000 and rounding down
+    final sats = (decoded.msats ~/ BigInt.from(1000)).toInt();
+    return (sats, decoded.isExpired, decoded.bip21);
   }
 }
