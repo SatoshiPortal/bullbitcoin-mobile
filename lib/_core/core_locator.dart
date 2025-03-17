@@ -26,6 +26,7 @@ import 'package:bb_mobile/_core/data/services/mnemonic_seed_factory_impl.dart';
 import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart';
 import 'package:bb_mobile/_core/data/services/swap_watcher_impl.dart';
 import 'package:bb_mobile/_core/data/services/wallet_manager_service_impl.dart';
+import 'package:bb_mobile/_core/domain/repositories/bip85_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/file_system_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/google_drive_repository.dart';
