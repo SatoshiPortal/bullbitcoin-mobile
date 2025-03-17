@@ -11,6 +11,8 @@ import 'package:bb_mobile/_core/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
+import 'package:bb_mobile/_core/data/repositories/file_system_repository_impl.dart';
+import 'package:bb_mobile/_core/data/repositories/google_drive_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/payjoin_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/seed_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/settings_repository_impl.dart';
@@ -22,6 +24,8 @@ import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart'
 import 'package:bb_mobile/_core/data/services/swap_watcher_impl.dart';
 import 'package:bb_mobile/_core/data/services/wallet_manager_service_impl.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/file_system_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/google_drive_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
@@ -37,7 +41,7 @@ import 'package:bb_mobile/_core/domain/usecases/build_psbt_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/get_default_wallet_use_case.dart';
+
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_hide_amounts_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
@@ -49,6 +53,7 @@ import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 
@@ -73,6 +78,13 @@ class CoreLocator {
       ),
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
     );
+    // - FileStorageDataSource
+
+    locator.registerLazySingleton<FileStorageDataSource>(
+      () => FileStorageDataSourceImpl(
+        filePicker: FilePicker.platform,
+      ),
+    );
     //  - Exchange
     locator.registerLazySingleton<ExchangeDatasource>(
       () => BullBitcoinExchangeDatasourceImpl(),
@@ -86,6 +98,13 @@ class CoreLocator {
       () => HiveStorageDatasourceImpl<String>(boltzSwapsBox),
       instanceName: LocatorInstanceNameConstants
           .boltzSwapsHiveStorageDatasourceInstanceName,
+    );
+
+    // Register Google Drive components
+    locator.registerLazySingleton<GoogleDriveRepository>(
+      () => GoogleDriveRepositoryImpl(
+        locator<GoogleDriveAppDataSource>(),
+      ),
     );
 
     // Repositories
@@ -108,6 +127,11 @@ class CoreLocator {
           electrumServerStorage:
               HiveStorageDatasourceImpl<String>(electrumServersBox),
         ),
+      ),
+    );
+    locator.registerLazySingleton<FileSystemRepository>(
+      () => FileSystemRepositoryImpl(
+        locator<FileStorageDataSource>(),
       ),
     );
     locator.registerLazySingleton<SeedRepository>(
