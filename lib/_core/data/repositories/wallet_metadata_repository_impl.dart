@@ -71,4 +71,13 @@ class WalletMetadataRepositoryImpl implements WalletMetadataRepository {
   Future<void> delete(String walletId) {
     return _source.delete(walletId);
   }
+
+  @override
+  Future<WalletMetadata> getDefault() async {
+    final all = await getAll();
+    return all.firstWhere(
+      (e) => e.isDefault,
+      orElse: () => throw "Default wallet not found",
+    );
+  }
 }
