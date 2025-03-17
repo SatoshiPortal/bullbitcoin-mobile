@@ -45,7 +45,7 @@ class WalletMetadataDataSourceImpl implements WalletMetadataDataSource {
     required bool isDefault,
   }) async {
     final xpub = await Bip32Derivation.getAccountXpub(
-      seedBytes: seed.seedBytes,
+      seedBytes: seed.bytes,
       network: network,
       scriptType: scriptType,
     );
@@ -53,7 +53,7 @@ class WalletMetadataDataSourceImpl implements WalletMetadataDataSource {
     String descriptor;
     String changeDescriptor;
     if (network.isBitcoin) {
-      final xprv = Bip32Derivation.getXprvFromSeed(seed.seedBytes, network);
+      final xprv = Bip32Derivation.getXprvFromSeed(seed.bytes, network);
       descriptor =
           await DescriptorDerivation.derivePublicBitcoinDescriptorFromXpriv(
         xprv,
