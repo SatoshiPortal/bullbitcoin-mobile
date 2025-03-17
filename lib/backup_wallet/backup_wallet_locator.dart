@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_core/domain/repositories/bip85_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
@@ -13,7 +12,6 @@ class BackupWalletLocator {
     // Use cases
     locator.registerFactory<CreateEncryptedBackupUsecase>(
       () => CreateEncryptedBackupUsecase(
-        bip85Repository: locator<Bip85Repository>(),
         seedRepository: locator<SeedRepository>(),
         walletMetadataRepository: locator<WalletMetadataRepository>(),
         recoverBullRepository: locator<RecoverBullRepository>(),
