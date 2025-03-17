@@ -1,10 +1,6 @@
 import 'dart:convert';
 import 'package:bb_mobile/_core/data/datasources/recoverbull_local_data_source.dart';
 import 'package:bb_mobile/_core/data/datasources/recoverbull_remote_data_source.dart';
-import 'package:bb_mobile/_core/data/models/seed_model.dart';
-import 'package:bb_mobile/_core/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/_core/domain/entities/seed.dart';
-import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
@@ -32,40 +28,19 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
   }
 
   @override
-  Future<List<(Seed, WalletMetadata)>> restoreBackupFile(
+  String restoreBackupFile(
     String backupFile,
     String backupKey,
-  ) async {
+  ) {
     try {
-      // Restore the encrypted backup using the provided key
       final decryptedBytes = localDataSource.restoreBackup(
         backupFile,
         HEX.decode(backupKey),
       );
 
-      // Convert the decrypted bytes to a string
-      final plaintext = utf8.decode(decryptedBytes);
-
-      // Parse the JSON array from the plaintext
-      final rawBackups = json.decode(plaintext) as List<(String, String)>;
-      final List<(Seed, WalletMetadata)> walletBackups = [];
-
-      // Process each backup entry
-      for (final backup in rawBackups) {
-        final seed =
-            SeedModel.fromJson(json.decode(backup.$1) as Map<String, dynamic>)
-                .toEntity();
-        final wallet = WalletMetadataModel.fromJson(
-          json.decode(backup.$2) as Map<String, dynamic>,
-        ).toEntity();
-
-        walletBackups.add((seed, wallet));
-      }
-
-      return walletBackups;
+      return utf8.decode(decryptedBytes);
     } catch (e) {
       debugPrint('Error restoring backup: $e');
-
       rethrow;
     }
   }
