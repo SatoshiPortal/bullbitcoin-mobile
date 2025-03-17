@@ -1,25 +1,22 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
-import 'package:bb_mobile/_core/domain/repositories/bip85_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_utils/bip32_derivation.dart';
+import 'package:bb_mobile/_utils/bip85_derivation.dart';
 import 'package:flutter/foundation.dart';
 
 class CreateEncryptedBackupUsecase {
   final RecoverBullRepository _recoverBullRepository;
-  final Bip85Repository _bip85dataSource;
   final SeedRepository _seedRepository;
   final WalletMetadataRepository _walletMetadataRepository;
   CreateEncryptedBackupUsecase({
     required RecoverBullRepository recoverBullRepository,
-    required Bip85Repository bip85Repository,
     required SeedRepository seedRepository,
     required WalletMetadataRepository walletMetadataRepository,
   })  : _recoverBullRepository = recoverBullRepository,
-        _bip85dataSource = bip85Repository,
         _seedRepository = seedRepository,
         _walletMetadataRepository = walletMetadataRepository;
 
@@ -56,10 +53,10 @@ class CreateEncryptedBackupUsecase {
         defaultWalletSeed.seedBytes,
         defaultWallet.network,
       );
-      final derivationPath = _bip85dataSource.generateBackupKeyPath();
-      final backupKey = _bip85dataSource
-          .derive(defaultWalletXpriv, derivationPath)
-          .sublist(0, 32);
+      final derivationPath = Bip85Derivation.generateBackupKeyPath();
+      final backupKey =
+          Bip85Derivation.derive(defaultWalletXpriv, derivationPath)
+              .sublist(0, 32);
       final encryptedBackup = await _recoverBullRepository.createBackupFile(
         backupKey: backupKey,
         seed: defaultWalletSeed,
