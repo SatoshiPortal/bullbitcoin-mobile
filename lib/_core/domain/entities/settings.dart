@@ -64,6 +64,7 @@ class SettingsState with _$SettingsState {
     required BitcoinUnit bitcoinUnit,
     Language? language,
     required String currencyCode,
+    bool? hideAmounts,
   }) = _SettingsState;
   const SettingsState._();
 }

@@ -5,6 +5,7 @@ import 'package:bb_mobile/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dar
 import 'package:bb_mobile/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/gen/assets.gen.dart';
 import 'package:bb_mobile/home/presentation/bloc/home_bloc.dart';
+import 'package:bb_mobile/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -137,19 +138,27 @@ class _EyeToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: context.colour.surfaceBright,
+    final hide = context.select(
+      (SettingsCubit _) => _.state?.hideAmounts ?? true,
+    );
+    return GestureDetector(
+      onTap: () {
+        context.read<SettingsCubit>().toggleHideAmounts(!hide);
+      },
+      child: Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(
+            color: context.colour.surfaceBright,
+          ),
+          color: context.colour.scrim,
         ),
-        color: context.colour.scrim,
-      ),
-      child: Icon(
-        Icons.remove_red_eye,
-        color: context.colour.onPrimary,
-        size: 20,
+        child: Icon(
+          !hide ? Icons.visibility : Icons.visibility_off,
+          color: context.colour.onPrimary,
+          size: 20,
+        ),
       ),
     );
   }
@@ -213,7 +222,9 @@ class _TopNav extends StatelessWidget {
         const Spacer(),
         const Gap(12),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            context.read<HomeBloc>().add(const HomeTransactionsSynced());
+          },
           visualDensity: VisualDensity.compact,
           color: context.colour.onPrimary,
           iconSize: 24,

@@ -46,6 +46,14 @@ class CurrencyText extends StatelessWidget {
       text = amount;
     }
 
+    final hideAmt = context.select(
+      (SettingsCubit _) => _.state?.hideAmounts ?? true,
+    );
+
+    if (hideAmt) {
+      text = '** ${text.split(' ').last}';
+    }
+
     return BBText(
       text,
       style: style,
