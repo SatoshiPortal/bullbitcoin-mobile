@@ -91,6 +91,7 @@ dependencies:
   auto_size_text_field: ^2.2.4
   gif: ^2.3.0
   custom_sliding_segmented_control: ^1.8.5
+  animated_svg: ^2.1.0
 
 
 dev_dependencies:

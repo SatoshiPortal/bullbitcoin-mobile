@@ -58,12 +58,12 @@ extension LanguageExtension on Language {
 }
 
 @freezed
-class Settings with _$Settings {
-  const factory Settings({
+class SettingsState with _$SettingsState {
+  const factory SettingsState({
     required Environment environment,
     required BitcoinUnit bitcoinUnit,
     Language? language,
     required String currencyCode,
-  }) = _Settings;
-  const Settings._();
+  }) = _SettingsState;
+  const SettingsState._();
 }

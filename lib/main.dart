@@ -126,7 +126,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             ),
         ),
       ],
-      child: BlocSelector<SettingsCubit, Settings?, Language?>(
+      child: BlocSelector<SettingsCubit, SettingsState?, Language?>(
         selector: (settings) => settings?.language,
         builder: (context, language) => MaterialApp.router(
           title: 'BullBitcoin Wallet',

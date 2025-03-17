@@ -1,11 +1,12 @@
+import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/bitcoin_price/domain/usecases/fetch_bitcoin_price_usecase.dart';
 import 'package:bb_mobile/bitcoin_price/domain/usecases/get_available_fiat_currencies.dart';
-
 import 'package:decimal/decimal.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:intl/intl.dart';
 
 part 'bitcoin_price_bloc.freezed.dart';
 part 'bitcoin_price_event.dart';
@@ -20,7 +21,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   })  : _getAvailableFiatCurrenciesUseCase = getAvailableFiatCurrenciesUseCase,
         _getCurrencyUseCase = getCurrencyUseCase,
         _fetchBitcoinPriceUseCase = fetchBitcoinPriceUseCase,
-        super(const BitcoinPriceState.initial()) {
+        super(const BitcoinPriceState()) {
     on<BitcoinPriceStarted>(_onStarted);
     on<BitcoinPriceFetched>(_onFetched);
     on<BitcoinPriceCurrencyChanged>(_onCurrencyChanged);
@@ -37,26 +38,26 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     debugPrint('FiatCurrenciesStarted');
 
     try {
-      final currency = event.currency ?? await _getCurrencyUseCase.execute();
-      final availableCurrencies =
-          await _getAvailableFiatCurrenciesUseCase.execute();
+      // final currency = event.currency ?? await _getCurrencyUseCase.execute();
+      // final availableCurrencies =
+      //     await _getAvailableFiatCurrenciesUseCase.execute();
 
-      if (!availableCurrencies.contains(currency)) {
-        throw PriceForCurrencyNotAvailableException(currencyCode: currency);
-      }
-
+      // if (!availableCurrencies.contains(currency)) {
+      //   throw PriceForCurrencyNotAvailableException(currencyCode: currency);
+      // }
+      const currency = 'CAD';
       final price = await _fetchBitcoinPriceUseCase.execute(currency);
 
       emit(
-        BitcoinPriceState.success(
+        BitcoinPriceState(
           currency: currency,
-          availableCurrencies: availableCurrencies,
+          // availableCurrencies: availableCurrencies,
           bitcoinPrice: price,
         ),
       );
     } catch (e) {
       debugPrint(e.toString());
-      emit(BitcoinPriceState.failure(e));
+      emit(state.copyWith(error: e));
     }
   }
 
@@ -69,13 +70,12 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     try {
       // The state should be in the success state, otherwise try to start the bloc
       //  again with the new currency in the event.
-      final successState = state as BitcoinPriceSuccess;
+      // final successState = state as BitcoinPriceSuccess;
 
-      final price =
-          await _fetchBitcoinPriceUseCase.execute(successState.currency);
+      final price = await _fetchBitcoinPriceUseCase.execute(state.currency!);
 
       emit(
-        successState.copyWith(
+        state.copyWith(
           bitcoinPrice: price,
         ),
       );
@@ -87,7 +87,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       //  to the success state. So the UI can show the exchange rate, but also show
       //  that it might not be the most recent one.
       //  (Adding a fetch and rate timestamp to the success can also help)
-      emit(BitcoinPriceState.failure(e));
+      emit(state.copyWith(error: e));
     }
   }
 
@@ -100,20 +100,20 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     try {
       // The state should be in the success state, otherwise try to start the bloc
       //  again with the new currency in the event.
-      final successState = state as BitcoinPriceSuccess;
+      // final successState = state as BitcoinPriceSuccess;
       final currency = event.currencyCode;
       // Get the exchange rate for the new currency
       final price = await _fetchBitcoinPriceUseCase.execute(currency);
 
       emit(
-        successState.copyWith(
+        state.copyWith(
           currency: currency,
           bitcoinPrice: price,
         ),
       );
     } catch (e) {
       debugPrint(e.toString());
-      emit(BitcoinPriceState.failure(e));
+      emit(state.copyWith(error: e));
     }
   }
 }

@@ -67,6 +67,12 @@ class Wallet with _$Wallet {
   }
 
   bool watchOnly() {
-    return false;
+    switch (source) {
+      case WalletSource.xpub:
+      case WalletSource.coldcard:
+        return true;
+      default:
+        return false;
+    }
   }
 }

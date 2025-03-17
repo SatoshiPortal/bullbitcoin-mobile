@@ -1,9 +1,13 @@
+import 'package:animated_svg/animated_svg.dart';
 import 'package:bb_mobile/_ui/components/cards/action_card.dart';
-import 'package:bb_mobile/_ui/components/cards/price_card.dart';
-import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:bb_mobile/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/gen/assets.gen.dart';
+import 'package:bb_mobile/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -97,8 +101,8 @@ class _Amounts extends StatelessWidget {
             Spacer(),
             Gap(31),
             Gap(32),
-            PriceCard(text: '0 BTC'),
-            Gap(32),
+            _BtcTotalAmt(),
+            Gap(16),
             _EyeToggle(),
             Spacer(),
           ],
@@ -106,6 +110,24 @@ class _Amounts extends StatelessWidget {
         Gap(12),
         _FiatAmt(),
       ],
+    );
+  }
+}
+
+class _BtcTotalAmt extends StatelessWidget {
+  const _BtcTotalAmt();
+
+  @override
+  Widget build(BuildContext context) {
+    final btcTotal = context.select(
+      (HomeBloc bloc) => bloc.state.totalBalance(),
+    );
+
+    return CurrencyText(
+      btcTotal,
+      showFiat: false,
+      style: context.font.displaySmall,
+      color: context.colour.onPrimary,
     );
   }
 }
@@ -138,6 +160,16 @@ class _FiatAmt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fiatPriceIsNull = context.select(
+      (BitcoinPriceBloc _) => _.state.bitcoinPrice == null,
+    );
+
+    if (fiatPriceIsNull) return const SizedBox.shrink();
+
+    final totalBal = context.select(
+      (HomeBloc bloc) => bloc.state.totalBalance(),
+    );
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
@@ -147,8 +179,10 @@ class _FiatAmt extends StatelessWidget {
         ),
         color: context.colour.surfaceDim,
       ),
-      child: BBText(
-        '\$0.0 CAD',
+      child: CurrencyText(
+        totalBal,
+        showFiat: true,
+        // '\$0.0 CAD',
         style: context.font.bodyLarge,
         color: context.colour.onPrimary,
       ),
@@ -209,15 +243,71 @@ class _TopNav extends StatelessWidget {
   }
 }
 
-class _BullLogo extends StatelessWidget {
+class _BullLogo extends StatefulWidget {
   const _BullLogo();
 
   @override
+  State<_BullLogo> createState() => _BullLogoState();
+}
+
+class _BullLogoState extends State<_BullLogo> {
+  late final SvgController controller;
+
+  @override
+  void initState() {
+    controller = AnimatedSvgController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      Assets.images2.bbLogoSmall.path,
-      height: 32,
-      // width: 40,
+    return BlocListener<HomeBloc, HomeState>(
+      listenWhen: (previous, current) =>
+          previous.isSyncingTransactions != current.isSyncingTransactions,
+      listener: (context, state) {
+        if (state.isSyncingTransactions) {
+          controller.forward();
+        } else {
+          // controller.reverse();
+        }
+      },
+      child: AnimatedSvg(
+        controller: controller,
+        duration: const Duration(milliseconds: 600),
+        size: 32,
+        children: [
+          SvgPicture.asset(
+            Assets.images2.bbLogo,
+            fit: BoxFit.fitHeight,
+            height: 32,
+            colorFilter: ColorFilter.mode(
+              context.colour.primary,
+              BlendMode.srcIn,
+            ),
+          ),
+          SvgPicture.asset(
+            Assets.images2.bbLogo,
+            fit: BoxFit.fitHeight,
+            height: 32,
+            colorFilter: ColorFilter.mode(
+              context.colour.primary,
+              BlendMode.srcIn,
+            ),
+          ),
+        ],
+      ),
     );
+
+    // return Image.asset(
+    //   Assets.images2.bbLogoSmall.path,
+    //   height: 32,
+    //   // width: 40,
+    // );
   }
 }

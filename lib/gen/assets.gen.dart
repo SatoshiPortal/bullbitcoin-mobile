@@ -86,6 +86,9 @@ class $AssetsImages2Gen {
   AssetGenImage get bbLogoSmall =>
       const AssetGenImage('assets/images2/bb-logo-small.png');
 
+  /// File path: assets/images2/bb-logo.svg
+  String get bbLogo => 'assets/images2/bb-logo.svg';
+
   /// File path: assets/images2/bg-red.png
   AssetGenImage get bgRed => const AssetGenImage('assets/images2/bg-red.png');
 
@@ -101,8 +104,8 @@ class $AssetsImages2Gen {
       const AssetGenImage('assets/images2/whitebullwithtext.png');
 
   /// List of all assets
-  List<AssetGenImage> get values =>
-      [bbLogoSmall, bgRed, bgLong, successTick, whitebullwithtext];
+  List<dynamic> get values =>
+      [bbLogoSmall, bbLogo, bgRed, bgLong, successTick, whitebullwithtext];
 }
 
 class Assets {

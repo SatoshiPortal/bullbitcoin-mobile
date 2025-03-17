@@ -5,11 +5,11 @@ import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/settings/domain/usecases/set_currency_usecase.dart';
-import 'package:bb_mobile/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/settings/domain/usecases/set_environment_usecase.dart';
+import 'package:bb_mobile/settings/domain/usecases/set_language_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SettingsCubit extends Cubit<Settings?> {
+class SettingsCubit extends Cubit<SettingsState?> {
   SettingsCubit({
     required SetEnvironmentUseCase setEnvironmentUseCase,
     required GetEnvironmentUseCase getEnvironmentUseCase,
@@ -45,7 +45,7 @@ class SettingsCubit extends Cubit<Settings?> {
     final currency = await _getCurrencyUseCase.execute();
 
     emit(
-      Settings(
+      SettingsState(
         environment: environment,
         bitcoinUnit: bitcoinUnit,
         language: language,
