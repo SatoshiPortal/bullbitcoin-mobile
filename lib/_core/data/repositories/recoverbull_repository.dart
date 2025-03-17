@@ -18,34 +18,15 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
   });
 
   @override
-  Future<String> createBackupFile({
-    required List<int> backupKey,
-    required Seed seed,
-    required List<WalletMetadata> wallets,
-  }) async {
-    if (wallets.isEmpty) {
-      throw "No wallets found to back up";
-    }
-
-    final List<(String, String)> backups = [];
-    // Collect all wallet and seed pairs
-    for (final wallet in wallets) {
-      backups.add(
-        (
-          jsonEncode(SeedModel.fromEntity(seed).toJson()),
-          jsonEncode(WalletMetadataModel.fromEntity(wallet).toJson())
-        ),
-      );
-    }
-
-    // Ensure we have at least one successful backup
-    if (backups.isEmpty) {
-      throw "Failed to create any wallet backups";
-    }
-    final plaintext = json.encode(backups.map((i) => jsonEncode(i)).toList());
+  String createBackupFile(
+    String backupKey,
+    String plaintext,
+  ) {
+    final backupKeyBytes = HEX.decode(backupKey);
+    final plaintextBytes = utf8.encode(plaintext);
 
     final jsonBackup =
-        localDataSource.createBackup(utf8.encode(plaintext), backupKey);
+        localDataSource.createBackup(plaintextBytes, backupKeyBytes);
 
     return jsonBackup;
   }
