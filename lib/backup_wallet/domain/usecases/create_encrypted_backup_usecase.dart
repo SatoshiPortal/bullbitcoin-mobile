@@ -22,45 +22,22 @@ class CreateEncryptedBackupUsecase {
         _seedRepository = seedRepository,
         _walletMetadataRepository = walletMetadataRepository;
 
-  Future<String> execute({required String defaultWalletFingerPrint}) async {
+  Future<String> execute() async {
     try {
-      final walletsMetadata = await _walletMetadataRepository.getAll();
-      if (walletsMetadata.isEmpty) {
-        throw Exception(
-          'No wallets available to create backup',
-        );
-      }
+      final defaultMetadata = await _walletMetadataRepository.getDefault();
+      final defaultFingerprint = defaultMetadata.masterFingerprint;
+      final defaultSeed = await _seedRepository.get(defaultFingerprint);
 
-      Seed? defaultWalletSeed;
-      final doesDeafaultFingerPrintSeedExist =
-          await _seedRepository.exists(defaultWalletFingerPrint);
-      if (doesDeafaultFingerPrintSeedExist) {
-        defaultWalletSeed = await _seedRepository.get(defaultWalletFingerPrint);
-      } else {
-        debugPrint('Master seed not found, trying to fetch first seed');
-        defaultWalletSeed = await _seedRepository.get(
-          walletsMetadata
-              .firstWhere(
-                (e) => e.network.isBitcoin,
-                orElse: () => walletsMetadata.first,
-              )
-              .masterFingerprint,
-        );
-      }
-
-      final defaultWallet = walletsMetadata.firstWhere(
-        (e) => e.masterFingerprint == defaultWalletSeed!.masterFingerprint,
-        orElse: () => throw "Default wallet not found",
-      );
-
-      final defaultWalletXpriv = Bip32Derivation.getXprvFromSeed(
-        defaultWalletSeed.seedBytes,
-        defaultWallet.network,
+      final defaultXprv = Bip32Derivation.getXprvFromSeed(
+        defaultSeed.seedBytes,
+        defaultMetadata.network,
       );
 
       final derivationPath = Bip85Derivation.generateBackupKeyPath();
       final backupKey =
-          Bip85Derivation.deriveBackupKey(defaultWalletXpriv, derivationPath);
+          Bip85Derivation.deriveBackupKey(defaultXprv, derivationPath);
+
+      final walletsMetadata = await _walletMetadataRepository.getAll();
 
       // Collect all wallet and seed pairs
       final List<({SeedModel seed, WalletMetadataModel metadata})> toBackup =
