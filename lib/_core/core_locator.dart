@@ -23,6 +23,8 @@ import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart'
 import 'package:bb_mobile/_core/data/services/swap_watcher_impl.dart';
 import 'package:bb_mobile/_core/data/services/wallet_manager_service_impl.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/file_system_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/google_drive_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
@@ -41,7 +43,7 @@ import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart
 import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/get_default_wallet_use_case.dart';
+
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_hide_amounts_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
@@ -53,6 +55,7 @@ import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 
@@ -95,6 +98,13 @@ class CoreLocator {
           .boltzSwapsHiveStorageDatasourceInstanceName,
     );
 
+    // Register Google Drive components
+    locator.registerLazySingleton<GoogleDriveRepository>(
+      () => GoogleDriveRepositoryImpl(
+        locator<GoogleDriveAppDataSource>(),
+      ),
+    );
+
     // Repositories
 
     final walletMetadataBox =
@@ -115,6 +125,11 @@ class CoreLocator {
           electrumServerStorage:
               HiveStorageDatasourceImpl<String>(electrumServersBox),
         ),
+      ),
+    );
+    locator.registerLazySingleton<FileSystemRepository>(
+      () => FileSystemRepositoryImpl(
+        locator<FileStorageDataSource>(),
       ),
     );
     locator.registerLazySingleton<SeedRepository>(
