@@ -3,11 +3,7 @@ import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 
 abstract class RecoverBullRepository {
   // Returning BullBackup could be helpful for the frontend that
-  Future<String> createBackupFile({
-    required List<int> backupKey,
-    required Seed seed,
-    required List<WalletMetadata> wallets,
-  });
+  String createBackupFile(String backupKey, String plaintext);
 
   Future<List<(Seed, WalletMetadata)>> restoreBackupFile(
     String backupFile,
