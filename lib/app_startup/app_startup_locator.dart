@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
+import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/app_startup/domain/usecases/init_wallets_usecase.dart';
 import 'package:bb_mobile/app_startup/domain/usecases/reset_app_data_usecase.dart';

@@ -1,6 +1,5 @@
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 
 class SendWithPayjoinUseCase {
   final PayjoinRepository _payjoinRepository;

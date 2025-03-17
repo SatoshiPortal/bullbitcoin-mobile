@@ -4,9 +4,9 @@ import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 class ReceiveWithPayjoinUseCase {
   final PayjoinRepository _payjoinRepository;
 
-  const ReceiveWithPayjoinUseCase(
-      {required PayjoinRepository payjoinRepository})
-      : _payjoinRepository = payjoinRepository;
+  const ReceiveWithPayjoinUseCase({
+    required PayjoinRepository payjoinRepository,
+  }) : _payjoinRepository = payjoinRepository;
 
   Future<PayjoinReceiver> execute({
     required String walletId,

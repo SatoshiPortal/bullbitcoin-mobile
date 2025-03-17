@@ -382,7 +382,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  @override
   Future<void> updateExpiredSwap({
     required String swapId,
   }) async {
@@ -400,7 +399,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  @override
   Future<void> updateFailedSwap({
     required String swapId,
   }) async {

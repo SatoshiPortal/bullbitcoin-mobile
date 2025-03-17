@@ -7,8 +7,10 @@ class GetReceiveAddressUseCase {
   GetReceiveAddressUseCase({required WalletManagerService walletManager})
       : _walletManager = walletManager;
 
-  Future<Address> execute(
-      {required String walletId, bool newAddress = false}) async {
+  Future<Address> execute({
+    required String walletId,
+    bool newAddress = false,
+  }) async {
     Address address;
     if (!newAddress) {
       address = await _walletManager.getLastUnusedAddress(walletId: walletId);

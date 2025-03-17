@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
 
 import 'package:bb_mobile/_core/data/datasources/boltz_storage_data_source.dart';
 import 'package:bb_mobile/_core/data/models/swap_model.dart';
@@ -733,7 +731,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
         reverse.lbtcLimits.maximal.toInt()
       );
     } catch (e) {
-      print(e.toString());
+      print(e);
       rethrow;
     }
   }
@@ -870,7 +868,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                 if (swapModel is ChainSwapModel ||
                     swapModel is LnSendSwapModel) {
                   final refunded = swapModel is ChainSwapModel
-                      ? (swapModel as ChainSwapModel).refundTxid != null
+                      ? swapModel.refundTxid != null
                       : (swapModel as LnSendSwapModel).refundTxid != null;
 
                   if (!refunded) {

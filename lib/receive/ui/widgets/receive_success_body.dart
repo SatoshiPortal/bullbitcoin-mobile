@@ -5,8 +5,6 @@ class ReceiveSuccessBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Receive Success Body'),
-    );
+    return const Center(child: Text('Receive Success Body'));
   }
 }
