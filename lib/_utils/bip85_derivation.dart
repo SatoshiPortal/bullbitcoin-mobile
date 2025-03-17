@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:bip85/bip85.dart' as bip85;
+import 'package:hex/hex.dart';
 
 class Bip85Derivation {
   static List<int> derive(String xprv, String path) {
@@ -12,6 +13,12 @@ class Bip85Derivation {
   static String generateBackupKeyPath() {
     final randomIndex = _randomIndex();
     return "m/1608'/0'/$randomIndex";
+  }
+
+  static String deriveBackupKey(String xprv, String path) {
+    final derivation = Bip85Derivation.derive(xprv, path);
+    final octets32 = derivation.sublist(0, 32);
+    return HEX.encode(octets32);
   }
 
   static int _randomIndex() {
