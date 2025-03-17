@@ -44,7 +44,7 @@ import 'package:bb_mobile/_core/domain/usecases/build_psbt_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/get_default_wallet_use_case.dart';
+
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_hide_amounts_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
@@ -86,6 +86,13 @@ class CoreLocator {
     locator.registerLazySingleton<FileStorageDatasource>(
       () => FileStorageDataSourceImpl(filePicker: FilePicker.platform),
     );
+    // - FileStorageDataSource
+
+    locator.registerLazySingleton<FileStorageDataSource>(
+      () => FileStorageDataSourceImpl(
+        filePicker: FilePicker.platform,
+      ),
+    );
     //  - Exchange
     locator.registerLazySingleton<ExchangeDatasource>(
       () => BullBitcoinExchangeDatasourceImpl(),
@@ -105,6 +112,13 @@ class CoreLocator {
     locator.registerLazySingleton<GoogleDriveRepository>(
       () => GoogleDriveRepositoryImpl(
         locator<GoogleDriveAppDatasource>(),
+      ),
+    );
+
+    // Register Google Drive components
+    locator.registerLazySingleton<GoogleDriveRepository>(
+      () => GoogleDriveRepositoryImpl(
+        locator<GoogleDriveAppDataSource>(),
       ),
     );
 
