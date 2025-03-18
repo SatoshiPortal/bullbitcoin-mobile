@@ -33,11 +33,11 @@ class ApkDiff:
                 secondNameListSorted.remove(ignoreFile)
 
         if len(firstNameListSorted) != len(secondNameListSorted):
-            print("Manifest lengths differ!")
+            debugPrint("Manifest lengths differ!")
 
         for (firstEntryName, secondEntryName) in zip(firstNameListSorted, secondNameListSorted):
             if firstEntryName != secondEntryName:
-                print("Sorted manifests don't match, %s vs %s" % (firstEntryName, secondEntryName))
+                debugPrint("Sorted manifests don't match, %s vs %s" % (firstEntryName, secondEntryName))
                 return False
 
         return True
@@ -47,7 +47,7 @@ class ApkDiff:
         secondInfoList = list(filter(lambda info: info.filename not in self.IGNORE_FILES, secondZip.infolist()))
 
         if len(firstInfoList) != len(secondInfoList):
-            print("APK info lists of different length!")
+            debugPrint("APK info lists of different length!")
             return False
 
         success = True
@@ -60,7 +60,7 @@ class ApkDiff:
                     if firstEntryBytes != secondEntryBytes:
                         firstZip.extract(firstEntryInfo, "mismatches/first")
                         secondZip.extract(secondEntryInfo, "mismatches/second")
-                        print("APKs differ on file %s! Files extracted to the mismatches/ directory." % (firstEntryInfo.filename))
+                        debugPrint("APKs differ on file %s! Files extracted to the mismatches/ directory." % (firstEntryInfo.filename))
                         success = False
 
                     secondInfoList.remove(secondEntryInfo)
@@ -71,12 +71,12 @@ class ApkDiff:
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print("Usage: apkdiff <pathToFirstApk> <pathToSecondApk>")
+        debugPrint("Usage: apkdiff <pathToFirstApk> <pathToSecondApk>")
         sys.exit(1)
 
     if ApkDiff().compare(sys.argv[1], sys.argv[2]):
-        print("APKs match!")
+        debugPrint("APKs match!")
         sys.exit(0)
     else:
-        print("APKs don't match!")
+        debugPrint("APKs don't match!")
         sys.exit(1)

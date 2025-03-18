@@ -15,28 +15,28 @@ import 'package:bb_mobile/settings/presentation/bloc/settings_cubit.dart';
 class SettingsLocator {
   static void setup() {
     // Usecases
-    locator.registerFactory<SetEnvironmentUseCase>(
-      () => SetEnvironmentUseCase(
+    locator.registerFactory<SetEnvironmentUsecase>(
+      () => SetEnvironmentUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<SetBitcoinUnitUseCase>(
-      () => SetBitcoinUnitUseCase(
+    locator.registerFactory<SetBitcoinUnitUsecase>(
+      () => SetBitcoinUnitUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<SetLanguageUseCase>(
-      () => SetLanguageUseCase(
+    locator.registerFactory<SetLanguageUsecase>(
+      () => SetLanguageUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<SetCurrencyUseCase>(
-      () => SetCurrencyUseCase(
+    locator.registerFactory<SetCurrencyUsecase>(
+      () => SetCurrencyUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<SetHideAmountsUseCase>(
-      () => SetHideAmountsUseCase(
+    locator.registerFactory<SetHideAmountsUsecase>(
+      () => SetHideAmountsUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
@@ -44,16 +44,16 @@ class SettingsLocator {
     // Bloc
     locator.registerFactory<SettingsCubit>(
       () => SettingsCubit(
-        setEnvironmentUseCase: locator<SetEnvironmentUseCase>(),
-        getEnvironmentUseCase: locator<GetEnvironmentUseCase>(),
-        setBitcoinUnitUseCase: locator<SetBitcoinUnitUseCase>(),
-        getBitcoinUnitUseCase: locator<GetBitcoinUnitUseCase>(),
-        setLanguageUseCase: locator<SetLanguageUseCase>(),
-        getLanguageUseCase: locator<GetLanguageUseCase>(),
-        getCurrencyUseCase: locator<GetCurrencyUseCase>(),
-        setCurrencyUseCase: locator<SetCurrencyUseCase>(),
-        setHideAmountsUseCase: locator<SetHideAmountsUseCase>(),
-        getHideAmountsUseCase: locator<GetHideAmountsUseCase>(),
+        setEnvironmentUsecase: locator<SetEnvironmentUsecase>(),
+        getEnvironmentUsecase: locator<GetEnvironmentUsecase>(),
+        setBitcoinUnitUsecase: locator<SetBitcoinUnitUsecase>(),
+        getBitcoinUnitUsecase: locator<GetBitcoinUnitUsecase>(),
+        setLanguageUsecase: locator<SetLanguageUsecase>(),
+        getLanguageUsecase: locator<GetLanguageUsecase>(),
+        getCurrencyUsecase: locator<GetCurrencyUsecase>(),
+        setCurrencyUsecase: locator<SetCurrencyUsecase>(),
+        setHideAmountsUsecase: locator<SetHideAmountsUsecase>(),
+        getHideAmountsUsecase: locator<GetHideAmountsUsecase>(),
       ),
     );
   }

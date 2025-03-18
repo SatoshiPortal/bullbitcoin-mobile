@@ -23,7 +23,7 @@ import 'package:test/test.dart';
 
 void main() {
   late WalletManagerService walletManagerService;
-  late CreateReceiveSwapUseCase receiveSwapUseCase;
+  late CreateReceiveSwapUsecase receiveSwapUsecase;
   late SwapWatcherService swapWatcherTestnetService;
   late SwapWatcherService swapWatcherMainnetService;
   late SwapRepository swapRepositoryTestnet;
@@ -58,7 +58,7 @@ void main() {
       lwk.LibLwk.init(),
     ]);
     await AppLocator.setup();
-    await locator<SetEnvironmentUseCase>().execute(Environment.mainnet);
+    await locator<SetEnvironmentUsecase>().execute(Environment.mainnet);
 
     walletManagerService = locator<WalletManagerService>();
     // Use the testnet swap watcher service
@@ -78,9 +78,9 @@ void main() {
       instanceName:
           LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
     );
-    receiveSwapUseCase = locator<CreateReceiveSwapUseCase>();
+    receiveSwapUsecase = locator<CreateReceiveSwapUsecase>();
 
-    await locator<CreateDefaultWalletsUseCase>().execute(
+    await locator<CreateDefaultWalletsUsecase>().execute(
       mnemonicWords: baseMnemonic.split(' '),
     );
     final wallets = await walletManagerService.getAllWallets();
@@ -123,7 +123,8 @@ void main() {
       liquidSendCompletedEvent = Completer();
       swapSubscription = swapWatcherMainnetService.swapStream.listen((swap) {
         debugPrint(
-            '(Subscriber) Swap Updated.\n${swap.id}:${swap.status}:${swap.type}');
+          '(Subscriber) Swap Updated.\n${swap.id}:${swap.status}:${swap.type}',
+        );
         switch (swap.type) {
           case SwapType.lightningToBitcoin:
             if (swap.status == SwapStatus.completed) {
@@ -149,7 +150,7 @@ void main() {
     });
 
     test('Create Liquid Receive Swap. REQUIRED: Pay Invoice', () async {
-      final swap = await receiveSwapUseCase.execute(
+      final swap = await receiveSwapUsecase.execute(
         walletId: instantWallet.id,
         type: SwapType.lightningToLiquid,
         amountSat: 1001,
@@ -169,7 +170,7 @@ void main() {
     test(
       'Create Bitcoin Receive Swap. REQUIRED: Pay Invoice',
       () async {
-        final swap = await receiveSwapUseCase.execute(
+        final swap = await receiveSwapUsecase.execute(
           walletId: secureWallet.id,
           type: SwapType.lightningToBitcoin,
           amountSat: 25001,
@@ -215,7 +216,8 @@ void main() {
     // TODO: Instead of checking balance; check transactions, match by txid and check transaction amount
     test('Check Liquid Balance After Receive Swap', () async {
       debugPrint(
-          'Waiting 60 seconds for transaction to confirm to check balances');
+        'Waiting 60 seconds for transaction to confirm to check balances',
+      );
       await Future.delayed(const Duration(seconds: 60));
       await walletManagerService.sync(walletId: instantWallet.id);
       final liquidBalance = await walletManagerService.getBalance(
@@ -237,7 +239,8 @@ void main() {
           initLiquidBalance + receivableAmount;
       debugPrint('Expected Balance: $expectedLiquidBalanceAfterSwap');
       debugPrint(
-          'Liquid Balance (totalSat): ${liquidBalance.totalSat.toInt()}');
+        'Liquid Balance (totalSat): ${liquidBalance.totalSat.toInt()}',
+      );
       expect(
         expectedLiquidBalanceAfterSwap,
         liquidBalance.totalSat.toInt(),

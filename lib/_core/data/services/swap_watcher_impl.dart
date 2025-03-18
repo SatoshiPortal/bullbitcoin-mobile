@@ -4,6 +4,7 @@ import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dar
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
+import 'package:flutter/foundation.dart';
 
 class SwapWatcherServiceImpl implements SwapWatcherService {
   final WalletManagerService _walletManager;
@@ -27,19 +28,21 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   void startWatching() {
     _boltzRepo.swapUpdatesStream.listen(
       (swap) async {
-        print('SwapWatcher received swap update: ${swap.id}:${swap.status}');
+        debugPrint(
+          'SwapWatcher received swap update: ${swap.id}:${swap.status}',
+        );
         await _processSwap(swap);
       },
       onError: (error) {
-        print('Swap stream error in watcher: $error');
+        debugPrint('Swap stream error in watcher: $error');
       },
       onDone: () {
-        print('Swap stream done in watcher.');
+        debugPrint('Swap stream done in watcher.');
       },
       cancelOnError: false,
     );
 
-    print('Swap watcher started and listening');
+    debugPrint('Swap watcher started and listening');
   }
 
   @override

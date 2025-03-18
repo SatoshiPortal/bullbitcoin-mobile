@@ -14,22 +14,22 @@ part 'bitcoin_price_state.dart';
 
 class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   BitcoinPriceBloc({
-    required GetAvailableFiatCurrenciesUseCase
-        getAvailableFiatCurrenciesUseCase,
-    required GetCurrencyUseCase getCurrencyUseCase,
-    required FetchBitcoinPriceUseCase fetchBitcoinPriceUseCase,
-  })  : _getAvailableFiatCurrenciesUseCase = getAvailableFiatCurrenciesUseCase,
-        _getCurrencyUseCase = getCurrencyUseCase,
-        _fetchBitcoinPriceUseCase = fetchBitcoinPriceUseCase,
+    required GetAvailableFiatCurrenciesUsecase
+        getAvailableFiatCurrenciesUsecase,
+    required GetCurrencyUsecase getCurrencyUsecase,
+    required FetchBitcoinPriceUsecase fetchBitcoinPriceUsecase,
+  })  : _getAvailableFiatCurrenciesUsecase = getAvailableFiatCurrenciesUsecase,
+        _getCurrencyUsecase = getCurrencyUsecase,
+        _fetchBitcoinPriceUsecase = fetchBitcoinPriceUsecase,
         super(const BitcoinPriceState()) {
     on<BitcoinPriceStarted>(_onStarted);
     on<BitcoinPriceFetched>(_onFetched);
     on<BitcoinPriceCurrencyChanged>(_onCurrencyChanged);
   }
 
-  final GetAvailableFiatCurrenciesUseCase _getAvailableFiatCurrenciesUseCase;
-  final GetCurrencyUseCase _getCurrencyUseCase;
-  final FetchBitcoinPriceUseCase _fetchBitcoinPriceUseCase;
+  final GetAvailableFiatCurrenciesUsecase _getAvailableFiatCurrenciesUsecase;
+  final GetCurrencyUsecase _getCurrencyUsecase;
+  final FetchBitcoinPriceUsecase _fetchBitcoinPriceUsecase;
 
   Future<void> _onStarted(
     BitcoinPriceStarted event,
@@ -38,15 +38,15 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     debugPrint('FiatCurrenciesStarted');
 
     try {
-      // final currency = event.currency ?? await _getCurrencyUseCase.execute();
+      // final currency = event.currency ?? await _getCurrencyUsecase.execute();
       // final availableCurrencies =
-      //     await _getAvailableFiatCurrenciesUseCase.execute();
+      //     await _getAvailableFiatCurrenciesUsecase.execute();
 
       // if (!availableCurrencies.contains(currency)) {
       //   throw PriceForCurrencyNotAvailableException(currencyCode: currency);
       // }
       const currency = 'CAD';
-      final price = await _fetchBitcoinPriceUseCase.execute(currency);
+      final price = await _fetchBitcoinPriceUsecase.execute(currency);
 
       emit(
         BitcoinPriceState(
@@ -72,7 +72,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       //  again with the new currency in the event.
       // final successState = state as BitcoinPriceSuccess;
 
-      final price = await _fetchBitcoinPriceUseCase.execute(state.currency!);
+      final price = await _fetchBitcoinPriceUsecase.execute(state.currency!);
 
       emit(
         state.copyWith(
@@ -103,7 +103,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       // final successState = state as BitcoinPriceSuccess;
       final currency = event.currencyCode;
       // Get the exchange rate for the new currency
-      final price = await _fetchBitcoinPriceUseCase.execute(currency);
+      final price = await _fetchBitcoinPriceUsecase.execute(currency);
 
       emit(
         state.copyWith(

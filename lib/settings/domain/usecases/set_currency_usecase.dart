@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 
-class SetCurrencyUseCase {
+class SetCurrencyUsecase {
   final SettingsRepository _settingsRepository;
 
-  SetCurrencyUseCase({
+  SetCurrencyUsecase({
     required SettingsRepository settingsRepository,
   }) : _settingsRepository = settingsRepository;
 

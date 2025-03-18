@@ -14,18 +14,18 @@ class MockWalletManagerService extends Mock implements WalletManagerService {}
 void main() {
   late MockSettingsRepository mockSettingsRepository;
   late MockWalletManagerService mockWalletManagerService;
-  late ImportXpubUseCase importXpubUseCase;
+  late ImportXpubUsecase importXpubUsecase;
 
   setUp(() {
     mockSettingsRepository = MockSettingsRepository();
     mockWalletManagerService = MockWalletManagerService();
-    importXpubUseCase = ImportXpubUseCase(
+    importXpubUsecase = ImportXpubUsecase(
       settingsRepository: mockSettingsRepository,
       walletManagerService: mockWalletManagerService,
     );
   });
 
-  group('ImportXpubUseCase', () {
+  group('ImportXpubUsecase', () {
     const testXpub = 'xpub6CUGRU...'; // Example xpub
     const testScriptType = ScriptType.bip84;
     const testLabel = 'Test Wallet';
@@ -58,7 +58,7 @@ void main() {
         ),
       ).thenAnswer((_) async => testWallet);
 
-      final result = await importXpubUseCase.execute(
+      final result = await importXpubUsecase.execute(
         xpub: testXpub,
         scriptType: testScriptType,
         label: testLabel,
@@ -67,12 +67,14 @@ void main() {
       expect(result, equals(testWallet));
 
       verify(() => mockSettingsRepository.getEnvironment()).called(1);
-      verify(() => mockWalletManagerService.importWatchOnlyWallet(
-            xpub: testXpub,
-            network: testNetworkMainnet,
-            scriptType: testScriptType,
-            label: testLabel,
-          )).called(1);
+      verify(
+        () => mockWalletManagerService.importWatchOnlyWallet(
+          xpub: testXpub,
+          network: testNetworkMainnet,
+          scriptType: testScriptType,
+          label: testLabel,
+        ),
+      ).called(1);
       verifyNoMoreInteractions(mockSettingsRepository);
       verifyNoMoreInteractions(mockWalletManagerService);
     });
@@ -93,7 +95,7 @@ void main() {
         ),
       ).thenAnswer((_) async => testWalletTestnet);
 
-      final result = await importXpubUseCase.execute(
+      final result = await importXpubUsecase.execute(
         xpub: testXpub,
         scriptType: testScriptType,
         label: testLabel,
@@ -128,7 +130,7 @@ void main() {
       ).thenThrow(Exception('Import failed'));
 
       await expectLater(
-        () async => await importXpubUseCase.execute(
+        () async => await importXpubUsecase.execute(
           xpub: testXpub,
           scriptType: testScriptType,
           label: testLabel,

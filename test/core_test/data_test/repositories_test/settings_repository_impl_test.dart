@@ -1,11 +1,11 @@
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/repositories/settings_repository_impl.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 class MockKeyValueStorage extends Mock
-    implements KeyValueStorageDataSource<String> {}
+    implements KeyValueStorageDatasource<String> {}
 
 void main() {
   late SettingsRepositoryImpl repository;
@@ -20,17 +20,21 @@ void main() {
     test('setEnvironment saves value correctly', () async {
       const environment = Environment.testnet;
 
-      when(() => mockStorage.saveValue(
-            key: 'environment',
-            value: environment.name,
-          )).thenAnswer((_) async {});
+      when(
+        () => mockStorage.saveValue(
+          key: 'environment',
+          value: environment.name,
+        ),
+      ).thenAnswer((_) async {});
 
       await repository.setEnvironment(environment);
 
-      verify(() => mockStorage.saveValue(
-            key: 'environment',
-            value: environment.name,
-          )).called(1);
+      verify(
+        () => mockStorage.saveValue(
+          key: 'environment',
+          value: environment.name,
+        ),
+      ).called(1);
     });
 
     test('getEnvironment returns saved value', () async {
@@ -57,17 +61,21 @@ void main() {
     test('setBitcoinUnit saves value correctly', () async {
       const bitcoinUnit = BitcoinUnit.sats;
 
-      when(() => mockStorage.saveValue(
-            key: 'bitcoinUnit',
-            value: bitcoinUnit.name,
-          )).thenAnswer((_) async {});
+      when(
+        () => mockStorage.saveValue(
+          key: 'bitcoinUnit',
+          value: bitcoinUnit.name,
+        ),
+      ).thenAnswer((_) async {});
 
       await repository.setBitcoinUnit(bitcoinUnit);
 
-      verify(() => mockStorage.saveValue(
-            key: 'bitcoinUnit',
-            value: bitcoinUnit.name,
-          )).called(1);
+      verify(
+        () => mockStorage.saveValue(
+          key: 'bitcoinUnit',
+          value: bitcoinUnit.name,
+        ),
+      ).called(1);
     });
 
     test('getBitcoinUnit returns saved value', () async {
@@ -93,17 +101,21 @@ void main() {
     test('setLanguage saves value correctly', () async {
       const language = Language.unitedStatesEnglish;
 
-      when(() => mockStorage.saveValue(
-            key: 'language',
-            value: language.name,
-          )).thenAnswer((_) async {});
+      when(
+        () => mockStorage.saveValue(
+          key: 'language',
+          value: language.name,
+        ),
+      ).thenAnswer((_) async {});
 
       await repository.setLanguage(language);
 
-      verify(() => mockStorage.saveValue(
-            key: 'language',
-            value: language.name,
-          )).called(1);
+      verify(
+        () => mockStorage.saveValue(
+          key: 'language',
+          value: language.name,
+        ),
+      ).called(1);
     });
 
     test('getLanguage returns saved value', () async {

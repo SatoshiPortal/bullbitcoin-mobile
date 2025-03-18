@@ -9,10 +9,10 @@ part 'onboarding_state.dart';
 
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   OnboardingBloc({
-    required CreateDefaultWalletsUseCase createDefaultWalletsUseCase,
-    required FindMnemonicWordsUseCase findMnemonicWordsUseCase,
-  })  : _createDefaultWalletsUseCase = createDefaultWalletsUseCase,
-        _findMnemonicWordsUseCase = findMnemonicWordsUseCase,
+    required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
+    required FindMnemonicWordsUsecase findMnemonicWordsUsecase,
+  })  : _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
+        _findMnemonicWordsUsecase = findMnemonicWordsUsecase,
         super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoveryWordChanged>(_onRecoveryWordChanged);
@@ -25,8 +25,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     });
   }
 
-  final CreateDefaultWalletsUseCase _createDefaultWalletsUseCase;
-  final FindMnemonicWordsUseCase _findMnemonicWordsUseCase;
+  final CreateDefaultWalletsUsecase _createDefaultWalletsUsecase;
+  final FindMnemonicWordsUsecase _findMnemonicWordsUsecase;
 
   Future<void> _onCreateNewWallet(
     OnboardingCreateNewWallet event,
@@ -34,7 +34,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   ) async {
     try {
       emit(state.copyWith(creating: true, error: null));
-      await _createDefaultWalletsUseCase.execute();
+      await _createDefaultWalletsUsecase.execute();
       emit(state.copyWith(creating: false, step: OnboardingStep.createSucess));
     } catch (e) {
       emit(state.copyWith(error: e, creating: false));
@@ -50,7 +50,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     final validWords = Map<int, String>.from(state.validWords);
     final hintWords = Map<int, List<String>>.from(state.hintWords);
 
-    hintWords[wordIndex] = await _findMnemonicWordsUseCase.execute(word);
+    hintWords[wordIndex] = await _findMnemonicWordsUsecase.execute(word);
 
     if (hintWords[wordIndex]?.contains(word) == true) {
       validWords[event.index] = event.word;
@@ -72,7 +72,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   ) async {
     try {
       emit(state.copyWith(creating: true, error: null, hintWords: {}));
-      await _createDefaultWalletsUseCase.execute(
+      await _createDefaultWalletsUsecase.execute(
         mnemonicWords: state.validWords.values.toList(),
       );
 

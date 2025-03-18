@@ -1,17 +1,16 @@
-import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 
-class CreateReceiveSwapUseCase {
+class CreateReceiveSwapUsecase {
   final WalletManagerService _walletManager;
   final SwapRepository _swapRepository;
   final SwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
 
-  CreateReceiveSwapUseCase({
+  CreateReceiveSwapUsecase({
     required WalletManagerService walletManager,
     required SwapRepository swapRepository,
     required SwapRepository swapRepositoryTestnet,

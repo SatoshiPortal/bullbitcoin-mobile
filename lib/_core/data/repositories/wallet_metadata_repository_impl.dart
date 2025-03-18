@@ -1,13 +1,13 @@
-import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/_core/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 
 class WalletMetadataRepositoryImpl implements WalletMetadataRepository {
-  final WalletMetadataDataSource _source;
+  final WalletMetadataDatasource _source;
 
-  WalletMetadataRepositoryImpl({required WalletMetadataDataSource source})
+  WalletMetadataRepositoryImpl({required WalletMetadataDatasource source})
       : _source = source;
 
   @override

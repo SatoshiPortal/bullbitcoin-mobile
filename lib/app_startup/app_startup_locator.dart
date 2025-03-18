@@ -15,25 +15,25 @@ import 'package:bb_mobile/pin_code/domain/repositories/pin_code_repository.dart'
 class AppStartupLocator {
   static void setup() {
     // Use cases
-    locator.registerFactory<ResetAppDataUseCase>(
-      () => ResetAppDataUseCase(
+    locator.registerFactory<ResetAppDataUsecase>(
+      () => ResetAppDataUsecase(
         pinCodeRepository: locator<PinCodeRepository>(),
       ),
     );
-    locator.registerFactory<CheckForExistingDefaultWalletsUseCase>(
-      () => CheckForExistingDefaultWalletsUseCase(
+    locator.registerFactory<CheckForExistingDefaultWalletsUsecase>(
+      () => CheckForExistingDefaultWalletsUsecase(
         walletManager: locator<WalletManagerService>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<InitExistingWalletsUseCase>(
-      () => InitExistingWalletsUseCase(
+    locator.registerFactory<InitExistingWalletsUsecase>(
+      () => InitExistingWalletsUsecase(
         walletManager: locator<WalletManagerService>(),
       ),
     );
     // Use cases
-    locator.registerFactory<CreateDefaultWalletsUseCase>(
-      () => CreateDefaultWalletsUseCase(
+    locator.registerFactory<CreateDefaultWalletsUsecase>(
+      () => CreateDefaultWalletsUsecase(
         settingsRepository: locator<SettingsRepository>(),
         mnemonicSeedFactory: locator<MnemonicSeedFactory>(),
         walletManager: locator<WalletManagerService>(),

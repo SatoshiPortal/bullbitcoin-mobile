@@ -1,12 +1,12 @@
-import 'package:bb_mobile/_core/data/datasources/seed_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/_core/data/models/seed_model.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 
 class SeedRepositoryImpl implements SeedRepository {
-  final SeedDataSource _source;
+  final SeedDatasource _source;
 
-  const SeedRepositoryImpl({required SeedDataSource source}) : _source = source;
+  const SeedRepositoryImpl({required SeedDatasource source}) : _source = source;
 
   @override
   Future<void> store({required String fingerprint, required Seed seed}) async {

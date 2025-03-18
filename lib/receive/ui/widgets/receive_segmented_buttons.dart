@@ -7,7 +7,7 @@ class ReceiveSegmentedButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: [Text('Receive Segmented Buttons'), child],
+      children: [const Text('Receive Segmented Buttons'), child],
     );
   }
 }

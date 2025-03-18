@@ -31,12 +31,12 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
 
-  final ResetAppDataUseCase _resetAppDataUseCase;
-  final CheckPinCodeExistsUseCase _checkPinCodeExistsUseCase;
-  final CheckForExistingDefaultWalletsUseCase
-      _checkForExistingDefaultWalletsUseCase;
+  final ResetAppDataUsecase _resetAppDataUsecase;
+  final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
+  final CheckForExistingDefaultWalletsUsecase
+      _checkForExistingDefaultWalletsUsecase;
 
-  final InitExistingWalletsUseCase _initExistingWalletsUseCase;
+  final InitExistingWalletsUsecase _initExistingWalletsUsecase;
 
   Future<void> _onAppStartupStarted(
     AppStartupStarted event,
@@ -47,12 +47,12 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       await _initializeTorUseCase.execute();
 
       final doDefaultWalletsExist =
-          await _checkForExistingDefaultWalletsUseCase.execute();
+          await _checkForExistingDefaultWalletsUsecase.execute();
       bool isPinCodeSet = false;
 
       if (doDefaultWalletsExist) {
-        await _initExistingWalletsUseCase.execute();
-        isPinCodeSet = await _checkPinCodeExistsUseCase.execute();
+        await _initExistingWalletsUsecase.execute();
+        isPinCodeSet = await _checkPinCodeExistsUsecase.execute();
         // Other startup logic can be added here, e.g. payjoin sessions resume
       } else {
         // This is a fresh install, so reset the app data that might still be

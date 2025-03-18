@@ -1,19 +1,19 @@
-import 'package:bb_mobile/_core/data/datasources/electrum_server_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/electrum_server_datasource.dart';
 import 'package:bb_mobile/_core/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
 
 class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
-  final ElectrumServerDataSource _electrumServerDataSource;
+  final ElectrumServerDatasource _electrumServerDatasource;
 
   const ElectrumServerRepositoryImpl({
-    required ElectrumServerDataSource electrumServerDataSource,
-  }) : _electrumServerDataSource = electrumServerDataSource;
+    required ElectrumServerDatasource electrumServerDatasource,
+  }) : _electrumServerDatasource = electrumServerDatasource;
 
   @override
   Future<ElectrumServer> getElectrumServer({required Network network}) async {
-    final model = await _electrumServerDataSource.get(
+    final model = await _electrumServerDatasource.get(
       network: network,
     );
     if (model == null) {
@@ -39,7 +39,7 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
       isLiquid: network.isLiquid,
     );
 
-    await _electrumServerDataSource.set(
+    await _electrumServerDatasource.set(
       model,
       network: network,
     );
