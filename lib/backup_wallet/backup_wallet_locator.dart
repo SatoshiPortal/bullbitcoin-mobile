@@ -26,8 +26,8 @@ class BackupWalletLocator {
     // Blocs
     locator.registerFactory<BackupWalletBloc>(
       () => BackupWalletBloc(
-        createEncryptedVaultUseCase: locator<CreateEncryptedVaultUsecase>(),
-        getDefaultWalletUseCase: locator<GetDefaultWalletUseCase>(),
+        createEncryptedVaultUsecase: locator<CreateEncryptedVaultUsecase>(),
+        getDefaultWalletUsecase: locator<GetDefaultWalletUsecase>(),
       ),
     );
   }

@@ -39,9 +39,9 @@ class AppStartupLocator {
       ),
     );
 
-    // Register InitializeTorUseCase using TorRepository
-    locator.registerFactory<InitializeTorUseCase>(
-      () => InitializeTorUseCase(locator<TorRepository>()),
+    // Register InitializeTorUsecase using TorRepository
+    locator.registerFactory<InitializeTorUsecase>(
+      () => InitializeTorUsecase(locator<TorRepository>()),
     );
 
     // Bloc

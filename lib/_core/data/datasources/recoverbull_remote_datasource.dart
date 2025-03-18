@@ -3,7 +3,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:recoverbull/recoverbull.dart';
 
-abstract class RecoverBullRemoteDataSource {
+abstract class RecoverBullRemoteDatasource {
   Future<void> info();
 
   Future<void> store(
@@ -26,17 +26,17 @@ abstract class RecoverBullRemoteDataSource {
   );
 }
 
-class RecoverBullRemoteDataSourceImpl implements RecoverBullRemoteDataSource {
+class RecoverBullRemoteDatasourceImpl implements RecoverBullRemoteDatasource {
   final KeyServer _keyServer;
   final TorRepository _torRepository;
 
-  RecoverBullRemoteDataSourceImpl._({
+  RecoverBullRemoteDatasourceImpl._({
     required KeyServer keyServer,
     required TorRepository torRepository,
   })  : _keyServer = keyServer,
         _torRepository = torRepository;
 
-  static Future<RecoverBullRemoteDataSource> init(Uri address) async {
+  static Future<RecoverBullRemoteDatasource> init(Uri address) async {
     // Get the TorRepository from the locator
     final torRepository = locator<TorRepository>();
 
@@ -49,7 +49,7 @@ class RecoverBullRemoteDataSourceImpl implements RecoverBullRemoteDataSource {
 
     final keyServer = KeyServer(address: address);
 
-    return RecoverBullRemoteDataSourceImpl._(
+    return RecoverBullRemoteDatasourceImpl._(
       keyServer: keyServer,
       torRepository: torRepository,
     );

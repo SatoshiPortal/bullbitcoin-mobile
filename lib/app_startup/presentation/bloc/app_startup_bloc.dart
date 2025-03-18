@@ -12,7 +12,7 @@ part 'app_startup_event.dart';
 part 'app_startup_state.dart';
 
 class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
-  final InitializeTorUseCase _initializeTorUseCase;
+  final InitializeTorUsecase _initializeTorUsecase;
 
   AppStartupBloc({
     required ResetAppDataUsecase resetAppDataUsecase,
@@ -42,7 +42,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   ) async {
     emit(const AppStartupState.loadingInProgress());
     try {
-      await _initializeTorUseCase.execute();
+      await _initializeTorUsecase.execute();
 
       final doDefaultWalletsExist =
           await _checkForExistingDefaultWalletsUsecase.execute();
