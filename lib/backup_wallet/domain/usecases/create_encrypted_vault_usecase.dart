@@ -8,11 +8,12 @@ import 'package:bb_mobile/_utils/bip32_derivation.dart';
 import 'package:bb_mobile/_utils/bip85_derivation.dart';
 import 'package:flutter/foundation.dart';
 
-class CreateEncryptedBackupUsecase {
+class CreateEncryptedVaultUsecase {
   final RecoverBullRepository _recoverBullRepository;
   final SeedRepository _seedRepository;
   final WalletMetadataRepository _walletMetadataRepository;
-  CreateEncryptedBackupUsecase({
+
+  CreateEncryptedVaultUsecase({
     required RecoverBullRepository recoverBullRepository,
     required SeedRepository seedRepository,
     required WalletMetadataRepository walletMetadataRepository,
