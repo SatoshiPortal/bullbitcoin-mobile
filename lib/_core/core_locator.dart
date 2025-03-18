@@ -41,7 +41,6 @@ import 'package:bb_mobile/_core/domain/usecases/build_psbt_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
-
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_hide_amounts_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';

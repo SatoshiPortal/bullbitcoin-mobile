@@ -1,3 +1,5 @@
+import 'package:bb_mobile/_core/domain/repositories/file_system_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/google_drive_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
@@ -17,8 +19,18 @@ class BackupWalletLocator {
         recoverBullRepository: locator<RecoverBullRepository>(),
       ),
     );
-    locator.registerFactory<StoreBackupKeyUsecase>(
-      () => StoreBackupKeyUsecase(
+    locator.registerFactory<SaveToFileSystemUseCase>(
+      () => SaveToFileSystemUseCase(
+        locator<FileSystemRepository>(),
+      ),
+    );
+    locator.registerFactory<SaveToGoogleDriveUseCase>(
+      () => SaveToGoogleDriveUseCase(
+        locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<SaveBackupKeyToServerUsecase>(
+      () => SaveBackupKeyToServerUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
       ),
     );
