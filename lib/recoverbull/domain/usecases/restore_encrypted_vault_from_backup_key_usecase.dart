@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:flutter/foundation.dart';
 
+// If the key server is down
 class RestoreEncryptedVaultFromBackupKeyUsecase {
   final RecoverBullRepository _recoverBullRepository;
 

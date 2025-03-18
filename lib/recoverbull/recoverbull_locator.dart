@@ -8,8 +8,13 @@ import 'package:bb_mobile/backup_wallet/domain/usecases/create_encrypted_vault_u
 import 'package:bb_mobile/backup_wallet/domain/usecases/store_backup_key_usecase.dart';
 import 'package:bb_mobile/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/save_to_google_drive_usecase.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/store_backup_key_into_server_usecase.dart';
+import 'package:bb_mobile/recoverbull/presentation/bloc/backup_wallet_bloc.dart';
 
-class BackupWalletLocator {
+class RecoverbullLocator {
   static void setup() {
     // Use cases
     locator.registerFactory<CreateEncryptedVaultUsecase>(
@@ -29,8 +34,8 @@ class BackupWalletLocator {
         locator<GoogleDriveRepository>(),
       ),
     );
-    locator.registerFactory<SaveBackupKeyToServerUsecase>(
-      () => SaveBackupKeyToServerUsecase(
+    locator.registerFactory<StoreBackupKeyIntoServerUsecase>(
+      () => StoreBackupKeyIntoServerUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
       ),
     );
