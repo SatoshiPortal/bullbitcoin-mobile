@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/_core/data/datasources/google_drive_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/google_drive_datasource.dart';
 import 'package:bb_mobile/_core/data/models/drive_file_model.dart';
 import 'package:bb_mobile/_core/domain/entities/drive_file.dart';
 import 'package:bb_mobile/_core/domain/repositories/google_drive_repository.dart';
 
 class GoogleDriveRepositoryImpl implements GoogleDriveRepository {
-  final GoogleDriveAppDataSource _dataSource;
+  final GoogleDriveAppDatasource _dataSource;
 
   GoogleDriveRepositoryImpl(this._dataSource);
 

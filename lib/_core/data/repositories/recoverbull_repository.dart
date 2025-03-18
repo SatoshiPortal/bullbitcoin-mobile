@@ -1,13 +1,14 @@
 import 'dart:convert';
-import 'package:bb_mobile/_core/data/datasources/recoverbull_local_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/recoverbull_remote_data_source.dart';
+
+import 'package:bb_mobile/_core/data/datasources/recoverbull_local_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 
 class RecoverBullRepositoryImpl implements RecoverBullRepository {
-  final RecoverBullLocalDataSource localDataSource;
-  final RecoverBullRemoteDataSource remoteDataSource;
+  final RecoverBullLocalDatasource localDataSource;
+  final RecoverBullRemoteDatasource remoteDataSource;
   RecoverBullRepositoryImpl({
     required this.localDataSource,
     required this.remoteDataSource,

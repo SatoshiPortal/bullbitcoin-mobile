@@ -11,7 +11,7 @@ abstract class FileStorageDatasource {
   Future<File?> pickFile();
 }
 
-class FileStorageDataSourceImpl implements FileStorageDataSource {
+class FileStorageDataSourceImpl implements FileStorageDatasource {
   final FilePicker _filePicker;
 
   FileStorageDataSourceImpl({FilePicker? filePicker})

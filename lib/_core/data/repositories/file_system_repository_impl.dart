@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:bb_mobile/_core/data/datasources/file_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/file_storage_datasource.dart';
 import 'package:bb_mobile/_core/domain/repositories/file_system_repository.dart';
 
 class FileSystemRepositoryImpl implements FileSystemRepository {
-  final FileStorageDataSource _fileStorageDataSource;
+  final FileStorageDatasource _fileStorageDataSource;
 
   FileSystemRepositoryImpl(this._fileStorageDataSource);
 

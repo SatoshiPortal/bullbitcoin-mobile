@@ -1,10 +1,11 @@
 import 'dart:io';
-import 'package:bb_mobile/_core/data/datasources/tor_data_source.dart';
+
+import 'package:bb_mobile/_core/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/_core/domain/repositories/tor_repository.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 class TorRepositoryImpl implements TorRepository {
-  final TorDataSource _torDataSource;
+  final TorDatasource _torDataSource;
 
   TorRepositoryImpl(this._torDataSource);
 

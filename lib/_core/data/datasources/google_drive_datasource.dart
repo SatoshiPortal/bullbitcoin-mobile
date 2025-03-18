@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 
-abstract class GoogleDriveAppDataSource {
+abstract class GoogleDriveAppDatasource {
   Future<void> connect();
   Future<void> disconnect();
   Future<List<int>> fetchContent(String fileId);
@@ -12,7 +12,7 @@ abstract class GoogleDriveAppDataSource {
   Future<void> trash(String path);
 }
 
-class GoogleDriveDataSourceImpl implements GoogleDriveAppDataSource {
+class GoogleDriveDatasourceImpl implements GoogleDriveAppDatasource {
   static final _google = GoogleSignIn(
     scopes: ['https://www.googleapis.com/auth/drive.appdata'],
   );

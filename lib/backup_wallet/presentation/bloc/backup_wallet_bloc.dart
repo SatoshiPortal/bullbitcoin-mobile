@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/get_default_wallet_use_case.dart';
-import 'package:bb_mobile/_core/domain/usecases/pick_file_use_case.dart';
-import 'package:bb_mobile/backup_wallet/domain/usecases/create_encrypted_backup_usecase.dart';
+
+import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
+import 'package:bb_mobile/backup_wallet/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/backup_wallet/domain/usecases/save_key_to_server_usecase.dart';
 import 'package:bb_mobile/backup_wallet/domain/usecases/save_to_file_system_usecase.dart';
 import 'package:bb_mobile/backup_wallet/domain/usecases/save_to_google_drive_usecase.dart';
@@ -18,28 +18,26 @@ part 'backup_wallet_event.dart';
 part 'backup_wallet_state.dart';
 
 class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
-  final CreateEncryptedBackupUsecase createEncryptedBackupUsecase;
-  final GetDefaultWalletUseCase getDefaultWalletUseCase;
-  final SelectFilePathUseCase _selectFilePathUseCase;
-  final ConnectToGoogleDriveUseCase connectToGoogleDriveUseCase;
+  final CreateEncryptedVaultUsecase createEncryptedBackupUsecase;
+  final SelectFilePathUsecase _selectFilePathUsecase;
+  final ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase;
   final FetchLatestBackupUsecase fetchLatestBackupUsecase;
-  final DisconnectFromGoogleDriveUseCase disconnectFromGoogleDriveUseCase;
-  final SaveToFileSystemUseCase _saveToFileSystemUseCase;
-  final SaveToGoogleDriveUseCase _saveToGoogleDriveUseCase;
+  final DisconnectFromGoogleDriveUsecase disconnectFromGoogleDriveUsecase;
+  final SaveToFileSystemUsecase _saveToFileSystemUsecase;
+  final SaveToGoogleDriveUsecase _saveToGoogleDriveUsecase;
   final SaveBackupKeyToServerUsecase saveBackupKeyToServerUsecase;
   BackupWalletBloc({
     required this.createEncryptedBackupUsecase,
-    required this.getDefaultWalletUseCase,
     required this.saveBackupKeyToServerUsecase,
     required this.fetchLatestBackupUsecase,
-    required this.connectToGoogleDriveUseCase,
-    required this.disconnectFromGoogleDriveUseCase,
-    required SelectFilePathUseCase selectFilePathUseCase,
-    required SaveToFileSystemUseCase saveToFileSystemUseCase,
-    required SaveToGoogleDriveUseCase saveToGoogleDriveUseCase,
-  })  : _selectFilePathUseCase = selectFilePathUseCase,
-        _saveToFileSystemUseCase = saveToFileSystemUseCase,
-        _saveToGoogleDriveUseCase = saveToGoogleDriveUseCase,
+    required this.connectToGoogleDriveUsecase,
+    required this.disconnectFromGoogleDriveUsecase,
+    required SelectFilePathUsecase selectFilePathUsecase,
+    required SaveToFileSystemUsecase saveToFileSystemUsecase,
+    required SaveToGoogleDriveUsecase saveToGoogleDriveUsecase,
+  })  : _selectFilePathUsecase = selectFilePathUsecase,
+        _saveToFileSystemUsecase = saveToFileSystemUsecase,
+        _saveToGoogleDriveUsecase = saveToGoogleDriveUsecase,
         super(BackupWalletState()) {
     on<OnFileSystemBackupSelected>(_onFileSystemBackupSelected);
     on<OnGoogleDriveBackupSelected>(_onGoogleDriveBackupSelected);
@@ -53,7 +51,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   ) async {
     try {
       emit(state.copyWith(status: const BackupWalletStatus.loading()));
-      final filePath = await _selectFilePathUseCase.execute();
+      final filePath = await _selectFilePathUsecase.execute();
       if (filePath == null) {
         emit(state.copyWith(status: const BackupWalletStatus.loading()));
         return;
@@ -77,7 +75,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   ) async {
     try {
       emit(state.copyWith(status: const BackupWalletStatus.loading()));
-      await connectToGoogleDriveUseCase.execute();
+      await connectToGoogleDriveUsecase.execute();
       emit(
         state.copyWith(
           status: const BackupWalletStatus.success(),
@@ -104,7 +102,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       //   emit(state.copyWith(status: const BackupWalletStatus.success()));
       //   return;
       // }
-      // await _saveToFileSystemUseCase.execute(state.filePath, encrytedBackup);
+      // await _saveToFileSystemUsecase.execute(state.filePath, encrytedBackup);
       // emit(state.copyWith(status: const BackupWalletStatus.success()));
       return;
     } catch (e) {
