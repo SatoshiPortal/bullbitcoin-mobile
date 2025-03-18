@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 
-class StoreBackupKeyUsecase {
+class SaveBackupKeyToServerUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
-  StoreBackupKeyUsecase({
+  SaveBackupKeyToServerUsecase({
     required RecoverBullRepository recoverBullRepository,
   }) : _recoverBullRepository = recoverBullRepository;
 
