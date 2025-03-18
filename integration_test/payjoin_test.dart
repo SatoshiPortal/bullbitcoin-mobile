@@ -217,11 +217,6 @@ void main() {
         () {},
       );
 
-      test(
-        'should broadcast the original transaction if the payjoin fails',
-        () {},
-      );
-
       tearDown(() {
         payjoinSubscription.cancel();
       });
