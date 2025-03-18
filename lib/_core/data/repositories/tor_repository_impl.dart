@@ -1,16 +1,16 @@
 import 'dart:io';
-import 'package:bb_mobile/_core/data/datasources/tor_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/tor_data_source.dart';
 import 'package:bb_mobile/_core/domain/repositories/tor_repository.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 class TorRepositoryImpl implements TorRepository {
-  final TorDatasource _torDatasource;
+  final TorDataSource _torDataSource;
 
-  TorRepositoryImpl(this._torDatasource);
+  TorRepositoryImpl(this._torDataSource);
 
   @override
   Future<bool> isTorReady() async {
-    return await _torDatasource.isReady;
+    return await _torDataSource.isReady;
   }
 
   @override
@@ -22,7 +22,7 @@ class TorRepositoryImpl implements TorRepository {
     }
 
     // Get the Tor proxy port
-    final proxyPort = _torDatasource.port;
+    final proxyPort = _torDataSource.port;
 
     return await SOCKSSocket.create(
       proxyHost: InternetAddress.loopbackIPv4.address,
