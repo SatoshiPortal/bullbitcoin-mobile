@@ -40,27 +40,33 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   })  : _selectFilePathUseCase = selectFilePathUseCase,
         _saveToFileSystemUseCase = saveToFileSystemUseCase,
         _saveToGoogleDriveUseCase = saveToGoogleDriveUseCase,
-        super(const BackupWalletState()) {
+        super(BackupWalletState()) {
     on<OnFileSystemBackupSelected>(_onFileSystemBackupSelected);
     on<OnGoogleDriveBackupSelected>(_onGoogleDriveBackupSelected);
     on<OnICloudDriveBackupSelected>(_onICloudDriveBackupSelected);
     on<StartWalletBackup>(_onStartWalletBackup);
   }
+
   Future<void> _onFileSystemBackupSelected(
     OnFileSystemBackupSelected event,
     Emitter<BackupWalletState> emit,
   ) async {
     try {
-      emit(state.copyWith(isSubmitting: true));
+      emit(state.copyWith(status: const BackupWalletStatus.loading()));
       final filePath = await _selectFilePathUseCase.execute();
       if (filePath == null) {
-        emit(state.copyWith(isSubmitting: false));
+        emit(state.copyWith(status: const BackupWalletStatus.loading()));
         return;
       }
-      emit(state.copyWith(filePath: filePath, isSubmitting: false));
+      emit(
+        state.copyWith(
+          backupProvider: BackupProvider.fileSystem(filePath),
+          status: const BackupWalletStatus.success(),
+        ),
+      );
       return;
     } catch (e) {
-      emit(BackupWalletState.error("Failed to backup wallet"));
+      emit(BackupWalletState.error("Failed to select file system path"));
       return;
     }
   }
@@ -70,10 +76,18 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     Emitter<BackupWalletState> emit,
   ) async {
     try {
-      emit(state.copyWith(isSubmitting: true));
+      emit(state.copyWith(status: const BackupWalletStatus.loading()));
+      await connectToGoogleDriveUseCase.execute();
+      emit(
+        state.copyWith(
+          status: const BackupWalletStatus.success(),
+          backupProvider: const BackupProvider.googleDrive(),
+        ),
+      );
       return;
     } catch (e) {
-      emit(BackupWalletState.error("Failed to backup wallet"));
+      debugPrint("Failed to connect to Google Drive $e");
+      emit(BackupWalletState.error("Failed to connect to Google Drive"));
       return;
     }
   }
@@ -83,15 +97,15 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     Emitter<BackupWalletState> emit,
   ) async {
     try {
-      emit(state.copyWith(isSubmitting: true));
-      final encrytedBackup = await createEncryptedBackupUsecase.execute();
-      if (state.filePath.isEmpty) {
-        debugPrint('No file path selected');
-        emit(state.copyWith(isSubmitting: false));
-        return;
-      }
-      await _saveToFileSystemUseCase.execute(state.filePath, encrytedBackup);
-      emit(state.copyWith(isSubmitting: false));
+      emit(state.copyWith(status: const BackupWalletStatus.loading()));
+      // final encrytedBackup = await createEncryptedBackupUsecase.execute();
+      // if (state.filePath.isEmpty) {
+      //   debugPrint('No file path selected');
+      //   emit(state.copyWith(status: const BackupWalletStatus.success()));
+      //   return;
+      // }
+      // await _saveToFileSystemUseCase.execute(state.filePath, encrytedBackup);
+      // emit(state.copyWith(status: const BackupWalletStatus.success()));
       return;
     } catch (e) {
       emit(BackupWalletState.error("Failed to backup wallet"));
