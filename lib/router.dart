@@ -53,7 +53,7 @@ class AppRouter {
 
   static final router = GoRouter(
     // navigatorKey: rootNavigatorKey,
-    initialLocation: AppRoute.devStart.path,
+    initialLocation: AppRoute.home.path,
     routes: [
       GoRoute(
         name: AppRoute.home.name,
@@ -140,16 +140,16 @@ class DevPages {
           done: true,
         ),
         DevPageData(
+          route: AppRoute.devReceive.name,
+          title: 'Receive',
+        ),
+        DevPageData(
           route: AppRoute.devCreate.name,
           title: 'Create',
         ),
         DevPageData(
           route: AppRoute.devSend.name,
           title: 'Send',
-        ),
-        DevPageData(
-          route: AppRoute.devReceive.name,
-          title: 'Receive',
         ),
         DevPageData(
           route: AppRoute.devSettings.name,
