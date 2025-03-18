@@ -23,7 +23,6 @@ void main() {
   late PayjoinWatcherService payjoinWatcherService;
   late ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase;
   late SendWithPayjoinUsecase sendWithPayjoinUsecase;
-  late BuildPsbtUsecase buildPsbtUsecase;
   late Wallet receiverWallet;
   late Wallet senderWallet;
 
@@ -49,7 +48,6 @@ void main() {
     payjoinWatcherService = locator<PayjoinWatcherService>();
     receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
     sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
-    buildPsbtUsecase = locator<BuildPsbtUsecase>();
 
     receiverWallet = await locator<RecoverWalletUsecase>().execute(
       mnemonicWords: receiverMnemonic.split(' '),

@@ -16,13 +16,10 @@ import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final PayjoinDatasource _source;
-  // Lock to prevent the same utxo from being used in multiple payjoin proposals
-  final Lock _lock;
 
   PayjoinRepositoryImpl({
     required PayjoinDatasource payjoinDatasource,
-  })  : _source = payjoinDatasource,
-        _lock = Lock();
+  }) : _source = payjoinDatasource;
 
   @override
   Stream<PayjoinReceiver> get requestsForReceivers =>
