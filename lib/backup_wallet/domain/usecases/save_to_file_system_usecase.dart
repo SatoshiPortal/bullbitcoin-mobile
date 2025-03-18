@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:bb_mobile/_core/domain/repositories/file_system_repository.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 
-class SaveToFileSystemUseCase {
+class SaveToFileSystemUsecase {
   final FileSystemRepository fileSystemRepository;
 
-  SaveToFileSystemUseCase(this.fileSystemRepository);
+  SaveToFileSystemUsecase(this.fileSystemRepository);
 
   Future<void> execute(String path, String content) async {
     try {

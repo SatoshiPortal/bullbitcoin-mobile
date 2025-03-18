@@ -1,17 +1,17 @@
-import 'package:bb_mobile/_core/data/datasources/bip39_word_list_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/boltz_storage_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/electrum_server_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/exchange_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/file_storage_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/google_drive_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/bip39_word_list_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_storage_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/electrum_server_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/exchange_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/file_storage_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/google_drive_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/seed_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/tor_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/payjoin_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/tor_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/file_system_repository_impl.dart';
@@ -43,7 +43,6 @@ import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/get_default_wallet_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_hide_amounts_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
@@ -52,8 +51,9 @@ import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/pick_file_use_case.dart';
+
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_use_case.dart';
+import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_use_case.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
@@ -68,12 +68,12 @@ class CoreLocator {
     // Data sources
 
     // - Tor
-    if (!locator.isRegistered<TorDataSource>()) {
+    if (!locator.isRegistered<TorDatasource>()) {
       // Register TorDataSource as a singleton async
       // This ensures Tor is properly initialized before it's used
-      locator.registerSingletonAsync<TorDataSource>(
+      locator.registerSingletonAsync<TorDatasource>(
         // This will initialize Tor, start it, and make sure it's ready
-        () async => await TorDataSourceImpl.init(),
+        () async => await TorDatasourceImpl.init(),
         signalsReady: true, // Signal when it's ready for use
       );
     }
@@ -86,7 +86,7 @@ class CoreLocator {
     );
     // - FileStorageDataSource
 
-    locator.registerLazySingleton<FileStorageDataSource>(
+    locator.registerLazySingleton<FileStorageDatasource>(
       () => FileStorageDataSourceImpl(
         filePicker: FilePicker.platform,
       ),
@@ -109,7 +109,7 @@ class CoreLocator {
     // Register Google Drive components
     locator.registerLazySingleton<GoogleDriveRepository>(
       () => GoogleDriveRepositoryImpl(
-        locator<GoogleDriveAppDataSource>(),
+        locator<GoogleDriveAppDatasource>(),
       ),
     );
 
@@ -137,7 +137,7 @@ class CoreLocator {
     );
     locator.registerLazySingleton<FileSystemRepository>(
       () => FileSystemRepositoryImpl(
-        locator<FileStorageDataSource>(),
+        locator<FileStorageDatasource>(),
       ),
     );
     locator.registerLazySingleton<SeedRepository>(
@@ -235,8 +235,8 @@ class CoreLocator {
     // Register TorRepository after TorDataSource is registered
     // Use waitFor to ensure TorDataSource is ready before TorRepository is created
     locator.registerSingletonWithDependencies<TorRepository>(
-      () => TorRepositoryImpl(locator<TorDataSource>()),
-      dependsOn: [TorDataSource],
+      () => TorRepositoryImpl(locator<TorDatasource>()),
+      dependsOn: [TorDatasource],
     );
 
     // Factories, managers or services responsible for handling specific logic
@@ -260,12 +260,12 @@ class CoreLocator {
     );
 
     // Use cases
-    locator.registerFactory<SelectFilePathUseCase>(
-      () => SelectFilePathUseCase(locator<FileSystemRepository>()),
+    locator.registerFactory<SelectFilePathUsecase>(
+      () => SelectFilePathUsecase(locator<FileSystemRepository>()),
     );
 
-    locator.registerFactory<FindMnemonicWordsUseCase>(
-      () => FindMnemonicWordsUseCase(
+    locator.registerFactory<FindMnemonicWordsUsecase>(
+      () => FindMnemonicWordsUsecase(
         wordListRepository: locator<WordListRepository>(),
       ),
     );
@@ -334,11 +334,11 @@ class CoreLocator {
     );
 
     // Google Drive use cases
-    locator.registerFactory<ConnectToGoogleDriveUseCase>(
-      () => ConnectToGoogleDriveUseCase(locator<GoogleDriveRepository>()),
+    locator.registerFactory<ConnectToGoogleDriveUsecase>(
+      () => ConnectToGoogleDriveUsecase(locator<GoogleDriveRepository>()),
     );
-    locator.registerFactory<DisconnectFromGoogleDriveUseCase>(
-      () => DisconnectFromGoogleDriveUseCase(locator<GoogleDriveRepository>()),
+    locator.registerFactory<DisconnectFromGoogleDriveUsecase>(
+      () => DisconnectFromGoogleDriveUsecase(locator<GoogleDriveRepository>()),
     );
     locator.registerFactory<FetchLatestBackupUsecase>(
       () => FetchLatestBackupUsecase(
