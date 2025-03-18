@@ -1,10 +1,10 @@
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_amount_segment.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_invoice_segment.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_scaffold.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_segmented_buttons.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_success_body.dart';
+import 'package:bb_mobile/receive/ui/zwidgets/receive_amount_segment.dart';
+import 'package:bb_mobile/receive/ui/zwidgets/receive_invoice_segment.dart';
+import 'package:bb_mobile/receive/ui/zwidgets/receive_scaffold.dart';
+import 'package:bb_mobile/receive/ui/zwidgets/receive_segmented_buttons.dart';
+import 'package:bb_mobile/receive/ui/zwidgets/receive_success_body.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
