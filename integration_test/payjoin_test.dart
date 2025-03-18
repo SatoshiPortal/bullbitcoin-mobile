@@ -128,7 +128,7 @@ void main() {
         });
       });
 
-      test('should work', () async {
+      test('should work with one receiver and one sender', () async {
         // Generate receiver address
         final address = await walletManagerService.getNewAddress(
           walletId: receiverWallet.id,
@@ -255,7 +255,7 @@ void main() {
       group(
         "and enough utxo's",
         () {
-          test('should work', () async {
+          test('should have wallets with enough utxos', () async {
             // Make sure the wallets have a different utxo for every payjoin
             final receiverUtxos = await walletManagerService.getUnspentUtxos(
               walletId: receiverWallet.id,
@@ -286,7 +286,9 @@ void main() {
               greaterThanOrEqualTo(numberOfPayjoins),
             );
             expect(senderUtxos.length, greaterThanOrEqualTo(numberOfPayjoins));
+          });
 
+          test('should work with multiple receivers and senders', () async {
             // Set up multiple receiver sessions
             for (int i = 0; i < numberOfPayjoins; i++) {
               // Generate receiver address
