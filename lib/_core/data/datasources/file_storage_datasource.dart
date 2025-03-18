@@ -1,4 +1,6 @@
 import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 abstract class FileStorageDatasource {
@@ -6,9 +8,15 @@ abstract class FileStorageDatasource {
   Future<void> deleteFile(String filePath);
   Future<String> getAppDirectory();
   Future<String> getDownloadDirectory();
+  Future<File?> pickFile();
 }
 
-class FileStorageDatasourceImpl implements FileStorageDatasource {
+class FileStorageDataSourceImpl implements FileStorageDatasource {
+  final FilePicker _filePicker;
+
+  FileStorageDataSourceImpl({FilePicker? filePicker})
+      : _filePicker = filePicker ?? FilePicker.platform;
+
   @override
   Future<File> saveToFile(File file, String value) async {
     return await file.writeAsString(value);
@@ -35,5 +43,18 @@ class FileStorageDatasourceImpl implements FileStorageDatasource {
       throw const FileSystemException('Could not get downloads directory');
     }
     return downloadDir.path;
+  }
+
+  @override
+  Future<File?> pickFile() async {
+    final files = await _filePicker.pickFiles();
+    if (files == null) throw 'No file selected';
+
+    final path = files.files.single.path;
+    if (path == null) throw 'No data selected';
+
+    final file = File(path);
+
+    return file;
   }
 }
