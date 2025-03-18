@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 
-class StoreBackupKeyUsecase {
+class TrashBackupKeyFromServerUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
-  StoreBackupKeyUsecase({
+  TrashBackupKeyFromServerUsecase({
     required RecoverBullRepository recoverBullRepository,
   }) : _recoverBullRepository = recoverBullRepository;
 
@@ -13,11 +13,7 @@ class StoreBackupKeyUsecase {
     required String salt,
     required String backupKey,
   }) async {
-    return _recoverBullRepository.storeBackupKey(
-      identifier,
-      password,
-      salt,
-      backupKey,
-    );
+    // TODO: implem
+    return _recoverBullRepository.trashBackupKey(identifier, password, salt);
   }
 }

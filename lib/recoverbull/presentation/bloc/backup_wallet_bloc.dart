@@ -5,10 +5,10 @@ import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_d
 import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
 
 import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
-import 'package:bb_mobile/backup_wallet/domain/usecases/create_encrypted_vault_usecase.dart';
-import 'package:bb_mobile/backup_wallet/domain/usecases/save_key_to_server_usecase.dart';
-import 'package:bb_mobile/backup_wallet/domain/usecases/save_to_file_system_usecase.dart';
-import 'package:bb_mobile/backup_wallet/domain/usecases/save_to_google_drive_usecase.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/save_to_google_drive_usecase.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/store_backup_key_into_server_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -25,10 +25,10 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   final DisconnectFromGoogleDriveUsecase disconnectFromGoogleDriveUsecase;
   final SaveToFileSystemUsecase _saveToFileSystemUsecase;
   final SaveToGoogleDriveUsecase _saveToGoogleDriveUsecase;
-  final SaveBackupKeyToServerUsecase saveBackupKeyToServerUsecase;
+  final StoreBackupKeyIntoServerUsecase storeBackupKeyIntoServerUsecase;
   BackupWalletBloc({
     required this.createEncryptedBackupUsecase,
-    required this.saveBackupKeyToServerUsecase,
+    required this.storeBackupKeyIntoServerUsecase,
     required this.fetchLatestBackupUsecase,
     required this.connectToGoogleDriveUsecase,
     required this.disconnectFromGoogleDriveUsecase,

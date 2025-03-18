@@ -3,21 +3,18 @@ import 'package:bb_mobile/_core/domain/repositories/google_drive_repository.dart
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/_core/domain/usecases/get_default_wallet_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
-
-import 'package:bb_mobile/backup_wallet/domain/usecases/create_encrypted_vault_usecase.dart';
-
-import 'package:bb_mobile/backup_wallet/domain/usecases/save_key_to_server_usecase.dart';
-import 'package:bb_mobile/backup_wallet/domain/usecases/save_to_file_system_usecase.dart';
-import 'package:bb_mobile/backup_wallet/domain/usecases/save_to_google_drive_usecase.dart';
-import 'package:bb_mobile/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/save_to_google_drive_usecase.dart';
+import 'package:bb_mobile/recoverbull/domain/usecases/store_backup_key_into_server_usecase.dart';
+import 'package:bb_mobile/recoverbull/presentation/bloc/backup_wallet_bloc.dart';
 
-class BackupWalletLocator {
+class RecoverbullLocator {
   static void setup() {
     // Use cases
     locator.registerFactory<CreateEncryptedVaultUsecase>(
@@ -37,8 +34,8 @@ class BackupWalletLocator {
         locator<GoogleDriveRepository>(),
       ),
     );
-    locator.registerFactory<SaveBackupKeyToServerUsecase>(
-      () => SaveBackupKeyToServerUsecase(
+    locator.registerFactory<StoreBackupKeyIntoServerUsecase>(
+      () => StoreBackupKeyIntoServerUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
       ),
     );
@@ -49,7 +46,8 @@ class BackupWalletLocator {
         createEncryptedBackupUsecase: locator<CreateEncryptedVaultUsecase>(),
         selectFilePathUsecase: locator<SelectFilePathUsecase>(),
         saveToFileSystemUsecase: locator<SaveToFileSystemUsecase>(),
-        saveBackupKeyToServerUsecase: locator<SaveBackupKeyToServerUsecase>(),
+        storeBackupKeyIntoServerUsecase:
+            locator<StoreBackupKeyIntoServerUsecase>(),
         fetchLatestBackupUsecase: locator<FetchLatestBackupUsecase>(),
         connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
         disconnectFromGoogleDriveUsecase:

@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart';
 
+// If the key server is up
 class RestoreEncryptedVaultFromPasswordUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
