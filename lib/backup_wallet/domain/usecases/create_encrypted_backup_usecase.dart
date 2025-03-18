@@ -22,19 +22,16 @@ class CreateEncryptedBackupUsecase {
 
   Future<String> execute() async {
     try {
+      // The default wallet is used to derive the backup key
       final defaultMetadata = await _walletMetadataRepository.getDefault();
       final defaultFingerprint = defaultMetadata.masterFingerprint;
       final defaultSeed = await _seedRepository.get(defaultFingerprint);
-
       final defaultXprv = Bip32Derivation.getXprvFromSeed(
         defaultSeed.bytes,
         defaultMetadata.network,
       );
 
-      final derivationPath = Bip85Derivation.generateBackupKeyPath();
-      final backupKey =
-          Bip85Derivation.deriveBackupKey(defaultXprv, derivationPath);
-
+      // Prepare the plaintext that will be encrypted in the backup
       final walletsMetadata = await _walletMetadataRepository.getAll();
       final List<RecoverBullWallet> toBackup = [];
 
@@ -47,12 +44,18 @@ class CreateEncryptedBackupUsecase {
 
       final plaintext = json.encode(toBackup.map((e) => e.toJson()).toList());
 
+      // Derive the backup key using BIP85
+      final derivationPath = Bip85Derivation.generateBackupKeyPath();
+      final backupKey =
+          Bip85Derivation.deriveBackupKey(defaultXprv, derivationPath);
+
+      // Create an encrypted backup file
       final encryptedBackup = _recoverBullRepository.createBackupFile(
         backupKey,
         plaintext,
       );
 
-      // Append the path to the backup file
+      // Add the BIP85 derivation path (backup key) to the backup file
       final mapBackup = json.decode(encryptedBackup);
       mapBackup['path'] = derivationPath;
 
