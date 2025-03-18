@@ -51,7 +51,7 @@ void main() {
         );
 
         expect(seed.masterFingerprint, test.expectedMasterFingerprint);
-        expect(seed.seedHex, test.expectedSeedHex);
+        expect(seed.hex, test.expectedSeedHex);
       } catch (e) {
         expect(e, test.expectedException);
       }

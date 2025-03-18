@@ -74,7 +74,7 @@ class CreateReceiveSwapUseCase {
             walletId: walletId,
             amountSat: amountSat,
             isTestnet: wallet.network.isTestnet,
-            mnemonic: mnemonic.asString,
+            mnemonic: mnemonic.toString(),
             electrumUrl: btcElectrumUrl,
           );
 
@@ -83,7 +83,7 @@ class CreateReceiveSwapUseCase {
             walletId: walletId,
             amountSat: amountSat,
             isTestnet: wallet.network.isTestnet,
-            mnemonic: mnemonic.asString,
+            mnemonic: mnemonic.toString(),
             electrumUrl: lbtcElectrumUrl,
           );
         default:
