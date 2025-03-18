@@ -1,10 +1,10 @@
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:flutter/foundation.dart';
 
-class RestoreEncryptedVaultFromBackupKeyUseCase {
+class RestoreEncryptedVaultFromBackupKeyUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
-  RestoreEncryptedVaultFromBackupKeyUseCase({
+  RestoreEncryptedVaultFromBackupKeyUsecase({
     required RecoverBullRepository recoverBullRepository,
   }) : _recoverBullRepository = recoverBullRepository;
 
