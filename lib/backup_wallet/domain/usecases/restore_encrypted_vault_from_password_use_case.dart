@@ -3,10 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart';
 
-class RestoreEncryptedVaultFromPasswordUseCase {
+class RestoreEncryptedVaultFromPasswordUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
-  RestoreEncryptedVaultFromPasswordUseCase({
+  RestoreEncryptedVaultFromPasswordUsecase({
     required RecoverBullRepository recoverBullRepository,
   }) : _recoverBullRepository = recoverBullRepository;
 
