@@ -1,16 +1,16 @@
 import 'dart:convert';
-import 'package:bb_mobile/_core/data/datasources/recoverbull_local_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/recoverbull_remote_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/recoverbull_local_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 
 class RecoverBullRepositoryImpl implements RecoverBullRepository {
-  final RecoverBullLocalDataSource localDataSource;
-  final RecoverBullRemoteDataSource remoteDataSource;
+  final RecoverBullLocalDatasource localDatasource;
+  final RecoverBullRemoteDatasource remoteDatasource;
   RecoverBullRepositoryImpl({
-    required this.localDataSource,
-    required this.remoteDataSource,
+    required this.localDatasource,
+    required this.remoteDatasource,
   });
 
   @override
@@ -22,7 +22,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     final plaintextBytes = utf8.encode(plaintext);
 
     final jsonBackup =
-        localDataSource.createBackup(plaintextBytes, backupKeyBytes);
+        localDatasource.createBackup(plaintextBytes, backupKeyBytes);
 
     return jsonBackup;
   }
@@ -33,7 +33,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String backupKey,
   ) {
     try {
-      final decryptedBytes = localDataSource.restoreBackup(
+      final decryptedBytes = localDatasource.restoreBackup(
         backupFile,
         HEX.decode(backupKey),
       );
@@ -52,7 +52,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String salt,
     String backupKey,
   ) async {
-    await remoteDataSource.store(
+    await remoteDatasource.store(
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),
@@ -66,7 +66,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String password,
     String salt,
   ) async {
-    final backupKey = await remoteDataSource.fetch(
+    final backupKey = await remoteDatasource.fetch(
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),
@@ -80,7 +80,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String password,
     String salt,
   ) async {
-    await remoteDataSource.trash(
+    await remoteDatasource.trash(
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),

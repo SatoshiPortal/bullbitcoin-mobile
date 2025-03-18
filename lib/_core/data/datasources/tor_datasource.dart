@@ -1,6 +1,6 @@
 import 'package:recoverbull/recoverbull.dart';
 
-abstract class TorDataSource {
+abstract class TorDatasource {
   /// Get the Tor client instance
   Tor getTorClient();
 
@@ -14,12 +14,12 @@ abstract class TorDataSource {
   Future<void> kill();
 }
 
-class TorDataSourceImpl implements TorDataSource {
+class TorDatasourceImpl implements TorDatasource {
   final Tor _tor;
 
-  TorDataSourceImpl._(this._tor);
+  TorDatasourceImpl._(this._tor);
 
-  static Future<TorDataSourceImpl> init() async {
+  static Future<TorDatasourceImpl> init() async {
     await Tor.init();
     final instance = Tor.instance;
     // Start Tor service
@@ -28,7 +28,7 @@ class TorDataSourceImpl implements TorDataSource {
     await instance.isReady();
 
     // // Return initialized data source with Tor instance
-    return TorDataSourceImpl._(instance);
+    return TorDatasourceImpl._(instance);
   }
 
   @override

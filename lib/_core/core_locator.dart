@@ -61,12 +61,12 @@ class CoreLocator {
     // Data sources
 
     // - Tor
-    if (!locator.isRegistered<TorDataSource>()) {
-      // Register TorDataSource as a singleton async
+    if (!locator.isRegistered<TorDatasource>()) {
+      // Register TorDatasource as a singleton async
       // This ensures Tor is properly initialized before it's used
-      locator.registerSingletonAsync<TorDataSource>(
+      locator.registerSingletonAsync<TorDatasource>(
         // This will initialize Tor, start it, and make sure it's ready
-        () async => await TorDataSourceImpl.init(),
+        () async => await TorDatasourceImpl.init(),
         signalsReady: true, // Signal when it's ready for use
       );
     }
@@ -210,11 +210,11 @@ class CoreLocator {
           LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
     );
 
-    // Register TorRepository after TorDataSource is registered
-    // Use waitFor to ensure TorDataSource is ready before TorRepository is created
+    // Register TorRepository after TorDatasource is registered
+    // Use waitFor to ensure TorDatasource is ready before TorRepository is created
     locator.registerSingletonWithDependencies<TorRepository>(
-      () => TorRepositoryImpl(locator<TorDataSource>()),
-      dependsOn: [TorDataSource],
+      () => TorRepositoryImpl(locator<TorDatasource>()),
+      dependsOn: [TorDatasource],
     );
 
     // Factories, managers or services responsible for handling specific logic
