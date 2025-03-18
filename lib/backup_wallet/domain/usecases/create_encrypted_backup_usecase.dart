@@ -27,7 +27,7 @@ class CreateEncryptedBackupUsecase {
       final defaultSeed = await _seedRepository.get(defaultFingerprint);
 
       final defaultXprv = Bip32Derivation.getXprvFromSeed(
-        defaultSeed.seedBytes,
+        defaultSeed.bytes,
         defaultMetadata.network,
       );
 
@@ -41,7 +41,7 @@ class CreateEncryptedBackupUsecase {
       for (final metadata in walletsMetadata) {
         final seed = await _seedRepository.get(metadata.masterFingerprint);
         toBackup.add(
-          RecoverBullWallet(seed: seed.seedBytes, metadata: metadata),
+          RecoverBullWallet(seed: seed.bytes, metadata: metadata),
         );
       }
 
