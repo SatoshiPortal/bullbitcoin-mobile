@@ -1,10 +1,10 @@
 import 'package:bb_mobile/_core/domain/repositories/google_drive_repository.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 
-class SaveToGoogleDriveUseCase {
+class SaveToGoogleDriveUsecase {
   final GoogleDriveRepository _repository;
 
-  SaveToGoogleDriveUseCase(this._repository);
+  SaveToGoogleDriveUsecase(this._repository);
 
   Future<void> execute(String content) async {
     try {

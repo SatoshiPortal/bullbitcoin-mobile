@@ -19,13 +19,13 @@ class BackupWalletLocator {
         recoverBullRepository: locator<RecoverBullRepository>(),
       ),
     );
-    locator.registerFactory<SaveToFileSystemUseCase>(
-      () => SaveToFileSystemUseCase(
+    locator.registerFactory<SaveToFileSystemUsecase>(
+      () => SaveToFileSystemUsecase(
         locator<FileSystemRepository>(),
       ),
     );
-    locator.registerFactory<SaveToGoogleDriveUseCase>(
-      () => SaveToGoogleDriveUseCase(
+    locator.registerFactory<SaveToGoogleDriveUsecase>(
+      () => SaveToGoogleDriveUsecase(
         locator<GoogleDriveRepository>(),
       ),
     );
