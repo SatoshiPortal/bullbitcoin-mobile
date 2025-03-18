@@ -7,16 +7,12 @@ import 'package:bb_mobile/_core/domain/entities/tx_input.dart';
 import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/payjoin_wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_repository.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/material.dart';
 
 class BdkWalletRepositoryImpl
-    implements
-        WalletRepository,
-        BitcoinWalletRepository,
-        PayjoinWalletRepository {
+    implements WalletRepository, BitcoinWalletRepository {
   final bdk.Wallet _wallet;
 
   BdkWalletRepositoryImpl({

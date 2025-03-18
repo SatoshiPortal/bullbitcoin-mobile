@@ -61,6 +61,8 @@ void main() {
     );
 
     debugPrint('Wallets created');
+    debugPrint('Receiver wallet id: ${receiverWallet.id}');
+    debugPrint('Sender wallet id: ${senderWallet.id}');
   });
 
   setUp(() async {
@@ -104,19 +106,19 @@ void main() {
   group('Payjoin Integration Tests', () {
     group('with one receive and one send', () {
       late StreamSubscription<Payjoin> payjoinSubscription;
-      late Completer<bool> payjoinReceiverCompletedEvent;
+      late Completer<bool> payjoinReceiverProposedEvent;
       late Completer<bool> payjoinSenderCompletedEvent;
 
       setUp(() async {
-        payjoinReceiverCompletedEvent = Completer();
+        payjoinReceiverProposedEvent = Completer();
         payjoinSenderCompletedEvent = Completer();
 
         payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
-          debugPrint('Payjoin event: $payjoin');
+          debugPrint('Payjoin event for ${payjoin.id}: ${payjoin.status}');
           switch (payjoin) {
             case PayjoinReceiver _:
-              if (payjoin.status == PayjoinStatus.completed) {
-                payjoinReceiverCompletedEvent.complete(true);
+              if (payjoin.status == PayjoinStatus.proposed) {
+                payjoinReceiverProposedEvent.complete(true);
               }
             case PayjoinSender _:
               if (payjoin.status == PayjoinStatus.completed) {
@@ -139,7 +141,7 @@ void main() {
           address: address.address,
           isTestnet: true,
         );
-        debugPrint('Payjoin receiver created: $payjoin');
+        debugPrint('Payjoin receiver created: ${payjoin.id}');
 
         expect(payjoin.status, PayjoinStatus.started);
         // Check that the payjoin uri is correct
@@ -164,7 +166,7 @@ void main() {
           originalPsbt: originalPsbt,
           networkFeesSatPerVb: networkFeesSatPerVb,
         );
-        debugPrint('Payjoin sender created: $payjoinSender');
+        debugPrint('Payjoin sender created: ${payjoinSender.id}');
         expect(payjoinSender.status, PayjoinStatus.requested);
 
         // Once the request is sent by the sender, it is automatically fetched
@@ -172,9 +174,9 @@ void main() {
         //  The receiver will process the request automatically and sends a
         //  payjoin proposal back to the payjoin directory which should complete
         //  the payjoin session for the receiver's side.
-        final didReceiverComplete = await Future.any(
+        final didReceiverPropose = await Future.any(
           [
-            payjoinReceiverCompletedEvent.future,
+            payjoinReceiverProposedEvent.future,
             Future.delayed(
               const Duration(
                 seconds: PayjoinConstants.directoryPollingInterval * 3,
@@ -183,7 +185,7 @@ void main() {
             ),
           ],
         );
-        expect(didReceiverComplete, true);
+        expect(didReceiverPropose, true);
 
         // Once the proposal is sent by the receiver, it is automatically fetched
         //  by the sender the next time it polls the payjoin directory.
@@ -235,10 +237,11 @@ void main() {
 
       setUp(() async {
         payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
-          debugPrint('Payjoin event: $payjoin');
+          debugPrint('Payjoin event for ${payjoin.id}: ${payjoin.status}');
           switch (payjoin) {
             case PayjoinReceiver _:
-              if (payjoin.status == PayjoinStatus.completed) {
+              if (payjoin.status == PayjoinStatus.proposed) {
+                // Complete the receiver side when it has send a proposal
                 payjoinCompleters[payjoin.id]!.complete(true);
               }
             case PayjoinSender _:
@@ -249,78 +252,123 @@ void main() {
         });
       });
 
-      group("and enough utxo's", () {
-        test('should work', () async {
-          // Make sure the wallets have a different utxo for every payjoin
-          // Set up multiple receiver sessions
-          for (int i = 0; i < numberOfPayjoins; i++) {
-            // Generate receiver address
-            final address = await walletManagerService.getNewAddress(
+      group(
+        "and enough utxo's",
+        () {
+          test('should work', () async {
+            // Make sure the wallets have a different utxo for every payjoin
+            final receiverUtxos = await walletManagerService.getUnspentUtxos(
               walletId: receiverWallet.id,
             );
-            debugPrint('Receive address generated: ${address.address}');
-
-            // Start a receiver session
-            final payjoin = await receiveWithPayjoinUseCase.execute(
-              walletId: receiverWallet.id,
-              address: address.address,
-              isTestnet: true,
-            );
-            debugPrint('Payjoin receiver created: $payjoin');
-
-            expect(payjoin.status, PayjoinStatus.started);
-            // Check that the payjoin uri is correct
-            final pjUri = Uri.parse(payjoin.pjUri);
-            expect(pjUri.scheme, 'bitcoin');
-            expect(pjUri.path, address.address);
-            expect(pjUri.queryParameters.containsKey('pj'), true);
-            expect(pjUri.queryParameters['pjos'], '0');
-
-            // Cache the address and payjoin uri
-            receiverAddresses.add(address.address);
-            payjoinUris.add(pjUri);
-            // Set a completer to check it completes successfully
-            payjoinCompleters[payjoin.id] = Completer();
-          }
-
-          // Set up multiple sender sessions
-          for (int i = 0; i < numberOfPayjoins; i++) {
-            // Build the psbt with the sender wallet
-            final originalPsbt = await buildPsbtUseCase.execute(
+            final senderUtxos = await walletManagerService.getUnspentUtxos(
               walletId: senderWallet.id,
-              address: receiverAddresses[i],
-              amountSat: BigInt.from(1000),
-              feeRateSatPerVb: networkFeesSatPerVb,
             );
-
-            final payjoinSender = await sendWithPayjoinUseCase.execute(
-              walletId: senderWallet.id,
-              bip21: payjoinUris[i].toString(),
-              originalPsbt: originalPsbt,
-              networkFeesSatPerVb: networkFeesSatPerVb,
+            debugPrint('Receiver utxos: ${receiverUtxos.length}');
+            debugPrint('Sender utxos: ${senderUtxos.length}');
+            if (receiverUtxos.length < numberOfPayjoins) {
+              final address = await walletManagerService.getNewAddress(
+                walletId: receiverWallet.id,
+              );
+              debugPrint(
+                'Send some utxos to ${address.address} before running the integration test again',
+              );
+            }
+            if (senderUtxos.length < numberOfPayjoins) {
+              final address = await walletManagerService.getNewAddress(
+                walletId: senderWallet.id,
+              );
+              debugPrint(
+                'Send some utxos to ${address.address} before running the integration test again',
+              );
+            }
+            expect(
+              receiverUtxos.length,
+              greaterThanOrEqualTo(numberOfPayjoins),
             );
-            debugPrint('Payjoin sender created: $payjoinSender');
-            expect(payjoinSender.status, PayjoinStatus.requested);
+            expect(senderUtxos.length, greaterThanOrEqualTo(numberOfPayjoins));
 
-            // Store completers for the sender sessions
-            payjoinCompleters[payjoinSender.id] = Completer();
-          }
+            // Set up multiple receiver sessions
+            for (int i = 0; i < numberOfPayjoins; i++) {
+              // Generate receiver address
+              final address = await walletManagerService.getNewAddress(
+                walletId: receiverWallet.id,
+              );
+              debugPrint('Receive address generated: ${address.address}');
 
-          final didAllComplete = await Future.any(
-            [
-              Future.wait(payjoinCompleters.values.map((e) => e.future)),
-              Future.delayed(
-                const Duration(
-                    seconds:
-                        3600 //PayjoinConstants.directoryPollingInterval * 3,
-                    ),
-                () => false,
-              ),
-            ],
-          );
-          expect(didAllComplete, true);
-        });
-      });
+              // Start a receiver session
+              final payjoin = await receiveWithPayjoinUseCase.execute(
+                walletId: receiverWallet.id,
+                address: address.address,
+                isTestnet: true,
+              );
+              debugPrint('Payjoin receiver created: ${payjoin.id}');
+
+              expect(payjoin.status, PayjoinStatus.started);
+              // Check that the payjoin uri is correct
+              final pjUri = Uri.parse(payjoin.pjUri);
+              expect(pjUri.scheme, 'bitcoin');
+              expect(pjUri.path, address.address);
+              expect(pjUri.queryParameters.containsKey('pj'), true);
+              expect(pjUri.queryParameters['pjos'], '0');
+
+              // Cache the address and payjoin uri
+              receiverAddresses.add(address.address);
+              payjoinUris.add(pjUri);
+              // Set a completer to check it completes successfully
+              payjoinCompleters[payjoin.id] = Completer();
+            }
+
+            // Set up multiple sender sessions
+            for (int i = 0; i < numberOfPayjoins; i++) {
+              // Build the psbt with the sender wallet
+              final originalPsbt = await buildPsbtUseCase.execute(
+                walletId: senderWallet.id,
+                address: receiverAddresses[i],
+                amountSat: BigInt.from(1000),
+                feeRateSatPerVb: networkFeesSatPerVb,
+              );
+
+              final payjoinSender = await sendWithPayjoinUseCase.execute(
+                walletId: senderWallet.id,
+                bip21: payjoinUris[i].toString(),
+                originalPsbt: originalPsbt,
+                networkFeesSatPerVb: networkFeesSatPerVb,
+              );
+              debugPrint('Payjoin sender created: ${payjoinSender.id}');
+              expect(payjoinSender.status, PayjoinStatus.requested);
+
+              // Store completers for the sender sessions
+              payjoinCompleters[payjoinSender.id] = Completer();
+            }
+
+            final didAllComplete = await Future.any(
+              [
+                Future.wait(payjoinCompleters.values.map((e) => e.future)).then(
+                  (results) => results.every(
+                    (completed) => completed == true, // Ensure all completed
+                  ),
+                ),
+                Future.delayed(
+                  const Duration(
+                    seconds: PayjoinConstants.directoryPollingInterval *
+                        3 *
+                        numberOfPayjoins,
+                  ),
+                  () => false,
+                ),
+              ],
+            );
+            expect(didAllComplete, true);
+          });
+        },
+        timeout: const Timeout(
+          Duration(
+            minutes: PayjoinConstants.directoryPollingInterval *
+                3 *
+                numberOfPayjoins,
+          ),
+        ),
+      );
 
       tearDown(() {
         payjoinSubscription.cancel();

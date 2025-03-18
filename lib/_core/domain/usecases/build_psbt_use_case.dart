@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_core/data/repositories/bdk_wallet_repository_impl.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
+import 'package:flutter/foundation.dart';
 
 class BuildPsbtUseCase {
   final PayjoinRepository _payjoin;
@@ -24,6 +25,10 @@ class BuildPsbtUseCase {
       // Inputs that are already used in ongoing payjoin sessions should not be
       //  used in other transactions.
       final payjoinInputs = await _payjoin.getInputsFromOngoingPayjoins();
+
+      debugPrint(
+        'Wallet id $walletId building psbt. PayjoinInputs: $payjoinInputs',
+      );
 
       final psbt = await _walletManager.buildPsbt(
         walletId: walletId,

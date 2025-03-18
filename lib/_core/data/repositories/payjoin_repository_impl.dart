@@ -12,13 +12,17 @@ import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/_utils/transaction_parsing.dart';
 import 'package:flutter/foundation.dart';
+import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final PayjoinDataSource _source;
+  // Lock to prevent the same utxo from being used in multiple payjoin proposals
+  final Lock _lock;
 
   PayjoinRepositoryImpl({
     required PayjoinDataSource payjoinDataSource,
-  }) : _source = payjoinDataSource;
+  })  : _source = payjoinDataSource,
+        _lock = Lock();
 
   @override
   Stream<PayjoinReceiver> get requestsForReceivers =>
@@ -40,15 +44,21 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       switch (payjoin) {
         case final PayjoinReceiverModel receiver:
           psbt = receiver.proposalPsbt;
+          debugPrint('ongoing receiver with psbt: $psbt');
         case final PayjoinSenderModel sender:
           psbt = sender.originalPsbt;
+          debugPrint('ongoing sender with psbt: $psbt');
       }
       if (psbt != null) {
         // Extract the inputs from the proposal psbt
         final psbtInputs = await TransactionParsing.extractInputsFromPsbt(psbt);
+        debugPrint('extracted inputs $psbtInputs, for psbt: $psbt');
         inputs.addAll(psbtInputs);
       }
     }
+
+    debugPrint('ongoingPayjoins: $payjoins');
+    debugPrint('inputsFromOngoingPayjoins: $inputs');
 
     return inputs;
   }
@@ -120,39 +130,46 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required List<Utxo> unspentUtxos,
     required FutureOr<String> Function(String) processPsbt,
   }) async {
-    debugPrint('unspentUtxos: $unspentUtxos');
-    // Make sure the inputs to select from for the proposal are not used by
-    //  ongoing payjoins already
-    final lockedInputs = await getInputsFromOngoingPayjoins();
+    // A lock is needed here to make sure the proposal of a payjoin is stored
+    //  before another payjoin checks for available inputs to create a proposal
+    final payjoinReceiver = await _lock.synchronized(() async {
+      debugPrint('unspentUtxos: $unspentUtxos');
+      // Make sure the inputs to select from for the proposal are not used by
+      //  ongoing payjoins already
+      final lockedInputs = await getInputsFromOngoingPayjoins();
+      debugPrint('lockedInputs: $lockedInputs');
 
-    final pdkInputPairs = unspentUtxos
-        .where((utxo) {
-          final isUtxoLocked = lockedInputs.any((input) {
-            return input.txId == utxo.txId && input.vout == utxo.vout;
-          });
+      final pdkInputPairs = unspentUtxos
+          .where((utxo) {
+            final isUtxoLocked = lockedInputs.any((input) {
+              return input.txId == utxo.txId && input.vout == utxo.vout;
+            });
 
-          return !isUtxoLocked;
-        })
-        .map((utxo) => PayjoinInputPairModel.fromUtxo(utxo))
-        .toList();
+            return !isUtxoLocked;
+          })
+          .map((utxo) => PayjoinInputPairModel.fromUtxo(utxo))
+          .toList();
 
-    debugPrint('pdkInputPairs: $pdkInputPairs');
+      debugPrint('pdkInputPairs: $pdkInputPairs');
 
-    if (pdkInputPairs.isEmpty) {
-      throw const NoInputsToPayjoinException(
-        message: 'No inputs available to create a new payjoin proposal',
+      if (pdkInputPairs.isEmpty) {
+        throw const NoInputsToPayjoinException(
+          message: 'No inputs available to create a new payjoin proposal',
+        );
+      }
+
+      final model = await _source.processRequest(
+        id: id,
+        hasOwnedInputs: hasOwnedInputs,
+        hasReceiverOutput: hasReceiverOutput,
+        inputPairs: pdkInputPairs,
+        processPsbt: processPsbt,
       );
-    }
 
-    final model = await _source.processRequest(
-      id: id,
-      hasOwnedInputs: hasOwnedInputs,
-      hasReceiverOutput: hasReceiverOutput,
-      inputPairs: pdkInputPairs,
-      processPsbt: processPsbt,
-    );
+      return model.toEntity() as PayjoinReceiver;
+    });
 
-    return model.toEntity() as PayjoinReceiver;
+    return payjoinReceiver;
   }
 
   @override

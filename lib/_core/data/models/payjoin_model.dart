@@ -44,7 +44,9 @@ sealed class PayjoinModel with _$PayjoinModel {
                 ? PayjoinStatus.expired
                 : proposalPsbt != null
                     ? PayjoinStatus.proposed
-                    : PayjoinStatus.started,
+                    : model.originalTxBytes != null
+                        ? PayjoinStatus.requested
+                        : PayjoinStatus.started,
         id: model.id,
         pjUri: model.pjUri,
         walletId: model.walletId,
