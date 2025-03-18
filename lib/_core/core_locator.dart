@@ -5,11 +5,11 @@ import 'package:bb_mobile/_core/data/datasources/electrum_server_datasource.dart
 import 'package:bb_mobile/_core/data/datasources/exchange_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/seed_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/tor_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/payjoin_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/tor_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/payjoin_repository_impl.dart';
@@ -57,12 +57,12 @@ class CoreLocator {
     // Data sources
 
     // - Tor
-    if (!locator.isRegistered<TorDataSource>()) {
-      // Register TorDataSource as a singleton async
+    if (!locator.isRegistered<TorDatasource>()) {
+      // Register TorDatasource as a singleton async
       // This ensures Tor is properly initialized before it's used
-      locator.registerSingletonAsync<TorDataSource>(
+      locator.registerSingletonAsync<TorDatasource>(
         // This will initialize Tor, start it, and make sure it's ready
-        () async => await TorDataSourceImpl.init(),
+        () async => await TorDatasourceImpl.init(),
         signalsReady: true, // Signal when it's ready for use
       );
     }
@@ -202,11 +202,11 @@ class CoreLocator {
           LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
     );
 
-    // Register TorRepository after TorDataSource is registered
-    // Use waitFor to ensure TorDataSource is ready before TorRepository is created
+    // Register TorRepository after TorDatasource is registered
+    // Use waitFor to ensure TorDatasource is ready before TorRepository is created
     locator.registerSingletonWithDependencies<TorRepository>(
-      () => TorRepositoryImpl(locator<TorDataSource>()),
-      dependsOn: [TorDataSource],
+      () => TorRepositoryImpl(locator<TorDatasource>()),
+      dependsOn: [TorDatasource],
     );
 
     // Factories, managers or services responsible for handling specific logic
@@ -230,14 +230,14 @@ class CoreLocator {
     );
 
     // Use cases
-    locator.registerFactory<GetDefaultWalletUseCase>(
-      () => GetDefaultWalletUseCase(
+    locator.registerFactory<GetDefaultWalletUsecase>(
+      () => GetDefaultWalletUsecase(
         walletManager: locator<WalletManagerService>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<FindMnemonicWordsUseCase>(
-      () => FindMnemonicWordsUseCase(
+    locator.registerFactory<FindMnemonicWordsUsecase>(
+      () => FindMnemonicWordsUsecase(
         wordListRepository: locator<WordListRepository>(),
       ),
     );

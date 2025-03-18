@@ -40,20 +40,20 @@ class AppStartupLocator {
       ),
     );
 
-    // Register InitializeTorUseCase using TorRepository
-    locator.registerFactory<InitializeTorUseCase>(
-      () => InitializeTorUseCase(locator<TorRepository>()),
+    // Register InitializeTorUsecase using TorRepository
+    locator.registerFactory<InitializeTorUsecase>(
+      () => InitializeTorUsecase(locator<TorRepository>()),
     );
 
     // Bloc
     locator.registerFactory<AppStartupBloc>(
       () => AppStartupBloc(
-        resetAppDataUseCase: locator<ResetAppDataUseCase>(),
-        checkPinCodeExistsUseCase: locator<CheckPinCodeExistsUseCase>(),
-        checkForExistingDefaultWalletsUseCase:
-            locator<CheckForExistingDefaultWalletsUseCase>(),
-        initExistingWalletsUseCase: locator<InitExistingWalletsUseCase>(),
-        initializeTorUseCase: locator<InitializeTorUseCase>(),
+        resetAppDataUsecase: locator<ResetAppDataUsecase>(),
+        checkPinCodeExistsUsecase: locator<CheckPinCodeExistsUsecase>(),
+        checkForExistingDefaultWalletsUsecase:
+            locator<CheckForExistingDefaultWalletsUsecase>(),
+        initExistingWalletsUsecase: locator<InitExistingWalletsUsecase>(),
+        initializeTorUsecase: locator<InitializeTorUsecase>(),
       ),
     );
   }

@@ -1,12 +1,12 @@
 import 'package:recoverbull/recoverbull.dart';
 
-abstract class RecoverBullLocalDataSource {
+abstract class RecoverBullLocalDatasource {
   String createBackup(List<int> secret, List<int> backupKey);
 
   List<int> restoreBackup(String backup, List<int> backupKey);
 }
 
-class RecoverBullLocalDataSourceImpl implements RecoverBullLocalDataSource {
+class RecoverBullLocalDatasourceImpl implements RecoverBullLocalDatasource {
   @override
   String createBackup(List<int> secret, List<int> backupKey) {
     final backup = RecoverBull.createBackup(
