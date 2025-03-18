@@ -8,11 +8,11 @@ part 'backup_wallet_state.dart';
 part 'backup_wallet_bloc.freezed.dart';
 
 class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
-  final CreateEncryptedBackupUsecase createEncryptedBackupUsecase;
-  final GetDefaultWalletUseCase getDefaultWalletUseCase;
+  final CreateEncryptedVaultUsecase createEncryptedVaultUsecase;
+  final GetDefaultWalletUsecase getDefaultWalletUsecase;
   BackupWalletBloc({
-    required this.createEncryptedBackupUsecase,
-    required this.getDefaultWalletUseCase,
+    required this.createEncryptedVaultUsecase,
+    required this.getDefaultWalletUsecase,
   }) : super(const BackupWalletState()) {
     on<BackupWalletEvent>((event, emit) {});
   }
