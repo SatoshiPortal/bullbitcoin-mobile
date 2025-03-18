@@ -17,6 +17,7 @@ import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class WalletManagerServiceImpl implements WalletManagerService {
@@ -318,7 +319,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
     try {
       await wallet.sync(electrumServer: electrumServer);
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       return getWallet(walletId);
     }
     return getWallet(walletId);

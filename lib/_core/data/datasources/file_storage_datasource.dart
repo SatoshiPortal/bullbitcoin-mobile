@@ -1,14 +1,14 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
-abstract class FileStorageDataSource {
+abstract class FileStorageDatasource {
   Future<File> saveToFile(File file, String value);
   Future<void> deleteFile(String filePath);
   Future<String> getAppDirectory();
   Future<String> getDownloadDirectory();
 }
 
-class FileStorageDataSourceImpl implements FileStorageDataSource {
+class FileStorageDatasourceImpl implements FileStorageDatasource {
   @override
   Future<File> saveToFile(File file, String value) async {
     return await file.writeAsString(value);

@@ -33,10 +33,10 @@ With that in mind, create a comment on the issue of the feature you want to impl
   - entities: Wallet, Settings (to get the environment to import the wallet to)
   - repository contracts: SettingsRepository
   - service contracts: WalletManagerService
-  - use cases: ImportXpubUseCase (This will orchestrate the whole process of importing the xpub and registering the wallet in the app)
+  - use cases: ImportXpubUsecase (This will orchestrate the whole process of importing the xpub and registering the wallet in the app)
 - data
   - models: WalletMetadataModel, SettingsModel, BalanceModel
-  - data sources: WalletDataSource, BdkWalletDataSourceImpl, WalletMetadataDataSource, Bip32DataSource, DescriptorDataSource
+  - data sources: WalletDatasource, BdkWalletDatasourceImpl, WalletMetadataDatasource, Bip32Datasource, DescriptorDatasource
   - repository implementations: SettingsRepositoryImpl
   - service implementations: WalletManagerServiceImpl
 - presentation

@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_utils/bip32_derivation.dart';
 import 'package:bb_mobile/_utils/descriptor_derivation.dart';
 
-abstract class WalletMetadataDataSource {
+abstract class WalletMetadataDatasource {
   Future<WalletMetadataModel> deriveFromSeed({
     required Seed seed,
     required Network network,
@@ -29,11 +29,11 @@ abstract class WalletMetadataDataSource {
   Future<void> delete(String walletId);
 }
 
-class WalletMetadataDataSourceImpl implements WalletMetadataDataSource {
-  final KeyValueStorageDataSource<String> _walletMetadataStorage;
+class WalletMetadataDatasourceImpl implements WalletMetadataDatasource {
+  final KeyValueStorageDatasource<String> _walletMetadataStorage;
 
-  const WalletMetadataDataSourceImpl({
-    required KeyValueStorageDataSource<String> walletMetadataStorage,
+  const WalletMetadataDatasourceImpl({
+    required KeyValueStorageDatasource<String> walletMetadataStorage,
   }) : _walletMetadataStorage = walletMetadataStorage;
 
   @override

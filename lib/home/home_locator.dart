@@ -8,7 +8,7 @@ class HomeLocator {
     // Bloc
     locator.registerFactory<HomeBloc>(
       () => HomeBloc(
-        getWalletsUseCase: locator<GetWalletsUseCase>(),
+        getWalletsUsecase: locator<GetWalletsUsecase>(),
         walletManagerService: locator<WalletManagerService>(),
       ),
     );

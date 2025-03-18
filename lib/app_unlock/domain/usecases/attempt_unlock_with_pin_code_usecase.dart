@@ -3,12 +3,12 @@ import 'package:bb_mobile/app_unlock/domain/services/timeout_calculator.dart';
 import 'package:bb_mobile/pin_code/domain/entities/unlock_attempt.dart';
 import 'package:bb_mobile/pin_code/domain/repositories/pin_code_repository.dart';
 
-class AttemptUnlockWithPinCodeUseCase {
+class AttemptUnlockWithPinCodeUsecase {
   final PinCodeRepository _pinCodeRepository;
   final FailedUnlockAttemptsRepository _failedUnlockAttemptsRepository;
   final TimeoutCalculator _timeoutCalculator;
 
-  AttemptUnlockWithPinCodeUseCase({
+  AttemptUnlockWithPinCodeUsecase({
     required PinCodeRepository pinCodeRepository,
     required FailedUnlockAttemptsRepository failedUnlockAttemptsRepository,
     required TimeoutCalculator timeoutCalculator,

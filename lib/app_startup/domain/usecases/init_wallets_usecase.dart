@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 
-class InitExistingWalletsUseCase {
+class InitExistingWalletsUsecase {
   final WalletManagerService _walletManager;
 
-  InitExistingWalletsUseCase({
+  InitExistingWalletsUsecase({
     required WalletManagerService walletManager,
   }) : _walletManager = walletManager;
 

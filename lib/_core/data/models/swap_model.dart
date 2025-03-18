@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -72,20 +70,22 @@ sealed class SwapModel with _$SwapModel {
 
   factory SwapModel.fromEntity(Swap swap) {
     return swap.when(
-      lnReceive: (id,
-          keyIndex,
-          type,
-          status,
-          environment,
-          creationTime,
-          receiveWalletId,
-          invoice,
-          receiveAddress,
-          receiveTxid,
-          boltzFee,
-          lockupFee,
-          claimFee,
-          completionTime) {
+      lnReceive: (
+        id,
+        keyIndex,
+        type,
+        status,
+        environment,
+        creationTime,
+        receiveWalletId,
+        invoice,
+        receiveAddress,
+        receiveTxid,
+        boltzFee,
+        lockupFee,
+        claimFee,
+        completionTime,
+      ) {
         return SwapModel.lnReceive(
           id: id,
           type: type.name,
@@ -103,22 +103,24 @@ sealed class SwapModel with _$SwapModel {
           claimFees: claimFee,
         );
       },
-      lnSend: (id,
-          keyIndex,
-          type,
-          status,
-          environment,
-          creationTime,
-          sendWalletId,
-          invoice,
-          sendTxid,
-          preimage,
-          refundAddress,
-          refundTxid,
-          boltzFee,
-          lockupFee,
-          claimFee,
-          completionTime) {
+      lnSend: (
+        id,
+        keyIndex,
+        type,
+        status,
+        environment,
+        creationTime,
+        sendWalletId,
+        invoice,
+        sendTxid,
+        preimage,
+        refundAddress,
+        refundTxid,
+        boltzFee,
+        lockupFee,
+        claimFee,
+        completionTime,
+      ) {
         return SwapModel.lnSend(
           id: id,
           type: type.name,
@@ -138,23 +140,25 @@ sealed class SwapModel with _$SwapModel {
           claimFees: claimFee,
         );
       },
-      chain: (id,
-          keyIndex,
-          type,
-          status,
-          environment,
-          creationTime,
-          sendWalletId,
-          sendTxid,
-          receiveWalletId,
-          receiveAddress,
-          receiveTxid,
-          refundAddress,
-          refundTxid,
-          boltzFee,
-          lockupFee,
-          claimFee,
-          completionTime) {
+      chain: (
+        id,
+        keyIndex,
+        type,
+        status,
+        environment,
+        creationTime,
+        sendWalletId,
+        sendTxid,
+        receiveWalletId,
+        receiveAddress,
+        receiveTxid,
+        refundAddress,
+        refundTxid,
+        boltzFee,
+        lockupFee,
+        claimFee,
+        completionTime,
+      ) {
         return SwapModel.chain(
           id: id,
           type: type.name,

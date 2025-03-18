@@ -12,26 +12,26 @@ part 'app_startup_state.dart';
 
 class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   AppStartupBloc({
-    required ResetAppDataUseCase resetAppDataUseCase,
-    required CheckPinCodeExistsUseCase checkPinCodeExistsUseCase,
-    required CheckForExistingDefaultWalletsUseCase
-        checkForExistingDefaultWalletsUseCase,
-    required InitExistingWalletsUseCase initExistingWalletsUseCase,
-  })  : _resetAppDataUseCase = resetAppDataUseCase,
-        _checkPinCodeExistsUseCase = checkPinCodeExistsUseCase,
-        _checkForExistingDefaultWalletsUseCase =
-            checkForExistingDefaultWalletsUseCase,
-        _initExistingWalletsUseCase = initExistingWalletsUseCase,
+    required ResetAppDataUsecase resetAppDataUsecase,
+    required CheckPinCodeExistsUsecase checkPinCodeExistsUsecase,
+    required CheckForExistingDefaultWalletsUsecase
+        checkForExistingDefaultWalletsUsecase,
+    required InitExistingWalletsUsecase initExistingWalletsUsecase,
+  })  : _resetAppDataUsecase = resetAppDataUsecase,
+        _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
+        _checkForExistingDefaultWalletsUsecase =
+            checkForExistingDefaultWalletsUsecase,
+        _initExistingWalletsUsecase = initExistingWalletsUsecase,
         super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
 
-  final ResetAppDataUseCase _resetAppDataUseCase;
-  final CheckPinCodeExistsUseCase _checkPinCodeExistsUseCase;
-  final CheckForExistingDefaultWalletsUseCase
-      _checkForExistingDefaultWalletsUseCase;
+  final ResetAppDataUsecase _resetAppDataUsecase;
+  final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
+  final CheckForExistingDefaultWalletsUsecase
+      _checkForExistingDefaultWalletsUsecase;
 
-  final InitExistingWalletsUseCase _initExistingWalletsUseCase;
+  final InitExistingWalletsUsecase _initExistingWalletsUsecase;
 
   Future<void> _onAppStartupStarted(
     AppStartupStarted event,
@@ -40,18 +40,18 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     emit(const AppStartupState.loadingInProgress());
     try {
       final doDefaultWalletsExist =
-          await _checkForExistingDefaultWalletsUseCase.execute();
+          await _checkForExistingDefaultWalletsUsecase.execute();
       bool isPinCodeSet = false;
 
       if (doDefaultWalletsExist) {
-        await _initExistingWalletsUseCase.execute();
-        isPinCodeSet = await _checkPinCodeExistsUseCase.execute();
+        await _initExistingWalletsUsecase.execute();
+        isPinCodeSet = await _checkPinCodeExistsUsecase.execute();
         // Other startup logic can be added here, e.g. payjoin sessions resume
       } else {
         // This is a fresh install, so reset the app data that might still be
         //  there from a previous install.
         //  (e.g. secure storage data on iOS like the pin code)
-        await _resetAppDataUseCase.execute();
+        await _resetAppDataUsecase.execute();
       }
 
       emit(

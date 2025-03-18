@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/_core/data/datasources/bitcoin_blockchain_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/payjoin_datasource.dart';
 import 'package:bb_mobile/_core/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/_core/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
@@ -11,11 +11,11 @@ import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
-  final PayjoinDataSource _source;
+  final PayjoinDatasource _source;
 
   PayjoinRepositoryImpl({
-    required PayjoinDataSource payjoinDataSource,
-  }) : _source = payjoinDataSource;
+    required PayjoinDatasource payjoinDatasource,
+  }) : _source = payjoinDatasource;
 
   @override
   Stream<PayjoinReceiver> get requestsForReceivers =>
@@ -116,7 +116,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required String finalizedPsbt,
     required ElectrumServer electrumServer,
   }) async {
-    final blockchain = await BdkBlockchainDataSourceImpl.fromElectrumServer(
+    final blockchain = await BdkBlockchainDatasourceImpl.fromElectrumServer(
       ElectrumServerModel.fromEntity(electrumServer),
     );
 

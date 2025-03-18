@@ -1,10 +1,10 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 
-class GetLanguageUseCase {
+class GetLanguageUsecase {
   final SettingsRepository _settingsRepository;
 
-  GetLanguageUseCase({
+  GetLanguageUsecase({
     required SettingsRepository settingsRepository,
   }) : _settingsRepository = settingsRepository;
 

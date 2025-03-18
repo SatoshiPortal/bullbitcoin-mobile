@@ -12,24 +12,24 @@ part 'receive_state.dart';
 
 class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ReceiveBloc({
-    required GetWalletsUseCase getWalletsUseCase,
-    required GetReceiveAddressUseCase getReceiveAddressUseCase,
-    required CreateReceiveSwapUseCase createReceiveSwapUseCase,
+    required GetWalletsUsecase getWalletsUsecase,
+    required GetReceiveAddressUsecase getReceiveAddressUsecase,
+    required CreateReceiveSwapUsecase createReceiveSwapUsecase,
     String?
         selectedWalletId, // TODO: analyze other ways to pass a preselected wallet (like in the ...Started events)
     // TODO: analyze as well if the list of wallets that can be used to select a wallet should be passed to the bloc or if it should be fetched by the bloc itself
-  })  : _getWalletsUseCase = getWalletsUseCase,
-        _getReceiveAddressUseCase = getReceiveAddressUseCase,
-        _createReceiveSwapUseCase = createReceiveSwapUseCase,
+  })  : _getWalletsUsecase = getWalletsUsecase,
+        _getReceiveAddressUsecase = getReceiveAddressUsecase,
+        _createReceiveSwapUsecase = createReceiveSwapUsecase,
         super(ReceiveState(selectedWalletId: selectedWalletId)) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
     on<ReceiveLiquidStarted>(_onLiquidStarted);
   }
 
-  final GetWalletsUseCase _getWalletsUseCase;
-  final GetReceiveAddressUseCase _getReceiveAddressUseCase;
-  final CreateReceiveSwapUseCase _createReceiveSwapUseCase;
+  final GetWalletsUsecase _getWalletsUsecase;
+  final GetReceiveAddressUsecase _getReceiveAddressUsecase;
+  final CreateReceiveSwapUsecase _createReceiveSwapUsecase;
 
   void _onBitcoinStarted(
     ReceiveBitcoinStarted event,

@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_core/domain/repositories/word_list_repository.dart';
 
-class FindMnemonicWordsUseCase {
+class FindMnemonicWordsUsecase {
   final WordListRepository _wordListRepository;
 
-  FindMnemonicWordsUseCase({
+  FindMnemonicWordsUsecase({
     required WordListRepository wordListRepository,
   }) : _wordListRepository = wordListRepository;
 

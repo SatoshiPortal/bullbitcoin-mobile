@@ -1,10 +1,10 @@
 import 'package:flutter/services.dart';
 
-abstract class Bip39WordListDataSource {
+abstract class Bip39WordListDatasource {
   Future<List<String>> getWords();
 }
 
-class Bip39EnglishWordListDataSourceImpl implements Bip39WordListDataSource {
+class Bip39EnglishWordListDatasourceImpl implements Bip39WordListDatasource {
   @override
   Future<List<String>> getWords() async {
     final i = await rootBundle.loadString('assets/bip39_english.txt');

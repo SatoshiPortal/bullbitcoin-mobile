@@ -1,9 +1,9 @@
 import 'package:bb_mobile/bitcoin_price/domain/repositories/bitcoin_price_repository.dart';
 
-class GetAvailableFiatCurrenciesUseCase {
+class GetAvailableFiatCurrenciesUsecase {
   final BitcoinPriceRepository _bitcoinPriceRepository;
 
-  GetAvailableFiatCurrenciesUseCase({
+  GetAvailableFiatCurrenciesUsecase({
     required BitcoinPriceRepository bitcoinPriceRepository,
   }) : _bitcoinPriceRepository = bitcoinPriceRepository;
 

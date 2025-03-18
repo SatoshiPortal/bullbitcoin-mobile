@@ -8,8 +8,8 @@ class OnboardingLocator {
     // Blocs
     locator.registerFactory<OnboardingBloc>(
       () => OnboardingBloc(
-        createDefaultWalletsUseCase: locator<CreateDefaultWalletsUseCase>(),
-        findMnemonicWordsUseCase: locator<FindMnemonicWordsUseCase>(),
+        createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
+        findMnemonicWordsUsecase: locator<FindMnemonicWordsUsecase>(),
       ),
     );
   }

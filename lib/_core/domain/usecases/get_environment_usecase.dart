@@ -1,10 +1,10 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 
-class GetEnvironmentUseCase {
+class GetEnvironmentUsecase {
   final SettingsRepository _settingsRepository;
 
-  GetEnvironmentUseCase({
+  GetEnvironmentUsecase({
     required SettingsRepository settingsRepository,
   }) : _settingsRepository = settingsRepository;
 

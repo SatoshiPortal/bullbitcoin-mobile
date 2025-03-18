@@ -4,12 +4,12 @@ import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:flutter/material.dart';
 
-class CreateDefaultWalletsUseCase {
+class CreateDefaultWalletsUsecase {
   final SettingsRepository _settingsRepository;
   final MnemonicSeedFactory _mnemonicSeedFactory;
   final WalletManagerService _walletManager;
 
-  CreateDefaultWalletsUseCase({
+  CreateDefaultWalletsUsecase({
     required SettingsRepository settingsRepository,
     required MnemonicSeedFactory mnemonicSeedFactory,
     required WalletManagerService walletManager,

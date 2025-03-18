@@ -1,10 +1,10 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 
-class GetBitcoinUnitUseCase {
+class GetBitcoinUnitUsecase {
   final SettingsRepository _settingsRepository;
 
-  GetBitcoinUnitUseCase({
+  GetBitcoinUnitUsecase({
     required SettingsRepository settingsRepository,
   }) : _settingsRepository = settingsRepository;
 

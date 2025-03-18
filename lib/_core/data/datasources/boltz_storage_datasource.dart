@@ -1,11 +1,11 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/models/swap_model.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:boltz/boltz.dart';
 
-abstract class BoltzStorageDataSource {
+abstract class BoltzStorageDatasource {
   // Local Storage
   Future<void> store(SwapModel swap);
   Future<SwapModel?> get(String swapId);
@@ -25,13 +25,13 @@ abstract class BoltzStorageDataSource {
   // Future<void> deleteSecureSwap(String swapId);
 }
 
-class BoltzStorageDataSourceImpl implements BoltzStorageDataSource {
-  final KeyValueStorageDataSource<String> _localSwapStorage;
-  final KeyValueStorageDataSource _secureSwapStorage;
+class BoltzStorageDatasourceImpl implements BoltzStorageDatasource {
+  final KeyValueStorageDatasource<String> _localSwapStorage;
+  final KeyValueStorageDatasource _secureSwapStorage;
 
-  BoltzStorageDataSourceImpl({
-    required KeyValueStorageDataSource<String> localSwapStorage,
-    required KeyValueStorageDataSource<String> secureSwapStorage,
+  BoltzStorageDatasourceImpl({
+    required KeyValueStorageDatasource<String> localSwapStorage,
+    required KeyValueStorageDatasource<String> secureSwapStorage,
   })  : _localSwapStorage = localSwapStorage,
         _secureSwapStorage = secureSwapStorage;
   // LOCAL STORAGE

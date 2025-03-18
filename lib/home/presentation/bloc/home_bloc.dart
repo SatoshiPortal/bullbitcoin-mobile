@@ -10,9 +10,9 @@ part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({
-    required GetWalletsUseCase getWalletsUseCase,
+    required GetWalletsUsecase getWalletsUsecase,
     required WalletManagerService walletManagerService,
-  })  : _getWalletsUseCase = getWalletsUseCase,
+  })  : _getWalletsUsecase = getWalletsUsecase,
         _walletManagerService = walletManagerService,
         super(const HomeState()) {
     on<HomeStarted>(_onStarted);
@@ -20,7 +20,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<HomeTransactionsSynced>(_onTransactionsSynced);
   }
 
-  final GetWalletsUseCase _getWalletsUseCase;
+  final GetWalletsUsecase _getWalletsUsecase;
   final WalletManagerService _walletManagerService;
 
   Future<void> _onStarted(
@@ -28,7 +28,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     try {
-      final wallets = await _getWalletsUseCase.execute();
+      final wallets = await _getWalletsUsecase.execute();
 
       emit(
         HomeState(status: HomeStatus.success, wallets: wallets),
@@ -45,7 +45,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     try {
-      final wallets = await _getWalletsUseCase.execute();
+      final wallets = await _getWalletsUsecase.execute();
 
       emit(
         state.copyWith(

@@ -1,10 +1,10 @@
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:hive/hive.dart';
 
-class HiveStorageDataSourceImpl<T> implements KeyValueStorageDataSource<T> {
+class HiveStorageDatasourceImpl<T> implements KeyValueStorageDatasource<T> {
   final Box<T> _box;
 
-  HiveStorageDataSourceImpl(this._box);
+  HiveStorageDatasourceImpl(this._box);
 
   @override
   Future<void> saveValue({required String key, required T value}) async {

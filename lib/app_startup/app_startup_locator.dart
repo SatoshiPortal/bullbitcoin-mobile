@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
+import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/app_startup/domain/usecases/init_wallets_usecase.dart';
 import 'package:bb_mobile/app_startup/domain/usecases/reset_app_data_usecase.dart';
@@ -13,25 +13,25 @@ import 'package:bb_mobile/pin_code/domain/repositories/pin_code_repository.dart'
 class AppStartupLocator {
   static void setup() {
     // Use cases
-    locator.registerFactory<ResetAppDataUseCase>(
-      () => ResetAppDataUseCase(
+    locator.registerFactory<ResetAppDataUsecase>(
+      () => ResetAppDataUsecase(
         pinCodeRepository: locator<PinCodeRepository>(),
       ),
     );
-    locator.registerFactory<CheckForExistingDefaultWalletsUseCase>(
-      () => CheckForExistingDefaultWalletsUseCase(
+    locator.registerFactory<CheckForExistingDefaultWalletsUsecase>(
+      () => CheckForExistingDefaultWalletsUsecase(
         walletManager: locator<WalletManagerService>(),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<InitExistingWalletsUseCase>(
-      () => InitExistingWalletsUseCase(
+    locator.registerFactory<InitExistingWalletsUsecase>(
+      () => InitExistingWalletsUsecase(
         walletManager: locator<WalletManagerService>(),
       ),
     );
     // Use cases
-    locator.registerFactory<CreateDefaultWalletsUseCase>(
-      () => CreateDefaultWalletsUseCase(
+    locator.registerFactory<CreateDefaultWalletsUsecase>(
+      () => CreateDefaultWalletsUsecase(
         settingsRepository: locator<SettingsRepository>(),
         mnemonicSeedFactory: locator<MnemonicSeedFactory>(),
         walletManager: locator<WalletManagerService>(),
@@ -41,11 +41,11 @@ class AppStartupLocator {
     // Bloc
     locator.registerFactory<AppStartupBloc>(
       () => AppStartupBloc(
-        resetAppDataUseCase: locator<ResetAppDataUseCase>(),
-        checkPinCodeExistsUseCase: locator<CheckPinCodeExistsUseCase>(),
-        checkForExistingDefaultWalletsUseCase:
-            locator<CheckForExistingDefaultWalletsUseCase>(),
-        initExistingWalletsUseCase: locator<InitExistingWalletsUseCase>(),
+        resetAppDataUsecase: locator<ResetAppDataUsecase>(),
+        checkPinCodeExistsUsecase: locator<CheckPinCodeExistsUsecase>(),
+        checkForExistingDefaultWalletsUsecase:
+            locator<CheckForExistingDefaultWalletsUsecase>(),
+        initExistingWalletsUsecase: locator<InitExistingWalletsUsecase>(),
       ),
     );
   }
