@@ -47,11 +47,13 @@ import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
-
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_payjoin_updates_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/pick_file_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_use_case.dart';
