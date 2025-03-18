@@ -79,7 +79,7 @@ class CoreLocator {
     );
     // - FileStorageDataSource
 
-    locator.registerLazySingleton<FileStorageDataSource>(
+    locator.registerLazySingleton<FileStorageDatasource>(
       () => FileStorageDataSourceImpl(
         filePicker: FilePicker.platform,
       ),
@@ -102,7 +102,7 @@ class CoreLocator {
     // Register Google Drive components
     locator.registerLazySingleton<GoogleDriveRepository>(
       () => GoogleDriveRepositoryImpl(
-        locator<GoogleDriveAppDataSource>(),
+        locator<GoogleDriveAppDatasource>(),
       ),
     );
 
@@ -130,7 +130,7 @@ class CoreLocator {
     );
     locator.registerLazySingleton<FileSystemRepository>(
       () => FileSystemRepositoryImpl(
-        locator<FileStorageDataSource>(),
+        locator<FileStorageDatasource>(),
       ),
     );
     locator.registerLazySingleton<SeedRepository>(
