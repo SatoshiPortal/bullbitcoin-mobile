@@ -10,6 +10,11 @@ part 'seed.freezed.dart';
 sealed class Seed with _$Seed {
   const Seed._();
 
+  /// Bytes-based seed
+  const factory Seed.bytes({
+    required Uint8List bytes,
+  }) = BytesSeed;
+
   /// Mnemonic-based seed
   const factory Seed.mnemonic({
     required List<String> mnemonicWords,
@@ -18,6 +23,7 @@ sealed class Seed with _$Seed {
 
   Uint8List get bytes {
     return when(
+      bytes: (b) => b,
       mnemonic: (mnemonicWords, passphrase) => bip39.mnemonicToSeed(
         mnemonicWords.join(' '),
         passphrase: passphrase ?? '',
@@ -26,11 +32,6 @@ sealed class Seed with _$Seed {
   }
 
   String get hex => bytes.toHexString();
-
-  @override
-  String toString() {
-    return when(mnemonic: (mnemonicWords, _) => mnemonicWords.join(' '));
-  }
 
   String get masterFingerprint {
     final root = bip32.BIP32.fromSeed(bytes);
