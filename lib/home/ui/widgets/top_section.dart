@@ -5,6 +5,7 @@ import 'package:bb_mobile/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dar
 import 'package:bb_mobile/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/gen/assets.gen.dart';
 import 'package:bb_mobile/home/presentation/bloc/home_bloc.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -233,7 +234,7 @@ class _TopNav extends StatelessWidget {
         const Gap(8),
 
         InkWell(
-          onTap: () {},
+          onTap: () => context.pushNamed(AppRoute.settings.name),
           child: Image.asset(
             Assets.icons.settingsLine.path,
             width: 24,

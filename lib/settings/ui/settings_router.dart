@@ -1,11 +1,13 @@
 import 'package:bb_mobile/pin_code/ui/pin_code_setting_flow.dart';
+import 'package:bb_mobile/recoverbull/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/settings/ui/screens/language_settings_screen.dart';
 import 'package:go_router/go_router.dart';
 
 enum SettingsSubroute {
   pinCode('pin-code'),
   language('language'),
-  currency('currency');
+  currency('currency'),
+  backup('wallet-backup');
 
   final String path;
 
@@ -23,6 +25,11 @@ class SettingsRouter {
       path: SettingsSubroute.pinCode.path,
       name: SettingsSubroute.pinCode.name,
       builder: (context, state) => const PinCodeSettingFlow(),
+    ),
+    GoRoute(
+      path: SettingsSubroute.backup.path,
+      name: SettingsSubroute.backup.name,
+      builder: (context, state) => const BackupSettingsScreen(),
     ),
     /** TODO: Implement CurrencySettingsScreen
      * Add the `BitcoinPriceCurrencyChanged` event to the `BitcoinPriceBloc` when the currency is changed successfully on the settings screen
