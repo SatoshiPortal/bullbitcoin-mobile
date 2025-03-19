@@ -1,10 +1,13 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
+import 'package:bb_mobile/_ui/components/dialpad/dailpad.dart';
 import 'package:bb_mobile/_ui/components/inputs/copy_input.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
+import 'package:bb_mobile/_ui/components/price_input/balance_row.dart';
+import 'package:bb_mobile/_ui/components/price_input/price_input.dart';
 import 'package:bb_mobile/_ui/components/segment/segmented_full.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
+import 'package:bb_mobile/_ui/components/toggle/switch.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
-import 'package:bb_mobile/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -27,8 +30,8 @@ class ReceiveScreen extends StatelessWidget {
         ),
       ),
       body: const SingleChildScrollView(
-        // child: QrPage(),
-        child: AmountPage(),
+        child: QrPage(),
+        // child: AmountPage(),
       ),
     );
   }
@@ -88,7 +91,7 @@ class ReceiveNetworkSelection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBSwitcher<String>(
+      child: BBSegmentFull<String>(
         items: const {
           'Bitcoin',
           'Lightning',
@@ -255,20 +258,7 @@ class ReceiveCopyAddress extends StatelessWidget {
             style: context.font.headlineSmall,
           ),
           const Spacer(),
-          Switch(
-            inactiveTrackColor: context.colour.surface,
-            trackOutlineWidth: const WidgetStatePropertyAll(0),
-            inactiveThumbColor: context.colour.onPrimary,
-            padding: EdgeInsets.zero,
-            value: false,
-            thumbIcon: WidgetStatePropertyAll(
-              Icon(
-                Icons.circle,
-                color: context.colour.onPrimary,
-              ),
-            ),
-            onChanged: (v) {},
-          ),
+          const BBSwitch(),
         ],
       ),
     );
@@ -280,137 +270,16 @@ class ReceiveAmountEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            BBText(
-              '200',
-              style: context.font.displaySmall!.copyWith(
-                fontSize: 36,
-              ),
-              color: context.colour.outlineVariant,
-            ),
-            const Gap(8),
-            BBText(
-              'sats',
-              style: context.font.displaySmall,
-              color: context.colour.outlineVariant,
-            ),
-            const Gap(16),
-            InkWell(
-              child: Image.asset(
-                Assets.images2.dropdownUpdown.path,
-                height: 20,
-                width: 20,
-              ),
-            ),
-          ],
-        ),
-        const Gap(14),
-        BBText(
-          '~0.00 CAD',
-          style: context.font.bodyLarge,
-          color: context.colour.surfaceContainer,
-        ),
-        const Gap(14),
-        Center(
-          child: Container(
-            height: 40,
-            width: 200,
-            alignment: Alignment.center,
-            child: Expanded(
-              child: TextField(
-                textAlignVertical: TextAlignVertical.center,
-                textAlign: TextAlign.center,
-                expands: true,
-                maxLines: null,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(2),
-                    borderSide: BorderSide.none,
-                  ),
-                  fillColor: context.colour.secondaryFixedDim,
-                  filled: true,
-                  floatingLabelAlignment: FloatingLabelAlignment.center,
-                  hintText: 'Add note',
-                  hintStyle: context.font.labelSmall!.copyWith(
-                    color: context.colour.surfaceContainer,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+    return const PriceInput();
   }
 }
 
 class ReceiveNumberPad extends StatelessWidget {
   const ReceiveNumberPad({super.key});
 
-  Widget numPadButton(BuildContext context, String num) {
-    return Expanded(
-      child: InkWell(
-        onTap: () {},
-        child: Container(
-          height: 64,
-          decoration: const BoxDecoration(
-              // border: Border.all(
-              //   color: context.colour.surface,
-              // ),
-              ),
-          child: Center(
-            child: BBText(
-              num,
-              style: context.font.headlineMedium!.copyWith(fontSize: 20),
-              color: context.colour.surfaceContainerLow,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              numPadButton(context, '1'),
-              numPadButton(context, '2'),
-              numPadButton(context, '3'),
-            ],
-          ),
-          Row(
-            children: [
-              numPadButton(context, '4'),
-              numPadButton(context, '5'),
-              numPadButton(context, '6'),
-            ],
-          ),
-          Row(
-            children: [
-              numPadButton(context, '7'),
-              numPadButton(context, '8'),
-              numPadButton(context, '9'),
-            ],
-          ),
-          Row(
-            children: [
-              numPadButton(context, '.'),
-              numPadButton(context, '0'),
-              numPadButton(context, ''),
-            ],
-          ),
-        ],
-      ),
-    );
+    return const DialPad();
   }
 }
 
@@ -419,45 +288,7 @@ class ReceiveBalanceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Container(
-            height: 1,
-            color: context.colour.secondaryFixedDim,
-          ),
-          const Gap(14),
-          Row(
-            children: [
-              const Gap(8),
-              BBText(
-                'Wallet Balance',
-                style: context.font.labelLarge,
-                color: context.colour.surface,
-              ),
-              const Gap(4),
-              BBText(
-                '53.34 CAD',
-                style: context.font.labelMedium,
-                color: context.colour.secondary,
-              ),
-              const Spacer(),
-              BBButton.small(
-                label: 'MAX',
-                height: 30,
-                width: 51,
-                bgColor: context.colour.secondaryFixedDim,
-                textColor: context.colour.secondary,
-                textStyle: context.font.labelLarge,
-                onPressed: () {},
-              ),
-              const Gap(8),
-            ],
-          ),
-        ],
-      ),
-    );
+    return const BalanceRow();
   }
 }
 

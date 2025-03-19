@@ -24,6 +24,7 @@ class BBText extends StatelessWidget {
       style: style!.copyWith(color: color),
       maxLines: maxLines,
       textAlign: textAlign,
+      softWrap: true,
     );
   }
 }

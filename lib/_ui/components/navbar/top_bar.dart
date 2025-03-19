@@ -9,15 +9,20 @@ class TopBar extends StatelessWidget {
     required this.title,
     this.onBack,
     this.onAction,
+    this.color,
+    this.actionIcon,
   });
 
   final String title;
   final Function? onBack;
   final Function? onAction;
+  final IconData? actionIcon;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      color: color,
       padding: const EdgeInsets.only(bottom: 8, left: 8, right: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -45,7 +50,7 @@ class TopBar extends StatelessWidget {
           ),
           if (onAction != null) ...[
             IconButton(
-              icon: const Icon(Icons.close),
+              icon: Icon(actionIcon ?? Icons.close),
               onPressed: () => onAction!(),
               iconSize: 24,
               color: context.colour.secondary,

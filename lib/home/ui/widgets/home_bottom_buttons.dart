@@ -31,7 +31,9 @@ class HomeBottomButtons extends StatelessWidget {
             iconData: Icons.crop_free,
             label: 'Send',
             iconFirst: true,
-            onPressed: () {},
+            onPressed: () {
+              context.pushNamed(AppRoute.send.name);
+            },
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,
           ),
