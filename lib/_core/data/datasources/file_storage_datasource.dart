@@ -12,6 +12,10 @@ abstract class FileStorageDatasource {
 }
 
 class FileStorageDatasourceImpl implements FileStorageDatasource {
+  final FilePicker _filePicker;
+
+  FileStorageDatasourceImpl({FilePicker? filePicker})
+      : _filePicker = filePicker ?? FilePicker.platform;
   @override
   Future<File> saveToFile(File file, String value) async {
     return await file.writeAsString(value);

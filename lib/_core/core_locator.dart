@@ -53,7 +53,11 @@ import 'package:bb_mobile/_core/domain/usecases/get_hide_amounts_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_payjoin_updates_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
@@ -100,7 +104,7 @@ class CoreLocator {
     // - FileStorageDataSource
 
     locator.registerLazySingleton<FileStorageDatasource>(
-      () => FileStorageDataSourceImpl(filePicker: FilePicker.platform),
+      () => FileStorageDatasourceImpl(filePicker: FilePicker.platform),
     );
     //  - Exchange
     locator.registerLazySingleton<ExchangeDatasource>(
@@ -117,13 +121,6 @@ class CoreLocator {
           .boltzSwapsHiveStorageDatasourceInstanceName,
     );
 
-    // Register Google Drive components
-    locator.registerLazySingleton<GoogleDriveRepository>(
-      () => GoogleDriveRepositoryImpl(
-        locator<GoogleDriveAppDatasource>(),
-      ),
-    );
-
     // Repositories
     // Register TorRepository right after TorDatasource
     locator.registerSingletonWithDependencies<TorRepository>(
@@ -136,13 +133,17 @@ class CoreLocator {
     await locator.isReady<TorRepository>();
     locator.registerSingletonWithDependencies<RecoverBullRepository>(
       () => RecoverBullRepositoryImpl(
-        localDataSource: locator<RecoverBullLocalDatasource>(),
-        remoteDataSource: locator<RecoverBullRemoteDatasource>(),
+        localDatasource: locator<RecoverBullLocalDatasource>(),
+        remoteDatasource: locator<RecoverBullRemoteDatasource>(),
         torRepository: locator<TorRepository>(),
       ),
       dependsOn: [TorRepository],
     );
-
+    locator.registerLazySingleton<GoogleDriveRepository>(
+      () => GoogleDriveRepositoryImpl(
+        locator<GoogleDriveAppDatasource>(),
+      ),
+    );
     final walletMetadataBox =
         await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
     locator.registerLazySingleton<WalletMetadataRepository>(
