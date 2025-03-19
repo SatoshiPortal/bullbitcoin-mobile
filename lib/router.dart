@@ -5,6 +5,7 @@ import 'package:bb_mobile/home/ui/home_screen.dart';
 import 'package:bb_mobile/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/receive/ui/receive_router.dart';
 import 'package:bb_mobile/recover_wallet/ui/recover_wallet_flow.dart';
+import 'package:bb_mobile/send/ui/send_screen.dart';
 import 'package:bb_mobile/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/settings/ui/settings_router.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,8 @@ enum AppRoute {
   receiveBitcoin('/receive-bitcoin'),
   receiveLightning('/receive-lightning'),
   receiveLiquid('/receive-liquid'),
+
+  send('/send'),
 
   devStart('/dev-start'),
   devReceive('/dev-receive'),
@@ -108,6 +111,11 @@ class AppRouter {
         path: AppRoute.settings.path,
         builder: (context, state) => const SettingsScreen(),
         routes: SettingsRouter.routes,
+      ),
+      GoRoute(
+        name: AppRoute.send.name,
+        path: AppRoute.send.path,
+        builder: (context, state) => const SendScreen(),
       ),
       ReceiveRouter.route,
       DevPages.devStart,

@@ -3,8 +3,8 @@ import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/cupertino.dart';
 
-class BBSwitcher<T extends Object> extends StatelessWidget {
-  const BBSwitcher({
+class BBSegmentFull<T extends Object> extends StatelessWidget {
+  const BBSegmentFull({
     super.key,
     required this.items,
     required this.selected,

@@ -95,6 +95,10 @@ class $AssetsImages2Gen {
   /// File path: assets/images2/bg_long.png
   AssetGenImage get bgLong => const AssetGenImage('assets/images2/bg_long.png');
 
+  /// File path: assets/images2/cubes_loading.gif
+  AssetGenImage get cubesLoading =>
+      const AssetGenImage('assets/images2/cubes_loading.gif');
+
   /// File path: assets/images2/dropdown_updown.png
   AssetGenImage get dropdownUpdown =>
       const AssetGenImage('assets/images2/dropdown_updown.png');
@@ -113,9 +117,10 @@ class $AssetsImages2Gen {
         bbLogo,
         bgRed,
         bgLong,
+        cubesLoading,
         dropdownUpdown,
         successTick,
-        whitebullwithtext
+        whitebullwithtext,
       ];
 }
 
