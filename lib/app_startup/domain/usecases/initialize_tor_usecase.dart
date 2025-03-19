@@ -7,6 +7,6 @@ class InitializeTorUsecase {
 
   Future<void> execute() async {
     //do a try catch over here
-    await _torRepository.isTorReady();
+    await _torRepository.start();
   }
 }
