@@ -8,6 +8,7 @@ import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_s
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/payjoin_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';

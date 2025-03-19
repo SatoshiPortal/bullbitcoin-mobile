@@ -20,11 +20,13 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     required CheckForExistingDefaultWalletsUsecase
         checkForExistingDefaultWalletsUsecase,
     required InitExistingWalletsUsecase initExistingWalletsUsecase,
+    required InitializeTorUsecase initializeTorUsecase,
   })  : _resetAppDataUsecase = resetAppDataUsecase,
         _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
         _checkForExistingDefaultWalletsUsecase =
             checkForExistingDefaultWalletsUsecase,
         _initExistingWalletsUsecase = initExistingWalletsUsecase,
+        _initializeTorUsecase = initializeTorUsecase,
         super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
