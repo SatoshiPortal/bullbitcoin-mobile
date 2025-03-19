@@ -3,11 +3,14 @@ import 'package:bb_mobile/_core/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/exchange_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/file_storage_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/google_drive_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/payjoin_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
@@ -80,9 +83,7 @@ class CoreLocator {
     // - FileStorageDataSource
 
     locator.registerLazySingleton<FileStorageDatasource>(
-      () => FileStorageDataSourceImpl(
-        filePicker: FilePicker.platform,
-      ),
+      () => FileStorageDataSourceImpl(filePicker: FilePicker.platform),
     );
     //  - Exchange
     locator.registerLazySingleton<ExchangeDatasource>(

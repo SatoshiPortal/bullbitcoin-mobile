@@ -4,9 +4,6 @@ import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart'
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_default_wallet_use_case.dart';
-import 'package:bb_mobile/backup_wallet/domain/usecases/create_encrypted_vault_usecase.dart';
-import 'package:bb_mobile/backup_wallet/domain/usecases/store_backup_key_usecase.dart';
-import 'package:bb_mobile/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
