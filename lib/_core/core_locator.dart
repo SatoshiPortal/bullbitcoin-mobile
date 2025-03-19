@@ -69,17 +69,18 @@ import 'package:hive/hive.dart';
 class CoreLocator {
   static Future<void> setup() async {
     // Data sources
-
-    // - Tor
+    //  - Tor
     if (!locator.isRegistered<TorDatasource>()) {
       // Register TorDatasource as a singleton async
       // This ensures Tor is properly initialized before it's used
       locator.registerSingletonAsync<TorDatasource>(
-        // This will initialize Tor, start it, and make sure it's ready
-        () async => await TorDatasourceImpl.init(),
-        signalsReady: true, // Signal when it's ready for use
+        () async {
+          final tor = await TorDatasourceImpl.init();
+          return tor;
+        },
       );
     }
+    await locator.isReady<TorDatasource>();
     //  - Secure storage
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
       () => SecureStorageDatasourceImpl(
@@ -129,6 +130,15 @@ class CoreLocator {
     );
 
     // Repositories
+    // Register TorRepository right after TorDatasource
+    locator.registerSingletonWithDependencies<TorRepository>(
+      () => TorRepositoryImpl(locator<TorDatasource>()),
+      dependsOn: [TorDatasource],
+    );
+
+    // Wait for Tor dependencies to be ready
+
+    await locator.isReady<TorRepository>();
 
     final walletMetadataBox =
         await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
