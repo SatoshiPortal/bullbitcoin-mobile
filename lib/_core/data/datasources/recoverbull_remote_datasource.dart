@@ -1,65 +1,51 @@
-import 'package:bb_mobile/_core/domain/repositories/tor_repository.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:recoverbull/recoverbull.dart';
 
 abstract class RecoverBullRemoteDatasource {
-  Future<void> info();
+  Future<void> info(SOCKSSocket socket);
 
   Future<void> store(
     List<int> backupId,
     List<int> password,
     List<int> salt,
     List<int> backupKey,
+    SOCKSSocket socket,
   );
 
   Future<List<int>> fetch(
     List<int> backupId,
     List<int> password,
     List<int> salt,
+    SOCKSSocket socket,
   );
 
   Future<void> trash(
     List<int> backupId,
     List<int> password,
     List<int> salt,
+    SOCKSSocket socket,
   );
 }
 
 class RecoverBullRemoteDatasourceImpl implements RecoverBullRemoteDatasource {
   final KeyServer _keyServer;
-  final TorRepository _torRepository;
 
   RecoverBullRemoteDatasourceImpl._({
     required KeyServer keyServer,
-    required TorRepository torRepository,
-  })  : _keyServer = keyServer,
-        _torRepository = torRepository;
+  }) : _keyServer = keyServer;
 
-  static Future<RecoverBullRemoteDatasource> init(Uri address) async {
-    // Get the TorRepository from the locator
-    final torRepository = locator<TorRepository>();
-
-    // Make sure Tor is ready
-    final isTorReady = await torRepository.isTorReady();
-    if (!isTorReady) {
-      // If Tor isn't ready, initialize it, or should we  use an completer to handle the tor initalization?
-      throw Exception('Tor is not ready');
-    }
-
+  static RecoverBullRemoteDatasource init(Uri address) {
     final keyServer = KeyServer(address: address);
-
     return RecoverBullRemoteDatasourceImpl._(
       keyServer: keyServer,
-      torRepository: torRepository,
     );
   }
 
   @override
-  Future<void> info() async {
-    final socket = await _torRepository.createSocket();
+  Future<void> info(SOCKSSocket socket) async {
     try {
-      await _keyServer.infos(socks: socket);
+      final info = await _keyServer.infos(socks: socket);
+      debugPrint('KeyServer connection sucess: ${info.canary}');
     } on Exception catch (e) {
       debugPrint('serverinfo error: $e');
       rethrow;
@@ -72,8 +58,8 @@ class RecoverBullRemoteDatasourceImpl implements RecoverBullRemoteDatasource {
     List<int> password,
     List<int> salt,
     List<int> backupKey,
+    SOCKSSocket socket,
   ) async {
-    final socket = await _torRepository.createSocket();
     try {
       await _keyServer.storeBackupKey(
         backupId: backupId,
@@ -93,8 +79,8 @@ class RecoverBullRemoteDatasourceImpl implements RecoverBullRemoteDatasource {
     List<int> backupId,
     List<int> password,
     List<int> salt,
+    SOCKSSocket socket,
   ) async {
-    final socket = await _torRepository.createSocket();
     try {
       return await _keyServer.fetchBackupKey(
         backupId: backupId,
@@ -113,8 +99,8 @@ class RecoverBullRemoteDatasourceImpl implements RecoverBullRemoteDatasource {
     List<int> backupId,
     List<int> password,
     List<int> salt,
+    SOCKSSocket socket,
   ) async {
-    final socket = await _torRepository.createSocket();
     try {
       await _keyServer.trashBackupKey(
         backupId: backupId,
