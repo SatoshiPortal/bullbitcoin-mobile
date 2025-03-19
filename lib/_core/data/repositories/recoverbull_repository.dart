@@ -1,16 +1,20 @@
 import 'dart:convert';
 import 'package:bb_mobile/_core/data/datasources/recoverbull_local_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/recoverbull_remote_datasource.dart';
+
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/tor_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 
 class RecoverBullRepositoryImpl implements RecoverBullRepository {
   final RecoverBullLocalDatasource localDatasource;
   final RecoverBullRemoteDatasource remoteDatasource;
+  final TorRepository torRepository;
   RecoverBullRepositoryImpl({
     required this.localDatasource,
     required this.remoteDatasource,
+    required this.torRepository,
   });
 
   @override
@@ -52,11 +56,14 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String salt,
     String backupKey,
   ) async {
+    final socket = await torRepository.createSocket();
+
     await remoteDatasource.store(
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),
       HEX.decode(backupKey),
+      socket,
     );
   }
 
@@ -66,10 +73,12 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String password,
     String salt,
   ) async {
+    final socket = await torRepository.createSocket();
     final backupKey = await remoteDatasource.fetch(
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),
+      socket,
     );
     return HEX.encode(backupKey);
   }
@@ -80,10 +89,22 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String password,
     String salt,
   ) async {
+    final socket = await torRepository.createSocket();
     await remoteDatasource.trash(
       HEX.decode(identifier),
       utf8.encode(password),
       HEX.decode(salt),
+      socket,
     );
+  }
+
+  @override
+  Future<void> checkKeyServerConnectionWithTor() async {
+    final isTorReady = await torRepository.isTorReady();
+    if (!isTorReady) {
+      throw Exception('Tor is not ready');
+    }
+    final socket = await torRepository.createSocket();
+    await remoteDatasource.info(socket);
   }
 }

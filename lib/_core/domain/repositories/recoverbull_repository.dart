@@ -25,4 +25,5 @@ abstract class RecoverBullRepository {
     String password,
     String salt,
   );
+  Future<void> checkKeyServerConnectionWithTor();
 }
