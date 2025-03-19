@@ -4,16 +4,6 @@ sealed class BackupWalletEvent {
   const BackupWalletEvent();
 }
 
-class OnStoreBackUpKey extends BackupWalletEvent {
-  final String secret;
-  const OnStoreBackUpKey(this.secret);
-}
-
-class OnConfirmBackUpKeySecret extends BackupWalletEvent {
-  final String secret;
-  const OnConfirmBackUpKeySecret(this.secret);
-}
-
 class StartWalletBackup extends BackupWalletEvent {
   const StartWalletBackup();
 }
