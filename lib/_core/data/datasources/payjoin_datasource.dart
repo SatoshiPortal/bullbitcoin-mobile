@@ -71,6 +71,12 @@ class NoValidPayjoinBip21Exception implements Exception {
   NoValidPayjoinBip21Exception(this.message);
 }
 
+class PayjoinExpiredException implements Exception {
+  final String message;
+
+  PayjoinExpiredException(this.message);
+}
+
 class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
   final String _payjoinDirectoryUrl;
   final Dio _dio;
@@ -528,32 +534,27 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
 
     final dio = Dio();
     // Listen for and register new receivers sent from the main isolate
-    receivePort.listen((data) async {
-      log('[Senders Isolate] Received data in senders isolate: $data');
-      final senderModel =
-          PayjoinSenderModel.fromJson(data as Map<String, dynamic>);
-      final sender = Sender.fromJson(senderModel.sender);
-      log('[Senders Isolate] Requesting payjoin...');
-      final context =
-          await PdkPayjoinDatasourceImpl.request(sender: sender, dio: dio);
-      log('[Senders Isolate] Payjoin requested.');
+    receivePort.listen(
+      (data) async {
+        log('[Senders Isolate] Received data in senders isolate: $data');
+        final senderModel =
+            PayjoinSenderModel.fromJson(data as Map<String, dynamic>);
+        final sender = Sender.fromJson(senderModel.sender);
+        log('[Senders Isolate] Requesting payjoin...');
+        final context =
+            await PdkPayjoinDatasourceImpl.request(sender: sender, dio: dio);
+        log('[Senders Isolate] Payjoin requested.');
 
-      // Periodically check for a proposal from the receiver
-      Timer.periodic(
-        const Duration(seconds: PayjoinConstants.directoryPollingInterval),
-        (Timer timer) async {
-          log('[Senders Isolate]Checking for proposal in senders isolate');
-          try {
-            final proposalPsbt = await PdkPayjoinDatasourceImpl.getProposalPsbt(
-              context: context,
-              dio: dio,
-            );
-            if (proposalPsbt != null) {
-              log('[Senders Isolate] Proposal found in senders isolate');
-              // The proposal psbt is needed in the main isolate for
-              //  further processing so send it through the model
-              final updatedModel = senderModel.copyWith(
-                proposalPsbt: proposalPsbt,
+        // Periodically check for a proposal from the receiver
+        Timer.periodic(
+          const Duration(seconds: PayjoinConstants.directoryPollingInterval),
+          (Timer timer) async {
+            log('[Senders Isolate]Checking for proposal in senders isolate');
+            try {
+              final proposalPsbt =
+                  await PdkPayjoinDatasourceImpl.getProposalPsbt(
+                context: context,
+                dio: dio,
               );
               if (proposalPsbt != null) {
                 log('[Senders Isolate] Proposal found in senders isolate');
