@@ -56,6 +56,10 @@ class ApiServiceConstants {
   // Boltz API
   static const boltzMainnetUrlPath = 'api.boltz.exchange/v2';
   static const boltzTestnetUrlPath = 'api.testnet.boltz.exchange/v2';
+
+  // BullBitcoin API
+  static const bullBitcoinKeyServerApiUrlPath =
+      'http://o7rwmpnfkzdcay2gotla6sbrviu27wcgck7nsjrq77nqhtwbjvwcraad.onion';
 }
 
 class LocatorInstanceNameConstants {
