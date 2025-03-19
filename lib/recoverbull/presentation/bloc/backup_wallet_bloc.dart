@@ -19,12 +19,12 @@ part 'backup_wallet_state.dart';
 
 class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   final CreateEncryptedVaultUsecase createEncryptedBackupUsecase;
-  final SelectFilePathUsecase _selectFilePathUsecase;
+  final SelectFilePathUsecase selectFilePathUsecase;
   final ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase;
   final FetchLatestBackupUsecase fetchLatestBackupUsecase;
   final DisconnectFromGoogleDriveUsecase disconnectFromGoogleDriveUsecase;
-  final SaveToFileSystemUsecase _saveToFileSystemUsecase;
-  final SaveToGoogleDriveUsecase _saveToGoogleDriveUsecase;
+  final SaveToFileSystemUsecase saveToFileSystemUsecase;
+  final SaveToGoogleDriveUsecase saveToGoogleDriveUsecase;
   final StoreBackupKeyIntoServerUsecase storeBackupKeyIntoServerUsecase;
   BackupWalletBloc({
     required this.createEncryptedBackupUsecase,
@@ -32,13 +32,10 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     required this.fetchLatestBackupUsecase,
     required this.connectToGoogleDriveUsecase,
     required this.disconnectFromGoogleDriveUsecase,
-    required SelectFilePathUsecase selectFilePathUsecase,
-    required SaveToFileSystemUsecase saveToFileSystemUsecase,
-    required SaveToGoogleDriveUsecase saveToGoogleDriveUsecase,
-  })  : _selectFilePathUsecase = selectFilePathUsecase,
-        _saveToFileSystemUsecase = saveToFileSystemUsecase,
-        _saveToGoogleDriveUsecase = saveToGoogleDriveUsecase,
-        super(BackupWalletState()) {
+    required this.selectFilePathUsecase,
+    required this.saveToFileSystemUsecase,
+    required this.saveToGoogleDriveUsecase,
+  }) : super(BackupWalletState.initial()) {
     on<OnFileSystemBackupSelected>(_onFileSystemBackupSelected);
     on<OnGoogleDriveBackupSelected>(_onGoogleDriveBackupSelected);
     on<OnICloudDriveBackupSelected>(_onICloudDriveBackupSelected);
@@ -51,9 +48,9 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   ) async {
     try {
       emit(state.copyWith(status: const BackupWalletStatus.loading()));
-      final filePath = await _selectFilePathUsecase.execute();
+      final filePath = await selectFilePathUsecase.execute();
       if (filePath == null) {
-        emit(state.copyWith(status: const BackupWalletStatus.loading()));
+        emit(state.copyWith(status: const BackupWalletStatus.initial()));
         return;
       }
       emit(
@@ -84,9 +81,8 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       );
       return;
     } catch (e) {
-      debugPrint("Failed to connect to Google Drive $e");
+      debugPrint("Failed to connect to Google Drive: $e");
       emit(BackupWalletState.error("Failed to connect to Google Drive"));
-      return;
     }
   }
 
@@ -96,16 +92,32 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   ) async {
     try {
       emit(state.copyWith(status: const BackupWalletStatus.loading()));
-      // final encrytedBackup = await createEncryptedBackupUsecase.execute();
-      // if (state.filePath.isEmpty) {
-      //   debugPrint('No file path selected');
-      //   emit(state.copyWith(status: const BackupWalletStatus.success()));
-      //   return;
-      // }
-      // await _saveToFileSystemUsecase.execute(state.filePath, encrytedBackup);
-      // emit(state.copyWith(status: const BackupWalletStatus.success()));
-      return;
+
+      // Create encrypted backup
+      final encryptedBackup = await createEncryptedBackupUsecase.execute();
+
+      // Store backup based on selected provider
+      state.backupProvider.maybeWhen(
+        fileSystem: (filePath) async {
+          if (filePath.isEmpty) {
+            throw Exception('No file path selected');
+          }
+          await saveToFileSystemUsecase.execute(filePath, encryptedBackup);
+        },
+        googleDrive: () async {
+          await saveToGoogleDriveUsecase.execute(encryptedBackup);
+        },
+        iCloud: () => debugPrint('iCloud backup not implemented'),
+        orElse: () => debugPrint('iCloud backup not implemented'),
+      );
+      debugPrint('Backup completed successfully to ${state.backupProvider}');
+      emit(
+        state.copyWith(
+          status: const BackupWalletStatus.success(),
+        ),
+      );
     } catch (e) {
+      debugPrint('Backup failed: $e');
       emit(BackupWalletState.error("Failed to backup wallet"));
     }
   }
@@ -114,6 +126,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     OnICloudDriveBackupSelected event,
     Emitter<BackupWalletState> emit,
   ) async {
+    debugPrint('iCloud backup not implemented');
     return;
   }
 }
