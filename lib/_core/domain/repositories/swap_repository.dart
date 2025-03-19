@@ -114,12 +114,17 @@ abstract class SwapRepository {
     required int absoluteFees,
   });
 
+  Future<Invoice> decodeInvoice({
+    required String invoice,
+  });
+
   // SWAP STORAGE UTILITY
   Future<Swap> getSwap({
     required String swapId,
   });
 
   Future<List<Swap>> getOngoingSwaps();
+  Future<List<Swap>> getAllSwaps();
 
   Future<void> updateSwap({
     required Swap swap,
@@ -131,14 +136,7 @@ abstract class SwapRepository {
   });
 
   // STREAM
-
-  void addSwapToStream({
-    required String swapId,
-  });
-  void removeSwapFromStream({
-    required String swapId,
-  });
-  void reinitializeStreamWithSwaps({
+  Future<void> reinitializeStreamWithSwaps({
     required List<String> swapIds,
   });
 

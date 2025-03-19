@@ -3,6 +3,7 @@ class SettingsConstants {
   static const bitcoinUnitKey = 'bitcoinUnit';
   static const languageKey = 'language';
   static const currencyKey = 'currency';
+  static const hideAmountsKey = 'hideAmounts';
   static const electrumServerKeyPrefix = 'electrumServer';
   static const defaultCurrencyCode = 'CAD';
 }
@@ -58,11 +59,11 @@ class ApiServiceConstants {
 }
 
 class LocatorInstanceNameConstants {
-  static const secureStorageDataSource = 'secureStorageDataSource';
-  static const bullBitcoinExchangeDataSourceInstanceName =
-      'bullBitcoinExchangeDataSource';
-  static const boltzSwapsHiveStorageDataSourceInstanceName =
-      'boltzSwapsHiveStorageDataSource';
+  static const secureStorageDatasource = 'secureStorageDatasource';
+  static const bullBitcoinExchangeDatasourceInstanceName =
+      'bullBitcoinExchangeDatasource';
+  static const boltzSwapsHiveStorageDatasourceInstanceName =
+      'boltzSwapsHiveStorageDatasource';
   static const boltzSwapRepositoryInstanceName = 'boltzSwapRepository';
   static const boltzTestnetSwapRepositoryInstanceName =
       'boltzTestnetSwapRepository';

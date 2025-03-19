@@ -86,11 +86,18 @@ class $AssetsImages2Gen {
   AssetGenImage get bbLogoSmall =>
       const AssetGenImage('assets/images2/bb-logo-small.png');
 
+  /// File path: assets/images2/bb-logo.svg
+  String get bbLogo => 'assets/images2/bb-logo.svg';
+
   /// File path: assets/images2/bg-red.png
   AssetGenImage get bgRed => const AssetGenImage('assets/images2/bg-red.png');
 
   /// File path: assets/images2/bg_long.png
   AssetGenImage get bgLong => const AssetGenImage('assets/images2/bg_long.png');
+
+  /// File path: assets/images2/dropdown_updown.png
+  AssetGenImage get dropdownUpdown =>
+      const AssetGenImage('assets/images2/dropdown_updown.png');
 
   /// File path: assets/images2/success_tick.gif
   AssetGenImage get successTick =>
@@ -101,8 +108,15 @@ class $AssetsImages2Gen {
       const AssetGenImage('assets/images2/whitebullwithtext.png');
 
   /// List of all assets
-  List<AssetGenImage> get values =>
-      [bbLogoSmall, bgRed, bgLong, successTick, whitebullwithtext];
+  List<dynamic> get values => [
+        bbLogoSmall,
+        bbLogo,
+        bgRed,
+        bgLong,
+        dropdownUpdown,
+        successTick,
+        whitebullwithtext
+      ];
 }
 
 class Assets {

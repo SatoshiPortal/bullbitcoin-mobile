@@ -1,10 +1,10 @@
 import 'package:bb_mobile/bitcoin_price/domain/repositories/bitcoin_price_repository.dart';
 import 'package:decimal/decimal.dart';
 
-class FetchBitcoinPriceUseCase {
+class FetchBitcoinPriceUsecase {
   final BitcoinPriceRepository _bitcoinPriceRepository;
 
-  FetchBitcoinPriceUseCase({
+  FetchBitcoinPriceUsecase({
     required BitcoinPriceRepository bitcoinPriceRepository,
   }) : _bitcoinPriceRepository = bitcoinPriceRepository;
 

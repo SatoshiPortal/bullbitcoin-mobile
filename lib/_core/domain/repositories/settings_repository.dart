@@ -8,5 +8,8 @@ abstract class SettingsRepository {
   Future<void> setLanguage(Language language);
   Future<Language?> getLanguage();
   Future<void> setCurrency(String currencyCode);
+  Future<void> setHideAmounts(bool hide);
+
   Future<String> getCurrency();
+  Future<bool> getHideAmounts();
 }

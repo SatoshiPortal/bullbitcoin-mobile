@@ -5,12 +5,12 @@ import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 
-class RecoverWalletUseCase {
+class RecoverWalletUsecase {
   final SettingsRepository _settingsRepository;
   final MnemonicSeedFactory _mnemonicSeedFactory;
   final WalletManagerService _walletManager;
 
-  RecoverWalletUseCase({
+  RecoverWalletUsecase({
     required SettingsRepository settingsRepository,
     required MnemonicSeedFactory mnemonicSeedFactory,
     required WalletManagerService walletManager,

@@ -16,7 +16,7 @@ sealed class Seed with _$Seed {
     String? passphrase,
   }) = MnemonicSeed;
 
-  Uint8List get seedBytes {
+  Uint8List get bytes {
     return when(
       mnemonic: (mnemonicWords, passphrase) => bip39.mnemonicToSeed(
         mnemonicWords.join(' '),
@@ -25,18 +25,15 @@ sealed class Seed with _$Seed {
     );
   }
 
-  String get seedHex {
-    return seedBytes.toHexString();
-  }
+  String get hex => bytes.toHexString();
 
-  String get asString {
-    return when(
-      mnemonic: (mnemonicWords, _) => mnemonicWords.join(' '),
-    );
+  @override
+  String toString() {
+    return when(mnemonic: (mnemonicWords, _) => mnemonicWords.join(' '));
   }
 
   String get masterFingerprint {
-    final root = bip32.BIP32.fromSeed(seedBytes);
+    final root = bip32.BIP32.fromSeed(bytes);
     final fingerprintBytes = root.fingerprint;
     final fingerprintHex = fingerprintBytes.toHexString();
     return fingerprintHex;

@@ -11,12 +11,8 @@ class CreateWalletButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isCreationInProgress = context.select(
-      (OnboardingBloc bloc) => bloc.state.maybeMap(
-        walletCreationInProgress: (_) => true,
-        orElse: () => false,
-      ),
-    );
+    final creating =
+        context.select((OnboardingBloc bloc) => bloc.state.creatingOnSplash());
 
     return BBButton.big(
       label: 'Create New Wallet',
@@ -24,12 +20,9 @@ class CreateWalletButton extends StatelessWidget {
       textColor: context.colour.onPrimary,
       iconData: Icons.account_balance_wallet_outlined,
       onPressed: () {
-        if (isCreationInProgress) return;
-        context.read<OnboardingBloc>().add(const OnboardingWalletCreated());
+        if (creating) return;
+        context.read<OnboardingBloc>().add(const OnboardingCreateNewWallet());
       },
-      // child: isCreationInProgress
-      // ? const CircularProgressIndicator()
-      // : Text(context.loc.onboardingCreateWalletButtonLabel),
     );
   }
 }

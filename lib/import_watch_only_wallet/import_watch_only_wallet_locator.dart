@@ -6,8 +6,8 @@ import 'package:bb_mobile/locator.dart';
 class ImportWatchOnlyWalletLocator {
   static void setup() {
     // Use cases
-    locator.registerFactory<ImportXpubUseCase>(
-      () => ImportXpubUseCase(
+    locator.registerFactory<ImportXpubUsecase>(
+      () => ImportXpubUsecase(
         settingsRepository: locator<SettingsRepository>(),
         walletManagerService: locator<WalletManagerService>(),
       ),

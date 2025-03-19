@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
+import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,11 +11,11 @@ part 'recover_wallet_state.dart';
 
 class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
   RecoverWalletBloc({
-    required FindMnemonicWordsUseCase findMnemonicWordsUseCase,
-    required CreateDefaultWalletsUseCase createDefaultWalletsUseCase,
+    required FindMnemonicWordsUsecase findMnemonicWordsUsecase,
+    required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
     bool useTestWallet = false,
-  })  : _findMnemonicWordsUseCase = findMnemonicWordsUseCase,
-        _createDefaultWalletsUseCase = createDefaultWalletsUseCase,
+  })  : _findMnemonicWordsUsecase = findMnemonicWordsUsecase,
+        _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
         super(const RecoverWalletState()) {
     on<RecoverWalletWordsCountChanged>(_onWordsCountChanged);
     on<RecoverWalletWordChanged>(_onWordChanged);
@@ -31,9 +31,9 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     }
   }
 
-  final FindMnemonicWordsUseCase _findMnemonicWordsUseCase;
+  final FindMnemonicWordsUsecase _findMnemonicWordsUsecase;
 
-  final CreateDefaultWalletsUseCase _createDefaultWalletsUseCase;
+  final CreateDefaultWalletsUsecase _createDefaultWalletsUsecase;
 
   void _importTestableWallet(
     ImportTestableWallet event,
@@ -84,7 +84,7 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     final validWords = Map<int, String>.from(state.validWords);
     final hintWords = Map<int, List<String>>.from(state.hintWords);
 
-    hintWords[wordIndex] = await _findMnemonicWordsUseCase.execute(word);
+    hintWords[wordIndex] = await _findMnemonicWordsUsecase.execute(word);
 
     if (hintWords[wordIndex]?.contains(word) == true) {
       validWords[event.index] = event.word;
@@ -125,7 +125,7 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
   ) async {
     try {
       emit(state.copyWith(isCreating: true));
-      await _createDefaultWalletsUseCase.execute(
+      await _createDefaultWalletsUsecase.execute(
         mnemonicWords: state.validWords.values.toList(),
         passphrase: state.passphrase,
       );

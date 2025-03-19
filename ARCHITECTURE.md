@@ -71,7 +71,7 @@ E.g. [`WalletManagerService`](lib/_core/domain/services/wallet_manager_service.d
 
 Use cases define **business operations** by orchestrating data flow from and to the entities by using the repository contracts and services. They essentially represent the actions that can be performed within the application.
 
-E.g. [`CreateDefaultWalletsUseCase`](lib/app_startup/domain/usecases/create_default_wallets_usecase.dart), [`AttemptUnlockWithPinCodeUseCase`](lib/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart).
+E.g. [`CreateDefaultWalletsUsecase`](lib/app_startup/domain/usecases/create_default_wallets_usecase.dart), [`AttemptUnlockWithPinCodeUsecase`](lib/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart).
 
 ### Data Layer
 
@@ -85,7 +85,7 @@ The data layer is responsible for retrieving and storing data from and to differ
 Classes responsible for the actual retrieving or storing of the data that directly interact with APIs, databases, or local storage sources.
 They generally take in [models](#models) as parameters and return models as well.
 
-E.g. [`ExchangeDataSource`](lib/_core/data/datasources/exchange_data_source.dart), [`Bip39WordListDataSource`](lib/_core/data/datasources/bip39_word_list_data_source.dart).
+E.g. [`ExchangeDatasource`](lib/_core/data/datasources/exchange_datasource.dart), [`Bip39WordListDatasource`](lib/_core/data/datasources/bip39_word_list_datasource.dart).
 
 #### Models
 

@@ -45,15 +45,33 @@ sealed class Address with _$Address {
   // TODO: Validate if the standard or confidential address should be used
   String get address => when(
         bitcoin: (address, _, __, ___, ____, _____, ______, _______) => address,
-        liquid: (standard, confidential, __, ___, ____, _____, ______, _______,
-                ________) =>
+        liquid: (
+          standard,
+          confidential,
+          __,
+          ___,
+          ____,
+          _____,
+          ______,
+          _______,
+          ________,
+        ) =>
             standard,
       );
 
   String? get confidential => when(
         bitcoin: (_, __, ___, ____, _____, ______, _______, ________) => null,
-        liquid: (_, confidential, __, ___, ____, _____, ______, _______,
-                ________) =>
+        liquid: (
+          _,
+          confidential,
+          __,
+          ___,
+          ____,
+          _____,
+          ______,
+          _______,
+          ________,
+        ) =>
             confidential,
       );
 

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/_core/data/datasources/bitcoin_blockchain_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/payjoin_datasource.dart';
 import 'package:bb_mobile/_core/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/_core/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/_core/data/models/payjoin_model.dart';
@@ -15,13 +15,13 @@ import 'package:flutter/foundation.dart';
 import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
-  final PayjoinDataSource _source;
+  final PayjoinDatasource _source;
   // Lock to prevent the same utxo from being used in multiple payjoin proposals
   final Lock _lock;
 
   PayjoinRepositoryImpl({
-    required PayjoinDataSource payjoinDataSource,
-  })  : _source = payjoinDataSource,
+    required PayjoinDatasource payjoinDatasource,
+  })  : _source = payjoinDatasource,
         _lock = Lock();
 
   @override
@@ -178,7 +178,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required String finalizedPsbt,
     required ElectrumServer electrumServer,
   }) async {
-    final blockchain = await BdkBlockchainDataSourceImpl.fromElectrumServer(
+    final blockchain = await BdkBlockchainDatasourceImpl.fromElectrumServer(
       ElectrumServerModel.fromEntity(electrumServer),
     );
 

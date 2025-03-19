@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 
 class SettingsRepositoryImpl implements SettingsRepository {
-  final KeyValueStorageDataSource<String> _storage;
+  final KeyValueStorageDatasource<String> _storage;
 
   SettingsRepositoryImpl({
-    required KeyValueStorageDataSource<String> storage,
+    required KeyValueStorageDatasource<String> storage,
   }) : _storage = storage;
 
   @override
@@ -73,5 +73,20 @@ class SettingsRepositoryImpl implements SettingsRepository {
     final currency = await _storage.getValue(SettingsConstants.currencyKey) ??
         SettingsConstants.defaultCurrencyCode;
     return currency;
+  }
+
+  @override
+  Future<void> setHideAmounts(bool hide) async {
+    return _storage.saveValue(
+      key: SettingsConstants.hideAmountsKey,
+      value: hide.toString(),
+    );
+  }
+
+  @override
+  Future<bool> getHideAmounts() async {
+    final hide =
+        await _storage.getValue(SettingsConstants.hideAmountsKey) ?? 'false';
+    return hide == 'true';
   }
 }

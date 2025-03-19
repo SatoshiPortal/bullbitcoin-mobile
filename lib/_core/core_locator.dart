@@ -1,14 +1,14 @@
-import 'package:bb_mobile/_core/data/datasources/bip39_word_list_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/boltz_storage_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/electrum_server_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/exchange_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/bip39_word_list_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_storage_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/electrum_server_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/exchange_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/payjoin_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/seed_data_source.dart';
-import 'package:bb_mobile/_core/data/datasources/wallet_metadata_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/payjoin_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/payjoin_repository_impl.dart';
@@ -31,16 +31,17 @@ import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
-import 'package:bb_mobile/_core/domain/usecases/build_psbt_use_case.dart';
-import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
+import 'package:bb_mobile/_core/domain/usecases/build_psbt_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_hide_amounts_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/get_payjoin_updates_use_case.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_payjoin_updates_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_use_case.dart';
-import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_use_case.dart';
+import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
@@ -52,25 +53,25 @@ class CoreLocator {
   static Future<void> setup() async {
     // Data sources
     //  - Secure storage
-    locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
-      () => SecureStorageDataSourceImpl(
+    locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
+      () => SecureStorageDatasourceImpl(
         const FlutterSecureStorage(),
       ),
-      instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
+      instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
     );
     //  - Exchange
-    locator.registerLazySingleton<ExchangeDataSource>(
-      () => BullBitcoinExchangeDataSourceImpl(),
+    locator.registerLazySingleton<ExchangeDatasource>(
+      () => BullBitcoinExchangeDatasourceImpl(),
       instanceName: LocatorInstanceNameConstants
-          .bullBitcoinExchangeDataSourceInstanceName,
+          .bullBitcoinExchangeDatasourceInstanceName,
     );
     //  - Swaps
     final boltzSwapsBox =
         await Hive.openBox<String>(HiveBoxNameConstants.boltzSwaps);
-    locator.registerLazySingleton<KeyValueStorageDataSource<String>>(
-      () => HiveStorageDataSourceImpl<String>(boltzSwapsBox),
+    locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
+      () => HiveStorageDatasourceImpl<String>(boltzSwapsBox),
       instanceName: LocatorInstanceNameConstants
-          .boltzSwapsHiveStorageDataSourceInstanceName,
+          .boltzSwapsHiveStorageDatasourceInstanceName,
     );
 
     // Repositories
@@ -78,9 +79,9 @@ class CoreLocator {
         await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
     locator.registerLazySingleton<WalletMetadataRepository>(
       () => WalletMetadataRepositoryImpl(
-        source: WalletMetadataDataSourceImpl(
+        source: WalletMetadataDatasourceImpl(
           walletMetadataStorage:
-              HiveStorageDataSourceImpl<String>(walletMetadataBox),
+              HiveStorageDatasourceImpl<String>(walletMetadataBox),
         ),
       ),
     );
@@ -88,17 +89,17 @@ class CoreLocator {
         await Hive.openBox<String>(HiveBoxNameConstants.electrumServers);
     locator.registerLazySingleton<ElectrumServerRepository>(
       () => ElectrumServerRepositoryImpl(
-        electrumServerDataSource: ElectrumServerDataSourceImpl(
+        electrumServerDatasource: ElectrumServerDatasourceImpl(
           electrumServerStorage:
-              HiveStorageDataSourceImpl<String>(electrumServersBox),
+              HiveStorageDatasourceImpl<String>(electrumServersBox),
         ),
       ),
     );
     locator.registerLazySingleton<SeedRepository>(
       () => SeedRepositoryImpl(
-        source: SeedDataSourceImpl(
-          secureStorage: locator<KeyValueStorageDataSource<String>>(
-            instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
+        source: SeedDatasourceImpl(
+          secureStorage: locator<KeyValueStorageDatasource<String>>(
+            instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
           ),
         ),
       ),
@@ -107,35 +108,35 @@ class CoreLocator {
         await Hive.openBox<String>(HiveBoxNameConstants.settings);
     locator.registerLazySingleton<SettingsRepository>(
       () => SettingsRepositoryImpl(
-        storage: HiveStorageDataSourceImpl<String>(settingsBox),
+        storage: HiveStorageDatasourceImpl<String>(settingsBox),
       ),
     );
     locator.registerLazySingleton<WordListRepository>(
       () => WordListRepositoryImpl(
-        dataSource: Bip39EnglishWordListDataSourceImpl(),
+        dataSource: Bip39EnglishWordListDatasourceImpl(),
       ),
     );
     final pdkPayjoinsBox =
         await Hive.openBox<String>(HiveBoxNameConstants.pdkPayjoins);
     locator.registerLazySingleton<PayjoinRepository>(
       () => PayjoinRepositoryImpl(
-        payjoinDataSource: PdkPayjoinDataSourceImpl(
+        payjoinDatasource: PdkPayjoinDatasourceImpl(
           dio: Dio(),
-          storage: HiveStorageDataSourceImpl<String>(pdkPayjoinsBox),
+          storage: HiveStorageDatasourceImpl<String>(pdkPayjoinsBox),
         ),
       ),
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltz: BoltzDataSourceImpl(
-          boltzStore: BoltzStorageDataSourceImpl(
-            secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
+        boltz: BoltzDatasourceImpl(
+          boltzStore: BoltzStorageDatasourceImpl(
+            secureSwapStorage: locator<KeyValueStorageDatasource<String>>(
               instanceName:
-                  LocatorInstanceNameConstants.secureStorageDataSource,
+                  LocatorInstanceNameConstants.secureStorageDatasource,
             ),
-            localSwapStorage: locator<KeyValueStorageDataSource<String>>(
+            localSwapStorage: locator<KeyValueStorageDatasource<String>>(
               instanceName: LocatorInstanceNameConstants
-                  .boltzSwapsHiveStorageDataSourceInstanceName,
+                  .boltzSwapsHiveStorageDatasourceInstanceName,
             ),
           ),
         ),
@@ -156,16 +157,16 @@ class CoreLocator {
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltz: BoltzDataSourceImpl(
+        boltz: BoltzDatasourceImpl(
           url: ApiServiceConstants.boltzTestnetUrlPath,
-          boltzStore: BoltzStorageDataSourceImpl(
-            secureSwapStorage: locator<KeyValueStorageDataSource<String>>(
+          boltzStore: BoltzStorageDatasourceImpl(
+            secureSwapStorage: locator<KeyValueStorageDatasource<String>>(
               instanceName:
-                  LocatorInstanceNameConstants.secureStorageDataSource,
+                  LocatorInstanceNameConstants.secureStorageDatasource,
             ),
-            localSwapStorage: locator<KeyValueStorageDataSource<String>>(
+            localSwapStorage: locator<KeyValueStorageDatasource<String>>(
               instanceName: LocatorInstanceNameConstants
-                  .boltzSwapsHiveStorageDataSourceInstanceName,
+                  .boltzSwapsHiveStorageDatasourceInstanceName,
             ),
           ),
         ),
@@ -207,56 +208,62 @@ class CoreLocator {
     );
 
     // Use cases
-    locator.registerFactory<FindMnemonicWordsUseCase>(
-      () => FindMnemonicWordsUseCase(
+    locator.registerFactory<FindMnemonicWordsUsecase>(
+      () => FindMnemonicWordsUsecase(
         wordListRepository: locator<WordListRepository>(),
       ),
     );
-    locator.registerFactory<GetEnvironmentUseCase>(
-      () => GetEnvironmentUseCase(
+    locator.registerFactory<GetEnvironmentUsecase>(
+      () => GetEnvironmentUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<GetBitcoinUnitUseCase>(
-      () => GetBitcoinUnitUseCase(
+    locator.registerFactory<GetBitcoinUnitUsecase>(
+      () => GetBitcoinUnitUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<GetLanguageUseCase>(
-      () => GetLanguageUseCase(
+    locator.registerFactory<GetHideAmountsUsecase>(
+      () => GetHideAmountsUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<GetCurrencyUseCase>(
-      () => GetCurrencyUseCase(
+
+    locator.registerFactory<GetLanguageUsecase>(
+      () => GetLanguageUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<GetWalletsUseCase>(
-      () => GetWalletsUseCase(
+    locator.registerFactory<GetCurrencyUsecase>(
+      () => GetCurrencyUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<GetWalletsUsecase>(
+      () => GetWalletsUsecase(
         settingsRepository: locator<SettingsRepository>(),
         walletManager: locator<WalletManagerService>(),
       ),
     );
-    locator.registerFactory<ReceiveWithPayjoinUseCase>(
-      () => ReceiveWithPayjoinUseCase(
+    locator.registerFactory<ReceiveWithPayjoinUsecase>(
+      () => ReceiveWithPayjoinUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
       ),
     );
-    locator.registerFactory<SendWithPayjoinUseCase>(
-      () => SendWithPayjoinUseCase(
+    locator.registerFactory<SendWithPayjoinUsecase>(
+      () => SendWithPayjoinUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
       ),
     );
-    locator.registerFactory<GetPayjoinUpdatesUseCase>(
-      () => GetPayjoinUpdatesUseCase(
+    locator.registerFactory<GetPayjoinUpdatesUsecase>(
+      () => GetPayjoinUpdatesUsecase(
         payjoinWatcherService: locator<PayjoinWatcherService>(),
       ),
     );
 
-    // Register CreateReceiveSwapUseCase
-    locator.registerFactory<CreateReceiveSwapUseCase>(
-      () => CreateReceiveSwapUseCase(
+    // Register CreateReceiveSwapUsecase
+    locator.registerFactory<CreateReceiveSwapUsecase>(
+      () => CreateReceiveSwapUsecase(
         walletManager: locator<WalletManagerService>(),
         swapRepository: locator<SwapRepository>(
           instanceName:
@@ -269,10 +276,10 @@ class CoreLocator {
         seedRepository: locator<SeedRepository>(),
       ),
     );
-    locator.registerFactory<BuildPsbtUseCase>(
-      () => BuildPsbtUseCase(
-        payjoin: locator<PayjoinRepository>(),
-        walletManager: locator<WalletManagerService>(),
+    locator.registerFactory<BuildPsbtUsecase>(
+      () => BuildPsbtUsecase(
+        payjoinRepository: locator<PayjoinRepository>(),
+        walletManagerService: locator<WalletManagerService>(),
       ),
     );
   }
