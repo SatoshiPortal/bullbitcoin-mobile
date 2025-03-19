@@ -3,11 +3,13 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
+import 'package:bb_mobile/_core/domain/entities/tx_input.dart';
 import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 
 abstract class PayjoinRepository {
   Stream<PayjoinReceiver> get requestsForReceivers;
   Stream<PayjoinSender> get proposalsForSenders;
+  Future<List<TxInput>> getInputsFromOngoingPayjoins();
   Future<PayjoinReceiver> createPayjoinReceiver({
     required String walletId,
     required bool isTestnet,

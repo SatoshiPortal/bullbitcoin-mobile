@@ -6,8 +6,9 @@ import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
-import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_use_case.dart';
-import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_use_case.dart';
+import 'package:bb_mobile/_core/domain/usecases/build_psbt_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
@@ -22,14 +23,15 @@ void main() {
   late PayjoinWatcherService payjoinWatcherService;
   late ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase;
   late SendWithPayjoinUsecase sendWithPayjoinUsecase;
+  late BuildPsbtUsecase buildPsbtUsecase;
   late Wallet receiverWallet;
   late Wallet senderWallet;
 
   // TODO: Change and move these to github secrets so the testnet coins for our integration
   //  tests are not at risk of being used by others.
-  const receiverMnemonic =
-      'model float claim feature convince exchange truck cream assume fancy swamp offer';
   const senderMnemonic =
+      'model float claim feature convince exchange truck cream assume fancy swamp offer';
+  const receiverMnemonic =
       'duty tattoo frown crazy pelican aisle area wrist robot stove taxi material';
 
   setUpAll(() async {
@@ -47,6 +49,7 @@ void main() {
     payjoinWatcherService = locator<PayjoinWatcherService>();
     receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
     sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
+    buildPsbtUsecase = locator<BuildPsbtUsecase>();
 
     receiverWallet = await locator<RecoverWalletUsecase>().execute(
       mnemonicWords: receiverMnemonic.split(' '),
@@ -58,6 +61,8 @@ void main() {
     );
 
     debugPrint('Wallets created');
+    debugPrint('Receiver wallet id: ${receiverWallet.id}');
+    debugPrint('Sender wallet id: ${senderWallet.id}');
   });
 
   setUp(() async {
@@ -101,19 +106,19 @@ void main() {
   group('Payjoin Integration Tests', () {
     group('with one receive and one send', () {
       late StreamSubscription<Payjoin> payjoinSubscription;
-      late Completer<bool> payjoinReceiverCompletedEvent;
+      late Completer<bool> payjoinReceiverProposedEvent;
       late Completer<bool> payjoinSenderCompletedEvent;
 
       setUp(() async {
-        payjoinReceiverCompletedEvent = Completer();
+        payjoinReceiverProposedEvent = Completer();
         payjoinSenderCompletedEvent = Completer();
 
         payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
-          debugPrint('Payjoin event: $payjoin');
+          debugPrint('Payjoin event for ${payjoin.id}: ${payjoin.status}');
           switch (payjoin) {
             case PayjoinReceiver _:
-              if (payjoin.status == PayjoinStatus.completed) {
-                payjoinReceiverCompletedEvent.complete(true);
+              if (payjoin.status == PayjoinStatus.proposed) {
+                payjoinReceiverProposedEvent.complete(true);
               }
             case PayjoinSender _:
               if (payjoin.status == PayjoinStatus.completed) {
@@ -123,7 +128,7 @@ void main() {
         });
       });
 
-      test('should work', () async {
+      test('should work with one receiver and one sender', () async {
         // Generate receiver address
         final address = await walletManagerService.getNewAddress(
           walletId: receiverWallet.id,
@@ -136,7 +141,7 @@ void main() {
           address: address.address,
           isTestnet: true,
         );
-        debugPrint('Payjoin receiver created: $payjoin');
+        debugPrint('Payjoin receiver created: ${payjoin.id}');
 
         expect(payjoin.status, PayjoinStatus.started);
         // Check that the payjoin uri is correct
@@ -148,7 +153,7 @@ void main() {
 
         // Build the psbt with the sender wallet
         const networkFeesSatPerVb = 1000.0;
-        final originalPsbt = await walletManagerService.buildPsbt(
+        final originalPsbt = await buildPsbtUsecase.execute(
           walletId: senderWallet.id,
           address: address.address,
           amountSat: BigInt.from(1000),
@@ -161,7 +166,7 @@ void main() {
           originalPsbt: originalPsbt,
           networkFeesSatPerVb: networkFeesSatPerVb,
         );
-        debugPrint('Payjoin sender created: $payjoinSender');
+        debugPrint('Payjoin sender created: ${payjoinSender.id}');
         expect(payjoinSender.status, PayjoinStatus.requested);
 
         // Once the request is sent by the sender, it is automatically fetched
@@ -169,9 +174,9 @@ void main() {
         //  The receiver will process the request automatically and sends a
         //  payjoin proposal back to the payjoin directory which should complete
         //  the payjoin session for the receiver's side.
-        final didReceiverComplete = await Future.any(
+        final didReceiverPropose = await Future.any(
           [
-            payjoinReceiverCompletedEvent.future,
+            payjoinReceiverProposedEvent.future,
             Future.delayed(
               const Duration(
                 seconds: PayjoinConstants.directoryPollingInterval * 3,
@@ -180,7 +185,7 @@ void main() {
             ),
           ],
         );
-        expect(didReceiverComplete, true);
+        expect(didReceiverPropose, true);
 
         // Once the proposal is sent by the receiver, it is automatically fetched
         //  by the sender the next time it polls the payjoin directory.
@@ -212,15 +217,159 @@ void main() {
         () {},
       );
 
-      test(
-        'should broadcast the original transaction if the payjoin fails',
-        () {},
-      );
       tearDown(() {
         payjoinSubscription.cancel();
       });
     });
 
-    group('with multiple ongoing payjoins', () {});
+    group('with multiple ongoing payjoins', () {
+      const numberOfPayjoins = 2;
+      const networkFeesSatPerVb = 500.0;
+      final List<String> receiverAddresses = [];
+      final List<Uri> payjoinUris = [];
+      final Map<String, Completer<bool>> payjoinCompleters = {};
+      late StreamSubscription<Payjoin> payjoinSubscription;
+
+      setUp(() async {
+        payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
+          debugPrint('Payjoin event for ${payjoin.id}: ${payjoin.status}');
+          switch (payjoin) {
+            case PayjoinReceiver _:
+              if (payjoin.status == PayjoinStatus.proposed) {
+                // Complete the receiver side when it has send a proposal
+                payjoinCompleters[payjoin.id]!.complete(true);
+              }
+            case PayjoinSender _:
+              if (payjoin.status == PayjoinStatus.completed) {
+                payjoinCompleters[payjoin.id]!.complete(true);
+              }
+          }
+        });
+      });
+
+      group(
+        "and enough utxo's",
+        () {
+          test('should have wallets with enough utxos', () async {
+            // Make sure the wallets have a different utxo for every payjoin
+            final receiverUtxos = await walletManagerService.getUnspentUtxos(
+              walletId: receiverWallet.id,
+            );
+            final senderUtxos = await walletManagerService.getUnspentUtxos(
+              walletId: senderWallet.id,
+            );
+            debugPrint('Receiver utxos: ${receiverUtxos.length}');
+            debugPrint('Sender utxos: ${senderUtxos.length}');
+            if (receiverUtxos.length < numberOfPayjoins) {
+              final address = await walletManagerService.getNewAddress(
+                walletId: receiverWallet.id,
+              );
+              debugPrint(
+                'Send some utxos to ${address.address} before running the integration test again',
+              );
+            }
+            if (senderUtxos.length < numberOfPayjoins) {
+              final address = await walletManagerService.getNewAddress(
+                walletId: senderWallet.id,
+              );
+              debugPrint(
+                'Send some utxos to ${address.address} before running the integration test again',
+              );
+            }
+            expect(
+              receiverUtxos.length,
+              greaterThanOrEqualTo(numberOfPayjoins),
+            );
+            expect(senderUtxos.length, greaterThanOrEqualTo(numberOfPayjoins));
+          });
+
+          test('should work with multiple receivers and senders', () async {
+            // Set up multiple receiver sessions
+            for (int i = 0; i < numberOfPayjoins; i++) {
+              // Generate receiver address
+              final address = await walletManagerService.getNewAddress(
+                walletId: receiverWallet.id,
+              );
+              debugPrint('Receive address generated: ${address.address}');
+
+              // Start a receiver session
+              final payjoin = await receiveWithPayjoinUsecase.execute(
+                walletId: receiverWallet.id,
+                address: address.address,
+                isTestnet: true,
+              );
+              debugPrint('Payjoin receiver created: ${payjoin.id}');
+
+              expect(payjoin.status, PayjoinStatus.started);
+              // Check that the payjoin uri is correct
+              final pjUri = Uri.parse(payjoin.pjUri);
+              expect(pjUri.scheme, 'bitcoin');
+              expect(pjUri.path, address.address);
+              expect(pjUri.queryParameters.containsKey('pj'), true);
+              expect(pjUri.queryParameters['pjos'], '0');
+
+              // Cache the address and payjoin uri
+              receiverAddresses.add(address.address);
+              payjoinUris.add(pjUri);
+              // Set a completer to check it completes successfully
+              payjoinCompleters[payjoin.id] = Completer();
+            }
+
+            // Set up multiple sender sessions
+            for (int i = 0; i < numberOfPayjoins; i++) {
+              // Build the psbt with the sender wallet
+              final originalPsbt = await buildPsbtUsecase.execute(
+                walletId: senderWallet.id,
+                address: receiverAddresses[i],
+                amountSat: BigInt.from(1000),
+                feeRateSatPerVb: networkFeesSatPerVb,
+              );
+
+              final payjoinSender = await sendWithPayjoinUsecase.execute(
+                walletId: senderWallet.id,
+                bip21: payjoinUris[i].toString(),
+                originalPsbt: originalPsbt,
+                networkFeesSatPerVb: networkFeesSatPerVb,
+              );
+              debugPrint('Payjoin sender created: ${payjoinSender.id}');
+              expect(payjoinSender.status, PayjoinStatus.requested);
+
+              // Store completers for the sender sessions
+              payjoinCompleters[payjoinSender.id] = Completer();
+            }
+
+            final didAllComplete = await Future.any(
+              [
+                Future.wait(payjoinCompleters.values.map((e) => e.future)).then(
+                  (results) => results.every(
+                    (completed) => completed == true, // Ensure all completed
+                  ),
+                ),
+                Future.delayed(
+                  const Duration(
+                    seconds: PayjoinConstants.directoryPollingInterval *
+                        3 *
+                        numberOfPayjoins,
+                  ),
+                  () => false,
+                ),
+              ],
+            );
+            expect(didAllComplete, true);
+          });
+        },
+        timeout: const Timeout(
+          Duration(
+            minutes: PayjoinConstants.directoryPollingInterval *
+                3 *
+                numberOfPayjoins,
+          ),
+        ),
+      );
+
+      tearDown(() {
+        payjoinSubscription.cancel();
+      });
+    });
   });
 }

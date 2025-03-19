@@ -1,4 +1,4 @@
-import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_use_case.dart';
+import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

@@ -41,7 +41,7 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
       _payjoinStreamController.stream.asBroadcastStream();
 
   Future<void> _processPayjoinRequest(PayjoinReceiver payjoin) async {
-    debugPrint('Processing payjoin request: $payjoin}');
+    debugPrint('Processing payjoin request: ${payjoin.id}');
     final walletId = payjoin.walletId;
     final unspentUtxos =
         await _walletManager.getUnspentUtxos(walletId: walletId);
