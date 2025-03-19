@@ -37,6 +37,8 @@ class RecoverbullLocator {
     locator.registerFactory<StoreBackupKeyIntoServerUsecase>(
       () => StoreBackupKeyIntoServerUsecase(
         recoverBullRepository: locator<RecoverBullRepository>(),
+        seedRepository: locator<SeedRepository>(),
+        walletMetadataRepository: locator<WalletMetadataRepository>(),
       ),
     );
 
