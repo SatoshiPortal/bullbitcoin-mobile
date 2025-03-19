@@ -9,35 +9,33 @@ import 'package:bb_mobile/_utils/bip85_derivation.dart';
 import 'package:flutter/foundation.dart';
 
 class CreateEncryptedVaultUsecase {
-  final RecoverBullRepository _recoverBullRepository;
-  final SeedRepository _seedRepository;
-  final WalletMetadataRepository _walletMetadataRepository;
+  final RecoverBullRepository recoverBullRepository;
+  final SeedRepository seedRepository;
+  final WalletMetadataRepository walletMetadataRepository;
 
   CreateEncryptedVaultUsecase({
-    required RecoverBullRepository recoverBullRepository,
-    required SeedRepository seedRepository,
-    required WalletMetadataRepository walletMetadataRepository,
-  })  : _recoverBullRepository = recoverBullRepository,
-        _seedRepository = seedRepository,
-        _walletMetadataRepository = walletMetadataRepository;
+    required this.recoverBullRepository,
+    required this.seedRepository,
+    required this.walletMetadataRepository,
+  });
 
   Future<String> execute() async {
     try {
       // The default wallet is used to derive the backup key
-      final defaultMetadata = await _walletMetadataRepository.getDefault();
+      final defaultMetadata = await walletMetadataRepository.getDefault();
       final defaultFingerprint = defaultMetadata.masterFingerprint;
-      final defaultSeed = await _seedRepository.get(defaultFingerprint);
+      final defaultSeed = await seedRepository.get(defaultFingerprint);
       final defaultXprv = Bip32Derivation.getXprvFromSeed(
         defaultSeed.bytes,
         defaultMetadata.network,
       );
 
       // Prepare the plaintext that will be encrypted in the backup
-      final walletsMetadata = await _walletMetadataRepository.getAll();
+      final walletsMetadata = await walletMetadataRepository.getAll();
       final List<RecoverBullWallet> toBackup = [];
 
       for (final metadata in walletsMetadata) {
-        final seed = await _seedRepository.get(metadata.masterFingerprint);
+        final seed = await seedRepository.get(metadata.masterFingerprint);
         toBackup.add(
           RecoverBullWallet(seed: seed.bytes, metadata: metadata),
         );
@@ -51,7 +49,7 @@ class CreateEncryptedVaultUsecase {
           Bip85Derivation.deriveBackupKey(defaultXprv, derivationPath);
 
       // Create an encrypted backup file
-      final encryptedBackup = _recoverBullRepository.createBackupFile(
+      final encryptedBackup = recoverBullRepository.createBackupFile(
         backupKey,
         plaintext,
       );
@@ -62,7 +60,7 @@ class CreateEncryptedVaultUsecase {
 
       return json.encode(mapBackup);
     } catch (e) {
-      debugPrint('error creating encrypted backup: $e');
+      debugPrint('$CreateEncryptedVaultUsecase: $e');
       rethrow;
     }
   }
