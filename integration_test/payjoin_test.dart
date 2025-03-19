@@ -20,8 +20,8 @@ import 'package:test/test.dart';
 void main() {
   late WalletManagerService walletManagerService;
   late PayjoinWatcherService payjoinWatcherService;
-  late ReceiveWithPayjoinUseCase receiveWithPayjoinUseCase;
-  late SendWithPayjoinUseCase sendWithPayjoinUseCase;
+  late ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase;
+  late SendWithPayjoinUsecase sendWithPayjoinUsecase;
   late Wallet receiverWallet;
   late Wallet senderWallet;
 
@@ -41,18 +41,18 @@ void main() {
     await AppLocator.setup();
 
     // Make sure we are running in testnet environment
-    await locator<SetEnvironmentUseCase>().execute(Environment.testnet);
+    await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
 
     walletManagerService = locator<WalletManagerService>();
     payjoinWatcherService = locator<PayjoinWatcherService>();
-    receiveWithPayjoinUseCase = locator<ReceiveWithPayjoinUseCase>();
-    sendWithPayjoinUseCase = locator<SendWithPayjoinUseCase>();
+    receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
+    sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
 
-    receiverWallet = await locator<RecoverWalletUseCase>().execute(
+    receiverWallet = await locator<RecoverWalletUsecase>().execute(
       mnemonicWords: receiverMnemonic.split(' '),
       scriptType: ScriptType.bip84,
     );
-    senderWallet = await locator<RecoverWalletUseCase>().execute(
+    senderWallet = await locator<RecoverWalletUsecase>().execute(
       mnemonicWords: senderMnemonic.split(' '),
       scriptType: ScriptType.bip84,
     );
@@ -131,7 +131,7 @@ void main() {
         debugPrint('Receive address generated: ${address.address}');
 
         // Start a receiver session
-        final payjoin = await receiveWithPayjoinUseCase.execute(
+        final payjoin = await receiveWithPayjoinUsecase.execute(
           walletId: receiverWallet.id,
           address: address.address,
           isTestnet: true,
@@ -155,7 +155,7 @@ void main() {
           feeRateSatPerVb: networkFeesSatPerVb,
         );
 
-        final payjoinSender = await sendWithPayjoinUseCase.execute(
+        final payjoinSender = await sendWithPayjoinUsecase.execute(
           walletId: senderWallet.id,
           bip21: pjUri.toString(),
           originalPsbt: originalPsbt,

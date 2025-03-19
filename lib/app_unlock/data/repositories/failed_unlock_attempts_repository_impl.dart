@@ -1,9 +1,9 @@
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/app_unlock/domain/repositories/failed_unlock_attempts_repository.dart';
 
 class FailedUnlockAttemptsRepositoryImpl
     implements FailedUnlockAttemptsRepository {
-  final KeyValueStorageDataSource<String> _storage;
+  final KeyValueStorageDatasource<String> _storage;
 
   static const _failedUnlockAttemptsKey = 'failedUnlockAttemptsKey';
 

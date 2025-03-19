@@ -1,4 +1,4 @@
-abstract class KeyValueStorageDataSource<T> {
+abstract class KeyValueStorageDatasource<T> {
   Future<void> saveValue({required String key, required T value});
   Future<Map<String, T>> getAll();
   Future<T?> getValue(String key);

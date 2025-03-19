@@ -1,4 +1,4 @@
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/app_unlock/data/repositories/failed_unlock_attempts_repository_impl.dart';
 import 'package:bb_mobile/app_unlock/data/services/exponential_timeout_calculator.dart';
@@ -16,8 +16,8 @@ class AppUnlockLocator {
     // Repositories
     locator.registerLazySingleton<FailedUnlockAttemptsRepository>(
       () => FailedUnlockAttemptsRepositoryImpl(
-        locator<KeyValueStorageDataSource<String>>(
-          instanceName: LocatorInstanceNameConstants.secureStorageDataSource,
+        locator<KeyValueStorageDatasource<String>>(
+          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
         ),
       ),
     );
@@ -28,20 +28,20 @@ class AppUnlockLocator {
     );
 
     // Use cases
-    locator.registerFactory<GetLatestUnlockAttemptUseCase>(
-      () => GetLatestUnlockAttemptUseCase(
+    locator.registerFactory<GetLatestUnlockAttemptUsecase>(
+      () => GetLatestUnlockAttemptUsecase(
         failedUnlockAttemptsRepository:
             locator<FailedUnlockAttemptsRepository>(),
         timeoutCalculator: locator<TimeoutCalculator>(),
       ),
     );
-    locator.registerFactory<CheckPinCodeExistsUseCase>(
-      () => CheckPinCodeExistsUseCase(
+    locator.registerFactory<CheckPinCodeExistsUsecase>(
+      () => CheckPinCodeExistsUsecase(
         pinCodeRepository: locator<PinCodeRepository>(),
       ),
     );
-    locator.registerFactory<AttemptUnlockWithPinCodeUseCase>(
-      () => AttemptUnlockWithPinCodeUseCase(
+    locator.registerFactory<AttemptUnlockWithPinCodeUsecase>(
+      () => AttemptUnlockWithPinCodeUsecase(
         failedUnlockAttemptsRepository:
             locator<FailedUnlockAttemptsRepository>(),
         pinCodeRepository: locator<PinCodeRepository>(),
@@ -52,10 +52,10 @@ class AppUnlockLocator {
     // Blocs
     locator.registerFactory<AppUnlockBloc>(
       () => AppUnlockBloc(
-        checkPinCodeExistsUseCase: locator<CheckPinCodeExistsUseCase>(),
-        getLatestUnlockAttemptUseCase: locator<GetLatestUnlockAttemptUseCase>(),
-        attemptUnlockWithPinCodeUseCase:
-            locator<AttemptUnlockWithPinCodeUseCase>(),
+        checkPinCodeExistsUsecase: locator<CheckPinCodeExistsUsecase>(),
+        getLatestUnlockAttemptUsecase: locator<GetLatestUnlockAttemptUsecase>(),
+        attemptUnlockWithPinCodeUsecase:
+            locator<AttemptUnlockWithPinCodeUsecase>(),
       ),
     );
   }

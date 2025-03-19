@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/models/seed_model.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 
-abstract class SeedDataSource {
+abstract class SeedDatasource {
   Future<void> store({
     required String fingerprint,
     required SeedModel seed,
@@ -14,11 +14,11 @@ abstract class SeedDataSource {
   Future<void> delete(String fingerprint);
 }
 
-class SeedDataSourceImpl implements SeedDataSource {
-  final KeyValueStorageDataSource<String> _secureStorage;
+class SeedDatasourceImpl implements SeedDatasource {
+  final KeyValueStorageDatasource<String> _secureStorage;
 
-  const SeedDataSourceImpl({
-    required KeyValueStorageDataSource<String> secureStorage,
+  const SeedDatasourceImpl({
+    required KeyValueStorageDatasource<String> secureStorage,
   }) : _secureStorage = secureStorage;
 
   @override

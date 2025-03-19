@@ -3,18 +3,18 @@ import 'dart:math';
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 
-abstract class ExchangeDataSource {
+abstract class ExchangeDatasource {
   Future<List<String>> getAvailableCurrencies();
   Future<Decimal> getBitcoinPrice(String currencyCode);
 }
 
-class BullBitcoinExchangeDataSourceImpl implements ExchangeDataSource {
+class BullBitcoinExchangeDatasourceImpl implements ExchangeDatasource {
   static const _pricePath = 'price';
   static const _inr_usd = 91;
   static const _crc_usd = 540;
   final Dio _http;
 
-  BullBitcoinExchangeDataSourceImpl({
+  BullBitcoinExchangeDatasourceImpl({
     Dio? bullBitcoinHttpClient,
   }) : _http = bullBitcoinHttpClient ??
             Dio(

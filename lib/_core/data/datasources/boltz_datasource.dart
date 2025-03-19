@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
 
-import 'package:bb_mobile/_core/data/datasources/boltz_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/models/swap_model.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart' as swap_entity;
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:boltz/boltz.dart';
+import 'package:flutter/material.dart';
 
-abstract class BoltzDataSource {
+abstract class BoltzDatasource {
   // Reverse Swaps
   Future<(int, int)> getBtcReverseSwapLimits();
   Future<(int, int)> getLbtcReverseSwapLimits();
@@ -175,24 +174,24 @@ abstract class BoltzDataSource {
   Stream<SwapModel> get swapUpdatesStream;
   StreamController<SwapModel> get swapUpdatesController;
   // STORAGE
-  BoltzStorageDataSourceImpl get storage;
+  BoltzStorageDatasourceImpl get storage;
 
   // Add connection management methods
   Future<void> reconnect();
 }
 
-class BoltzDataSourceImpl implements BoltzDataSource {
+class BoltzDatasourceImpl implements BoltzDatasource {
   final String _baseUrl;
   late String _httpsUrl;
 
   late BoltzWebSocket _boltzWebSocket;
-  final BoltzStorageDataSourceImpl _boltzStore;
+  final BoltzStorageDatasourceImpl _boltzStore;
 
   final _swapUpdatesController = StreamController<SwapModel>.broadcast();
 
-  BoltzDataSourceImpl({
+  BoltzDatasourceImpl({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
-    required BoltzStorageDataSourceImpl boltzStore,
+    required BoltzStorageDatasourceImpl boltzStore,
   })  : _baseUrl = url,
         _boltzStore = boltzStore {
     _httpsUrl = 'https://$_baseUrl';
@@ -200,7 +199,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   }
 
   @override
-  BoltzStorageDataSourceImpl get storage => _boltzStore;
+  BoltzStorageDatasourceImpl get storage => _boltzStore;
 
   @override
   Stream<SwapModel> get swapUpdatesStream => _swapUpdatesController.stream;
@@ -307,7 +306,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
 
       return swapModel;
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       rethrow;
     }
   }
@@ -718,7 +717,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
         reverse.btcLimits.maximal.toInt()
       );
     } catch (e) {
-      print(e);
+      debugPrint(e.toString());
       rethrow;
     }
   }
@@ -733,7 +732,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
         reverse.lbtcLimits.maximal.toInt()
       );
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
       rethrow;
     }
   }
@@ -783,7 +782,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
           try {
             final swapModel = await _boltzStore.get(swapId);
             if (swapModel == null) {
-              print('No swap found for id: $swapId');
+              debugPrint('No swap found for id: $swapId');
               return;
             }
             // Check if swap is already in terminal state
@@ -870,7 +869,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
                 if (swapModel is ChainSwapModel ||
                     swapModel is LnSendSwapModel) {
                   final refunded = swapModel is ChainSwapModel
-                      ? (swapModel as ChainSwapModel).refundTxid != null
+                      ? swapModel.refundTxid != null
                       : (swapModel as LnSendSwapModel).refundTxid != null;
 
                   if (!refunded) {
@@ -1014,24 +1013,25 @@ class BoltzDataSourceImpl implements BoltzDataSource {
             if (updatedSwapModel != null &&
                 updatedSwapModel.status != swapModel.status) {
               await _boltzStore.store(updatedSwapModel);
-              print(
-                  'Updated swap $swapId from ${swapModel.status} to ${updatedSwapModel.status}');
+              debugPrint(
+                'Updated swap $swapId from ${swapModel.status} to ${updatedSwapModel.status}',
+              );
               _swapUpdatesController.add(updatedSwapModel);
             }
           } catch (e) {
-            print('Error processing swap status update: $e');
+            debugPrint('Error processing swap status update: $e');
           }
         },
         onError: (error) {
-          print('Boltz WebSocket error: $error');
+          debugPrint('Boltz WebSocket error: $error');
           _swapUpdatesController.addError(error as Error);
         },
         onDone: () {},
       );
 
-      print('Started Boltz WebSocket');
+      debugPrint('Started Boltz WebSocket');
     } catch (e) {
-      print('Error initializing BoltzWebSocket: $e');
+      debugPrint('Error initializing BoltzWebSocket: $e');
       // Don't rethrow here to allow for graceful recovery
     }
   }
@@ -1039,10 +1039,10 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   @override
   Future<void> reconnect() async {
     try {
-      print('Attempting to reconnect to Boltz WebSocket...');
+      debugPrint('Attempting to reconnect to Boltz WebSocket...');
       resetStream();
     } catch (e) {
-      print('Failed to reconnect: $e');
+      debugPrint('Failed to reconnect: $e');
     }
   }
 
@@ -1050,9 +1050,9 @@ class BoltzDataSourceImpl implements BoltzDataSource {
   void resetStream() {
     try {
       _boltzWebSocket.dispose();
-      print('Boltz WebSocket connection closed');
+      debugPrint('Boltz WebSocket connection closed');
     } catch (e) {
-      print('Error disposing WebSocket: $e');
+      debugPrint('Error disposing WebSocket: $e');
     }
     _initializeBoltzWebSocket();
   }
@@ -1062,7 +1062,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     try {
       _boltzWebSocket.subscribe(swapIds);
     } catch (e) {
-      print('Error subscribing to swaps: $e');
+      debugPrint('Error subscribing to swaps: $e');
     }
   }
 
@@ -1071,7 +1071,7 @@ class BoltzDataSourceImpl implements BoltzDataSource {
     try {
       _boltzWebSocket.unsubscribe(swapIds);
     } catch (e) {
-      print('Error unsubscribing from swaps: $e');
+      debugPrint('Error unsubscribing from swaps: $e');
     }
   }
 

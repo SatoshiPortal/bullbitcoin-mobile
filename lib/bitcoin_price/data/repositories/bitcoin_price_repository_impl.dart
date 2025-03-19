@@ -1,12 +1,12 @@
-import 'package:bb_mobile/_core/data/datasources/exchange_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/exchange_datasource.dart';
 import 'package:bb_mobile/bitcoin_price/domain/repositories/bitcoin_price_repository.dart';
 import 'package:decimal/decimal.dart';
 
 class BitcoinPriceRepositoryImpl implements BitcoinPriceRepository {
-  final ExchangeDataSource _exchange;
+  final ExchangeDatasource _exchange;
 
   BitcoinPriceRepositoryImpl({
-    required ExchangeDataSource exchange,
+    required ExchangeDatasource exchange,
   }) : _exchange = exchange;
 
   @override

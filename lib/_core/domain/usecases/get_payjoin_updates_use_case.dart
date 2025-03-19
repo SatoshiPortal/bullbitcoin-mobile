@@ -1,10 +1,10 @@
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
 import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 
-class GetPayjoinUpdatesUseCase {
+class GetPayjoinUpdatesUsecase {
   final PayjoinWatcherService _payjoinWatcher;
 
-  const GetPayjoinUpdatesUseCase({
+  const GetPayjoinUpdatesUsecase({
     required PayjoinWatcherService payjoinWatcherService,
   }) : _payjoinWatcher = payjoinWatcherService;
 

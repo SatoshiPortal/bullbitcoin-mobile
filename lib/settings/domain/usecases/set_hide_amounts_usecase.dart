@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 
-class SetHideAmountsUseCase {
+class SetHideAmountsUsecase {
   final SettingsRepository _settingsRepository;
 
-  SetHideAmountsUseCase({
+  SetHideAmountsUsecase({
     required SettingsRepository settingsRepository,
   }) : _settingsRepository = settingsRepository;
 

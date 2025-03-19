@@ -11,14 +11,14 @@ part 'app_unlock_state.dart';
 
 class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
   AppUnlockBloc({
-    required CheckPinCodeExistsUseCase checkPinCodeExistsUseCase,
-    required GetLatestUnlockAttemptUseCase getLatestUnlockAttemptUseCase,
-    required AttemptUnlockWithPinCodeUseCase attemptUnlockWithPinCodeUseCase,
+    required CheckPinCodeExistsUsecase checkPinCodeExistsUsecase,
+    required GetLatestUnlockAttemptUsecase getLatestUnlockAttemptUsecase,
+    required AttemptUnlockWithPinCodeUsecase attemptUnlockWithPinCodeUsecase,
     int minPinCodeLength = 4,
     int maxPinCodeLength = 8,
-  })  : _checkPinCodeExistsUseCase = checkPinCodeExistsUseCase,
-        _getLatestUnlockAttemptUseCase = getLatestUnlockAttemptUseCase,
-        _attemptUnlockWithPinCodeUseCase = attemptUnlockWithPinCodeUseCase,
+  })  : _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
+        _getLatestUnlockAttemptUsecase = getLatestUnlockAttemptUsecase,
+        _attemptUnlockWithPinCodeUsecase = attemptUnlockWithPinCodeUsecase,
         super(
           AppUnlockState(
             keyboardNumbers: List.generate(10, (i) => i)..shuffle(),
@@ -33,22 +33,22 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     on<AppUnlockCountdownTick>(_onCountdownTick);
   }
 
-  final CheckPinCodeExistsUseCase _checkPinCodeExistsUseCase;
-  final GetLatestUnlockAttemptUseCase _getLatestUnlockAttemptUseCase;
-  final AttemptUnlockWithPinCodeUseCase _attemptUnlockWithPinCodeUseCase;
+  final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
+  final GetLatestUnlockAttemptUsecase _getLatestUnlockAttemptUsecase;
+  final AttemptUnlockWithPinCodeUsecase _attemptUnlockWithPinCodeUsecase;
 
   Future<void> _onStarted(
     AppUnlockStarted event,
     Emitter<AppUnlockState> emit,
   ) async {
     try {
-      final isPinCodeSet = await _checkPinCodeExistsUseCase.execute();
+      final isPinCodeSet = await _checkPinCodeExistsUsecase.execute();
 
       if (!isPinCodeSet) {
         // No pin code exists, go directly to success state since no pin is required
         emit(state.copyWith(status: AppUnlockStatus.success));
       } else {
-        final latestAttempt = await _getLatestUnlockAttemptUseCase.execute();
+        final latestAttempt = await _getLatestUnlockAttemptUsecase.execute();
 
         emit(
           state.copyWith(
@@ -103,7 +103,7 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     emit(state.copyWith(isVerifying: true));
     try {
       final attemptResult =
-          await _attemptUnlockWithPinCodeUseCase.execute(state.pinCode);
+          await _attemptUnlockWithPinCodeUsecase.execute(state.pinCode);
 
       emit(
         state.copyWith(

@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:bb_mobile/_core/data/datasources/boltz_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/_core/data/models/swap_model.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
-  final BoltzDataSource _boltz;
+  final BoltzDatasource _boltz;
 
   BoltzSwapRepositoryImpl({
-    required BoltzDataSource boltz,
+    required BoltzDatasource boltz,
   }) : _boltz = boltz;
 
   @override

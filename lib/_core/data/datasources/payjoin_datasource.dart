@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 
-import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/_core/data/models/payjoin_model.dart';
 import 'package:bb_mobile/_utils/constants.dart';
@@ -16,7 +16,7 @@ import 'package:payjoin_flutter/send.dart';
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:payjoin_flutter/uri.dart';
 
-abstract class PayjoinDataSource {
+abstract class PayjoinDatasource {
   // requestsForReceivers is a stream that emits a PayjoinReceiverModel every
   //  time a payjoin request (original tx psbt) is received from a sender.
   Stream<PayjoinReceiverModel> get requestsForReceivers;
@@ -70,10 +70,10 @@ class NoValidPayjoinBip21Exception implements Exception {
   NoValidPayjoinBip21Exception(this.message);
 }
 
-class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
+class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
   final String _payjoinDirectoryUrl;
   final Dio _dio;
-  final KeyValueStorageDataSource<String> _storage;
+  final KeyValueStorageDatasource<String> _storage;
   final StreamController<PayjoinReceiverModel> _payjoinRequestedController =
       StreamController.broadcast();
   final StreamController<PayjoinSenderModel> _proposalSentController =
@@ -87,10 +87,10 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
   final Completer _receiversIsolateReady;
   final Completer _sendersIsolateReady;
 
-  PdkPayjoinDataSourceImpl({
+  PdkPayjoinDatasourceImpl({
     String payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
     required Dio dio,
-    required KeyValueStorageDataSource<String> storage,
+    required KeyValueStorageDatasource<String> storage,
   })  : _payjoinDirectoryUrl = payjoinDirectoryUrl,
         _dio = dio,
         _storage = storage,
@@ -489,7 +489,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
       final sender = Sender.fromJson(senderModel.sender);
       log('[Senders Isolate] Requesting payjoin...');
       final context =
-          await PdkPayjoinDataSourceImpl.request(sender: sender, dio: dio);
+          await PdkPayjoinDatasourceImpl.request(sender: sender, dio: dio);
       log('[Senders Isolate] Payjoin requested.');
 
       // Periodically check for a proposal from the receiver
@@ -498,7 +498,7 @@ class PdkPayjoinDataSourceImpl implements PayjoinDataSource {
         (Timer timer) async {
           log('[Senders Isolate]Checking for proposal in senders isolate');
           try {
-            final proposalPsbt = await PdkPayjoinDataSourceImpl.getProposalPsbt(
+            final proposalPsbt = await PdkPayjoinDatasourceImpl.getProposalPsbt(
               context: context,
               dio: dio,
             );

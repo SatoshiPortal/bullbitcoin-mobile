@@ -1,17 +1,17 @@
 import 'package:bb_mobile/_core/data/models/electrum_server_model.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
-abstract class BitcoinBlockchainDataSource {
+abstract class BitcoinBlockchainDatasource {
   Future<String> broadcastPsbt(String finalizedPsbt);
 }
 
-class BdkBlockchainDataSourceImpl implements BitcoinBlockchainDataSource {
+class BdkBlockchainDatasourceImpl implements BitcoinBlockchainDatasource {
   final bdk.Blockchain _blockchain;
 
-  BdkBlockchainDataSourceImpl({required bdk.Blockchain blockchain})
+  BdkBlockchainDatasourceImpl({required bdk.Blockchain blockchain})
       : _blockchain = blockchain;
 
-  static Future<BdkBlockchainDataSourceImpl> fromElectrumServer(
+  static Future<BdkBlockchainDatasourceImpl> fromElectrumServer(
     ElectrumServerModel electrumServer,
   ) async {
     final blockchain = await bdk.Blockchain.create(
@@ -27,7 +27,7 @@ class BdkBlockchainDataSourceImpl implements BitcoinBlockchainDataSource {
       ),
     );
 
-    return BdkBlockchainDataSourceImpl(blockchain: blockchain);
+    return BdkBlockchainDatasourceImpl(blockchain: blockchain);
   }
 
   @override

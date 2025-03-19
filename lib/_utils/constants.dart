@@ -59,11 +59,11 @@ class ApiServiceConstants {
 }
 
 class LocatorInstanceNameConstants {
-  static const secureStorageDataSource = 'secureStorageDataSource';
-  static const bullBitcoinExchangeDataSourceInstanceName =
-      'bullBitcoinExchangeDataSource';
-  static const boltzSwapsHiveStorageDataSourceInstanceName =
-      'boltzSwapsHiveStorageDataSource';
+  static const secureStorageDatasource = 'secureStorageDatasource';
+  static const bullBitcoinExchangeDatasourceInstanceName =
+      'bullBitcoinExchangeDatasource';
+  static const boltzSwapsHiveStorageDatasourceInstanceName =
+      'boltzSwapsHiveStorageDatasource';
   static const boltzSwapRepositoryInstanceName = 'boltzSwapRepository';
   static const boltzTestnetSwapRepositoryInstanceName =
       'boltzTestnetSwapRepository';

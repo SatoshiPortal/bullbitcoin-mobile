@@ -1,11 +1,11 @@
-import 'package:bb_mobile/_core/data/datasources/bip39_word_list_data_source.dart';
+import 'package:bb_mobile/_core/data/datasources/bip39_word_list_datasource.dart';
 import 'package:bb_mobile/_core/domain/repositories/word_list_repository.dart';
 
 class WordListRepositoryImpl implements WordListRepository {
-  final Bip39WordListDataSource _dataSource;
+  final Bip39WordListDatasource _dataSource;
   late List<String> _words = [];
 
-  WordListRepositoryImpl({required Bip39WordListDataSource dataSource})
+  WordListRepositoryImpl({required Bip39WordListDatasource dataSource})
       : _dataSource = dataSource;
 
   @override

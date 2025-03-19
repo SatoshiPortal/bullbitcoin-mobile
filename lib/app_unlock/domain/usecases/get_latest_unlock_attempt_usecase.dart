@@ -2,11 +2,11 @@ import 'package:bb_mobile/app_unlock/domain/repositories/failed_unlock_attempts_
 import 'package:bb_mobile/app_unlock/domain/services/timeout_calculator.dart';
 import 'package:bb_mobile/pin_code/domain/entities/unlock_attempt.dart';
 
-class GetLatestUnlockAttemptUseCase {
+class GetLatestUnlockAttemptUsecase {
   final FailedUnlockAttemptsRepository _failedUnlockAttemptsRepository;
   final TimeoutCalculator _timeoutCalculator;
 
-  GetLatestUnlockAttemptUseCase({
+  GetLatestUnlockAttemptUsecase({
     required FailedUnlockAttemptsRepository failedUnlockAttemptsRepository,
     required TimeoutCalculator timeoutCalculator,
   })  : _failedUnlockAttemptsRepository = failedUnlockAttemptsRepository,

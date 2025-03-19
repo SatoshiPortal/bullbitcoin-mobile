@@ -2,11 +2,11 @@ import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 
-class GetWalletsUseCase {
+class GetWalletsUsecase {
   final WalletManagerService _manager;
   final SettingsRepository _settingsRepository;
 
-  GetWalletsUseCase({
+  GetWalletsUsecase({
     required WalletManagerService walletManager,
     required SettingsRepository settingsRepository,
   })  : _manager = walletManager,

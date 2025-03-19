@@ -11,13 +11,13 @@ import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
 class ReceiveLocator {
   static void setup() {
     // Use cases
-    locator.registerFactory<GetReceiveAddressUseCase>(
-      () => GetReceiveAddressUseCase(
+    locator.registerFactory<GetReceiveAddressUsecase>(
+      () => GetReceiveAddressUsecase(
         walletManager: locator<WalletManagerService>(),
       ),
     );
-    locator.registerFactory<CreateReceiveSwapUseCase>(
-      () => CreateReceiveSwapUseCase(
+    locator.registerFactory<CreateReceiveSwapUsecase>(
+      () => CreateReceiveSwapUsecase(
         walletManager: locator<WalletManagerService>(),
         swapRepository: locator<SwapRepository>(
           instanceName:
@@ -34,9 +34,9 @@ class ReceiveLocator {
     // Bloc
     locator.registerFactory<ReceiveBloc>(
       () => ReceiveBloc(
-        getWalletsUseCase: locator<GetWalletsUseCase>(),
-        getReceiveAddressUseCase: locator<GetReceiveAddressUseCase>(),
-        createReceiveSwapUseCase: locator<CreateReceiveSwapUseCase>(),
+        getWalletsUsecase: locator<GetWalletsUsecase>(),
+        getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
+        createReceiveSwapUsecase: locator<CreateReceiveSwapUsecase>(),
       ),
     );
   }

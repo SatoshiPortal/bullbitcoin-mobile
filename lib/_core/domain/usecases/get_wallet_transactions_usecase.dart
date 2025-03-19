@@ -1,10 +1,10 @@
 // TODO: Create a Transaction entity first
 /*import 'package:bb_mobile/_core/domain/repositories/wallet_manager_repository.dart';
 
-class GetWalletTransactionsUseCase {
+class GetWalletTransactionsUsecase {
   final WalletManagerService _manager;
 
-  GetWalletTransactionsUseCase({required WalletManagerService walletManager})
+  GetWalletTransactionsUsecase({required WalletManagerService walletManager})
       : _manager = walletManager;
 
   Future<List<Transaction>> execute(
