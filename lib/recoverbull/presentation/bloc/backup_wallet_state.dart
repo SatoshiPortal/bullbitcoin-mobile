@@ -22,7 +22,9 @@ sealed class BackupWalletState with _$BackupWalletState {
     @Default('') String encryted,
     @Default(BackupWalletStatus.initial) BackupWalletStatus status,
   }) = _BackupWalletState;
-
+  factory BackupWalletState.initial() => const BackupWalletState(
+        status: BackupWalletStatus.initial(),
+      );
   factory BackupWalletState.error(String error) => BackupWalletState(
         status: BackupWalletStatus.failure(error),
       );
