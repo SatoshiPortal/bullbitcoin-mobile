@@ -140,16 +140,16 @@ class DevPages {
           done: true,
         ),
         DevPageData(
+          route: AppRoute.devReceive.name,
+          title: 'Receive',
+        ),
+        DevPageData(
           route: AppRoute.devCreate.name,
           title: 'Create',
         ),
         DevPageData(
           route: AppRoute.devSend.name,
           title: 'Send',
-        ),
-        DevPageData(
-          route: AppRoute.devReceive.name,
-          title: 'Receive',
         ),
         DevPageData(
           route: AppRoute.devSettings.name,

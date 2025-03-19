@@ -1,10 +1,9 @@
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_amount_segment.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_invoice_segment.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_scaffold.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_segmented_buttons.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_success_body.dart';
+import 'package:bb_mobile/receive/ui/screens/receive_screen.dart';
+import 'package:bb_mobile/receive/ui/zwidgets/receive_amount_segment.dart';
+import 'package:bb_mobile/receive/ui/zwidgets/receive_invoice_segment.dart';
+import 'package:bb_mobile/receive/ui/zwidgets/receive_success_body.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,7 +29,8 @@ class ReceiveRouter {
     navigatorKey: rootNavigatorKey,
     builder: (context, state, child) => BlocProvider<ReceiveBloc>(
       create: (_) => locator<ReceiveBloc>(),
-      child: ReceiveScaffold(body: child),
+      child: child,
+      // child: ReceiveScaffold(body: child),
     ),
     routes: [
       ShellRoute(
@@ -46,9 +46,10 @@ class ReceiveRouter {
               '${state.matchedLocation}/${ReceiveSubroute.success.path}',
             );
           },
-          child: ReceiveSegmentedButtons(
-            child: child,
-          ),
+          child: child,
+          // child: ReceiveSegmentedButtons(
+          //   child: child,
+          // ),
         ),
         routes: [
           GoRoute(
@@ -61,7 +62,8 @@ class ReceiveRouter {
               if (bloc.state.paymentNetwork != ReceivePaymentNetwork.bitcoin) {
                 bloc.add(const ReceiveBitcoinStarted());
               }
-              return const ReceiveInvoiceSegment();
+              return const ReceiveScreen();
+              // return const ReceiveInvoiceSegment();
             },
             routes: [
               GoRoute(

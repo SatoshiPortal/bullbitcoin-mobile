@@ -17,6 +17,10 @@ class BBButton extends StatelessWidget {
     this.iconFirst = false,
     this.outlined = false,
     this.borderColor,
+    this.disabled = false,
+    this.height,
+    this.width,
+    this.textStyle,
   }) : size = _ButtonSize.large;
 
   const BBButton.small({
@@ -30,6 +34,10 @@ class BBButton extends StatelessWidget {
     this.iconFirst = false,
     this.outlined = false,
     this.borderColor,
+    this.disabled = false,
+    this.height,
+    this.width,
+    this.textStyle,
   }) : size = _ButtonSize.small;
 
   final String? icon;
@@ -43,6 +51,10 @@ class BBButton extends StatelessWidget {
   final bool outlined;
   final _ButtonSize size;
   final Color? borderColor;
+  final bool disabled;
+  final double? height;
+  final double? width;
+  final TextStyle? textStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -54,47 +66,56 @@ class BBButton extends StatelessWidget {
             ? Image.asset(icon!, width: 20, height: 20, color: textColor)
             : const SizedBox.shrink();
 
-    return InkWell(
-      onTap: () => onPressed(),
-      borderRadius: radius,
-      child: Container(
-        height: 52,
-        width: size == _ButtonSize.large ? null : 160,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: !outlined ? bgColor : Colors.transparent,
-          border: outlined ? Border.all(color: textColor) : null,
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 200),
+      opacity: disabled ? 0.5 : 1,
+      child: IgnorePointer(
+        ignoring: disabled,
+        child: InkWell(
+          onTap: () => onPressed(),
           borderRadius: radius,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (iconData == null && icon == null) ...[
-              BBText(
-                label,
-                style: context.font.headlineLarge,
-                color: textColor,
-              ),
-            ] else ...[
-              if (iconFirst) ...[
-                image,
-                const Gap(10),
-                BBText(
-                  label,
-                  style: context.font.headlineLarge,
-                  color: textColor,
-                ),
-              ] else ...[
-                BBText(
-                  label,
-                  style: context.font.headlineLarge,
-                  color: textColor,
-                ),
-                const Gap(10),
-                image,
+          child: Container(
+            height: height ?? 52,
+            width: width ?? (size == _ButtonSize.large ? null : 160),
+            padding: height != null
+                ? null
+                : const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: !outlined ? bgColor : Colors.transparent,
+              border: outlined ? Border.all(color: textColor) : null,
+              borderRadius: radius,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (iconData == null && icon == null) ...[
+                  BBText(
+                    label,
+                    style: textStyle ?? context.font.headlineLarge,
+                    color: textColor,
+                  ),
+                ] else ...[
+                  if (iconFirst) ...[
+                    image,
+                    const Gap(10),
+                    BBText(
+                      label,
+                      style: textStyle ?? context.font.headlineLarge,
+                      color: textColor,
+                    ),
+                  ] else ...[
+                    BBText(
+                      label,
+                      style: textStyle ?? context.font.headlineLarge,
+                      color: textColor,
+                    ),
+                    const Gap(10),
+                    image,
+                  ],
+                ],
               ],
-            ],
-          ],
+            ),
+          ),
         ),
       ),
     );
