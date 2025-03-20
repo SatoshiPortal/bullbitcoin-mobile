@@ -143,6 +143,12 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get languageSettingsLabel;
 
+  /// The label for the button to access the backup settings
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet backup'**
+  String get backupSettingsLabel;
+
   /// The label for the button to access the fiat currency settings
   ///
   /// In en, this message translates to:
@@ -154,6 +160,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language'**
   String get languageSettingsScreenTitle;
+
+  /// No description provided for @backupSettingsScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup settings'**
+  String get backupSettingsScreenTitle;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

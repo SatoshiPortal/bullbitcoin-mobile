@@ -235,7 +235,7 @@ class _TopNav extends StatelessWidget {
         const Gap(8),
 
         InkWell(
-          onTap: () {},
+          onTap: () => context.pushNamed(AppRoute.settings.name),
           child: Image.asset(
             Assets.icons.settingsLine.path,
             width: 24,
