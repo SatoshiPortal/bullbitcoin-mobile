@@ -1,13 +1,12 @@
 import 'package:bb_mobile/recoverbull/domain/usecases/check_key_server_connection_usecase.dart';
 import 'package:bb_mobile/recoverbull/domain/usecases/derive_backup_key_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/recoverbull/domain/usecases/restore_encrypted_vault_from_password_use_case.dart';
 import 'package:bb_mobile/recoverbull/domain/usecases/store_backup_key_into_server_usecase.dart';
 import 'package:bb_mobile/recoverbull/domain/usecases/trash_backup_key_from_server_usecase.dart';
+import 'package:bb_mobile/recoverbull/domain/validators/secret_validator.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hex/hex.dart';
 
 part 'keychain_state.dart';
 part 'keychain_cubit.freezed.dart';

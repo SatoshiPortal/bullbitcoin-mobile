@@ -46,13 +46,15 @@ class KeychainState with _$KeychainState {
     DateTime? lastRequestTime,
     int? cooldownMinutes,
   }) = _KeychainState;
-  const KeychainState._();
+  KeychainState._();
 
-  // Validation rules
-  static const int _minSecretLength = 6;
-  bool get hasValidSecretLength => secret.length >= _minSecretLength;
-  bool get hasValidTempSecretLength => tempSecret.length >= _minSecretLength;
-  bool get areSecretsMatching => secret == tempSecret;
+  SecretValidator get _validator => SecretValidator();
+
+  bool get hasValidSecretLength => _validator.hasValidLength(secret);
+  bool get hasValidTempSecretLength => _validator.hasValidLength(tempSecret);
+  bool get areSecretsMatching =>
+      _validator.areSecretsMatching(secret, tempSecret);
+
   bool get canProceed => switch (selectedKeyChainFlow) {
         KeyChainFlow.enter => hasValidSecretLength,
         KeyChainFlow.confirm => hasValidSecretLength && areSecretsMatching,
