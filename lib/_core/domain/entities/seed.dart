@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_utils/uint_8_list_x.dart';
 import 'package:bip32/bip32.dart' as bip32;
-import 'package:bip39/bip39.dart' as bip39;
+import 'package:bip39_mnemonic/bip39_mnemonic.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -24,9 +24,11 @@ sealed class Seed with _$Seed {
   Uint8List get bytes {
     return when(
       bytes: (b) => b,
-      mnemonic: (mnemonicWords, passphrase) => bip39.mnemonicToSeed(
-        mnemonicWords.join(' '),
-        passphrase: passphrase ?? '',
+      mnemonic: (mnemonicWords, passphrase) => Uint8List.fromList(
+        Mnemonic.fromWords(
+          words: mnemonicWords,
+          passphrase: passphrase ?? '',
+        ).seed,
       ),
     );
   }
