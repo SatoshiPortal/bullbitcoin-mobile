@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/recoverbull/domain/usecases/derive_backup_key_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/recoverbull/recoverbull_password_validator.dart';
+import 'package:bb_mobile/key_server/domain/usecases/derive_backup_key_from_default_wallet_usecase.dart';
+import 'package:bb_mobile/key_server/domain/validators/password_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart';

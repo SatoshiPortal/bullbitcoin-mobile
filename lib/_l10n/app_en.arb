@@ -32,6 +32,10 @@
   "@languageSettingsLabel": {
     "description": "The label for the button to access the language settings"
   },
+  "backupSettingsLabel": "Wallet backup",
+  "@backupSettingsLabel": {
+    "description": "The label for the button to access the backup settings"
+  },
   "fiatCurrencySettingsLabel": "Fiat currency",
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"
@@ -39,5 +43,9 @@
   "languageSettingsScreenTitle": "Language",
   "@languageSettingsScreenTitle": {
     "description": "The title of the language settings screen"
+  },
+  "backupSettingsScreenTitle": "Backup settings",
+  "@backupeSettingsScreenTitle": {
+    "description": "The title of the backup settings screen"
   }
 }
