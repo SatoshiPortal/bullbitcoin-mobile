@@ -17,7 +17,6 @@ abstract class TorDatasource {
 
 class TorDatasourceImpl implements TorDatasource {
   final Tor _tor;
-  bool _isStarted = false;
 
   TorDatasourceImpl._(this._tor);
 
@@ -35,7 +34,7 @@ class TorDatasourceImpl implements TorDatasource {
   Future<bool> get isReady async {
     try {
       await _tor.isReady();
-      return _isStarted && _tor.bootstrapped && _tor.port > 0;
+      return _tor.started && _tor.bootstrapped && _tor.port > 0;
     } catch (e) {
       return false;
     }
@@ -43,9 +42,8 @@ class TorDatasourceImpl implements TorDatasource {
 
   @override
   Future<void> start() async {
-    if (!_isStarted) {
+    if (!_tor.started) {
       await _tor.start();
-      _isStarted = true;
     }
     await isReady;
   }
@@ -53,7 +51,6 @@ class TorDatasourceImpl implements TorDatasource {
   @override
   Future<void> kill() async {
     await _tor.stop();
-    _isStarted = false;
   }
 
   @override
