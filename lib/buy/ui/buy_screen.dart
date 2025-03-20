@@ -1,3 +1,4 @@
+import 'package:bb_mobile/buy/ui/screens/buy_confirm_screen.dart';
 import 'package:flutter/material.dart';
 
 class BuyScreen extends StatelessWidget {
@@ -5,6 +6,7 @@ class BuyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    // return const BuyAmountScreen();
+    return const BuyConfirmScreen();
   }
 }
