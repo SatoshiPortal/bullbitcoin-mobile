@@ -1,3 +1,5 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 class SettingsConstants {
   static const environmentKey = 'environment';
   static const bitcoinUnitKey = 'bitcoinUnit';
@@ -58,8 +60,9 @@ class ApiServiceConstants {
   static const boltzTestnetUrlPath = 'api.testnet.boltz.exchange/v2';
 
   // BullBitcoin API
-  static const bullBitcoinKeyServerApiUrlPath =
-      'http://o7rwmpnfkzdcay2gotla6sbrviu27wcgck7nsjrq77nqhtwbjvwcraad.onion';
+
+  static final bullBitcoinKeyServerApiUrlPath =
+      dotenv.env['KEY_SERVER'] ?? 'http://localhost:80';
 }
 
 class LocatorInstanceNameConstants {
