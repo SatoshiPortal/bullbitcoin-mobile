@@ -1,8 +1,10 @@
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/gen/assets.gen.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 enum _ButtonPosition { first, last, middle }
 
@@ -47,14 +49,18 @@ class _ActionRow extends StatelessWidget {
             _ActionButton(
               icon: Assets.icons.btc.path,
               label: 'Buy',
-              onPressed: () {},
+              onPressed: () {
+                context.pushNamed(AppRoute.buy.name);
+              },
               position: _ButtonPosition.first,
             ),
             const Gap(1),
             _ActionButton(
               icon: Assets.icons.dollar.path,
               label: 'Sell',
-              onPressed: () {},
+              onPressed: () {
+                context.pushNamed(AppRoute.sell.name);
+              },
               position: _ButtonPosition.middle,
             ),
             const Gap(1),
