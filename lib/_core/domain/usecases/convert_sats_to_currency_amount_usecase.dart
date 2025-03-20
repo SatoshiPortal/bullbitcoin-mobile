@@ -2,11 +2,11 @@ import 'package:bb_mobile/_core/domain/repositories/exchange_rate_repository.dar
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 
-class GetBitcoinValueInCurrencyUsecase {
+class ConvertSatsToCurrencyAmountUsecase {
   final ExchangeRateRepository _exchangeRate;
   final SettingsRepository _settingsRepository;
 
-  GetBitcoinValueInCurrencyUsecase({
+  ConvertSatsToCurrencyAmountUsecase({
     required ExchangeRateRepository exchangeRateRepository,
     required SettingsRepository settingsRepository,
   })  : _exchangeRate = exchangeRateRepository,
@@ -21,21 +21,22 @@ class GetBitcoinValueInCurrencyUsecase {
       final availableCurrencies = await _exchangeRate.availableCurrencies;
 
       if (!availableCurrencies.contains(currency)) {
-        throw CurrencyValueException('Currency not available');
+        throw ConvertSatsToCurrencyAmountException('Currency not available');
       }
 
+      // If no amount is specified, return the price of one Bitcoin
       return _exchangeRate.getCurrencyValue(
         amountSat: amountSat ?? ConversionConstants.satsAmountOfOneBitcoin,
         currency: currency,
       );
     } catch (e) {
-      throw CurrencyValueException('$e');
+      throw ConvertSatsToCurrencyAmountException('$e');
     }
   }
 }
 
-class CurrencyValueException implements Exception {
+class ConvertSatsToCurrencyAmountException implements Exception {
   final String message;
 
-  CurrencyValueException(this.message);
+  ConvertSatsToCurrencyAmountException(this.message);
 }

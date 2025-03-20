@@ -1,10 +1,10 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_value_in_currency_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/get_currency_value_in_sats_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/receive/domain/usecases/get_receive_address_use_case.dart';
@@ -20,16 +20,20 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required GetWalletsUsecase getWalletsUsecase,
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
     required GetCurrencyUsecase getCurrencyUsecase,
-    required GetBitcoinValueInCurrencyUsecase getBitcoinValueInCurrencyUsecase,
-    required GetCurrencyValueInSatsUsecase getCurrencyValueInSatsUsecase,
+    required ConvertSatsToCurrencyAmountUsecase
+        convertSatsToCurrencyAmountUsecase,
+    required ConvertCurrencyToSatsAmountUsecase
+        convertCurrencyToSatsAmountUsecase,
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required CreateReceiveSwapUsecase createReceiveSwapUsecase,
     Wallet? wallet,
   })  : _getWalletsUsecase = getWalletsUsecase,
         _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
         _getCurrencyUsecase = getCurrencyUsecase,
-        _getBitcoinValueInCurrencyUsecase = getBitcoinValueInCurrencyUsecase,
-        _getCurrencyValueInSatsUsecase = getCurrencyValueInSatsUsecase,
+        _convertSatsToCurrencyAmountUsecase =
+            convertSatsToCurrencyAmountUsecase,
+        _convertCurrencyToSatsAmountUsecase =
+            convertCurrencyToSatsAmountUsecase,
         _getReceiveAddressUsecase = getReceiveAddressUsecase,
         _createReceiveSwapUsecase = createReceiveSwapUsecase,
         // Lightning is the default when pressing the receive button on the home screen
@@ -42,8 +46,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final GetWalletsUsecase _getWalletsUsecase;
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
   final GetCurrencyUsecase _getCurrencyUsecase;
-  final GetBitcoinValueInCurrencyUsecase _getBitcoinValueInCurrencyUsecase;
-  final GetCurrencyValueInSatsUsecase _getCurrencyValueInSatsUsecase;
+  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final ConvertCurrencyToSatsAmountUsecase _convertCurrencyToSatsAmountUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final CreateReceiveSwapUsecase _createReceiveSwapUsecase;
 

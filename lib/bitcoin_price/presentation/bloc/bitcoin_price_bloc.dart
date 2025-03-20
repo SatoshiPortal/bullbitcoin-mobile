@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_value_in_currency_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,10 +15,12 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   BitcoinPriceBloc({
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
     required GetCurrencyUsecase getCurrencyUsecase,
-    required GetBitcoinValueInCurrencyUsecase getBitcoinValueInCurrencyUsecase,
+    required ConvertSatsToCurrencyAmountUsecase
+        convertSatsToCurrencyAmountUsecase,
   })  : _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
         _getCurrencyUsecase = getCurrencyUsecase,
-        _getBitcoinValueInCurrencyUsecase = getBitcoinValueInCurrencyUsecase,
+        _convertSatsToCurrencyAmountUsecase =
+            convertSatsToCurrencyAmountUsecase,
         super(const BitcoinPriceState()) {
     on<BitcoinPriceStarted>(_onStarted);
     on<BitcoinPriceFetched>(_onFetched);
@@ -27,7 +29,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
 
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
   final GetCurrencyUsecase _getCurrencyUsecase;
-  final GetBitcoinValueInCurrencyUsecase _getBitcoinValueInCurrencyUsecase;
+  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
 
   Future<void> _onStarted(
     BitcoinPriceStarted event,
@@ -40,7 +42,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       final availableCurrencies =
           await _getAvailableCurrenciesUsecase.execute();
 
-      final price = await _getBitcoinValueInCurrencyUsecase.execute(
+      final price = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currency,
       );
 
@@ -67,7 +69,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       final currency = state.currency;
 
       if (currency != null) {
-        final price = await _getBitcoinValueInCurrencyUsecase.execute(
+        final price = await _convertSatsToCurrencyAmountUsecase.execute(
           currencyCode: currency,
         );
 
@@ -101,7 +103,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       // final successState = state as BitcoinPriceSuccess;
       final currency = event.currencyCode;
       // Get the exchange rate for the new currency
-      final price = await _getBitcoinValueInCurrencyUsecase.execute(
+      final price = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: currency,
       );
 
