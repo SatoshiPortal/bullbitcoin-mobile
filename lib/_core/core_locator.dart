@@ -2,7 +2,7 @@ import 'package:bb_mobile/_core/data/datasources/bip39_word_list_datasource.dart
 import 'package:bb_mobile/_core/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_datasource.dart';
-import 'package:bb_mobile/_core/data/datasources/exchange_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -11,6 +11,7 @@ import 'package:bb_mobile/_core/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
+import 'package:bb_mobile/_core/data/repositories/exchange_rate_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/payjoin_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/seed_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/settings_repository_impl.dart';
@@ -33,8 +34,11 @@ import 'package:bb_mobile/_core/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/build_psbt_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_value_in_currency_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_currency_value_in_sats_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_environment_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_hide_amounts_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
@@ -59,11 +63,11 @@ class CoreLocator {
       ),
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
     );
-    //  - Exchange
-    locator.registerLazySingleton<ExchangeDatasource>(
-      () => BullBitcoinExchangeDatasourceImpl(),
-      instanceName: LocatorInstanceNameConstants
-          .bullBitcoinExchangeDatasourceInstanceName,
+    //  - Bull Bitcoin API
+    final bbApiDatasource = BullBitcoinApiDatasource(
+      bullBitcoinHttpClient: Dio(
+        BaseOptions(baseUrl: 'https://api.bullbitcoin.com'),
+      ),
     );
     //  - Swaps
     final boltzSwapsBox =
@@ -228,7 +232,6 @@ class CoreLocator {
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-
     locator.registerFactory<GetLanguageUsecase>(
       () => GetLanguageUsecase(
         settingsRepository: locator<SettingsRepository>(),
@@ -260,8 +263,6 @@ class CoreLocator {
         payjoinWatcherService: locator<PayjoinWatcherService>(),
       ),
     );
-
-    // Register CreateReceiveSwapUsecase
     locator.registerFactory<CreateReceiveSwapUsecase>(
       () => CreateReceiveSwapUsecase(
         walletManager: locator<WalletManagerService>(),
@@ -280,6 +281,25 @@ class CoreLocator {
       () => BuildPsbtUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
         walletManagerService: locator<WalletManagerService>(),
+      ),
+    );
+    final exchangeRateRepository =
+        ExchangeRateRepositoryImpl(bitcoinPriceDatasource: bbApiDatasource);
+    locator.registerFactory<GetAvailableCurrenciesUsecase>(
+      () => GetAvailableCurrenciesUsecase(
+        exchangeRateRepository: exchangeRateRepository,
+      ),
+    );
+    locator.registerFactory<GetBitcoinValueInCurrencyUsecase>(
+      () => GetBitcoinValueInCurrencyUsecase(
+        exchangeRateRepository: exchangeRateRepository,
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<GetCurrencyValueInSatsUsecase>(
+      () => GetCurrencyValueInSatsUsecase(
+        exchangeRateRepository: exchangeRateRepository,
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }

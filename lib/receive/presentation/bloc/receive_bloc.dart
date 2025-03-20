@@ -1,5 +1,10 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
+import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_value_in_currency_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_currency_value_in_sats_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/receive/domain/usecases/get_receive_address_use_case.dart';
@@ -13,21 +18,32 @@ part 'receive_state.dart';
 class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ReceiveBloc({
     required GetWalletsUsecase getWalletsUsecase,
+    required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
+    required GetCurrencyUsecase getCurrencyUsecase,
+    required GetBitcoinValueInCurrencyUsecase getBitcoinValueInCurrencyUsecase,
+    required GetCurrencyValueInSatsUsecase getCurrencyValueInSatsUsecase,
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required CreateReceiveSwapUsecase createReceiveSwapUsecase,
-    String?
-        selectedWalletId, // TODO: analyze other ways to pass a preselected wallet (like in the ...Started events)
-    // TODO: analyze as well if the list of wallets that can be used to select a wallet should be passed to the bloc or if it should be fetched by the bloc itself
+    Wallet? wallet,
   })  : _getWalletsUsecase = getWalletsUsecase,
+        _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
+        _getCurrencyUsecase = getCurrencyUsecase,
+        _getBitcoinValueInCurrencyUsecase = getBitcoinValueInCurrencyUsecase,
+        _getCurrencyValueInSatsUsecase = getCurrencyValueInSatsUsecase,
         _getReceiveAddressUsecase = getReceiveAddressUsecase,
         _createReceiveSwapUsecase = createReceiveSwapUsecase,
-        super(ReceiveState(selectedWalletId: selectedWalletId)) {
+        // Lightning is the default when pressing the receive button on the home screen
+        super(ReceiveState.lightning(wallet: wallet)) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
     on<ReceiveLiquidStarted>(_onLiquidStarted);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
+  final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
+  final GetCurrencyUsecase _getCurrencyUsecase;
+  final GetBitcoinValueInCurrencyUsecase _getBitcoinValueInCurrencyUsecase;
+  final GetCurrencyValueInSatsUsecase _getCurrencyValueInSatsUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final CreateReceiveSwapUsecase _createReceiveSwapUsecase;
 
@@ -41,7 +57,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     emit(
       state.copyWith(
         status: ReceiveStatus.inProgress,
-        paymentNetwork: ReceivePaymentNetwork.bitcoin,
       ),
     );
   }
@@ -53,9 +68,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     // TODO: get the wallet, fiat currency, exchange rate, and bitcoin unit
     // TODO: check where to get the wallet id from (from the event or from the default wallet use case if not present in the event?)
     emit(
-      state.copyWith(
+      const ReceiveState.lightning(
         status: ReceiveStatus.inProgress,
-        paymentNetwork: ReceivePaymentNetwork.lightning,
       ),
     );
   }
@@ -68,9 +82,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     // TODO: check where to get the wallet id from (from the event or from the default wallet use case if not present in the event?)
     // TODO: also get the first unused address for the selected wallet
     emit(
-      state.copyWith(
+      const ReceiveState.liquid(
         status: ReceiveStatus.inProgress,
-        paymentNetwork: ReceivePaymentNetwork.liquid,
       ),
     );
   }

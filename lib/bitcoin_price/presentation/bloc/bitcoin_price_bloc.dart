@@ -1,8 +1,7 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_value_in_currency_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/bitcoin_price/domain/usecases/fetch_bitcoin_price_usecase.dart';
-import 'package:bb_mobile/bitcoin_price/domain/usecases/get_available_fiat_currencies.dart';
-import 'package:decimal/decimal.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -14,22 +13,21 @@ part 'bitcoin_price_state.dart';
 
 class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   BitcoinPriceBloc({
-    required GetAvailableFiatCurrenciesUsecase
-        getAvailableFiatCurrenciesUsecase,
+    required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
     required GetCurrencyUsecase getCurrencyUsecase,
-    required FetchBitcoinPriceUsecase fetchBitcoinPriceUsecase,
-  })  : _getAvailableFiatCurrenciesUsecase = getAvailableFiatCurrenciesUsecase,
+    required GetBitcoinValueInCurrencyUsecase getBitcoinValueInCurrencyUsecase,
+  })  : _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
         _getCurrencyUsecase = getCurrencyUsecase,
-        _fetchBitcoinPriceUsecase = fetchBitcoinPriceUsecase,
+        _getBitcoinValueInCurrencyUsecase = getBitcoinValueInCurrencyUsecase,
         super(const BitcoinPriceState()) {
     on<BitcoinPriceStarted>(_onStarted);
     on<BitcoinPriceFetched>(_onFetched);
     on<BitcoinPriceCurrencyChanged>(_onCurrencyChanged);
   }
 
-  final GetAvailableFiatCurrenciesUsecase _getAvailableFiatCurrenciesUsecase;
+  final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
   final GetCurrencyUsecase _getCurrencyUsecase;
-  final FetchBitcoinPriceUsecase _fetchBitcoinPriceUsecase;
+  final GetBitcoinValueInCurrencyUsecase _getBitcoinValueInCurrencyUsecase;
 
   Future<void> _onStarted(
     BitcoinPriceStarted event,
@@ -38,20 +36,18 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     debugPrint('FiatCurrenciesStarted');
 
     try {
-      // final currency = event.currency ?? await _getCurrencyUsecase.execute();
-      // final availableCurrencies =
-      //     await _getAvailableFiatCurrenciesUsecase.execute();
+      final currency = event.currency ?? await _getCurrencyUsecase.execute();
+      final availableCurrencies =
+          await _getAvailableCurrenciesUsecase.execute();
 
-      // if (!availableCurrencies.contains(currency)) {
-      //   throw PriceForCurrencyNotAvailableException(currencyCode: currency);
-      // }
-      const currency = 'CAD';
-      final price = await _fetchBitcoinPriceUsecase.execute(currency);
+      final price = await _getBitcoinValueInCurrencyUsecase.execute(
+        currencyCode: currency,
+      );
 
       emit(
         BitcoinPriceState(
           currency: currency,
-          // availableCurrencies: availableCurrencies,
+          availableCurrencies: availableCurrencies,
           bitcoinPrice: price,
         ),
       );
@@ -68,17 +64,19 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     debugPrint('BitcoinPriceFetched');
 
     try {
-      // The state should be in the success state, otherwise try to start the bloc
-      //  again with the new currency in the event.
-      // final successState = state as BitcoinPriceSuccess;
+      final currency = state.currency;
 
-      final price = await _fetchBitcoinPriceUsecase.execute(state.currency!);
+      if (currency != null) {
+        final price = await _getBitcoinValueInCurrencyUsecase.execute(
+          currencyCode: currency,
+        );
 
-      emit(
-        state.copyWith(
-          bitcoinPrice: price,
-        ),
-      );
+        emit(
+          state.copyWith(
+            bitcoinPrice: price,
+          ),
+        );
+      }
     } catch (e) {
       debugPrint(e.toString());
       // TODO: would it make sense to not emit a failure state here, but keep the
@@ -103,7 +101,9 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       // final successState = state as BitcoinPriceSuccess;
       final currency = event.currencyCode;
       // Get the exchange rate for the new currency
-      final price = await _fetchBitcoinPriceUsecase.execute(currency);
+      final price = await _getBitcoinValueInCurrencyUsecase.execute(
+        currencyCode: currency,
+      );
 
       emit(
         state.copyWith(
@@ -116,12 +116,4 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
       emit(state.copyWith(error: e));
     }
   }
-}
-
-class PriceForCurrencyNotAvailableException implements Exception {
-  final String message;
-
-  PriceForCurrencyNotAvailableException({
-    required String currencyCode,
-  }) : message = 'No price available for currency $currencyCode';
 }
