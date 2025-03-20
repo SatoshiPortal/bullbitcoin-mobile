@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/_core/domain/usecases/get_default_wallet_use_case.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
@@ -8,7 +7,6 @@ import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
 import 'package:bb_mobile/recoverbull/domain/usecases/save_to_google_drive_usecase.dart';
-import 'package:bb_mobile/recoverbull/domain/usecases/store_backup_key_into_server_usecase.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -25,10 +23,8 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   final DisconnectFromGoogleDriveUsecase disconnectFromGoogleDriveUsecase;
   final SaveToFileSystemUsecase saveToFileSystemUsecase;
   final SaveToGoogleDriveUsecase saveToGoogleDriveUsecase;
-  final StoreBackupKeyIntoServerUsecase storeBackupKeyIntoServerUsecase;
   BackupWalletBloc({
     required this.createEncryptedBackupUsecase,
-    required this.storeBackupKeyIntoServerUsecase,
     required this.fetchLatestBackupUsecase,
     required this.connectToGoogleDriveUsecase,
     required this.disconnectFromGoogleDriveUsecase,
