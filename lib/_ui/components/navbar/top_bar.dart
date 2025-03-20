@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:bb_mobile/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -11,6 +12,7 @@ class TopBar extends StatelessWidget {
     this.onAction,
     this.color,
     this.actionIcon,
+    this.bullLogo = false,
   });
 
   final String title;
@@ -18,6 +20,7 @@ class TopBar extends StatelessWidget {
   final Function? onAction;
   final IconData? actionIcon;
   final Color? color;
+  final bool bullLogo;
 
   @override
   Widget build(BuildContext context) {
@@ -41,11 +44,17 @@ class TopBar extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.only(bottom: 8),
               alignment: Alignment.bottomCenter,
-              child: BBText(
-                title,
-                style: context.font.headlineMedium,
-                color: context.colour.secondary,
-              ),
+              child: bullLogo
+                  ? Image.asset(
+                      Assets.images2.bbLogoSmall.path,
+                      height: 32,
+                      width: 32,
+                    )
+                  : BBText(
+                      title,
+                      style: context.font.headlineMedium,
+                      color: context.colour.secondary,
+                    ),
             ),
           ),
           if (onAction != null) ...[
