@@ -8,13 +8,13 @@ sealed class BitcoinPriceState with _$BitcoinPriceState {
     //
     List<String>? availableCurrencies,
     String? currency,
-    Decimal? bitcoinPrice,
+    double? bitcoinPrice,
   }) = _BitcoinPriceState;
   const BitcoinPriceState._();
 
   String? calculateFiatPrice(int satAmount) {
     if (bitcoinPrice == null) return null;
-    final p = bitcoinPrice!.toDouble() * (satAmount / 100000000);
+    final p = bitcoinPrice! * (satAmount / 100000000);
     if (currency == null) return null;
     return '${_fiatFormatting(p.toStringAsFixed(2))} ${currency!}';
   }

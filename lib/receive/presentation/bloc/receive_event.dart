@@ -15,10 +15,3 @@ class ReceiveLightningStarted extends ReceiveEvent {
 class ReceiveLiquidStarted extends ReceiveEvent {
   const ReceiveLiquidStarted();
 }
-
-// Todo: add event to receive to a specific wallet only (so disable the other wallets)
-class ReceiveEventWalletPreselected extends ReceiveEvent {
-  final String walletId;
-
-  ReceiveEventWalletPreselected({required this.walletId});
-}

@@ -1,40 +1,31 @@
 import 'dart:math';
 
-import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 
-abstract class ExchangeDatasource {
-  Future<List<String>> getAvailableCurrencies();
-  Future<Decimal> getBitcoinPrice(String currencyCode);
+abstract class BitcoinPriceDatasource {
+  Future<List<String>> get availableCurrencies;
+  Future<double> getPrice(String currencyCode);
 }
 
-class BullBitcoinExchangeDatasourceImpl implements ExchangeDatasource {
-  static const _pricePath = 'price';
-  static const _inr_usd = 91;
-  static const _crc_usd = 540;
+class BullBitcoinApiDatasource implements BitcoinPriceDatasource {
   final Dio _http;
+  final _pricePath = '/public/price';
 
-  BullBitcoinExchangeDatasourceImpl({
-    Dio? bullBitcoinHttpClient,
-  }) : _http = bullBitcoinHttpClient ??
-            Dio(
-              BaseOptions(
-                  // baseUrl: 'https://api.bullbitcoin.com/public/price',
-                  ),
-            );
+  BullBitcoinApiDatasource({
+    required Dio bullBitcoinHttpClient,
+  }) : _http = bullBitcoinHttpClient;
 
   @override
-  Future<List<String>> getAvailableCurrencies() async {
-    // TODO: implement getAvailableCurrencies
-    throw UnimplementedError();
+  Future<List<String>> get availableCurrencies async {
+    // TODO: fetch the actual list of currencies from the api
+    return ['USD', 'CAD', 'INR', 'CRC', 'EUR'];
   }
 
   @override
-  Future<Decimal> getBitcoinPrice(String currencyCode) async {
+  Future<double> getPrice(String currencyCode) async {
     try {
       final resp = await _http.post(
-        'https://api.bullbitcoin.com/public/price',
-        // _pricePath,
+        _pricePath,
         // TODO: Create a model for this request data
         data: {
           'id': 1,
@@ -70,18 +61,10 @@ class BullBitcoinExchangeDatasourceImpl implements ExchangeDatasource {
       final precision = element['precision'] as int? ?? 2;
 
       // Convert price based on precision (e.g., if price is 11751892 and precision is 2, actual price is 117518.92)
-      final rateDouble = price / pow(10, precision);
-
-      final rate = Decimal.fromBigInt(BigInt.from(rateDouble));
-      // .tryParse(result['indexPrice'] as String);
-
-      // if (rate == null) {
-      //   throw 'Unable to parse exchange rate from Bull Bitcoin Exchange API';
-      // }
+      final rate = price / pow(10, precision);
 
       return rate;
     } catch (e) {
-      // TODO: Use custom error class
       rethrow;
     }
   }

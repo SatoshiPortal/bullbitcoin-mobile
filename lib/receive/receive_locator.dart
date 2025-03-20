@@ -1,6 +1,10 @@
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
@@ -35,6 +39,12 @@ class ReceiveLocator {
     locator.registerFactory<ReceiveBloc>(
       () => ReceiveBloc(
         getWalletsUsecase: locator<GetWalletsUsecase>(),
+        getAvailableCurrenciesUsecase: locator<GetAvailableCurrenciesUsecase>(),
+        getCurrencyUsecase: locator<GetCurrencyUsecase>(),
+        convertSatsToCurrencyAmountUsecase:
+            locator<ConvertSatsToCurrencyAmountUsecase>(),
+        convertCurrencyToSatsAmountUsecase:
+            locator<ConvertCurrencyToSatsAmountUsecase>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         createReceiveSwapUsecase: locator<CreateReceiveSwapUsecase>(),
       ),

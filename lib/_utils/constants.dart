@@ -8,6 +8,10 @@ class SettingsConstants {
   static const defaultCurrencyCode = 'CAD';
 }
 
+class ConversionConstants {
+  static final satsAmountOfOneBitcoin = BigInt.from(100000000);
+}
+
 class SecureStorageKeyPrefixConstants {
   static const seed = 'seed_';
   static const swap = 'swap_';
@@ -60,8 +64,6 @@ class ApiServiceConstants {
 
 class LocatorInstanceNameConstants {
   static const secureStorageDatasource = 'secureStorageDatasource';
-  static const bullBitcoinExchangeDatasourceInstanceName =
-      'bullBitcoinExchangeDatasource';
   static const boltzSwapsHiveStorageDatasourceInstanceName =
       'boltzSwapsHiveStorageDatasource';
   static const boltzSwapRepositoryInstanceName = 'boltzSwapRepository';

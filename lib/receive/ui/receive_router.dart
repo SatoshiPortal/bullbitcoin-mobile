@@ -59,9 +59,9 @@ class ReceiveRouter {
             builder: (context, state) {
               // Entry route, go to bitcoin receive state if not already there
               final bloc = context.read<ReceiveBloc>();
-              if (bloc.state.paymentNetwork != ReceivePaymentNetwork.bitcoin) {
-                bloc.add(const ReceiveBitcoinStarted());
-              }
+              //if (bloc.state.paymentNetwork != ReceivePaymentNetwork.bitcoin) {
+              bloc.add(const ReceiveBitcoinStarted());
+              //}
               return const ReceiveScreen();
               // return const ReceiveInvoiceSegment();
             },
@@ -88,10 +88,10 @@ class ReceiveRouter {
             builder: (context, state) {
               // Entry route, go to lightning receive state if not already there
               final bloc = context.read<ReceiveBloc>();
-              if (bloc.state.paymentNetwork !=
-                  ReceivePaymentNetwork.lightning) {
-                bloc.add(const ReceiveLightningStarted());
-              }
+              //if (bloc.state.paymentNetwork !=
+              // ReceivePaymentNetwork.lightning) {
+              bloc.add(const ReceiveLightningStarted());
+              // }
               return const ReceiveAmountSegment();
             },
             routes: [
@@ -117,9 +117,9 @@ class ReceiveRouter {
             builder: (context, state) {
               // Entry route, go to liquid receive state if not already there
               final bloc = context.read<ReceiveBloc>();
-              if (bloc.state.paymentNetwork != ReceivePaymentNetwork.liquid) {
-                bloc.add(const ReceiveLiquidStarted());
-              }
+              //if (bloc.state.paymentNetwork != ReceivePaymentNetwork.liquid) {
+              bloc.add(const ReceiveLiquidStarted());
+              //}
               return const ReceiveInvoiceSegment();
             },
             routes: [
