@@ -8,12 +8,12 @@ import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_d
 import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/recoverbull/domain/usecases/create_encrypted_vault_usecase.dart';
-import 'package:bb_mobile/recoverbull/domain/usecases/save_to_file_system_usecase.dart';
-import 'package:bb_mobile/recoverbull/domain/usecases/save_to_google_drive_usecase.dart';
-import 'package:bb_mobile/recoverbull/presentation/bloc/backup_wallet_bloc.dart';
+import 'package:bb_mobile/backup_wallet/domain/usecases/create_encrypted_vault_usecase.dart';
+import 'package:bb_mobile/backup_wallet/domain/usecases/save_to_file_system_usecase.dart';
+import 'package:bb_mobile/backup_wallet/domain/usecases/save_to_google_drive_usecase.dart';
+import 'package:bb_mobile/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 
-class RecoverbullLocator {
+class BackupWalletLocator {
   static void setup() {
     // Use cases
     locator.registerFactory<CreateEncryptedVaultUsecase>(
