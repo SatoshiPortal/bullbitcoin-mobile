@@ -32,8 +32,10 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }) : super(const KeyServerState());
 
   void backspaceKey() {
-    if (state.key.isEmpty) return;
-    _updateKey(state.key.substring(0, state.key.length - 1));
+    if (state.secret.isEmpty) return;
+    updateKeyServerState(
+      secret: state.secret.substring(0, state.secret.length - 1),
+    );
   }
 
   Future<void> checkConnection() async {
@@ -53,8 +55,8 @@ class KeyServerCubit extends Cubit<KeyServerState> {
       emit(
         state.copyWith(
           selectedFlow: KeyServerFlow.confirm,
-          tempKey: state.key,
-          key: '',
+          temporarySecret: state.secret,
+          secret: '',
         ),
       );
       return;
@@ -89,44 +91,37 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }
 
   void enterKey(String value) {
-    if (state.key.length >= pinMax) return;
-    _updateKey(state.key + value);
+    if (state.secret.length >= pinMax) return;
+    updateKeyServerState(secret: state.secret + value);
   }
 
   Future<void> recoverKey() async {
     if (!state.canProceed) return;
+    if (state.encrypted.isEmpty) {
+      _emitOperationStatus(
+        const KeyServerOperationStatus.failure(
+          message: 'No backup key found. Please try again.',
+        ),
+      );
+      return;
+    }
     try {
       final backupKey = await _handleServerOperation(
         () => restoreBackupKeyFromPasswordUsecase.execute(
-          backupAsString: '',
-          password: state.key,
+          backupAsString: state.encrypted,
+          password: state.secret,
         ),
         'Recover Key',
       );
       if (backupKey != null) {
-        emit(
-          state.copyWith(
-            backupKey: backupKey,
-            secretStatus: SecretStatus.recovered,
-          ),
+        updateKeyServerState(
+          backupKey: backupKey,
+          secretStatus: SecretStatus.recovered,
         );
       }
     } catch (e) {
       _emitError('Failed to recover key: $e');
     }
-  }
-
-  void setFlow(KeyServerFlow flow) {
-    emit(
-      state.copyWith(
-        selectedFlow: flow,
-        status: const KeyServerOperationStatus.initial(),
-        key: '',
-        tempKey: '',
-        isKeyConfirmed: false,
-        backupKey: '',
-      ),
-    );
   }
 
   Future<void> storeKey() async {
@@ -137,7 +132,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
       );
       await _handleServerOperation(
         () => storeBackupKeyIntoServerUsecase.execute(
-          password: state.key,
+          password: state.secret,
           backupKey: derivedKey,
           backupFileAsString: '',
         ),
@@ -149,7 +144,50 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     }
   }
 
-  void toggleObscure() => emit(state.copyWith(obscure: !state.obscure));
+  void toggleObscure() =>
+      emit(state.copyWith(isSecretObscured: !state.isSecretObscured));
+
+  void updateKeyServerState({
+    String? secret,
+    String? backupKey,
+    KeyServerFlow? flow,
+    SecretStatus? secretStatus,
+    KeyServerOperationStatus? status,
+    AuthInputType? authInputType,
+    String? encrypted,
+    bool resetState = false,
+  }) {
+    // Prevent duplicate state updates
+    if (!resetState &&
+        secret == state.secret &&
+        backupKey == state.backupKey &&
+        flow == state.selectedFlow &&
+        authInputType == state.authInputType &&
+        encrypted == state.encrypted) {
+      return;
+    }
+
+    // Don't reset backupKey if it's a state change during backup flow
+    final isBackupFlow =
+        flow == KeyServerFlow.enter || flow == KeyServerFlow.confirm;
+    final shouldKeepBackupKey = isBackupFlow && state.backupKey.isNotEmpty;
+
+    emit(
+      state.copyWith(
+        secret: resetState ? '' : (secret ?? state.secret),
+        backupKey: shouldKeepBackupKey
+            ? state.backupKey
+            : (resetState ? '' : (backupKey ?? state.backupKey)),
+        selectedFlow: flow ?? state.selectedFlow,
+        authInputType: authInputType ?? state.authInputType,
+        encrypted: encrypted ?? state.encrypted,
+        temporarySecret: resetState ? '' : state.temporarySecret,
+        secretStatus: secretStatus ?? state.secretStatus,
+
+        status: const KeyServerOperationStatus.initial(), // Always clear status
+      ),
+    );
+  }
 
   // Private helper methods
   Future<T?> _handleServerOperation<T>(
