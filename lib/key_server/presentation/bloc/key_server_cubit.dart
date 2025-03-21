@@ -190,15 +190,35 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }
 
   // Private helper methods
+
+  void _emitError(String message) => emit(
+        state.copyWith(
+          status: KeyServerOperationStatus.failure(message: message),
+          torStatus: TorStatus.offline,
+        ),
+      );
+
+  void _emitOperationStatus(KeyServerOperationStatus status) =>
+      emit(state.copyWith(status: status));
   Future<T?> _handleServerOperation<T>(
     Future<T> Function() operation,
     String operationName,
   ) async {
-    _emitLoading();
+    emit(
+      state.copyWith(
+        status: const KeyServerOperationStatus.loading(),
+        torStatus: TorStatus.connecting,
+      ),
+    );
     for (var attempt = 0; attempt < maxRetries; attempt++) {
       try {
         final result = await operation();
-        _emitSuccess();
+        emit(
+          state.copyWith(
+            status: const KeyServerOperationStatus.success(),
+            torStatus: TorStatus.online,
+          ),
+        );
         return result;
       } catch (e) {
         if (attempt == maxRetries - 1) {
@@ -210,36 +230,4 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     }
     return null;
   }
-
-  void _emitError(String message) => emit(
-        state.copyWith(
-          status: KeyServerOperationStatus.failure(message: message),
-          torStatus: TorStatus.offline,
-        ),
-      );
-
-  void _emitLoading() => emit(
-        state.copyWith(
-          status: const KeyServerOperationStatus.loading(),
-          torStatus: TorStatus.connecting,
-        ),
-      );
-
-  void _emitSuccess() => emit(
-        state.copyWith(
-          status: const KeyServerOperationStatus.success(),
-          torStatus: TorStatus.online,
-        ),
-      );
-
-  void _emitOperationStatus(KeyServerOperationStatus status) =>
-      emit(state.copyWith(status: status));
-
-  void _updateKey(String value) => emit(
-        state.copyWith(
-          key: value,
-          status: const KeyServerOperationStatus.initial(),
-          isKeyConfirmed: false,
-        ),
-      );
 }
