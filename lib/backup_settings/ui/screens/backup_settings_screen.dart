@@ -2,6 +2,7 @@ import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/_utils/build_context_x.dart';
+import 'package:bb_mobile/backup_settings/ui/backup_settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -49,7 +50,9 @@ class RecoverBackupButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BBButton.big(
       label: 'Recover Backup',
-      onPressed: () {},
+      onPressed: () => context.pushNamed(
+        BackupSettingsSubroute.backupOptions.name,
+      ),
       borderColor: context.colour.secondary,
       outlined: true,
       bgColor: Colors.transparent,
@@ -67,7 +70,9 @@ class StartBackupButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: BBButton.big(
         label: 'Start Backup',
-        onPressed: () {},
+        onPressed: () => context.pushNamed(
+          BackupSettingsSubroute.backupOptions.name,
+        ),
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
       ),
