@@ -17,7 +17,7 @@ class DeriveBackupKeyFromDefaultWalletUsecase {
     required this.walletMetadataRepository,
   });
 
-  Future<String> execute(String backupFile) async {
+  Future<String> execute({required String backupFileAsString}) async {
     try {
       final isValidBackupFile = BullBackup.isValid(backupFile);
       if (!isValidBackupFile) throw 'Invalid backup file';

@@ -20,7 +20,7 @@ class StoreBackupKeyIntoServerUsecase {
 
   Future<void> execute({
     required String password,
-    required String backupFile,
+    required String backupFileAsString,
     required String backupKey,
   }) async {
     try {

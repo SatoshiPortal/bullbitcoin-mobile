@@ -12,7 +12,7 @@ class TrashBackupKeyFromServerUsecase {
 
   Future<void> execute({
     required String password,
-    required String backupFile,
+    required String backupFileAsString,
   }) async {
     try {
       final isValidBackupFile = BullBackup.isValid(backupFile);
