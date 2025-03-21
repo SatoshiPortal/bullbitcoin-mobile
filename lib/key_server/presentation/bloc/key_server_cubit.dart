@@ -43,7 +43,8 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     );
   }
 
-  void clearError() => _emitStatus(const KeyServerOperationStatus.initial());
+  void clearError() =>
+      _emitOperationStatus(const KeyServerOperationStatus.initial());
 
   Future<void> confirmKey() async {
     if (!state.canProceed) return;
@@ -60,7 +61,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     }
 
     if (!state.areKeysMatching) {
-      _emitStatus(
+      _emitOperationStatus(
         const KeyServerOperationStatus.failure(
           message: 'Keys do not match. Please try again.',
         ),
@@ -193,7 +194,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
         ),
       );
 
-  void _emitStatus(KeyServerOperationStatus status) =>
+  void _emitOperationStatus(KeyServerOperationStatus status) =>
       emit(state.copyWith(status: status));
 
   void _updateKey(String value) => emit(
