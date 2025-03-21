@@ -11,12 +11,15 @@ class RestoreBackupKeyFromPasswordUsecase {
     required this.recoverBullRepository,
   });
 
-  Future<String> execute(String backupFile, String password) async {
+  Future<String> execute({
+    required String backupAsString,
+    required String password,
+  }) async {
     try {
-      final isValidBackupFile = BullBackup.isValid(backupFile);
+      final isValidBackupFile = BullBackup.isValid(backupAsString);
       if (!isValidBackupFile) throw 'Invalid backup file';
 
-      final bullBackup = BullBackup.fromJson(backupFile);
+      final bullBackup = BullBackup.fromJson(backupAsString);
 
       final backupKey = await recoverBullRepository.fetchBackupKey(
         HEX.encode(bullBackup.id),
