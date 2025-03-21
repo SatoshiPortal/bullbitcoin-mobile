@@ -38,10 +38,9 @@ class KeyServerState with _$KeyServerState {
     @Default(SecretStatus.initial) SecretStatus secretStatus,
     @Default(KeyServerOperationStatus.initial())
     KeyServerOperationStatus status,
-    @Default(false) bool obscure,
-    @Default('') String key,
-    @Default('') String tempKey,
-    @Default(false) bool isKeyConfirmed,
+    @Default(false) bool isSecretObscured,
+    @Default('') String secret,
+    @Default('') String temporarySecret,
     @Default('') String backupKey,
     @Default('') String encrypted,
     DateTime? lastRequestTime,
@@ -51,8 +50,9 @@ class KeyServerState with _$KeyServerState {
 
   KeyValidator get _validator => KeyValidator();
 
-  bool get hasValidKeyLength => _validator.hasValidLength(key);
-  bool get areKeysMatching => _validator.areKeysMatching(key, tempKey);
+  bool get hasValidKeyLength => _validator.hasValidLength(secret);
+  bool get areKeysMatching =>
+      _validator.areKeysMatching(secret, temporarySecret);
 
   bool get canProceed => switch (selectedFlow) {
         KeyServerFlow.enter => hasValidKeyLength,
