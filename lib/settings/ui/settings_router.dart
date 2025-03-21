@@ -1,5 +1,5 @@
+import 'package:bb_mobile/backup_wallet/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/pin_code/ui/pin_code_setting_flow.dart';
-import 'package:bb_mobile/recoverbull/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/settings/ui/screens/language_settings_screen.dart';
 import 'package:go_router/go_router.dart';
 
