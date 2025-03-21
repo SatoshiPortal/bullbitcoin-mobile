@@ -38,10 +38,9 @@ class KeyServerState with _$KeyServerState {
     @Default(SecretStatus.initial) SecretStatus secretStatus,
     @Default(KeyServerOperationStatus.initial())
     KeyServerOperationStatus status,
-    @Default(false) bool obscure,
-    @Default('') String key,
-    @Default('') String tempKey,
-    @Default(false) bool isKeyConfirmed,
+    @Default(false) bool isSecretObscured,
+    @Default('') String secret,
+    @Default('') String temporarySecret,
     @Default('') String backupKey,
     @Default('') String encrypted,
     DateTime? lastRequestTime,
@@ -51,9 +50,9 @@ class KeyServerState with _$KeyServerState {
 
   KeyValidator get _validator => KeyValidator();
 
-  bool get hasValidKeyLength => _validator.hasValidLength(key);
-  bool get hasValidTempKeyLength => _validator.hasValidLength(tempKey);
-  bool get areKeysMatching => _validator.areKeysMatching(key, tempKey);
+  bool get hasValidKeyLength => _validator.hasValidLength(secret);
+  bool get areKeysMatching =>
+      _validator.areKeysMatching(secret, temporarySecret);
 
   bool get canProceed => switch (selectedFlow) {
         KeyServerFlow.enter => hasValidKeyLength,
@@ -62,47 +61,10 @@ class KeyServerState with _$KeyServerState {
         KeyServerFlow.delete => hasValidKeyLength,
       };
 
-  // State updates
-  KeyServerState updateWithKey(String value) => copyWith(
-        key: value,
-        status: const KeyServerOperationStatus.initial(),
-        isKeyConfirmed: false,
-      );
-
-  KeyServerState updateWithTempKey(String value) => copyWith(
-        tempKey: value,
-        isKeyConfirmed: areKeysMatching && hasValidKeyLength,
-        status: const KeyServerOperationStatus.initial(),
-      );
-
-  KeyServerState reset() => copyWith(
-        key: '',
-        tempKey: '',
-        isKeyConfirmed: false,
-        status: const KeyServerOperationStatus.initial(),
-        backupKey: '',
-      );
-
-  KeyServerState setFlow(KeyServerFlow flow) => copyWith(
-        selectedFlow: flow,
-        status: const KeyServerOperationStatus.initial(),
-      ).reset();
-
-  KeyServerState updateTorStatus(TorStatus status) => copyWith(
-        torStatus: status,
-        status: const KeyServerOperationStatus.initial(),
-      );
   bool get isInCooldown {
     if (lastRequestTime == null || cooldownMinutes == null) return false;
-    final cooldownEnd =
-        lastRequestTime!.add(Duration(minutes: cooldownMinutes!));
-    return DateTime.now().isBefore(cooldownEnd);
-  }
-
-  int? get remainingCooldownSeconds {
-    if (!isInCooldown) return null;
-    final cooldownEnd =
-        lastRequestTime!.add(Duration(minutes: cooldownMinutes!));
-    return cooldownEnd.difference(DateTime.now()).inSeconds;
+    return DateTime.now().isBefore(
+      lastRequestTime!.add(Duration(minutes: cooldownMinutes!)),
+    );
   }
 }
