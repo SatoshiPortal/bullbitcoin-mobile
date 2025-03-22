@@ -51,11 +51,11 @@ enum AppRoute {
 }
 
 class AppRouter {
-  // static final GlobalKey<NavigatorState> rootNavigatorKey =
-  //     GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> rootNavigatorKey =
+      GlobalKey<NavigatorState>();
 
   static final router = GoRouter(
-    // navigatorKey: rootNavigatorKey,
+    navigatorKey: rootNavigatorKey,
     initialLocation: AppRoute.home.path,
     routes: [
       GoRoute(

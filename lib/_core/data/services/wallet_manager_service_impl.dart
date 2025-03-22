@@ -206,7 +206,12 @@ class WalletManagerServiceImpl implements WalletManagerService {
   }
 
   @override
-  Future<List<Wallet>> getAllWallets({Environment? environment}) async {
+  Future<List<Wallet>> getWallets({
+    Environment? environment,
+    bool? onlyDefaults,
+    bool? onlyBitcoin,
+    bool? onlyLiquid,
+  }) async {
     final wallets = <Wallet>[];
     for (final walletEntry in _wallets.entries) {
       final metadata = await _walletMetadata.get(walletEntry.key);
@@ -215,8 +220,12 @@ class WalletManagerServiceImpl implements WalletManagerService {
         continue;
       }
 
+      // Filter out wallets that don't match the given criteria
       if (environment != null &&
-          metadata.network.isMainnet != environment.isMainnet) {
+              metadata.network.isMainnet != environment.isMainnet ||
+          onlyDefaults == true && !metadata.isDefault ||
+          onlyBitcoin == true && !metadata.network.isBitcoin ||
+          onlyLiquid == true && !metadata.network.isLiquid) {
         continue;
       }
 
@@ -339,7 +348,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
       await sync(walletId: walletId);
     }
 
-    return getAllWallets(environment: environment);
+    return getWallets(environment: environment);
   }
 
   @override

@@ -1,20 +1,17 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
-import 'package:bb_mobile/_ui/components/dialpad/dailpad.dart';
 import 'package:bb_mobile/_ui/components/inputs/copy_input.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/_ui/components/price_input/balance_row.dart';
-import 'package:bb_mobile/_ui/components/price_input/price_input.dart';
-import 'package:bb_mobile/_ui/components/segment/segmented_full.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/components/toggle/switch.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:bb_mobile/receive/ui/widgets/receive_network_selection.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class ReceiveScreen extends StatelessWidget {
-  const ReceiveScreen({super.key});
+class ReceiveQrScreen extends StatelessWidget {
+  const ReceiveQrScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -57,49 +54,6 @@ class QrPage extends StatelessWidget {
         ReceiveNewAddressButton(),
         Gap(40),
       ],
-    );
-  }
-}
-
-class AmountPage extends StatelessWidget {
-  const AmountPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Gap(10),
-        ReceiveNetworkSelection(),
-        Gap(82),
-        ReceiveAmountEntry(),
-        Gap(82),
-        ReceiveBalanceRow(),
-        ReceiveNumberPad(),
-        Gap(40),
-        ReceiveContinueButton(),
-        Gap(40),
-      ],
-    );
-  }
-}
-
-class ReceiveNetworkSelection extends StatelessWidget {
-  const ReceiveNetworkSelection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBSegmentFull<String>(
-        items: const {
-          'Bitcoin',
-          'Lightning',
-          'Liquid',
-        },
-        onSelected: (c) {},
-        selected: 'Bitcoin',
-      ),
     );
   }
 }
@@ -265,33 +219,6 @@ class ReceiveCopyAddress extends StatelessWidget {
   }
 }
 
-class ReceiveAmountEntry extends StatelessWidget {
-  const ReceiveAmountEntry({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const PriceInput();
-  }
-}
-
-class ReceiveNumberPad extends StatelessWidget {
-  const ReceiveNumberPad({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const DialPad();
-  }
-}
-
-class ReceiveBalanceRow extends StatelessWidget {
-  const ReceiveBalanceRow({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const BalanceRow();
-  }
-}
-
 class ReceiveNewAddressButton extends StatelessWidget {
   const ReceiveNewAddressButton({super.key});
 
@@ -302,24 +229,6 @@ class ReceiveNewAddressButton extends StatelessWidget {
       child: BBButton.big(
         label: 'New address',
         onPressed: () {},
-        bgColor: context.colour.secondary,
-        textColor: context.colour.onSecondary,
-      ),
-    );
-  }
-}
-
-class ReceiveContinueButton extends StatelessWidget {
-  const ReceiveContinueButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: BBButton.big(
-        label: 'Continue',
-        onPressed: () {},
-        disabled: true,
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
       ),

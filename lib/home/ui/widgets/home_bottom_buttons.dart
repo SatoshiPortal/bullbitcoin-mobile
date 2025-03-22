@@ -19,7 +19,8 @@ class HomeBottomButtons extends StatelessWidget {
             label: 'Receive',
             iconFirst: true,
             onPressed: () {
-              context.pushNamed(AppRoute.receiveBitcoin.name);
+              // Lightning is the default receive method
+              context.pushNamed(AppRoute.receiveLightning.name);
             },
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,

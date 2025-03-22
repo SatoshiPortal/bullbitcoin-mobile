@@ -254,6 +254,7 @@ class CoreLocator {
     locator.registerFactory<ReceiveWithPayjoinUsecase>(
       () => ReceiveWithPayjoinUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
     locator.registerFactory<SendWithPayjoinUsecase>(

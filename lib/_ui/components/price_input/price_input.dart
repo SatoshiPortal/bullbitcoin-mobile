@@ -49,24 +49,22 @@ class PriceInput extends StatelessWidget {
             height: 40,
             width: 200,
             alignment: Alignment.center,
-            child: Expanded(
-              child: TextField(
-                textAlignVertical: TextAlignVertical.center,
-                textAlign: TextAlign.center,
-                expands: true,
-                maxLines: null,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(2),
-                    borderSide: BorderSide.none,
-                  ),
-                  fillColor: context.colour.secondaryFixedDim,
-                  filled: true,
-                  floatingLabelAlignment: FloatingLabelAlignment.center,
-                  hintText: 'Add note',
-                  hintStyle: context.font.labelSmall!.copyWith(
-                    color: context.colour.surfaceContainer,
-                  ),
+            child: TextField(
+              textAlignVertical: TextAlignVertical.center,
+              textAlign: TextAlign.center,
+              expands: true,
+              maxLines: null,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(2),
+                  borderSide: BorderSide.none,
+                ),
+                fillColor: context.colour.secondaryFixedDim,
+                filled: true,
+                floatingLabelAlignment: FloatingLabelAlignment.center,
+                hintText: 'Add note',
+                hintStyle: context.font.labelSmall!.copyWith(
+                  color: context.colour.surfaceContainer,
                 ),
               ),
             ),

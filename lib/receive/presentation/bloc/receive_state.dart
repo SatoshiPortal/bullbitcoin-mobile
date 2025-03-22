@@ -1,61 +1,95 @@
 part of 'receive_bloc.dart';
 
-enum ReceiveStatus { initial, inProgress, success, error }
+enum ReceiveStatus { inProgress, success, error }
 
 @freezed
 class ReceiveState with _$ReceiveState {
-  const factory ReceiveState.lightning({
-    @Default(ReceiveStatus.initial) ReceiveStatus status,
-    Wallet? wallet,
-    @Default([]) List<String> amountInputCurrencies,
-    @Default('SAT') String amountInputCurrencyCode,
-    @Default('0') String fiatAmountInput,
-    @Default('0') String bitcoinAmountInput,
+  // Some default variables are added to the states,
+  //  even to the network undefined and error state,
+  //  this is to avoid null checks in the business logic and the UI.
+  const factory ReceiveState.networkUndefined({
+    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
+    @Default([]) List<String> fiatCurrencyCodes,
+    @Default('') String amountInputCurrencyCode,
+    @Default('') String fiatAmountInput,
+    @Default('') String bitcoinAmountInput,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
     @Default(0) double exchangeRate,
-    String? fiatCurrencyCode,
+  }) = NetworkUndefinedReceiveState;
+  const factory ReceiveState.bitcoin({
+    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
+    required Wallet wallet,
+    required List<String> fiatCurrencyCodes,
+    required String fiatCurrencyCode,
+    required String amountInputCurrencyCode,
+    required BitcoinUnit bitcoinUnit,
+    required double exchangeRate,
+    required String address,
+    @Default('') String fiatAmountInput,
+    @Default('') String bitcoinAmountInput,
+    @Default('') String note,
+    @Default('') payjoinQueryParameter,
+    @Default(false) bool addressOnly,
+  }) = BitcoinReceiveState;
+  const factory ReceiveState.lightning({
+    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
+    required Wallet wallet,
+    required List<String> fiatCurrencyCodes,
+    required String fiatCurrencyCode,
+    required String amountInputCurrencyCode,
+    required BitcoinUnit bitcoinUnit,
+    required double exchangeRate,
+    @Default('') String fiatAmountInput,
+    @Default('') String bitcoinAmountInput,
     @Default('') String note,
     Swap? swap,
   }) = LightningReceiveState;
-
-  const factory ReceiveState.bitcoin({
-    @Default(ReceiveStatus.initial) ReceiveStatus status,
-    Wallet? wallet,
-    @Default('') String address,
-    String? payjoinQueryParameter,
-    @Default([]) List<String> amountInputCurrencies,
-    @Default('SAT') String amountInputCurrencyCode,
-    @Default('0') String fiatAmountInput,
-    @Default('0') String bitcoinAmountInput,
-    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
-    @Default(0) double exchangeRate,
-    String? fiatCurrencyCode,
-    @Default('') String note,
-    @Default(false) bool addressOnly,
-  }) = BitcoinReceiveState;
-
   const factory ReceiveState.liquid({
-    @Default(ReceiveStatus.initial) ReceiveStatus status,
-    Wallet? wallet,
-    @Default('') String address,
-    @Default([]) List<String> amountInputCurrencies,
-    @Default('SAT') String amountInputCurrencyCode,
-    @Default('0') String fiatAmountInput,
-    @Default('0') String bitcoinAmountInput,
-    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
-    @Default(0) double exchangeRate,
-    String? fiatCurrencyCode,
+    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
+    required Wallet wallet,
+    required List<String> fiatCurrencyCodes,
+    required String fiatCurrencyCode,
+    required String amountInputCurrencyCode,
+    required BitcoinUnit bitcoinUnit,
+    required double exchangeRate,
+    required String address,
+    @Default('') String fiatAmountInput,
+    @Default('') String bitcoinAmountInput,
     @Default('') String note,
   }) = LiquidReceiveState;
+  const factory ReceiveState.error({
+    required Object error,
+    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
+    @Default([]) List<String> fiatCurrencyCodes,
+    @Default('') String amountInputCurrencyCode,
+    @Default('') String fiatAmountInput,
+    @Default('') String bitcoinAmountInput,
+    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
+    @Default(0) double exchangeRate,
+  }) = ErrorReceiveState;
   const ReceiveState._();
+
+  List<String> get amountInputCurrencyCodes {
+    return [
+      BitcoinUnit.btc.code,
+      BitcoinUnit.sats.code,
+      ...fiatCurrencyCodes,
+    ];
+  }
 
   bool get isFiatAmountInput => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
       .contains(amountInputCurrencyCode);
 
   BigInt get amountSat {
     if (isFiatAmountInput) {
+      if (fiatAmountInput.isEmpty) {
+        return BigInt.zero;
+      }
       return BigInt.from(
-          double.parse(fiatAmountInput) * 100000000 / exchangeRate);
+        double.parse(fiatAmountInput) * 100000000 / exchangeRate,
+      );
+    } else if (bitcoinAmountInput.isEmpty) {
+      return BigInt.zero;
     } else if (bitcoinUnit == BitcoinUnit.sats) {
       return BigInt.parse(bitcoinAmountInput);
     } else {
@@ -68,7 +102,12 @@ class ReceiveState with _$ReceiveState {
 
   double get amountFiat {
     if (isFiatAmountInput) {
+      if (fiatAmountInput.isEmpty) {
+        return 0;
+      }
       return double.parse(fiatAmountInput);
+    } else if (bitcoinAmountInput.isEmpty) {
+      return 0;
     } else if (bitcoinUnit == BitcoinUnit.sats) {
       return BigInt.parse(bitcoinAmountInput).toDouble() *
           exchangeRate /
@@ -77,6 +116,8 @@ class ReceiveState with _$ReceiveState {
       return double.parse(bitcoinAmountInput) * exchangeRate;
     }
   }
+
+  bool get hasAmount => amountSat > BigInt.zero;
 
   bool get hasReceivedFunds => status == ReceiveStatus.success;
 }
