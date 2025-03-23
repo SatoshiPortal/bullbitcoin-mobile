@@ -26,7 +26,10 @@ class HiveBoxNameConstants {
 }
 
 class PayjoinConstants {
-  static const String ohttpRelayUrl = 'https://pj.bobspacebkk.com';
+  static const List<String> ohttpRelayUrls = [
+    'https://ohttp.achow101.com',
+    'https://pj.bobspacebkk.com',
+  ];
   static const String directoryUrl = 'https://payjo.in';
   static const directoryPollingInterval = 5;
 }
