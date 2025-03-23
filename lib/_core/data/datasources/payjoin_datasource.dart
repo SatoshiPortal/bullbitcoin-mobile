@@ -135,14 +135,14 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
       OhttpKeys? ohttpKeys;
       for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
         try {
-          ohttpRelay = await Url.fromStr(ohttpRelayUrl);
+          final relay = await Url.fromStr(ohttpRelayUrl);
           ohttpKeys = await fetchOhttpKeys(
-            ohttpRelay: ohttpRelay,
+            ohttpRelay: relay,
             payjoinDirectory: payjoinDirectory,
           );
+          ohttpRelay = relay;
           break;
         } catch (e) {
-          ohttpRelay = null;
           continue;
         }
       }
