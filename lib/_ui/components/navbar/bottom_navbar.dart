@@ -2,6 +2,10 @@ import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
+// Choose ONE of these imports based on which solution you want to use:
+import 'package:bb_mobile/_ui/screens/exchange/bull_bitcoin_webview.dart'; // For WebView solution
+// OR
+// import 'package:bb_mobile/_ui/screens/exchange/bull_bitcoin_launcher.dart'; // For URL launcher solution
 
 class BottomNavbar extends StatelessWidget {
   const BottomNavbar({super.key});
@@ -24,7 +28,19 @@ class BottomNavbar extends StatelessWidget {
           _BottomNavButton(
             icon: Assets.icons.dollar.path,
             label: 'Exchange',
-            onPressed: () {},
+            onPressed: () {
+              // CHOOSE ONE OF THESE OPTIONS:
+
+              // Option 1: WebView solution
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const BullBitcoinWebView(),
+                ),
+              );
+
+              // // Option 2: URL Launcher solution
+              // BullBitcoinLauncher.openExchange(context);
+            },
             selected: false,
           ),
         ],
