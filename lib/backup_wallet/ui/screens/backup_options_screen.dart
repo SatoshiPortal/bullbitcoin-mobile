@@ -54,7 +54,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                   'assets/encrypted_vault.png',
                   width: 36,
                   height: 45,
-                  fit: BoxFit.contain,
+                  fit: BoxFit.cover,
                 ),
                 title: 'Encrypted vault',
                 description:
@@ -71,7 +71,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                   'assets/physical_backup.png',
                   width: 36,
                   height: 45,
-                  fit: BoxFit.contain,
+                  fit: BoxFit.cover,
                 ),
                 title: 'Physical backup',
                 description:
