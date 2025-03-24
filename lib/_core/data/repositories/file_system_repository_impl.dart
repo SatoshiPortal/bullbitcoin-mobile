@@ -33,4 +33,9 @@ class FileSystemRepositoryImpl implements FileSystemRepository {
   Future<String> getDownloadDirectory() async {
     return await _fileStorageDataSource.getDownloadDirectory();
   }
+
+  @override
+  Future<String?> getDirectoryPath() async {
+    return await _fileStorageDataSource.getDirectoryPath();
+  }
 }

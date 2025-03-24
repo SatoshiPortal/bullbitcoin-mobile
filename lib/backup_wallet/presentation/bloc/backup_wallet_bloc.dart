@@ -17,7 +17,7 @@ part 'backup_wallet_state.dart';
 
 class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   final CreateEncryptedVaultUsecase createEncryptedBackupUsecase;
-  final SelectFilePathUsecase selectFilePathUsecase;
+  final SelectFolderPathUsecase selectFolderPathUsecase;
   final ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase;
   final FetchLatestBackupUsecase fetchLatestBackupUsecase;
   final DisconnectFromGoogleDriveUsecase disconnectFromGoogleDriveUsecase;
@@ -28,7 +28,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     required this.fetchLatestBackupUsecase,
     required this.connectToGoogleDriveUsecase,
     required this.disconnectFromGoogleDriveUsecase,
-    required this.selectFilePathUsecase,
+    required this.selectFolderPathUsecase,
     required this.saveToFileSystemUsecase,
     required this.saveToGoogleDriveUsecase,
   }) : super(BackupWalletState.initial()) {
@@ -43,8 +43,12 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     Emitter<BackupWalletState> emit,
   ) async {
     try {
-      emit(state.copyWith(status: const BackupWalletStatus.loading()));
-      final filePath = await selectFilePathUsecase.execute();
+      emit(
+        state.copyWith(
+          status: const BackupWalletStatus.loading(LoadingType.general),
+        ),
+      );
+      final filePath = await selectFolderPathUsecase.execute();
       if (filePath == null) {
         emit(state.copyWith(status: const BackupWalletStatus.initial()));
         return;
