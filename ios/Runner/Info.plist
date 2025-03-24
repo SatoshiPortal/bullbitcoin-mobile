@@ -49,5 +49,18 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>GIDClientID</key>
+	<string>1000256293534-88hujil9lm2odvvlgut96m08ml961mt2.apps.googleusercontent.com</string>
+	<key>BUNDLE_ID</key>
+	<string>com.bullbitcoin.mobile</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.1000256293534-88hujil9lm2odvvlgut96m08ml961mt2</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
