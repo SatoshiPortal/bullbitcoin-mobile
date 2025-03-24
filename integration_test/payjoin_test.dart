@@ -162,7 +162,7 @@ void main() {
         final payjoinSender = await sendWithPayjoinUsecase.execute(
           walletId: senderWallet.id,
           bip21: pjUri.toString(),
-          originalPsbt: originalPsbt,
+          originalPsbt: originalPsbt.toBase64(),
           networkFeesSatPerVb: networkFeesSatPerVb,
         );
         debugPrint('Payjoin sender created: ${payjoinSender.id}');
@@ -326,7 +326,7 @@ void main() {
               final payjoinSender = await sendWithPayjoinUsecase.execute(
                 walletId: senderWallet.id,
                 bip21: payjoinUris[i].toString(),
-                originalPsbt: originalPsbt,
+                originalPsbt: originalPsbt.toBase64(),
                 networkFeesSatPerVb: networkFeesSatPerVb,
               );
               debugPrint('Payjoin sender created: ${payjoinSender.id}');

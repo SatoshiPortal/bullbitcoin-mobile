@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_core/data/repositories/bdk_wallet_repository_impl.dart';
+import 'package:bb_mobile/_core/domain/entities/transaction.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:flutter/foundation.dart';
@@ -13,7 +14,7 @@ class BuildPsbtUsecase {
   })  : _payjoin = payjoinRepository,
         _walletManager = walletManagerService;
 
-  Future<String> execute({
+  Future<Transaction> execute({
     required String walletId,
     required String address,
     BigInt? amountSat,
@@ -30,7 +31,7 @@ class BuildPsbtUsecase {
         'Wallet id $walletId building psbt. PayjoinInputs: $payjoinInputs',
       );
 
-      final psbt = await _walletManager.buildPsbt(
+      final psbt = await _walletManager.buildUnsigned(
         walletId: walletId,
         address: address,
         amountSat: amountSat,

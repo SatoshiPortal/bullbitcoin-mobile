@@ -8,6 +8,7 @@ import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
+import 'package:bb_mobile/_core/domain/entities/transaction.dart';
 import 'package:bb_mobile/_core/domain/entities/tx_input.dart';
 import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
@@ -384,7 +385,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
   }
 
   @override
-  Future<String> buildPsbt({
+  Future<Transaction> buildUnsigned({
     required String walletId,
     required String address,
     BigInt? amountSat,
@@ -402,7 +403,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
     if (wallet is BitcoinWalletRepository) {
       final bitcoinWallet = wallet as BitcoinWalletRepository;
 
-      return bitcoinWallet.buildPsbt(
+      return bitcoinWallet.buildUnsigned(
         address: address,
         amountSat: amountSat,
         absoluteFeeSat: absoluteFeeSat,
@@ -418,9 +419,9 @@ class WalletManagerServiceImpl implements WalletManagerService {
   }
 
   @override
-  Future<String> signPsbt({
+  Future<Transaction> sign({
     required String walletId,
-    required String psbt,
+    required Transaction tx,
   }) async {
     final wallet = await _getWalletWithPrivateKey(walletId);
 
@@ -430,7 +431,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
 
     if (wallet is BitcoinWalletRepository) {
       final bitcoinWallet = wallet as BitcoinWalletRepository;
-      return bitcoinWallet.signPsbt(psbt);
+      return bitcoinWallet.sign(tx);
     }
 
     throw UnsupportedError(
