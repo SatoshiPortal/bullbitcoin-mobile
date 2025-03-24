@@ -47,14 +47,16 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
   void clearError() =>
       _emitOperationStatus(const KeyServerOperationStatus.initial());
-
+  void clearSensitive() => updateKeyServerState(
+        secret: '',
+      );
   Future<void> confirmKey() async {
     if (!state.canProceed) return;
 
-    if (state.selectedFlow == KeyServerFlow.enter) {
+    if (state.currentFlow == CurrentKeyServerFlow.enter) {
       emit(
         state.copyWith(
-          selectedFlow: KeyServerFlow.confirm,
+          currentFlow: CurrentKeyServerFlow.confirm,
           temporarySecret: state.secret,
           secret: '',
         ),
@@ -125,20 +127,36 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }
 
   Future<void> storeKey() async {
+    await checkConnection();
+
     if (!state.canProceed || !state.areKeysMatching) return;
     try {
+      emit(state.copyWith(
+        status: const KeyServerOperationStatus.loading(),
+      ));
+
       final derivedKey = await deriveBackupKeyFromDefaultWalletUsecase.execute(
-        backupFileAsString: '',
+        backupFileAsString: state.encrypted,
       );
+
       await _handleServerOperation(
         () => storeBackupKeyIntoServerUsecase.execute(
           password: state.secret,
           backupKey: derivedKey,
-          backupFileAsString: '',
+          backupFileAsString: state.encrypted,
         ),
         'Store Key',
       );
-      emit(state.copyWith(secretStatus: SecretStatus.stored));
+
+      // Update all relevant state properties in a single emit
+      emit(
+        state.copyWith(
+          secretStatus: SecretStatus.stored,
+          status: const KeyServerOperationStatus.success(),
+          currentFlow: CurrentKeyServerFlow
+              .enter, // Reset flow to prevent confirm screen
+        ),
+      );
     } catch (e) {
       _emitError('Failed to store key: $e');
     }
@@ -146,11 +164,13 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
   void toggleObscure() =>
       emit(state.copyWith(isSecretObscured: !state.isSecretObscured));
+  void toggleAuthInputType(AuthInputType newType) =>
+      updateKeyServerState(authInputType: newType, resetState: true);
 
   void updateKeyServerState({
     String? secret,
     String? backupKey,
-    KeyServerFlow? flow,
+    CurrentKeyServerFlow? flow,
     SecretStatus? secretStatus,
     KeyServerOperationStatus? status,
     AuthInputType? authInputType,
@@ -161,15 +181,15 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     if (!resetState &&
         secret == state.secret &&
         backupKey == state.backupKey &&
-        flow == state.selectedFlow &&
+        flow == state.currentFlow &&
         authInputType == state.authInputType &&
         encrypted == state.encrypted) {
       return;
     }
 
     // Don't reset backupKey if it's a state change during backup flow
-    final isBackupFlow =
-        flow == KeyServerFlow.enter || flow == KeyServerFlow.confirm;
+    final isBackupFlow = flow == CurrentKeyServerFlow.enter ||
+        flow == CurrentKeyServerFlow.confirm;
     final shouldKeepBackupKey = isBackupFlow && state.backupKey.isNotEmpty;
 
     emit(
@@ -178,13 +198,13 @@ class KeyServerCubit extends Cubit<KeyServerState> {
         backupKey: shouldKeepBackupKey
             ? state.backupKey
             : (resetState ? '' : (backupKey ?? state.backupKey)),
-        selectedFlow: flow ?? state.selectedFlow,
+        currentFlow: flow ?? state.currentFlow,
         authInputType: authInputType ?? state.authInputType,
         encrypted: encrypted ?? state.encrypted,
         temporarySecret: resetState ? '' : state.temporarySecret,
         secretStatus: secretStatus ?? state.secretStatus,
 
-        status: const KeyServerOperationStatus.initial(), // Always clear status
+        status: status ?? state.status, // Don't clear status automatically
       ),
     );
   }

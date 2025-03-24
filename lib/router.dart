@@ -3,6 +3,8 @@ import 'package:bb_mobile/_ui/screens/route_error_screen.dart';
 import 'package:bb_mobile/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/buy/ui/buy_screen.dart';
 import 'package:bb_mobile/home/ui/home_screen.dart';
+import 'package:bb_mobile/key_server/ui/key_server_flow.dart'
+    show KeyServerFlow;
 import 'package:bb_mobile/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/receive/ui/receive_router.dart';
 import 'package:bb_mobile/recover_wallet/ui/recover_wallet_flow.dart';
@@ -22,7 +24,7 @@ enum AppRoute {
   appUnlock('/app-unlock'),
   recoverWallet('/recover-wallet'),
   recoverImportWallet('/recover-wallet-import'),
-
+  keyServerFlow('/key-server-flow'),
   settings('/settings'),
 
   send('/send'),
@@ -87,6 +89,13 @@ class AppRouter {
       //     return const OnboardingScreen();
       //   },
       // ),
+
+      GoRoute(
+        name: AppRoute.keyServerFlow.name,
+        path: AppRoute.keyServerFlow.path,
+        builder: (context, state) =>
+            KeyServerFlow(encrypted: state.extra as String?),
+      ),
       GoRoute(
         name: AppRoute.appUnlock.name,
         path: AppRoute.appUnlock.path,
@@ -96,6 +105,7 @@ class AppRouter {
           return PinCodeUnlockScreen(onSuccess: onSuccess);
         },
       ),
+
       GoRoute(
         name: AppRoute.recoverWallet.name,
         path: AppRoute.recoverWallet.path,

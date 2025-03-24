@@ -28,6 +28,7 @@ class BackupKeyServiceImpl implements BackupKeyService {
       defaultSeed.bytes,
       defaultMetadata.network,
     );
+
     return Bip85Derivation.deriveBackupKey(xprv, path);
   }
 }
