@@ -125,12 +125,13 @@ class CoreLocator {
     );
     final pdkPayjoinsBox =
         await Hive.openBox<String>(HiveBoxNameConstants.pdkPayjoins);
+    final pdkPayjoinDataSource = PdkPayjoinDatasourceImpl(
+      dio: Dio(),
+      storage: HiveStorageDatasourceImpl<String>(pdkPayjoinsBox),
+    );
     locator.registerLazySingleton<PayjoinRepository>(
       () => PayjoinRepositoryImpl(
-        payjoinDatasource: PdkPayjoinDatasourceImpl(
-          dio: Dio(),
-          storage: HiveStorageDatasourceImpl<String>(pdkPayjoinsBox),
-        ),
+        payjoinDatasource: pdkPayjoinDataSource,
       ),
     );
     locator.registerLazySingleton<SwapRepository>(

@@ -21,9 +21,6 @@ enum AppRoute {
   recoverImportWallet('/recover-wallet-import'),
 
   settings('/settings'),
-  receiveBitcoin('/receive-bitcoin'),
-  receiveLightning('/receive-lightning'),
-  receiveLiquid('/receive-liquid'),
 
   send('/send'),
 

@@ -4,8 +4,12 @@ import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/components/toggle/switch.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/receive/ui/receive_router.dart';
 import 'package:bb_mobile/receive/ui/widgets/receive_network_selection.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -22,7 +26,11 @@ class ReceiveQrScreen extends StatelessWidget {
         flexibleSpace: TopBar(
           title: 'Receive',
           onBack: () {
-            context.pop();
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.goNamed(AppRoute.home.name);
+            }
           },
         ),
       ),
@@ -148,7 +156,22 @@ class ReceiveInfoDetails extends StatelessWidget {
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      final state = context.read<ReceiveBloc>().state;
+                      switch (state) {
+                        case LightningReceiveState _:
+                          context.pushNamed(
+                            ReceiveRoute.receiveLightningAmount.name,
+                          );
+                        case LiquidReceiveState _:
+                          context
+                              .pushNamed(ReceiveRoute.receiveLiquidAmount.name);
+                        case BitcoinReceiveState _:
+                          context.pushNamed(
+                            ReceiveRoute.receiveBitcoinAmount.name,
+                          );
+                      }
+                    },
                     visualDensity: VisualDensity.compact,
                     iconSize: 20,
                     icon: const Icon(Icons.edit),

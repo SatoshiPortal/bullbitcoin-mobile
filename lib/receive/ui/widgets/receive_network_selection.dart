@@ -29,11 +29,11 @@ class ReceiveNetworkSelection extends StatelessWidget {
         },
         onSelected: (c) {
           if (c == 'Bitcoin') {
-            context.goNamed(AppRoute.receiveBitcoin.name);
+            context.goNamed(ReceiveRoute.receiveBitcoin.name);
           } else if (c == 'Lightning') {
-            context.goNamed(AppRoute.receiveLightning.name);
+            context.goNamed(ReceiveRoute.receiveLightning.name);
           } else if (c == 'Liquid') {
-            context.goNamed(AppRoute.receiveLiquid.name);
+            context.goNamed(ReceiveRoute.receiveLiquid.name);
           }
         },
         selected: network,

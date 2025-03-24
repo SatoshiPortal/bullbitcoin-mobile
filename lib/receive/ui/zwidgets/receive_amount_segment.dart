@@ -18,12 +18,12 @@ class ReceiveAmountSegment extends StatelessWidget {
             onPressed: () {
               final state = context.read<ReceiveBloc>().state;
               final baseRoute = state is LightningReceiveState
-                  ? AppRoute.receiveLightning
+                  ? ReceiveRoute.receiveLightning
                   : state is LiquidReceiveState
-                      ? AppRoute.receiveLiquid
-                      : AppRoute.receiveBitcoin;
+                      ? ReceiveRoute.receiveLiquid
+                      : ReceiveRoute.receiveBitcoin;
               context.replace(
-                '${baseRoute.path}/${ReceiveSubroute.invoice.path}',
+                '${baseRoute.path}/${ReceiveRoute.invoice.path}',
               );
             },
             child: const Text('Continue'),

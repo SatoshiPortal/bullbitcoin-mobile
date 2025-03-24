@@ -20,12 +20,12 @@ class ReceiveInvoiceSegment extends StatelessWidget {
             onTap: () {
               final state = context.read<ReceiveBloc>().state;
               final baseRoute = state is LightningReceiveState
-                  ? AppRoute.receiveLightning
+                  ? ReceiveRoute.receiveLightning
                   : state is LiquidReceiveState
-                      ? AppRoute.receiveLiquid
-                      : AppRoute.receiveBitcoin;
+                      ? ReceiveRoute.receiveLiquid
+                      : ReceiveRoute.receiveBitcoin;
               context.replace(
-                '${baseRoute.path}/${ReceiveSubroute.amount.path}',
+                '${baseRoute.path}/${ReceiveRoute.amount.path}',
               );
             },
           ),
