@@ -3,12 +3,13 @@ import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class DialPad extends StatelessWidget {
-  const DialPad({super.key});
+  final void Function(String)? onTap;
+  const DialPad({super.key, required this.onTap});
 
   Widget numPadButton(BuildContext context, String num) {
     return Expanded(
       child: InkWell(
-        onTap: () {},
+        onTap: () => onTap?.call(num),
         child: Container(
           height: 64,
           decoration: const BoxDecoration(
