@@ -160,15 +160,16 @@ class ReceiveInfoDetails extends StatelessWidget {
                       final state = context.read<ReceiveBloc>().state;
                       switch (state) {
                         case LightningReceiveState _:
-                          context.pushNamed(
-                            ReceiveRoute.receiveLightningAmount.name,
+                          context.push(
+                            '${ReceiveRoute.receiveLightning.path}/${ReceiveRoute.amount.path}',
                           );
                         case LiquidReceiveState _:
-                          context
-                              .pushNamed(ReceiveRoute.receiveLiquidAmount.name);
+                          context.push(
+                            '${ReceiveRoute.receiveLiquid.path}/${ReceiveRoute.amount.path}',
+                          );
                         case BitcoinReceiveState _:
-                          context.pushNamed(
-                            ReceiveRoute.receiveBitcoinAmount.name,
+                          context.push(
+                            '${ReceiveRoute.receiveBitcoin.path}/${ReceiveRoute.amount.path}',
                           );
                       }
                     },

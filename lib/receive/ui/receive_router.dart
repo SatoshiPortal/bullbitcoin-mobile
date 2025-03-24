@@ -13,13 +13,9 @@ enum ReceiveRoute {
   receiveBitcoin('/receive-bitcoin'),
   receiveLightning('/receive-lightning'),
   receiveLiquid('/receive-liquid'),
-  receiveLightningQr('qr'),
-  receiveLightningAmount('amount'),
-  receiveLiquidAmount('amount'),
-  receiveBitcoinAmount('amount'),
-  receiveLightningSuccess('success'),
-  receiveLiquidSuccess('success'),
-  receiveBitcoinSuccess('success');
+  amount('amount'),
+  qr('qr'),
+  success('success');
 
   final String path;
 
@@ -31,7 +27,6 @@ class ReceiveRouter {
       GlobalKey<NavigatorState>();
 
   static final route = ShellRoute(
-    parentNavigatorKey: AppRouter.rootNavigatorKey,
     navigatorKey: shellNavigatorKey,
     builder: (context, state, child) {
       // Pass a preselected wallet to the receive bloc if available
@@ -44,13 +39,7 @@ class ReceiveRouter {
               current.hasReceivedFunds == true,
           listener: (context, blocState) {
             // Show the success screen when the user has received funds
-            final successRoute = blocState is BitcoinReceiveState
-                ? ReceiveRoute.receiveBitcoinSuccess
-                : blocState is LightningReceiveState
-                    ? ReceiveRoute.receiveLightningSuccess
-                    : ReceiveRoute.receiveLiquidSuccess;
-
-            context.goNamed(successRoute.name);
+            context.go('${state.matchedLocation}/${ReceiveRoute.success}');
           },
           child: child,
         ),
@@ -60,7 +49,6 @@ class ReceiveRouter {
       GoRoute(
         name: ReceiveRoute.receiveBitcoin.name,
         path: ReceiveRoute.receiveBitcoin.path,
-        parentNavigatorKey: shellNavigatorKey,
         builder: (context, state) {
           // Entry route, start a bitcoin receive if not already there
           final bloc = context.read<ReceiveBloc>();
@@ -71,14 +59,11 @@ class ReceiveRouter {
         },
         routes: [
           GoRoute(
-            name: ReceiveRoute.receiveBitcoinAmount.name,
-            path: ReceiveRoute.receiveBitcoinAmount.path,
-            parentNavigatorKey: shellNavigatorKey,
+            path: ReceiveRoute.amount.path,
             builder: (context, state) => const ReceiveAmountScreen(),
           ),
           GoRoute(
-            name: ReceiveRoute.receiveBitcoinSuccess.name,
-            path: ReceiveRoute.receiveBitcoinSuccess.path,
+            path: ReceiveRoute.success.path,
             parentNavigatorKey: AppRouter.rootNavigatorKey,
             builder: (context, state) => const ReceiveSuccessBody(),
           ),
@@ -87,7 +72,6 @@ class ReceiveRouter {
       GoRoute(
         name: ReceiveRoute.receiveLightning.name,
         path: ReceiveRoute.receiveLightning.path,
-        parentNavigatorKey: shellNavigatorKey,
         builder: (context, state) {
           // Entry route, go to lightning receive state if not already there
           final bloc = context.read<ReceiveBloc>();
@@ -98,20 +82,15 @@ class ReceiveRouter {
         },
         routes: [
           GoRoute(
-            name: ReceiveRoute.receiveLightningQr.name,
-            path: ReceiveRoute.receiveLightningQr.path,
-            parentNavigatorKey: shellNavigatorKey,
+            path: ReceiveRoute.qr.path,
             builder: (context, state) => const ReceiveQrScreen(),
           ),
           GoRoute(
-            name: ReceiveRoute.receiveLightningAmount.name,
-            path: ReceiveRoute.receiveLightningAmount.path,
-            parentNavigatorKey: shellNavigatorKey,
+            path: ReceiveRoute.amount.path,
             builder: (context, state) => const ReceiveAmountScreen(),
           ),
           GoRoute(
-            name: ReceiveRoute.receiveLightningSuccess.name,
-            path: ReceiveRoute.receiveLightningSuccess.path,
+            path: ReceiveRoute.success.path,
             parentNavigatorKey: AppRouter.rootNavigatorKey,
             builder: (context, state) => const ReceiveSuccessBody(),
           ),
@@ -120,7 +99,6 @@ class ReceiveRouter {
       GoRoute(
         name: ReceiveRoute.receiveLiquid.name,
         path: ReceiveRoute.receiveLiquid.path,
-        parentNavigatorKey: shellNavigatorKey,
         builder: (context, state) {
           // Entry route, go to liquid receive state if not already there
           final bloc = context.read<ReceiveBloc>();
@@ -131,14 +109,11 @@ class ReceiveRouter {
         },
         routes: [
           GoRoute(
-            name: ReceiveRoute.receiveLiquidAmount.name,
-            path: ReceiveRoute.receiveLiquidAmount.path,
-            parentNavigatorKey: shellNavigatorKey,
+            path: ReceiveRoute.amount.path,
             builder: (context, state) => const ReceiveAmountScreen(),
           ),
           GoRoute(
-            name: ReceiveRoute.receiveLiquidSuccess.name,
-            path: ReceiveRoute.receiveLiquidSuccess.path,
+            path: ReceiveRoute.success.path,
             parentNavigatorKey: AppRouter.rootNavigatorKey,
             builder: (context, state) => const ReceiveSuccessBody(),
           ),

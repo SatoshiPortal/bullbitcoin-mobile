@@ -23,7 +23,7 @@ class ReceiveAmountSegment extends StatelessWidget {
                       ? ReceiveRoute.receiveLiquid
                       : ReceiveRoute.receiveBitcoin;
               context.replace(
-                '${baseRoute.path}/${ReceiveRoute.invoice.path}',
+                '${baseRoute.path}/${ReceiveRoute.receiveBitcoin.path}',
               );
             },
             child: const Text('Continue'),
