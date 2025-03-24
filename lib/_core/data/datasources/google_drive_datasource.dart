@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -12,7 +13,7 @@ abstract class GoogleDriveAppDatasource {
   Future<void> trash(String path);
 }
 
-class GoogleDriveDatasourceImpl implements GoogleDriveAppDatasource {
+class GoogleDriveAppDatasourceImpl implements GoogleDriveAppDatasource {
   static final _google = GoogleSignIn(
     scopes: ['https://www.googleapis.com/auth/drive.appdata'],
   );
@@ -20,50 +21,38 @@ class GoogleDriveDatasourceImpl implements GoogleDriveAppDatasource {
   drive.DriveApi? _driveApi;
 
   void _checkConnection() {
-    if (_driveApi == null) throw 'unathenticated';
+    if (_driveApi == null) throw 'unauthenticated';
   }
 
   @override
   Future<void> connect() async {
-    GoogleSignInAccount? account;
     try {
-      account = await _google.signInSilently();
+      GoogleSignInAccount? account = await _google.signInSilently();
+
+      if (account == null) {
+        debugPrint('Silent sign-in failed, attempting interactive sign-in...');
+        account = await _google.signIn();
+      }
+
+      if (account == null) {
+        throw 'Sign-in failed';
+      }
+
+      final client = await _google.authenticatedClient();
+      if (client == null) throw 'Failed to get authenticated client';
+
+      _driveApi = drive.DriveApi(client);
     } catch (e) {
-      debugPrint('Silent sign-in failed, trying interactive sign-in: $e');
+      debugPrint('Google Sign-in error: $e');
+      await disconnect();
+      rethrow;
     }
-
-    account ??= await _google.signIn();
-
-    final client = await _google.authenticatedClient();
-    if (account == null || client == null) throw 'authentication failed';
-    _driveApi = drive.DriveApi(client);
   }
 
   @override
   Future<void> disconnect() async {
     await _google.disconnect();
     _driveApi = null;
-  }
-
-  @override
-  Future<void> trash(String path) async {
-    _checkConnection();
-    final files = await _driveApi!.files.list(
-      spaces: 'appDataFolder',
-      q: "name = '$path' and trashed = false",
-      $fields: 'files(id)',
-    );
-
-    final firstFile = files.files?.firstOrNull;
-    if (firstFile == null) {
-      throw "Backup file not found";
-    }
-
-    await _driveApi!.files.update(
-      drive.File()..trashed = true, // Set trashed to true to move to trash
-      firstFile.id!,
-    );
-    return;
   }
 
   @override
@@ -75,18 +64,7 @@ class GoogleDriveDatasourceImpl implements GoogleDriveAppDatasource {
       $fields: 'files(id, name, createdTime)',
       orderBy: 'createdTime desc',
     );
-
-    final files = response.files;
-    if (files == null || files.isEmpty) {
-      return [];
-    } else {
-      return files;
-    }
-  }
-
-  @override
-  Future<void> store(String content) async {
-    return;
+    return response.files ?? [];
   }
 
   @override
@@ -102,5 +80,29 @@ class GoogleDriveDatasourceImpl implements GoogleDriveAppDatasource {
       (previous, element) => previous..addAll(element),
     );
     return bytes;
+  }
+
+  @override
+  Future<void> trash(String path) async {
+    _checkConnection();
+    final files = await _driveApi!.files.list(
+      spaces: 'appDataFolder',
+      q: "name = '$path' and trashed = false",
+      $fields: 'files(id)',
+    );
+
+    final fileId = files.files?.firstOrNull?.id;
+    if (fileId == null) throw "Backup file not found";
+
+    await _driveApi!.files.update(
+      drive.File()..trashed = true,
+      fileId,
+    );
+  }
+
+  @override
+  Future<void> store(String content) async {
+    // Implement if needed
+    return;
   }
 }
