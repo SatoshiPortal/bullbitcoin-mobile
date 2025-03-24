@@ -68,8 +68,8 @@ class ApiServiceConstants {
 
   // BullBitcoin API
 
-  static final bullBitcoinKeyServerApiUrlPath =
-      dotenv.env['KEY_SERVER'] ?? 'http://localhost:80';
+  static final bullBitcoinKeyServerApiUrlPath = dotenv.env['KEY_SERVER'] ??
+      'http://o7rwmpnfkzdcay2gotla6sbrviu27wcgck7nsjrq77nqhtwbjvwcraad.onion';
 }
 
 class LocatorInstanceNameConstants {
