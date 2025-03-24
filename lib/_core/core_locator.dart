@@ -55,9 +55,9 @@ import 'package:bb_mobile/_core/domain/usecases/get_payjoin_updates_usecase.dart
 import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
@@ -89,7 +89,10 @@ class CoreLocator {
       ),
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
     );
-
+    // - Google Drive Datasource
+    locator.registerLazySingleton<GoogleDriveAppDatasource>(
+      () => GoogleDriveAppDatasourceImpl(),
+    );
     // - RecoverBullLocalDatasource
 
     locator.registerLazySingleton<RecoverBullLocalDatasource>(
@@ -289,6 +292,26 @@ class CoreLocator {
     );
 
     // Use cases
+    locator.registerFactory<ConnectToGoogleDriveUsecase>(
+      () => ConnectToGoogleDriveUsecase(
+        locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<DisconnectFromGoogleDriveUsecase>(
+      () => DisconnectFromGoogleDriveUsecase(
+        locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<SelectFilePathUsecase>(
+      () => SelectFilePathUsecase(
+        locator<FileSystemRepository>(),
+      ),
+    );
+    locator.registerFactory<SelectFolderPathUsecase>(
+      () => SelectFolderPathUsecase(
+        locator<FileSystemRepository>(),
+      ),
+    );
     locator.registerFactory<FindMnemonicWordsUsecase>(
       () => FindMnemonicWordsUsecase(
         wordListRepository: locator<WordListRepository>(),
