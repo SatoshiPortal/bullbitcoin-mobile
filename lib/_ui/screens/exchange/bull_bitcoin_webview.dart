@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
-import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
+
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 class BullBitcoinWebView extends StatefulWidget {
-  const BullBitcoinWebView({Key? key}) : super(key: key);
+  const BullBitcoinWebView({super.key});
 
   @override
   State<BullBitcoinWebView> createState() => _BullBitcoinWebViewState();
@@ -26,7 +27,7 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
   bool _authenticated = false;
   String? _currentUrl;
   Map<String, String> _allCookies = {};
-  Map<String, Map<String, String>> _iframeCookies = {};
+  final Map<String, Map<String, String>> _iframeCookies = {};
 
   // The specific cookie name we're looking for
   final String _targetAuthCookie = 'bb_session';
@@ -114,6 +115,30 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
 
     // Load the URL with Basic Auth
     _loadUrlWithBasicAuth();
+    _cookieManager();
+  }
+
+  Future<void> _cookieManager() async {
+    final cookieManager = WebviewCookieManager();
+    // await cookieManager.clearCookies();
+
+    final gotCookies =
+        await cookieManager.getCookies('https://accounts05.bullbitcoin.dev');
+    bool containsSessionToken = false;
+    bool containerCsrfToken = false;
+    for (final item in gotCookies) {
+      if (item.name.contains('csrf')) {
+        containerCsrfToken = true;
+      }
+      if (item.name == 'bb_session') {
+        containsSessionToken = true;
+      }
+    }
+
+    if (containerCsrfToken && containsSessionToken) {
+      final Uri url = Uri.parse('https://bbx05.bullbitcoin.dev');
+      _controller.loadRequest(url);
+    }
   }
 
   @override
@@ -262,7 +287,8 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
             frameCookies.forEach((cookieName, cookieValue) {
               final isIgnored = _ignoredCookies.contains(cookieName);
               debugPrint(
-                  '  ${isIgnored ? "[IGNORED] " : ""}$cookieName: $cookieValue');
+                '  ${isIgnored ? "[IGNORED] " : ""}$cookieName: $cookieValue',
+              );
             });
           }
 
@@ -328,7 +354,8 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
         // Log the cookies we found, but keep polling since bb_session is missing
         if (mainCookieMap.isNotEmpty) {
           debugPrint(
-              'Found some cookies, but no bb_session yet. Continuing to poll...');
+            'Found some cookies, but no bb_session yet. Continuing to poll...',
+          );
           if (_cookieCheckTimer == null) {
             _startCookiePolling();
           }
@@ -357,47 +384,49 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Exchange Authentication',
-          onBack: () {
-            context.pop();
-          },
+      // appBar: AppBar(
+      //   forceMaterialTransparency: true,
+      //   automaticallyImplyLeading: false,
+      //   flexibleSpace: TopBar(
+      //     title: 'Exchange Authentication',
+      //     onBack: () {
+      //       context.pop();
+      //     },
+      //   ),
+      // ),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            if (_hasError)
+              _ErrorView(
+                message: _errorMessage,
+                onRetry: () => Navigator.of(context).pop(),
+              )
+            else
+              WebViewWidget(controller: _controller),
+            if (_isLoading && !_hasError)
+              const Center(child: CircularProgressIndicator()),
+          ],
         ),
       ),
-      body: Stack(
-        children: [
-          if (_hasError)
-            _ErrorView(
-              message: _errorMessage,
-              onRetry: () => Navigator.of(context).pop(),
-            )
-          else
-            WebViewWidget(controller: _controller),
-          if (_isLoading && !_hasError)
-            const Center(child: CircularProgressIndicator()),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            heroTag: 'checkCookies',
-            child: const Icon(Icons.cookie_outlined),
-            onPressed: _checkAllCookies,
-            tooltip: 'Check for auth cookies',
-          ),
-          const SizedBox(height: 16),
-          FloatingActionButton(
-            heroTag: 'showCookies',
-            child: const Icon(Icons.preview_outlined),
-            onPressed: () => _showCookiesDialog(context),
-            tooltip: 'Show all cookies',
-          ),
-        ],
-      ),
+      // floatingActionButton: Column(
+      //   mainAxisAlignment: MainAxisAlignment.end,
+      //   children: [
+      //     FloatingActionButton(
+      //       heroTag: 'checkCookies',
+      //       onPressed: _checkAllCookies,
+      //       tooltip: 'Check for auth cookies',
+      //       child: const Icon(Icons.cookie_outlined),
+      //     ),
+      //     const SizedBox(height: 16),
+      //     FloatingActionButton(
+      //       heroTag: 'showCookies',
+      //       onPressed: () => _showCookiesDialog(context),
+      //       tooltip: 'Show all cookies',
+      //       child: const Icon(Icons.preview_outlined),
+      //     ),
+      //   ],
+      // ),
     );
   }
 
@@ -411,16 +440,20 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Main Document Cookies:',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text(
+                'Main Document Cookies:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 8),
               if (_allCookies.isEmpty)
                 const Text('No cookies found')
               else
-                ..._allCookies.entries.map((entry) => Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Text('${entry.key}: ${entry.value}'),
-                    )),
+                ..._allCookies.entries.map(
+                  (entry) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text('${entry.key}: ${entry.value}'),
+                  ),
+                ),
             ],
           ),
         ),
@@ -444,10 +477,10 @@ class _ErrorView extends StatelessWidget {
   final VoidCallback onRetry;
 
   const _ErrorView({
-    Key? key,
+    super.key,
     required this.message,
     required this.onRetry,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_ui/components/navbar/bottom_navbar.dart';
+import 'package:bb_mobile/_ui/screens/exchange/bull_bitcoin_webview.dart';
 import 'package:bb_mobile/home/presentation/bloc/home_bloc.dart';
 import 'package:bb_mobile/home/ui/widgets/home_bottom_buttons.dart';
 import 'package:bb_mobile/home/ui/widgets/top_section.dart';
@@ -29,25 +30,41 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _Screen extends StatelessWidget {
+class _Screen extends StatefulWidget {
   const _Screen();
 
   @override
+  State<_Screen> createState() => _ScreenState();
+}
+
+class _ScreenState extends State<_Screen> {
+  int page = 0;
+
+  @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      bottomNavigationBar: BottomNavbar(),
-      body: Column(
-        children: [
-          HomeTopSection(),
-          HomeWalletCards(),
-          Spacer(),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 13.0),
-            child: HomeBottomButtons(),
-          ),
-          Gap(16),
-        ],
+    return Scaffold(
+      bottomNavigationBar: BottomNavbar(
+        selectedPage: page,
+        onPageSelected: (index) {
+          setState(() {
+            page = index;
+          });
+        },
       ),
+      body: page == 0
+          ? const Column(
+              children: [
+                HomeTopSection(),
+                HomeWalletCards(),
+                Spacer(),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 13.0),
+                  child: HomeBottomButtons(),
+                ),
+                Gap(16),
+              ],
+            )
+          : const BullBitcoinWebView(),
     );
   }
 }
