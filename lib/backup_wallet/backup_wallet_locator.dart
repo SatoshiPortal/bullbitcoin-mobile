@@ -6,12 +6,12 @@ import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.d
 import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
-import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/_core/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/backup_wallet/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/backup_wallet/domain/usecases/save_to_file_system_usecase.dart';
 import 'package:bb_mobile/backup_wallet/domain/usecases/save_to_google_drive_usecase.dart';
 import 'package:bb_mobile/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
+import 'package:bb_mobile/locator.dart';
 
 class BackupWalletLocator {
   static void setup() {
@@ -33,7 +33,11 @@ class BackupWalletLocator {
         locator<GoogleDriveRepository>(),
       ),
     );
-
+    locator.registerFactory<FetchLatestBackupUsecase>(
+      () => FetchLatestBackupUsecase(
+        locator<GoogleDriveRepository>(),
+      ),
+    );
     // Blocs
     locator.registerFactory<BackupWalletBloc>(
       () => BackupWalletBloc(
@@ -42,7 +46,7 @@ class BackupWalletLocator {
         connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
         disconnectFromGoogleDriveUsecase:
             locator<DisconnectFromGoogleDriveUsecase>(),
-        selectFilePathUsecase: locator<SelectFilePathUsecase>(),
+        selectFolderPathUsecase: locator<SelectFolderPathUsecase>(),
         saveToFileSystemUsecase: locator<SaveToFileSystemUsecase>(),
         saveToGoogleDriveUsecase: locator<SaveToGoogleDriveUsecase>(),
       ),

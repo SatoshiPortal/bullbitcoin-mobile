@@ -1,14 +1,14 @@
-import 'package:bb_mobile/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/backup_wallet/ui/screens/backup_options_screen.dart';
 import 'package:bb_mobile/backup_wallet/ui/screens/backup_security_info_screen.dart';
+import 'package:bb_mobile/backup_wallet/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:go_router/go_router.dart';
 
 enum BackupSettingsSubroute {
   backupOptions('backup-options'),
-  backupSecurityInfo('backup-security-info'),
   recoverOptions('recover-options'),
-  encryptedVaultBackup('encrypted-vault-backup'),
-  physicalBackup('physical-backup'),
+  backupSecurityInfo('backup-security-info'),
+  encryptedVaultBackupFlow('encrypted-vault-backup-flow'),
+  physicalBackupFlow('physical-backup-flow'),
   encryptedVaultRecover('encrypted-vault-recover'),
   physicalRecover('physical-recover');
 
@@ -31,17 +31,18 @@ class BackupSettingsSettingsRouter {
         backupOption: state.extra as String? ?? 'encrypted-vault',
       ),
     ),
+    GoRoute(
+      name: BackupSettingsSubroute.encryptedVaultBackupFlow.name,
+      path: BackupSettingsSubroute.encryptedVaultBackupFlow.path,
+      //TODO: Implement the backup flow screen instead
+      builder: (context, state) => const ChooseVaultLocationScreen(),
+    ),
     // GoRoute(
     //   name: BackupSettingsSubroute.recoverOptions.name,
     //   path: BackupSettingsSubroute.recoverOptions.path,
     //   builder: (context, state) => const RecoverOptionsScreen(),
     // ),
 
-    // GoRoute(
-    //   name: BackupSettingsSubroute.encryptedVaultBackup.name,
-    //   path: BackupSettingsSubroute.encryptedVaultBackup.path,
-    //   builder: (context, state) => const EncryptedVaultBackupScreen(),
-    // ),
     // GoRoute(
     //   name: BackupSettingsSubroute.physicalBackup.name,
     //   path: BackupSettingsSubroute.physicalBackup.path,
