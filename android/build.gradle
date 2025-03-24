@@ -4,17 +4,9 @@ buildscript {
         google()
         mavenCentral()
     }
-
     dependencies {
         classpath 'com.android.tools.build:gradle:8.5.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
     }
 }
 
@@ -22,19 +14,12 @@ rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
 subprojects {
     afterEvaluate { project ->
         if (project.plugins.hasPlugin("com.android.application") ||
-                project.plugins.hasPlugin("com.android.library")) {
+            project.plugins.hasPlugin("com.android.library")) {
             project.android {
-<<<<<<< HEAD
-                compileSdkVersion 34
-                buildToolsVersion "34.0.0"
-            }
-        }
-    }
-}                   
-=======
                 compileSdk = 34
                 buildToolsVersion "34.0.0"
             }
@@ -67,7 +52,6 @@ subprojects {
     }
 }
 
->>>>>>> 11f2621c (chore: update Android build configuration to latest Kotlin and Gradle versions)
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
