@@ -11,7 +11,7 @@ class OptionsTag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.colour.onPrimary,
         border: Border.all(
           color: context.colour.surface,
         ),
