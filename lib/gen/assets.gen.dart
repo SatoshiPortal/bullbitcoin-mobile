@@ -142,8 +142,15 @@ class Assets {
   static const AssetGenImage bbWhite = AssetGenImage('assets/bb-white.png');
   static const String bip39English = 'assets/bip39_english.txt';
   static const AssetGenImage ccLogo = AssetGenImage('assets/cc-logo.png');
+  static const AssetGenImage customLocation =
+      AssetGenImage('assets/custom_location.png');
   static const String edit = 'assets/edit.svg';
+  static const AssetGenImage encryptedVault =
+      AssetGenImage('assets/encrypted_vault.png');
+  static const AssetGenImage googleDrive =
+      AssetGenImage('assets/google_drive.png');
   static const $AssetsI18nGen i18n = $AssetsI18nGen();
+  static const AssetGenImage icloud = AssetGenImage('assets/icloud.png');
   static const AssetGenImage iconlarge = AssetGenImage('assets/iconlarge.png');
   static const AssetGenImage iconnewRed =
       AssetGenImage('assets/iconnew-red.png');
@@ -154,6 +161,8 @@ class Assets {
   static const String loaderanimation = 'assets/loaderanimation.json';
   static const String newAddress = 'assets/new-address.svg';
   static const AssetGenImage nfcScan = AssetGenImage('assets/nfc_scan.png');
+  static const AssetGenImage physicalBackup =
+      AssetGenImage('assets/physical_backup.png');
   static const String refresh = 'assets/refresh.svg';
   static const String requestPayment = 'assets/request-payment.svg';
   static const AssetGenImage splash = AssetGenImage('assets/splash.png');
@@ -177,13 +186,18 @@ class Assets {
         bbWhite,
         bip39English,
         ccLogo,
+        customLocation,
         edit,
+        encryptedVault,
+        googleDrive,
+        icloud,
         iconlarge,
         iconnewRed,
         iconnew,
         loaderanimation,
         newAddress,
         nfcScan,
+        physicalBackup,
         refresh,
         requestPayment,
         splash,
