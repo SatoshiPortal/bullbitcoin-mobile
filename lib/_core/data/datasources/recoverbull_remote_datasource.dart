@@ -45,7 +45,7 @@ class RecoverBullRemoteDatasourceImpl implements RecoverBullRemoteDatasource {
   Future<void> info(SOCKSSocket socket) async {
     try {
       final info = await _keyServer.infos(socks: socket);
-      debugPrint('KeyServer connection sucess: ${info.canary}');
+      debugPrint('KeyServer connection success: ${info.canary}');
     } on Exception catch (e) {
       debugPrint('serverinfo error: $e');
       rethrow;
