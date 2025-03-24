@@ -1,9 +1,11 @@
 import 'package:bb_mobile/_core/core_locator.dart';
 import 'package:bb_mobile/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/app_unlock/app_unlock_locator.dart';
+import 'package:bb_mobile/backup_wallet/backup_wallet_locator.dart';
 import 'package:bb_mobile/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/home/home_locator.dart';
 import 'package:bb_mobile/import_watch_only_wallet/import_watch_only_wallet_locator.dart';
+import 'package:bb_mobile/key_server/key_server_locator.dart';
 import 'package:bb_mobile/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/receive/receive_locator.dart';
@@ -20,7 +22,7 @@ class AppLocator {
 
     // Register core dependencies first
     await CoreLocator.setup();
-
+    KeyServerLocator.setup();
     // Register feature-specific dependencies
     PinCodeLocator.setup();
     AppStartupLocator.setup();
@@ -31,6 +33,7 @@ class AppLocator {
     BitcoinPriceLocator.setup();
     HomeLocator.setup();
     ReceiveLocator.setup();
+    BackupWalletLocator.setup();
     ImportWatchOnlyWalletLocator.setup();
   }
 }
