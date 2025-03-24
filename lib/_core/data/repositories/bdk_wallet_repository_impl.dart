@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/_core/domain/entities/address.dart';
 import 'package:bb_mobile/_core/domain/entities/balance.dart';
 import 'package:bb_mobile/_core/domain/entities/electrum_server.dart';
+import 'package:bb_mobile/_core/domain/entities/transaction.dart';
 import 'package:bb_mobile/_core/domain/entities/tx_input.dart';
 import 'package:bb_mobile/_core/domain/entities/utxo.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
@@ -223,13 +224,15 @@ class BdkWalletRepositoryImpl
   }
 
   @override
-  Future<String> buildPsbt({
+  Future<Transaction> buildUnsigned({
     required String address,
     BigInt? amountSat,
     BigInt? absoluteFeeSat,
     double? feeRateSatPerVb,
     List<TxInput>? unspendableInputs,
     bool? drain,
+    List<TxInput>? selectedInputs,
+    bool replaceByFees = true,
   }) async {
     bdk.TxBuilder txBuilder;
 
@@ -249,6 +252,14 @@ class BdkWalletRepositoryImpl
       }
       txBuilder = bdk.TxBuilder().addRecipient(script, amountSat);
     }
+
+    if (selectedInputs != null && selectedInputs.isNotEmpty) {
+      final selectableOutPoints = selectedInputs
+          .map((input) => bdk.OutPoint(txid: input.txId, vout: input.vout))
+          .toList();
+      txBuilder.addUtxos(selectableOutPoints);
+    }
+    if (replaceByFees) txBuilder.enableRbf();
 
     // Set the fee rate or absolute fee
     if (absoluteFeeSat != null) {
@@ -280,35 +291,16 @@ class BdkWalletRepositoryImpl
 
     // Finish the transaction building process
     final (psbt, _) = await txBuilder.finish(_wallet);
-
-    // Sign the transaction
-    final isFinalized = await _wallet.sign(
-      psbt: psbt,
-      signOptions: const bdk.SignOptions(
-        trustWitnessUtxo: true,
-        allowAllSighashes: false,
-        removePartialSigs: true,
-        tryFinalize: true,
-        signWithTapInternalKey: true,
-        allowGrinding: false,
-      ),
-    );
-    if (!isFinalized) {
-      debugPrint('The built PSBT is not a finalized one');
-    } else {
-      debugPrint('The built PSBT is finalized');
-    }
-
-    // Return the signed PSBT
-    return psbt.asString();
+    return Transaction(bytes: psbt.serialize());
   }
 
   @override
-  Future<String> signPsbt(String psbt) async {
-    final partiallySignedTransaction =
-        await bdk.PartiallySignedTransaction.fromString(psbt);
+  Future<Transaction> sign(Transaction unsigned) async {
+    final psbt =
+        await bdk.PartiallySignedTransaction.fromString(unsigned.toBase64());
+
     final isFinalized = await _wallet.sign(
-      psbt: partiallySignedTransaction,
+      psbt: psbt,
       signOptions: const bdk.SignOptions(
         trustWitnessUtxo: true,
         allowAllSighashes: false,
@@ -324,18 +316,7 @@ class BdkWalletRepositoryImpl
       debugPrint('Signed PSBT is finalized');
     }
 
-    return partiallySignedTransaction.asString();
-  }
-
-  @override
-  Future<String> getTxIdFromPsbt(String psbt) async {
-    final partiallySignedTransaction =
-        await bdk.PartiallySignedTransaction.fromString(
-      psbt,
-    );
-    final tx = partiallySignedTransaction.extractTx();
-
-    return tx.txid();
+    return Transaction(bytes: psbt.serialize());
   }
 
   @override
@@ -343,13 +324,6 @@ class BdkWalletRepositoryImpl
     final txs = _wallet.listTransactions(includeRaw: false);
 
     return txs.any((tx) => tx.txid == txId);
-  }
-
-  @override
-  Future<String> getTxIdFromTxBytes(List<int> bytes) async {
-    final tx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
-
-    return tx.txid();
   }
 
   @override
