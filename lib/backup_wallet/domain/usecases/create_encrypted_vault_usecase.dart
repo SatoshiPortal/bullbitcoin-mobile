@@ -23,28 +23,33 @@ class CreateEncryptedVaultUsecase {
     try {
       // The default wallet is used to derive the backup key
       final defaultMetadata = await walletMetadataRepository.getDefault();
+
       final defaultFingerprint = defaultMetadata.masterFingerprint;
+      final defaultSeedExists = await seedRepository.exists(defaultFingerprint);
+      if (!defaultSeedExists) {
+        throw 'CreateEncryptedVaultUsecase: Default seed not found for fingerprint: $defaultFingerprint';
+      }
       final defaultSeed = await seedRepository.get(defaultFingerprint);
+
       final defaultXprv = Bip32Derivation.getXprvFromSeed(
         defaultSeed.bytes,
         defaultMetadata.network,
       );
-
       // Prepare the plaintext that will be encrypted in the backup
       final walletsMetadata = await walletMetadataRepository.getAll();
       final List<RecoverBullWallet> toBackup = [];
-
       for (final metadata in walletsMetadata) {
         final seed = await seedRepository.get(metadata.masterFingerprint);
+
         toBackup.add(
           RecoverBullWallet(seed: seed.bytes, metadata: metadata),
         );
       }
-
       final plaintext = json.encode(toBackup.map((e) => e.toJson()).toList());
 
       // Derive the backup key using BIP85
       final derivationPath = Bip85Derivation.generateBackupKeyPath();
+
       final backupKey =
           Bip85Derivation.deriveBackupKey(defaultXprv, derivationPath);
 
