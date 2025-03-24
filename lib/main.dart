@@ -11,9 +11,11 @@ import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bip85/bip85.dart';
 import 'package:boltz/boltz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lwk/lwk.dart';
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
@@ -26,7 +28,9 @@ Future main() async {
       Hive.initFlutter(),
       LibLwk.init(),
       BoltzCore.init(),
+      LibBip85.init(),
       core.init(),
+      dotenv.load(isOptional: true),
     ]);
 
     // The Locator setup might depend on the initialization of the libraries above
