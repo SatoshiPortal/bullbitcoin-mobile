@@ -60,6 +60,8 @@ abstract class WalletManagerService {
     double? feeRateSatPerVb,
     List<TxInput>? unspendableInputs,
     bool? drain,
+    List<TxInput>? selectableInputs,
+    bool replaceByFees,
   });
   Future<Transaction> sign({required String walletId, required Transaction tx});
 }

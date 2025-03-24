@@ -32,7 +32,7 @@ import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
-import 'package:bb_mobile/_core/domain/usecases/build_psbt_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/build_transaction_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
@@ -282,8 +282,8 @@ class CoreLocator {
         seedRepository: locator<SeedRepository>(),
       ),
     );
-    locator.registerFactory<BuildPsbtUsecase>(
-      () => BuildPsbtUsecase(
+    locator.registerFactory<BuildTransactionUsecase>(
+      () => BuildTransactionUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
         walletManagerService: locator<WalletManagerService>(),
       ),

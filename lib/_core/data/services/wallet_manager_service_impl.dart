@@ -393,6 +393,8 @@ class WalletManagerServiceImpl implements WalletManagerService {
     double? feeRateSatPerVb,
     List<TxInput>? unspendableInputs,
     bool? drain,
+    List<TxInput>? selectableInputs,
+    bool replaceByFees = true,
   }) async {
     final wallet = await _getWalletWithPrivateKey(walletId);
 
@@ -410,6 +412,8 @@ class WalletManagerServiceImpl implements WalletManagerService {
         feeRateSatPerVb: feeRateSatPerVb,
         unspendableInputs: unspendableInputs,
         drain: drain,
+        selectedInputs: selectableInputs,
+        replaceByFees: replaceByFees,
       );
     }
 
