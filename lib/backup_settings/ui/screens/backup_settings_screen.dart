@@ -32,7 +32,7 @@ class BackupSettingsScreen extends StatelessWidget {
               Gap(20),
               BackupTestStatusWidget(),
               Gap(30),
-              RecoverBackupButton(),
+              RecoverOrTestBackupButton(),
               Gap(5),
               StartBackupButton(),
             ],
@@ -43,15 +43,15 @@ class BackupSettingsScreen extends StatelessWidget {
   }
 }
 
-class RecoverBackupButton extends StatelessWidget {
-  const RecoverBackupButton({super.key});
+class RecoverOrTestBackupButton extends StatelessWidget {
+  const RecoverOrTestBackupButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BBButton.big(
-      label: 'Recover Backup',
+      label: 'Recover or Test Backup',
       onPressed: () => context.pushNamed(
-        BackupSettingsSubroute.backupOptions.name,
+        BackupSettingsSubroute.recoverOptions.name,
       ),
       borderColor: context.colour.secondary,
       outlined: true,
