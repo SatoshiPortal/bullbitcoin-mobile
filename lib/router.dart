@@ -22,6 +22,7 @@ enum AppRoute {
   onboarding('/onboarding'),
   home('/'),
   appUnlock('/app-unlock'),
+  //todo; move to settings router
   recoverWallet('/recover-wallet'),
   recoverImportWallet('/recover-wallet-import'),
   keyServerFlow('/key-server-flow'),
@@ -93,8 +94,14 @@ class AppRouter {
       GoRoute(
         name: AppRoute.keyServerFlow.name,
         path: AppRoute.keyServerFlow.path,
-        builder: (context, state) =>
-            KeyServerFlow(encrypted: state.extra as String?),
+        builder: (context, state) {
+          final (String? encrypted, String? flow) =
+              state.extra! as (String?, String?);
+          return KeyServerFlow(
+            encrypted: encrypted,
+            currentFlow: flow,
+          );
+        },
       ),
       GoRoute(
         name: AppRoute.appUnlock.name,
@@ -106,19 +113,19 @@ class AppRouter {
         },
       ),
 
-      GoRoute(
-        name: AppRoute.recoverWallet.name,
-        path: AppRoute.recoverWallet.path,
-        builder: (context, state) =>
-            const RecoverWalletFlow(fromOnboarding: true),
-      ),
-      GoRoute(
-        name: AppRoute.recoverImportWallet.name,
-        path: AppRoute.recoverImportWallet.path,
-        builder: (context, state) => const RecoverWalletFlow(
-          fromOnboarding: false,
-        ),
-      ),
+      // GoRoute(
+      //   name: AppRoute.recoverWallet.name,
+      //   path: AppRoute.recoverWallet.path,
+      //   builder: (context, state) =>
+      //       const RecoverWalletFlow(fromOnboarding: true),
+      // ),
+      // GoRoute(
+      //   name: AppRoute.recoverImportWallet.name,
+      //   path: AppRoute.recoverImportWallet.path,
+      //   builder: (context, state) => const RecoverWalletFlow(
+      //     fromOnboarding: false,
+      //   ),
+      // ),
       GoRoute(
         name: AppRoute.settings.name,
         path: AppRoute.settings.path,
