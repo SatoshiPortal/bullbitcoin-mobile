@@ -1,10 +1,12 @@
 import 'package:bb_mobile/_ui/screens/dev_page.dart';
 import 'package:bb_mobile/_ui/screens/route_error_screen.dart';
 import 'package:bb_mobile/app_unlock/ui/pin_code_unlock_screen.dart';
+import 'package:bb_mobile/buy/ui/buy_screen.dart';
 import 'package:bb_mobile/home/ui/home_screen.dart';
 import 'package:bb_mobile/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/receive/ui/receive_router.dart';
 import 'package:bb_mobile/recover_wallet/ui/recover_wallet_flow.dart';
+import 'package:bb_mobile/sell/ui/sell_screen.dart';
 import 'package:bb_mobile/send/ui/send_screen.dart';
 import 'package:bb_mobile/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/settings/ui/settings_router.dart';
@@ -23,6 +25,8 @@ enum AppRoute {
   settings('/settings'),
 
   send('/send'),
+  sell('/sell'),
+  buy('/buy'),
 
   devStart('/dev-start'),
   devReceive('/dev-receive'),
@@ -113,6 +117,16 @@ class AppRouter {
         name: AppRoute.send.name,
         path: AppRoute.send.path,
         builder: (context, state) => const SendScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.sell.name,
+        path: AppRoute.sell.path,
+        builder: (context, state) => const SellScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.buy.name,
+        path: AppRoute.buy.path,
+        builder: (context, state) => const BuyScreen(),
       ),
       ReceiveRouter.route,
       DevPages.devStart,

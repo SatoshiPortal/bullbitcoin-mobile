@@ -86,7 +86,7 @@ dependencies:
     sdk: flutter
   intl: any
   bip32: ^2.0.0
-  bip39: ^1.0.6
+  bip39_mnemonic: ^3.0.9
   bs58check: ^1.0.2
   auto_size_text_field: ^2.2.4
   gif: ^2.3.0
