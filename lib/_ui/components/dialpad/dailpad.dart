@@ -1,15 +1,41 @@
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class DialPad extends StatelessWidget {
   final void Function(String)? onTap;
-  const DialPad({super.key, required this.onTap});
+  final void Function()? onDelete;
+  const DialPad({super.key, required this.onTap, this.onDelete});
+  Widget deleteButton(BuildContext context) {
+    return Expanded(
+      child: IconButton(
+        iconSize: 32,
+        color: context.colour.onPrimaryContainer,
+        splashColor: Colors.transparent,
+        onPressed: () {
+          SystemSound.play(SystemSoundType.click);
+          HapticFeedback.mediumImpact();
+          onDelete?.call();
+        },
+        icon: Icon(
+          CupertinoIcons.delete_left,
+          size: 32,
+          color: context.colour.surfaceContainerLow,
+        ),
+      ),
+    );
+  }
 
   Widget numPadButton(BuildContext context, String num) {
     return Expanded(
       child: InkWell(
-        onTap: () => onTap?.call(num),
+        onTap: () {
+          SystemSound.play(SystemSoundType.click);
+          HapticFeedback.mediumImpact();
+          onTap?.call(num);
+        },
         child: Container(
           height: 64,
           decoration: const BoxDecoration(
@@ -60,7 +86,7 @@ class DialPad extends StatelessWidget {
             children: [
               numPadButton(context, '.'),
               numPadButton(context, '0'),
-              numPadButton(context, ''),
+              deleteButton(context),
             ],
           ),
         ],
