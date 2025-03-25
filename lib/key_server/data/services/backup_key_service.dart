@@ -4,7 +4,6 @@ import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.d
     show WalletMetadataRepository;
 import 'package:bb_mobile/_utils/bip32_derivation.dart';
 import 'package:bb_mobile/_utils/bip85_derivation.dart';
-import 'package:bb_mobile/key_server/domain/model/errors/key_server_error.dart';
 import 'package:bb_mobile/key_server/domain/services/backup_key_service.dart';
 
 class BackupKeyServiceImpl implements BackupKeyService {
@@ -20,7 +19,7 @@ class BackupKeyServiceImpl implements BackupKeyService {
   Future<String> deriveBackupKeyFromDefaultSeed({
     required String? path,
   }) async {
-    if (path == null) throw const Bip85PathMissingError();
+    if (path == null) throw 'Missing bip85 path';
     final defaultMetadata = await _walletMetadataRepository.getDefault();
     final defaultSeed =
         await _seedRepository.get(defaultMetadata.masterFingerprint);
