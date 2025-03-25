@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/backup_wallet/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/backup_wallet/domain/usecases/save_to_file_system_usecase.dart';
@@ -19,7 +19,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
   final CreateEncryptedVaultUsecase createEncryptedBackupUsecase;
   final SelectFolderPathUsecase selectFolderPathUsecase;
   final ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase;
-  final FetchLatestBackupUsecase fetchLatestBackupUsecase;
+  final FetchLatestGoogleDriveBackupUsecase fetchLatestBackupUsecase;
   final DisconnectFromGoogleDriveUsecase disconnectFromGoogleDriveUsecase;
   final SaveToFileSystemUsecase saveToFileSystemUsecase;
   final SaveToGoogleDriveUsecase saveToGoogleDriveUsecase;
@@ -100,10 +100,11 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       // Then start the backup process
       await _startBackup(emit);
     } catch (e) {
+      debugPrint('Error connecting to Google Drive: $e');
       emit(
         state.copyWith(
-          status: BackupWalletStatus.failure(
-            'Failed to connect to Google Drive: $e',
+          status: const BackupWalletStatus.failure(
+            'Failed to connect to Google Drive',
           ),
         ),
       );
@@ -135,9 +136,10 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
 
       emit(state.copyWith(status: const BackupWalletStatus.success()));
     } catch (e) {
+      debugPrint('Failed to save the backup: $e');
       emit(
         state.copyWith(
-          status: BackupWalletStatus.failure('Backup failed: $e'),
+          status: const BackupWalletStatus.failure('Failed to save the backup'),
         ),
       );
     }
