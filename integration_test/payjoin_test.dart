@@ -51,11 +51,11 @@ void main() {
     sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
     buildTransactionUsecase = locator<BuildTransactionUsecase>();
 
-    receiverWallet = await locator<RecoverWalletUsecase>().execute(
+    receiverWallet = await locator<RecoverOrCreateWalletUsecase>().execute(
       mnemonicWords: receiverMnemonic.split(' '),
       scriptType: ScriptType.bip84,
     );
-    senderWallet = await locator<RecoverWalletUsecase>().execute(
+    senderWallet = await locator<RecoverOrCreateWalletUsecase>().execute(
       mnemonicWords: senderMnemonic.split(' '),
       scriptType: ScriptType.bip84,
     );
