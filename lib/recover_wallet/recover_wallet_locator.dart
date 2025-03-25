@@ -10,8 +10,8 @@ import 'package:bb_mobile/recover_wallet/presentation/bloc/recover_wallet_bloc.d
 class RecoverWalletLocator {
   static void setup() {
     // Use cases
-    locator.registerFactory<RecoverWalletUsecase>(
-      () => RecoverWalletUsecase(
+    locator.registerFactory<RecoverOrCreateWalletUsecase>(
+      () => RecoverOrCreateWalletUsecase(
         settingsRepository: locator<SettingsRepository>(),
         mnemonicSeedFactory: locator<MnemonicSeedFactory>(),
         walletManager: locator<WalletManagerService>(),
