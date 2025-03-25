@@ -11,8 +11,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class RecoverWalletInputScreen extends StatelessWidget {
-  const RecoverWalletInputScreen({super.key});
+class RecoverPhysicalWalletInputScreen extends StatelessWidget {
+  const RecoverPhysicalWalletInputScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

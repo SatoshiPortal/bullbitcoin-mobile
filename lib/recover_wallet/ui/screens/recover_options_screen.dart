@@ -12,7 +12,8 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class RecoverOptionsScreen extends StatefulWidget {
-  const RecoverOptionsScreen({super.key});
+  final bool isRecovering;
+  const RecoverOptionsScreen({super.key, required this.isRecovering});
 
   @override
   State<RecoverOptionsScreen> createState() => _RecoverOptionsScreenState();
