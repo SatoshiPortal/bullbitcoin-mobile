@@ -40,24 +40,24 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
       final plaintext =
           recoverBullRepository.restoreBackupFile(backupFile, backupKey);
 
-      final decodedPlaintext = json.decode(plaintext) as List<dynamic>;
-      final decodedRecoverbullWallets = decodedPlaintext
-          .map((e) => RecoverBullWallet.fromJson(e as Map<String, dynamic>))
-          .toList();
+      final decodedPlaintext = json.decode(plaintext) as Map<String, dynamic>;
+      final decodedRecoverbullWallets =
+          RecoverBullWallet.fromJson(decodedPlaintext);
 
-      for (final item in decodedRecoverbullWallets) {
-        final seed = Seed.bytes(bytes: Uint8List.fromList(item.seed));
-        final metadata = item.metadata;
-
-        await walletManagerService.createWallet(
-          seed: seed,
-          network: metadata.network,
-          scriptType: metadata.scriptType,
-          isDefault: metadata.isDefault,
-        );
-      }
+      final seed = Seed.mnemonic(
+        mnemonicWords: decodedRecoverbullWallets.mnemonicPassphrase.$1,
+        passphrase: decodedRecoverbullWallets.mnemonicPassphrase.$2,
+      );
+      final metadata = decodedRecoverbullWallets.metadata;
+      //TODO: check if this function will cover all the cases.
+      await walletManagerService.createWallet(
+        seed: seed,
+        network: metadata.network,
+        scriptType: metadata.scriptType,
+        isDefault: metadata.isDefault,
+      );
     } catch (e) {
-      debugPrint('$RestoreEncryptedVaultFromBackupKeyUsecase: $e');
+      debugPrint('$RestoreEncryptedVaultFromBackupKeyUsecase: ${e.toString()}');
       rethrow;
     }
   }

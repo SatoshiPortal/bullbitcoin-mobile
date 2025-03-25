@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/_core/data/models/seed_model.dart';
 import 'package:bb_mobile/_core/domain/entities/recoverbull_wallet.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
@@ -30,23 +31,29 @@ class CreateEncryptedVaultUsecase {
         throw 'CreateEncryptedVaultUsecase: Default seed not found for fingerprint: $defaultFingerprint';
       }
       final defaultSeed = await seedRepository.get(defaultFingerprint);
-
+      final defaultSeedModel = SeedModel.fromEntity(defaultSeed);
+      final (mnemonic, passphrase) = defaultSeedModel.maybeMap(
+        mnemonic: (mnemonic) => (mnemonic.mnemonicWords, mnemonic.passphrase),
+        orElse: () =>
+            throw 'CreateEncryptedVaultUsecase: Default seed is not a bytes seed',
+      );
       final defaultXprv = Bip32Derivation.getXprvFromSeed(
         defaultSeed.bytes,
         defaultMetadata.network,
       );
-      // Prepare the plaintext that will be encrypted in the backup
-      final walletsMetadata = await walletMetadataRepository.getAll();
-      final List<RecoverBullWallet> toBackup = [];
-      for (final metadata in walletsMetadata) {
-        final seed = await seedRepository.get(metadata.masterFingerprint);
 
-        toBackup.add(
-          RecoverBullWallet(seed: seed.bytes, metadata: metadata),
-        );
-      }
-      final plaintext = json.encode(toBackup.map((e) => e.toJson()).toList());
+      final defaultWalletMetaData =
+          (await walletMetadataRepository.getAll()).firstWhere(
+        (metadata) => metadata.masterFingerprint == defaultFingerprint,
+        orElse: () =>
+            throw 'Default wallet metadata not found for fingerprint: $defaultFingerprint',
+      );
 
+      final toBackup = RecoverBullWallet(
+        mnemonicPassphrase: (mnemonic, passphrase),
+        metadata: defaultWalletMetaData,
+      );
+      final plaintext = json.encode(toBackup.toJson());
       // Derive the backup key using BIP85
       final derivationPath = Bip85Derivation.generateBackupKeyPath();
 
