@@ -23,7 +23,7 @@ class RestoreBackupKeyFromPasswordUsecase {
       }
 
       final backupKey = await recoverBullRepository.fetchBackupKey(
-        backupInfo.backupId,
+        backupInfo.id,
         password,
         backupInfo.salt,
       );
