@@ -64,6 +64,7 @@ import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
+import 'package:bb_mobile/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -313,9 +314,11 @@ class CoreLocator {
       () => FetchBackupFromFileSystemUsecase(),
     );
 
-    locator.registerFactory<RestoreRecoverBullBackupUsecase>(
-      () => RestoreRecoverBullBackupUsecase(
-        repository: locator<RecoverBullRepository>(),
+    locator.registerFactory<RestoreEncryptedVaultFromBackupKeyUsecase>(
+      () => RestoreEncryptedVaultFromBackupKeyUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+        walletManagerService: locator<WalletManagerService>(),
+        walletMetadataRepository: locator<WalletMetadataRepository>(),
       ),
     );
     locator.registerFactory<FindMnemonicWordsUsecase>(
