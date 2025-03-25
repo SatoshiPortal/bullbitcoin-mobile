@@ -53,10 +53,11 @@ class KeyServerState with _$KeyServerState {
   bool get hasValidKeyLength => _validator.hasValidLength(secret);
   bool get areKeysMatching =>
       _validator.areKeysMatching(secret, temporarySecret);
-
+  bool get isInCommonPasswordList => _validator.isInCommonPasswordList(secret);
   bool get canProceed => switch (currentFlow) {
-        CurrentKeyServerFlow.enter => hasValidKeyLength,
-        CurrentKeyServerFlow.confirm => hasValidKeyLength && areKeysMatching,
+        CurrentKeyServerFlow.enter =>
+          hasValidKeyLength && !isInCommonPasswordList,
+        CurrentKeyServerFlow.confirm => areKeysMatching,
         CurrentKeyServerFlow.recovery =>
           authInputType == AuthInputType.backupKey
               ? backupKey.isNotEmpty
