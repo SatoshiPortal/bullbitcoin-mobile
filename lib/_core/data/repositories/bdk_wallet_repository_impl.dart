@@ -291,13 +291,14 @@ class BdkWalletRepositoryImpl
 
     // Finish the transaction building process
     final (psbt, _) = await txBuilder.finish(_wallet);
-    return Transaction(bytes: psbt.serialize());
+    return Transaction.fromBdkPsbt(psbt);
   }
 
   @override
   Future<Transaction> sign(Transaction unsigned) async {
-    final psbt =
-        await bdk.PartiallySignedTransaction.fromString(unsigned.toBase64());
+    final psbt = await bdk.PartiallySignedTransaction.fromString(
+      unsigned.toPsbtBase64(),
+    );
 
     final isFinalized = await _wallet.sign(
       psbt: psbt,
@@ -316,7 +317,7 @@ class BdkWalletRepositoryImpl
       debugPrint('Signed PSBT is finalized');
     }
 
-    return Transaction(bytes: psbt.serialize());
+    return Transaction.fromBdkPsbt(psbt);
   }
 
   @override

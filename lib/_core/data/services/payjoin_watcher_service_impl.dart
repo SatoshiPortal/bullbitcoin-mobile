@@ -59,10 +59,10 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
       ),
       unspentUtxos: unspentUtxos,
       processPsbt: (psbt) async {
-        final txPsbt = await Transaction.fromPsbt(psbtBase64: psbt);
+        final tx = await Transaction.fromPsbtBase64(psbt);
         final signedPsbt =
-            await _walletManager.sign(walletId: walletId, tx: txPsbt);
-        return signedPsbt.toBase64();
+            await _walletManager.sign(walletId: walletId, tx: tx);
+        return signedPsbt.toPsbtBase64();
       },
     );
 
@@ -85,16 +85,14 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
     }
 
     try {
-      final psbt = await Transaction.fromPsbt(psbtBase64: proposalPsbt);
+      final psbt = await Transaction.fromPsbtBase64(proposalPsbt);
 
-      final finalizedPsbt = await _walletManager.sign(
-        walletId: walletId,
-        tx: psbt,
-      );
+      final finalizedPsbt =
+          await _walletManager.sign(walletId: walletId, tx: psbt);
 
       final processedPayjoin = await _payjoin.broadcastPsbt(
         payjoinId: payjoin.id,
-        finalizedPsbt: finalizedPsbt.toBase64(),
+        finalizedPsbt: finalizedPsbt.toPsbtBase64(),
         electrumServer: electrumServer,
       );
 

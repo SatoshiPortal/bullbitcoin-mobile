@@ -1,43 +1,32 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/_core/domain/entities/tx_input.dart';
 import 'package:bb_mobile/_core/domain/entities/tx_output.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
-import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'transaction.freezed.dart';
+class Transaction {
+  final bdk.PartiallySignedTransaction _psbt;
 
-@freezed
-class Transaction with _$Transaction {
-  const factory Transaction({required List<int> bytes}) = _Transaction;
+  const Transaction.fromBdkPsbt(this._psbt);
 
-  static Future<Transaction> fromPsbt({required String psbtBase64}) async {
+  static Future<Transaction> fromPsbtBase64(String psbtBase64) async {
     final psbt = await bdk.PartiallySignedTransaction.fromString(psbtBase64);
-    final txBytes = await psbt.extractTx().serialize();
-    return Transaction(bytes: txBytes);
+    return Transaction.fromBdkPsbt(psbt);
   }
 
-  const Transaction._();
+  String toPsbtBase64() => _psbt.asString();
 
-  Future<String> get id async {
-    final tx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
-    return await tx.txid();
-  }
+  bdk.Transaction get _tx => _psbt.extractTx();
 
-  Future<int> get version async {
-    final tx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
-    return await tx.version();
-  }
+  Future<String> get id async => await _tx.txid();
+
+  Future<int> get version async => await _tx.version();
 
   Future<int> get locktime async {
-    final tx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
-    final locktime = await tx.lockTime();
+    final locktime = await _tx.lockTime();
     return locktime.field0;
   }
 
   Future<List<TxInput>> get inputs async {
-    final tx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
-    final txInList = await tx.input();
+    final txInList = await _tx.input();
     final inputs = txInList
         .map(
           (e) => TxInput(
@@ -51,13 +40,14 @@ class Transaction with _$Transaction {
   }
 
   Future<List<TxOutput>> get outputs async {
-    final tx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
-    final txOutList = await tx.output();
+    final txOutList = await _tx.output();
     final outputs = txOutList
         .map((e) => TxOutput(value: e.value, script: e.scriptPubkey.bytes))
         .toList();
     return outputs;
   }
 
-  String toBase64() => base64Encode(bytes);
+  BigInt? get feeAmount => _psbt.feeAmount();
+
+  double? get satPerVb => _psbt.feeRate()?.satPerVb;
 }
