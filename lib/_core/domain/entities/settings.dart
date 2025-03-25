@@ -18,7 +18,7 @@ enum Environment {
 
 enum BitcoinUnit {
   btc(code: 'BTC', decimals: 8),
-  sats(code: 'SAT', decimals: 0);
+  sats(code: 'sats', decimals: 0);
 
   final String code;
   final int decimals;

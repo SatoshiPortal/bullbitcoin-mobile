@@ -13,6 +13,7 @@ import 'package:bb_mobile/receive/domain/usecases/get_receive_address_use_case.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:intl/intl.dart';
 
 part 'receive_bloc.freezed.dart';
 part 'receive_event.dart';
@@ -49,6 +50,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
     on<ReceiveLiquidStarted>(_onLiquidStarted);
+    on<ReceiveAmountChanged>(_onAmountChanged);
+    on<ReceiveAmountCurrencyChanged>(_onAmountCurrencyChanged);
+    on<ReceiveNoteChanged>(_onNoteChanged);
+    on<ReceiveAddressOnlyToggled>(_onAddressOnlyToggled);
+    on<ReceiveNewAddressGenerated>(_onNewAddressGenerated);
+    on<ReceiveLightningSwapCreated>(_onLightningSwapCreated);
+    on<ReceivePaymentReceived>(_onPaymentReceived);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -81,42 +89,47 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       final address =
           await _getReceiveAddressUsecase.execute(walletId: wallet.id);
 
-      String? payjoinQueryParameter;
+      String payjoinQueryParameter = '';
       try {
         final payjoin = await _receiveWithPayjoinUsecase.execute(
           walletId: wallet.id,
           address: address.address,
         );
-        payjoinQueryParameter = Uri.parse(payjoin.pjUri).queryParameters['pj'];
+        payjoinQueryParameter =
+            Uri.parse(payjoin.pjUri).queryParameters['pj'] ?? '';
       } catch (e) {
         debugPrint('Payjoin not available');
       }
 
-      final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
-      final fiatCurrency = await _getCurrencyUsecase.execute();
-      // TODO: analyse if getting the exchange rate should be done on every amount change
-      //  or if it is ok to do it only once at start and use that rate for the whole receive flow
-      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: fiatCurrency,
-      );
-      final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
+      final currencyValues = await Future.wait([
+        _getBitcoinUnitUseCase.execute(),
+        _getCurrencyUsecase.execute(),
+        _convertSatsToCurrencyAmountUsecase.execute(),
+        _getAvailableCurrenciesUsecase.execute(),
+      ]);
+
+      final bitcoinUnit = currencyValues[0] as BitcoinUnit;
+      final fiatCurrency = currencyValues[1] as String;
+      final exchangeRate = currencyValues[2] as double;
+      final fiatCurrencies = currencyValues[3] as List<String>;
 
       emit(
         ReceiveState.bitcoin(
           wallet: wallet,
           fiatCurrencyCodes: fiatCurrencies,
-          fiatCurrencyCode: fiatCurrency,
-          exchangeRate: exchangeRate,
+          defaultFiatCurrencyCode: fiatCurrency,
+          defaultFiatCurrencyExchangeRate: exchangeRate,
           bitcoinUnit: bitcoinUnit,
           // Start entering the amount in bitcoin
           amountInputCurrencyCode: bitcoinUnit.code,
+          amountInputCurrencyExchangeRate: exchangeRate,
           address: address.address,
           payjoinQueryParameter: payjoinQueryParameter,
         ),
       );
     } catch (e) {
       emit(
-        ReceiveState.error(error: e),
+        state.copyWith(error: e),
       );
     }
   }
@@ -125,74 +138,270 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveLightningStarted event,
     Emitter<ReceiveState> emit,
   ) async {
-    // If no wallet is passed through the constructor, get the default liquid wallet,
-    //  which is the default wallet to receive lightning payments since fees are lower
-    //  than on the bitcoin network.
-    Wallet? wallet = _wallet;
-    if (wallet == null) {
-      final wallets = await _getWalletsUsecase.execute(
-        onlyLiquid: true,
-        onlyDefaults: true,
+    try {
+      // If no wallet is passed through the constructor, get the default liquid wallet,
+      //  which is the default wallet to receive lightning payments since fees are lower
+      //  than on the bitcoin network.
+      Wallet? wallet = _wallet;
+      if (wallet == null) {
+        final wallets = await _getWalletsUsecase.execute(
+          onlyLiquid: true,
+          onlyDefaults: true,
+        );
+
+        wallet = wallets.first;
+      }
+
+      final currencyValues = await Future.wait([
+        _getBitcoinUnitUseCase.execute(),
+        _getCurrencyUsecase.execute(),
+        _convertSatsToCurrencyAmountUsecase.execute(),
+        _getAvailableCurrenciesUsecase.execute(),
+      ]);
+
+      final bitcoinUnit = currencyValues[0] as BitcoinUnit;
+      final fiatCurrency = currencyValues[1] as String;
+      final exchangeRate = currencyValues[2] as double;
+      final fiatCurrencies = currencyValues[3] as List<String>;
+
+      emit(
+        ReceiveState.lightning(
+          wallet: wallet,
+          fiatCurrencyCodes: fiatCurrencies,
+          defaultFiatCurrencyCode: fiatCurrency,
+          defaultFiatCurrencyExchangeRate: exchangeRate,
+          bitcoinUnit: bitcoinUnit,
+          // Start entering the amount in bitcoin
+          amountInputCurrencyCode: bitcoinUnit.code,
+          amountInputCurrencyExchangeRate: exchangeRate,
+        ),
       );
-
-      wallet = wallets.first;
+    } catch (e) {
+      emit(
+        state.copyWith(error: e),
+      );
     }
-
-    final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
-    final fiatCurrency = await _getCurrencyUsecase.execute();
-    final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
-      currencyCode: fiatCurrency,
-    );
-    final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
-
-    emit(
-      ReceiveState.lightning(
-        wallet: wallet,
-        fiatCurrencyCodes: fiatCurrencies,
-        fiatCurrencyCode: fiatCurrency,
-        exchangeRate: exchangeRate,
-        bitcoinUnit: bitcoinUnit,
-        // Start entering the amount in bitcoin
-        amountInputCurrencyCode: bitcoinUnit.code,
-      ),
-    );
   }
 
   Future<void> _onLiquidStarted(
     ReceiveLiquidStarted event,
     Emitter<ReceiveState> emit,
   ) async {
-    // If no wallet is passed through the constructor, get the default bitcoin wallet
-    Wallet? wallet = _wallet;
-    if (wallet == null) {
-      final wallets = await _getWalletsUsecase.execute(
-        onlyBitcoin: true,
-        onlyDefaults: true,
-      );
+    try {
+      // If no wallet is passed through the constructor, get the default bitcoin wallet
+      Wallet? wallet = _wallet;
+      if (wallet == null) {
+        final wallets = await _getWalletsUsecase.execute(
+          onlyLiquid: true,
+          onlyDefaults: true,
+        );
 
-      wallet = wallets.first;
+        wallet = wallets.first;
+      }
+
+      final address =
+          await _getReceiveAddressUsecase.execute(walletId: wallet.id);
+
+      final currencyValues = await Future.wait([
+        _getBitcoinUnitUseCase.execute(),
+        _getCurrencyUsecase.execute(),
+        _convertSatsToCurrencyAmountUsecase.execute(),
+        _getAvailableCurrenciesUsecase.execute(),
+      ]);
+
+      final bitcoinUnit = currencyValues[0] as BitcoinUnit;
+      final fiatCurrency = currencyValues[1] as String;
+      final exchangeRate = currencyValues[2] as double;
+      final fiatCurrencies = currencyValues[3] as List<String>;
+
+      emit(
+        ReceiveState.liquid(
+          wallet: wallet,
+          fiatCurrencyCodes: fiatCurrencies,
+          defaultFiatCurrencyCode: fiatCurrency,
+          defaultFiatCurrencyExchangeRate: exchangeRate,
+          bitcoinUnit: bitcoinUnit,
+          // Start entering the amount in bitcoin
+          amountInputCurrencyCode: bitcoinUnit.code,
+          amountInputCurrencyExchangeRate: exchangeRate,
+          address: address.address,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(error: e),
+      );
+    }
+  }
+
+  Future<void> _onAmountChanged(
+    ReceiveAmountChanged event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    try {
+      String amount;
+
+      if (event.amount.isEmpty) {
+        amount = event.amount;
+      } else if (state.isFiatAmountInput) {
+        final amountFiat = double.tryParse(event.amount);
+        final isDecimalPoint = event.amount == '.';
+
+        amount = amountFiat == null && !isDecimalPoint
+            ? state.amountInput
+            : event.amount;
+      } else if (state.amountInputCurrencyCode == BitcoinUnit.sats.code) {
+        // If the amount is in sats, make sure it is a valid BigInt and do not
+        //  allow a decimal point.
+        final amountSats = BigInt.tryParse(event.amount);
+        final hasDecimals = event.amount.contains('.');
+
+        amount = amountSats == null || hasDecimals
+            ? state.amountInput
+            : event.amount;
+      } else {
+        // If the amount is in BTC, make sure it is a valid double and
+        //  do not allow more than 8 decimal places.
+        final amountBtc = double.tryParse(event.amount);
+        final decimals = event.amount.split('.').last.length;
+        final isDecimalPoint = event.amount == '.';
+
+        amount = (amountBtc == null && !isDecimalPoint) ||
+                decimals > BitcoinUnit.btc.decimals
+            ? state.amountInput
+            : event.amount;
+      }
+
+      emit(
+        state.copyWith(
+          amountInput: amount,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(error: e),
+      );
+    }
+  }
+
+  Future<void> _onAmountCurrencyChanged(
+    ReceiveAmountCurrencyChanged event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    double exchangeRate = state.amountInputCurrencyExchangeRate;
+
+    if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
+        .contains(event.currencyCode)) {
+      exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: event.currencyCode,
+      );
     }
 
-    final address =
-        await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-
-    final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
-    final fiatCurrency = await _getCurrencyUsecase.execute();
-    final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
-      currencyCode: fiatCurrency,
-    );
-    final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
-
     emit(
-      ReceiveState.liquid(
-        wallet: wallet,
-        fiatCurrencyCodes: fiatCurrencies,
-        fiatCurrencyCode: fiatCurrency,
-        exchangeRate: exchangeRate,
-        bitcoinUnit: bitcoinUnit,
-        // Start entering the amount in bitcoin
-        amountInputCurrencyCode: bitcoinUnit.code,
-        address: address.address,
+      state.copyWith(
+        amountInputCurrencyCode: event.currencyCode,
+        amountInputCurrencyExchangeRate: exchangeRate,
+        amountInput: '', // Clear the amount when changing the currency
+      ),
+    );
+  }
+
+  Future<void> _onNoteChanged(
+    ReceiveNoteChanged event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        note: event.note,
+      ),
+    );
+  }
+
+  Future<void> _onAddressOnlyToggled(
+    ReceiveAddressOnlyToggled event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    // This toggle switch button is only available in the bitcoin receive screen
+    if (state is BitcoinReceiveState) {
+      final bitcoinReceiveState = state as BitcoinReceiveState;
+      emit(
+        bitcoinReceiveState.copyWith(
+          isAddressOnly: event.isAddressOnly,
+        ),
+      );
+    }
+  }
+
+  Future<void> _onNewAddressGenerated(
+    ReceiveNewAddressGenerated event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    try {
+      switch (state) {
+        case final BitcoinReceiveState bitcoinReceiveState:
+          final address = await _getReceiveAddressUsecase.execute(
+            walletId: bitcoinReceiveState.wallet.id,
+            newAddress: true,
+          );
+
+          emit(
+            bitcoinReceiveState.copyWith(
+              address: address.address,
+            ),
+          );
+        case final LiquidReceiveState liquidReceiveState:
+          final address = await _getReceiveAddressUsecase.execute(
+            walletId: liquidReceiveState.wallet.id,
+            newAddress: true,
+          );
+
+          emit(
+            liquidReceiveState.copyWith(
+              address: address.address,
+            ),
+          );
+        default:
+          break;
+      }
+    } catch (e) {
+      emit(
+        state.copyWith(error: e),
+      );
+    }
+  }
+
+  Future<void> _onLightningSwapCreated(
+    ReceiveLightningSwapCreated event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    try {
+      /*
+      final swap = await _createReceiveSwapUsecase.execute(
+        walletId: state.wallet.id,
+        amount: state.amountInput,
+        currencyCode: state.amountInputCurrencyCode,
+        note: state.note,
+      );
+
+      emit(
+        (state as LightningReceiveState).copyWith(
+          swap: swap,
+        ),
+      );*/
+    } catch (e) {
+      emit(
+        state.copyWith(error: e),
+      );
+    }
+  }
+
+  Future<void> _onPaymentReceived(
+    ReceivePaymentReceived event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: ReceiveStatus.success,
       ),
     );
   }

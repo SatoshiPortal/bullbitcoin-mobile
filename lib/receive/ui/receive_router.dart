@@ -49,18 +49,19 @@ class ReceiveRouter {
       GoRoute(
         name: ReceiveRoute.receiveBitcoin.name,
         path: ReceiveRoute.receiveBitcoin.path,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           // Entry route, start a bitcoin receive if not already there
           final bloc = context.read<ReceiveBloc>();
           if (bloc.state is! BitcoinReceiveState) {
             bloc.add(const ReceiveBitcoinStarted());
           }
-          return const ReceiveQrScreen();
+          return const NoTransitionPage(child: ReceiveQrScreen());
         },
         routes: [
           GoRoute(
             path: ReceiveRoute.amount.path,
-            builder: (context, state) => const ReceiveAmountScreen(),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
             path: ReceiveRoute.success.path,
@@ -72,22 +73,30 @@ class ReceiveRouter {
       GoRoute(
         name: ReceiveRoute.receiveLightning.name,
         path: ReceiveRoute.receiveLightning.path,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           // Entry route, go to lightning receive state if not already there
           final bloc = context.read<ReceiveBloc>();
           if (bloc.state is! LightningReceiveState) {
             bloc.add(const ReceiveLightningStarted());
           }
-          return const ReceiveAmountScreen();
+          return NoTransitionPage(
+            child: ReceiveAmountScreen(
+              onContinuePressed: () => context.push(
+                '${state.matchedLocation}/${ReceiveRoute.qr.path}',
+              ),
+            ),
+          );
         },
         routes: [
           GoRoute(
             path: ReceiveRoute.qr.path,
-            builder: (context, state) => const ReceiveQrScreen(),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ReceiveQrScreen()),
           ),
           GoRoute(
             path: ReceiveRoute.amount.path,
-            builder: (context, state) => const ReceiveAmountScreen(),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
             path: ReceiveRoute.success.path,
@@ -99,18 +108,19 @@ class ReceiveRouter {
       GoRoute(
         name: ReceiveRoute.receiveLiquid.name,
         path: ReceiveRoute.receiveLiquid.path,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           // Entry route, go to liquid receive state if not already there
           final bloc = context.read<ReceiveBloc>();
           if (bloc.state is! LiquidReceiveState) {
             bloc.add(const ReceiveLiquidStarted());
           }
-          return const ReceiveQrScreen();
+          return const NoTransitionPage(child: ReceiveQrScreen());
         },
         routes: [
           GoRoute(
             path: ReceiveRoute.amount.path,
-            builder: (context, state) => const ReceiveAmountScreen(),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
             path: ReceiveRoute.success.path,

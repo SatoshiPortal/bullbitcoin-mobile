@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/components/cards/info_card.dart';
-import 'package:bb_mobile/_ui/components/dialpad/dailpad.dart';
+import 'package:bb_mobile/_ui/components/dialpad/dialPad.dart';
 import 'package:bb_mobile/_ui/components/inputs/copy_input.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/price_input/balance_row.dart';
@@ -130,10 +130,19 @@ class SendAmountScreen extends StatelessWidget {
             ),
             const Gap(16),
             const Gap(82),
-            const PriceInput(),
+            PriceInput(
+              amount: '',
+              currency: '',
+              amountEquivalent: '',
+              availableCurrencies: const [],
+              onCurrencyChanged: (currencyCode) {},
+            ),
             const Gap(82),
             const BalanceRow(),
-            const DialPad(),
+            DialPad(
+              onNumberPressed: (number) => print(number),
+              onBackspacePressed: () => print('backspace'),
+            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: BBButton.big(

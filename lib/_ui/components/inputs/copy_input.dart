@@ -1,12 +1,15 @@
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 
 class CopyInput extends StatelessWidget {
-  const CopyInput({super.key, required this.text});
+  const CopyInput({super.key, required this.text, this.clipboardText});
 
   final String text;
+  final String?
+      clipboardText; // In case it should be different from the shown text
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +25,13 @@ class CopyInput extends StatelessWidget {
       child: Row(
         children: [
           const Gap(15),
-          BBText(
-            text,
-            style: context.font.bodyLarge,
-            color: context.colour.secondary,
+          Expanded(
+            child: BBText(
+              text,
+              style: context.font.bodyLarge,
+              color: context.colour.secondary,
+            ),
           ),
-          const Spacer(),
           IconButton(
             visualDensity: VisualDensity.compact,
             iconSize: 20,
@@ -35,7 +39,13 @@ class CopyInput extends StatelessWidget {
               Icons.copy_sharp,
               color: context.colour.secondary,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Clipboard.setData(
+                ClipboardData(
+                  text: clipboardText ?? text,
+                ),
+              );
+            },
           ),
           const Gap(8),
         ],

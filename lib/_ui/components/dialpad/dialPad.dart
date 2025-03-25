@@ -3,12 +3,19 @@ import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class DialPad extends StatelessWidget {
-  const DialPad({super.key});
+  const DialPad({
+    super.key,
+    required this.onNumberPressed,
+    required this.onBackspacePressed,
+  });
+
+  final Function(String) onNumberPressed;
+  final Function() onBackspacePressed;
 
   Widget numPadButton(BuildContext context, String num) {
     return Expanded(
       child: InkWell(
-        onTap: () {},
+        onTap: () => onNumberPressed(num),
         child: Container(
           height: 64,
           decoration: const BoxDecoration(
@@ -20,6 +27,28 @@ class DialPad extends StatelessWidget {
             child: BBText(
               num,
               style: context.font.headlineMedium!.copyWith(fontSize: 20),
+              color: context.colour.surfaceContainerLow,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget backspaceButton(BuildContext context) {
+    return Expanded(
+      child: InkWell(
+        onTap: onBackspacePressed,
+        child: Container(
+          height: 64,
+          decoration: const BoxDecoration(
+              // border: Border.all(
+              //   color: context.colour.surface,
+              // ),
+              ),
+          child: Center(
+            child: Icon(
+              Icons.backspace_outlined,
               color: context.colour.surfaceContainerLow,
             ),
           ),
@@ -59,7 +88,7 @@ class DialPad extends StatelessWidget {
             children: [
               numPadButton(context, '.'),
               numPadButton(context, '0'),
-              numPadButton(context, ''),
+              backspaceButton(context),
             ],
           ),
         ],

@@ -11,13 +11,23 @@ class GetReceiveAddressUsecase {
     required String walletId,
     bool newAddress = false,
   }) async {
-    Address address;
-    if (!newAddress) {
-      address = await _walletManager.getLastUnusedAddress(walletId: walletId);
-    } else {
-      address = await _walletManager.getNewAddress(walletId: walletId);
-    }
+    try {
+      Address address;
+      if (!newAddress) {
+        address = await _walletManager.getLastUnusedAddress(walletId: walletId);
+      } else {
+        address = await _walletManager.getNewAddress(walletId: walletId);
+      }
 
-    return address;
+      return address;
+    } catch (e) {
+      throw GetReceiveAddressException(e.toString());
+    }
   }
+}
+
+class GetReceiveAddressException implements Exception {
+  final String? message;
+
+  GetReceiveAddressException(this.message);
 }
