@@ -35,7 +35,12 @@ class KeyServerError implements Exception {
     );
   }
 
-  // Named constructors for domain-specific errors
+  const KeyServerError.failedToConnect()
+      : this._(
+          message:
+              'Failed to connect to the target key server. Please try again later!',
+          type: KeyServerErrorType.unavailable,
+        );
   const KeyServerError.invalidBackupFile()
       : this._(
           message: 'Invalid backup file format',
