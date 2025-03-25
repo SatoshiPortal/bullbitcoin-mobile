@@ -85,6 +85,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   Future<void> deleteKey() async {
     if (!state.canProceed) return;
     try {
+      await checkConnection();
       await _handleServerOperation(
         () => trashKeyFromServerUsecase.execute(
           password: '',
@@ -172,6 +173,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
           return;
         }
         try {
+          await checkConnection();
           final backupKey = await _handleServerOperation(
             () => restoreBackupKeyFromPasswordUsecase.execute(
               backupAsString: state.encrypted,
