@@ -52,6 +52,7 @@ class RecoverOrTestBackupButton extends StatelessWidget {
       label: 'Recover or Test Backup',
       onPressed: () => context.pushNamed(
         BackupSettingsSubroute.recoverOptions.name,
+        extra: false,
       ),
       borderColor: context.colour.secondary,
       outlined: true,
