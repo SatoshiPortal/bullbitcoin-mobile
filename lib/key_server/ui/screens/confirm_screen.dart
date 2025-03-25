@@ -1,6 +1,6 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/components/dialpad/dailpad.dart';
-import 'package:bb_mobile/_ui/components/inputs/secure_input.dart';
+import 'package:bb_mobile/_ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
@@ -27,25 +27,26 @@ class ConfirmScreen extends StatelessWidget {
         flexibleSpace: TopBar(
           onBack: () => context.go(AppRoute.home.path),
           title:
-              "Confirm ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'}",
+              "Confirm access ${state.authInputType == AuthInputType.pin ? 'PIN' : 'Password'}",
         ),
       ),
       body: PageLayout(
         bottomChild: const ConfirmButton(),
         bottomHeight: 80,
         children: [
+          const Gap(100),
           BBText(
-            'Please re-enter your ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'} to confirm.',
+            'Enter your ${state.authInputType == AuthInputType.pin ? 'PIN' : 'Password'} again to continue.',
             textAlign: TextAlign.center,
             style: context.font.labelMedium?.copyWith(
               color: context.colour.outline,
             ),
             maxLines: 2,
           ),
-          const Gap(120),
+          const Gap(50),
           if (state.authInputType == AuthInputType.password)
             BBText(
-              'Confirm Password',
+              'Password',
               textAlign: TextAlign.start,
               style: context.font.labelSmall?.copyWith(
                 color: context.colour.secondary,
@@ -54,12 +55,14 @@ class ConfirmScreen extends StatelessWidget {
           else
             const SizedBox.shrink(),
           const Gap(2),
-          ObscuredTextInput(
-            text: state.secret,
+          BBInputText(
+            value: state.secret,
             obscure: state.isSecretObscured,
-            onVisibilityToggle: () =>
-                context.read<KeyServerCubit>().toggleObscure(),
-            isPassword: state.authInputType == AuthInputType.password,
+            onRightTap: () => context.read<KeyServerCubit>().toggleObscure(),
+            rightIcon: state.isSecretObscured
+                ? const Icon(Icons.visibility_off_outlined)
+                : const Icon(Icons.visibility_outlined),
+            onlyNumbers: state.authInputType == AuthInputType.pin,
             onChanged: (value) {
               if (state.authInputType == AuthInputType.password) {
                 context.read<KeyServerCubit>().enterKey(value);
@@ -81,11 +84,8 @@ class ConfirmScreen extends StatelessWidget {
           ),
           if (state.authInputType == AuthInputType.pin)
             DialPad(
-              onTap: (e) {
-                SystemSound.play(SystemSoundType.click);
-                HapticFeedback.mediumImpact();
-                context.read<KeyServerCubit>().enterKey(e);
-              },
+              onTap: (e) => context.read<KeyServerCubit>().enterKey(e),
+              onDelete: () => context.read<KeyServerCubit>().backspaceKey(),
             )
           else
             const SizedBox.shrink(),

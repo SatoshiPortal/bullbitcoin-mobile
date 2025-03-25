@@ -1,22 +1,20 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/components/dialpad/dailpad.dart';
 import 'package:bb_mobile/_ui/components/inputs/text_input.dart';
-import 'package:bb_mobile/_ui/components/navbar/top_bar.dart' show TopBar;
-import 'package:bb_mobile/_ui/components/text/text.dart' show BBText;
+import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
+import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/key_server/ui/key_server_flow.dart';
-import 'package:bb_mobile/router.dart';
+import 'package:bb_mobile/router.dart' show AppRoute;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'
-    show HapticFeedback, SystemSound, SystemSoundType;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class EnterScreen extends StatelessWidget {
-  const EnterScreen({super.key});
+class RecoverWithSecretScreen extends StatelessWidget {
+  const RecoverWithSecretScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,15 +26,15 @@ class EnterScreen extends StatelessWidget {
         flexibleSpace: TopBar(
           onBack: () => context.go(AppRoute.home.path),
           title:
-              "Choose access ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'}",
+              "Enter your backup ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'}",
         ),
       ),
       body: PageLayout(
-        bottomChild: const ConfirmButton(),
-        bottomHeight: 80,
+        bottomChild: const RecoverButton(),
+        bottomHeight: 72,
         children: [
           BBText(
-            'You must memorize this ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'} to recover access to your wallet. It must be at least 6 digits. If you lose this ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'} you cannot recover your backup.',
+            'Test to make sure you remember your backup ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'} ',
             textAlign: TextAlign.center,
             style: context.font.labelMedium?.copyWith(
               color: context.colour.outline,
@@ -72,7 +70,7 @@ class EnterScreen extends StatelessWidget {
           const Gap(50),
           BBButton.small(
             label:
-                'Pick a ${state.authInputType == AuthInputType.pin ? 'password' : 'pin'} instead >>',
+                'Pick ${state.authInputType == AuthInputType.pin ? 'password' : 'PIN'} instead >>',
             bgColor: Colors.transparent,
             textColor: context.colour.inversePrimary,
             textStyle: context.font.labelSmall,
@@ -95,8 +93,8 @@ class EnterScreen extends StatelessWidget {
   }
 }
 
-class ConfirmButton extends StatelessWidget {
-  const ConfirmButton({super.key});
+class RecoverButton extends StatelessWidget {
+  const RecoverButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +111,7 @@ class ConfirmButton extends StatelessWidget {
             : context.colour.outline,
         onPressed: () {
           if (state.canProceed) {
-            context.read<KeyServerCubit>().confirmKey();
+            context.read<KeyServerCubit>().recoverKey();
           }
         },
         textColor: context.colour.onSecondary,
