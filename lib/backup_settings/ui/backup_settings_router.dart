@@ -3,8 +3,8 @@ import 'package:bb_mobile/backup_wallet/ui/screens/backup_security_info_screen.d
 import 'package:bb_mobile/backup_wallet/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/key_server/ui/screens/recover_with_backup_key_screen.dart';
 import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
-import 'package:bb_mobile/recover_wallet/ui/screens/choose_recover_encrypted_vault_provider_screen.dart';
-import 'package:bb_mobile/recover_wallet/ui/screens/fetched_backup_info_screen.dart';
+import 'package:bb_mobile/recover_wallet/ui/screens/encrypted_vault/choose_recover_encrypted_vault_provider_screen.dart';
+import 'package:bb_mobile/recover_wallet/ui/screens/encrypted_vault/fetched_backup_info_screen.dart';
 import 'package:bb_mobile/recover_wallet/ui/screens/recover_options_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -51,7 +51,9 @@ class BackupSettingsSettingsRouter {
     GoRoute(
       name: BackupSettingsSubroute.recoverOptions.name,
       path: BackupSettingsSubroute.recoverOptions.path,
-      builder: (context, state) => const RecoverOptionsScreen(),
+      builder: (context, state) => RecoverOptionsScreen(
+        isRecovering: state.extra == null ? false : state.extra as bool,
+      ),
     ),
 
     // GoRoute(
