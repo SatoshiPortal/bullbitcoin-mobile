@@ -143,7 +143,8 @@ class _Button extends StatelessWidget {
         context.select((RecoverWalletBloc _) => _.state.hasAllValidWords);
 
     final creating = context.select(
-      (RecoverWalletBloc _) => _.state.isCreating,
+      (RecoverWalletBloc _) =>
+          _.state.recoverWalletStatus == const RecoverWalletStatus.loading(),
     );
 
     if (creating) {

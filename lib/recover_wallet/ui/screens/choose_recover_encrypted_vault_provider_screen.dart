@@ -45,11 +45,12 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<RecoverWalletBloc, RecoverWalletState>(
-      listenWhen: (previous, current) => previous.status != current.status,
+      listenWhen: (previous, current) =>
+          previous.recoverWalletStatus != current.recoverWalletStatus,
       listener: (context, state) {
-        state.status.when(
+        state.recoverWalletStatus.when(
           initial: () => {},
-          loading: (type) {},
+          loading: () {},
           success: () {
             if (!state.encryptedInfo.isCorrupted) {
               context.pushNamed(
@@ -95,7 +96,7 @@ class _Screen extends StatelessWidget {
                 _ProviderTile(
                   provider: backupProviders[0],
                   onTap: () => context.read<RecoverWalletBloc>().add(
-                        const OnGoogleDriveRecoverSelected(),
+                        const SelectGoogleDriveRecovery(),
                       ),
                 ),
                 const Gap(16),
@@ -107,7 +108,7 @@ class _Screen extends StatelessWidget {
                 _ProviderTile(
                   provider: backupProviders[2],
                   onTap: () => context.read<RecoverWalletBloc>().add(
-                        const OnFileSystemRecoverSelected(),
+                        const SelectFileSystemRecovery(),
                       ),
                 ),
               ],
