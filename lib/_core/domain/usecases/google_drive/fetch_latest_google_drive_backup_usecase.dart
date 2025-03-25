@@ -1,9 +1,9 @@
 import 'package:bb_mobile/_core/domain/repositories/google_drive_repository.dart';
 
-class FetchLatestBackupUsecase {
+class FetchLatestGoogleDriveBackupUsecase {
   final GoogleDriveRepository _repository;
 
-  FetchLatestBackupUsecase(this._repository);
+  FetchLatestGoogleDriveBackupUsecase(this._repository);
 
   Future<String> execute() async {
     try {
