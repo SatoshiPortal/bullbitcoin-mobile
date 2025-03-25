@@ -13,7 +13,7 @@ class CreateBackupKeyFromDefaultSeedUsecase {
     required this.walletMetadataRepository,
   });
 
-  Future<String> execute() async {
+  Future<String> execute(String derivationPath) async {
     try {
       // The default wallet is used to derive the backup key
       final defaultMetadata = await walletMetadataRepository.getDefault();
@@ -29,9 +29,6 @@ class CreateBackupKeyFromDefaultSeedUsecase {
         defaultSeed.bytes,
         defaultMetadata.network,
       );
-
-      // Derive the backup key using BIP85
-      final derivationPath = Bip85Derivation.generateBackupKeyPath();
 
       final backupKey =
           Bip85Derivation.deriveBackupKey(defaultXprv, derivationPath);
