@@ -6,7 +6,6 @@ import 'package:bb_mobile/key_server/ui/key_server_flow.dart'
     show KeyServerFlow;
 import 'package:bb_mobile/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/receive/ui/receive_router.dart';
-import 'package:bb_mobile/recover_wallet/ui/recover_wallet_flow.dart';
 import 'package:bb_mobile/send/ui/send_screen.dart';
 import 'package:bb_mobile/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/settings/ui/settings_router.dart';
@@ -19,6 +18,7 @@ enum AppRoute {
   onboarding('/onboarding'),
   home('/'),
   appUnlock('/app-unlock'),
+  //todo; move to settings router
   recoverWallet('/recover-wallet'),
   recoverImportWallet('/recover-wallet-import'),
   keyServerFlow('/key-server-flow'),
@@ -90,8 +90,14 @@ class AppRouter {
       GoRoute(
         name: AppRoute.keyServerFlow.name,
         path: AppRoute.keyServerFlow.path,
-        builder: (context, state) =>
-            KeyServerFlow(encrypted: state.extra as String?),
+        builder: (context, state) {
+          final (String? encrypted, String? flow) =
+              state.extra! as (String?, String?);
+          return KeyServerFlow(
+            encrypted: encrypted,
+            currentFlow: flow,
+          );
+        },
       ),
       GoRoute(
         name: AppRoute.appUnlock.name,
@@ -103,19 +109,19 @@ class AppRouter {
         },
       ),
 
-      GoRoute(
-        name: AppRoute.recoverWallet.name,
-        path: AppRoute.recoverWallet.path,
-        builder: (context, state) =>
-            const RecoverWalletFlow(fromOnboarding: true),
-      ),
-      GoRoute(
-        name: AppRoute.recoverImportWallet.name,
-        path: AppRoute.recoverImportWallet.path,
-        builder: (context, state) => const RecoverWalletFlow(
-          fromOnboarding: false,
-        ),
-      ),
+      // GoRoute(
+      //   name: AppRoute.recoverWallet.name,
+      //   path: AppRoute.recoverWallet.path,
+      //   builder: (context, state) =>
+      //       const RecoverWalletFlow(fromOnboarding: true),
+      // ),
+      // GoRoute(
+      //   name: AppRoute.recoverImportWallet.name,
+      //   path: AppRoute.recoverImportWallet.path,
+      //   builder: (context, state) => const RecoverWalletFlow(
+      //     fromOnboarding: false,
+      //   ),
+      // ),
       GoRoute(
         name: AppRoute.settings.name,
         path: AppRoute.settings.path,
