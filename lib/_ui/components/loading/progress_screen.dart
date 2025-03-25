@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
+import 'package:bb_mobile/_ui/components/template/screen_template.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -25,16 +26,22 @@ class ProgressScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        color: Colors.white,
+      backgroundColor: context.colour.onSecondary,
+      body: StackedPage(
+        bottomChildHeight: MediaQuery.of(context).size.height * 0.2,
+        bottomChild: (!isLoading && onTap != null)
+            ? BBButton.big(
+                label: buttonText ?? 'Continue',
+                onPressed: onTap ?? () {},
+                textColor: context.colour.onPrimary,
+                bgColor: context.colour.secondary,
+              )
+            : const SizedBox.shrink(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Spacer(flex: 2),
               Center(
                 child: isLoading
                     ? Image.network(
@@ -43,19 +50,17 @@ class ProgressScreen extends StatelessWidget {
                         height: 200,
                         fit: BoxFit.cover,
                       )
-                    : const Icon(
-                        Icons.check_circle_outline,
-                        size: 100,
-                      ),
+                    : const SizedBox.shrink(),
               ),
-              const Gap(32),
               if (title == null)
                 const SizedBox.shrink()
               else
                 BBText(
-                  title ?? '',
                   textAlign: TextAlign.center,
-                  style: context.font.headlineLarge,
+                  style: context.font.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  title ?? '',
                 ),
               const Gap(16),
               if (description == null)
@@ -71,16 +76,6 @@ class ProgressScreen extends StatelessWidget {
                 const Gap(16),
                 ...extras,
               ],
-              if (!isLoading && onTap != null) ...[
-                const Gap(32),
-                BBButton.big(
-                  label: buttonText ?? 'Continue',
-                  onPressed: onTap ?? () {},
-                  textColor: context.colour.onPrimary,
-                  bgColor: context.colour.secondary,
-                ),
-              ],
-              const Spacer(flex: 3),
             ],
           ),
         ),
