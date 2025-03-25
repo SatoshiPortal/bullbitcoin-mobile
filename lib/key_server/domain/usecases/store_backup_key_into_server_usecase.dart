@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
-import 'package:bb_mobile/key_server/domain/model/errors/key_server_error.dart';
+import 'package:bb_mobile/key_server/domain/errors/key_server_error.dart'
+    show KeyServerError;
 import 'package:bb_mobile/key_server/domain/services/backup_key_service.dart';
 import 'package:bb_mobile/key_server/domain/validators/password_validator.dart';
 import 'package:flutter/foundation.dart';
@@ -24,18 +25,20 @@ class StoreBackupKeyIntoServerUsecase {
   }) async {
     try {
       if (RecoverBullPasswordValidator.isInCommonPasswordList(password)) {
-        throw const PasswordTooCommonError();
+        throw const KeyServerError.commonPassword();
       }
+
       if (!BullBackup.isValid(backupFileAsString)) {
-        throw const BackupFileInvalidError();
+        throw const KeyServerError.invalidBackupFile();
       }
+
       final bullBackup = BullBackup.fromJson(backupFileAsString);
       final derivedKey = await _backupKeyService.deriveBackupKeyFromDefaultSeed(
         path: bullBackup.path,
       );
 
       if (backupKey != derivedKey) {
-        throw const BackupFileInvalidError();
+        throw const KeyServerError.keyMismatch();
       }
 
       await _recoverBullRepository.storeBackupKey(
@@ -44,8 +47,12 @@ class StoreBackupKeyIntoServerUsecase {
         HEX.encode(bullBackup.salt),
         backupKey,
       );
+    } on KeyServerException catch (e) {
+      throw KeyServerError.fromException(e);
     } catch (e) {
-      debugPrint('$StoreBackupKeyIntoServerUsecase: $e');
+      if (e is! KeyServerError) {
+        debugPrint('$StoreBackupKeyIntoServerUsecase: $e');
+      }
       rethrow;
     }
   }

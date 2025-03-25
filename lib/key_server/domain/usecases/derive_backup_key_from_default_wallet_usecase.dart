@@ -1,4 +1,3 @@
-import 'package:bb_mobile/key_server/domain/model/errors/key_server_error.dart';
 import 'package:bb_mobile/key_server/domain/services/backup_key_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:recoverbull/recoverbull.dart';
@@ -13,7 +12,7 @@ class DeriveBackupKeyFromDefaultWalletUsecase {
   Future<String> execute({required String backupFileAsString}) async {
     try {
       if (!BullBackup.isValid(backupFileAsString)) {
-        throw const BackupFileInvalidError();
+        throw 'Corrupted backup file';
       }
       final bullBackup = BullBackup.fromJson(backupFileAsString);
 
