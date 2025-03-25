@@ -56,3 +56,24 @@ class ImportTestableWallet extends RecoverWalletEvent {
   final bool useTestWallet;
   const ImportTestableWallet({required this.useTestWallet});
 }
+
+class SelectGoogleDriveRecovery extends RecoverWalletEvent {
+  const SelectGoogleDriveRecovery();
+}
+
+class SelectFileSystemRecovery extends RecoverWalletEvent {
+  const SelectFileSystemRecovery();
+}
+
+class DecryptRecoveryFile extends RecoverWalletEvent {
+  final String backupKey;
+  final String backupFile;
+  const DecryptRecoveryFile({
+    required this.backupKey,
+    required this.backupFile,
+  });
+}
+
+class StartWalletRecovery extends RecoverWalletEvent {
+  const StartWalletRecovery();
+}
