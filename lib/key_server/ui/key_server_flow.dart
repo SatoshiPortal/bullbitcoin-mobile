@@ -88,7 +88,7 @@ class RecoverSuccessScreen extends StatelessWidget {
             );
           }
           return ProgressScreen(
-            title: 'Test completed successfully!',
+            title: 'Wallet recovered successfully!',
             description:
                 'You are able to recover access to a lost Bitcoin wallet',
             isLoading: false,
