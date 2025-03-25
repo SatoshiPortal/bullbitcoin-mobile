@@ -9,8 +9,6 @@ import 'package:bb_mobile/key_server/ui/key_server_flow.dart';
 import 'package:bb_mobile/router.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'
-    show HapticFeedback, SystemSound, SystemSoundType;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -69,6 +67,25 @@ class EnterScreen extends StatelessWidget {
               }
             },
           ),
+          const Gap(2),
+          if (state.isInCommonPasswordList)
+            BBText(
+              'This ${(state.authInputType == AuthInputType.pin) ? 'PIN' : 'Password'} is too common. Please choose a different one.',
+              textAlign: TextAlign.start,
+              style: context.font.labelSmall?.copyWith(
+                color: context.colour.error,
+              ),
+            )
+          else if (!state.hasValidKeyLength)
+            BBText(
+              '${(state.authInputType == AuthInputType.pin) ? 'PIN' : 'Password'} must be at least 6 digits long',
+              textAlign: TextAlign.start,
+              style: context.font.labelSmall?.copyWith(
+                color: context.colour.error,
+              ),
+            )
+          else
+            const SizedBox.shrink(),
           const Gap(50),
           BBButton.small(
             label:
