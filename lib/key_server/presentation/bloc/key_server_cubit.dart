@@ -18,7 +18,7 @@ part 'key_server_cubit.freezed.dart';
 class KeyServerCubit extends Cubit<KeyServerState> {
   static const pinMax = 8;
   static const maxRetries = 2;
-  static const retryDelay = Duration(seconds: 1);
+  static const retryDelay = Duration(seconds: 4);
 
   final StoreBackupKeyIntoServerUsecase storeBackupKeyIntoServerUsecase;
   final TrashBackupKeyFromServerUsecase trashKeyFromServerUsecase;
@@ -372,7 +372,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
           } catch (e) {
             final isLastAttempt = attempt == maxRetries - 1;
             if (isLastAttempt) {
-              throw 'Key service unavailable. Please check your connection.';
+              throw const KeyServerError.failedToConnect();
             }
             await Future.delayed(retryDelay);
           }
@@ -390,7 +390,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
       }
     } catch (e) {
       debugPrint('$operationName failed: ${(e as KeyServerError).message}');
-      throw 'Key service unavailable. Please check your connection.';
+      throw 'Key server unavailable. Please check your connection.';
     }
     throw Exception('Unexpected error in $operationName');
   }
