@@ -4,6 +4,7 @@ enum CurrentKeyServerFlow {
   enter,
   confirm,
   recovery,
+  recoveryWithBackupKey,
   delete;
 
   static CurrentKeyServerFlow fromString(String value) {
@@ -56,8 +57,13 @@ class KeyServerState with _$KeyServerState {
   bool get canProceed => switch (currentFlow) {
         CurrentKeyServerFlow.enter => hasValidKeyLength,
         CurrentKeyServerFlow.confirm => hasValidKeyLength && areKeysMatching,
-        CurrentKeyServerFlow.recovery => backupKey.isNotEmpty,
+        CurrentKeyServerFlow.recovery =>
+          authInputType == AuthInputType.backupKey
+              ? backupKey.isNotEmpty
+              : hasValidKeyLength,
         CurrentKeyServerFlow.delete => hasValidKeyLength,
+        // TODO: Handle this case.
+        CurrentKeyServerFlow.recoveryWithBackupKey => backupKey.isNotEmpty
       };
 
   bool get isInCooldown {
