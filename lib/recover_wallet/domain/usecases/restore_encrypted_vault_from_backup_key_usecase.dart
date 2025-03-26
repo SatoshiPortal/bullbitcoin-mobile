@@ -8,6 +8,7 @@ import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.d
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/key_server/domain/errors/key_server_error.dart';
 import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
+import 'package:bb_mobile/recover_wallet/domain/errors/recover_wallet_error.dart';
 import 'package:flutter/foundation.dart';
 
 /// If the key server is down
@@ -35,7 +36,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
       final availableWallets = await walletMetadataRepository.getAll();
       for (final wallet in availableWallets) {
         if (wallet.isDefault) {
-          throw 'there is already a default recoverbull cannot succeed';
+          throw const DefaultWalletAlreadyExistsError();
         }
       }
       final plaintext =
