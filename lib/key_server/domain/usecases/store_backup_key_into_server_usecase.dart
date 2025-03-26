@@ -3,9 +3,9 @@ import 'package:bb_mobile/key_server/data/services/backup_key_service.dart';
 
 import 'package:bb_mobile/key_server/domain/errors/key_server_error.dart'
     show KeyServerError;
+import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
 
 import 'package:flutter/foundation.dart';
-import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 /// Stores a backup key on the server with password protection
@@ -25,13 +25,13 @@ class StoreBackupKeyIntoServerUsecase {
     required String backupKey,
   }) async {
     try {
-      if (!BullBackup.isValid(backupFile)) {
+      final backupInfo = BackupInfo(backupFile: backupFile);
+      if (backupInfo.isCorrupted) {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final bullBackup = BullBackup.fromJson(backupFile);
       final derivedKey = await _backupKeyService.deriveBackupKeyFromDefaultSeed(
-        path: bullBackup.path,
+        path: backupInfo.path,
       );
 
       if (backupKey != derivedKey) {
@@ -39,9 +39,9 @@ class StoreBackupKeyIntoServerUsecase {
       }
 
       await _recoverBullRepository.storeBackupKey(
-        HEX.encode(bullBackup.id),
+        backupInfo.id,
         password,
-        HEX.encode(bullBackup.salt),
+        backupInfo.salt,
         backupKey,
       );
     } on KeyServerException catch (e) {

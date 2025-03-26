@@ -1,4 +1,6 @@
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/key_server/domain/errors/key_server_error.dart';
+import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart';
@@ -16,16 +18,15 @@ class TrashBackupKeyFromServerUsecase {
     required String backupFile,
   }) async {
     try {
-      if (!BullBackup.isValid(backupFile)) {
-        throw 'Corrupted backup file';
+      final backupInfo = BackupInfo(backupFile: backupFile);
+      if (backupInfo.isCorrupted) {
+        throw const KeyServerError.invalidBackupFile();
       }
 
-      final bullBackup = BullBackup.fromJson(backupFile);
-
       return _recoverBullRepository.trashBackupKey(
-        HEX.encode(bullBackup.id),
+        backupInfo.id,
         password,
-        HEX.encode(bullBackup.salt),
+        backupInfo.salt,
       );
     } catch (e) {
       debugPrint('$TrashBackupKeyFromServerUsecase: $e');
