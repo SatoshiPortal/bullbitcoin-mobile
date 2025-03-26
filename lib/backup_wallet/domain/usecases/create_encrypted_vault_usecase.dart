@@ -26,10 +26,6 @@ class CreateEncryptedVaultUsecase {
       final defaultMetadata = await walletMetadataRepository.getDefault();
 
       final defaultFingerprint = defaultMetadata.masterFingerprint;
-      final defaultSeedExists = await seedRepository.exists(defaultFingerprint);
-      if (!defaultSeedExists) {
-        throw 'CreateEncryptedVaultUsecase: Default seed not found for fingerprint: $defaultFingerprint';
-      }
       final defaultSeed = await seedRepository.get(defaultFingerprint);
       final defaultSeedModel = SeedModel.fromEntity(defaultSeed);
       final (mnemonic, passphrase) = defaultSeedModel.maybeMap(
