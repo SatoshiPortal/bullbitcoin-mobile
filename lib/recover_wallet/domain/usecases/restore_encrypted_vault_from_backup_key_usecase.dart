@@ -46,8 +46,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
           RecoverBullWallet.fromJson(decodedPlaintext);
 
       final seed = Seed.mnemonic(
-        mnemonicWords: decodedRecoverbullWallets.mnemonicPassphrase.$1,
-        passphrase: decodedRecoverbullWallets.mnemonicPassphrase.$2,
+        mnemonicWords: decodedRecoverbullWallets.mnemonic,
       );
       final metadata = decodedRecoverbullWallets.metadata;
       //TODO: check if this function will cover all the cases

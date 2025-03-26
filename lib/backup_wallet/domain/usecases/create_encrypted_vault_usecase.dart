@@ -28,8 +28,8 @@ class CreateEncryptedVaultUsecase {
       final defaultFingerprint = defaultMetadata.masterFingerprint;
       final defaultSeed = await seedRepository.get(defaultFingerprint);
       final defaultSeedModel = SeedModel.fromEntity(defaultSeed);
-      final (mnemonic, passphrase) = defaultSeedModel.maybeMap(
-        mnemonic: (mnemonic) => (mnemonic.mnemonicWords, mnemonic.passphrase),
+      final mnemonic = defaultSeedModel.maybeMap(
+        mnemonic: (mnemonic) => mnemonic.mnemonicWords,
         orElse: () =>
             throw 'CreateEncryptedVaultUsecase: Default seed is not a bytes seed',
       );
@@ -46,7 +46,7 @@ class CreateEncryptedVaultUsecase {
       );
 
       final toBackup = RecoverBullWallet(
-        mnemonicPassphrase: (mnemonic, passphrase),
+        mnemonic: mnemonic,
         metadata: defaultWalletMetaData,
       );
       final plaintext = json.encode(toBackup.toJson());
