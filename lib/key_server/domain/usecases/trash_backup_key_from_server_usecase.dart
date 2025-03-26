@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart';
 
+/// Removes a backup key from the server using the provided password and backup file
 class TrashBackupKeyFromServerUsecase {
   final RecoverBullRepository _recoverBullRepository;
 
@@ -12,13 +13,14 @@ class TrashBackupKeyFromServerUsecase {
 
   Future<void> execute({
     required String password,
-    required String backupFile,
+    required String backupFileAsString,
   }) async {
     try {
-      final isValidBackupFile = BullBackup.isValid(backupFile);
-      if (!isValidBackupFile) throw 'Invalid backup file';
+      if (!BullBackup.isValid(backupFileAsString)) {
+        throw 'Corrupted backup file';
+      }
 
-      final bullBackup = BullBackup.fromJson(backupFile);
+      final bullBackup = BullBackup.fromJson(backupFileAsString);
 
       return _recoverBullRepository.trashBackupKey(
         HEX.encode(bullBackup.id),

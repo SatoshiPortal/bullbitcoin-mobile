@@ -9,6 +9,7 @@ abstract class FileStorageDatasource {
   Future<String> getAppDirectory();
   Future<String> getDownloadDirectory();
   Future<File?> pickFile();
+  Future<String?> getDirectoryPath();
 }
 
 class FileStorageDatasourceImpl implements FileStorageDatasource {
@@ -55,5 +56,12 @@ class FileStorageDatasourceImpl implements FileStorageDatasource {
     final file = File(path);
 
     return file;
+  }
+
+  @override
+  Future<String?> getDirectoryPath() async {
+    final path = await _filePicker.getDirectoryPath();
+    if (path == null) throw 'No directory selected';
+    return path;
   }
 }

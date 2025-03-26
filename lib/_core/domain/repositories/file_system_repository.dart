@@ -6,4 +6,5 @@ abstract class FileSystemRepository {
   Future<void> deleteFile(String path);
   Future<String> getAppDirectory();
   Future<String> getDownloadDirectory();
+  Future<String?> getDirectoryPath();
 }

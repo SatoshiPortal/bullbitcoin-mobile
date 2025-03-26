@@ -5,12 +5,12 @@ import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 
-class RecoverWalletUsecase {
+class RecoverOrCreateWalletUsecase {
   final SettingsRepository _settingsRepository;
   final MnemonicSeedFactory _mnemonicSeedFactory;
   final WalletManagerService _walletManager;
 
-  RecoverWalletUsecase({
+  RecoverOrCreateWalletUsecase({
     required SettingsRepository settingsRepository,
     required MnemonicSeedFactory mnemonicSeedFactory,
     required WalletManagerService walletManager,
@@ -23,11 +23,13 @@ class RecoverWalletUsecase {
     String? passphrase,
     required ScriptType scriptType,
     String label = '',
+    Network? network,
   }) async {
     final environment = await _settingsRepository.getEnvironment();
-    final bitcoinNetwork = environment == Environment.mainnet
-        ? Network.bitcoinMainnet
-        : Network.bitcoinTestnet;
+    final bitcoinNetwork = network ??
+        (environment == Environment.mainnet
+            ? Network.bitcoinMainnet
+            : Network.bitcoinTestnet);
 
     final mnemonicSeed = _mnemonicSeedFactory.fromWords(
       mnemonicWords,

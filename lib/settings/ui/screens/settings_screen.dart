@@ -29,7 +29,7 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 title: Text(context.loc.backupSettingsLabel),
                 onTap: () {
-                  context.pushNamed(SettingsSubroute.backup.name);
+                  context.pushNamed(SettingsSubroute.backupSettings.name);
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),

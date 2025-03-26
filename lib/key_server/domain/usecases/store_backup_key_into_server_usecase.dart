@@ -1,59 +1,56 @@
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
-import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/key_server/domain/usecases/derive_backup_key_from_default_wallet_usecase.dart';
-import 'package:bb_mobile/key_server/domain/validators/password_validator.dart';
+
+import 'package:bb_mobile/key_server/domain/errors/key_server_error.dart'
+    show KeyServerError;
+import 'package:bb_mobile/key_server/domain/services/backup_key_service.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart';
 
+/// Stores a backup key on the server with password protection
 class StoreBackupKeyIntoServerUsecase {
-  final RecoverBullRepository recoverBullRepository;
-  final SeedRepository seedRepository;
-  final WalletMetadataRepository walletMetadataRepository;
+  final RecoverBullRepository _recoverBullRepository;
+  final BackupKeyService _backupKeyService;
 
   StoreBackupKeyIntoServerUsecase({
-    required this.recoverBullRepository,
-    required this.seedRepository,
-    required this.walletMetadataRepository,
-  });
+    required RecoverBullRepository recoverBullRepository,
+    required BackupKeyService backupService,
+  })  : _recoverBullRepository = recoverBullRepository,
+        _backupKeyService = backupService;
 
   Future<void> execute({
     required String password,
-    required String backupFile,
+    required String backupFileAsString,
     required String backupKey,
   }) async {
     try {
-      // Ensure backupFile has a valid format
-      final isValidBackupFile = BullBackup.isValid(backupFile);
-      if (!isValidBackupFile) throw 'Invalid backup file';
-
-      // Ensure password is not too common
-      if (RecoverBullPasswordValidator.isInCommonPasswordList(password)) {
-        throw '$StoreBackupKeyIntoServerUsecase: password is too common';
+      if (!BullBackup.isValid(backupFileAsString)) {
+        throw const KeyServerError.invalidBackupFile();
       }
 
-      final derivedBackupKey = await DeriveBackupKeyFromDefaultWalletUsecase(
-        recoverBullRepository: recoverBullRepository,
-        seedRepository: seedRepository,
-        walletMetadataRepository: walletMetadataRepository,
-      ).execute(backupFile);
+      final bullBackup = BullBackup.fromJson(backupFileAsString);
+      final derivedKey = await _backupKeyService.deriveBackupKeyFromDefaultSeed(
+        path: bullBackup.path,
+      );
 
-      // Ensure the given backup key is derived from the default wallet
-      if (backupKey != derivedBackupKey) {
-        throw '$StoreBackupKeyIntoServerUsecase: the given backup key is not derived from the current default wallet';
+      if (backupKey != derivedKey) {
+        throw const KeyServerError.keyMismatch();
       }
 
-      final bullBackup = BullBackup.fromJson(backupFile);
-
-      await recoverBullRepository.storeBackupKey(
+      await _recoverBullRepository.storeBackupKey(
         HEX.encode(bullBackup.id),
         password,
         HEX.encode(bullBackup.salt),
         backupKey,
       );
-    } catch (e) {
+    } on KeyServerException catch (e) {
       debugPrint('$StoreBackupKeyIntoServerUsecase: $e');
+      throw KeyServerError.fromException(e);
+    } catch (e) {
+      if (e is! KeyServerError) {
+        debugPrint('$StoreBackupKeyIntoServerUsecase: $e');
+      }
       rethrow;
     }
   }

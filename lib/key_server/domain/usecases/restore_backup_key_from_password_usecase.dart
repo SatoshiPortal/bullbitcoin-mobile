@@ -1,6 +1,7 @@
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/key_server/domain/errors/key_server_error.dart';
+import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hex/hex.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 /// If the key server is up
@@ -11,20 +12,25 @@ class RestoreBackupKeyFromPasswordUsecase {
     required this.recoverBullRepository,
   });
 
-  Future<String> execute(String backupFile, String password) async {
+  Future<String> execute({
+    required String backupAsString,
+    required String password,
+  }) async {
     try {
-      final isValidBackupFile = BullBackup.isValid(backupFile);
-      if (!isValidBackupFile) throw 'Invalid backup file';
-
-      final bullBackup = BullBackup.fromJson(backupFile);
+      final backupInfo = BackupInfo(encrypted: backupAsString);
+      if (backupInfo.isCorrupted) {
+        throw const KeyServerError.invalidBackupFile();
+      }
 
       final backupKey = await recoverBullRepository.fetchBackupKey(
-        HEX.encode(bullBackup.id),
+        backupInfo.id,
         password,
-        HEX.encode(bullBackup.salt),
+        backupInfo.salt,
       );
 
       return backupKey;
+    } on KeyServerException catch (e) {
+      throw KeyServerError.fromException(e);
     } catch (e) {
       debugPrint('$RestoreBackupKeyFromPasswordUsecase: $e');
       rethrow;

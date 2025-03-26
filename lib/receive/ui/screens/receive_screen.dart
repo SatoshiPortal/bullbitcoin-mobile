@@ -279,7 +279,9 @@ class ReceiveNumberPad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DialPad();
+    return DialPad(
+      onTap: (e) {},
+    );
   }
 }
 

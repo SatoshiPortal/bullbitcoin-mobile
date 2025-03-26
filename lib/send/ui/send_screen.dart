@@ -133,7 +133,9 @@ class SendAmountScreen extends StatelessWidget {
             const PriceInput(),
             const Gap(82),
             const BalanceRow(),
-            const DialPad(),
+            DialPad(
+              onTap: (e) {},
+            ),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: BBButton.big(

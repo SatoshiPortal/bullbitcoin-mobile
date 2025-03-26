@@ -45,6 +45,8 @@ import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/build_psbt_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_currency_usecase.dart';
@@ -55,13 +57,16 @@ import 'package:bb_mobile/_core/domain/usecases/get_payjoin_updates_usecase.dart
 import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_backup_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/restore_recoverbull_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
+import 'package:bb_mobile/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -89,7 +94,10 @@ class CoreLocator {
       ),
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
     );
-
+    // - Google Drive Datasource
+    locator.registerLazySingleton<GoogleDriveAppDatasource>(
+      () => GoogleDriveAppDatasourceImpl(),
+    );
     // - RecoverBullLocalDatasource
 
     locator.registerLazySingleton<RecoverBullLocalDatasource>(
@@ -289,6 +297,48 @@ class CoreLocator {
     );
 
     // Use cases
+    locator.registerFactory<CreateBackupKeyFromDefaultSeedUsecase>(
+      () => CreateBackupKeyFromDefaultSeedUsecase(
+        seedRepository: locator<SeedRepository>(),
+        walletMetadataRepository: locator<WalletMetadataRepository>(),
+      ),
+    );
+    locator.registerFactory<ConnectToGoogleDriveUsecase>(
+      () => ConnectToGoogleDriveUsecase(
+        locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<FetchLatestGoogleDriveBackupUsecase>(
+      () => FetchLatestGoogleDriveBackupUsecase(
+        locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<DisconnectFromGoogleDriveUsecase>(
+      () => DisconnectFromGoogleDriveUsecase(
+        locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<SelectFileFromPathUsecase>(
+      () => SelectFileFromPathUsecase(
+        locator<FileSystemRepository>(),
+      ),
+    );
+    locator.registerFactory<SelectFolderPathUsecase>(
+      () => SelectFolderPathUsecase(
+        locator<FileSystemRepository>(),
+      ),
+    );
+    locator.registerFactory<FetchBackupFromFileSystemUsecase>(
+      () => FetchBackupFromFileSystemUsecase(),
+    );
+
+    locator.registerFactory<RestoreEncryptedVaultFromBackupKeyUsecase>(
+      () => RestoreEncryptedVaultFromBackupKeyUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+        walletManagerService: locator<WalletManagerService>(),
+        walletMetadataRepository: locator<WalletMetadataRepository>(),
+      ),
+    );
     locator.registerFactory<FindMnemonicWordsUsecase>(
       () => FindMnemonicWordsUsecase(
         wordListRepository: locator<WordListRepository>(),
