@@ -113,33 +113,7 @@ class KeyServerFlow extends StatelessWidget {
                     previous.password != current.password ||
                     previous.secretStatus != current.secretStatus,
                 builder: (context, state) {
-                  // Show loading screen in these cases:
-                  // 1. When any key server operation is in progress
-                  // 2. When we've successfully recovered the secret but wallet recovery is not yet completed
-                  // (either it's still in progress or it failed)
-                  if (state.status ==
-                          const KeyServerOperationStatus.loading() ||
-                      (state.status ==
-                              const KeyServerOperationStatus.success() &&
-                          state.secretStatus == SecretStatus.recovered &&
-                          walletState.recoverWalletStatus !=
-                              const RecoverWalletStatus.success())) {
-                    // Add decrypt event if needed and keep showing loading
-                    if (state.status ==
-                            const KeyServerOperationStatus.success() &&
-                        state.secretStatus == SecretStatus.recovered &&
-                        walletState.recoverWalletStatus ==
-                            const RecoverWalletStatus.initial()) {
-                      context.read<RecoverWalletBloc>().add(
-                            DecryptRecoveryFile(
-                              backupKey: state.backupKey,
-                              backupFile: state.backupFile,
-                            ),
-                          );
-                    }
-                    return const KeyLoadingScreen();
-                  }
-
+                  // Handle key server errors
                   if (state.status.maybeWhen(
                     failure: (_) => true,
                     orElse: () => false,
@@ -157,6 +131,49 @@ class KeyServerFlow extends StatelessWidget {
                             );
                       },
                     );
+                  }
+
+                  // Handle wallet recovery errors
+                  if (walletState.recoverWalletStatus.maybeWhen(
+                    failure: (_) => true,
+                    orElse: () => false,
+                  )) {
+                    return ErrorScreen(
+                      message: walletState.recoverWalletStatus.maybeWhen(
+                        failure: (message) => message,
+                        orElse: () => 'An error occurred',
+                      ),
+                      title: 'Oops! Something went wrong',
+                      onRetry: () {
+                        context.read<KeyServerCubit>().clearError();
+                        context.read<KeyServerCubit>().updateKeyServerState(
+                              flow: CurrentKeyServerFlow.enter,
+                            );
+                      },
+                    );
+                  }
+
+                  // Show loading only for active operations
+                  if (state.status ==
+                          const KeyServerOperationStatus.loading() ||
+                      walletState.recoverWalletStatus ==
+                          const RecoverWalletStatus.loading()) {
+                    return const KeyLoadingScreen();
+                  }
+
+                  // Trigger wallet recovery when key server succeeds
+                  if (state.status ==
+                          const KeyServerOperationStatus.success() &&
+                      state.secretStatus == SecretStatus.recovered &&
+                      walletState.recoverWalletStatus ==
+                          const RecoverWalletStatus.initial()) {
+                    context.read<RecoverWalletBloc>().add(
+                          DecryptRecoveryFile(
+                            backupKey: state.backupKey,
+                            backupFile: state.backupFile,
+                          ),
+                        );
+                    return const KeyLoadingScreen();
                   }
 
                   if (state.status ==
