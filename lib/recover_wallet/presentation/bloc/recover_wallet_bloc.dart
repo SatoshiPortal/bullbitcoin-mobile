@@ -329,10 +329,13 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
       );
       return;
     } catch (e) {
+      debugPrint(
+        'Failed to decrypt backup: $e',
+      );
       emit(
         state.copyWith(
           recoverWalletStatus:
-              RecoverWalletStatus.failure('Failed to decrypt backup: $e'),
+              const RecoverWalletStatus.failure('Failed to recover backup'),
         ),
       );
       return;
