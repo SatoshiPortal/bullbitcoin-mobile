@@ -6,8 +6,9 @@ import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/key_server/domain/errors/key_server_error.dart';
+import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
 import 'package:flutter/foundation.dart';
-import 'package:recoverbull/recoverbull.dart';
 
 /// If the key server is down
 class RestoreEncryptedVaultFromBackupKeyUsecase {
@@ -26,18 +27,17 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
     required String backupKey,
   }) async {
     try {
-      // Ensure backupFile has a valid format
-      final isValidBackupFile = BullBackup.isValid(backupFile);
-      if (!isValidBackupFile) throw 'Invalid backup file';
-
-      try {
-        await walletMetadataRepository.getDefault();
-        throw '$RestoreEncryptedVaultFromBackupKeyUsecase: there is already a default recoverbull cannot succeed';
-      } catch (_) {
-        // If there is no default wallet `walletMetadataRepository.getDefault()`
-        // the function should throw, we do nothing and we continue
+      final backupInfo = BackupInfo(backupFile: backupFile);
+      if (backupInfo.isCorrupted) {
+        throw const KeyServerError.invalidBackupFile();
       }
 
+      final availableWallets = await walletMetadataRepository.getAll();
+      for (final wallet in availableWallets) {
+        if (wallet.isDefault) {
+          throw 'there is already a default recoverbull cannot succeed';
+        }
+      }
       final plaintext =
           recoverBullRepository.restoreBackupFile(backupFile, backupKey);
 
