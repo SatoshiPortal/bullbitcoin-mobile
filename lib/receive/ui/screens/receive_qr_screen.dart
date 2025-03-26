@@ -1,49 +1,18 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/components/inputs/copy_input.dart';
-import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/components/toggle/switch.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/receive/ui/receive_router.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_network_selection.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class ReceiveQrScreen extends StatelessWidget {
-  const ReceiveQrScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Receive',
-          onBack: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(AppRoute.home.name);
-            }
-          },
-        ),
-      ),
-      body: const SingleChildScrollView(
-        child: QrPage(),
-        // child: AmountPage(),
-      ),
-    );
-  }
-}
-
-class QrPage extends StatelessWidget {
-  const QrPage({super.key});
+class ReceiveQrPage extends StatelessWidget {
+  const ReceiveQrPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,28 +23,30 @@ class QrPage extends StatelessWidget {
       (ReceiveBloc bloc) => bloc.state is LightningReceiveState,
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Gap(10),
-        const ReceiveNetworkSelection(),
-        const Gap(16),
-        const ReceiveQRDetails(),
-        const Gap(10),
-        const ReceiveInfoDetails(),
-        const Gap(16),
-        if (isBitcoin)
-          // The switch to only copy/scan the address is only for Bitcoin since
-          // the other networks don't have payjoin bip21 uri's
-          const Column(
-            children: [
-              ReceiveCopyAddress(),
-              Gap(10),
-            ],
-          ),
-        if (!isLightning) const ReceiveNewAddressButton(),
-        const Gap(40),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // const Gap(10),
+          // const ReceiveNetworkSelection(),
+          const Gap(16),
+          const ReceiveQRDetails(),
+          const Gap(10),
+          const ReceiveInfoDetails(),
+          const Gap(16),
+          if (isBitcoin)
+            // The switch to only copy/scan the address is only for Bitcoin since
+            // the other networks don't have payjoin bip21 uri's
+            const Column(
+              children: [
+                ReceiveCopyAddress(),
+                Gap(10),
+              ],
+            ),
+          if (!isLightning) const ReceiveNewAddressButton(),
+          const Gap(40),
+        ],
+      ),
     );
   }
 }
