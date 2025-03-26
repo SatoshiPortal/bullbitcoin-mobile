@@ -38,16 +38,9 @@ class CreateEncryptedVaultUsecase {
         defaultMetadata.network,
       );
 
-      final defaultWalletMetaData =
-          (await walletMetadataRepository.getAll()).firstWhere(
-        (metadata) => metadata.masterFingerprint == defaultFingerprint,
-        orElse: () =>
-            throw 'Default wallet metadata not found for fingerprint: $defaultFingerprint',
-      );
-
       final toBackup = RecoverBullWallet(
         mnemonic: mnemonic,
-        metadata: defaultWalletMetaData,
+        metadata: defaultMetadata,
       );
       final plaintext = json.encode(toBackup.toJson());
       // Derive the backup key using BIP85
