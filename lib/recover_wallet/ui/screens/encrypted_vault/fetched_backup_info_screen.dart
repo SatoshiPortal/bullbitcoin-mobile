@@ -2,9 +2,7 @@ import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
-import 'package:bb_mobile/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/key_server/presentation/bloc/key_server_cubit.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
@@ -14,11 +12,11 @@ import 'package:intl/intl.dart';
 
 class FetchedBackupInfoScreen extends StatelessWidget {
   final BackupInfo encryptedInfo;
-  final bool isRecovering;
+  final bool fromOnboarding;
   const FetchedBackupInfoScreen({
     super.key,
     required this.encryptedInfo,
-    this.isRecovering = false,
+    this.fromOnboarding = false,
   });
 
   @override
@@ -28,8 +26,12 @@ class FetchedBackupInfoScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          onBack: () => context.go(AppRoute.home.path),
-          title: isRecovering ? 'Recover Wallet' : 'Test Backup',
+          onBack: () => fromOnboarding
+              ? context.pop()
+              : context.pushNamed(
+                  AppRoute.home.name,
+                ),
+          title: fromOnboarding ? 'Recover Wallet' : 'Test Backup',
         ),
       ),
       body: Padding(
@@ -73,7 +75,8 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                   AppRoute.keyServerFlow.name,
                   extra: (
                     encryptedInfo.encrypted,
-                    CurrentKeyServerFlow.recoveryWithBackupKey.name
+                    CurrentKeyServerFlow.recoveryWithBackupKey.name,
+                    fromOnboarding
                   ),
                 ),
                 bgColor: Colors.transparent,
@@ -88,7 +91,8 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                 AppRoute.keyServerFlow.name,
                 extra: (
                   encryptedInfo.encrypted,
-                  CurrentKeyServerFlow.recovery.name
+                  CurrentKeyServerFlow.recovery.name,
+                  fromOnboarding
                 ),
               ),
               bgColor: context.colour.secondary,
