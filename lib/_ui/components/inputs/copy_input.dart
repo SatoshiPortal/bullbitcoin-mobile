@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_ui/components/loading/loading_line_content.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -26,11 +27,13 @@ class CopyInput extends StatelessWidget {
         children: [
           const Gap(15),
           Expanded(
-            child: BBText(
-              text,
-              style: context.font.bodyLarge,
-              color: context.colour.secondary,
-            ),
+            child: text.isEmpty
+                ? const LoadingLineContent(width: double.infinity)
+                : BBText(
+                    text,
+                    style: context.font.bodyLarge,
+                    color: context.colour.secondary,
+                  ),
           ),
           IconButton(
             visualDensity: VisualDensity.compact,
