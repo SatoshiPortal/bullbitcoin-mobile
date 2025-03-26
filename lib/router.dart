@@ -10,6 +10,7 @@ import 'package:bb_mobile/sell/ui/sell_screen.dart';
 import 'package:bb_mobile/send/ui/send_screen.dart';
 import 'package:bb_mobile/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/settings/ui/settings_router.dart';
+import 'package:bb_mobile/transactions/ui/screens/transactions_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -30,6 +31,7 @@ enum AppRoute {
   send('/send'),
   sell('/sell'),
   buy('/buy'),
+  txs('/txs'),
 
   devStart('/dev-start'),
   devReceive('/dev-receive'),
@@ -130,6 +132,11 @@ class AppRouter {
         name: AppRoute.buy.name,
         path: AppRoute.buy.path,
         builder: (context, state) => const BuyScreen(),
+      ),
+      GoRoute(
+        name: AppRoute.txs.name,
+        path: AppRoute.txs.path,
+        builder: (context, state) => const TransactionsScreen(),
       ),
       ReceiveRouter.route,
       DevPages.devStart,
