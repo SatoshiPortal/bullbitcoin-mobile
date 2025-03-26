@@ -130,11 +130,26 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
   }) async {
     try {
       final payjoinDirectory = await Url.fromStr(_payjoinDirectoryUrl);
-      final ohttpRelay = await Url.fromStr(PayjoinConstants.ohttpRelayUrl);
-      final ohttpKeys = await fetchOhttpKeys(
-        ohttpRelay: ohttpRelay,
-        payjoinDirectory: payjoinDirectory,
-      );
+
+      Url? ohttpRelay;
+      OhttpKeys? ohttpKeys;
+      for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
+        try {
+          final relay = await Url.fromStr(ohttpRelayUrl);
+          ohttpKeys = await fetchOhttpKeys(
+            ohttpRelay: relay,
+            payjoinDirectory: payjoinDirectory,
+          );
+          ohttpRelay = relay;
+          break;
+        } catch (e) {
+          continue;
+        }
+      }
+
+      if (ohttpRelay == null || ohttpKeys == null) {
+        throw Exception('All OHTTP relays failed');
+      }
 
       final receiver = await Receiver.create(
         address: address,
@@ -645,9 +660,25 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
     required Sender sender,
     required Dio dio,
   }) async {
-    final (req, context) = await sender.extractV2(
-      ohttpProxyUrl: await Url.fromStr(PayjoinConstants.ohttpRelayUrl),
-    );
+    (Request, V2PostContext)? result;
+
+    for (final ohttpProxyUrl in PayjoinConstants.ohttpRelayUrls) {
+      try {
+        result = await sender.extractV2(
+          ohttpProxyUrl: await Url.fromStr(ohttpProxyUrl),
+        );
+        break;
+      } catch (e) {
+        log('request exception: $e');
+        continue;
+      }
+    }
+
+    if (result == null) {
+      throw Exception('All OHTTP relays failed');
+    }
+
+    final (req, context) = result;
 
     final res = await dio.post(
       req.url.asString(),
@@ -672,9 +703,25 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
     required Dio dio,
   }) async {
     try {
-      final (req, reqCtx) = await context.extractReq(
-        ohttpRelay: await Url.fromStr(PayjoinConstants.ohttpRelayUrl),
-      );
+      (Request, ClientResponse)? result;
+
+      for (final ohttpRelay in PayjoinConstants.ohttpRelayUrls) {
+        try {
+          result = await context.extractReq(
+            ohttpRelay: await Url.fromStr(ohttpRelay),
+          );
+          break;
+        } catch (e) {
+          log('extract request exception: $e');
+          continue;
+        }
+      }
+
+      if (result == null) {
+        throw Exception('All OHTTP relays failed');
+      }
+
+      final (req, reqCtx) = result;
 
       final res = await dio.post(
         req.url.asString(),

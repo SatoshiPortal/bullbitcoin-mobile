@@ -8,6 +8,10 @@ class SettingsConstants {
   static const defaultCurrencyCode = 'CAD';
 }
 
+class ConversionConstants {
+  static final satsAmountOfOneBitcoin = BigInt.from(100000000);
+}
+
 class SecureStorageKeyPrefixConstants {
   static const seed = 'seed_';
   static const swap = 'swap_';
@@ -22,7 +26,10 @@ class HiveBoxNameConstants {
 }
 
 class PayjoinConstants {
-  static const String ohttpRelayUrl = 'https://pj.bobspacebkk.com';
+  static const List<String> ohttpRelayUrls = [
+    'https://ohttp.achow101.com',
+    'https://pj.bobspacebkk.com',
+  ];
   static const String directoryUrl = 'https://payjo.in';
   static const directoryPollingInterval = 5;
 }
@@ -60,8 +67,6 @@ class ApiServiceConstants {
 
 class LocatorInstanceNameConstants {
   static const secureStorageDatasource = 'secureStorageDatasource';
-  static const bullBitcoinExchangeDatasourceInstanceName =
-      'bullBitcoinExchangeDatasource';
   static const boltzSwapsHiveStorageDatasourceInstanceName =
       'boltzSwapsHiveStorageDatasource';
   static const boltzSwapRepositoryInstanceName = 'boltzSwapRepository';

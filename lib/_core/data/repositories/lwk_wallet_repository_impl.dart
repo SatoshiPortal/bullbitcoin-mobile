@@ -171,6 +171,10 @@ class LwkWalletRepositoryImpl
     final txOutputLists = txs.map((tx) => tx.outputs).toList();
 
     final outputs = txOutputLists.expand((list) => list).toList();
+    if (outputs.isEmpty) {
+      return false;
+    }
+
     final isUsed = await Future.any(
       outputs.map((output) async {
         final outputAddress = await lwk.Address.addressFromScript(
@@ -181,7 +185,7 @@ class LwkWalletRepositoryImpl
         return outputAddress.confidential == address ||
             outputAddress.standard == address;
       }),
-    ).catchError((_) => false); // To handle empty lists
+    ); // To handle empty lists
 
     return isUsed;
   }

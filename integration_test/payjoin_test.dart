@@ -139,7 +139,6 @@ void main() {
         final payjoin = await receiveWithPayjoinUsecase.execute(
           walletId: receiverWallet.id,
           address: address.address,
-          isTestnet: true,
         );
         debugPrint('Payjoin receiver created: ${payjoin.id}');
 
@@ -296,7 +295,6 @@ void main() {
               final payjoin = await receiveWithPayjoinUsecase.execute(
                 walletId: receiverWallet.id,
                 address: address.address,
-                isTestnet: true,
               );
               debugPrint('Payjoin receiver created: ${payjoin.id}');
 

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:bb_mobile/receive/ui/receive_router.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -19,7 +20,8 @@ class HomeBottomButtons extends StatelessWidget {
             label: 'Receive',
             iconFirst: true,
             onPressed: () {
-              context.pushNamed(AppRoute.receiveBitcoin.name);
+              // Lightning is the default receive method
+              context.pushNamed(ReceiveRoute.receiveLightning.name);
             },
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,

@@ -120,7 +120,7 @@ class $AssetsImages2Gen {
         cubesLoading,
         dropdownUpdown,
         successTick,
-        whitebullwithtext,
+        whitebullwithtext
       ];
 }
 

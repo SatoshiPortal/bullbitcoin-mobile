@@ -1,20 +1,21 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
-import 'package:bb_mobile/_ui/components/dialpad/dailpad.dart';
 import 'package:bb_mobile/_ui/components/inputs/copy_input.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/_ui/components/price_input/balance_row.dart';
-import 'package:bb_mobile/_ui/components/price_input/price_input.dart';
-import 'package:bb_mobile/_ui/components/segment/segmented_full.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/components/toggle/switch.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/receive/ui/receive_router.dart';
+import 'package:bb_mobile/receive/ui/widgets/receive_network_selection.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class ReceiveScreen extends StatelessWidget {
-  const ReceiveScreen({super.key});
+class ReceiveQrScreen extends StatelessWidget {
+  const ReceiveQrScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,11 @@ class ReceiveScreen extends StatelessWidget {
         flexibleSpace: TopBar(
           title: 'Receive',
           onBack: () {
-            context.pop();
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.goNamed(AppRoute.home.name);
+            }
           },
         ),
       ),
@@ -42,64 +47,32 @@ class QrPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final isBitcoin = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state is BitcoinReceiveState,
+    );
+
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Gap(10),
-        ReceiveNetworkSelection(),
-        Gap(16),
-        ReceiveQRDetails(),
-        Gap(10),
-        ReceiveInfoDetails(),
-        Gap(16),
-        ReceiveCopyAddress(),
-        Gap(10),
-        ReceiveNewAddressButton(),
-        Gap(40),
+        const Gap(10),
+        const ReceiveNetworkSelection(),
+        const Gap(16),
+        const ReceiveQRDetails(),
+        const Gap(10),
+        const ReceiveInfoDetails(),
+        const Gap(16),
+        if (isBitcoin)
+          // The switch to only copy/scan the address is only for Bitcoin since
+          // the other networks don't have payjoin bip21 uri's
+          const Column(
+            children: [
+              ReceiveCopyAddress(),
+              Gap(10),
+            ],
+          ),
+        const ReceiveNewAddressButton(),
+        const Gap(40),
       ],
-    );
-  }
-}
-
-class AmountPage extends StatelessWidget {
-  const AmountPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Gap(10),
-        ReceiveNetworkSelection(),
-        Gap(82),
-        ReceiveAmountEntry(),
-        Gap(82),
-        ReceiveBalanceRow(),
-        ReceiveNumberPad(),
-        Gap(40),
-        ReceiveContinueButton(),
-        Gap(40),
-      ],
-    );
-  }
-}
-
-class ReceiveNetworkSelection extends StatelessWidget {
-  const ReceiveNetworkSelection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: BBSegmentFull<String>(
-        items: const {
-          'Bitcoin',
-          'Lightning',
-          'Liquid',
-        },
-        onSelected: (c) {},
-        selected: 'Bitcoin',
-      ),
     );
   }
 }
@@ -109,6 +82,16 @@ class ReceiveQRDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLightning = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state is LightningReceiveState,
+    );
+    final qrData = context.select<ReceiveBloc, String>(
+      (bloc) => bloc.state.qrData,
+    );
+    final addressOrInvoiceOnly = context.select<ReceiveBloc, String>(
+      (bloc) => bloc.state.addressOrInvoiceOnly,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -120,7 +103,7 @@ class ReceiveQRDetails extends StatelessWidget {
               color: context.colour.onPrimary,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: QrImageView(data: 'BC1QYL7J673.6Y6ALV70ASDASDM0'),
+            child: QrImageView(data: qrData),
           ),
         ),
         const Gap(14),
@@ -130,11 +113,14 @@ class ReceiveQRDetails extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               BBText(
-                'Address',
+                isLightning ? 'Lightning invoice' : 'Address',
                 style: context.font.bodyMedium,
               ),
               const Gap(6),
-              const CopyInput(text: 'BC1QYL7J673.6Y6ALV70ASDASDM0'),
+              CopyInput(
+                text: addressOrInvoiceOnly,
+                clipboardText: qrData,
+              ),
             ],
           ),
         ),
@@ -148,6 +134,16 @@ class ReceiveInfoDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bitcoinAmount = context.select<ReceiveBloc, String>(
+      (bloc) => bloc.state.formattedConfirmedAmountBitcoin,
+    );
+    final amountEquivalent = context.select<ReceiveBloc, String>(
+      (bloc) => bloc.state.formattedConfirmedAmountFiat,
+    );
+    final note = context.select<ReceiveBloc, String>(
+      (bloc) => bloc.state.note,
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -179,12 +175,12 @@ class ReceiveInfoDetails extends StatelessWidget {
                       Row(
                         children: [
                           BBText(
-                            '0 sats',
+                            bitcoinAmount,
                             style: context.font.bodyMedium,
                           ),
                           const Gap(12),
                           BBText(
-                            '~0.00 CAD',
+                            '~$amountEquivalent',
                             style: context.font.bodyLarge,
                             color: context.colour.outline,
                           ),
@@ -194,7 +190,23 @@ class ReceiveInfoDetails extends StatelessWidget {
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      final state = context.read<ReceiveBloc>().state;
+                      switch (state) {
+                        case LightningReceiveState _:
+                          context.push(
+                            '${ReceiveRoute.receiveLightning.path}/${ReceiveRoute.amount.path}',
+                          );
+                        case LiquidReceiveState _:
+                          context.push(
+                            '${ReceiveRoute.receiveLiquid.path}/${ReceiveRoute.amount.path}',
+                          );
+                        case BitcoinReceiveState _:
+                          context.push(
+                            '${ReceiveRoute.receiveBitcoin.path}/${ReceiveRoute.amount.path}',
+                          );
+                      }
+                    },
                     visualDensity: VisualDensity.compact,
                     iconSize: 20,
                     icon: const Icon(Icons.edit),
@@ -222,7 +234,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                       ),
                       const Gap(4),
                       BBText(
-                        'Enter here...',
+                        note.isNotEmpty ? note : 'Enter here...',
                         style: context.font.bodyMedium,
                       ),
                     ],
@@ -258,37 +270,19 @@ class ReceiveCopyAddress extends StatelessWidget {
             style: context.font.headlineSmall,
           ),
           const Spacer(),
-          const BBSwitch(),
+          BBSwitch(
+            value: context.select<ReceiveBloc, bool>(
+              (bloc) =>
+                  bloc.state is BitcoinReceiveState &&
+                  (bloc.state as BitcoinReceiveState).isAddressOnly,
+            ),
+            onChanged: (addressOnly) => context
+                .read<ReceiveBloc>()
+                .add(ReceiveEvent.receiveAddressOnlyToggled(addressOnly)),
+          ),
         ],
       ),
     );
-  }
-}
-
-class ReceiveAmountEntry extends StatelessWidget {
-  const ReceiveAmountEntry({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const PriceInput();
-  }
-}
-
-class ReceiveNumberPad extends StatelessWidget {
-  const ReceiveNumberPad({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const DialPad();
-  }
-}
-
-class ReceiveBalanceRow extends StatelessWidget {
-  const ReceiveBalanceRow({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const BalanceRow();
   }
 }
 
@@ -301,25 +295,11 @@ class ReceiveNewAddressButton extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: BBButton.big(
         label: 'New address',
-        onPressed: () {},
-        bgColor: context.colour.secondary,
-        textColor: context.colour.onSecondary,
-      ),
-    );
-  }
-}
-
-class ReceiveContinueButton extends StatelessWidget {
-  const ReceiveContinueButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: BBButton.big(
-        label: 'Continue',
-        onPressed: () {},
-        disabled: true,
+        onPressed: () {
+          context.read<ReceiveBloc>().add(
+                const ReceiveEvent.receiveNewAddressGenerated(),
+              );
+        },
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
       ),

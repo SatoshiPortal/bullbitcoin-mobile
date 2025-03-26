@@ -17,12 +17,14 @@ enum Environment {
 }
 
 enum BitcoinUnit {
-  btc(decimals: 8),
-  sats(decimals: 0);
+  btc(code: 'BTC', decimals: 8),
+  sats(code: 'sats', decimals: 0);
 
+  final String code;
   final int decimals;
 
   const BitcoinUnit({
+    required this.code,
     required this.decimals,
   });
 

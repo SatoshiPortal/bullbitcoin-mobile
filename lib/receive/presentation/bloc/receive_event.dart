@@ -1,24 +1,21 @@
 part of 'receive_bloc.dart';
 
-sealed class ReceiveEvent {
-  const ReceiveEvent();
-}
-
-class ReceiveBitcoinStarted extends ReceiveEvent {
-  const ReceiveBitcoinStarted();
-}
-
-class ReceiveLightningStarted extends ReceiveEvent {
-  const ReceiveLightningStarted();
-}
-
-class ReceiveLiquidStarted extends ReceiveEvent {
-  const ReceiveLiquidStarted();
-}
-
-// Todo: add event to receive to a specific wallet only (so disable the other wallets)
-class ReceiveEventWalletPreselected extends ReceiveEvent {
-  final String walletId;
-
-  ReceiveEventWalletPreselected({required this.walletId});
+@freezed
+class ReceiveEvent with _$ReceiveEvent {
+  const factory ReceiveEvent.receiveBitcoinStarted() = ReceiveBitcoinStarted;
+  const factory ReceiveEvent.receiveLightningStarted() =
+      ReceiveLightningStarted;
+  const factory ReceiveEvent.receiveLiquidStarted() = ReceiveLiquidStarted;
+  const factory ReceiveEvent.receiveAmountCurrencyChanged(String currencyCode) =
+      ReceiveAmountCurrencyChanged;
+  const factory ReceiveEvent.receiveAmountInputChanged(String amount) =
+      ReceiveAmountInputChanged;
+  const factory ReceiveEvent.receiveAmountConfirmed() = ReceiveAmountConfirmed;
+  const factory ReceiveEvent.receiveNoteChanged(String note) =
+      ReceiveNoteChanged;
+  const factory ReceiveEvent.receiveAddressOnlyToggled(bool isAddressOnly) =
+      ReceiveAddressOnlyToggled;
+  const factory ReceiveEvent.receiveNewAddressGenerated() =
+      ReceiveNewAddressGenerated;
+  const factory ReceiveEvent.receivePaymentReceived() = ReceivePaymentReceived;
 }

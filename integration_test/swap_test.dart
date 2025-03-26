@@ -80,7 +80,7 @@ void main() {
     await locator<CreateDefaultWalletsUsecase>().execute(
       mnemonicWords: baseMnemonic.split(' '),
     );
-    final wallets = await walletManagerService.getAllWallets();
+    final wallets = await walletManagerService.getWallets();
     instantWallet = wallets.firstWhere(
       (wallet) => wallet.network == Network.liquidMainnet,
     );

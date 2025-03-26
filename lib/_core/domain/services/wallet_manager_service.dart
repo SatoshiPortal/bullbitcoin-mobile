@@ -26,7 +26,12 @@ abstract class WalletManagerService {
     required String label,
   });
   Future<Wallet?> getWallet(String id);
-  Future<List<Wallet>> getAllWallets({Environment? environment});
+  Future<List<Wallet>> getWallets({
+    Environment? environment,
+    bool? onlyDefaults,
+    bool? onlyBitcoin,
+    bool? onlyLiquid,
+  });
   Future<Wallet> sync({required String walletId});
   Future<List<Wallet>> syncAll({Environment? environment});
   Future<Balance> getBalance({required String walletId});
