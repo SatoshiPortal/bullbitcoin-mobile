@@ -3,6 +3,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/receive/ui/screens/receive_amount_screen.dart';
 import 'package:bb_mobile/receive/ui/screens/receive_qr_screen.dart';
+import 'package:bb_mobile/receive/ui/screens/receive_scaffold.dart';
 import 'package:bb_mobile/receive/ui/zwidgets/receive_success_body.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
@@ -26,11 +27,17 @@ class ReceiveRouter {
   static final GlobalKey<NavigatorState> shellNavigatorKey =
       GlobalKey<NavigatorState>();
 
+  static String getName(String route) {
+    final s = route.split('-')[1];
+    return s[0].toUpperCase() + s.substring(1);
+  }
+
   static final route = ShellRoute(
     navigatorKey: shellNavigatorKey,
     builder: (context, state, child) {
       // Pass a preselected wallet to the receive bloc if available
       final wallet = state.extra as Wallet?;
+
       return BlocProvider<ReceiveBloc>(
         create: (_) => locator<ReceiveBloc>(param1: wallet),
         child: BlocListener<ReceiveBloc, ReceiveState>(
@@ -41,7 +48,10 @@ class ReceiveRouter {
             // Show the success screen when the user has received funds
             context.go('${state.matchedLocation}/${ReceiveRoute.success}');
           },
-          child: child,
+          child: ReceiveScaffold(
+            route: getName(state.matchedLocation),
+            child: child,
+          ),
         ),
       );
     },
@@ -55,7 +65,7 @@ class ReceiveRouter {
           if (bloc.state is! BitcoinReceiveState) {
             bloc.add(const ReceiveBitcoinStarted());
           }
-          return const NoTransitionPage(child: ReceiveQrScreen());
+          return const NoTransitionPage(child: ReceiveQRDetails());
         },
         routes: [
           GoRoute(
@@ -91,7 +101,7 @@ class ReceiveRouter {
           GoRoute(
             path: ReceiveRoute.qr.path,
             pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ReceiveQrScreen()),
+                const NoTransitionPage(child: ReceiveQRDetails()),
           ),
           GoRoute(
             path: ReceiveRoute.amount.path,
@@ -114,7 +124,7 @@ class ReceiveRouter {
           if (bloc.state is! LiquidReceiveState) {
             bloc.add(const ReceiveLiquidStarted());
           }
-          return const NoTransitionPage(child: ReceiveQrScreen());
+          return const NoTransitionPage(child: ReceiveQRDetails());
         },
         routes: [
           GoRoute(

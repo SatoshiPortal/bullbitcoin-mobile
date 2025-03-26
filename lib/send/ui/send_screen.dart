@@ -118,7 +118,7 @@ class SendAmountScreen extends StatelessWidget {
             const Gap(10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: BBSegmentFull<String>(
+              child: BBSegmentFull(
                 items: const {
                   'Bitcoin',
                   'Lightning',
