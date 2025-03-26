@@ -10,12 +10,7 @@ class GetDefaultWalletMetadataUsecase {
 
   Future<WalletMetadata> execute() async {
     try {
-      final defaultMetadata = await walletMetadataRepository.getDefault();
-      if (defaultMetadata == null) {
-        throw Exception('No default wallet metadata found');
-      }
-
-      return defaultMetadata;
+      return await walletMetadataRepository.getDefault();
     } catch (e) {
       throw Exception('Failed to get default wallet metadata: $e');
     }

@@ -9,7 +9,6 @@ import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
 import 'package:bb_mobile/recover_wallet/domain/errors/recover_wallet_error.dart';
-import 'package:bb_mobile/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +22,6 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
   RecoverWalletBloc({
     required SelectFileFromPathUsecase selectFilePathUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
-    required RecoverOrCreateWalletUsecase recoverOrCreateWalletUsecase,
     required FindMnemonicWordsUsecase findMnemonicWordsUsecase,
     required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
     required RestoreEncryptedVaultFromBackupKeyUsecase
@@ -32,8 +30,7 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
         fetchLatestGoogleDriveBackupUsecase,
     required FetchBackupFromFileSystemUsecase fetchBackupFromFileSystemUsecase,
     bool useTestWallet = false,
-  })  : _recoverOrCreateWalletUsecase = recoverOrCreateWalletUsecase,
-        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
+  })  : _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
         _selectFileFromPathUsecase = selectFilePathUsecase,
         _findMnemonicWordsUsecase = findMnemonicWordsUsecase,
         _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
@@ -64,7 +61,6 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
   final CreateDefaultWalletsUsecase _createDefaultWalletsUsecase;
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
-  final RecoverOrCreateWalletUsecase _recoverOrCreateWalletUsecase;
   final RestoreEncryptedVaultFromBackupKeyUsecase
       _restoreEncryptedVaultFromBackupKeyUsecase;
   final FetchLatestGoogleDriveBackupUsecase

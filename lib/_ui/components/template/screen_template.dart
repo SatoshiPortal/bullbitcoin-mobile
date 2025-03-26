@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:extra_alignments/extra_alignments.dart';
 import 'package:flutter/widgets.dart';
 

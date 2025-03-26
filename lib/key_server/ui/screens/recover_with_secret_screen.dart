@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
-import 'package:bb_mobile/_ui/components/dialpad/dailpad.dart';
+import 'package:bb_mobile/_ui/components/dialpad/dial_pad.dart';
 import 'package:bb_mobile/_ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
@@ -84,8 +84,10 @@ class RecoverWithSecretScreen extends StatelessWidget {
           ),
           if (state.authInputType == AuthInputType.pin)
             DialPad(
-              onTap: (e) => context.read<KeyServerCubit>().enterKey(e),
-              onDelete: () => context.read<KeyServerCubit>().backspaceKey(),
+              onNumberPressed: (e) =>
+                  context.read<KeyServerCubit>().enterKey(e),
+              onBackspacePressed: () =>
+                  context.read<KeyServerCubit>().backspaceKey(),
             )
           else
             const SizedBox.shrink(),

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
-import 'package:bb_mobile/_ui/components/dialpad/dailpad.dart';
+import 'package:bb_mobile/_ui/components/dialpad/dial_pad.dart';
 import 'package:bb_mobile/_ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
@@ -9,7 +9,6 @@ import 'package:bb_mobile/key_server/ui/key_server_flow.dart';
 import 'package:bb_mobile/router.dart' show AppRoute;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -84,8 +83,10 @@ class ConfirmScreen extends StatelessWidget {
           ),
           if (state.authInputType == AuthInputType.pin)
             DialPad(
-              onTap: (e) => context.read<KeyServerCubit>().enterKey(e),
-              onDelete: () => context.read<KeyServerCubit>().backspaceKey(),
+              onNumberPressed: (e) =>
+                  context.read<KeyServerCubit>().enterKey(e),
+              onBackspacePressed: () =>
+                  context.read<KeyServerCubit>().backspaceKey(),
             )
           else
             const SizedBox.shrink(),

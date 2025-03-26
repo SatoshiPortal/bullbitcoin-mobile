@@ -3,6 +3,8 @@ import 'package:bb_mobile/_core/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/file_storage_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/google_drive_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -15,6 +17,8 @@ import 'package:bb_mobile/_core/data/datasources/wallet_metadata_datasource.dart
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/exchange_rate_repository_impl.dart';
+import 'package:bb_mobile/_core/data/repositories/file_system_repository_impl.dart';
+import 'package:bb_mobile/_core/data/repositories/google_drive_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/payjoin_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/data/repositories/seed_repository_impl.dart';
@@ -44,6 +48,8 @@ import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/build_transaction_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
@@ -57,7 +63,6 @@ import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_driv
 import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/restore_recoverbull_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_usecase.dart';
@@ -66,7 +71,6 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:dio/dio.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 
@@ -129,9 +133,7 @@ class CoreLocator {
       dependsOn: [TorRepository],
     );
     locator.registerLazySingleton<GoogleDriveRepository>(
-      () => GoogleDriveRepositoryImpl(
-        locator<GoogleDriveAppDatasource>(),
-      ),
+      () => GoogleDriveRepositoryImpl(locator<GoogleDriveAppDatasource>()),
     );
     final walletMetadataBox =
         await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
@@ -154,9 +156,7 @@ class CoreLocator {
       ),
     );
     locator.registerLazySingleton<FileSystemRepository>(
-      () => FileSystemRepositoryImpl(
-        locator<FileStorageDatasource>(),
-      ),
+      () => FileSystemRepositoryImpl(locator<FileStorageDatasource>()),
     );
     locator.registerLazySingleton<SeedRepository>(
       () => SeedRepositoryImpl(

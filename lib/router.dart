@@ -7,7 +7,6 @@ import 'package:bb_mobile/key_server/ui/key_server_flow.dart'
     show KeyServerFlow;
 import 'package:bb_mobile/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/receive/ui/receive_router.dart';
-import 'package:bb_mobile/recover_wallet/ui/recover_wallet_flow.dart';
 import 'package:bb_mobile/sell/ui/sell_screen.dart';
 import 'package:bb_mobile/send/ui/send_screen.dart';
 import 'package:bb_mobile/settings/ui/screens/settings_screen.dart';

@@ -5,10 +5,10 @@ class ConvertCurrencyToSatsAmountUsecase {
   final ExchangeRateRepository _exchangeRate;
   final SettingsRepository _settingsRepository;
 
-  ConvertCurrencyToSatsAmountUsecase(
-      {required ExchangeRateRepository exchangeRateRepository,
-      required SettingsRepository settingsRepository})
-      : _exchangeRate = exchangeRateRepository,
+  ConvertCurrencyToSatsAmountUsecase({
+    required ExchangeRateRepository exchangeRateRepository,
+    required SettingsRepository settingsRepository,
+  })  : _exchangeRate = exchangeRateRepository,
         _settingsRepository = settingsRepository;
 
   Future<BigInt> execute({

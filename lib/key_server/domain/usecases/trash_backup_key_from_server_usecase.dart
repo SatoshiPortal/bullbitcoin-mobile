@@ -2,8 +2,6 @@ import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart'
 import 'package:bb_mobile/key_server/domain/errors/key_server_error.dart';
 import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hex/hex.dart';
-import 'package:recoverbull/recoverbull.dart';
 
 /// Removes a backup key from the server using the provided password and backup file
 class TrashBackupKeyFromServerUsecase {

@@ -14,7 +14,11 @@ class GetDefaultWalletUsecase {
 
   Future<Wallet> execute() async {
     final environment = await _settingsRepository.getEnvironment();
-    final wallets = await _manager.getAllWallets(environment: environment);
-    return wallets.firstWhere((e) => e.isDefault);
+    final wallets = await _manager.getWallets(
+      environment: environment,
+      onlyDefaults: true,
+      onlyBitcoin: true,
+    );
+    return wallets.first;
   }
 }

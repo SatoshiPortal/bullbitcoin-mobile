@@ -44,7 +44,7 @@ class _RecoverWithBackupKeyScreenState
   Widget build(BuildContext context) {
     return BlocListener<KeyServerCubit, KeyServerState>(
       listener: (context, state) {
-        print('KeyServerState backupKey: ${state.backupKey}');
+        debugPrint('KeyServerState backupKey: ${state.backupKey}');
         if (state.status == const KeyServerOperationStatus.success() &&
             state.backupKey.isNotEmpty) {
           _controller.text = state.backupKey;

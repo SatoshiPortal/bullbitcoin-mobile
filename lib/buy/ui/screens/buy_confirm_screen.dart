@@ -9,13 +9,6 @@ import 'package:gap/gap.dart';
 class BuyConfirmScreen extends StatelessWidget {
   const BuyConfirmScreen({super.key});
 
-  Widget _divider(BuildContext context) {
-    return Container(
-      height: 1,
-      color: context.colour.secondaryFixedDim,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

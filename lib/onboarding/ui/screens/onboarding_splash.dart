@@ -4,7 +4,6 @@ import 'package:bb_mobile/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/gen/assets.gen.dart';
 import 'package:bb_mobile/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/onboarding/ui/widgets/create_wallet_button.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';

@@ -30,7 +30,6 @@ class RecoverWalletLocator {
         createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
         selectFilePathUsecase: locator<SelectFileFromPathUsecase>(),
         connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
-        recoverOrCreateWalletUsecase: locator<RecoverOrCreateWalletUsecase>(),
         fetchLatestGoogleDriveBackupUsecase:
             locator<FetchLatestGoogleDriveBackupUsecase>(),
         fetchBackupFromFileSystemUsecase:
