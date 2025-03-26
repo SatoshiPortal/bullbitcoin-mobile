@@ -9,12 +9,12 @@ class DeriveBackupKeyFromDefaultWalletUsecase {
     required BackupKeyService backupKeyService,
   }) : _backupKeyService = backupKeyService;
 
-  Future<String> execute({required String backupFileAsString}) async {
+  Future<String> execute({required String backupFile}) async {
     try {
-      if (!BullBackup.isValid(backupFileAsString)) {
+      if (!BullBackup.isValid(backupFile)) {
         throw 'Corrupted backup file';
       }
-      final bullBackup = BullBackup.fromJson(backupFileAsString);
+      final bullBackup = BullBackup.fromJson(backupFile);
 
       return await _backupKeyService.deriveBackupKeyFromDefaultSeed(
         path: bullBackup.path,
