@@ -4,18 +4,17 @@ import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.d
     show WalletMetadataRepository;
 import 'package:bb_mobile/_utils/bip32_derivation.dart';
 import 'package:bb_mobile/_utils/bip85_derivation.dart';
-import 'package:bb_mobile/key_server/domain/services/backup_key_service.dart';
 
-class BackupKeyServiceImpl implements BackupKeyService {
+class BackupKeyService {
   final SeedRepository _seedRepository;
   final WalletMetadataRepository _walletMetadataRepository;
 
-  BackupKeyServiceImpl({
+  BackupKeyService({
     required SeedRepository seedRepository,
     required WalletMetadataRepository walletMetadataRepository,
   })  : _seedRepository = seedRepository,
         _walletMetadataRepository = walletMetadataRepository;
-  @override
+
   Future<String> deriveBackupKeyFromDefaultSeed({
     required String? path,
   }) async {

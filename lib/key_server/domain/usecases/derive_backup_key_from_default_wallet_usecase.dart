@@ -1,4 +1,4 @@
-import 'package:bb_mobile/key_server/domain/services/backup_key_service.dart';
+import 'package:bb_mobile/key_server/data/services/backup_key_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:recoverbull/recoverbull.dart';
 
