@@ -97,11 +97,11 @@ class _Screen extends StatelessWidget {
             }
           },
           success: () {
-            if (state.encrypted.isNotEmpty) {
+            if (state.backupFile.isNotEmpty) {
               context.pushNamed(
                 AppRoute.keyServerFlow.name,
                 extra: (
-                  state.encrypted,
+                  state.backupFile,
                   CurrentKeyServerFlow.enter.toString(),
                   false
                 ),

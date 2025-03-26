@@ -121,7 +121,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
 
       final encryptedBackup = await createEncryptedBackupUsecase.execute();
 
-      emit(state.copyWith(encrypted: encryptedBackup));
+      emit(state.copyWith(backupFile: encryptedBackup));
 
       await state.backupProvider.when(
         fileSystem: (filePath) async {

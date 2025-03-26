@@ -24,7 +24,7 @@ sealed class BackupProvider with _$BackupProvider {
 sealed class BackupWalletState with _$BackupWalletState {
   const factory BackupWalletState({
     @Default(BackupProvider.googleDrive()) BackupProvider backupProvider,
-    @Default('') String encrypted,
+    @Default('') String backupFile,
     @Default(BackupWalletStatus.initial()) BackupWalletStatus status,
   }) = _BackupWalletState;
   const BackupWalletState._();
