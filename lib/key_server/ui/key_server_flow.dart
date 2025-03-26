@@ -11,11 +11,10 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
 import 'package:bb_mobile/recover_wallet/ui/recover_wallet_router.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:bb_mobile/settings/ui/settings_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
-    show BlocBuilder, BlocConsumer, BlocProvider, ReadContext;
+    show BlocBuilder, BlocProvider, MultiBlocProvider, ReadContext;
 import 'package:go_router/go_router.dart';
 
 class KeyLoadingScreen extends StatelessWidget {
@@ -60,7 +59,6 @@ class RecoverSuccessScreen extends StatelessWidget {
   });
 
   @override
-  @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: locator<RecoverWalletBloc>()
@@ -70,58 +68,19 @@ class RecoverSuccessScreen extends StatelessWidget {
             backupFile: backupFile,
           ),
         ),
-      child: BlocConsumer<RecoverWalletBloc, RecoverWalletState>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          if (state.recoverWalletStatus ==
-              const RecoverWalletStatus.loading()) {
-            return const KeyLoadingScreen();
-          }
-          if (state.recoverWalletStatus.maybeWhen(
-            failure: (_) => true,
-            orElse: () => false,
-          )) {
-            return ErrorScreen(
-              message: state.recoverWalletStatus.maybeWhen(
-                failure: (message) => message,
-                orElse: () => 'An error occurred',
-              ),
-              title: 'Oops! Something went wrong',
-            );
-          }
-          return ProgressScreen(
-            title: fromOnboarding
-                ? 'Wallet recovered successfully!'
-                : 'Test completed successfully!',
-            description: fromOnboarding
-                ? ''
-                : 'You are able to recover access to a lost Bitcoin wallet',
-            isLoading: false,
-            buttonText: 'Done',
-            onTap: () => context.goNamed(
-              AppRoute.home.name,
-              extra: false,
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class RecoverTestSuccessScreen extends StatelessWidget {
-  const RecoverTestSuccessScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ProgressScreen(
-      title: 'Test completed successfully!',
-      description: 'You are able to recover access to a lost Bitcoin wallet',
-      isLoading: false,
-      buttonText: 'Done',
-      onTap: () => context.go(
-        SettingsSubroute.backupSettings.path,
-        extra: false,
+      child: ProgressScreen(
+        title: fromOnboarding
+            ? 'Wallet recovered successfully!'
+            : 'Test completed successfully!',
+        description: fromOnboarding
+            ? ''
+            : 'You are able to recover access to a lost Bitcoin wallet',
+        isLoading: false,
+        buttonText: 'Done',
+        onTap: () => context.goNamed(
+          AppRoute.home.name,
+          extra: false,
+        ),
       ),
     );
   }
@@ -140,68 +99,88 @@ class KeyServerFlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: locator<KeyServerCubit>()
-        ..updateKeyServerState(
-          encrypted: encrypted,
-          flow: CurrentKeyServerFlow.fromString(currentFlow ?? ''),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(
+          value: locator<KeyServerCubit>()
+            ..updateKeyServerState(
+              encrypted: encrypted,
+              flow: CurrentKeyServerFlow.fromString(currentFlow ?? ''),
+            ),
         ),
-      child: BlocBuilder<KeyServerCubit, KeyServerState>(
-        buildWhen: (previous, current) =>
-            previous.currentFlow != current.currentFlow ||
-            previous.status != current.status ||
-            previous.secret != current.secret ||
-            previous.secretStatus != current.secretStatus,
-        builder: (context, state) {
-          if (state.status == const KeyServerOperationStatus.loading()) {
-            return const KeyLoadingScreen();
-          }
+        BlocProvider.value(value: locator<RecoverWalletBloc>()),
+      ],
+      child: Builder(
+        builder: (context) {
+          return BlocBuilder<RecoverWalletBloc, RecoverWalletState>(
+            builder: (context, walletState) {
+              return BlocBuilder<KeyServerCubit, KeyServerState>(
+                buildWhen: (previous, current) =>
+                    previous.currentFlow != current.currentFlow ||
+                    previous.status != current.status ||
+                    previous.secret != current.secret ||
+                    previous.secretStatus != current.secretStatus,
+                builder: (context, state) {
+                  final bool isLoading = state.status ==
+                          const KeyServerOperationStatus.loading() ||
+                      walletState.recoverWalletStatus ==
+                          const RecoverWalletStatus.loading();
 
-          if (state.status.maybeWhen(
-            failure: (_) => true,
-            orElse: () => false,
-          )) {
-            return ErrorScreen(
-              message: state.status.maybeWhen(
-                failure: (message) => message,
-                orElse: () => 'An error occurred',
-              ),
-              title: 'Oops! Something went wrong',
-              onRetry: () {
-                context.read<KeyServerCubit>().clearError();
-                context.read<KeyServerCubit>().updateKeyServerState(
-                      flow: CurrentKeyServerFlow.enter,
+                  if (isLoading) {
+                    return const KeyLoadingScreen();
+                  }
+
+                  if (state.status.maybeWhen(
+                    failure: (_) => true,
+                    orElse: () => false,
+                  )) {
+                    return ErrorScreen(
+                      message: state.status.maybeWhen(
+                        failure: (message) => message,
+                        orElse: () => 'An error occurred',
+                      ),
+                      title: 'Oops! Something went wrong',
+                      onRetry: () {
+                        context.read<KeyServerCubit>().clearError();
+                        context.read<KeyServerCubit>().updateKeyServerState(
+                              flow: CurrentKeyServerFlow.enter,
+                            );
+                      },
                     );
-              },
-            );
-          }
+                  }
 
-          if (state.status == const KeyServerOperationStatus.success() &&
-              state.secretStatus == SecretStatus.stored) {
-            return const BackupSuccessScreen();
-          }
-          if (state.status == const KeyServerOperationStatus.success() &&
-              state.secretStatus == SecretStatus.recovered) {
-            return RecoverSuccessScreen(
-              backupKey: state.backupKey,
-              fromOnboarding: fromOnboarding,
-              backupFile: state.encrypted,
-            );
-          }
+                  if (state.status ==
+                          const KeyServerOperationStatus.success() &&
+                      state.secretStatus == SecretStatus.stored) {
+                    return const BackupSuccessScreen();
+                  }
 
-          return switch (state.currentFlow) {
-            CurrentKeyServerFlow.enter => const EnterScreen(),
-            CurrentKeyServerFlow.confirm => const ConfirmScreen(),
-            CurrentKeyServerFlow.recovery => RecoverWithSecretScreen(
-                fromOnboarding: fromOnboarding,
-              ),
-            //todo: add delete flow
-            CurrentKeyServerFlow.delete => const EnterScreen(),
-            CurrentKeyServerFlow.recoveryWithBackupKey =>
-              RecoverWithBackupKeyScreen(
-                fromOnboarding: fromOnboarding,
-              ),
-          };
+                  if (state.status ==
+                          const KeyServerOperationStatus.success() &&
+                      state.secretStatus == SecretStatus.recovered) {
+                    return RecoverSuccessScreen(
+                      backupKey: state.backupKey,
+                      fromOnboarding: fromOnboarding,
+                      backupFile: state.encrypted,
+                    );
+                  }
+
+                  return switch (state.currentFlow) {
+                    CurrentKeyServerFlow.enter => const EnterScreen(),
+                    CurrentKeyServerFlow.confirm => const ConfirmScreen(),
+                    CurrentKeyServerFlow.recovery => RecoverWithSecretScreen(
+                        fromOnboarding: fromOnboarding,
+                      ),
+                    CurrentKeyServerFlow.delete => const EnterScreen(),
+                    CurrentKeyServerFlow.recoveryWithBackupKey =>
+                      RecoverWithBackupKeyScreen(
+                        fromOnboarding: fromOnboarding,
+                      ),
+                  };
+                },
+              );
+            },
+          );
         },
       ),
     );
