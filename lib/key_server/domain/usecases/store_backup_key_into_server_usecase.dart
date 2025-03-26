@@ -1,8 +1,8 @@
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/key_server/data/services/backup_key_service.dart';
 
 import 'package:bb_mobile/key_server/domain/errors/key_server_error.dart'
     show KeyServerError;
-import 'package:bb_mobile/key_server/domain/services/backup_key_service.dart';
 
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
