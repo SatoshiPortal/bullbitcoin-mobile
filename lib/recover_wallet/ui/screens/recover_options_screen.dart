@@ -3,17 +3,17 @@ import 'dart:ui';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
-import 'package:bb_mobile/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/backup_wallet/ui/widgets/how_to_decide.dart'
     show HowToDecideSheetBackupOption;
 import 'package:bb_mobile/backup_wallet/ui/widgets/option_tag.dart';
+import 'package:bb_mobile/recover_wallet/ui/recover_wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class RecoverOptionsScreen extends StatefulWidget {
-  final bool isRecovering;
-  const RecoverOptionsScreen({super.key, required this.isRecovering});
+  final bool fromOnboarding;
+  const RecoverOptionsScreen({super.key, required this.fromOnboarding});
 
   @override
   State<RecoverOptionsScreen> createState() => _RecoverOptionsScreenState();
@@ -62,8 +62,9 @@ class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
                     'Anonymous backup with strong encryption using your cloud.',
                 tag: 'Easy and simple (1 minute)',
                 onTap: () => context.pushNamed(
-                  BackupSettingsSubroute.encryptedVaultRecoverFlow.name,
-                  extra: true,
+                  RecoverWalletSubroute
+                      .chooseRecoverProvider.name, // ChooseVaultProviderScreen
+                  extra: widget.fromOnboarding,
                 ),
               ),
               const Gap(16),
@@ -78,10 +79,8 @@ class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
                 description:
                     'Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.',
                 tag: 'Trustless (take your time)',
-                onTap: () => context.pushNamed(
-                  BackupSettingsSubroute.backupSecurityInfo.name,
-                  extra: 'physical-backup',
-                ),
+                onTap: () =>
+                    context.pushNamed(RecoverWalletSubroute.physical.name),
               ),
               const Gap(16),
               GestureDetector(

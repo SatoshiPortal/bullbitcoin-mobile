@@ -1,13 +1,13 @@
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
-import 'package:bb_mobile/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/backup_wallet/data/constants/backup_providers.dart'
     show backupProviders;
 import 'package:bb_mobile/backup_wallet/domain/entities/backup_provider_entity.dart';
 import 'package:bb_mobile/backup_wallet/ui/widgets/option_tag.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
+import 'package:bb_mobile/recover_wallet/ui/recover_wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
@@ -15,32 +15,31 @@ import 'package:flutter_bloc/flutter_bloc.dart'
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ChooserRecoverVaultLocationScreen extends StatefulWidget {
-  final bool isRecovering;
-  const ChooserRecoverVaultLocationScreen({
+class ChooseVaultProviderScreen extends StatefulWidget {
+  final bool fromOnboarding;
+  const ChooseVaultProviderScreen({
     super.key,
-    this.isRecovering = false,
+    this.fromOnboarding = false,
   });
 
   @override
-  State<ChooserRecoverVaultLocationScreen> createState() =>
-      _ChooserRecoverVaultLocationScreenState();
+  State<ChooseVaultProviderScreen> createState() =>
+      _ChooseVaultProviderScreenState();
 }
 
-class _ChooserRecoverVaultLocationScreenState
-    extends State<ChooserRecoverVaultLocationScreen> {
+class _ChooseVaultProviderScreenState extends State<ChooseVaultProviderScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => locator<RecoverWalletBloc>(),
-      child: _Screen(widget.isRecovering),
+      child: _Screen(widget.fromOnboarding),
     );
   }
 }
 
 class _Screen extends StatelessWidget {
-  final bool isRecovering;
-  const _Screen(this.isRecovering);
+  final bool fromOnboarding;
+  const _Screen(this.fromOnboarding);
 
   @override
   Widget build(BuildContext context) {
@@ -54,12 +53,13 @@ class _Screen extends StatelessWidget {
           success: () {
             if (!state.encryptedInfo.isCorrupted) {
               context.pushNamed(
-                BackupSettingsSubroute.fetchedBackupInfo.name,
-                extra: (state.encryptedInfo, isRecovering),
+                RecoverWalletSubroute.backupInfo.name,
+                extra: (state.encryptedInfo, fromOnboarding),
               );
             }
           },
           failure: (message) {
+            //TODO; create a proper error screen or widget
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(message)),
             );
@@ -73,7 +73,7 @@ class _Screen extends StatelessWidget {
             automaticallyImplyLeading: false,
             flexibleSpace: TopBar(
               onBack: () => context.pop(),
-              title: isRecovering ? "Choose vault location" : "Test backup",
+              title: fromOnboarding ? "Choose vault location" : "Test backup",
             ),
           ),
           body: Padding(
@@ -81,7 +81,7 @@ class _Screen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (!isRecovering) ...[
+                if (!fromOnboarding) ...[
                   BBText(
                     'Test to make sure you can retrieve your encrypted vault.',
                     style: context.font.bodySmall?.copyWith(
