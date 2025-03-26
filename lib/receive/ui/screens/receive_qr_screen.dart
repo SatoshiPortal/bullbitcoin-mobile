@@ -47,8 +47,11 @@ class QrPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isBitcoin = context.select<ReceiveBloc, bool>(
-      (bloc) => bloc.state is BitcoinReceiveState,
+    final isBitcoin = context.select(
+      (ReceiveBloc bloc) => bloc.state is BitcoinReceiveState,
+    );
+    final isLightning = context.select(
+      (ReceiveBloc bloc) => bloc.state is LightningReceiveState,
     );
 
     return Column(
@@ -70,7 +73,7 @@ class QrPage extends StatelessWidget {
               Gap(10),
             ],
           ),
-        const ReceiveNewAddressButton(),
+        if (!isLightning) const ReceiveNewAddressButton(),
         const Gap(40),
       ],
     );
