@@ -20,11 +20,6 @@ class BackupOptionsScreen extends StatefulWidget {
 
 class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
