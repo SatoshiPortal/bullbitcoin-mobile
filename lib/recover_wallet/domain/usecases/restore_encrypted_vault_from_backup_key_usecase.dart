@@ -26,7 +26,6 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
     required String backupKey,
   }) async {
     try {
-      print('RestoreEncryptedVaultFromBackupKeyUsecase: with key: $backupKey');
       // Ensure backupFile has a valid format
       final isValidBackupFile = BullBackup.isValid(backupFile);
       if (!isValidBackupFile) throw 'Invalid backup file';
