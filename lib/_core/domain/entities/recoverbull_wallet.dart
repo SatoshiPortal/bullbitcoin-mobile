@@ -7,10 +7,7 @@ part 'recoverbull_wallet.g.dart';
 @freezed
 class RecoverBullWallet with _$RecoverBullWallet {
   const factory RecoverBullWallet({
-    @Default(
-      <String>[],
-    )
-    List<String> mnemonic,
+    @Default([]) List<String> mnemonic,
     required WalletMetadata metadata,
   }) = _RecoverBullWallet;
 
