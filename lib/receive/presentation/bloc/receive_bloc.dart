@@ -80,6 +80,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         wallet = wallets.first;
       }
 
+      // Emit the bitcoin state with the wallet already so the UI can already
+      // update before the async operations are done
+      emit(ReceiveState.bitcoin(wallet: wallet));
+
       final address =
           await _getReceiveAddressUsecase.execute(walletId: wallet.id);
 
@@ -108,8 +112,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       final fiatCurrencies = currencyValues[3] as List<String>;
 
       emit(
-        ReceiveState.bitcoin(
-          wallet: wallet,
+        (state as BitcoinReceiveState).copyWith(
           fiatCurrencyCodes: fiatCurrencies,
           fiatCurrencyCode: fiatCurrency,
           exchangeRate: exchangeRate,
@@ -145,6 +148,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         wallet = wallets.first;
       }
 
+      // Emit the lightning state with the wallet already so the UI can already
+      // update before the async operations are done
+      emit(ReceiveState.lightning(wallet: wallet));
+
       final currencyValues = await Future.wait([
         _getBitcoinUnitUseCase.execute(),
         _getCurrencyUsecase.execute(),
@@ -158,8 +165,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       final fiatCurrencies = currencyValues[3] as List<String>;
 
       emit(
-        ReceiveState.lightning(
-          wallet: wallet,
+        state.copyWith(
           fiatCurrencyCodes: fiatCurrencies,
           fiatCurrencyCode: fiatCurrency,
           exchangeRate: exchangeRate,
@@ -191,6 +197,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         wallet = wallets.first;
       }
 
+      // Emit the liquid state with the wallet already so the UI can already
+      // update before the async operations are done
+      emit(ReceiveState.liquid(wallet: wallet));
+
       final address =
           await _getReceiveAddressUsecase.execute(walletId: wallet.id);
 
@@ -207,8 +217,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       final fiatCurrencies = currencyValues[3] as List<String>;
 
       emit(
-        ReceiveState.liquid(
-          wallet: wallet,
+        (state as LiquidReceiveState).copyWith(
           fiatCurrencyCodes: fiatCurrencies,
           fiatCurrencyCode: fiatCurrency,
           exchangeRate: exchangeRate,
