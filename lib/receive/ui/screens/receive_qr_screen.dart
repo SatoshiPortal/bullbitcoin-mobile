@@ -11,8 +11,8 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-class QrPage extends StatelessWidget {
-  const QrPage({super.key});
+class ReceiveQrPage extends StatelessWidget {
+  const ReceiveQrPage({super.key});
 
   @override
   Widget build(BuildContext context) {

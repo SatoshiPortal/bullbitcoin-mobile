@@ -65,7 +65,7 @@ class ReceiveRouter {
           if (bloc.state is! BitcoinReceiveState) {
             bloc.add(const ReceiveBitcoinStarted());
           }
-          return const NoTransitionPage(child: ReceiveQRDetails());
+          return const NoTransitionPage(child: ReceiveQrPage());
         },
         routes: [
           GoRoute(
@@ -101,7 +101,7 @@ class ReceiveRouter {
           GoRoute(
             path: ReceiveRoute.qr.path,
             pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ReceiveQRDetails()),
+                const NoTransitionPage(child: ReceiveQrPage()),
           ),
           GoRoute(
             path: ReceiveRoute.amount.path,
@@ -124,7 +124,7 @@ class ReceiveRouter {
           if (bloc.state is! LiquidReceiveState) {
             bloc.add(const ReceiveLiquidStarted());
           }
-          return const NoTransitionPage(child: ReceiveQRDetails());
+          return const NoTransitionPage(child: ReceiveQrPage());
         },
         routes: [
           GoRoute(
