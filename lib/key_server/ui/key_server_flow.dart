@@ -51,6 +51,7 @@ class RecoverSuccessScreen extends StatelessWidget {
   final String backupKey;
   final String backupFile;
   final bool fromOnboarding;
+
   const RecoverSuccessScreen({
     super.key,
     required this.backupKey,
@@ -60,27 +61,18 @@ class RecoverSuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: locator<RecoverWalletBloc>()
-        ..add(
-          DecryptRecoveryFile(
-            backupKey: backupKey,
-            backupFile: backupFile,
-          ),
-        ),
-      child: ProgressScreen(
-        title: fromOnboarding
-            ? 'Wallet recovered successfully!'
-            : 'Test completed successfully!',
-        description: fromOnboarding
-            ? ''
-            : 'You are able to recover access to a lost Bitcoin wallet',
-        isLoading: false,
-        buttonText: 'Done',
-        onTap: () => context.goNamed(
-          AppRoute.home.name,
-          extra: false,
-        ),
+    return ProgressScreen(
+      title: fromOnboarding
+          ? 'Wallet recovered successfully!'
+          : 'Test completed successfully!',
+      description: fromOnboarding
+          ? ''
+          : 'You are able to recover access to a lost Bitcoin wallet',
+      isLoading: false,
+      buttonText: 'Done',
+      onTap: () => context.goNamed(
+        AppRoute.home.name,
+        extra: false,
       ),
     );
   }
@@ -121,12 +113,30 @@ class KeyServerFlow extends StatelessWidget {
                     previous.password != current.password ||
                     previous.secretStatus != current.secretStatus,
                 builder: (context, state) {
-                  final bool isLoading = state.status ==
+                  // Show loading screen in these cases:
+                  // 1. When any key server operation is in progress
+                  // 2. When we've successfully recovered the secret but wallet recovery is not yet completed
+                  // (either it's still in progress or it failed)
+                  if (state.status ==
                           const KeyServerOperationStatus.loading() ||
-                      walletState.recoverWalletStatus ==
-                          const RecoverWalletStatus.loading();
-
-                  if (isLoading) {
+                      (state.status ==
+                              const KeyServerOperationStatus.success() &&
+                          state.secretStatus == SecretStatus.recovered &&
+                          walletState.recoverWalletStatus !=
+                              const RecoverWalletStatus.success())) {
+                    // Add decrypt event if needed and keep showing loading
+                    if (state.status ==
+                            const KeyServerOperationStatus.success() &&
+                        state.secretStatus == SecretStatus.recovered &&
+                        walletState.recoverWalletStatus ==
+                            const RecoverWalletStatus.initial()) {
+                      context.read<RecoverWalletBloc>().add(
+                            DecryptRecoveryFile(
+                              backupKey: state.backupKey,
+                              backupFile: state.backupFile,
+                            ),
+                          );
+                    }
                     return const KeyLoadingScreen();
                   }
 
@@ -157,7 +167,9 @@ class KeyServerFlow extends StatelessWidget {
 
                   if (state.status ==
                           const KeyServerOperationStatus.success() &&
-                      state.secretStatus == SecretStatus.recovered) {
+                      state.secretStatus == SecretStatus.recovered &&
+                      walletState.recoverWalletStatus ==
+                          const RecoverWalletStatus.success()) {
                     return RecoverSuccessScreen(
                       backupKey: state.backupKey,
                       fromOnboarding: fromOnboarding,
