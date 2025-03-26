@@ -125,7 +125,7 @@ class SendAmountScreen extends StatelessWidget {
                   'Liquid',
                 },
                 onSelected: (c) {},
-                selected: 'Bitcoin',
+                initialValue: 'Bitcoin',
               ),
             ),
             const Gap(16),

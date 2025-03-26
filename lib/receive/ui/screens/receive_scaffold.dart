@@ -9,11 +9,9 @@ class ReceiveScaffold extends StatelessWidget {
   const ReceiveScaffold({
     super.key,
     required this.child,
-    required this.route,
   });
 
   final Widget child;
-  final String route;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +34,7 @@ class ReceiveScaffold extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Gap(10),
-          ReceiveNetworkSelection(selected: route),
+          const ReceiveNetworkSelection(),
           Expanded(child: child),
         ],
       ),

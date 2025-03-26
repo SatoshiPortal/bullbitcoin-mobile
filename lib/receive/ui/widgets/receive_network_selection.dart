@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceiveNetworkSelection extends StatelessWidget {
-  const ReceiveNetworkSelection({super.key, required this.selected});
-
-  final String selected;
+  const ReceiveNetworkSelection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +25,7 @@ class ReceiveNetworkSelection extends StatelessWidget {
             context.goNamed(ReceiveRoute.receiveLiquid.name);
           }
         },
-        selected: selected,
+        initialValue: 'Lightning',
       ),
     );
   }

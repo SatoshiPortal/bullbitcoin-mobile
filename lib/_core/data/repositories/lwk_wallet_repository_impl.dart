@@ -145,6 +145,8 @@ class LwkWalletRepositoryImpl
 
     BigInt balance = BigInt.zero;
 
+    return balance;
+    // TODO: Check why addressFromScript throws a "Public key malformed" error
     for (final utxo in utxos) {
       if (utxo.unblinded.asset != _lBtcAssetId) {
         continue;
@@ -175,17 +177,21 @@ class LwkWalletRepositoryImpl
       return false;
     }
 
+    return false;
+
+    // TODO: Check why addressFromScript throws a "Public key malformed" error
+    final blindingKey = await _wallet.blindingKey();
     final isUsed = await Future.any(
       outputs.map((output) async {
         final outputAddress = await lwk.Address.addressFromScript(
           script: output.scriptPubkey,
           network: _network,
-          blindingKey: await _wallet.blindingKey(),
+          blindingKey: blindingKey,
         );
         return outputAddress.confidential == address ||
             outputAddress.standard == address;
       }),
-    ); // To handle empty lists
+    );
 
     return isUsed;
   }

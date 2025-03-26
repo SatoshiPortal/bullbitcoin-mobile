@@ -17,5 +17,6 @@ class ReceiveEvent with _$ReceiveEvent {
       ReceiveAddressOnlyToggled;
   const factory ReceiveEvent.receiveNewAddressGenerated() =
       ReceiveNewAddressGenerated;
-  const factory ReceiveEvent.receivePaymentReceived() = ReceivePaymentReceived;
+  const factory ReceiveEvent.receiveLightningSwapUpdated(LnReceiveSwap swap) =
+      ReceiveLightningSwapUpdated;
 }

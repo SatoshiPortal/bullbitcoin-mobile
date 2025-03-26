@@ -2,9 +2,9 @@ import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/receive/ui/screens/receive_amount_screen.dart';
+import 'package:bb_mobile/receive/ui/screens/receive_payment_received_screen.dart';
 import 'package:bb_mobile/receive/ui/screens/receive_qr_screen.dart';
 import 'package:bb_mobile/receive/ui/screens/receive_scaffold.dart';
-import 'package:bb_mobile/receive/ui/zwidgets/receive_success_body.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +16,7 @@ enum ReceiveRoute {
   receiveLiquid('/receive-liquid'),
   amount('amount'),
   qr('qr'),
-  success('success');
+  paymentReceived('payment-received');
 
   final String path;
 
@@ -26,11 +26,6 @@ enum ReceiveRoute {
 class ReceiveRouter {
   static final GlobalKey<NavigatorState> shellNavigatorKey =
       GlobalKey<NavigatorState>();
-
-  static String getName(String route) {
-    final s = route.split('-')[1];
-    return s[0].toUpperCase() + s.substring(1);
-  }
 
   static final route = ShellRoute(
     navigatorKey: shellNavigatorKey,
@@ -42,14 +37,15 @@ class ReceiveRouter {
         create: (_) => locator<ReceiveBloc>(param1: wallet),
         child: BlocListener<ReceiveBloc, ReceiveState>(
           listenWhen: (previous, current) =>
-              previous.hasReceivedFunds != true &&
-              current.hasReceivedFunds == true,
+              previous.isPaymentReceived != true &&
+              current.isPaymentReceived == true,
           listener: (context, blocState) {
-            // Show the success screen when the user has received funds
-            context.go('${state.matchedLocation}/${ReceiveRoute.success}');
+            // Show the payment received screen when the payment was send/received
+            context.go(
+              '${state.matchedLocation}/${ReceiveRoute.paymentReceived.path}',
+            );
           },
           child: ReceiveScaffold(
-            route: getName(state.matchedLocation),
             child: child,
           ),
         ),
@@ -74,9 +70,9 @@ class ReceiveRouter {
                 const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
-            path: ReceiveRoute.success.path,
+            path: ReceiveRoute.paymentReceived.path,
             parentNavigatorKey: AppRouter.rootNavigatorKey,
-            builder: (context, state) => const ReceiveSuccessBody(),
+            builder: (context, state) => const ReceivePaymentReceivedScreen(),
           ),
         ],
       ),
@@ -109,9 +105,9 @@ class ReceiveRouter {
                 const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
-            path: ReceiveRoute.success.path,
+            path: ReceiveRoute.paymentReceived.path,
             parentNavigatorKey: AppRouter.rootNavigatorKey,
-            builder: (context, state) => const ReceiveSuccessBody(),
+            builder: (context, state) => const ReceivePaymentReceivedScreen(),
           ),
         ],
       ),
@@ -133,9 +129,9 @@ class ReceiveRouter {
                 const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
-            path: ReceiveRoute.success.path,
+            path: ReceiveRoute.paymentReceived.path,
             parentNavigatorKey: AppRouter.rootNavigatorKey,
-            builder: (context, state) => const ReceiveSuccessBody(),
+            builder: (context, state) => const ReceivePaymentReceivedScreen(),
           ),
         ],
       ),

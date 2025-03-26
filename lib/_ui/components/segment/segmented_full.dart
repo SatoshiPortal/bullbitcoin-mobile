@@ -7,12 +7,12 @@ class BBSegmentFull extends StatefulWidget {
   const BBSegmentFull({
     super.key,
     required this.items,
-    required this.selected,
+    this.initialValue,
     required this.onSelected,
   });
 
   final Set<String> items;
-  final String selected;
+  final String? initialValue;
   final Function(String) onSelected;
 
   @override
@@ -20,28 +20,28 @@ class BBSegmentFull extends StatefulWidget {
 }
 
 class _BBSegmentFullState extends State<BBSegmentFull> {
-  late final CustomSegmentedController<String> controller;
+  late String selectedSegment;
 
   @override
   void initState() {
-    controller = CustomSegmentedController<String>();
+    selectedSegment = widget.initialValue ?? widget.items.first;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (controller.value != widget.selected) {
-      if (mounted) controller.value = widget.selected;
-    }
-
     return Center(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(2),
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: CustomSlidingSegmentedControl<String>(
-          controller: controller,
-          initialValue: widget.selected,
-          onValueChanged: (v) => widget.onSelected(v),
+          initialValue: widget.initialValue ?? widget.items.first,
+          onValueChanged: (v) {
+            setState(() {
+              selectedSegment = v;
+            });
+            widget.onSelected(v);
+          },
           innerPadding: const EdgeInsets.all(4),
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInToLinear,
@@ -56,15 +56,14 @@ class _BBSegmentFullState extends State<BBSegmentFull> {
             color: context.colour.onPrimary,
             borderRadius: BorderRadius.circular(2),
           ),
-
           children: {
             for (final item in widget.items)
               item: BBText(
                 item,
-                style: item == widget.selected
+                style: item == selectedSegment
                     ? context.font.labelLarge
                     : context.font.labelMedium,
-                color: item == widget.selected
+                color: item == selectedSegment
                     ? context.colour.primary
                     : context.colour.outline,
               ),

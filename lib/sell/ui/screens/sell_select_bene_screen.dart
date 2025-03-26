@@ -44,7 +44,6 @@ class _SellSelectBeneficiaryScreenState
             const Gap(16.0),
             BBSegmentFull(
               items: const {'New beneficiary', 'My beneficiaries'},
-              selected: selectedSegment,
               onSelected: (value) {
                 setState(() {
                   selectedSegment = value;

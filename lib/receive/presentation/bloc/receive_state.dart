@@ -1,11 +1,8 @@
 part of 'receive_bloc.dart';
 
-enum ReceiveStatus { inProgress, success, error }
-
 @freezed
 class ReceiveState with _$ReceiveState {
   const factory ReceiveState.bitcoin({
-    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
     required Wallet wallet,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
@@ -18,10 +15,10 @@ class ReceiveState with _$ReceiveState {
     @Default('') String note,
     @Default('') String payjoinQueryParameter,
     @Default(false) bool isAddressOnly,
+    @Default('') String txId,
     Object? error,
   }) = BitcoinReceiveState;
   const factory ReceiveState.lightning({
-    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
     required Wallet wallet,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
@@ -35,7 +32,6 @@ class ReceiveState with _$ReceiveState {
     Object? error,
   }) = LightningReceiveState;
   const factory ReceiveState.liquid({
-    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
     required Wallet wallet,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
@@ -46,13 +42,13 @@ class ReceiveState with _$ReceiveState {
     @Default('') String inputAmount,
     BigInt? confirmedAmountSat,
     @Default('') String note,
+    @Default('') String txId,
     Object? error,
   }) = LiquidReceiveState;
   // Some default and optional variables are added to the network undefined state,
   //  this is to have an initial state to set in the block and avoid null checks
   //  in the business logic and the UI.
   const factory ReceiveState.networkUndefined({
-    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('') String fiatCurrencyCode,
@@ -214,5 +210,25 @@ class ReceiveState with _$ReceiveState {
     }
   }
 
-  bool get hasReceivedFunds => status == ReceiveStatus.success;
+  bool get isPaymentInProgress {
+    switch (this) {
+      case final LightningReceiveState state:
+        return state.swap != null && state.swap!.status == SwapStatus.claimable;
+      case _:
+        return false;
+    }
+  }
+
+  bool get isPaymentReceived {
+    switch (this) {
+      case final LiquidReceiveState state:
+        return state.txId.isNotEmpty;
+      case final BitcoinReceiveState state:
+        return state.txId.isNotEmpty;
+      case final LightningReceiveState state:
+        return state.swap != null && state.swap!.status == SwapStatus.completed;
+      case _:
+        return false;
+    }
+  }
 }
