@@ -32,7 +32,7 @@ sealed class Address with _$Address {
 
   factory Address.liquid({
     required String standard, // Standard address
-    String? confidential, // Confidential address
+    required String confidential, // Confidential address
     required int index,
     AddressKind? kind,
     AddressStatus? state,
@@ -56,14 +56,15 @@ sealed class Address with _$Address {
           _______,
           ________,
         ) =>
-            standard,
+            confidential,
       );
 
-  String? get confidential => when(
-        bitcoin: (_, __, ___, ____, _____, ______, _______, ________) => null,
+  String get standardAddress => when(
+        bitcoin: (address, __, ___, ____, _____, ______, _______, ________) =>
+            address,
         liquid: (
+          standard,
           _,
-          confidential,
           __,
           ___,
           ____,
@@ -72,7 +73,7 @@ sealed class Address with _$Address {
           _______,
           ________,
         ) =>
-            confidential,
+            standard,
       );
 
   /// Returns true if this is a Bitcoin address

@@ -162,11 +162,11 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     final claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
       swapId: swap.id,
       absoluteFees: swap.claimFee!,
-      liquidAddress: address.confidential!,
+      liquidAddress: address.address,
     );
     final updatedSwap = swap.copyWith(
       receiveTxid: claimTxId,
-      receiveAddress: address.confidential,
+      receiveAddress: address.address,
       status: SwapStatus.completed,
     );
     // TODO: add label to txid

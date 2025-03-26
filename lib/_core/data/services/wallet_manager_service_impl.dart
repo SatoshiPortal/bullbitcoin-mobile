@@ -548,8 +548,8 @@ class WalletManagerServiceImpl implements WalletManagerService {
         addresses.add(
           Address.liquid(
             index: address.index,
-            standard: address.address,
-            confidential: address.confidential,
+            standard: address.standardAddress,
+            confidential: address.address,
             kind: AddressKind.external,
             state: AddressStatus.used,
             balanceSat: balanceSat,
