@@ -89,11 +89,11 @@ class RecoverSuccessScreen extends StatelessWidget {
 class KeyServerFlow extends StatelessWidget {
   const KeyServerFlow({
     super.key,
-    this.encrypted,
+    this.backupFile,
     this.currentFlow,
     this.fromOnboarding = false,
   });
-  final String? encrypted;
+  final String? backupFile;
   final String? currentFlow;
   final bool fromOnboarding;
 
@@ -104,7 +104,7 @@ class KeyServerFlow extends StatelessWidget {
         BlocProvider.value(
           value: locator<KeyServerCubit>()
             ..updateKeyServerState(
-              encrypted: encrypted,
+              backupFile: backupFile,
               flow: CurrentKeyServerFlow.fromString(currentFlow ?? ''),
             ),
         ),
@@ -118,7 +118,7 @@ class KeyServerFlow extends StatelessWidget {
                 buildWhen: (previous, current) =>
                     previous.currentFlow != current.currentFlow ||
                     previous.status != current.status ||
-                    previous.secret != current.secret ||
+                    previous.password != current.password ||
                     previous.secretStatus != current.secretStatus,
                 builder: (context, state) {
                   final bool isLoading = state.status ==
@@ -161,7 +161,7 @@ class KeyServerFlow extends StatelessWidget {
                     return RecoverSuccessScreen(
                       backupKey: state.backupKey,
                       fromOnboarding: fromOnboarding,
-                      backupFile: state.encrypted,
+                      backupFile: state.backupFile,
                     );
                   }
 

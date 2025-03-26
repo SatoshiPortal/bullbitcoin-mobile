@@ -39,31 +39,31 @@ class KeyServerState with _$KeyServerState {
     @Default(SecretStatus.initial) SecretStatus secretStatus,
     @Default(KeyServerOperationStatus.initial())
     KeyServerOperationStatus status,
-    @Default(false) bool isSecretObscured,
-    @Default('') String secret,
-    @Default('') String temporarySecret,
+    @Default(false) bool isPasswordObscured,
+    @Default('') String password,
+    @Default('') String temporaryPassword,
     @Default('') String backupKey,
-    @Default('') String encrypted,
+    @Default('') String backupFile,
     DateTime? lastRequestTime,
     int? cooldownMinutes,
   }) = _KeyServerState;
   const KeyServerState._();
 
-  KeyValidator get _validator => KeyValidator();
-  bool get hasValidKeyLength => _validator.hasValidLength(secret);
-  bool get areKeysMatching =>
-      _validator.areKeysMatching(secret, temporarySecret);
-  bool get isInCommonPasswordList => _validator.isInCommonPasswordList(secret);
+  PasswordValidator get _validator => PasswordValidator();
+  bool get hasValidPasswordLength => _validator.hasValidLength(password);
+  bool get arePasswordsMatching =>
+      _validator.arePasswordsMatching(password, temporaryPassword);
+  bool get isInCommonPasswordList =>
+      _validator.isInCommonPasswordList(password);
   bool get canProceed => switch (currentFlow) {
         CurrentKeyServerFlow.enter =>
-          hasValidKeyLength && !isInCommonPasswordList,
-        CurrentKeyServerFlow.confirm => areKeysMatching,
+          hasValidPasswordLength && !isInCommonPasswordList,
+        CurrentKeyServerFlow.confirm => arePasswordsMatching,
         CurrentKeyServerFlow.recovery =>
           authInputType == AuthInputType.backupKey
               ? backupKey.isNotEmpty
-              : hasValidKeyLength,
-        CurrentKeyServerFlow.delete => hasValidKeyLength,
-        // TODO: Handle this case.
+              : hasValidPasswordLength,
+        CurrentKeyServerFlow.delete => hasValidPasswordLength,
         CurrentKeyServerFlow.recoveryWithBackupKey => backupKey.isNotEmpty
       };
 

@@ -56,10 +56,10 @@ class ConfirmScreen extends StatelessWidget {
             const SizedBox.shrink(),
           const Gap(2),
           BBInputText(
-            value: state.secret,
-            obscure: state.isSecretObscured,
+            value: state.password,
+            obscure: state.isPasswordObscured,
             onRightTap: () => context.read<KeyServerCubit>().toggleObscure(),
-            rightIcon: state.isSecretObscured
+            rightIcon: state.isPasswordObscured
                 ? const Icon(Icons.visibility_off_outlined)
                 : const Icon(Icons.visibility_outlined),
             onlyNumbers: state.authInputType == AuthInputType.pin,

@@ -74,7 +74,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                 onPressed: () => context.pushNamed(
                   AppRoute.keyServerFlow.name,
                   extra: (
-                    encryptedInfo.encrypted,
+                    encryptedInfo.backupFile,
                     CurrentKeyServerFlow.recoveryWithBackupKey.name,
                     fromOnboarding
                   ),
@@ -90,7 +90,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
               onPressed: () => context.pushNamed(
                 AppRoute.keyServerFlow.name,
                 extra: (
-                  encryptedInfo.encrypted,
+                  encryptedInfo.backupFile,
                   CurrentKeyServerFlow.recovery.name,
                   fromOnboarding
                 ),
