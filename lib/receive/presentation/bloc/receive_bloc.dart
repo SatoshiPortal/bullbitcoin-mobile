@@ -347,6 +347,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
     if (state is LightningReceiveState) {
       final lightningReceiveState = state as LightningReceiveState;
+
+      // Reset the swap and error before creating a new swap
+      emit(lightningReceiveState.copyWith(swap: null, error: null));
+
       LnReceiveSwap? swap;
       try {
         swap = await _createLnReceiveSwap(
@@ -354,18 +358,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           amountSat: confirmedAmountSat,
           note: lightningReceiveState.note,
         );
-        emit(
-          lightningReceiveState.copyWith(
-            swap: swap,
-            error: null,
-          ),
-        );
+
+        emit(lightningReceiveState.copyWith(swap: swap, error: null));
       } catch (e) {
-        emit(
-          state.copyWith(
-            error: e,
-          ),
-        );
+        emit(state.copyWith(error: e));
         return;
       }
     }
@@ -386,6 +382,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     // Create a new swap if the description is still changed after the amount was already confirmed
     if (state is LightningReceiveState && state.confirmedAmountSat != null) {
       final lightningReceiveState = state as LightningReceiveState;
+
+      // Reset the swap and error before creating a new swap
+      emit(lightningReceiveState.copyWith(swap: null, error: null));
+
       LnReceiveSwap? swap;
       try {
         swap = await _createLnReceiveSwap(
@@ -393,18 +393,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           amountSat: lightningReceiveState.confirmedAmountSat!,
           note: note,
         );
-        emit(
-          lightningReceiveState.copyWith(
-            swap: swap,
-            error: null,
-          ),
-        );
+
+        emit(lightningReceiveState.copyWith(swap: swap, error: null));
       } catch (e) {
-        emit(
-          state.copyWith(
-            error: e,
-          ),
-        );
+        emit(state.copyWith(error: e));
         return;
       }
     }
