@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
-import 'package:bb_mobile/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:bb_mobile/backup_wallet/ui/widgets/how_to_decide.dart'
     show HowToDecideSheetBackupOption;
 import 'package:bb_mobile/backup_wallet/ui/widgets/option_tag.dart';
@@ -61,7 +61,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                     'Anonymous backup with strong encryption using your cloud.',
                 tag: 'Easy and simple (1 minute)',
                 onTap: () => context.pushNamed(
-                  BackupSettingsSubroute.backupSecurityInfo.name,
+                  BackupWalletSubroute.securityInfo.name,
                   extra: 'encrypted-vault',
                 ),
               ),
@@ -78,7 +78,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                     'Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.',
                 tag: 'Trustless (take your time)',
                 onTap: () => context.pushNamed(
-                  BackupSettingsSubroute.backupSecurityInfo.name,
+                  BackupWalletSubroute.securityInfo.name,
                   extra: 'physical-backup',
                 ),
               ),
