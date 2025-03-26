@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_core/domain/entities/settings.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet.dart';
-import 'package:bb_mobile/_core/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
@@ -27,8 +26,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required GetBitcoinUnitUsecase getBitcoinUnitUseCase,
     required ConvertSatsToCurrencyAmountUsecase
         convertSatsToCurrencyAmountUsecase,
-    required ConvertCurrencyToSatsAmountUsecase
-        convertCurrencyToSatsAmountUsecase,
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required CreateReceiveSwapUsecase createReceiveSwapUsecase,
     required ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase,
@@ -39,8 +36,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
         _convertSatsToCurrencyAmountUsecase =
             convertSatsToCurrencyAmountUsecase,
-        _convertCurrencyToSatsAmountUsecase =
-            convertCurrencyToSatsAmountUsecase,
         _getReceiveAddressUsecase = getReceiveAddressUsecase,
         _createReceiveSwapUsecase = createReceiveSwapUsecase,
         _receiveWithPayjoinUsecase = receiveWithPayjoinUsecase,
@@ -64,7 +59,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final GetCurrencyUsecase _getCurrencyUsecase;
   final GetBitcoinUnitUsecase _getBitcoinUnitUseCase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
-  final ConvertCurrencyToSatsAmountUsecase _convertCurrencyToSatsAmountUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final ReceiveWithPayjoinUsecase _receiveWithPayjoinUsecase;
   final CreateReceiveSwapUsecase _createReceiveSwapUsecase;
@@ -322,17 +316,61 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveAmountConfirmed event,
     Emitter<ReceiveState> emit,
   ) async {
-    emit(
-      state.copyWith(
-        confirmedAmountSat: state.inputAmountSat,
-      ),
-    );
+    if (state.confirmedAmountSat != null &&
+        state.confirmedAmountSat == state.inputAmountSat &&
+        (state is! LightningReceiveState ||
+            (state as LightningReceiveState).swap != null)) {
+      // If the same amount was already confirmed, do nothing
+      return;
+    }
+
+    final confirmedAmountSat = state.inputAmountSat;
+
+    if (state is LightningReceiveState) {
+      // For Lightning we should create a swap once the amount is confirmed
+      final lightningReceiveState = state as LightningReceiveState;
+
+      LnReceiveSwap? swap;
+      try {
+        // TODO: check how to pass a note/description
+        swap = await _createReceiveSwapUsecase.execute(
+          walletId: lightningReceiveState.wallet.id,
+          type: SwapType.lightningToLiquid,
+          amountSat: confirmedAmountSat.toInt(),
+        );
+      } catch (e) {
+        emit(
+          state.copyWith(
+            confirmedAmountSat: confirmedAmountSat,
+            error: e,
+          ),
+        );
+        return;
+      }
+
+      emit(
+        lightningReceiveState.copyWith(
+          confirmedAmountSat: confirmedAmountSat,
+          swap: swap,
+          error: null,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          confirmedAmountSat: confirmedAmountSat,
+        ),
+      );
+    }
   }
 
   Future<void> _onNoteChanged(
     ReceiveNoteChanged event,
     Emitter<ReceiveState> emit,
   ) async {
+    // TODO: create a new swap with the note in case of Lightning
+    //  (see _onAmountConfirmed and extract the swap creation to a separate
+    //  method to reuse here)
     emit(
       state.copyWith(
         note: event.note,

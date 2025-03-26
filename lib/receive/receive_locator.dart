@@ -2,7 +2,6 @@ import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
-import 'package:bb_mobile/_core/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
@@ -47,8 +46,6 @@ class ReceiveLocator {
         getBitcoinUnitUseCase: locator<GetBitcoinUnitUsecase>(),
         convertSatsToCurrencyAmountUsecase:
             locator<ConvertSatsToCurrencyAmountUsecase>(),
-        convertCurrencyToSatsAmountUsecase:
-            locator<ConvertCurrencyToSatsAmountUsecase>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),
         createReceiveSwapUsecase: locator<CreateReceiveSwapUsecase>(),
         receiveWithPayjoinUsecase: locator<ReceiveWithPayjoinUsecase>(),

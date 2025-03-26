@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_core/domain/entities/seed.dart';
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
@@ -46,7 +47,9 @@ class CreateReceiveSwapUsecase {
         );
       }
 
-      final mnemonic = await _seedRepository.get(wallet.masterFingerprint);
+      final mnemonicSeed =
+          await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
+      final mnemonic = mnemonicSeed.mnemonicWords.join(' ');
 
       if (wallet.network.isLiquid && type == SwapType.lightningToBitcoin) {
         throw Exception(
@@ -73,7 +76,7 @@ class CreateReceiveSwapUsecase {
             walletId: walletId,
             amountSat: amountSat,
             isTestnet: wallet.network.isTestnet,
-            mnemonic: mnemonic.toString(),
+            mnemonic: mnemonic,
             electrumUrl: btcElectrumUrl,
           );
 
@@ -82,7 +85,7 @@ class CreateReceiveSwapUsecase {
             walletId: walletId,
             amountSat: amountSat,
             isTestnet: wallet.network.isTestnet,
-            mnemonic: mnemonic.toString(),
+            mnemonic: mnemonic,
             electrumUrl: lbtcElectrumUrl,
           );
         default:
