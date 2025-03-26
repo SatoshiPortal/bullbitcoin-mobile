@@ -59,7 +59,7 @@ class FileStorageDatasourceImpl implements FileStorageDatasource {
   }
 
   @override
-  Future<String?> getDirectoryPath() async {
+  Future<String> getDirectoryPath() async {
     final path = await _filePicker.getDirectoryPath();
     if (path == null) throw 'No directory selected';
     return path;

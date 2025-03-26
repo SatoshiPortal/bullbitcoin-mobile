@@ -26,14 +26,10 @@ class CreateEncryptedVaultUsecase {
       final defaultMetadata = await walletMetadataRepository.getDefault();
 
       final defaultFingerprint = defaultMetadata.masterFingerprint;
-      final defaultSeedExists = await seedRepository.exists(defaultFingerprint);
-      if (!defaultSeedExists) {
-        throw 'CreateEncryptedVaultUsecase: Default seed not found for fingerprint: $defaultFingerprint';
-      }
       final defaultSeed = await seedRepository.get(defaultFingerprint);
       final defaultSeedModel = SeedModel.fromEntity(defaultSeed);
-      final (mnemonic, passphrase) = defaultSeedModel.maybeMap(
-        mnemonic: (mnemonic) => (mnemonic.mnemonicWords, mnemonic.passphrase),
+      final mnemonic = defaultSeedModel.maybeMap(
+        mnemonic: (mnemonic) => mnemonic.mnemonicWords,
         orElse: () =>
             throw 'CreateEncryptedVaultUsecase: Default seed is not a bytes seed',
       );
@@ -42,16 +38,9 @@ class CreateEncryptedVaultUsecase {
         defaultMetadata.network,
       );
 
-      final defaultWalletMetaData =
-          (await walletMetadataRepository.getAll()).firstWhere(
-        (metadata) => metadata.masterFingerprint == defaultFingerprint,
-        orElse: () =>
-            throw 'Default wallet metadata not found for fingerprint: $defaultFingerprint',
-      );
-
       final toBackup = RecoverBullWallet(
-        mnemonicPassphrase: (mnemonic, passphrase),
-        metadata: defaultWalletMetaData,
+        mnemonic: mnemonic,
+        metadata: defaultMetadata,
       );
       final plaintext = json.encode(toBackup.toJson());
       // Derive the backup key using BIP85

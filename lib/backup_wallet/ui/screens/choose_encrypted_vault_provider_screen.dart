@@ -21,15 +21,15 @@ import 'package:flutter_bloc/flutter_bloc.dart'
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ChooseVaultLocationScreen extends StatefulWidget {
-  const ChooseVaultLocationScreen({super.key});
+class ChooseVaultProviderScreen extends StatefulWidget {
+  const ChooseVaultProviderScreen({super.key});
 
   @override
-  State<ChooseVaultLocationScreen> createState() =>
-      _ChooseVaultLocationScreenState();
+  State<ChooseVaultProviderScreen> createState() =>
+      _ChooseVaultProviderScreenState();
 }
 
-class _ChooseVaultLocationScreenState extends State<ChooseVaultLocationScreen> {
+class _ChooseVaultProviderScreenState extends State<ChooseVaultProviderScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -97,10 +97,14 @@ class _Screen extends StatelessWidget {
             }
           },
           success: () {
-            if (state.encrypted.isNotEmpty) {
+            if (state.backupFile.isNotEmpty) {
               context.pushNamed(
                 AppRoute.keyServerFlow.name,
-                extra: (state.encrypted, CurrentKeyServerFlow.enter.toString()),
+                extra: (
+                  state.backupFile,
+                  CurrentKeyServerFlow.enter.toString(),
+                  false
+                ),
               );
             }
           },

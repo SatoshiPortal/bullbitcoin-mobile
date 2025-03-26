@@ -19,10 +19,6 @@ class CreateBackupKeyFromDefaultSeedUsecase {
       final defaultMetadata = await walletMetadataRepository.getDefault();
 
       final defaultFingerprint = defaultMetadata.masterFingerprint;
-      final defaultSeedExists = await seedRepository.exists(defaultFingerprint);
-      if (!defaultSeedExists) {
-        throw 'CreateBackupKeyFromDefaultSeedUsecase: Default seed not found for fingerprint: $defaultFingerprint';
-      }
       final defaultSeed = await seedRepository.get(defaultFingerprint);
 
       final defaultXprv = Bip32Derivation.getXprvFromSeed(

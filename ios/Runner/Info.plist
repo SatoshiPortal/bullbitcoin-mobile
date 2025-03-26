@@ -42,7 +42,7 @@
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
 	<key>GIDClientID</key>
-	<string>1000256293534-88hujil9lm2odvvlgut96m08ml961mt2.apps.googleusercontent.com</string>
+	<string>$(GOOGLE_DRIVE_CLIENT_ID)</string>
 	<key>BUNDLE_ID</key>
 	<string>com.bullbitcoin.mobile</string>
 	<key>CFBundleURLTypes</key>
@@ -50,7 +50,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.googleusercontent.apps.1000256293534-88hujil9lm2odvvlgut96m08ml961mt2</string>
+				<string>$(GOOGLE_DRIVE_URL_SCHEME)</string>
 			</array>
 		</dict>
 	</array>

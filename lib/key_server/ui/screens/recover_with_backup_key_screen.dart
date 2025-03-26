@@ -12,7 +12,8 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class RecoverWithBackupKeyScreen extends StatefulWidget {
-  const RecoverWithBackupKeyScreen({super.key});
+  final bool fromOnboarding;
+  const RecoverWithBackupKeyScreen({super.key, required this.fromOnboarding});
 
   @override
   State<RecoverWithBackupKeyScreen> createState() =>

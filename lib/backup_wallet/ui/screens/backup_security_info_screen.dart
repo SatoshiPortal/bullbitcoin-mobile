@@ -2,9 +2,8 @@ import 'package:bb_mobile/_ui/components/buttons/button.dart' show BBButton;
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
-import 'package:bb_mobile/backup_settings/ui/backup_settings_router.dart'
-    show BackupSettingsSubroute;
 import 'package:bb_mobile/backup_wallet/data/constants/backup_security_infos.dart';
+import 'package:bb_mobile/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -61,10 +60,11 @@ class BackupSecurityInfoScreen extends StatelessWidget {
               label: 'Start Backup',
               onPressed: backupOption.contains('encrypted-vault')
                   ? () => context.pushNamed(
-                        BackupSettingsSubroute.encryptedVaultBackupFlow.name,
+                        BackupWalletSubroute.chooseBackupProvider.name,
                       )
+                  //Todo: add physical backup screens
                   : () => context.pushNamed(
-                        BackupSettingsSubroute.physicalBackupFlow.name,
+                        BackupWalletSubroute.physical.name,
                       ),
               bgColor: context.colour.secondary,
               textColor: context.colour.onSecondary,

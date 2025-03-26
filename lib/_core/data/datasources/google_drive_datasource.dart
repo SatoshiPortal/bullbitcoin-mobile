@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
+import 'package:recoverbull/recoverbull.dart';
 
 abstract class GoogleDriveAppDatasource {
   Future<void> connect();
@@ -102,7 +104,24 @@ class GoogleDriveAppDatasourceImpl implements GoogleDriveAppDatasource {
 
   @override
   Future<void> store(String content) async {
-    // Implement if needed
-    return;
+    _checkConnection();
+    final backup = BullBackup.fromJson(content);
+    final filename =
+        '${DateTime.now().millisecondsSinceEpoch}_${backup.id}.json';
+
+    final file = drive.File()
+      ..name = filename
+      ..mimeType = 'application/json'
+      ..parents = ['appDataFolder'];
+
+    final jsonBackup = backup.toJson();
+
+    await _driveApi!.files.create(
+      file,
+      uploadMedia: drive.Media(
+        Stream.value(utf8.encode(jsonBackup)),
+        jsonBackup.length,
+      ),
+    );
   }
 }

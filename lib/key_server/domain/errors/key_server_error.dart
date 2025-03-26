@@ -17,9 +17,12 @@ class KeyServerError implements Exception {
         type: KeyServerErrorType.invalidCredentials,
       );
     } else if (e.code == 429) {
+      final cooldownEnd =
+          e.requestedAt?.add(Duration(minutes: e.cooldownInMinutes!));
+      final retryInMinutes = cooldownEnd?.difference(DateTime.now()).inMinutes;
       return KeyServerError._(
-        message: e.cooldownInMinutes != null
-            ? 'Rate-limited. Retry in ${e.cooldownInMinutes} minutes'
+        message: retryInMinutes != null
+            ? 'Rate-limited. Retry in $retryInMinutes minutes'
             : 'Rate-limited. Try again later',
         type: KeyServerErrorType.rateLimited,
       );

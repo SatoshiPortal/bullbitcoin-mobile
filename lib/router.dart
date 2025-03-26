@@ -91,11 +91,12 @@ class AppRouter {
         name: AppRoute.keyServerFlow.name,
         path: AppRoute.keyServerFlow.path,
         builder: (context, state) {
-          final (String? encrypted, String? flow) =
-              state.extra! as (String?, String?);
+          final (String? backupFile, String? flow, bool fromOnboarding) =
+              state.extra! as (String?, String?, bool);
           return KeyServerFlow(
-            encrypted: encrypted,
+            backupFile: backupFile,
             currentFlow: flow,
+            fromOnboarding: fromOnboarding,
           );
         },
       ),
@@ -109,19 +110,6 @@ class AppRouter {
         },
       ),
 
-      // GoRoute(
-      //   name: AppRoute.recoverWallet.name,
-      //   path: AppRoute.recoverWallet.path,
-      //   builder: (context, state) =>
-      //       const RecoverWalletFlow(fromOnboarding: true),
-      // ),
-      // GoRoute(
-      //   name: AppRoute.recoverImportWallet.name,
-      //   path: AppRoute.recoverImportWallet.path,
-      //   builder: (context, state) => const RecoverWalletFlow(
-      //     fromOnboarding: false,
-      //   ),
-      // ),
       GoRoute(
         name: AppRoute.settings.name,
         path: AppRoute.settings.path,

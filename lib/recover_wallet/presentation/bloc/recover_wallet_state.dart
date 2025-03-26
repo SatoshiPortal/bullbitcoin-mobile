@@ -34,7 +34,7 @@ sealed class RecoverWalletState implements _$RecoverWalletState {
     @Default(ScriptType.bip84) ScriptType scriptType,
     @Default('') String label,
     @Default(RecoverProvider.googleDrive()) RecoverProvider backupProvider,
-    @Default(BackupInfo(encrypted: '')) BackupInfo encryptedInfo,
+    @Default(BackupInfo(backupFile: '')) BackupInfo encryptedInfo,
   }) = _RecoverWalletState;
   const RecoverWalletState._();
   bool get hasAllValidWords =>

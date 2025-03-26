@@ -54,10 +54,10 @@ class EnterScreen extends StatelessWidget {
             const SizedBox.shrink(),
           const Gap(2),
           BBInputText(
-            value: state.secret,
-            obscure: state.isSecretObscured,
+            value: state.password,
+            obscure: state.isPasswordObscured,
             onRightTap: () => context.read<KeyServerCubit>().toggleObscure(),
-            rightIcon: state.isSecretObscured
+            rightIcon: state.isPasswordObscured
                 ? const Icon(Icons.visibility_off_outlined)
                 : const Icon(Icons.visibility_outlined),
             onlyNumbers: state.authInputType == AuthInputType.pin,
@@ -76,7 +76,7 @@ class EnterScreen extends StatelessWidget {
                 color: context.colour.error,
               ),
             )
-          else if (!state.hasValidKeyLength)
+          else if (!state.hasValidPasswordLength)
             BBText(
               '${(state.authInputType == AuthInputType.pin) ? 'PIN' : 'Password'} must be at least 6 digits long',
               textAlign: TextAlign.start,
