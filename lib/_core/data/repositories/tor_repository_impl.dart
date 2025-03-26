@@ -47,4 +47,10 @@ class TorRepositoryImpl implements TorRepository {
     await _torDatasource.start();
     debugPrint('Tor started at port: ${_torDatasource.port}');
   }
+
+  @override
+  Future<void> stop() async {
+    await _torDatasource.kill();
+    debugPrint('Tor stopped');
+  }
 }

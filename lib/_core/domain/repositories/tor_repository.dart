@@ -8,4 +8,6 @@ abstract class TorRepository {
 
   /// Creates a SOCKS socket using the Tor connection
   Future<SOCKSSocket> createSocket();
+
+  Future<void> stop();
 }
