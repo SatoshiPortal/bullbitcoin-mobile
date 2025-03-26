@@ -113,36 +113,24 @@ class KeyServerFlow extends StatelessWidget {
                     previous.password != current.password ||
                     previous.secretStatus != current.secretStatus,
                 builder: (context, state) {
-                  // Handle key server errors
+                  // Handle errors first
                   if (state.status.maybeWhen(
-                    failure: (_) => true,
-                    orElse: () => false,
-                  )) {
-                    return ErrorScreen(
-                      message: state.status.maybeWhen(
-                        failure: (message) => message,
-                        orElse: () => 'An error occurred',
-                      ),
-                      title: 'Oops! Something went wrong',
-                      onRetry: () {
-                        context.read<KeyServerCubit>().clearError();
-                        context.read<KeyServerCubit>().updateKeyServerState(
-                              flow: CurrentKeyServerFlow.enter,
-                            );
-                      },
-                    );
-                  }
-
-                  // Handle wallet recovery errors
-                  if (walletState.recoverWalletStatus.maybeWhen(
-                    failure: (_) => true,
-                    orElse: () => false,
-                  )) {
+                        failure: (_) => true,
+                        orElse: () => false,
+                      ) ||
+                      walletState.recoverWalletStatus.maybeWhen(
+                        failure: (_) => true,
+                        orElse: () => false,
+                      )) {
                     return ErrorScreen(
                       message: walletState.recoverWalletStatus.maybeWhen(
-                        failure: (message) => message,
-                        orElse: () => 'An error occurred',
-                      ),
+                            failure: (message) => message,
+                            orElse: () => state.status.maybeWhen(
+                              failure: (message) => message,
+                              orElse: () => 'An error occurred',
+                            ),
+                          ) ??
+                          'An error occurred',
                       title: 'Oops! Something went wrong',
                       onRetry: () {
                         context.read<KeyServerCubit>().clearError();
@@ -153,7 +141,7 @@ class KeyServerFlow extends StatelessWidget {
                     );
                   }
 
-                  // Show loading only for active operations
+                  // Show loading for either operation
                   if (state.status ==
                           const KeyServerOperationStatus.loading() ||
                       walletState.recoverWalletStatus ==
@@ -161,39 +149,39 @@ class KeyServerFlow extends StatelessWidget {
                     return const KeyLoadingScreen();
                   }
 
-                  // Trigger wallet recovery when key server succeeds
+                  // Handle success states
                   if (state.status ==
-                          const KeyServerOperationStatus.success() &&
-                      state.secretStatus == SecretStatus.recovered &&
-                      walletState.recoverWalletStatus ==
+                      const KeyServerOperationStatus.success()) {
+                    if (state.secretStatus == SecretStatus.stored) {
+                      return const BackupSuccessScreen();
+                    }
+
+                    if (state.secretStatus == SecretStatus.recovered) {
+                      // Trigger wallet recovery if not started
+                      if (walletState.recoverWalletStatus ==
                           const RecoverWalletStatus.initial()) {
-                    context.read<RecoverWalletBloc>().add(
-                          DecryptRecoveryFile(
-                            backupKey: state.backupKey,
-                            backupFile: state.backupFile,
-                          ),
-                        );
-                    return const KeyLoadingScreen();
-                  }
+                        context.read<RecoverWalletBloc>().add(
+                              DecryptRecoveryFile(
+                                backupKey: state.backupKey,
+                                backupFile: state.backupFile,
+                              ),
+                            );
+                        return const KeyLoadingScreen();
+                      }
 
-                  if (state.status ==
-                          const KeyServerOperationStatus.success() &&
-                      state.secretStatus == SecretStatus.stored) {
-                    return const BackupSuccessScreen();
-                  }
-
-                  if (state.status ==
-                          const KeyServerOperationStatus.success() &&
-                      state.secretStatus == SecretStatus.recovered &&
-                      walletState.recoverWalletStatus ==
+                      // Show success when wallet recovery is complete
+                      if (walletState.recoverWalletStatus ==
                           const RecoverWalletStatus.success()) {
-                    return RecoverSuccessScreen(
-                      backupKey: state.backupKey,
-                      fromOnboarding: fromOnboarding,
-                      backupFile: state.backupFile,
-                    );
+                        return RecoverSuccessScreen(
+                          backupKey: state.backupKey,
+                          fromOnboarding: fromOnboarding,
+                          backupFile: state.backupFile,
+                        );
+                      }
+                    }
                   }
 
+                  // Default flow screens
                   return switch (state.currentFlow) {
                     CurrentKeyServerFlow.enter => const EnterScreen(),
                     CurrentKeyServerFlow.confirm => const ConfirmScreen(),
