@@ -284,7 +284,7 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
       emit(
         state.copyWith(
           recoverWalletStatus: const RecoverWalletStatus.success(),
-          encryptedInfo: BackupInfo(encrypted: encryptedBackup as String),
+          encryptedInfo: BackupInfo(backupFile: encryptedBackup as String),
         ),
       );
     } catch (e) {

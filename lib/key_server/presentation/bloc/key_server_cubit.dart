@@ -5,7 +5,7 @@ import 'package:bb_mobile/key_server/domain/usecases/derive_backup_key_from_defa
 import 'package:bb_mobile/key_server/domain/usecases/restore_backup_key_from_password_usecase.dart';
 import 'package:bb_mobile/key_server/domain/usecases/store_backup_key_into_server_usecase.dart';
 import 'package:bb_mobile/key_server/domain/usecases/trash_backup_key_from_server_usecase.dart';
-import 'package:bb_mobile/key_server/domain/validators/secret_validator.dart';
+import 'package:bb_mobile/key_server/domain/validators/password_validator.dart';
 import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,9 +38,9 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }) : super(const KeyServerState());
 
   void backspaceKey() {
-    if (state.secret.isEmpty) return;
+    if (state.password.isEmpty) return;
     updateKeyServerState(
-      secret: state.secret.substring(0, state.secret.length - 1),
+      password: state.password.substring(0, state.password.length - 1),
     );
   }
 
@@ -54,7 +54,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   void clearError() =>
       _emitOperationStatus(const KeyServerOperationStatus.initial());
   void clearSensitive() => updateKeyServerState(
-        secret: '',
+        password: '',
       );
   Future<void> confirmKey() async {
     if (!state.canProceed) return;
@@ -63,14 +63,14 @@ class KeyServerCubit extends Cubit<KeyServerState> {
       emit(
         state.copyWith(
           currentFlow: CurrentKeyServerFlow.confirm,
-          temporarySecret: state.secret,
-          secret: '',
+          temporaryPassword: state.password,
+          password: '',
         ),
       );
       return;
     }
 
-    if (!state.areKeysMatching) {
+    if (!state.arePasswordsMatching) {
       _emitOperationStatus(
         const KeyServerOperationStatus.failure(
           message: 'Keys do not match. Please try again.',
@@ -114,10 +114,10 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }
 
   void enterKey(String value) {
-    if (state.secret.length >= pinMax) return;
+    if (state.password.length >= pinMax) return;
     updateKeyServerState(
-      secret: state.authInputType == AuthInputType.pin
-          ? state.secret + value
+      password: state.authInputType == AuthInputType.pin
+          ? state.password + value
           : value,
     );
   }
@@ -126,7 +126,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     try {
       emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
       final backupInfo = BackupInfo(
-        encrypted: state.encrypted,
+        backupFile: state.backupFile,
       );
       final backupKey = await createBackupKeyFromDefaultSeedUsecase
           .execute(backupInfo.path ?? '');
@@ -164,7 +164,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
           ),
         );
       } else {
-        if (state.encrypted.isEmpty) {
+        if (state.backupFile.isEmpty) {
           _emitOperationStatus(
             const KeyServerOperationStatus.failure(
               message: 'No backup key found. Please try again.',
@@ -176,8 +176,8 @@ class KeyServerCubit extends Cubit<KeyServerState> {
           await checkConnection();
           final backupKey = await _handleServerOperation(
             () => restoreBackupKeyFromPasswordUsecase.execute(
-              backupAsString: state.encrypted,
-              password: state.secret,
+              backupFile: state.backupFile,
+              password: state.password,
             ),
             'Recover Key',
           );
@@ -217,14 +217,15 @@ class KeyServerCubit extends Cubit<KeyServerState> {
       emit(
         state.copyWith(
           status: const KeyServerOperationStatus.failure(
-              message: 'Failed to recover key. Please try again.'),
+            message: 'Failed to recover key. Please try again.',
+          ),
         ),
       );
     }
   }
 
   Future<void> storeKey() async {
-    if (!state.canProceed || !state.areKeysMatching) return;
+    if (!state.canProceed || !state.arePasswordsMatching) return;
 
     try {
       emit(
@@ -236,14 +237,14 @@ class KeyServerCubit extends Cubit<KeyServerState> {
       await checkConnection();
 
       final derivedKey = await deriveBackupKeyFromDefaultWalletUsecase.execute(
-        backupFile: state.encrypted,
+        backupFile: state.backupFile,
       );
 
       await _handleServerOperation(
         () => storeBackupKeyIntoServerUsecase.execute(
-          password: state.secret,
+          password: state.password,
           backupKey: derivedKey,
-          backupFile: state.encrypted,
+          backupFile: state.backupFile,
         ),
         'Store Key',
       );
@@ -276,7 +277,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }
 
   void toggleObscure() =>
-      emit(state.copyWith(isSecretObscured: !state.isSecretObscured));
+      emit(state.copyWith(isPasswordObscured: !state.isPasswordObscured));
   void toggleAuthInputType(AuthInputType newType) {
     if (newType == AuthInputType.backupKey &&
         state.currentFlow != CurrentKeyServerFlow.recovery) {
@@ -285,7 +286,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
     updateKeyServerState(
       authInputType: newType,
-      secret: '',
+      password: '',
       backupKey: '',
       resetState: true,
     );
@@ -300,22 +301,22 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }
 
   void updateKeyServerState({
-    String? secret,
+    String? password,
     String? backupKey,
     CurrentKeyServerFlow? flow,
     SecretStatus? secretStatus,
     KeyServerOperationStatus? status,
     AuthInputType? authInputType,
-    String? encrypted,
+    String? backupFile,
     bool resetState = false,
   }) {
     // Prevent duplicate state updates
     if (!resetState &&
-        secret == state.secret &&
+        password == state.password &&
         backupKey == state.backupKey &&
         flow == state.currentFlow &&
         authInputType == state.authInputType &&
-        encrypted == state.encrypted) {
+        backupFile == state.backupFile) {
       return;
     }
 
@@ -326,14 +327,14 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
     emit(
       state.copyWith(
-        secret: resetState ? '' : (secret ?? state.secret),
+        password: resetState ? '' : (password ?? state.password),
         backupKey: shouldKeepBackupKey
             ? state.backupKey
             : (resetState ? '' : (backupKey ?? state.backupKey)),
         currentFlow: flow ?? state.currentFlow,
         authInputType: authInputType ?? state.authInputType,
-        encrypted: encrypted ?? state.encrypted,
-        temporarySecret: resetState ? '' : state.temporarySecret,
+        backupFile: backupFile ?? state.backupFile,
+        temporaryPassword: resetState ? '' : state.temporaryPassword,
         secretStatus: secretStatus ?? state.secretStatus,
 
         status: status ?? state.status, // Don't clear status automatically
