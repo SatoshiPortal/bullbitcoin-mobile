@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/_core/domain/entities/payjoin.dart';
+import 'package:bb_mobile/_core/domain/entities/transaction.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
@@ -57,8 +58,12 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
         scriptBytes: outputScript,
       ),
       unspentUtxos: unspentUtxos,
-      processPsbt: (psbt) =>
-          _walletManager.signPsbt(walletId: walletId, psbt: psbt),
+      processPsbt: (psbt) async {
+        final tx = await Transaction.fromPsbtBase64(psbt);
+        final signedPsbt =
+            await _walletManager.sign(walletId: walletId, tx: tx);
+        return signedPsbt.toPsbtBase64();
+      },
     );
 
     _payjoinStreamController.add(processedPayjoin);
@@ -80,16 +85,17 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
     }
 
     try {
-      final finalizedPsbt = await _walletManager.signPsbt(
-        walletId: walletId,
-        psbt: proposalPsbt,
-      );
+      final psbt = await Transaction.fromPsbtBase64(proposalPsbt);
+
+      final finalizedPsbt =
+          await _walletManager.sign(walletId: walletId, tx: psbt);
 
       final processedPayjoin = await _payjoin.broadcastPsbt(
         payjoinId: payjoin.id,
-        finalizedPsbt: finalizedPsbt,
+        finalizedPsbt: finalizedPsbt.toPsbtBase64(),
         electrumServer: electrumServer,
       );
+
       _payjoinStreamController.add(processedPayjoin);
     } catch (e) {
       // TODO: Handle this, maybe by sending the original transaction instead
