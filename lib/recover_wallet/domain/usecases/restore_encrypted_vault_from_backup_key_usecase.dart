@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/_core/domain/entities/recoverbull_wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/seed.dart';
+import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
@@ -25,6 +26,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
     required String backupKey,
   }) async {
     try {
+      print('RestoreEncryptedVaultFromBackupKeyUsecase: with key: $backupKey');
       // Ensure backupFile has a valid format
       final isValidBackupFile = BullBackup.isValid(backupFile);
       if (!isValidBackupFile) throw 'Invalid backup file';
@@ -49,15 +51,30 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
         passphrase: decodedRecoverbullWallets.mnemonicPassphrase.$2,
       );
       final metadata = decodedRecoverbullWallets.metadata;
-      //TODO: check if this function will cover all the cases.
-      await walletManagerService.createWallet(
-        seed: seed,
-        network: metadata.network,
-        scriptType: metadata.scriptType,
-        isDefault: metadata.isDefault,
-      );
+      //TODO: check if this function will cover all the cases
+
+      final liquidNetwork = metadata.network.isMainnet
+          ? Network.liquidMainnet
+          : Network.liquidTestnet;
+
+      // The default wallets should be 1 Bitcoin and 1 Liquid wallet.
+      await Future.wait([
+        walletManagerService.createWallet(
+          seed: seed,
+          network: metadata.network,
+          scriptType: metadata.scriptType,
+          isDefault: metadata.isDefault,
+        ),
+        walletManagerService.createWallet(
+          seed: seed,
+          network: liquidNetwork,
+          scriptType: metadata.scriptType,
+          isDefault: metadata.isDefault,
+        ),
+      ]);
+      debugPrint('Default wallets created');
     } catch (e) {
-      debugPrint('$RestoreEncryptedVaultFromBackupKeyUsecase: ${e.toString()}');
+      debugPrint('$RestoreEncryptedVaultFromBackupKeyUsecase: $e');
       rethrow;
     }
   }
