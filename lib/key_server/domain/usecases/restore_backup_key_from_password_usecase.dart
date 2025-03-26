@@ -13,11 +13,11 @@ class RestoreBackupKeyFromPasswordUsecase {
   });
 
   Future<String> execute({
-    required String backupAsString,
+    required String backupFile,
     required String password,
   }) async {
     try {
-      final backupInfo = BackupInfo(encrypted: backupAsString);
+      final backupInfo = BackupInfo(backupFile: backupFile);
       if (backupInfo.isCorrupted) {
         throw const KeyServerError.invalidBackupFile();
       }

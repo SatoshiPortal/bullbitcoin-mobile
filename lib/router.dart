@@ -91,10 +91,10 @@ class AppRouter {
         name: AppRoute.keyServerFlow.name,
         path: AppRoute.keyServerFlow.path,
         builder: (context, state) {
-          final (String? encrypted, String? flow, bool fromOnboarding) =
+          final (String? backupFile, String? flow, bool fromOnboarding) =
               state.extra! as (String?, String?, bool);
           return KeyServerFlow(
-            encrypted: encrypted,
+            backupFile: backupFile,
             currentFlow: flow,
             fromOnboarding: fromOnboarding,
           );
