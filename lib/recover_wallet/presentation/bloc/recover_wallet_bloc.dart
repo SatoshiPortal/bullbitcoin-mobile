@@ -8,6 +8,7 @@ import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_google
 import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
+import 'package:bb_mobile/recover_wallet/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:flutter/foundation.dart';
@@ -316,6 +317,17 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
           recoverWalletStatus: const RecoverWalletStatus.success(),
         ),
       );
+      return;
+    } on DefaultWalletAlreadyExistsError {
+      debugPrint(
+        'Default wallet already exists. Please delete it before restoring from backup.',
+      );
+      emit(
+        state.copyWith(
+          recoverWalletStatus: const RecoverWalletStatus.success(),
+        ),
+      );
+      return;
     } catch (e) {
       emit(
         state.copyWith(
@@ -323,6 +335,7 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
               RecoverWalletStatus.failure('Failed to decrypt backup: $e'),
         ),
       );
+      return;
     }
   }
 }
