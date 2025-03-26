@@ -9,16 +9,16 @@ class ReceiveAmountEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final amount = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.amountInput,
+      (bloc) => bloc.state.inputAmount,
     );
     final inputCurrency = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.amountInputCurrencyCode,
+      (bloc) => bloc.state.inputAmountCurrencyCode,
     );
     final availableInputCurrencies = context.select<ReceiveBloc, List<String>>(
-      (bloc) => bloc.state.amountInputCurrencyCodes,
+      (bloc) => bloc.state.inputAmountCurrencyCodes,
     );
     final amountEquivalent = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.formattedAmountEquivalent,
+      (bloc) => bloc.state.formattedAmountInputEquivalent,
     );
 
     return PriceInput(

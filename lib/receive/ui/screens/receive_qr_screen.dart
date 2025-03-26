@@ -135,10 +135,10 @@ class ReceiveInfoDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bitcoinAmount = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.formattedBitcoinAmount,
+      (bloc) => bloc.state.formattedConfirmedAmountBitcoin,
     );
     final amountEquivalent = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.formattedDefaultFiatCurrencyEquivalent,
+      (bloc) => bloc.state.formattedConfirmedAmountFiat,
     );
     final note = context.select<ReceiveBloc, String>(
       (bloc) => bloc.state.note,

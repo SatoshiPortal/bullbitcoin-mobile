@@ -7,14 +7,14 @@ class ReceiveState with _$ReceiveState {
   const factory ReceiveState.bitcoin({
     @Default(ReceiveStatus.inProgress) ReceiveStatus status,
     required Wallet wallet,
-    required List<String> fiatCurrencyCodes,
-    required String defaultFiatCurrencyCode,
-    required double defaultFiatCurrencyExchangeRate,
-    required String amountInputCurrencyCode,
-    required double amountInputCurrencyExchangeRate,
     required BitcoinUnit bitcoinUnit,
+    required List<String> fiatCurrencyCodes,
+    required String fiatCurrencyCode,
+    required double exchangeRate,
+    required String inputAmountCurrencyCode,
     required String address,
-    @Default('') String amountInput,
+    @Default('') String inputAmount,
+    BigInt? confirmedAmountSat,
     @Default('') String note,
     @Default('') String payjoinQueryParameter,
     @Default(false) bool isAddressOnly,
@@ -23,13 +23,13 @@ class ReceiveState with _$ReceiveState {
   const factory ReceiveState.lightning({
     @Default(ReceiveStatus.inProgress) ReceiveStatus status,
     required Wallet wallet,
-    required List<String> fiatCurrencyCodes,
-    required String defaultFiatCurrencyCode,
-    required double defaultFiatCurrencyExchangeRate,
-    required String amountInputCurrencyCode,
-    required double amountInputCurrencyExchangeRate,
     required BitcoinUnit bitcoinUnit,
-    @Default('') String amountInput,
+    required List<String> fiatCurrencyCodes,
+    required String fiatCurrencyCode,
+    required double exchangeRate,
+    required String inputAmountCurrencyCode,
+    @Default('') String inputAmount,
+    BigInt? confirmedAmountSat,
     @Default('') String note,
     LnReceiveSwap? swap,
     Object? error,
@@ -37,14 +37,14 @@ class ReceiveState with _$ReceiveState {
   const factory ReceiveState.liquid({
     @Default(ReceiveStatus.inProgress) ReceiveStatus status,
     required Wallet wallet,
-    required List<String> fiatCurrencyCodes,
-    required String defaultFiatCurrencyCode,
-    required double defaultFiatCurrencyExchangeRate,
-    required String amountInputCurrencyCode,
-    required double amountInputCurrencyExchangeRate,
     required BitcoinUnit bitcoinUnit,
+    required List<String> fiatCurrencyCodes,
+    required String fiatCurrencyCode,
+    required double exchangeRate,
+    required String inputAmountCurrencyCode,
     required String address,
-    @Default('') String amountInput,
+    @Default('') String inputAmount,
+    BigInt? confirmedAmountSat,
     @Default('') String note,
     Object? error,
   }) = LiquidReceiveState;
@@ -53,23 +53,60 @@ class ReceiveState with _$ReceiveState {
   //  in the business logic and the UI.
   const factory ReceiveState.networkUndefined({
     @Default(ReceiveStatus.inProgress) ReceiveStatus status,
-    @Default([]) List<String> fiatCurrencyCodes,
-    @Default('') String defaultFiatCurrencyCode,
-    @Default(0) double defaultFiatCurrencyExchangeRate,
-    @Default('') String amountInputCurrencyCode,
-    @Default(0) double amountInputCurrencyExchangeRate,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
-    @Default('') String amountInput,
+    @Default([]) List<String> fiatCurrencyCodes,
+    @Default('') String fiatCurrencyCode,
+    @Default(0) double exchangeRate,
+    @Default('') String inputAmountCurrencyCode,
+    @Default('') String inputAmount,
+    BigInt? confirmedAmountSat,
     @Default('') String note,
     Object? error,
   }) = NetworkUndefinedReceiveState;
   const ReceiveState._();
 
+  List<String> get inputAmountCurrencyCodes {
+    return [
+      BitcoinUnit.btc.code,
+      BitcoinUnit.sats.code,
+      ...fiatCurrencyCodes,
+    ];
+  }
+
+  bool get isInputAmountFiat => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
+      .contains(inputAmountCurrencyCode);
+
+  BigInt get inputAmountSat {
+    BigInt amountSat = BigInt.zero;
+
+    if (inputAmount.isNotEmpty) {
+      if (isInputAmountFiat) {
+        final amountFiat = double.tryParse(inputAmount) ?? 0;
+        amountSat = BigInt.from(
+          amountFiat * 100000000 / exchangeRate,
+        );
+      } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+        amountSat = BigInt.tryParse(inputAmount) ?? BigInt.zero;
+      } else {
+        final amountBtc = double.tryParse(inputAmount) ?? 0;
+        amountSat = BigInt.from((amountBtc * 100000000).truncate());
+      }
+    }
+
+    return amountSat;
+  }
+
+  double get inputAmountBtc => inputAmountSat.toDouble() / 100000000;
+
+  double get inputAmountFiat {
+    return inputAmountBtc * exchangeRate;
+  }
+
   String get qrData {
     switch (this) {
       case final BitcoinReceiveState bitcoinState:
         if (bitcoinState.isAddressOnly ||
-            (bitcoinState.amountSat == BigInt.zero &&
+            (confirmedAmountSat == null &&
                 bitcoinState.note.isEmpty &&
                 bitcoinState.payjoinQueryParameter.isEmpty)) {
           return bitcoinState.address;
@@ -78,8 +115,7 @@ class ReceiveState with _$ReceiveState {
           scheme: 'bitcoin',
           path: bitcoinState.address,
           queryParameters: {
-            if (bitcoinState.amountSat > BigInt.zero)
-              'amount': bitcoinState.amountBtc.toString(),
+            if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
             if (bitcoinState.note.isNotEmpty) 'message': bitcoinState.note,
             if (bitcoinState.payjoinQueryParameter.isNotEmpty)
               'pj': bitcoinState.payjoinQueryParameter,
@@ -89,15 +125,14 @@ class ReceiveState with _$ReceiveState {
       case final LightningReceiveState lightningState:
         return lightningState.swap?.invoice ?? '';
       case final LiquidReceiveState liquidState:
-        if (liquidState.amountSat == BigInt.zero && liquidState.note.isEmpty) {
+        if (confirmedAmountSat == null && liquidState.note.isEmpty) {
           return liquidState.address;
         }
         final bip21Uri = Uri(
           scheme: 'liquidnetwork',
           path: liquidState.address,
           queryParameters: {
-            if (liquidState.amountSat > BigInt.zero)
-              'amount': liquidState.amountBtc.toString(),
+            if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
             if (liquidState.note.isNotEmpty) 'message': liquidState.note,
           },
         );
@@ -120,84 +155,64 @@ class ReceiveState with _$ReceiveState {
     }
   }
 
-  List<String> get amountInputCurrencyCodes {
-    return [
-      BitcoinUnit.btc.code,
-      BitcoinUnit.sats.code,
-      ...fiatCurrencyCodes,
-    ];
+  double get confirmedAmountBtc => confirmedAmountSat != null
+      ? confirmedAmountSat!.toDouble() / 100000000
+      : 0;
+
+  double get confirmedAmountFiat {
+    return confirmedAmountBtc * exchangeRate;
   }
 
-  bool get isFiatAmountInput => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
-      .contains(amountInputCurrencyCode);
-
-  BigInt get amountSat {
-    if (amountInput.isEmpty) {
-      return BigInt.zero;
-    } else if (isFiatAmountInput) {
-      final amountFiat = double.tryParse(amountInput) ?? 0;
-      return BigInt.from(
-        amountFiat * 100000000 / amountInputCurrencyExchangeRate,
-      );
-    } else if (amountInputCurrencyCode == BitcoinUnit.sats.code) {
-      return BigInt.tryParse(amountInput) ?? BigInt.zero;
-    } else {
-      final amountBtc = double.tryParse(amountInput) ?? 0;
-      return BigInt.from((amountBtc * 100000000).truncate());
-    }
-  }
-
-  double get amountBtc => amountSat.toDouble() / 100000000;
-
-  double get amountDefaultFiatCurrency {
-    return amountBtc * defaultFiatCurrencyExchangeRate;
-  }
-
-  String get formattedBitcoinAmount {
+  String get formattedConfirmedAmountBitcoin {
     final currencyFormatter = NumberFormat.currency(
-      name: BitcoinUnit.btc.code,
+      name: bitcoinUnit.code,
       decimalDigits: bitcoinUnit.decimals,
       customPattern: '#,##0.00 ¤',
     );
     final formatted = currencyFormatter
         .format(
-          bitcoinUnit == BitcoinUnit.sats ? amountSat : amountBtc,
+          bitcoinUnit == BitcoinUnit.sats
+              ? confirmedAmountSat?.toDouble() ?? 0
+              : confirmedAmountBtc,
         )
         .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
     return formatted;
   }
 
-  String get formattedAmountEquivalent {
-    final amountEquivalentCurrencyCode =
-        isFiatAmountInput ? bitcoinUnit.code : defaultFiatCurrencyCode;
-    final currencyFormatter = isFiatAmountInput
-        ? NumberFormat.currency(
-            name: amountEquivalentCurrencyCode,
-            decimalDigits: bitcoinUnit.decimals,
-            customPattern: '#,##0.00 ¤',
-          )
-        : NumberFormat.currency(
-            name: amountEquivalentCurrencyCode,
-            customPattern: '#,##0.00 ¤',
-          );
-    final amountEquivalent = isFiatAmountInput
-        ? bitcoinUnit == BitcoinUnit.sats
-            ? currencyFormatter.format(amountSat.toInt())
-            : currencyFormatter.format(amountBtc)
-        : currencyFormatter.format(amountDefaultFiatCurrency);
-
-    return amountEquivalent;
-  }
-
-  String get formattedDefaultFiatCurrencyEquivalent {
+  String get formattedConfirmedAmountFiat {
     final currencyFormatter = NumberFormat.currency(
-      name: defaultFiatCurrencyCode,
+      name: fiatCurrencyCode,
       customPattern: '#,##0.00 ¤',
     );
-    return currencyFormatter.format(amountDefaultFiatCurrency);
+    final formatted = currencyFormatter.format(confirmedAmountFiat);
+    return formatted;
   }
 
-  bool get hasAmount => amountSat > BigInt.zero;
+  String get formattedAmountInputEquivalent {
+    if (isInputAmountFiat) {
+      // If the input is in fiat, the equivalent should be in bitcoin
+      final equivalentAmount = bitcoinUnit == BitcoinUnit.sats
+          ? inputAmountSat.toDouble()
+          : inputAmountBtc;
+      final currencyFormatter = NumberFormat.currency(
+        name: bitcoinUnit.code,
+        decimalDigits: bitcoinUnit.decimals,
+        customPattern: '#,##0.00 ¤',
+      );
+      final formatted = currencyFormatter
+          .format(equivalentAmount)
+          .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
+      return formatted;
+    } else {
+      // If the input is in bitcoin, the equivalent should be in fiat
+      final currencyFormatter = NumberFormat.currency(
+        name: fiatCurrencyCode,
+        customPattern: '#,##0.00 ¤',
+      );
+      final formatted = currencyFormatter.format(inputAmountFiat);
+      return formatted;
+    }
+  }
 
   bool get hasReceivedFunds => status == ReceiveStatus.success;
 }

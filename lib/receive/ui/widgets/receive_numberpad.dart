@@ -10,15 +10,15 @@ class ReceiveNumberPad extends StatelessWidget {
   Widget build(BuildContext context) {
     return DialPad(
       onNumberPressed: (number) {
-        final amountInput = context.read<ReceiveBloc>().state.amountInput;
-        final amount = amountInput + number;
-        context.read<ReceiveBloc>().add(ReceiveAmountChanged(amount));
+        final inputAmount = context.read<ReceiveBloc>().state.inputAmount;
+        final amount = inputAmount + number;
+        context.read<ReceiveBloc>().add(ReceiveAmountInputChanged(amount));
       },
       onBackspacePressed: () {
-        final amountInput = context.read<ReceiveBloc>().state.amountInput;
-        if (amountInput.isNotEmpty) {
-          final amount = amountInput.substring(0, amountInput.length - 1);
-          context.read<ReceiveBloc>().add(ReceiveAmountChanged(amount));
+        final inputAmount = context.read<ReceiveBloc>().state.inputAmount;
+        if (inputAmount.isNotEmpty) {
+          final amount = inputAmount.substring(0, inputAmount.length - 1);
+          context.read<ReceiveBloc>().add(ReceiveAmountInputChanged(amount));
         }
       },
     );

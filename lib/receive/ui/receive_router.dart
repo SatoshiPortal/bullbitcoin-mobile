@@ -81,7 +81,7 @@ class ReceiveRouter {
           }
           return NoTransitionPage(
             child: ReceiveAmountScreen(
-              onContinuePressed: () => context.push(
+              onContinueNavigation: () => context.push(
                 '${state.matchedLocation}/${ReceiveRoute.qr.path}',
               ),
             ),

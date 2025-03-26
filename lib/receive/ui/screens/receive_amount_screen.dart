@@ -12,12 +12,9 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceiveAmountScreen extends StatelessWidget {
-  const ReceiveAmountScreen({
-    super.key,
-    this.onContinuePressed,
-  });
+  const ReceiveAmountScreen({super.key, this.onContinueNavigation});
 
-  final Function? onContinuePressed;
+  final Function? onContinueNavigation;
 
   @override
   Widget build(BuildContext context) {
@@ -37,9 +34,7 @@ class ReceiveAmountScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        child: AmountPage(
-          onContinuePressed: onContinuePressed,
-        ),
+        child: AmountPage(onContinueNavigation: onContinueNavigation),
         // child: AmountPage(),
       ),
     );
@@ -49,10 +44,10 @@ class ReceiveAmountScreen extends StatelessWidget {
 class AmountPage extends StatelessWidget {
   const AmountPage({
     super.key,
-    this.onContinuePressed,
+    this.onContinueNavigation,
   });
 
-  final Function? onContinuePressed;
+  final Function? onContinueNavigation;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +62,7 @@ class AmountPage extends StatelessWidget {
         const ReceiveNumberPad(),
         const Gap(40),
         ReceiveAmountContinueButton(
-          onPressed: onContinuePressed,
+          onContinueNavigation: onContinueNavigation,
         ),
         const Gap(40),
       ],
@@ -78,10 +73,10 @@ class AmountPage extends StatelessWidget {
 class ReceiveAmountContinueButton extends StatelessWidget {
   const ReceiveAmountContinueButton({
     super.key,
-    this.onPressed,
+    this.onContinueNavigation,
   });
 
-  final Function? onPressed;
+  final Function? onContinueNavigation;
 
   @override
   Widget build(BuildContext context) {
@@ -89,8 +84,20 @@ class ReceiveAmountContinueButton extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: BBButton.big(
         label: 'Continue',
-        onPressed: onPressed ?? context.pop,
-        disabled: !context.watch<ReceiveBloc>().state.hasAmount,
+        onPressed: () {
+          // Confirm the amount and continue
+          context.read<ReceiveBloc>().add(const ReceiveAmountConfirmed());
+
+          // Continue navigation can be different depending on the context.
+          // For example when the amount screen is the first screen in the flow
+          // as with Lightning or not.
+          if (onContinueNavigation != null) {
+            onContinueNavigation!();
+          } else {
+            context.pop();
+          }
+        },
+        disabled: context.watch<ReceiveBloc>().state.inputAmount.isEmpty,
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
       ),

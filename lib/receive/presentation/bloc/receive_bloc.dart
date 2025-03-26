@@ -50,12 +50,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
     on<ReceiveLiquidStarted>(_onLiquidStarted);
-    on<ReceiveAmountChanged>(_onAmountChanged);
+    on<ReceiveAmountInputChanged>(_onAmountInputChanged);
+    on<ReceiveAmountConfirmed>(_onAmountConfirmed);
     on<ReceiveAmountCurrencyChanged>(_onAmountCurrencyChanged);
     on<ReceiveNoteChanged>(_onNoteChanged);
     on<ReceiveAddressOnlyToggled>(_onAddressOnlyToggled);
     on<ReceiveNewAddressGenerated>(_onNewAddressGenerated);
-    on<ReceiveLightningSwapCreated>(_onLightningSwapCreated);
     on<ReceivePaymentReceived>(_onPaymentReceived);
   }
 
@@ -117,12 +117,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         ReceiveState.bitcoin(
           wallet: wallet,
           fiatCurrencyCodes: fiatCurrencies,
-          defaultFiatCurrencyCode: fiatCurrency,
-          defaultFiatCurrencyExchangeRate: exchangeRate,
+          fiatCurrencyCode: fiatCurrency,
+          exchangeRate: exchangeRate,
           bitcoinUnit: bitcoinUnit,
           // Start entering the amount in bitcoin
-          amountInputCurrencyCode: bitcoinUnit.code,
-          amountInputCurrencyExchangeRate: exchangeRate,
+          inputAmountCurrencyCode: bitcoinUnit.code,
           address: address.address,
           payjoinQueryParameter: payjoinQueryParameter,
         ),
@@ -168,12 +167,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         ReceiveState.lightning(
           wallet: wallet,
           fiatCurrencyCodes: fiatCurrencies,
-          defaultFiatCurrencyCode: fiatCurrency,
-          defaultFiatCurrencyExchangeRate: exchangeRate,
+          fiatCurrencyCode: fiatCurrency,
+          exchangeRate: exchangeRate,
           bitcoinUnit: bitcoinUnit,
           // Start entering the amount in bitcoin
-          amountInputCurrencyCode: bitcoinUnit.code,
-          amountInputCurrencyExchangeRate: exchangeRate,
+          inputAmountCurrencyCode: bitcoinUnit.code,
         ),
       );
     } catch (e) {
@@ -218,12 +216,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         ReceiveState.liquid(
           wallet: wallet,
           fiatCurrencyCodes: fiatCurrencies,
-          defaultFiatCurrencyCode: fiatCurrency,
-          defaultFiatCurrencyExchangeRate: exchangeRate,
+          fiatCurrencyCode: fiatCurrency,
+          exchangeRate: exchangeRate,
           bitcoinUnit: bitcoinUnit,
           // Start entering the amount in bitcoin
-          amountInputCurrencyCode: bitcoinUnit.code,
-          amountInputCurrencyExchangeRate: exchangeRate,
+          inputAmountCurrencyCode: bitcoinUnit.code,
           address: address.address,
         ),
       );
@@ -234,8 +231,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
   }
 
-  Future<void> _onAmountChanged(
-    ReceiveAmountChanged event,
+  Future<void> _onAmountInputChanged(
+    ReceiveAmountInputChanged event,
     Emitter<ReceiveState> emit,
   ) async {
     try {
@@ -243,21 +240,21 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       if (event.amount.isEmpty) {
         amount = event.amount;
-      } else if (state.isFiatAmountInput) {
+      } else if (state.isInputAmountFiat) {
         final amountFiat = double.tryParse(event.amount);
         final isDecimalPoint = event.amount == '.';
 
         amount = amountFiat == null && !isDecimalPoint
-            ? state.amountInput
+            ? state.inputAmount
             : event.amount;
-      } else if (state.amountInputCurrencyCode == BitcoinUnit.sats.code) {
+      } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
         // If the amount is in sats, make sure it is a valid BigInt and do not
         //  allow a decimal point.
         final amountSats = BigInt.tryParse(event.amount);
         final hasDecimals = event.amount.contains('.');
 
         amount = amountSats == null || hasDecimals
-            ? state.amountInput
+            ? state.inputAmount
             : event.amount;
       } else {
         // If the amount is in BTC, make sure it is a valid double and
@@ -268,13 +265,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
         amount = (amountBtc == null && !isDecimalPoint) ||
                 decimals > BitcoinUnit.btc.decimals
-            ? state.amountInput
+            ? state.inputAmount
             : event.amount;
       }
 
       emit(
         state.copyWith(
-          amountInput: amount,
+          inputAmount: amount,
         ),
       );
     } catch (e) {
@@ -288,20 +285,46 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveAmountCurrencyChanged event,
     Emitter<ReceiveState> emit,
   ) async {
-    double exchangeRate = state.amountInputCurrencyExchangeRate;
+    double exchangeRate = state.exchangeRate;
+    String fiatCurrencyCode = state.fiatCurrencyCode;
 
     if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
         .contains(event.currencyCode)) {
+      // If the currency is a fiat currency, retrieve the exchange rate and replace
+      //  the current exchange rate and fiat currency code.
+      fiatCurrencyCode = event.currencyCode;
       exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
         currencyCode: event.currencyCode,
       );
+    } else {
+      // If the currency is a bitcoin unit, set the fiat currency and exchange
+      //  rate back to the currency from the settings.
+      final currencyValues = await Future.wait([
+        _getCurrencyUsecase.execute(),
+        _convertSatsToCurrencyAmountUsecase.execute(),
+      ]);
+
+      fiatCurrencyCode = currencyValues[0] as String;
+      exchangeRate = currencyValues[1] as double;
     }
 
     emit(
       state.copyWith(
-        amountInputCurrencyCode: event.currencyCode,
-        amountInputCurrencyExchangeRate: exchangeRate,
-        amountInput: '', // Clear the amount when changing the currency
+        inputAmountCurrencyCode: event.currencyCode,
+        fiatCurrencyCode: fiatCurrencyCode,
+        exchangeRate: exchangeRate,
+        inputAmount: '', // Clear the amount when changing the currency
+      ),
+    );
+  }
+
+  Future<void> _onAmountConfirmed(
+    ReceiveAmountConfirmed event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        confirmedAmountSat: state.inputAmountSat,
       ),
     );
   }
@@ -363,31 +386,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         default:
           break;
       }
-    } catch (e) {
-      emit(
-        state.copyWith(error: e),
-      );
-    }
-  }
-
-  Future<void> _onLightningSwapCreated(
-    ReceiveLightningSwapCreated event,
-    Emitter<ReceiveState> emit,
-  ) async {
-    try {
-      /*
-      final swap = await _createReceiveSwapUsecase.execute(
-        walletId: state.wallet.id,
-        amount: state.amountInput,
-        currencyCode: state.amountInputCurrencyCode,
-        note: state.note,
-      );
-
-      emit(
-        (state as LightningReceiveState).copyWith(
-          swap: swap,
-        ),
-      );*/
     } catch (e) {
       emit(
         state.copyWith(error: e),
