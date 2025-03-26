@@ -89,7 +89,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
       await _handleServerOperation(
         () => trashKeyFromServerUsecase.execute(
           password: '',
-          backupFileAsString: '',
+          backupFile: '',
         ),
         'Delete Key',
       );
@@ -236,14 +236,14 @@ class KeyServerCubit extends Cubit<KeyServerState> {
       await checkConnection();
 
       final derivedKey = await deriveBackupKeyFromDefaultWalletUsecase.execute(
-        backupFileAsString: state.encrypted,
+        backupFile: state.encrypted,
       );
 
       await _handleServerOperation(
         () => storeBackupKeyIntoServerUsecase.execute(
           password: state.secret,
           backupKey: derivedKey,
-          backupFileAsString: state.encrypted,
+          backupFile: state.encrypted,
         ),
         'Store Key',
       );

@@ -13,14 +13,14 @@ class TrashBackupKeyFromServerUsecase {
 
   Future<void> execute({
     required String password,
-    required String backupFileAsString,
+    required String backupFile,
   }) async {
     try {
-      if (!BullBackup.isValid(backupFileAsString)) {
+      if (!BullBackup.isValid(backupFile)) {
         throw 'Corrupted backup file';
       }
 
-      final bullBackup = BullBackup.fromJson(backupFileAsString);
+      final bullBackup = BullBackup.fromJson(backupFile);
 
       return _recoverBullRepository.trashBackupKey(
         HEX.encode(bullBackup.id),

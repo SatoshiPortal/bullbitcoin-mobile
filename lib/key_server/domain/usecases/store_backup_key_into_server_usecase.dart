@@ -21,15 +21,15 @@ class StoreBackupKeyIntoServerUsecase {
 
   Future<void> execute({
     required String password,
-    required String backupFileAsString,
+    required String backupFile,
     required String backupKey,
   }) async {
     try {
-      if (!BullBackup.isValid(backupFileAsString)) {
+      if (!BullBackup.isValid(backupFile)) {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final bullBackup = BullBackup.fromJson(backupFileAsString);
+      final bullBackup = BullBackup.fromJson(backupFile);
       final derivedKey = await _backupKeyService.deriveBackupKeyFromDefaultSeed(
         path: bullBackup.path,
       );
