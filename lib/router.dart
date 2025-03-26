@@ -109,19 +109,6 @@ class AppRouter {
         },
       ),
 
-      // GoRoute(
-      //   name: AppRoute.recoverWallet.name,
-      //   path: AppRoute.recoverWallet.path,
-      //   builder: (context, state) =>
-      //       const RecoverWalletFlow(fromOnboarding: true),
-      // ),
-      // GoRoute(
-      //   name: AppRoute.recoverImportWallet.name,
-      //   path: AppRoute.recoverImportWallet.path,
-      //   builder: (context, state) => const RecoverWalletFlow(
-      //     fromOnboarding: false,
-      //   ),
-      // ),
       GoRoute(
         name: AppRoute.settings.name,
         path: AppRoute.settings.path,
