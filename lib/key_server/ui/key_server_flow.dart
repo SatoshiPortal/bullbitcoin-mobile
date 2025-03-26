@@ -1,7 +1,6 @@
 import 'package:bb_mobile/_ui/components/loading/progress_screen.dart';
 import 'package:bb_mobile/_ui/components/template/screen_template.dart'
     show StackedPage;
-import 'package:bb_mobile/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/key_server/ui/screens/confirm_screen.dart';
 import 'package:bb_mobile/key_server/ui/screens/enter_screen.dart';
@@ -10,6 +9,7 @@ import 'package:bb_mobile/key_server/ui/screens/recover_with_secret_screen.dart'
 import 'package:bb_mobile/key_server/ui/widgets/error_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
+import 'package:bb_mobile/recover_wallet/ui/recover_wallet_router.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/settings/ui/settings_router.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +41,7 @@ class BackupSuccessScreen extends StatelessWidget {
       isLoading: false,
       buttonText: 'Test Backup',
       onTap: () => context.pushNamed(
-        BackupSettingsSubroute.encryptedVaultRecoverFlow.name,
+        RecoverWalletSubroute.chooseRecoverProvider.name,
         extra: false,
       ),
     );
@@ -51,10 +51,12 @@ class BackupSuccessScreen extends StatelessWidget {
 class RecoverSuccessScreen extends StatelessWidget {
   final String backupKey;
   final String backupFile;
+  final bool fromOnboarding;
   const RecoverSuccessScreen({
     super.key,
     required this.backupKey,
     required this.backupFile,
+    required this.fromOnboarding,
   });
 
   @override
@@ -88,9 +90,12 @@ class RecoverSuccessScreen extends StatelessWidget {
             );
           }
           return ProgressScreen(
-            title: 'Wallet recovered successfully!',
-            description:
-                'You are able to recover access to a lost Bitcoin wallet',
+            title: fromOnboarding
+                ? 'Wallet recovered successfully!'
+                : 'Test completed successfully!',
+            description: fromOnboarding
+                ? ''
+                : 'You are able to recover access to a lost Bitcoin wallet',
             isLoading: false,
             buttonText: 'Done',
             onTap: () => context.goNamed(
@@ -123,9 +128,15 @@ class RecoverTestSuccessScreen extends StatelessWidget {
 }
 
 class KeyServerFlow extends StatelessWidget {
-  const KeyServerFlow({super.key, this.encrypted, this.currentFlow});
+  const KeyServerFlow({
+    super.key,
+    this.encrypted,
+    this.currentFlow,
+    this.fromOnboarding = false,
+  });
   final String? encrypted;
   final String? currentFlow;
+  final bool fromOnboarding;
 
   @override
   Widget build(BuildContext context) {
@@ -173,6 +184,7 @@ class KeyServerFlow extends StatelessWidget {
               state.secretStatus == SecretStatus.recovered) {
             return RecoverSuccessScreen(
               backupKey: state.backupKey,
+              fromOnboarding: fromOnboarding,
               backupFile: state.encrypted,
             );
           }
@@ -180,10 +192,15 @@ class KeyServerFlow extends StatelessWidget {
           return switch (state.currentFlow) {
             CurrentKeyServerFlow.enter => const EnterScreen(),
             CurrentKeyServerFlow.confirm => const ConfirmScreen(),
-            CurrentKeyServerFlow.recovery => const RecoverWithSecretScreen(),
+            CurrentKeyServerFlow.recovery => RecoverWithSecretScreen(
+                fromOnboarding: fromOnboarding,
+              ),
+            //todo: add delete flow
             CurrentKeyServerFlow.delete => const EnterScreen(),
             CurrentKeyServerFlow.recoveryWithBackupKey =>
-              const RecoverWithBackupKeyScreen(),
+              RecoverWithBackupKeyScreen(
+                fromOnboarding: fromOnboarding,
+              ),
           };
         },
       ),

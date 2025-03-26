@@ -14,7 +14,8 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class RecoverWithSecretScreen extends StatelessWidget {
-  const RecoverWithSecretScreen({super.key});
+  final bool fromOnboarding;
+  const RecoverWithSecretScreen({super.key, required this.fromOnboarding});
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +27,16 @@ class RecoverWithSecretScreen extends StatelessWidget {
         flexibleSpace: TopBar(
           onBack: () => context.go(AppRoute.home.path),
           title:
-              "Enter your backup ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'}",
+              "Enter your${fromOnboarding ? '' : 'backup'} ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'}",
         ),
       ),
       body: PageLayout(
         bottomChild: const RecoverButton(),
         bottomHeight: 72,
         children: [
+          if (fromOnboarding) const Gap(100) else const Gap(10),
           BBText(
-            'Test to make sure you remember your backup ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'} ',
+            '${fromOnboarding ? 'Enter your' : 'Test to make sure you remember your backup '} ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'} ${fromOnboarding ? 'to continue' : ''}',
             textAlign: TextAlign.center,
             style: context.font.labelMedium?.copyWith(
               color: context.colour.outline,
