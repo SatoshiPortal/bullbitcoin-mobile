@@ -99,18 +99,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       final address =
           await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-
-      String payjoinQueryParameter = '';
-      try {
-        final payjoin = await _receiveWithPayjoinUsecase.execute(
-          walletId: wallet.id,
+      emit(
+        (state as BitcoinReceiveState).copyWith(
           address: address.address,
-        );
-        payjoinQueryParameter =
-            Uri.parse(payjoin.pjUri).queryParameters['pj'] ?? '';
-      } catch (e) {
-        debugPrint('Payjoin not available');
-      }
+        ),
+      );
 
       final currencyValues = await Future.wait([
         _getBitcoinUnitUseCase.execute(),
@@ -132,7 +125,23 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           bitcoinUnit: bitcoinUnit,
           // Start entering the amount in bitcoin
           inputAmountCurrencyCode: bitcoinUnit.code,
+        ),
+      );
+
+      String payjoinQueryParameter = '';
+      try {
+        final payjoin = await _receiveWithPayjoinUsecase.execute(
+          walletId: wallet.id,
           address: address.address,
+        );
+        payjoinQueryParameter =
+            Uri.parse(payjoin.pjUri).queryParameters['pj'] ?? '';
+      } catch (e) {
+        debugPrint('Payjoin not available');
+      }
+
+      emit(
+        (state as BitcoinReceiveState).copyWith(
           payjoinQueryParameter: payjoinQueryParameter,
         ),
       );
@@ -216,7 +225,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       final address =
           await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-
+      emit(
+        (state as LiquidReceiveState).copyWith(
+          address: address.address,
+        ),
+      );
       final currencyValues = await Future.wait([
         _getBitcoinUnitUseCase.execute(),
         _getCurrencyUsecase.execute(),
@@ -237,7 +250,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           bitcoinUnit: bitcoinUnit,
           // Start entering the amount in bitcoin
           inputAmountCurrencyCode: bitcoinUnit.code,
-          address: address.address,
         ),
       );
     } catch (e) {
