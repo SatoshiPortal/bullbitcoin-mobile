@@ -3,18 +3,27 @@ import 'package:bb_mobile/_core/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/file_storage_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/google_drive_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/payjoin_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/recoverbull_local_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/_core/data/repositories/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/exchange_rate_repository_impl.dart';
+import 'package:bb_mobile/_core/data/repositories/file_system_repository_impl.dart';
+import 'package:bb_mobile/_core/data/repositories/google_drive_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/payjoin_repository_impl.dart';
+import 'package:bb_mobile/_core/data/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/data/repositories/seed_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/settings_repository_impl.dart';
+import 'package:bb_mobile/_core/data/repositories/tor_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/wallet_metadata_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/word_list_repository_impl.dart';
 import 'package:bb_mobile/_core/data/services/mnemonic_seed_factory_impl.dart';
@@ -22,19 +31,25 @@ import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart'
 import 'package:bb_mobile/_core/data/services/swap_watcher_impl.dart';
 import 'package:bb_mobile/_core/data/services/wallet_manager_service_impl.dart';
 import 'package:bb_mobile/_core/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/file_system_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/google_drive_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/tor_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/repositories/word_list_repository.dart';
 import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
-import 'package:bb_mobile/_core/domain/usecases/build_psbt_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/build_transaction_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_bitcoin_unit_usecase.dart';
@@ -44,19 +59,38 @@ import 'package:bb_mobile/_core/domain/usecases/get_hide_amounts_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_payjoin_updates_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
+import 'package:bb_mobile/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 
 class CoreLocator {
   static Future<void> setup() async {
     // Data sources
+    //  - Tor
+    if (!locator.isRegistered<TorDatasource>()) {
+      // Register TorDatasource as a singleton async
+      // This ensures Tor is properly initialized before it's used
+      locator.registerSingletonAsync<TorDatasource>(
+        () async {
+          final tor = await TorDatasourceImpl.init();
+          return tor;
+        },
+      );
+    }
+    await locator.isReady<TorDatasource>();
     //  - Secure storage
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
       () => SecureStorageDatasourceImpl(
@@ -83,6 +117,52 @@ class CoreLocator {
     );
 
     // Repositories
+    // Register TorRepository right after TorDatasource
+    // - Google Drive Datasource
+    locator.registerLazySingleton<GoogleDriveAppDatasource>(
+      () => GoogleDriveAppDatasourceImpl(),
+    );
+    // - RecoverBullLocalDatasource
+
+    locator.registerLazySingleton<RecoverBullLocalDatasource>(
+      () => RecoverBullLocalDatasourceImpl(),
+    );
+    // - RecoverBullRemoteDatasource
+    locator.registerLazySingleton<RecoverBullRemoteDatasource>(
+      () => RecoverBullRemoteDatasourceImpl.init(
+        Uri.parse(ApiServiceConstants.bullBitcoinKeyServerApiUrlPath),
+      ),
+    );
+    // - FileStorageDataSource
+
+    locator.registerLazySingleton<FileStorageDatasource>(
+      () => FileStorageDatasourceImpl(filePicker: FilePicker.platform),
+    );
+
+    locator.registerSingletonWithDependencies<TorRepository>(
+      () => TorRepositoryImpl(locator<TorDatasource>()),
+      dependsOn: [TorDatasource],
+    );
+    locator.registerLazySingleton<GoogleDriveRepository>(
+      () => GoogleDriveRepositoryImpl(
+        locator<GoogleDriveAppDatasource>(),
+      ),
+    );
+    // Wait for Tor dependencies to be ready
+    // Register TorRepository after TorDatasource is registered
+    // Use waitFor to ensure TorDatasource is ready before TorRepository is created
+
+    await locator.isReady<TorRepository>();
+    locator.registerSingletonWithDependencies<RecoverBullRepository>(
+      () => RecoverBullRepositoryImpl(
+        localDatasource: locator<RecoverBullLocalDatasource>(),
+        remoteDatasource: locator<RecoverBullRemoteDatasource>(),
+        torRepository: locator<TorRepository>(),
+      ),
+      dependsOn: [TorRepository],
+    );
+    // await locator.isReady<RecoverBullRepository>();
+
     final walletMetadataBox =
         await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
     locator.registerLazySingleton<WalletMetadataRepository>(
@@ -101,6 +181,11 @@ class CoreLocator {
           electrumServerStorage:
               HiveStorageDatasourceImpl<String>(electrumServersBox),
         ),
+      ),
+    );
+    locator.registerLazySingleton<FileSystemRepository>(
+      () => FileSystemRepositoryImpl(
+        locator<FileStorageDatasource>(),
       ),
     );
     locator.registerLazySingleton<SeedRepository>(
@@ -217,6 +302,48 @@ class CoreLocator {
     );
 
     // Use cases
+    locator.registerFactory<CreateBackupKeyFromDefaultSeedUsecase>(
+      () => CreateBackupKeyFromDefaultSeedUsecase(
+        seedRepository: locator<SeedRepository>(),
+        walletMetadataRepository: locator<WalletMetadataRepository>(),
+      ),
+    );
+    locator.registerFactory<ConnectToGoogleDriveUsecase>(
+      () => ConnectToGoogleDriveUsecase(
+        locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<FetchLatestGoogleDriveBackupUsecase>(
+      () => FetchLatestGoogleDriveBackupUsecase(
+        locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<DisconnectFromGoogleDriveUsecase>(
+      () => DisconnectFromGoogleDriveUsecase(
+        locator<GoogleDriveRepository>(),
+      ),
+    );
+    locator.registerFactory<SelectFileFromPathUsecase>(
+      () => SelectFileFromPathUsecase(
+        locator<FileSystemRepository>(),
+      ),
+    );
+    locator.registerFactory<SelectFolderPathUsecase>(
+      () => SelectFolderPathUsecase(
+        locator<FileSystemRepository>(),
+      ),
+    );
+    locator.registerFactory<FetchBackupFromFileSystemUsecase>(
+      () => FetchBackupFromFileSystemUsecase(),
+    );
+
+    locator.registerFactory<RestoreEncryptedVaultFromBackupKeyUsecase>(
+      () => RestoreEncryptedVaultFromBackupKeyUsecase(
+        recoverBullRepository: locator<RecoverBullRepository>(),
+        walletManagerService: locator<WalletManagerService>(),
+        walletMetadataRepository: locator<WalletMetadataRepository>(),
+      ),
+    );
     locator.registerFactory<FindMnemonicWordsUsecase>(
       () => FindMnemonicWordsUsecase(
         wordListRepository: locator<WordListRepository>(),
@@ -283,8 +410,8 @@ class CoreLocator {
         seedRepository: locator<SeedRepository>(),
       ),
     );
-    locator.registerFactory<BuildPsbtUsecase>(
-      () => BuildPsbtUsecase(
+    locator.registerFactory<BuildTransactionUsecase>(
+      () => BuildTransactionUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
         walletManagerService: locator<WalletManagerService>(),
       ),

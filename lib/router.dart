@@ -3,9 +3,10 @@ import 'package:bb_mobile/_ui/screens/route_error_screen.dart';
 import 'package:bb_mobile/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/buy/ui/buy_screen.dart';
 import 'package:bb_mobile/home/ui/home_screen.dart';
+import 'package:bb_mobile/key_server/ui/key_server_flow.dart'
+    show KeyServerFlow;
 import 'package:bb_mobile/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/receive/ui/receive_router.dart';
-import 'package:bb_mobile/recover_wallet/ui/recover_wallet_flow.dart';
 import 'package:bb_mobile/sell/ui/sell_screen.dart';
 import 'package:bb_mobile/send/ui/send_screen.dart';
 import 'package:bb_mobile/settings/ui/screens/settings_screen.dart';
@@ -20,9 +21,10 @@ enum AppRoute {
   onboarding('/onboarding'),
   home('/'),
   appUnlock('/app-unlock'),
+  //todo; move to settings router
   recoverWallet('/recover-wallet'),
   recoverImportWallet('/recover-wallet-import'),
-
+  keyServerFlow('/key-server-flow'),
   settings('/settings'),
 
   send('/send'),
@@ -87,6 +89,20 @@ class AppRouter {
       //     return const OnboardingScreen();
       //   },
       // ),
+
+      GoRoute(
+        name: AppRoute.keyServerFlow.name,
+        path: AppRoute.keyServerFlow.path,
+        builder: (context, state) {
+          final (String? backupFile, String? flow, bool fromOnboarding) =
+              state.extra! as (String?, String?, bool);
+          return KeyServerFlow(
+            backupFile: backupFile,
+            currentFlow: flow,
+            fromOnboarding: fromOnboarding,
+          );
+        },
+      ),
       GoRoute(
         name: AppRoute.appUnlock.name,
         path: AppRoute.appUnlock.path,
@@ -96,19 +112,7 @@ class AppRouter {
           return PinCodeUnlockScreen(onSuccess: onSuccess);
         },
       ),
-      GoRoute(
-        name: AppRoute.recoverWallet.name,
-        path: AppRoute.recoverWallet.path,
-        builder: (context, state) =>
-            const RecoverWalletFlow(fromOnboarding: true),
-      ),
-      GoRoute(
-        name: AppRoute.recoverImportWallet.name,
-        path: AppRoute.recoverImportWallet.path,
-        builder: (context, state) => const RecoverWalletFlow(
-          fromOnboarding: false,
-        ),
-      ),
+
       GoRoute(
         name: AppRoute.settings.name,
         path: AppRoute.settings.path,

@@ -1,12 +1,31 @@
 part of 'recover_wallet_bloc.dart';
 
-enum RecoverWalletStatus { inProgress, success }
+enum LoadingType {
+  general,
+  googleSignIn,
+}
+
+@freezed
+sealed class RecoverWalletStatus with _$RecoverWalletStatus {
+  const factory RecoverWalletStatus.initial() = _Initial;
+  const factory RecoverWalletStatus.loading() = _Loading;
+  const factory RecoverWalletStatus.success() = _Success;
+  const factory RecoverWalletStatus.failure(String message) = _Failure;
+}
+
+@freezed
+sealed class RecoverProvider with _$RecoverProvider {
+  const factory RecoverProvider.googleDrive() = _GoogleDrive;
+  const factory RecoverProvider.iCloud() = _ICloud;
+  const factory RecoverProvider.fileSystem(String fileAsString) = _FileSystem;
+}
 
 @freezed
 sealed class RecoverWalletState implements _$RecoverWalletState {
   const factory RecoverWalletState({
     @Default(false) bool fromOnboarding,
-    @Default(RecoverWalletStatus.inProgress) RecoverWalletStatus status,
+    @Default(RecoverWalletStatus.initial())
+    RecoverWalletStatus recoverWalletStatus,
     @Default(12) int wordsCount,
     // @Default([]) List<({String word, bool tapped})> words,
     @Default({}) Map<int, String> validWords,
@@ -14,15 +33,13 @@ sealed class RecoverWalletState implements _$RecoverWalletState {
     @Default('') String passphrase,
     @Default(ScriptType.bip84) ScriptType scriptType,
     @Default('') String label,
-    @Default(false) bool isConfirming,
-    @Default(false) bool isCreating,
-
-    // Wallet? recoveredWallet,
-    @Default(null) Object? error,
+    @Default(RecoverProvider.googleDrive()) RecoverProvider backupProvider,
+    @Default(BackupInfo(backupFile: '')) BackupInfo encryptedInfo,
   }) = _RecoverWalletState;
   const RecoverWalletState._();
-
-  bool get hasAllValidWords => validWords.length == wordsCount && !isConfirming;
+  bool get hasAllValidWords =>
+      validWords.length == wordsCount &&
+      !(recoverWalletStatus == const RecoverWalletStatus.loading());
 }
 
 Map<int, String> importWords(List<String> words) =>

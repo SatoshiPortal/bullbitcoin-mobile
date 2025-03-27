@@ -33,8 +33,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageSettingsLabel => 'Language';
 
   @override
+  String get backupSettingsLabel => 'Wallet backup';
+
+  @override
   String get fiatCurrencySettingsLabel => 'Fiat currency';
 
   @override
   String get languageSettingsScreenTitle => 'Language';
+
+  @override
+  String get backupSettingsScreenTitle => 'Backup settings';
 }

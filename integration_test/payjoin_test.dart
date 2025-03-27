@@ -6,7 +6,7 @@ import 'package:bb_mobile/_core/domain/entities/wallet.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_core/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
-import 'package:bb_mobile/_core/domain/usecases/build_psbt_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/build_transaction_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/_utils/constants.dart';
@@ -23,7 +23,7 @@ void main() {
   late PayjoinWatcherService payjoinWatcherService;
   late ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase;
   late SendWithPayjoinUsecase sendWithPayjoinUsecase;
-  late BuildPsbtUsecase buildPsbtUsecase;
+  late BuildTransactionUsecase buildTransactionUsecase;
   late Wallet receiverWallet;
   late Wallet senderWallet;
 
@@ -49,13 +49,13 @@ void main() {
     payjoinWatcherService = locator<PayjoinWatcherService>();
     receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
     sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
-    buildPsbtUsecase = locator<BuildPsbtUsecase>();
+    buildTransactionUsecase = locator<BuildTransactionUsecase>();
 
-    receiverWallet = await locator<RecoverWalletUsecase>().execute(
+    receiverWallet = await locator<RecoverOrCreateWalletUsecase>().execute(
       mnemonicWords: receiverMnemonic.split(' '),
       scriptType: ScriptType.bip84,
     );
-    senderWallet = await locator<RecoverWalletUsecase>().execute(
+    senderWallet = await locator<RecoverOrCreateWalletUsecase>().execute(
       mnemonicWords: senderMnemonic.split(' '),
       scriptType: ScriptType.bip84,
     );
@@ -152,7 +152,7 @@ void main() {
 
         // Build the psbt with the sender wallet
         const networkFeesSatPerVb = 1000.0;
-        final originalPsbt = await buildPsbtUsecase.execute(
+        final originalPsbt = await buildTransactionUsecase.execute(
           walletId: senderWallet.id,
           address: address.address,
           amountSat: BigInt.from(1000),
@@ -162,7 +162,7 @@ void main() {
         final payjoinSender = await sendWithPayjoinUsecase.execute(
           walletId: senderWallet.id,
           bip21: pjUri.toString(),
-          originalPsbt: originalPsbt,
+          originalPsbt: originalPsbt.toPsbtBase64(),
           networkFeesSatPerVb: networkFeesSatPerVb,
         );
         debugPrint('Payjoin sender created: ${payjoinSender.id}');
@@ -316,7 +316,7 @@ void main() {
             // Set up multiple sender sessions
             for (int i = 0; i < numberOfPayjoins; i++) {
               // Build the psbt with the sender wallet
-              final originalPsbt = await buildPsbtUsecase.execute(
+              final originalPsbt = await buildTransactionUsecase.execute(
                 walletId: senderWallet.id,
                 address: receiverAddresses[i],
                 amountSat: BigInt.from(1000),
@@ -326,7 +326,7 @@ void main() {
               final payjoinSender = await sendWithPayjoinUsecase.execute(
                 walletId: senderWallet.id,
                 bip21: payjoinUris[i].toString(),
-                originalPsbt: originalPsbt,
+                originalPsbt: originalPsbt.toPsbtBase64(),
                 networkFeesSatPerVb: networkFeesSatPerVb,
               );
               debugPrint('Payjoin sender created: ${payjoinSender.id}');

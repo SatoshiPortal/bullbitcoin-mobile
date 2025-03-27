@@ -18,7 +18,7 @@ The lib/ directory is organized into the following main sections:
   - Presentation (lib/`<feature>`/presentation/): Contains **feature-specific** BLoCs.
   - UI (lib/`<feature>`/ui/): Contains **feature-specific** UI components, screens, widgets, themes and routes.
   - Locator (lib/`<feature>`/): Defines **dependency injection** setup for the feature.
-- [Localization](lib/_l10n/): Contains **localization files** with translations for different languages.
+- [Localization](lib/_l10n/): Contains **localization files** with translations for different languages, re-generate the files using `flutter gen-l10n`.
 - [Utils](lib/_utils/): Contains **small utility functions, extensions and constants** used throughout the app.
 - App-Level Configuration in the root directory [lib/](lib/): Contains the main app entry point, configuration, and global utilities.
   - [App Bloc Observer](bloc_observer.dart) – Observes **global BLoC events** for debugging and logging.

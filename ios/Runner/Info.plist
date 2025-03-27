@@ -49,5 +49,18 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>GIDClientID</key>
+	<string>$(GOOGLE_DRIVE_CLIENT_ID)</string>
+	<key>BUNDLE_ID</key>
+	<string>com.bullbitcoin.mobile</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>$(GOOGLE_DRIVE_URL_SCHEME)</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
