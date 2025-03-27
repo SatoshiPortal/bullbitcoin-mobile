@@ -20,6 +20,7 @@ class WalletMetadataModel with _$WalletMetadataModel {
     required String internalPublicDescriptor,
     required String source,
     @Default(false) bool isDefault,
+    @Default(false) bool isTorEnabledOnStartup,
     @Default('') String label,
   }) = _WalletMetadataModel;
   const WalletMetadataModel._();
@@ -48,6 +49,7 @@ class WalletMetadataModel with _$WalletMetadataModel {
       internalPublicDescriptor: entity.internalPublicDescriptor,
       source: entity.source.name,
       isDefault: entity.isDefault,
+      isTorEnabledOnStartup: entity.isTorEnabledOnStartup,
       label: entity.label,
     );
   }
@@ -62,6 +64,7 @@ class WalletMetadataModel with _$WalletMetadataModel {
         isLiquid: isLiquid,
       ),
       scriptType: ScriptType.fromName(scriptType),
+      isTorEnabledOnStartup: isTorEnabledOnStartup,
       xpub: xpub,
       externalPublicDescriptor: externalPublicDescriptor,
       internalPublicDescriptor: internalPublicDescriptor,

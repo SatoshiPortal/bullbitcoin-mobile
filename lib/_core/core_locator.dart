@@ -79,17 +79,8 @@ class CoreLocator {
   static Future<void> setup() async {
     // Data sources
     //  - Tor
-    if (!locator.isRegistered<TorDatasource>()) {
-      // Register TorDatasource as a singleton async
-      // This ensures Tor is properly initialized before it's used
-      locator.registerSingletonAsync<TorDatasource>(
-        () async {
-          final tor = await TorDatasourceImpl.init();
-          return tor;
-        },
-      );
-    }
-    await locator.isReady<TorDatasource>();
+    locator
+        .registerLazySingleton<TorDatasource>(() => TorDatasourceImpl.init());
     //  - Secure storage
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
       () => SecureStorageDatasourceImpl(
@@ -138,27 +129,24 @@ class CoreLocator {
       () => FileStorageDatasourceImpl(filePicker: FilePicker.platform),
     );
 
-    locator.registerSingletonWithDependencies<TorRepository>(
+    locator.registerLazySingleton<TorRepository>(
       () => TorRepositoryImpl(locator<TorDatasource>()),
-      dependsOn: [TorDatasource],
     );
     locator.registerLazySingleton<GoogleDriveRepository>(
       () => GoogleDriveRepositoryImpl(
         locator<GoogleDriveAppDatasource>(),
       ),
     );
-    // Wait for Tor dependencies to be ready
+
     // Register TorRepository after TorDatasource is registered
     // Use waitFor to ensure TorDatasource is ready before TorRepository is created
 
-    await locator.isReady<TorRepository>();
-    locator.registerSingletonWithDependencies<RecoverBullRepository>(
+    locator.registerLazySingleton<RecoverBullRepository>(
       () => RecoverBullRepositoryImpl(
         localDatasource: locator<RecoverBullLocalDatasource>(),
         remoteDatasource: locator<RecoverBullRemoteDatasource>(),
         torRepository: locator<TorRepository>(),
       ),
-      dependsOn: [TorRepository],
     );
     // await locator.isReady<RecoverBullRepository>();
 

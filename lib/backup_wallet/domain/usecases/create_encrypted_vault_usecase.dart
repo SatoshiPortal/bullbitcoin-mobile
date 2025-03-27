@@ -54,7 +54,9 @@ class CreateEncryptedVaultUsecase {
         backupKey,
         plaintext,
       );
-
+      walletMetadataRepository.store(
+        defaultMetadata.copyWith(isTorEnabledOnStartup: true),
+      );
       // Add the BIP85 derivation path (backup key) to the backup file
       final mapBackup = json.decode(encryptedBackup);
       mapBackup['path'] = derivationPath;

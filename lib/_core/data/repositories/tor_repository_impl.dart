@@ -44,7 +44,7 @@ class TorRepositoryImpl implements TorRepository {
 
   @override
   Future<void> start() async {
-    await _torDatasource.start();
+    await _torDatasource.startTor();
     debugPrint('Tor started at port: ${_torDatasource.port}');
   }
 }

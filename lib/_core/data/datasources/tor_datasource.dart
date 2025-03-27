@@ -2,7 +2,7 @@ import 'package:recoverbull/recoverbull.dart';
 
 abstract class TorDatasource {
   /// Get the Tor client instance
-  Future<void> start();
+  Future<void> startTor();
 
   /// Check if Tor is ready (bootstrapped and has valid port)
   Future<bool> get isReady;
@@ -20,11 +20,8 @@ class TorDatasourceImpl implements TorDatasource {
 
   TorDatasourceImpl._(this._tor);
 
-  static Future<TorDatasourceImpl> init() async {
-    await Tor.init();
-    final instance = Tor.instance;
-
-    return TorDatasourceImpl._(instance);
+  factory TorDatasourceImpl.init() {
+    return TorDatasourceImpl._(Tor.instance);
   }
 
   @override
@@ -41,11 +38,11 @@ class TorDatasourceImpl implements TorDatasource {
   }
 
   @override
-  Future<void> start() async {
+  Future<void> startTor() async {
+    await Tor.init();
     if (!_tor.started) {
       await _tor.start();
     }
-    await isReady;
   }
 
   @override
