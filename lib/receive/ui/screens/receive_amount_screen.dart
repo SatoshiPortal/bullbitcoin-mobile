@@ -1,11 +1,8 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
-import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/receive/ui/widgets/receive_amount_entry.dart';
-import 'package:bb_mobile/receive/ui/widgets/receive_network_selection.dart';
 import 'package:bb_mobile/receive/ui/widgets/receive_numberpad.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -18,26 +15,28 @@ class ReceiveAmountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Receive',
-          onBack: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(AppRoute.home.name);
-            }
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: AmountPage(onContinueNavigation: onContinueNavigation),
-        // child: AmountPage(),
-      ),
-    );
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     forceMaterialTransparency: true,
+    //     automaticallyImplyLeading: false,
+    //     flexibleSpace: TopBar(
+    //       title: 'Receive',
+    //       onBack: () {
+    //         if (context.canPop()) {
+    //           context.pop();
+    //         } else {
+    //           context.goNamed(AppRoute.home.name);
+    //         }
+    //       },
+    //     ),
+    //   ),
+    //   body: SingleChildScrollView(
+    //     child: AmountPage(onContinueNavigation: onContinueNavigation),
+    //     // child: AmountPage(),
+    //   ),
+    // );
+
+    return AmountPage(onContinueNavigation: onContinueNavigation);
   }
 }
 
@@ -51,20 +50,33 @@ class AmountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Stack(
       children: [
-        const Gap(10),
-        const ReceiveNetworkSelection(),
-        const Gap(82),
-        const ReceiveAmountEntry(),
-        const Gap(82),
-        const ReceiveNumberPad(),
-        const Gap(40),
-        ReceiveAmountContinueButton(
-          onContinueNavigation: onContinueNavigation,
+        const SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Gap(82),
+              ReceiveAmountEntry(),
+              Gap(82),
+              ReceiveNumberPad(),
+              Gap(82),
+            ],
+          ),
         ),
-        const Gap(40),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ReceiveAmountContinueButton(
+                onContinueNavigation: onContinueNavigation,
+              ),
+              const Gap(16),
+            ],
+          ),
+        ),
       ],
     );
   }

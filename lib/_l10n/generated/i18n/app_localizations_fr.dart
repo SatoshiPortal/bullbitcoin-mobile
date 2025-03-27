@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -31,7 +33,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get languageSettingsLabel => 'Langue';
 
   @override
-  String get backupSettingsLabel => 'Wallet backup';
+  String get backupSettingsLabel => 'Paramètres de sauvegarde';
 
   @override
   String get fiatCurrencySettingsLabel => 'Devise fiduciaire';
@@ -40,5 +42,5 @@ class AppLocalizationsFr extends AppLocalizations {
   String get languageSettingsScreenTitle => 'Langue';
 
   @override
-  String get backupSettingsScreenTitle => 'Backup settings';
+  String get backupSettingsScreenTitle => 'Paramètres de sauvegarde';
 }

@@ -10,8 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  bdk_flutter:
-    ^0.31.2
+  bdk_flutter: ^0.31.2
   cupertino_icons: ^1.0.2
   flutter_bloc: ^8.1.6
   freezed: ^2.4.5
@@ -73,14 +72,16 @@ dependencies:
   decimal: ^2.3.3
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  boltz: 0.1.9
+  boltz:
+    0.1.9
     # git:
     #   url: https://github.com/SatoshiPortal/boltz-dart.git
     #   ref: main
-  lwk: 0.1.7
-    # git:
-    #   url: https://github.com/SatoshiPortal/lwk-dart.git
-    #   ref: main
+  lwk:
+    # 0.1.7
+    git:
+      url: https://github.com/SatoshiPortal/lwk-dart.git
+      ref: develop
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter
@@ -92,9 +93,9 @@ dependencies:
   gif: ^2.3.0
   custom_sliding_segmented_control: ^1.8.5
   animated_svg: ^2.1.0
+  shimmer: ^3.0.0
   dart_bip21: ^1.0.0
 
-  
   googleapis: ^13.2.0
   google_sign_in: ^6.2.2
   extension_google_sign_in_as_googleapis_auth: ^2.0.12

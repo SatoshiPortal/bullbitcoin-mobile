@@ -3,17 +3,30 @@ import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:custom_sliding_segmented_control/custom_sliding_segmented_control.dart';
 import 'package:flutter/cupertino.dart';
 
-class BBSegmentFull<T extends Object> extends StatelessWidget {
+class BBSegmentFull extends StatefulWidget {
   const BBSegmentFull({
     super.key,
     required this.items,
-    required this.selected,
+    this.initialValue,
     required this.onSelected,
   });
 
   final Set<String> items;
-  final String selected;
+  final String? initialValue;
   final Function(String) onSelected;
+
+  @override
+  State<BBSegmentFull> createState() => _BBSegmentFullState();
+}
+
+class _BBSegmentFullState extends State<BBSegmentFull> {
+  late String selectedSegment;
+
+  @override
+  void initState() {
+    selectedSegment = widget.initialValue ?? widget.items.first;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +35,19 @@ class BBSegmentFull<T extends Object> extends StatelessWidget {
         borderRadius: BorderRadius.circular(2),
         clipBehavior: Clip.antiAliasWithSaveLayer,
         child: CustomSlidingSegmentedControl<String>(
-          onValueChanged: (v) => onSelected(v),
+          initialValue: widget.initialValue ?? widget.items.first,
+          onValueChanged: (v) {
+            setState(() {
+              selectedSegment = v;
+            });
+            widget.onSelected(v);
+          },
           innerPadding: const EdgeInsets.all(4),
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInToLinear,
           // fromMax: true,
           isStretch: true,
+          customSegmentSettings: CustomSegmentSettings(),
           decoration: BoxDecoration(
             color: context.colour.secondaryFixedDim,
             borderRadius: BorderRadius.circular(2),
@@ -37,13 +57,13 @@ class BBSegmentFull<T extends Object> extends StatelessWidget {
             borderRadius: BorderRadius.circular(2),
           ),
           children: {
-            for (final item in items)
+            for (final item in widget.items)
               item: BBText(
                 item,
-                style: item == selected
+                style: item == selectedSegment
                     ? context.font.labelLarge
                     : context.font.labelMedium,
-                color: item == selected
+                color: item == selectedSegment
                     ? context.colour.primary
                     : context.colour.outline,
               ),

@@ -8,6 +8,16 @@ class InitExistingWalletsUsecase {
   }) : _walletManager = walletManager;
 
   Future<void> execute() async {
-    await _walletManager.initExistingWallets();
+    try {
+      await _walletManager.initExistingWallets();
+    } catch (e) {
+      throw InitExistingWalletsException(e.toString());
+    }
   }
+}
+
+class InitExistingWalletsException implements Exception {
+  final String message;
+
+  InitExistingWalletsException(this.message);
 }

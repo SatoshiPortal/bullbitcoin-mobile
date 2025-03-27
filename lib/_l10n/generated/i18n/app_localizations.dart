@@ -161,7 +161,7 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get languageSettingsScreenTitle;
 
-  /// No description provided for @backupSettingsScreenTitle.
+  /// The title of the backup settings screen
   ///
   /// In en, this message translates to:
   /// **'Backup settings'**

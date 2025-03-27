@@ -151,27 +151,31 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Future<void> _processReceiveLnToLiquidClaim({
     required LnReceiveSwap swap,
   }) async {
-    final address = await _walletManager.getNewAddress(
-      walletId: swap.receiveWalletId,
-    );
+    try {
+      final address = await _walletManager.getNewAddress(
+        walletId: swap.receiveWalletId,
+      );
 
-    if (!address.isLiquid) {
-      throw Exception('Claim Address is not a Liquid address');
+      if (!address.isLiquid) {
+        throw Exception('Claim Address is not a Liquid address');
+      }
+      // TODO: add label to liquid address
+      final claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
+        swapId: swap.id,
+        absoluteFees: swap.claimFee!,
+        liquidAddress: address.address,
+      );
+      final updatedSwap = swap.copyWith(
+        receiveTxid: claimTxId,
+        receiveAddress: address.address,
+        status: SwapStatus.completed,
+      );
+      // TODO: add label to txid
+      await _boltzRepo.updateSwap(swap: updatedSwap);
+      _swapStreamController.add(swap);
+    } catch (e) {
+      debugPrint(e.toString());
     }
-    // TODO: add label to liquid address
-    final claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
-      swapId: swap.id,
-      absoluteFees: swap.claimFee!,
-      liquidAddress: address.confidential!,
-    );
-    final updatedSwap = swap.copyWith(
-      receiveTxid: claimTxId,
-      receiveAddress: address.confidential,
-      status: SwapStatus.completed,
-    );
-    // TODO: add label to txid
-    await _boltzRepo.updateSwap(swap: updatedSwap);
-    _swapStreamController.add(swap);
   }
 
   Future<void> _processSendLiquidToLnRefund({

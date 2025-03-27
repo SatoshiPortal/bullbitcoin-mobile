@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ReceiveDetailsScreen extends StatelessWidget {
-  const ReceiveDetailsScreen({
+class ReceivePaymentInProgressScreen extends StatelessWidget {
+  const ReceivePaymentInProgressScreen({
     super.key,
     required this.receiveState,
   });
@@ -36,7 +36,7 @@ class ReceiveDetailsScreen extends StatelessWidget {
             },
           ),
         ),
-        body: DetailsPage(
+        body: PaymentInProgressPage(
           receiveState: receiveState,
         ),
         // child: AmountPage(),
@@ -45,8 +45,8 @@ class ReceiveDetailsScreen extends StatelessWidget {
   }
 }
 
-class DetailsPage extends StatelessWidget {
-  const DetailsPage({
+class PaymentInProgressPage extends StatelessWidget {
+  const PaymentInProgressPage({
     required this.receiveState,
   });
 
@@ -59,11 +59,11 @@ class DetailsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           BBText(
-            'TODO: DETAILS',
+            'Payment in progress',
             style: context.font.headlineLarge,
           ),
           BBText(
-            'Payment received',
+            'It will be confirmed in a few seconds',
             style: context.font.headlineMedium,
           ),
           const Gap(16),

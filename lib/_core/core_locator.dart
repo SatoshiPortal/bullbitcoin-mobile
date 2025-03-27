@@ -66,6 +66,7 @@ import 'package:bb_mobile/_core/domain/usecases/receive_with_payjoin_usecase.dar
 import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/_core/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
@@ -433,6 +434,14 @@ class CoreLocator {
       () => ConvertCurrencyToSatsAmountUsecase(
         exchangeRateRepository: exchangeRateRepository,
         settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<WatchSwapUsecase>(
+      () => WatchSwapUsecase(
+        watcherService: locator<SwapWatcherService>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
+        ),
       ),
     );
   }

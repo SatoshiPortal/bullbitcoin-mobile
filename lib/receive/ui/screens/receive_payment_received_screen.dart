@@ -1,3 +1,4 @@
+import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
@@ -7,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ReceiveDetailsScreen extends StatelessWidget {
-  const ReceiveDetailsScreen({
+class ReceivePaymentReceivedScreen extends StatelessWidget {
+  const ReceivePaymentReceivedScreen({
     super.key,
     required this.receiveState,
   });
@@ -36,7 +37,7 @@ class ReceiveDetailsScreen extends StatelessWidget {
             },
           ),
         ),
-        body: DetailsPage(
+        body: PaymentReceivedPage(
           receiveState: receiveState,
         ),
         // child: AmountPage(),
@@ -45,8 +46,9 @@ class ReceiveDetailsScreen extends StatelessWidget {
   }
 }
 
-class DetailsPage extends StatelessWidget {
-  const DetailsPage({
+class PaymentReceivedPage extends StatelessWidget {
+  const PaymentReceivedPage({
+    super.key,
     required this.receiveState,
   });
 
@@ -56,20 +58,17 @@ class DetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          BBText(
-            'TODO: DETAILS',
-            style: context.font.headlineLarge,
-          ),
+          const Spacer(),
           BBText(
             'Payment received',
-            style: context.font.headlineMedium,
+            style: context.font.headlineLarge,
           ),
-          const Gap(16),
+          const Gap(24),
           BBText(
             receiveState.formattedConfirmedAmountBitcoin,
-            style: context.font.headlineLarge,
+            style: context.font.displaySmall,
           ),
           const Gap(4),
           BBText(
@@ -77,7 +76,29 @@ class DetailsPage extends StatelessWidget {
             style: context.font.bodyLarge,
             color: context.colour.surface,
           ),
+          const Spacer(),
+          const ReceiveDetailsButton(),
+          const Gap(16),
         ],
+      ),
+    );
+  }
+}
+
+class ReceiveDetailsButton extends StatelessWidget {
+  const ReceiveDetailsButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: BBButton.big(
+        label: 'Details',
+        onPressed: () {},
+        bgColor: context.colour.secondary,
+        textColor: context.colour.onSecondary,
       ),
     );
   }

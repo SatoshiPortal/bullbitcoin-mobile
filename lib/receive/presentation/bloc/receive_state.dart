@@ -1,33 +1,30 @@
 part of 'receive_bloc.dart';
 
-enum ReceiveStatus { inProgress, success, error }
-
 @freezed
 class ReceiveState with _$ReceiveState {
   const factory ReceiveState.bitcoin({
-    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
     required Wallet wallet,
-    required BitcoinUnit bitcoinUnit,
-    required List<String> fiatCurrencyCodes,
-    required String fiatCurrencyCode,
-    required double exchangeRate,
-    required String inputAmountCurrencyCode,
-    required String address,
+    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
+    @Default([]) List<String> fiatCurrencyCodes,
+    @Default('') String fiatCurrencyCode,
+    @Default(0) double exchangeRate,
+    @Default('') String inputAmountCurrencyCode,
+    @Default('') String address,
     @Default('') String inputAmount,
     BigInt? confirmedAmountSat,
     @Default('') String note,
     @Default('') String payjoinQueryParameter,
     @Default(false) bool isAddressOnly,
+    @Default('') String txId,
     Object? error,
   }) = BitcoinReceiveState;
   const factory ReceiveState.lightning({
-    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
     required Wallet wallet,
-    required BitcoinUnit bitcoinUnit,
-    required List<String> fiatCurrencyCodes,
-    required String fiatCurrencyCode,
-    required double exchangeRate,
-    required String inputAmountCurrencyCode,
+    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
+    @Default([]) List<String> fiatCurrencyCodes,
+    @Default('') String fiatCurrencyCode,
+    @Default(0) double exchangeRate,
+    @Default('') String inputAmountCurrencyCode,
     @Default('') String inputAmount,
     BigInt? confirmedAmountSat,
     @Default('') String note,
@@ -35,24 +32,23 @@ class ReceiveState with _$ReceiveState {
     Object? error,
   }) = LightningReceiveState;
   const factory ReceiveState.liquid({
-    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
     required Wallet wallet,
-    required BitcoinUnit bitcoinUnit,
-    required List<String> fiatCurrencyCodes,
-    required String fiatCurrencyCode,
-    required double exchangeRate,
-    required String inputAmountCurrencyCode,
-    required String address,
+    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
+    @Default([]) List<String> fiatCurrencyCodes,
+    @Default('') String fiatCurrencyCode,
+    @Default(0) double exchangeRate,
+    @Default('') String inputAmountCurrencyCode,
+    @Default('') String address,
     @Default('') String inputAmount,
     BigInt? confirmedAmountSat,
     @Default('') String note,
+    @Default('') String txId,
     Object? error,
   }) = LiquidReceiveState;
   // Some default and optional variables are added to the network undefined state,
   //  this is to have an initial state to set in the block and avoid null checks
   //  in the business logic and the UI.
   const factory ReceiveState.networkUndefined({
-    @Default(ReceiveStatus.inProgress) ReceiveStatus status,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('') String fiatCurrencyCode,
@@ -214,5 +210,35 @@ class ReceiveState with _$ReceiveState {
     }
   }
 
-  bool get hasReceivedFunds => status == ReceiveStatus.success;
+  bool get isPaymentInProgress {
+    switch (this) {
+      case final LightningReceiveState state:
+        return state.swap != null && state.swap!.status == SwapStatus.claimable;
+      case _:
+        return false;
+    }
+  }
+
+  bool get isPaymentReceived {
+    switch (this) {
+      case final LiquidReceiveState state:
+        return state.txId.isNotEmpty;
+      case final BitcoinReceiveState state:
+        return state.txId.isNotEmpty;
+      case final LightningReceiveState state:
+        return state.swap != null && state.swap!.status == SwapStatus.completed;
+      case _:
+        return false;
+    }
+  }
+
+  bool get isPayjoinLoading {
+    if (this is BitcoinReceiveState) {
+      final state = this as BitcoinReceiveState;
+      return state.payjoinQueryParameter.isEmpty &&
+          state.error is! ReceivePayjoinException &&
+          !state.isAddressOnly;
+    }
+    return false;
+  }
 }
