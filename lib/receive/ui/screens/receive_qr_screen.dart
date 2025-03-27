@@ -5,6 +5,7 @@ import 'package:bb_mobile/_ui/components/toggle/switch.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
 import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/receive/ui/receive_router.dart';
+import 'package:bb_mobile/receive/ui/widgets/receive_enter_note.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -215,7 +216,9 @@ class ReceiveInfoDetails extends StatelessWidget {
                   ),
                   const Spacer(),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await ReceiveEnterNote.showBottomSheet(context);
+                    },
                     visualDensity: VisualDensity.compact,
                     iconSize: 20,
                     icon: const Icon(Icons.edit),
