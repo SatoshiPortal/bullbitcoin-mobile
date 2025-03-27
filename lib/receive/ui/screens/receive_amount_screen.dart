@@ -50,23 +50,34 @@ class AmountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // const Gap(10),
-          // const ReceiveNetworkSelection(),
-          const Gap(82),
-          const ReceiveAmountEntry(),
-          const Gap(82),
-          const ReceiveNumberPad(),
-          const Gap(40),
-          ReceiveAmountContinueButton(
-            onContinueNavigation: onContinueNavigation,
+    return Stack(
+      children: [
+        const SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Gap(82),
+              ReceiveAmountEntry(),
+              Gap(82),
+              ReceiveNumberPad(),
+              Gap(40),
+            ],
           ),
-          const Gap(40),
-        ],
-      ),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ReceiveAmountContinueButton(
+                onContinueNavigation: onContinueNavigation,
+              ),
+              const Gap(16),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
