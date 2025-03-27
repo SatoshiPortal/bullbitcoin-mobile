@@ -7,7 +7,6 @@ import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_driv
 import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
@@ -27,7 +26,6 @@ class RecoverWalletLocator {
     locator.registerFactory<RecoverWalletBloc>(
       () => RecoverWalletBloc(
         findMnemonicWordsUsecase: locator<FindMnemonicWordsUsecase>(),
-        createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
         selectFilePathUsecase: locator<SelectFileFromPathUsecase>(),
         connectToGoogleDriveUsecase: locator<ConnectToGoogleDriveUsecase>(),
         fetchLatestGoogleDriveBackupUsecase:

@@ -18,6 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lwk/lwk.dart';
+// ignore: implementation_imports
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 
 Future main() async {

@@ -321,13 +321,6 @@ class BdkWalletRepositoryImpl
   }
 
   @override
-  Future<bool> hasTransaction(String txId) async {
-    final txs = _wallet.listTransactions(includeRaw: false);
-
-    return txs.any((tx) => tx.txid == txId);
-  }
-
-  @override
   Future<bool> isAddressUsed(String address) async {
     final transactions = _wallet.listTransactions(includeRaw: false);
 

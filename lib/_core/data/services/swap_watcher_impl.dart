@@ -139,7 +139,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       throw Exception('Refund Address is not a Bitcoin address');
     }
     // TODO: add label to bitcoin address
-    final refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
+    await _boltzRepo.refundBitcoinToLightningSwap(
       swapId: swap.id,
       bitcoinAddress: address.address,
       absoluteFees: swap.claimFee!,
@@ -188,7 +188,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       throw Exception('Refund Address is not a Liquid address');
     }
     // TODO: add label to liquid address
-    final refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
+    await _boltzRepo.refundLiquidToLightningSwap(
       swapId: swap.id,
       liquidAddress: address.address,
       absoluteFees: swap.claimFee!,
@@ -231,7 +231,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       throw Exception('Refund address is not a Liquid address');
     }
     // TODO: add label to bitcoin claim address
-    final claimTxId = await _boltzRepo.claimLiquidToBitcoinSwap(
+    await _boltzRepo.claimLiquidToBitcoinSwap(
       swapId: swap.id,
       absoluteFees: swap.claimFee!,
       bitcoinClaimAddress: claimAddress.address,
@@ -276,7 +276,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       throw Exception('Refund address is not a Bitcoin address');
     }
     // TODO: add label to bitcoin claim address
-    final claimTxId = await _boltzRepo.claimBitcoinToLiquidSwap(
+    await _boltzRepo.claimBitcoinToLiquidSwap(
       swapId: swap.id,
       absoluteFees: swap.claimFee!,
       liquidClaimAddress: claimAddress.address,

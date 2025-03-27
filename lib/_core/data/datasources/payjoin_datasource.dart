@@ -13,6 +13,7 @@ import 'package:payjoin_flutter/bitcoin_ffi.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:payjoin_flutter/receive.dart';
 import 'package:payjoin_flutter/send.dart';
+// ignore: implementation_imports
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:payjoin_flutter/uri.dart';
 

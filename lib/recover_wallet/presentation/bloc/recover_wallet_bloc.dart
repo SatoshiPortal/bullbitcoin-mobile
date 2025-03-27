@@ -6,7 +6,6 @@ import 'package:bb_mobile/_core/domain/usecases/find_mnemonic_words_usecase.dart
 import 'package:bb_mobile/_core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/_core/domain/usecases/select_file_path_usecase.dart';
-import 'package:bb_mobile/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
 import 'package:bb_mobile/recover_wallet/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
@@ -23,7 +22,6 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     required SelectFileFromPathUsecase selectFilePathUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
     required FindMnemonicWordsUsecase findMnemonicWordsUsecase,
-    required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
     required RestoreEncryptedVaultFromBackupKeyUsecase
         restoreEncryptedVaultFromBackupKeyUsecase,
     required FetchLatestGoogleDriveBackupUsecase
@@ -33,7 +31,6 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
   })  : _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
         _selectFileFromPathUsecase = selectFilePathUsecase,
         _findMnemonicWordsUsecase = findMnemonicWordsUsecase,
-        _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
         _restoreEncryptedVaultFromBackupKeyUsecase =
             restoreEncryptedVaultFromBackupKeyUsecase,
         _fetchLatestGoogleDriveBackupUsecase =
@@ -58,7 +55,6 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
 
   final FindMnemonicWordsUsecase _findMnemonicWordsUsecase;
 
-  final CreateDefaultWalletsUsecase _createDefaultWalletsUsecase;
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
   final RestoreEncryptedVaultFromBackupKeyUsecase
@@ -159,35 +155,6 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     Emitter<RecoverWalletState> emit,
   ) {
     emit(state.copyWith(label: event.label));
-  }
-
-  Future<void> _onConfirmed(
-    RecoverWalletConfirmed event,
-    Emitter<RecoverWalletState> emit,
-  ) async {
-    try {
-      emit(
-        state.copyWith(
-          recoverWalletStatus: const RecoverWalletStatus.loading(),
-        ),
-      );
-      await _createDefaultWalletsUsecase.execute(
-        mnemonicWords: state.validWords.values.toList(),
-        passphrase: state.passphrase,
-      );
-
-      emit(
-        state.copyWith(
-          recoverWalletStatus: const RecoverWalletStatus.success(),
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          recoverWalletStatus: RecoverWalletStatus.failure(e.toString()),
-        ),
-      );
-    }
   }
 
   Future<void> _onGoogleDriveRecoverSelected(

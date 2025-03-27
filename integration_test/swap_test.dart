@@ -21,18 +21,18 @@ import 'package:test/test.dart';
 void main() {
   late WalletManagerService walletManagerService;
   late CreateReceiveSwapUsecase receiveSwapUsecase;
-  late SwapWatcherService swapWatcherTestnetService;
+  // late SwapWatcherService swapWatcherTestnetService;
   late SwapWatcherService swapWatcherMainnetService;
-  late SwapRepository swapRepositoryTestnet;
+  // late SwapRepository swapRepositoryTestnet;
   late SwapRepository swapRepositoryMainnet;
   late Wallet instantWallet;
   late Wallet secureWallet;
   late String receiveLbtcSwapId;
   late String receiveBtcSwapId;
   late int initLiquidBalance;
-  late int postReceiveLiquidBalance;
-  late int initBitcoinBalance;
-  late int postReceiveBitcoinBalance;
+  // late int postReceiveLiquidBalance;
+  // late int initBitcoinBalance;
+  // late int postReceiveBitcoinBalance;
   // TODO: Change and move these to github secrets so the testnet coins for our integration
   //  tests are not at risk of being used by others.
   const baseMnemonic =
@@ -45,8 +45,8 @@ void main() {
    * 
    * 
    */
-  const liquidSendInvoice = '';
-  const bitcoinSendInvoice = '';
+  // const liquidSendInvoice = '';
+  // const bitcoinSendInvoice = '';
 
   setUpAll(() async {
     await Future.wait([
@@ -59,18 +59,18 @@ void main() {
 
     walletManagerService = locator<WalletManagerService>();
     // Use the testnet swap watcher service
-    swapWatcherTestnetService = locator<SwapWatcherService>(
-      instanceName:
-          LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
-    );
+    // swapWatcherTestnetService = locator<SwapWatcherService>(
+    //   instanceName:
+    //       LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
+    // );
     swapWatcherMainnetService = locator<SwapWatcherService>(
       instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
     );
     // Get the testnet swap repository
-    swapRepositoryTestnet = locator<SwapRepository>(
-      instanceName:
-          LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
-    );
+    // swapRepositoryTestnet = locator<SwapRepository>(
+    //   instanceName:
+    //       LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
+    // );
     swapRepositoryMainnet = locator<SwapRepository>(
       instanceName:
           LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
@@ -103,7 +103,7 @@ void main() {
     debugPrint('Liquid balance: $liquidBalance');
     debugPrint('Bitcoin balance: $bitcoinBalance');
     initLiquidBalance = liquidBalance.totalSat.toInt();
-    initBitcoinBalance = bitcoinBalance.totalSat.toInt();
+    // initBitcoinBalance = bitcoinBalance.totalSat.toInt();
   });
 
   group(

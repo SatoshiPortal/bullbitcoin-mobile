@@ -382,7 +382,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  @override
   Future<void> updateExpiredSwap({
     required String swapId,
   }) async {
@@ -400,7 +399,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  @override
   Future<void> updateFailedSwap({
     required String swapId,
   }) async {
@@ -419,96 +417,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   /// PRIVATE
-  Future<void> _updateClaimedReceiveSwap({
-    required String swapId,
-    required String receiveAddress,
-    required String txid,
-  }) async {
-    final swapModel = await _boltz.storage.get(swapId);
-    if (swapModel == null) {
-      throw "No swap model found";
-    }
-
-    final swap = swapModel.toEntity();
-    if (swap.status != SwapStatus.pending) {
-      throw "Can only update status of a pending swap";
-    }
-
-    final updatedSwap = swap.maybeMap(
-      lnReceive: (lnReceiveSwap) => lnReceiveSwap.copyWith(
-        receiveAddress: receiveAddress,
-        receiveTxid: txid,
-        completionTime: DateTime.now(),
-        status: SwapStatus.completed,
-      ),
-      orElse: () => throw "Only lnReceive swaps can be claimed this way",
-    );
-
-    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
-  }
-
-  Future<void> _updateClaimedChainSwap({
-    required String swapId,
-    required String receiveAddress,
-    required String txid,
-  }) async {
-    final swapModel = await _boltz.storage.get(swapId);
-    if (swapModel == null) {
-      throw "No swap model found";
-    }
-
-    final swap = swapModel.toEntity();
-    if (swap.status != SwapStatus.paid) {
-      throw "Can only update status of a paid swap";
-    }
-
-    final updatedSwap = swap.maybeMap(
-      chain: (chainSwap) => chainSwap.copyWith(
-        receiveAddress: receiveAddress,
-        receiveTxid: txid,
-        completionTime: DateTime.now(),
-        status: SwapStatus.completed,
-      ),
-      orElse: () => throw "Only chain swaps can be claimed this way",
-    );
-
-    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
-  }
-
-  Future<void> _updateRefundedSendSwap({
-    required String swapId,
-    required String refundAddress,
-    required String txid,
-  }) async {
-    final swapModel = await _boltz.storage.get(swapId);
-    if (swapModel == null) {
-      throw "No swap model found";
-    }
-
-    final swap = swapModel.toEntity();
-    if (swap.status != SwapStatus.paid) {
-      throw "Can only update status of a paid swap";
-    }
-
-    final updatedSwap = swap.maybeMap(
-      lnSend: (lnSendSwap) => lnSendSwap.copyWith(
-        refundAddress: refundAddress,
-        refundTxid: txid,
-        completionTime: DateTime.now(),
-        status: SwapStatus.completed,
-      ),
-      chain: (chainSwap) => chainSwap.copyWith(
-        refundAddress: refundAddress,
-        refundTxid: txid,
-        completionTime: DateTime.now(),
-        status: SwapStatus.completed,
-      ),
-      orElse: () => throw "Only lnSend or chain swaps can be refunded",
-    );
-
-    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
-  }
-
   Future<void> _updateCompletedSendSwap({
     required String swapId,
   }) async {
