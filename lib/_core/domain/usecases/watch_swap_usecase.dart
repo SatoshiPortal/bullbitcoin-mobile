@@ -1,5 +1,6 @@
 import 'package:bb_mobile/_core/domain/entities/swap.dart';
 import 'package:bb_mobile/_core/domain/services/swap_watcher_service.dart';
+import 'package:flutter/material.dart';
 
 class WatchSwapUsecase {
   final SwapWatcherService _watcher;
@@ -9,7 +10,12 @@ class WatchSwapUsecase {
 
   Stream<Swap> execute(String swapId) {
     try {
-      return _watcher.swapStream.where((s) => s.id == swapId);
+      return _watcher.swapStream.where((s) {
+        debugPrint(
+          '[WatchSwapUsecase] swapId: ${s.id}, swap status: ${s.status}',
+        );
+        return s.id == swapId;
+      });
     } catch (e) {
       throw WatchSwapException(e.toString());
     }

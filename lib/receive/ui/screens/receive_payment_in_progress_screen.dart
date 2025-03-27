@@ -1,4 +1,3 @@
-import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
@@ -8,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ReceivePaymentReceivedScreen extends StatelessWidget {
-  const ReceivePaymentReceivedScreen({
+class ReceivePaymentInProgressScreen extends StatelessWidget {
+  const ReceivePaymentInProgressScreen({
     super.key,
     required this.receiveState,
   });
@@ -37,7 +36,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
             },
           ),
         ),
-        body: PaymentReceivedPage(
+        body: PaymentInProgressPage(
           receiveState: receiveState,
         ),
         // child: AmountPage(),
@@ -46,9 +45,8 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
   }
 }
 
-class PaymentReceivedPage extends StatelessWidget {
-  const PaymentReceivedPage({
-    super.key,
+class PaymentInProgressPage extends StatelessWidget {
+  const PaymentInProgressPage({
     required this.receiveState,
   });
 
@@ -58,17 +56,20 @@ class PaymentReceivedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Spacer(),
           BBText(
-            'Payment received',
+            'Payment in progress',
             style: context.font.headlineLarge,
           ),
-          const Gap(24),
+          BBText(
+            'It will be confirmed in a few seconds',
+            style: context.font.headlineMedium,
+          ),
+          const Gap(16),
           BBText(
             receiveState.formattedConfirmedAmountBitcoin,
-            style: context.font.displaySmall,
+            style: context.font.headlineLarge,
           ),
           const Gap(4),
           BBText(
@@ -76,29 +77,7 @@ class PaymentReceivedPage extends StatelessWidget {
             style: context.font.bodyLarge,
             color: context.colour.surface,
           ),
-          const Spacer(),
-          const ReceiveDetailsButton(),
-          const Gap(16),
         ],
-      ),
-    );
-  }
-}
-
-class ReceiveDetailsButton extends StatelessWidget {
-  const ReceiveDetailsButton({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: BBButton.big(
-        label: 'Details',
-        onPressed: () {},
-        bgColor: context.colour.secondary,
-        textColor: context.colour.onSecondary,
       ),
     );
   }

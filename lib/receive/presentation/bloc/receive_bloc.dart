@@ -93,17 +93,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         wallet = wallets.first;
       }
 
-      // Emit the bitcoin state with the wallet already so the UI can already
-      // update before the async operations are done
+      // Emit the bitcoin state with the wallet already for the UI to update
       emit(ReceiveState.bitcoin(wallet: wallet));
 
       final address =
           await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-      emit(
-        (state as BitcoinReceiveState).copyWith(
-          address: address.address,
-        ),
-      );
+
+      // Emit the address so the UI can already show it before the async operations are done
+      emit((state as BitcoinReceiveState).copyWith(address: address.address));
 
       final currencyValues = await Future.wait([
         _getBitcoinUnitUseCase.execute(),
@@ -138,12 +135,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             Uri.parse(payjoin.pjUri).queryParameters['pj'] ?? '';
       } catch (e) {
         debugPrint('Payjoin not available');
+        // TODO: add error handling
       }
 
       emit(
-        (state as BitcoinReceiveState).copyWith(
-          payjoinQueryParameter: payjoinQueryParameter,
-        ),
+        (state as BitcoinReceiveState)
+            .copyWith(payjoinQueryParameter: payjoinQueryParameter),
       );
     } catch (e) {
       emit(
@@ -503,6 +500,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     // Cancel the previous subscription if it exists
     _swapSubscription?.cancel();
     _swapSubscription = _watchSwapUsecase.execute(swapId).listen((updatedSwap) {
+      debugPrint(
+        '[ReceiveBloc] Watched swap ${updatedSwap.id} updated: ${updatedSwap.status}',
+      );
       if (updatedSwap is LnReceiveSwap) {
         add(ReceiveLightningSwapUpdated(updatedSwap));
       }

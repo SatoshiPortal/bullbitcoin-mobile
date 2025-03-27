@@ -479,6 +479,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
       final electrumServer = await _electrum.getElectrumServer(
         network: walletMetadata.network,
       );
+
       return LwkWalletRepositoryImpl.public(
         ctDescriptor: walletMetadata.externalPublicDescriptor,
         dbPath: dbPath,

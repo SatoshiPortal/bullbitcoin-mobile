@@ -60,7 +60,7 @@ class AmountPage extends StatelessWidget {
               ReceiveAmountEntry(),
               Gap(82),
               ReceiveNumberPad(),
-              Gap(40),
+              Gap(82),
             ],
           ),
         ),
