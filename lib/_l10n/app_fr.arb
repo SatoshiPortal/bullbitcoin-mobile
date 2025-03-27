@@ -40,4 +40,8 @@
   "@languageSettingsScreenTitle": {
     "description": "Le titre de l'écran des paramètres de la langue"
   }
+    "backupSettingsScreenTitle": "Backup settings",
+  "@backupSettingsScreenTitle": {
+    "description": "The title of the backup settings screen"
+  }
 }

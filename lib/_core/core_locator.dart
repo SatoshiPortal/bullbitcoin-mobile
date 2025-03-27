@@ -71,6 +71,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 
@@ -116,12 +117,39 @@ class CoreLocator {
 
     // Repositories
     // Register TorRepository right after TorDatasource
+    // - Google Drive Datasource
+    locator.registerLazySingleton<GoogleDriveAppDatasource>(
+      () => GoogleDriveAppDatasourceImpl(),
+    );
+    // - RecoverBullLocalDatasource
+
+    locator.registerLazySingleton<RecoverBullLocalDatasource>(
+      () => RecoverBullLocalDatasourceImpl(),
+    );
+    // - RecoverBullRemoteDatasource
+    locator.registerLazySingleton<RecoverBullRemoteDatasource>(
+      () => RecoverBullRemoteDatasourceImpl.init(
+        Uri.parse(ApiServiceConstants.bullBitcoinKeyServerApiUrlPath),
+      ),
+    );
+    // - FileStorageDataSource
+
+    locator.registerLazySingleton<FileStorageDatasource>(
+      () => FileStorageDatasourceImpl(filePicker: FilePicker.platform),
+    );
+
     locator.registerSingletonWithDependencies<TorRepository>(
       () => TorRepositoryImpl(locator<TorDatasource>()),
       dependsOn: [TorDatasource],
     );
-
+    locator.registerLazySingleton<GoogleDriveRepository>(
+      () => GoogleDriveRepositoryImpl(
+        locator<GoogleDriveAppDatasource>(),
+      ),
+    );
     // Wait for Tor dependencies to be ready
+    // Register TorRepository after TorDatasource is registered
+    // Use waitFor to ensure TorDatasource is ready before TorRepository is created
 
     await locator.isReady<TorRepository>();
     locator.registerSingletonWithDependencies<RecoverBullRepository>(
@@ -132,9 +160,8 @@ class CoreLocator {
       ),
       dependsOn: [TorRepository],
     );
-    locator.registerLazySingleton<GoogleDriveRepository>(
-      () => GoogleDriveRepositoryImpl(locator<GoogleDriveAppDatasource>()),
-    );
+    // await locator.isReady<RecoverBullRepository>();
+
     final walletMetadataBox =
         await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
     locator.registerLazySingleton<WalletMetadataRepository>(
@@ -156,7 +183,9 @@ class CoreLocator {
       ),
     );
     locator.registerLazySingleton<FileSystemRepository>(
-      () => FileSystemRepositoryImpl(locator<FileStorageDatasource>()),
+      () => FileSystemRepositoryImpl(
+        locator<FileStorageDatasource>(),
+      ),
     );
     locator.registerLazySingleton<SeedRepository>(
       () => SeedRepositoryImpl(
@@ -249,13 +278,6 @@ class CoreLocator {
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
-    );
-
-    // Register TorRepository after TorDatasource is registered
-    // Use waitFor to ensure TorDatasource is ready before TorRepository is created
-    locator.registerSingletonWithDependencies<TorRepository>(
-      () => TorRepositoryImpl(locator<TorDatasource>()),
-      dependsOn: [TorDatasource],
     );
 
     // Factories, managers or services responsible for handling specific logic
