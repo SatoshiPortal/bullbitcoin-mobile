@@ -7,7 +7,7 @@ class ConvertCurrencyToSatsAmountUsecase {
 
   ConvertCurrencyToSatsAmountUsecase(
       {required ExchangeRateRepository exchangeRateRepository,
-      required SettingsRepository settingsRepository})
+      required SettingsRepository settingsRepository,})
       : _exchangeRate = exchangeRateRepository,
         _settingsRepository = settingsRepository;
 

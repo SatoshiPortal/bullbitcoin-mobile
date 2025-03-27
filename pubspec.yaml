@@ -77,10 +77,11 @@ dependencies:
     # git:
     #   url: https://github.com/SatoshiPortal/boltz-dart.git
     #   ref: main
-  lwk: 0.1.7
-    # git:
-    #   url: https://github.com/SatoshiPortal/lwk-dart.git
-    #   ref: main
+  lwk: 
+  # 0.1.7
+    git:
+      url: https://github.com/SatoshiPortal/lwk-dart.git
+      ref: develop
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter

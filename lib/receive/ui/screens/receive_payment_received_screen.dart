@@ -1,11 +1,8 @@
 import 'package:bb_mobile/_ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/_ui/components/text/text.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
-import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceivePaymentReceivedScreen extends StatelessWidget {
