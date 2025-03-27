@@ -231,4 +231,14 @@ class ReceiveState with _$ReceiveState {
         return false;
     }
   }
+
+  bool get isPayjoinLoading {
+    if (this is BitcoinReceiveState) {
+      final state = this as BitcoinReceiveState;
+      return state.payjoinQueryParameter.isEmpty &&
+          state.error is! ReceivePayjoinException &&
+          !state.isAddressOnly;
+    }
+    return false;
+  }
 }

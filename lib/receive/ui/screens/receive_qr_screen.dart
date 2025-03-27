@@ -67,6 +67,10 @@ class ReceiveQRDetails extends StatelessWidget {
       (bloc) => bloc.state.addressOrInvoiceOnly,
     );
 
+    final loadingPJ = context.select(
+      (ReceiveBloc bloc) => bloc.state.isPayjoinLoading,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -81,7 +85,18 @@ class ReceiveQRDetails extends StatelessWidget {
             child: QrImageView(data: qrData),
           ),
         ),
-        const Gap(14),
+        if (loadingPJ) ...[
+          const Gap(2),
+          Center(
+            child: BBText(
+              'Loading PayJoin parameters...',
+              style: context.font.labelMedium,
+            ),
+          ),
+          const Gap(2),
+        ] else ...[
+          const Gap(20),
+        ],
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(

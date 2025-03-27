@@ -125,23 +125,22 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         ),
       );
 
-      String payjoinQueryParameter = '';
       try {
         final payjoin = await _receiveWithPayjoinUsecase.execute(
           walletId: wallet.id,
           address: address.address,
         );
-        payjoinQueryParameter =
+        final payjoinQueryParameter =
             Uri.parse(payjoin.pjUri).queryParameters['pj'] ?? '';
-      } catch (e) {
-        debugPrint('Payjoin not available');
-        // TODO: add error handling
-      }
 
-      emit(
-        (state as BitcoinReceiveState)
-            .copyWith(payjoinQueryParameter: payjoinQueryParameter),
-      );
+        emit(
+          (state as BitcoinReceiveState)
+              .copyWith(payjoinQueryParameter: payjoinQueryParameter),
+        );
+      } catch (e) {
+        debugPrint('Payjoin receiver creation failed: $e');
+        emit(state.copyWith(error: e));
+      }
     } catch (e) {
       emit(
         state.copyWith(error: e),
