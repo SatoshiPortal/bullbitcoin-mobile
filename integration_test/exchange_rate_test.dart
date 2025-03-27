@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/_core/data/datasources/bullbitcoin_api_datasource.dart';
-import 'package:bb_mobile/_core/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/_core/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/_utils/constants.dart';
+import 'package:bb_mobile/core/data/datasources/bitcoin_price_datasource.dart';
+import 'package:bb_mobile/core/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
+import 'package:bb_mobile/core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';

@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:bb_mobile/_core/domain/entities/settings.dart';
-import 'package:bb_mobile/_l10n/generated/i18n/app_localizations.dart';
-import 'package:bb_mobile/_ui/themes/app_theme.dart';
-import 'package:bb_mobile/app_startup/presentation/bloc/app_startup_bloc.dart';
-import 'package:bb_mobile/app_startup/ui/app_startup_widget.dart';
-import 'package:bb_mobile/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/bloc_observer.dart';
+import 'package:bb_mobile/core/domain/entities/settings.dart';
+import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
+import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
+import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/l10n/generated/i18n/app_localizations.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:bb_mobile/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:bip85/bip85.dart';
 import 'package:boltz/boltz.dart';
 import 'package:flutter/material.dart';
