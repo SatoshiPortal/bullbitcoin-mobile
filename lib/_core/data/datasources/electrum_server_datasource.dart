@@ -5,22 +5,13 @@ import 'package:bb_mobile/_core/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_utils/constants.dart';
 
-abstract class ElectrumServerDatasource {
-  Future<ElectrumServerModel?> get({required Network network});
-  Future<void> set(
-    ElectrumServerModel server, {
-    required Network network,
-  });
-}
-
-class ElectrumServerDatasourceImpl implements ElectrumServerDatasource {
+class ElectrumServerDatasource {
   final KeyValueStorageDatasource<String> _electrumServerStorage;
 
-  const ElectrumServerDatasourceImpl({
+  const ElectrumServerDatasource({
     required KeyValueStorageDatasource<String> electrumServerStorage,
   }) : _electrumServerStorage = electrumServerStorage;
 
-  @override
   Future<ElectrumServerModel?> get({required Network network}) async {
     final key = '${SettingsConstants.electrumServerKeyPrefix}${network.name}';
     final value = await _electrumServerStorage.getValue(key);
@@ -31,7 +22,6 @@ class ElectrumServerDatasourceImpl implements ElectrumServerDatasource {
     return ElectrumServerModel.fromJson(model);
   }
 
-  @override
   Future<void> set(
     ElectrumServerModel server, {
     required Network network,

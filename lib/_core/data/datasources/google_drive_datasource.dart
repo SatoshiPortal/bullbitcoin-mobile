@@ -6,16 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:recoverbull/recoverbull.dart';
 
-abstract class GoogleDriveAppDatasource {
-  Future<void> connect();
-  Future<void> disconnect();
-  Future<List<int>> fetchContent(String fileId);
-  Future<List<drive.File>> fetchAll();
-  Future<void> store(String content);
-  Future<void> trash(String path);
-}
-
-class GoogleDriveAppDatasourceImpl implements GoogleDriveAppDatasource {
+class GoogleDriveAppDatasource {
   static final _google = GoogleSignIn(
     scopes: ['https://www.googleapis.com/auth/drive.appdata'],
   );
@@ -26,7 +17,6 @@ class GoogleDriveAppDatasourceImpl implements GoogleDriveAppDatasource {
     if (_driveApi == null) throw 'unauthenticated';
   }
 
-  @override
   Future<void> connect() async {
     try {
       GoogleSignInAccount? account = await _google.signInSilently();
@@ -51,13 +41,11 @@ class GoogleDriveAppDatasourceImpl implements GoogleDriveAppDatasource {
     }
   }
 
-  @override
   Future<void> disconnect() async {
     await _google.disconnect();
     _driveApi = null;
   }
 
-  @override
   Future<List<drive.File>> fetchAll() async {
     _checkConnection();
     final response = await _driveApi!.files.list(
@@ -69,7 +57,6 @@ class GoogleDriveAppDatasourceImpl implements GoogleDriveAppDatasource {
     return response.files ?? [];
   }
 
-  @override
   Future<List<int>> fetchContent(String fileId) async {
     _checkConnection();
     final media = await _driveApi!.files.get(
@@ -84,7 +71,6 @@ class GoogleDriveAppDatasourceImpl implements GoogleDriveAppDatasource {
     return bytes;
   }
 
-  @override
   Future<void> trash(String path) async {
     _checkConnection();
     final files = await _driveApi!.files.list(
@@ -102,7 +88,6 @@ class GoogleDriveAppDatasourceImpl implements GoogleDriveAppDatasource {
     );
   }
 
-  @override
   Future<void> store(String content) async {
     _checkConnection();
     final backup = BullBackup.fromJson(content);

@@ -16,68 +16,7 @@ import 'package:payjoin_flutter/send.dart';
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:payjoin_flutter/uri.dart';
 
-abstract class PayjoinDatasource {
-  // requestsForReceivers is a stream that emits a PayjoinReceiverModel every
-  //  time a payjoin request (original tx psbt) is received from a sender.
-  Stream<PayjoinReceiverModel> get requestsForReceivers;
-  // proposalsForSenders is a stream that emits a PayjoinSenderModel every time a
-  //  payjoin proposal (payjoin tx psbt) was sent by a receiver for a sender.
-  Stream<PayjoinSenderModel> get proposalsForSenders;
-  Stream<PayjoinModel> get expired;
-  Future<PayjoinReceiverModel> createReceiver({
-    required String walletId,
-    required String address,
-    required bool isTestnet,
-    required BigInt maxFeeRateSatPerVb,
-    int? expireAfterSec,
-  });
-  Future<PayjoinSenderModel> createSender({
-    required String walletId,
-    required String bip21,
-    required String originalPsbt,
-    required double networkFeesSatPerVb,
-  });
-  Future<PayjoinModel?> get(String id);
-  Future<List<PayjoinModel>> getAll({bool onlyOngoing = true});
-  Future<void> delete(String id);
-  Future<PayjoinReceiverModel> processRequest({
-    required String id,
-    required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
-    required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
-    required List<PayjoinInputPairModel> inputPairs,
-    required FutureOr<String> Function(String) processPsbt,
-  });
-  Future<PayjoinSenderModel> completeSender(
-    String uri, {
-    required String txId,
-  });
-}
-
-class PayjoinNotFoundException implements Exception {
-  final String message;
-
-  PayjoinNotFoundException(this.message);
-}
-
-class ReceiveCreationException implements Exception {
-  final String message;
-
-  ReceiveCreationException(this.message);
-}
-
-class NoValidPayjoinBip21Exception implements Exception {
-  final String message;
-
-  NoValidPayjoinBip21Exception(this.message);
-}
-
-class PayjoinExpiredException implements Exception {
-  final String message;
-
-  PayjoinExpiredException(this.message);
-}
-
-class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
+class PayjoinDatasource {
   final String _payjoinDirectoryUrl;
   final Dio _dio;
   final KeyValueStorageDatasource<String> _storage;
@@ -96,7 +35,7 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
   final Completer _receiversIsolateReady;
   final Completer _sendersIsolateReady;
 
-  PdkPayjoinDatasourceImpl({
+  PayjoinDatasource({
     String payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
     required Dio dio,
     required KeyValueStorageDatasource<String> storage,
@@ -108,19 +47,15 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
     _resumePayjoins();
   }
 
-  @override
   Stream<PayjoinReceiverModel> get requestsForReceivers =>
       _payjoinRequestedController.stream.asBroadcastStream();
 
-  @override
   Stream<PayjoinSenderModel> get proposalsForSenders =>
       _proposalSentController.stream.asBroadcastStream();
 
-  @override
   Stream<PayjoinModel> get expired =>
       _expiredController.stream.asBroadcastStream();
 
-  @override
   Future<PayjoinReceiverModel> createReceiver({
     required String walletId,
     required String address,
@@ -187,7 +122,6 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
     }
   }
 
-  @override
   Future<PayjoinSenderModel> createSender({
     required String walletId,
     required String bip21,
@@ -236,7 +170,6 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
     return model;
   }
 
-  @override
   Future<PayjoinModel?> get(String id) async {
     final value = await _storage.getValue(id);
     if (value == null) {
@@ -250,7 +183,6 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
     }
   }
 
-  @override
   Future<List<PayjoinModel>> getAll({bool onlyOngoing = true}) async {
     final entries = await _storage.getAll();
     final models = <PayjoinModel>[];
@@ -275,12 +207,10 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
     return models;
   }
 
-  @override
   Future<void> delete(String id) async {
     await _storage.deleteValue(id);
   }
 
-  @override
   Future<PayjoinReceiverModel> processRequest({
     required String id,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
@@ -382,7 +312,6 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
     return updatedModel;
   }
 
-  @override
   Future<PayjoinSenderModel> completeSender(
     String uri, {
     required String txId,
@@ -557,7 +486,7 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
         final sender = Sender.fromJson(senderModel.sender);
         log('[Senders Isolate] Requesting payjoin...');
         final context =
-            await PdkPayjoinDatasourceImpl.request(sender: sender, dio: dio);
+            await PayjoinDatasource.request(sender: sender, dio: dio);
         log('[Senders Isolate] Payjoin requested.');
 
         // Periodically check for a proposal from the receiver
@@ -566,8 +495,7 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
           (Timer timer) async {
             log('[Senders Isolate]Checking for proposal in senders isolate');
             try {
-              final proposalPsbt =
-                  await PdkPayjoinDatasourceImpl.getProposalPsbt(
+              final proposalPsbt = await PayjoinDatasource.getProposalPsbt(
                 context: context,
                 dio: dio,
               );
@@ -799,4 +727,28 @@ class PdkPayjoinDatasourceImpl implements PayjoinDatasource {
       }
     }
   }
+}
+
+class PayjoinNotFoundException implements Exception {
+  final String message;
+
+  PayjoinNotFoundException(this.message);
+}
+
+class ReceiveCreationException implements Exception {
+  final String message;
+
+  ReceiveCreationException(this.message);
+}
+
+class NoValidPayjoinBip21Exception implements Exception {
+  final String message;
+
+  NoValidPayjoinBip21Exception(this.message);
+}
+
+class PayjoinExpiredException implements Exception {
+  final String message;
+
+  PayjoinExpiredException(this.message);
 }

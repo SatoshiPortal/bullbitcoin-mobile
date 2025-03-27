@@ -7,210 +7,32 @@ import 'package:bb_mobile/_utils/constants.dart';
 import 'package:boltz/boltz.dart';
 import 'package:flutter/material.dart';
 
-abstract class BoltzDatasource {
-  // Reverse Swaps
-  Future<(int, int)> getBtcReverseSwapLimits();
-  Future<(int, int)> getLbtcReverseSwapLimits();
-
-  Future<SwapModel> createBtcReverseSwap({
-    required String walletId,
-    required String mnemonic,
-    required int index,
-    required int outAmount,
-    required bool isTestnet,
-    required String electrumUrl,
-  });
-  Future<String> claimBtcReverseSwap({
-    required String swapId,
-    required String claimAddress,
-    required int absoluteFees,
-    required bool tryCooperate,
-  });
-  Future<String> broadcastBtcLnSwap({
-    required String swapId,
-    required String signedTxHex,
-    required bool broadcastViaBoltz,
-  });
-  Future<SwapModel> createLBtcReverseSwap({
-    required String walletId,
-    required String mnemonic,
-    required int index,
-    required int outAmount,
-    required bool isTestnet,
-    required String electrumUrl,
-  });
-
-  /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> claimLBtcReverseSwap({
-    required String swapId,
-    required String claimAddress,
-    required int absoluteFees,
-    required bool tryCooperate,
-  });
-  Future<String> broadcastLbtcLnSwap({
-    required String swapId,
-    required String signedTxHex,
-    required bool broadcastViaBoltz,
-  });
-  // Submarine Swaps
-  Future<(int, int)> getBtcSubmarineSwapLimits();
-  Future<(int, int)> getLbtcSubmarineSwapLimits();
-
-  Future<SwapModel> createBtcSubmarineSwap({
-    required String walletId,
-    required String mnemonic,
-    required int index,
-    required String invoice,
-    required bool isTestnet,
-    required String electrumUrl,
-  });
-  Future<void> coopSignBtcSubmarineSwap({required String swapId});
-  // TODO: add function to get invoice preimage
-  /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> refundBtcSubmarineSwap({
-    required String swapId,
-    required String refundAddress,
-    required int absoluteFees,
-    required bool tryCooperate,
-  });
-  Future<SwapModel> createLbtcSubmarineSwap({
-    required String walletId,
-    required String mnemonic,
-    required int index,
-    required String invoice,
-    required bool isTestnet,
-    required String electrumUrl,
-  });
-  Future<void> coopSignLbtcSubmarineSwap({required String swapId});
-  // TODO: add function to get invoice preimage
-  /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> refundLbtcSubmarineSwap({
-    required String swapId,
-    required String refundAddress,
-    required int absoluteFees,
-    required bool tryCooperate,
-  });
-
-  // Chain Swap
-  Future<(int, int)> getBtcToLbtcChainSwapLimits();
-  Future<(int, int)> getLbtcToBtcChainSwapLimits();
-
-  Future<SwapModel> createBtcToLbtcChainSwap({
-    required String sendWalletId,
-    required String mnemonic,
-    required int index,
-    required int amountSat,
-    required bool isTestnet,
-    required String btcElectrumUrl,
-    required String lbtcElectrumUrl,
-    String? receiveWalletId,
-    String? externalRecipientAddress,
-  });
-  Future<SwapModel> createLbtcToBtcChainSwap({
-    required String sendWalletId,
-    required String mnemonic,
-    required int index,
-    required int amountSat,
-    required bool isTestnet,
-    required String btcElectrumUrl,
-    required String lbtcElectrumUrl,
-    String? receiveWalletId,
-    String? externalRecipientAddress,
-  });
-
-  /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> claimBtcToLbtcChainSwap({
-    required String swapId,
-    required String claimLiquidAddress,
-    required String refundBitcoinAddress,
-    required int absoluteFees,
-    required bool tryCooperate,
-  });
-
-  /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> claimLbtcToBtcChainSwap({
-    required String swapId,
-    required String claimBitcoinAddress,
-    required String refundLiquidAddress,
-    required int absoluteFees,
-    required bool tryCooperate,
-  });
-  Future<String> broadcastChainSwapClaim({
-    required String swapId,
-    required String signedTxHex,
-    required bool broadcastViaBoltz,
-  });
-
-  /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> refundBtcToLbtcChainSwap({
-    required String swapId,
-    required String refundBitcoinAddress,
-    required int absoluteFees,
-    required bool tryCooperate,
-  });
-
-  /// Returns a signed tx hex which needs to be broadcasted
-  Future<String> refundLbtcToBtcChainSwap({
-    required String swapId,
-    required String refundLiquidAddress,
-    required int absoluteFees,
-    required bool tryCooperate,
-  });
-
-  Future<String> broadcastChainSwapRefund({
-    required String swapId,
-    required String signedTxHex,
-    required bool broadcastViaBoltz,
-  });
-
-  Future<(int, bool, String?)> decodeInvoice(String invoice);
-
-  // WebSocket stream handling - replace the old methods with these
-  void subscribeToSwaps(List<String> swapIds);
-  void unsubscribeToSwaps(List<String> swapIds);
-  void resetStream();
-
-  // Expose a standardized stream for the repository layer
-  Stream<SwapModel> get swapUpdatesStream;
-  StreamController<SwapModel> get swapUpdatesController;
-  // STORAGE
-  BoltzStorageDatasourceImpl get storage;
-
-  // Add connection management methods
-  Future<void> reconnect();
-}
-
-class BoltzDatasourceImpl implements BoltzDatasource {
+class BoltzDatasource {
   final String _baseUrl;
   late String _httpsUrl;
 
   late BoltzWebSocket _boltzWebSocket;
-  final BoltzStorageDatasourceImpl _boltzStore;
+  final BoltzStorageDatasource _boltzStore;
 
   final _swapUpdatesController = StreamController<SwapModel>.broadcast();
 
-  BoltzDatasourceImpl({
+  BoltzDatasource({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
-    required BoltzStorageDatasourceImpl boltzStore,
+    required BoltzStorageDatasource boltzStore,
   })  : _baseUrl = url,
         _boltzStore = boltzStore {
     _httpsUrl = 'https://$_baseUrl';
     _initializeBoltzWebSocket();
   }
 
-  @override
-  BoltzStorageDatasourceImpl get storage => _boltzStore;
+  BoltzStorageDatasource get storage => _boltzStore;
 
-  @override
   Stream<SwapModel> get swapUpdatesStream => _swapUpdatesController.stream;
 
-  @override
   StreamController<SwapModel> get swapUpdatesController =>
       _swapUpdatesController;
 
   // REVERSE SWAPS
-
-  @override
   Future<SwapModel> createBtcReverseSwap({
     required String walletId,
     required String mnemonic,
@@ -248,7 +70,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     return swapModel;
   }
 
-  @override
   Future<String> claimBtcReverseSwap({
     required String swapId,
     required String claimAddress,
@@ -264,7 +85,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     );
   }
 
-  @override
   Future<SwapModel> createLBtcReverseSwap({
     required String walletId,
     required String mnemonic,
@@ -311,7 +131,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     }
   }
 
-  @override
   Future<String> claimLBtcReverseSwap({
     required String swapId,
     required String claimAddress,
@@ -327,7 +146,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     );
   }
 
-  @override
   Future<String> broadcastBtcLnSwap({
     required String swapId,
     required String signedTxHex,
@@ -344,7 +162,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
           );
   }
 
-  @override
   Future<String> broadcastLbtcLnSwap({
     required String swapId,
     required String signedTxHex,
@@ -361,16 +178,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
           );
   }
 
-  // SUBMARINE SWAPS
-  // @override
-  // Future<swap_entity.SubmarineSwapFeesAndLimits>
-  //     getSubmarineFeesAndLimits() async {
-  //   final fees = Fees(boltzUrl: _url);
-  //   final submarine = await fees.submarine();
-  //   return submarine.toDomainEntity();
-  // }
-
-  @override
   Future<SwapModel> createBtcSubmarineSwap({
     required String walletId,
     required String mnemonic,
@@ -414,7 +221,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     return swapModel;
   }
 
-  @override
   Future<SwapModel> createLbtcSubmarineSwap({
     required String walletId,
     required String mnemonic,
@@ -459,19 +265,16 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     return swapModel;
   }
 
-  @override
   Future<void> coopSignBtcSubmarineSwap({required String swapId}) async {
     final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
     return btcLnSwap.coopCloseSubmarine();
   }
 
-  @override
   Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
     final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
     return lbtcLnSwap.coopCloseSubmarine();
   }
 
-  @override
   Future<String> refundBtcSubmarineSwap({
     required String swapId,
     required String refundAddress,
@@ -486,7 +289,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     );
   }
 
-  @override
   Future<String> refundLbtcSubmarineSwap({
     required String swapId,
     required String refundAddress,
@@ -501,15 +303,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     );
   }
 
-  // // CHAIN SWAPS
-  // @override
-  // Future<ChainFeesAndLimits> getChainFeesAndLimits() async {
-  //   final fees = Fees(boltzUrl: _url);
-  //   final chain = await fees.chain();
-  //   return chain;
-  // }
-
-  @override
   Future<SwapModel> createBtcToLbtcChainSwap({
     required String sendWalletId,
     required String mnemonic,
@@ -557,7 +350,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     return swapModel;
   }
 
-  @override
   Future<SwapModel> createLbtcToBtcChainSwap({
     required String sendWalletId,
     required String mnemonic,
@@ -607,7 +399,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     return swapModel;
   }
 
-  @override
   Future<String> broadcastChainSwapRefund({
     required String swapId,
     required String signedTxHex,
@@ -625,7 +416,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
           );
   }
 
-  @override
   Future<String> claimBtcToLbtcChainSwap({
     required String swapId,
     required String claimLiquidAddress,
@@ -642,7 +432,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     );
   }
 
-  @override
   Future<String> claimLbtcToBtcChainSwap({
     required String swapId,
     required String claimBitcoinAddress,
@@ -659,7 +448,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     );
   }
 
-  @override
   Future<String> broadcastChainSwapClaim({
     required String swapId,
     required String signedTxHex,
@@ -677,7 +465,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
           );
   }
 
-  @override
   Future<String> refundBtcToLbtcChainSwap({
     required String swapId,
     required String refundBitcoinAddress,
@@ -692,7 +479,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     );
   }
 
-  @override
   Future<String> refundLbtcToBtcChainSwap({
     required String swapId,
     required String refundLiquidAddress,
@@ -707,7 +493,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     );
   }
 
-  @override
   Future<(int, int)> getBtcReverseSwapLimits() async {
     try {
       final fees = Fees(boltzUrl: _httpsUrl);
@@ -722,7 +507,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     }
   }
 
-  @override
   Future<(int, int)> getLbtcReverseSwapLimits() async {
     try {
       final fees = Fees(boltzUrl: _httpsUrl);
@@ -737,7 +521,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     }
   }
 
-  @override
   Future<(int, int)> getBtcSubmarineSwapLimits() async {
     final fees = Fees(boltzUrl: _httpsUrl);
     final submarine = await fees.submarine();
@@ -747,7 +530,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     );
   }
 
-  @override
   Future<(int, int)> getLbtcSubmarineSwapLimits() async {
     final fees = Fees(boltzUrl: _httpsUrl);
     final submarine = await fees.submarine();
@@ -757,14 +539,12 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     );
   }
 
-  @override
   Future<(int, int)> getBtcToLbtcChainSwapLimits() async {
     final fees = Fees(boltzUrl: _httpsUrl);
     final chain = await fees.chain();
     return (chain.btcLimits.minimal.toInt(), chain.btcLimits.maximal.toInt());
   }
 
-  @override
   Future<(int, int)> getLbtcToBtcChainSwapLimits() async {
     final fees = Fees(boltzUrl: _httpsUrl);
     final chain = await fees.chain();
@@ -1036,7 +816,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     }
   }
 
-  @override
   Future<void> reconnect() async {
     try {
       debugPrint('Attempting to reconnect to Boltz WebSocket...');
@@ -1046,7 +825,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     }
   }
 
-  @override
   void resetStream() {
     try {
       _boltzWebSocket.dispose();
@@ -1057,7 +835,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     _initializeBoltzWebSocket();
   }
 
-  @override
   void subscribeToSwaps(List<String> swapIds) {
     try {
       _boltzWebSocket.subscribe(swapIds);
@@ -1066,7 +843,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     }
   }
 
-  @override
   void unsubscribeToSwaps(List<String> swapIds) {
     try {
       _boltzWebSocket.unsubscribe(swapIds);
@@ -1075,7 +851,6 @@ class BoltzDatasourceImpl implements BoltzDatasource {
     }
   }
 
-  @override
   Future<(int, bool, String?)> decodeInvoice(String invoice) async {
     // TODO: implement decodeInvoice
     final decoded = await DecodedInvoice.fromString(

@@ -2,26 +2,19 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 
-abstract class BitcoinPriceDatasource {
-  Future<List<String>> get availableCurrencies;
-  Future<double> getPrice(String currencyCode);
-}
-
-class BullBitcoinApiDatasource implements BitcoinPriceDatasource {
+class BitcoinPriceDatasource {
   final Dio _http;
   final _pricePath = '/public/price';
 
-  BullBitcoinApiDatasource({
+  BitcoinPriceDatasource({
     required Dio bullBitcoinHttpClient,
   }) : _http = bullBitcoinHttpClient;
 
-  @override
   Future<List<String>> get availableCurrencies async {
     // TODO: fetch the actual list of currencies from the api
     return ['USD', 'CAD', 'INR', 'CRC', 'EUR'];
   }
 
-  @override
   Future<double> getPrice(String currencyCode) async {
     try {
       final resp = await _http.post(

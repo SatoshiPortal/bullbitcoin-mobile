@@ -8,11 +8,10 @@ import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 
 class RecoverBullRepositoryImpl implements RecoverBullRepository {
-  final RecoverBullLocalDatasource localDatasource;
   final RecoverBullRemoteDatasource remoteDatasource;
   final TorRepository torRepository;
+
   RecoverBullRepositoryImpl({
-    required this.localDatasource,
     required this.remoteDatasource,
     required this.torRepository,
   });
@@ -26,7 +25,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     final plaintextBytes = utf8.encode(plaintext);
 
     final jsonBackup =
-        localDatasource.createBackup(plaintextBytes, backupKeyBytes);
+        RecoverBullDatasource.create(plaintextBytes, backupKeyBytes);
 
     return jsonBackup;
   }
@@ -37,7 +36,7 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     String backupKey,
   ) {
     try {
-      final decryptedBytes = localDatasource.restoreBackup(
+      final decryptedBytes = RecoverBullDatasource.restore(
         backupFile,
         HEX.decode(backupKey),
       );

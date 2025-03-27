@@ -1,47 +1,12 @@
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:recoverbull/recoverbull.dart';
 
-abstract class RecoverBullRemoteDatasource {
-  Future<void> info(SOCKSSocket socket);
-
-  Future<void> store(
-    List<int> backupId,
-    List<int> password,
-    List<int> salt,
-    List<int> backupKey,
-    SOCKSSocket socket,
-  );
-
-  Future<List<int>> fetch(
-    List<int> backupId,
-    List<int> password,
-    List<int> salt,
-    SOCKSSocket socket,
-  );
-
-  Future<void> trash(
-    List<int> backupId,
-    List<int> password,
-    List<int> salt,
-    SOCKSSocket socket,
-  );
-}
-
-class RecoverBullRemoteDatasourceImpl implements RecoverBullRemoteDatasource {
+class RecoverBullRemoteDatasource {
   final KeyServer _keyServer;
 
-  RecoverBullRemoteDatasourceImpl._({
-    required KeyServer keyServer,
-  }) : _keyServer = keyServer;
+  RecoverBullRemoteDatasource({required Uri address})
+      : _keyServer = KeyServer(address: address);
 
-  static RecoverBullRemoteDatasource init(Uri address) {
-    final keyServer = KeyServer(address: address);
-    return RecoverBullRemoteDatasourceImpl._(
-      keyServer: keyServer,
-    );
-  }
-
-  @override
   Future<void> info(SOCKSSocket socket) async {
     try {
       final info = await _keyServer.infos(socks: socket);
@@ -52,7 +17,6 @@ class RecoverBullRemoteDatasourceImpl implements RecoverBullRemoteDatasource {
     }
   }
 
-  @override
   Future<void> store(
     List<int> backupId,
     List<int> password,
@@ -74,7 +38,6 @@ class RecoverBullRemoteDatasourceImpl implements RecoverBullRemoteDatasource {
     }
   }
 
-  @override
   Future<List<int>> fetch(
     List<int> backupId,
     List<int> password,
@@ -94,7 +57,6 @@ class RecoverBullRemoteDatasourceImpl implements RecoverBullRemoteDatasource {
     }
   }
 
-  @override
   Future<void> trash(
     List<int> backupId,
     List<int> password,

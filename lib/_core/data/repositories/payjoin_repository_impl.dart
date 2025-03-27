@@ -178,7 +178,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required String finalizedPsbt,
     required ElectrumServer electrumServer,
   }) async {
-    final blockchain = await BdkBlockchainDatasourceImpl.fromElectrumServer(
+    final blockchain = await BitcoinBlockchainDatasource.fromElectrumServer(
       ElectrumServerModel.fromEntity(electrumServer),
     );
 

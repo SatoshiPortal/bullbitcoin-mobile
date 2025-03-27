@@ -1,7 +1,6 @@
-import 'package:bb_mobile/_core/data/datasources/bip39_word_list_datasource.dart';
+import 'package:bb_mobile/_core/data/datasources/bitcoin_price_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/boltz_storage_datasource.dart';
-import 'package:bb_mobile/_core/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/electrum_server_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/file_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/google_drive_datasource.dart';
@@ -9,7 +8,6 @@ import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/hive_sto
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/impl/secure_storage_data_source_impl.dart';
 import 'package:bb_mobile/_core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/payjoin_datasource.dart';
-import 'package:bb_mobile/_core/data/datasources/recoverbull_local_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/_core/data/datasources/tor_datasource.dart';
@@ -25,7 +23,6 @@ import 'package:bb_mobile/_core/data/repositories/seed_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/settings_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/tor_repository_impl.dart';
 import 'package:bb_mobile/_core/data/repositories/wallet_metadata_repository_impl.dart';
-import 'package:bb_mobile/_core/data/repositories/word_list_repository_impl.dart';
 import 'package:bb_mobile/_core/data/services/mnemonic_seed_factory_impl.dart';
 import 'package:bb_mobile/_core/data/services/payjoin_watcher_service_impl.dart';
 import 'package:bb_mobile/_core/data/services/swap_watcher_impl.dart';
@@ -85,7 +82,7 @@ class CoreLocator {
       // This ensures Tor is properly initialized before it's used
       locator.registerSingletonAsync<TorDatasource>(
         () async {
-          final tor = await TorDatasourceImpl.init();
+          final tor = await TorDatasource.init();
           return tor;
         },
       );
@@ -99,7 +96,7 @@ class CoreLocator {
       instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
     );
     //  - Bull Bitcoin API
-    final bbApiDatasource = BullBitcoinApiDatasource(
+    final bbApiDatasource = BitcoinPriceDatasource(
       bullBitcoinHttpClient: Dio(
         BaseOptions(baseUrl: 'https://api.bullbitcoin.com'),
       ),
@@ -120,23 +117,19 @@ class CoreLocator {
     // Register TorRepository right after TorDatasource
     // - Google Drive Datasource
     locator.registerLazySingleton<GoogleDriveAppDatasource>(
-      () => GoogleDriveAppDatasourceImpl(),
+      () => GoogleDriveAppDatasource(),
     );
-    // - RecoverBullLocalDatasource
 
-    locator.registerLazySingleton<RecoverBullLocalDatasource>(
-      () => RecoverBullLocalDatasourceImpl(),
-    );
     // - RecoverBullRemoteDatasource
     locator.registerLazySingleton<RecoverBullRemoteDatasource>(
-      () => RecoverBullRemoteDatasourceImpl.init(
-        Uri.parse(ApiServiceConstants.bullBitcoinKeyServerApiUrlPath),
+      () => RecoverBullRemoteDatasource(
+        address: Uri.parse(ApiServiceConstants.bullBitcoinKeyServerApiUrlPath),
       ),
     );
     // - FileStorageDataSource
 
     locator.registerLazySingleton<FileStorageDatasource>(
-      () => FileStorageDatasourceImpl(filePicker: FilePicker.platform),
+      () => FileStorageDatasource(filePicker: FilePicker.platform),
     );
 
     locator.registerSingletonWithDependencies<TorRepository>(
@@ -155,7 +148,6 @@ class CoreLocator {
     await locator.isReady<TorRepository>();
     locator.registerSingletonWithDependencies<RecoverBullRepository>(
       () => RecoverBullRepositoryImpl(
-        localDatasource: locator<RecoverBullLocalDatasource>(),
         remoteDatasource: locator<RecoverBullRemoteDatasource>(),
         torRepository: locator<TorRepository>(),
       ),
@@ -167,7 +159,7 @@ class CoreLocator {
         await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
     locator.registerLazySingleton<WalletMetadataRepository>(
       () => WalletMetadataRepositoryImpl(
-        source: WalletMetadataDatasourceImpl(
+        source: WalletMetadataDatasource(
           walletMetadataStorage:
               HiveStorageDatasourceImpl<String>(walletMetadataBox),
         ),
@@ -177,7 +169,7 @@ class CoreLocator {
         await Hive.openBox<String>(HiveBoxNameConstants.electrumServers);
     locator.registerLazySingleton<ElectrumServerRepository>(
       () => ElectrumServerRepositoryImpl(
-        electrumServerDatasource: ElectrumServerDatasourceImpl(
+        electrumServerDatasource: ElectrumServerDatasource(
           electrumServerStorage:
               HiveStorageDatasourceImpl<String>(electrumServersBox),
         ),
@@ -190,7 +182,7 @@ class CoreLocator {
     );
     locator.registerLazySingleton<SeedRepository>(
       () => SeedRepositoryImpl(
-        source: SeedDatasourceImpl(
+        source: SeedDatasource(
           secureStorage: locator<KeyValueStorageDatasource<String>>(
             instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
           ),
@@ -204,14 +196,9 @@ class CoreLocator {
         storage: HiveStorageDatasourceImpl<String>(settingsBox),
       ),
     );
-    locator.registerLazySingleton<WordListRepository>(
-      () => WordListRepositoryImpl(
-        dataSource: Bip39EnglishWordListDatasourceImpl(),
-      ),
-    );
     final pdkPayjoinsBox =
         await Hive.openBox<String>(HiveBoxNameConstants.pdkPayjoins);
-    final pdkPayjoinDataSource = PdkPayjoinDatasourceImpl(
+    final pdkPayjoinDataSource = PayjoinDatasource(
       dio: Dio(),
       storage: HiveStorageDatasourceImpl<String>(pdkPayjoinsBox),
     );
@@ -222,8 +209,8 @@ class CoreLocator {
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltz: BoltzDatasourceImpl(
-          boltzStore: BoltzStorageDatasourceImpl(
+        boltz: BoltzDatasource(
+          boltzStore: BoltzStorageDatasource(
             secureSwapStorage: locator<KeyValueStorageDatasource<String>>(
               instanceName:
                   LocatorInstanceNameConstants.secureStorageDatasource,
@@ -251,9 +238,9 @@ class CoreLocator {
     );
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltz: BoltzDatasourceImpl(
+        boltz: BoltzDatasource(
           url: ApiServiceConstants.boltzTestnetUrlPath,
-          boltzStore: BoltzStorageDatasourceImpl(
+          boltzStore: BoltzStorageDatasource(
             secureSwapStorage: locator<KeyValueStorageDatasource<String>>(
               instanceName:
                   LocatorInstanceNameConstants.secureStorageDatasource,

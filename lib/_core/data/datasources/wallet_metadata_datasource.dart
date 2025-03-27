@@ -7,36 +7,13 @@ import 'package:bb_mobile/_core/domain/entities/wallet_metadata.dart';
 import 'package:bb_mobile/_utils/bip32_derivation.dart';
 import 'package:bb_mobile/_utils/descriptor_derivation.dart';
 
-abstract class WalletMetadataDatasource {
-  Future<WalletMetadataModel> deriveFromSeed({
-    required Seed seed,
-    required Network network,
-    required ScriptType scriptType,
-    required String label,
-    required bool isDefault,
-  });
-  Future<WalletMetadataModel> deriveFromXpub({
-    required String xpub,
-    required Network network,
-    required ScriptType scriptType,
-    required String label,
-  });
-  Future<void> store(
-    WalletMetadataModel metadata,
-  );
-  Future<WalletMetadataModel?> get(String walletId);
-  Future<List<WalletMetadataModel>> getAll();
-  Future<void> delete(String walletId);
-}
-
-class WalletMetadataDatasourceImpl implements WalletMetadataDatasource {
+class WalletMetadataDatasource {
   final KeyValueStorageDatasource<String> _walletMetadataStorage;
 
-  const WalletMetadataDatasourceImpl({
+  const WalletMetadataDatasource({
     required KeyValueStorageDatasource<String> walletMetadataStorage,
   }) : _walletMetadataStorage = walletMetadataStorage;
 
-  @override
   Future<WalletMetadataModel> deriveFromSeed({
     required Seed seed,
     required Network network,
@@ -100,7 +77,6 @@ class WalletMetadataDatasourceImpl implements WalletMetadataDatasource {
     );
   }
 
-  @override
   Future<WalletMetadataModel> deriveFromXpub({
     required String xpub,
     required Network network,
@@ -148,7 +124,6 @@ class WalletMetadataDatasourceImpl implements WalletMetadataDatasource {
     );
   }
 
-  @override
   Future<void> store(
     WalletMetadataModel metadata,
   ) async {
@@ -156,7 +131,6 @@ class WalletMetadataDatasourceImpl implements WalletMetadataDatasource {
     await _walletMetadataStorage.saveValue(key: metadata.id, value: value);
   }
 
-  @override
   Future<WalletMetadataModel?> get(String walletId) async {
     final value = await _walletMetadataStorage.getValue(walletId);
 
@@ -170,7 +144,6 @@ class WalletMetadataDatasourceImpl implements WalletMetadataDatasource {
     return metadata;
   }
 
-  @override
   Future<List<WalletMetadataModel>> getAll() async {
     final map = await _walletMetadataStorage.getAll();
 
@@ -180,7 +153,6 @@ class WalletMetadataDatasourceImpl implements WalletMetadataDatasource {
         .toList();
   }
 
-  @override
   Future<void> delete(String walletId) {
     return _walletMetadataStorage.deleteValue(walletId);
   }
