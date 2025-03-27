@@ -129,6 +129,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       );
 
       String payjoinQueryParameter = '';
+
+      emit((state as BitcoinReceiveState).copyWith(loadingPJ: true));
       try {
         final payjoin = await _receiveWithPayjoinUsecase.execute(
           walletId: wallet.id,
@@ -143,6 +145,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       emit(
         (state as BitcoinReceiveState).copyWith(
           payjoinQueryParameter: payjoinQueryParameter,
+          loadingPJ: false,
         ),
       );
     } catch (e) {

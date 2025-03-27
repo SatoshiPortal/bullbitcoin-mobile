@@ -13,6 +13,7 @@ class ReceiveState with _$ReceiveState {
     @Default('') String inputAmount,
     BigInt? confirmedAmountSat,
     @Default('') String note,
+    @Default(false) bool loadingPJ,
     @Default('') String payjoinQueryParameter,
     @Default(false) bool isAddressOnly,
     @Default('') String txId,
@@ -230,5 +231,12 @@ class ReceiveState with _$ReceiveState {
       case _:
         return false;
     }
+  }
+
+  bool loadingPayjoin() {
+    if (this is BitcoinReceiveState) {
+      return (this as BitcoinReceiveState).loadingPJ;
+    }
+    return false;
   }
 }
