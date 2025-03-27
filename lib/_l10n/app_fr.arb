@@ -40,8 +40,12 @@
   "@languageSettingsScreenTitle": {
     "description": "Le titre de l'écran des paramètres de la langue"
   },
-  "backupSettingsScreenTitle": "Backup settings",
+  "backupSettingsScreenTitle": "Paramètres de sauvegarde",
   "@backupSettingsScreenTitle": {
     "description": "The title of the backup settings screen"
-  }
+  },
+  "backupSettingsLabel": "Paramètres de sauvegarde",
+  "@backupSettingsLabel": {
+    "description": "The label for the button to access the backup settings"
+  },
 }
