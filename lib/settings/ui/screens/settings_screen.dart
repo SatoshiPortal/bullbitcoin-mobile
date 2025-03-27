@@ -27,6 +27,13 @@ class SettingsScreen extends StatelessWidget {
                 trailing: const SatsBitcoinUnitSwitch(),
               ),
               ListTile(
+                title: Text(context.loc.backupSettingsLabel),
+                onTap: () {
+                  context.pushNamed(SettingsSubroute.backupSettings.name);
+                },
+                trailing: const Icon(Icons.chevron_right),
+              ),
+              ListTile(
                 title: Text(context.loc.pinCodeSettingsLabel),
                 onTap: () {
                   context.pushNamed(SettingsSubroute.pinCode.name);

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/_ui/components/dialpad/dialPad.dart';
+import 'package:bb_mobile/_ui/components/dialpad/dial_pad.dart';
 import 'package:bb_mobile/receive/presentation/bloc/receive_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_metadata.freezed.dart';
+part 'wallet_metadata.g.dart';
 
 enum Network {
   bitcoinMainnet(
@@ -104,4 +105,7 @@ class WalletMetadata with _$WalletMetadata {
     required WalletSource source,
   }) = _WalletMetadata;
   const WalletMetadata._();
+
+  factory WalletMetadata.fromJson(Map<String, dynamic> json) =>
+      _$WalletMetadataFromJson(json);
 }

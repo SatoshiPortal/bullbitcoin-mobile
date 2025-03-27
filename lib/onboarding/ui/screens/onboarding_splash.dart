@@ -1,11 +1,13 @@
 import 'package:bb_mobile/_ui/components/buttons/button.dart';
 import 'package:bb_mobile/_ui/themes/app_theme.dart';
+import 'package:bb_mobile/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/gen/assets.gen.dart';
 import 'package:bb_mobile/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/onboarding/ui/widgets/create_wallet_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({
@@ -74,6 +76,7 @@ class _Actions extends StatelessWidget {
         else ...[
           const CreateWalletButton(),
           const Gap(10),
+          //TODO; Move physical wallet recovery to recover wallet feature
           BBButton.big(
             label: 'Recover Wallet Backup',
             bgColor: Colors.transparent,
@@ -81,10 +84,13 @@ class _Actions extends StatelessWidget {
             iconData: Icons.history_edu,
             outlined: true,
             onPressed: () async {
-              context
-                  .read<OnboardingBloc>()
-                  .add(const OnboardingGoToRecoverStep());
-              // context.pushNamed(AppRoute.recoverWallet.name);
+              // context
+              //     .read<OnboardingBloc>()
+              //     .add(const OnboardingGoToRecoverStep());
+              context.pushNamed(
+                BackupSettingsSubroute.recoverOptions.name,
+                extra: true,
+              );
             },
           ),
         ],

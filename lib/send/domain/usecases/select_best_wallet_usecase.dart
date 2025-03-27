@@ -14,7 +14,7 @@ class SelectBestWalletUsecase {
     BigInt? amountSat,
   }) async {
     try {
-      final wallets = await _walletManager.getAllWallets();
+      final wallets = await _walletManager.getWallets();
 
       if (request is BitcoinRequest || request is LiquidRequest) {
         if (amountSat == null) throw 'amountSat should be specified';
