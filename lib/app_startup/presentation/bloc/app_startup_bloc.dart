@@ -59,9 +59,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
       if (doDefaultWalletsExist) {
         final isTorIniatizationEnabled =
             await _checkForTorInitializationOnStartupUsecase.execute();
-        print(
-          'AppStartupBloc: isTorIniatizationEnabled: $isTorIniatizationEnabled',
-        );
         if (isTorIniatizationEnabled) {
           await _initializeTorUsecase.execute();
         }
