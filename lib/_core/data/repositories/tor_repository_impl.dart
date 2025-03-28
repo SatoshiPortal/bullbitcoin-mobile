@@ -6,14 +6,12 @@ import 'package:recoverbull/recoverbull.dart';
 
 class TorRepositoryImpl implements TorRepository {
   final TorDatasource _torDatasource;
-  bool _initialized = false;
 
   TorRepositoryImpl(this._torDatasource);
 
   Future<void> _ensureInitialized() async {
-    if (!_initialized) {
+    if (!_torDatasource.started) {
       await start();
-      _initialized = true;
     }
   }
 
@@ -44,7 +42,7 @@ class TorRepositoryImpl implements TorRepository {
 
   @override
   Future<void> start() async {
-    await _torDatasource.startTor();
+    await _torDatasource.start();
     debugPrint('Tor started at port: ${_torDatasource.port}');
   }
 }

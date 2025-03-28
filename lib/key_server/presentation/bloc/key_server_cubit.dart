@@ -45,10 +45,24 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }
 
   Future<void> checkConnection() async {
-    await _handleServerOperation(
-      checkServerConnectionUsecase.execute,
-      'Check Connection',
-    );
+    emit(state.copyWith(torStatus: TorStatus.connecting));
+    try {
+      for (var attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          await checkServerConnectionUsecase.execute();
+          emit(state.copyWith(torStatus: TorStatus.online));
+          return;
+        } catch (e) {
+          if (attempt == maxRetries - 1) {
+            throw const KeyServerError.failedToConnect();
+          }
+          await Future.delayed(retryDelay);
+        }
+      }
+    } catch (e) {
+      emit(state.copyWith(torStatus: TorStatus.offline));
+      rethrow;
+    }
   }
 
   void clearError() =>
@@ -353,46 +367,38 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     emit(
       state.copyWith(
         status: const KeyServerOperationStatus.loading(),
-        torStatus: TorStatus.connecting,
       ),
     );
 
     try {
-      if (operation == checkServerConnectionUsecase.execute) {
-        // Only retry for connection checks
-        for (var attempt = 0; attempt < maxRetries; attempt++) {
-          try {
-            final result = await operation();
-            emit(
-              state.copyWith(
-                status: const KeyServerOperationStatus.success(),
-                torStatus: TorStatus.online,
-              ),
-            );
-            return result;
-          } catch (e) {
-            final isLastAttempt = attempt == maxRetries - 1;
-            if (isLastAttempt) {
-              throw const KeyServerError.failedToConnect();
-            }
-            await Future.delayed(retryDelay);
-          }
-        }
-      } else {
-        // Execute other operations only once
-        final result = await operation();
-        emit(
-          state.copyWith(
-            status: const KeyServerOperationStatus.success(),
-            torStatus: TorStatus.online,
-          ),
-        );
-        return result;
-      }
+      // Always check connection before any key server operation
+      await checkConnection();
+
+      final result = await operation();
+      emit(
+        state.copyWith(
+          status: const KeyServerOperationStatus.success(),
+        ),
+      );
+      return result;
+    } on KeyServerError catch (e) {
+      debugPrint('$operationName failed: ${e.message}');
+      emit(
+        state.copyWith(
+          status: KeyServerOperationStatus.failure(message: e.message),
+        ),
+      );
+      rethrow;
     } catch (e) {
-      debugPrint('$operationName failed: ${(e as KeyServerError).message}');
-      throw 'Key server unavailable. Please check your connection.';
+      debugPrint('Unexpected error in $operationName: $e');
+      emit(
+        state.copyWith(
+          status: const KeyServerOperationStatus.failure(
+            message: 'Operation failed. Please check your connection.',
+          ),
+        ),
+      );
+      rethrow;
     }
-    throw Exception('Unexpected error in $operationName');
   }
 }
