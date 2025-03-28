@@ -122,7 +122,9 @@ abstract class SwapRepository {
   Future<Swap> getSwap({
     required String swapId,
   });
-
+  Future<Swap?> getSwapByTxId({
+    required String txid,
+  });
   Future<List<Swap>> getOngoingSwaps();
   Future<List<Swap>> getAllSwaps();
 

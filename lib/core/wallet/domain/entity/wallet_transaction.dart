@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -39,18 +40,19 @@ sealed class WalletTransaction with _$WalletTransaction {
     required Network network,
   }) = ReceiveTransactionDetail;
   factory WalletTransaction.lnSwap({
-    required String swapId,
+    required String walletId,
+    required String txId,
     required int amount,
-    required int fees,
     DateTime? confirmationTime,
     required Network network,
+    required Swap swap,
   }) = LnSwapTransactionDetail;
   factory WalletTransaction.chainSwap({
-    required String swapId,
+    required String walletId,
     required int amount,
-    required int fees,
     DateTime? confirmationTime,
     required Network network,
+    required Swap swap,
   }) = ChainSwapTransactionDetail;
   factory WalletTransaction.self({
     required String walletId,

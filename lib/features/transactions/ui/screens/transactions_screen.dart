@@ -95,6 +95,9 @@ class TxsList extends StatelessWidget {
         color = context.colour.tertiary;
         walletType = 'Liquid';
     }
+    if (tx.type == TxType.lnSwap) {
+      walletType = 'Lightning';
+    }
 
     final type = tx.type;
     switch (type) {
@@ -108,7 +111,7 @@ class TxsList extends StatelessWidget {
         icon = Icons.swap_horiz;
 
       case TxType.lnSwap:
-        icon = Icons.swap_horiz;
+        icon = Icons.arrow_downward;
 
       case TxType.chainSwap:
         icon = Icons.swap_horiz;
@@ -123,7 +126,7 @@ class TxsList extends StatelessWidget {
         .select((TransactionsCubit cubit) => cubit.state.sortedTransactions);
 
     final List<TxItem> txItems = [];
-    if (txs != null) {
+    if (txs.isNotEmpty) {
       for (final tx in txs) {
         final (icon, color, type) = getTxDetails(context, tx);
         String? formattedDate;

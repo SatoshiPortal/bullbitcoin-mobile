@@ -6,8 +6,6 @@ import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 
-
-
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDatasource _boltz;
 
@@ -586,5 +584,39 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       isExpired: expired,
       magicBip21: bip21,
     );
+  }
+
+  @override
+  Future<Swap?> getSwapByTxId({required String txid}) async {
+    // TODO: implement getSwapByTxId
+    final allSwapModels = await _boltz.storage.getAll();
+    if (allSwapModels.isEmpty) {
+      return null;
+    }
+    for (final swapModel in allSwapModels) {
+      final swap = swapModel.toEntity();
+      if (swap.type == SwapType.lightningToBitcoin ||
+          swap.type == SwapType.lightningToLiquid) {
+        final receiveLnSwap = swap as LnReceiveSwap;
+        if (receiveLnSwap.receiveTxid == txid) {
+          return swap;
+        }
+      } else if (swap.type == SwapType.bitcoinToLightning ||
+          swap.type == SwapType.liquidToLightning) {
+        final sendLnSwap = swap as LnSendSwap;
+
+        if (sendLnSwap.sendTxid == txid) {
+          return swap;
+        }
+      } else if (swap.type == SwapType.bitcoinToLiquid ||
+          swap.type == SwapType.liquidToBitcoin) {
+        final chainSwap = swap as ChainSwap;
+
+        if (chainSwap.sendTxid == txid || chainSwap.receiveTxid == txid) {
+          return swap;
+        }
+      }
+    }
+    return null;
   }
 }

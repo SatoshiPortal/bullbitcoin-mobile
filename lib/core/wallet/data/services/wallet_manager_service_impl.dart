@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/liquid/data/repository/lwk_wallet_repository_impl
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/balance.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
@@ -27,15 +28,21 @@ class WalletManagerServiceImpl implements WalletManagerService {
   final WalletMetadataRepository _walletMetadata;
   final SeedRepository _seed;
   final ElectrumServerRepository _electrum;
+  final SwapRepository _testnetSwapRepository;
+  final SwapRepository _mainnetSwapRepository;
   final Map<String, WalletRepository> _wallets = {};
 
   WalletManagerServiceImpl({
     required WalletMetadataRepository walletMetadataRepository,
     required SeedRepository seedRepository,
     required ElectrumServerRepository electrumServerRepository,
+    required SwapRepository testnetSwapRepository,
+    required SwapRepository mainnetSwapRepository,
   })  : _walletMetadata = walletMetadataRepository,
         _seed = seedRepository,
-        _electrum = electrumServerRepository;
+        _electrum = electrumServerRepository,
+        _testnetSwapRepository = testnetSwapRepository,
+        _mainnetSwapRepository = mainnetSwapRepository;
 
   @override
   Future<bool> doDefaultWalletsExist({required Environment environment}) async {
@@ -610,36 +617,57 @@ class WalletManagerServiceImpl implements WalletManagerService {
     final network = metadata?.network;
     final transactions = await wallet.getTransactions(walletId);
     final walletTxs = <WalletTransaction>[];
-
+    final swapRepository =
+        network!.isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
     for (final tx in transactions) {
-      switch (tx.type) {
-        case TxType.send:
-          walletTxs.add(SendTransactionDetail(
+      // check if a swap with this txid exists
+      // check if this is a payjoin
+      final swap = await swapRepository.getSwapByTxId(txid: tx.txid);
+      if (swap != null) {
+        if (swap.isLnReceiveSwap || swap.isLnSendSwap) {
+          walletTxs.add(
+            LnSwapTransactionDetail(
+              amount: tx.amount,
+              txId: tx.txid,
+              walletId: walletId,
+              network: network,
+              confirmationTime: tx.confirmationTime,
+              swap: swap,
+            ),
+          );
+        } else if (swap.isChainSwap) {
+          walletTxs.add(
+            ChainSwapTransactionDetail(
+              amount: tx.amount,
+              walletId: walletId,
+              network: network,
+              confirmationTime: tx.confirmationTime,
+              swap: swap,
+            ),
+          );
+        }
+      } else if (tx.type == TxType.send) {
+        walletTxs.add(
+          SendTransactionDetail(
             amount: tx.amount,
             fees: tx.fees!,
             txId: tx.txid,
             walletId: walletId,
-            network: network!,
+            network: network,
             confirmationTime: tx.confirmationTime,
-          ));
-        case TxType.receive:
-          walletTxs.add(ReceiveTransactionDetail(
+          ),
+        );
+      } else if (tx.type == TxType.receive) {
+        walletTxs.add(
+          ReceiveTransactionDetail(
             amount: tx.amount,
             fees: tx.fees,
             txId: tx.txid,
             walletId: walletId,
-            network: network!,
+            network: network,
             confirmationTime: tx.confirmationTime,
-          ));
-        case TxType.self:
-          // TODO: Handle this case.
-          throw UnimplementedError();
-        case TxType.lnSwap:
-          // TODO: Handle this case.
-          throw UnimplementedError();
-        case TxType.chainSwap:
-          // TODO: Handle this case.
-          throw UnimplementedError();
+          ),
+        );
       }
     }
     return walletTxs;
