@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/balance.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
@@ -362,6 +363,42 @@ class BdkWalletRepositoryImpl
     }
 
     return balance;
+  }
+
+  @override
+  Future<List<BaseWalletTransaction>> getTransactions(String walletId) async {
+    // TODO: implement getTransactions
+    final transactions = _wallet.listTransactions(includeRaw: false);
+    final List<BaseWalletTransaction> walletTxs = [];
+    for (final tx in transactions) {
+      debugPrint(tx.transaction.toString());
+      final txid = await tx.transaction?.txid();
+      final type = tx.sent == BigInt.from(0) && tx.received > BigInt.from(0)
+          ? TxType.receive
+          : tx.sent != BigInt.from(0) && tx.received != BigInt.from(0)
+              ? TxType.self
+              : TxType.send;
+      final amount = type == TxType.send
+          ? tx.sent as int
+          : type == TxType.receive
+              ? tx.received as int
+              : tx.fee != null
+                  ? tx.fee! as int
+                  : 0;
+      final fees = tx.fee;
+      final confirmationDateTime = tx.confirmationTime?.timestamp ?? 0;
+      final walletTx = BaseWalletTransaction(
+        txid: txid!,
+        type: type,
+        amount: amount,
+        fees: fees != null ? fees as int : null,
+        confirmationTime: confirmationDateTime != 0
+            ? DateTime.fromMillisecondsSinceEpoch(confirmationDateTime as int)
+            : null,
+      );
+      walletTxs.add(walletTx);
+    }
+    return walletTxs;
   }
 }
 
