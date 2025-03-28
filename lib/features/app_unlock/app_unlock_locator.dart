@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/app_unlock/data/repositories/failed_unlock_attempts_repository_impl.dart';
 import 'package:bb_mobile/features/app_unlock/data/services/exponential_timeout_calculator.dart';

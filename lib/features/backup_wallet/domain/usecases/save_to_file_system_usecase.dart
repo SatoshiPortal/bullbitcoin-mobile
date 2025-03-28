@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/domain/repositories/file_system_repository.dart';
+import 'package:bb_mobile/core/recoverbull/domain/repositories/file_system_repository.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/entities/backup_info.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 

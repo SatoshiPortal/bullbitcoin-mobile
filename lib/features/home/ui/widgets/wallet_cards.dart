@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bb_mobile/ui/components/cards/wallet_card.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';

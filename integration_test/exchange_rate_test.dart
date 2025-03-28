@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/data/datasources/bitcoin_price_datasource.dart';
-import 'package:bb_mobile/core/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/get_available_currencies_usecase.dart';
+
+import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';

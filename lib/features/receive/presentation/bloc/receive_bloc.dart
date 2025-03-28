@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/domain/entities/settings.dart';
-import 'package:bb_mobile/core/domain/entities/swap.dart';
-import 'package:bb_mobile/core/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/get_bitcoin_unit_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/receive_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_use_case.dart';
 import 'package:flutter/material.dart';

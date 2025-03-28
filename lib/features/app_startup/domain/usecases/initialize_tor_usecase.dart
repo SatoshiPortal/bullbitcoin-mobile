@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/domain/repositories/tor_repository.dart';
+
+import 'package:bb_mobile/core/tor/domain/repositories/tor_repository.dart';
 
 class InitializeTorUsecase {
   final TorRepository _torRepository;

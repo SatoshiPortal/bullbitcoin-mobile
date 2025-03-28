@@ -1,8 +1,9 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/domain/repositories/recoverbull_repository.dart';
-import 'package:bb_mobile/core/domain/repositories/tor_repository.dart';
-import 'package:bb_mobile/core/domain/services/wallet_manager_service.dart';
+
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/core/tor/domain/repositories/tor_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/features/backup_wallet/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/check_key_server_connection_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/derive_backup_key_from_default_wallet_usecase.dart';

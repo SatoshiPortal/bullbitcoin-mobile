@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/domain/repositories/tor_repository.dart';
-import 'package:bb_mobile/core/domain/services/mnemonic_seed_factory.dart';
-import 'package:bb_mobile/core/domain/services/wallet_manager_service.dart';
+
+import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/tor/domain/repositories/tor_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/init_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_tor_usecase.dart';

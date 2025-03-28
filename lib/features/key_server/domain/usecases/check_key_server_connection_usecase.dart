@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/domain/repositories/recoverbull_repository.dart';
+
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 
 class CheckKeyServerConnectionUsecase {
   final RecoverBullRepository _recoverBullRepository;

@@ -1,11 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/core/domain/usecases/fetch_backup_from_file_system_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/find_mnemonic_words_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/google_drive/connect_google_drive_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/select_file_path_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
+import 'package:bb_mobile/core/seed/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/entities/backup_info.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';

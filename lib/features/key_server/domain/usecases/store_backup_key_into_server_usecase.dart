@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/features/key_server/data/services/backup_key_service.dart';
 
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart'

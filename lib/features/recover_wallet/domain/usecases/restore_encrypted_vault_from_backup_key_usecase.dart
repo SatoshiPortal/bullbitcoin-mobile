@@ -1,11 +1,12 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/domain/entities/recoverbull_wallet.dart';
-import 'package:bb_mobile/core/domain/entities/seed.dart';
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/core/domain/repositories/recoverbull_repository.dart';
-import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/core/domain/services/wallet_manager_service.dart';
+
+import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/entities/backup_info.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/errors/recover_wallet_error.dart';

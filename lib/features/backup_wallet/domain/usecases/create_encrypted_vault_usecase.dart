@@ -1,12 +1,13 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/data/models/seed_model.dart';
-import 'package:bb_mobile/core/domain/entities/recoverbull_wallet.dart';
-import 'package:bb_mobile/core/domain/repositories/recoverbull_repository.dart';
-import 'package:bb_mobile/core/domain/repositories/seed_repository.dart';
-import 'package:bb_mobile/core/domain/repositories/wallet_metadata_repository.dart';
+
+import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
+import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/bip85_derivation.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class CreateEncryptedVaultUsecase {

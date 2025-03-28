@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/domain/services/wallet_manager_service.dart';
-import 'package:bb_mobile/core/domain/usecases/get_wallets_usecase.dart';
+
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

@@ -1,15 +1,15 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/domain/entities/payjoin.dart';
-import 'package:bb_mobile/core/domain/entities/settings.dart';
-import 'package:bb_mobile/core/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/core/domain/services/payjoin_watcher_service.dart';
-import 'package:bb_mobile/core/domain/services/wallet_manager_service.dart';
-import 'package:bb_mobile/core/domain/usecases/build_transaction_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/receive_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/build_transaction_usecase.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';

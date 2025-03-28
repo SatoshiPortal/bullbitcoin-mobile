@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/domain/entities/settings.dart';
-import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 
 class SetBitcoinUnitUsecase {
   final SettingsRepository _settingsRepository;

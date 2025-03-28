@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/domain/entities/tx_input.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/foundation.dart';
 

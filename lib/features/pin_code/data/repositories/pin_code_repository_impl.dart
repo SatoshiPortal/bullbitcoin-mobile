@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/features/pin_code/domain/repositories/pin_code_repository.dart';
 
 class PinCodeRepositoryImpl implements PinCodeRepository {

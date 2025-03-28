@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/domain/entities/settings.dart';
-import 'package:bb_mobile/core/domain/entities/swap.dart';
-import 'package:bb_mobile/core/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/core/domain/repositories/swap_repository.dart';
-import 'package:bb_mobile/core/domain/services/swap_watcher_service.dart';
-import 'package:bb_mobile/core/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';

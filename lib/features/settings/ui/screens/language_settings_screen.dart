@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/domain/entities/settings.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/language_option.dart';

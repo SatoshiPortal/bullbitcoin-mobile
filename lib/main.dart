@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bb_mobile/bloc_observer.dart';
-import 'package:bb_mobile/core/domain/entities/settings.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';

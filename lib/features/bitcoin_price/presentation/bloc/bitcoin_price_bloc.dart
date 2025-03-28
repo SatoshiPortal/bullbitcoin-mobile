@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/domain/entities/settings.dart';
-import 'package:bb_mobile/core/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/domain/usecases/get_currency_usecase.dart';
+
+import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

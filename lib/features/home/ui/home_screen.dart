@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/domain/entities/settings.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bb_mobile/features/home/ui/widgets/home_bottom_buttons.dart';
 import 'package:bb_mobile/features/home/ui/widgets/top_section.dart';

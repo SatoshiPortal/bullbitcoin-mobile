@@ -1,9 +1,11 @@
-import 'package:bb_mobile/core/domain/entities/settings.dart';
-import 'package:bb_mobile/core/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/domain/entities/wallet_metadata.dart';
-import 'package:bb_mobile/core/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/domain/services/mnemonic_seed_factory.dart';
-import 'package:bb_mobile/core/domain/services/wallet_manager_service.dart';
+
+
+import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 
 class RecoverOrCreateWalletUsecase {
   final SettingsRepository _settingsRepository;
