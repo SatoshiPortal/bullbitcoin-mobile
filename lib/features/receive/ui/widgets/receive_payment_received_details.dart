@@ -11,8 +11,6 @@ class ReceivePaymentReceivedDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Text('ReceivePaymentReceivedDetailsTable'),
-    );
+    return const Text('ReceivePaymentReceivedDetailsTable');
   }
 }
