@@ -23,14 +23,26 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       final wallets = await _getWalletsUsecase.execute(
         onlyDefaults: true,
       );
-      final List<WalletTransaction> txs = [];
+      final List<WalletTransaction> walletTxs = [];
       for (final wallet in wallets) {
         final txs = await _getWalletTransactionsUsecase.execute(wallet.id);
-        txs.addAll(txs);
+        walletTxs.addAll(txs);
       }
-      emit(state.copyWith(loadingTxs: false, transactions: txs));
+      emit(state.copyWith(loadingTxs: false, transactions: walletTxs));
     } catch (e) {
       emit(state.copyWith(loadingTxs: false, err: e));
     }
   }
 }
+
+/***
+ * 
+ * 
+ * #0      WalletManagerServiceImpl.getTransactions (package:bb_mobile/core/wallet/data/services/wallet_manager_service_impl.dart:634:11)
+<asynchronous suspension>
+#1      GetWalletTransactionsUsecase.execute (package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart:14:12)
+<asynchronous suspension>
+#2      TransactionsCubit.loadTxs (package:bb_mobile/features/transactions/bloc/transactions_bloc.dart:28:21)
+<asynchronous suspension>
+
+ */

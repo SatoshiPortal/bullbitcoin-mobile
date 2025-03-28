@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class TransactionsScreen extends StatelessWidget {
   const TransactionsScreen({super.key});
@@ -118,19 +119,24 @@ class TxsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs =
-        context.select((TransactionsCubit cubit) => cubit.state.transactions);
+    final txs = context
+        .select((TransactionsCubit cubit) => cubit.state.sortedTransactions);
 
     final List<TxItem> txItems = [];
     if (txs != null) {
       for (final tx in txs) {
         final (icon, color, type) = getTxDetails(context, tx);
+        String? formattedDate;
+        if (tx.confirmationTime != null) {
+          formattedDate = timeago.format(tx.confirmationTime!);
+        }
+
         txItems.add(
           TxItem(
             icon: icon,
             amount: tx.amount,
             label: 'Label',
-            date: tx.confirmationTime?.toIso8601String(),
+            date: formattedDate,
             walletType: type,
             walletColor: color,
           ),
@@ -142,69 +148,6 @@ class TxsList extends StatelessWidget {
       children: [
         const Gap(16.0),
         ...txItems,
-        // BBText(
-        //   'Today',
-        //   style: context.font.bodyLarge?.copyWith(
-        //     color: context.colour.outline,
-        //   ),
-        // ),
-        // const Gap(8.0),
-        // const TxItem(
-        //   icon: Icons.arrow_downward,
-        //   amount: '0.00162199 BTC',
-        //   label: 'Label',
-        //   date: 'Jan 03',
-        //   walletType: 'Onchain',
-        //   walletColor: Colors.orange,
-        // ),
-        // const TxItem(
-        //   icon: Icons.arrow_downward,
-        //   amount: '0.00162199 BTC',
-        //   label: 'Label',
-        //   date: 'Jan 03',
-        //   walletType: 'Liquid',
-        //   walletColor: Colors.yellow,
-        // ),
-        // const TxItem(
-        //   icon: Icons.swap_horiz,
-        //   amount: '0.00162199 BTC',
-        //   label: 'Label',
-        //   date: 'Jan 03',
-        //   walletType: 'Instant',
-        //   walletColor: Colors.amber,
-        // ),
-        // const Gap(16.0),
-        // BBText(
-        //   'March 2025',
-        //   style: context.font.bodyLarge?.copyWith(
-        //     color: context.colour.outline,
-        //   ),
-        // ),
-        // const Gap(8.0),
-        // const TxItem(
-        //   icon: Icons.arrow_downward,
-        //   amount: '0.00162199 BTC',
-        //   label: 'Label',
-        //   date: 'Jan 03',
-        //   walletType: 'Onchain',
-        //   walletColor: Colors.orange,
-        // ),
-        // const TxItem(
-        //   icon: Icons.arrow_downward,
-        //   amount: '0.00162199 BTC',
-        //   label: 'Label',
-        //   date: 'Jan 03',
-        //   walletType: 'Liquid',
-        //   walletColor: Colors.yellow,
-        // ),
-        // const TxItem(
-        //   icon: Icons.swap_horiz,
-        //   amount: '0.00162199 BTC',
-        //   label: 'Label',
-        //   date: 'Jan 03',
-        //   walletType: 'Instant',
-        //   walletColor: Colors.amber,
-        // ),
       ],
     );
   }

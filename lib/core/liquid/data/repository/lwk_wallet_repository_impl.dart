@@ -225,7 +225,7 @@ class LwkWalletRepositoryImpl
         type: type,
         amount: finalBalance,
         confirmationTime: confirmationTime != 0
-            ? DateTime.fromMillisecondsSinceEpoch(confirmationTime)
+            ? DateTime.fromMillisecondsSinceEpoch(confirmationTime * 1000)
             : null,
       );
       walletTxs.add(walletTx);
