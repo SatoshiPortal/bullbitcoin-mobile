@@ -1,6 +1,8 @@
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_transaction.freezed.dart';
+part 'wallet_transaction.g.dart';
 
 @freezed
 class BaseWalletTransaction with _$BaseWalletTransaction {
@@ -26,6 +28,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     required int amount,
     required int fees,
     DateTime? confirmationTime,
+    required Network network,
   }) = SendTransactionDetail;
   factory WalletTransaction.receive({
     required String walletId,
@@ -33,18 +36,21 @@ sealed class WalletTransaction with _$WalletTransaction {
     required int amount,
     DateTime? confirmationTime,
     int? fees,
+    required Network network,
   }) = ReceiveTransactionDetail;
   factory WalletTransaction.lnSwap({
     required String swapId,
     required int amount,
     required int fees,
     DateTime? confirmationTime,
+    required Network network,
   }) = LnSwapTransactionDetail;
   factory WalletTransaction.chainSwap({
     required String swapId,
     required int amount,
     required int fees,
     DateTime? confirmationTime,
+    required Network network,
   }) = ChainSwapTransactionDetail;
   factory WalletTransaction.self({
     required String walletId,
@@ -52,7 +58,18 @@ sealed class WalletTransaction with _$WalletTransaction {
     required int amount,
     required int fees,
     DateTime? confirmationTime,
+    required Network network,
   }) = SelfTransactionDetail;
+
+  TxType get type {
+    return map(
+      send: (_) => TxType.send,
+      receive: (_) => TxType.receive,
+      self: (_) => TxType.self,
+      lnSwap: (_) => TxType.lnSwap,
+      chainSwap: (_) => TxType.chainSwap,
+    );
+  }
 }
 
 enum TxType {

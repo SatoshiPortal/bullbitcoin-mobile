@@ -339,7 +339,9 @@ class WalletManagerServiceImpl implements WalletManagerService {
 
   @override
   Future<List<Wallet>> syncAll({Environment? environment}) async {
-    for (final walletId in _wallets.keys) {
+    final walletIds = List<String>.from(_wallets.keys);
+
+    for (final walletId in walletIds) {
       final metadata = await _walletMetadata.get(walletId);
       if (metadata == null ||
           (environment != null &&
@@ -604,26 +606,31 @@ class WalletManagerServiceImpl implements WalletManagerService {
     if (wallet == null) {
       throw WalletNotFoundException(walletId);
     }
+    final metadata = await _walletMetadata.get(walletId);
+    final network = metadata?.network;
     final transactions = await wallet.getTransactions(walletId);
     final walletTxs = <WalletTransaction>[];
-    // check if the tx is a swap or buy/sell
+
     for (final tx in transactions) {
       switch (tx.type) {
         case TxType.send:
-          SendTransactionDetail(
+          walletTxs.add(SendTransactionDetail(
             amount: tx.amount,
             fees: tx.fees!,
             txId: tx.txid,
             walletId: walletId,
-          );
+            network: network!,
+            confirmationTime: tx.confirmationTime,
+          ));
         case TxType.receive:
-          // TODO: Handle this case.
-          ReceiveTransactionDetail(
+          walletTxs.add(ReceiveTransactionDetail(
             amount: tx.amount,
             fees: tx.fees,
             txId: tx.txid,
             walletId: walletId,
-          );
+            network: network!,
+            confirmationTime: tx.confirmationTime,
+          ));
         case TxType.self:
           // TODO: Handle this case.
           throw UnimplementedError();

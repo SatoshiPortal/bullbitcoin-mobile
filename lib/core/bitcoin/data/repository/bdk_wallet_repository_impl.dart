@@ -371,28 +371,26 @@ class BdkWalletRepositoryImpl
     final List<BaseWalletTransaction> walletTxs = [];
     for (final tx in transactions) {
       debugPrint(tx.transaction.toString());
-      final txid = await tx.transaction?.txid();
+      final txid = tx.txid;
       final type = tx.sent == BigInt.from(0) && tx.received > BigInt.from(0)
           ? TxType.receive
-          : tx.sent != BigInt.from(0) && tx.received != BigInt.from(0)
-              ? TxType.self
-              : TxType.send;
+          : TxType.send;
       final amount = type == TxType.send
-          ? tx.sent as int
+          ? tx.sent.toInt()
           : type == TxType.receive
-              ? tx.received as int
+              ? tx.received.toInt()
               : tx.fee != null
-                  ? tx.fee! as int
+                  ? tx.fee!.toInt()
                   : 0;
       final fees = tx.fee;
-      final confirmationDateTime = tx.confirmationTime?.timestamp ?? 0;
+      final confirmationDateTime = tx.confirmationTime?.timestamp.toInt() ?? 0;
       final walletTx = BaseWalletTransaction(
         txid: txid!,
         type: type,
         amount: amount,
-        fees: fees != null ? fees as int : null,
+        fees: fees?.toInt(),
         confirmationTime: confirmationDateTime != 0
-            ? DateTime.fromMillisecondsSinceEpoch(confirmationDateTime as int)
+            ? DateTime.fromMillisecondsSinceEpoch(confirmationDateTime * 1000)
             : null,
       );
       walletTxs.add(walletTx);
