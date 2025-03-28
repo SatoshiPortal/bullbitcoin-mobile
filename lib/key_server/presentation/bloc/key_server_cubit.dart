@@ -46,22 +46,23 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
   Future<void> checkConnection() async {
     emit(state.copyWith(torStatus: TorStatus.connecting));
-    try {
-      for (var attempt = 0; attempt < maxRetries; attempt++) {
-        try {
-          await checkServerConnectionUsecase.execute();
-          emit(state.copyWith(torStatus: TorStatus.online));
-          return;
-        } catch (e) {
-          if (attempt == maxRetries - 1) {
-            throw const KeyServerError.failedToConnect();
-          }
-          await Future.delayed(retryDelay);
+
+    for (var attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        await checkServerConnectionUsecase.execute();
+        emit(state.copyWith(torStatus: TorStatus.online));
+        return;
+      } catch (e) {
+        debugPrint('Connection attempt ${attempt + 1} failed: $e');
+
+        if (attempt == maxRetries - 1) {
+          emit(state.copyWith(torStatus: TorStatus.offline));
+          throw const KeyServerError.failedToConnect();
         }
+
+        // Only delay if we're going to retry
+        await Future.delayed(retryDelay);
       }
-    } catch (e) {
-      emit(state.copyWith(torStatus: TorStatus.offline));
-      rethrow;
     }
   }
 
@@ -99,7 +100,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   Future<void> deleteKey() async {
     if (!state.canProceed) return;
     try {
-      await checkConnection();
       await _handleServerOperation(
         () => trashKeyFromServerUsecase.execute(
           password: '',
@@ -187,7 +187,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
           return;
         }
         try {
-          await checkConnection();
           final backupKey = await _handleServerOperation(
             () => restoreBackupKeyFromPasswordUsecase.execute(
               backupFile: state.backupFile,
@@ -247,8 +246,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
           status: const KeyServerOperationStatus.loading(),
         ),
       );
-
-      await checkConnection();
 
       final derivedKey = await deriveBackupKeyFromDefaultWalletUsecase.execute(
         backupFile: state.backupFile,
