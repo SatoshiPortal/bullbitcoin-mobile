@@ -1,4 +1,3 @@
-import 'package:animated_svg/animated_svg.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
@@ -8,9 +7,10 @@ import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/cards/action_card.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:gap/gap.dart';
+import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeTopSection extends StatelessWidget {
@@ -210,7 +210,7 @@ class _TopNav extends StatelessWidget {
         const Gap(8),
         IconButton(
           onPressed: () {
-            context.pop();
+            context.read<HomeBloc>().add(const HomeTransactionsSynced());
           },
           visualDensity: VisualDensity.compact,
           iconSize: 24,
@@ -221,10 +221,9 @@ class _TopNav extends StatelessWidget {
         const Spacer(),
         const _BullLogo(),
         const Spacer(),
-        const Gap(12),
+        const Gap(20),
         IconButton(
           onPressed: () {
-            // context.read<HomeBloc>().add(const HomeTransactionsSynced());
             context.pushNamed(AppRoute.txs.name);
           },
           visualDensity: VisualDensity.compact,
@@ -256,71 +255,32 @@ class _TopNav extends StatelessWidget {
   }
 }
 
-class _BullLogo extends StatefulWidget {
+class _BullLogo extends StatelessWidget {
   const _BullLogo();
 
   @override
-  State<_BullLogo> createState() => _BullLogoState();
-}
-
-class _BullLogoState extends State<_BullLogo> {
-  late final SvgController controller;
-
-  @override
-  void initState() {
-    controller = AnimatedSvgController();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BlocListener<HomeBloc, HomeState>(
-      listenWhen: (previous, current) =>
-          previous.isSyncingTransactions != current.isSyncingTransactions,
-      listener: (context, state) {
-        if (state.isSyncingTransactions) {
-          controller.forward();
-        } else {
-          // controller.reverse();
-        }
-      },
-      child: AnimatedSvg(
-        controller: controller,
-        duration: const Duration(milliseconds: 600),
-        size: 32,
-        children: [
-          SvgPicture.asset(
-            Assets.images2.bbLogo,
-            fit: BoxFit.fitHeight,
-            height: 32,
-            colorFilter: ColorFilter.mode(
-              context.colour.primary,
-              BlendMode.srcIn,
-            ),
-          ),
-          SvgPicture.asset(
-            Assets.images2.bbLogo,
-            fit: BoxFit.fitHeight,
-            height: 32,
-            colorFilter: ColorFilter.mode(
-              context.colour.primary,
-              BlendMode.srcIn,
-            ),
-          ),
-        ],
-      ),
-    );
+    final syncing =
+        context.select((HomeBloc _) => _.state.isSyncingTransactions);
 
-    // return Image.asset(
-    //   Assets.images2.bbLogoSmall.path,
-    //   height: 32,
-    //   // width: 40,
-    // );
+    if (!syncing) {
+      return InkWell(
+        onTap: () {
+          context.read<HomeBloc>().add(const HomeTransactionsSynced());
+        },
+        child: Image.asset(
+          Assets.images2.bbLogoSmall.path,
+          width: 32,
+          height: 32,
+        ),
+      ).animate(delay: 300.ms).fadeIn();
+    }
+
+    return Gif(
+      image: AssetImage(Assets.images2.bbSync.path),
+      autostart: Autostart.loop,
+      height: 32,
+      width: 32,
+    );
   }
 }
