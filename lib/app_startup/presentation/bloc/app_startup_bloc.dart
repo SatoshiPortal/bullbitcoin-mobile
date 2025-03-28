@@ -50,8 +50,6 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   ) async {
     emit(const AppStartupState.loadingInProgress());
     try {
-      // await _initializeTorUsecase.execute();
-
       final doDefaultWalletsExist =
           await _checkForExistingDefaultWalletsUsecase.execute();
       bool isPinCodeSet = false;
