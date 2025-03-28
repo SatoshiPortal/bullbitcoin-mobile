@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
@@ -32,6 +34,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required CreateReceiveSwapUsecase createReceiveSwapUsecase,
     required ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase,
+    required WatchPayjoinUsecase watchPayjoinUsecase,
     required WatchSwapUsecase watchSwapUsecase,
     Wallet? wallet,
   })  : _getWalletsUsecase = getWalletsUsecase,
@@ -43,6 +46,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         _getReceiveAddressUsecase = getReceiveAddressUsecase,
         _createReceiveSwapUsecase = createReceiveSwapUsecase,
         _receiveWithPayjoinUsecase = receiveWithPayjoinUsecase,
+        _watchPayjoinUsecase = watchPayjoinUsecase,
         _watchSwapUsecase = watchSwapUsecase,
         _wallet = wallet,
         // Lightning is the default when pressing the receive button on the home screen
@@ -67,8 +71,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final ReceiveWithPayjoinUsecase _receiveWithPayjoinUsecase;
   final CreateReceiveSwapUsecase _createReceiveSwapUsecase;
+  final WatchPayjoinUsecase _watchPayjoinUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final Wallet? _wallet;
+  StreamSubscription<Payjoin>? _payjoinSubscription;
   StreamSubscription<Swap>? _swapSubscription;
 
   @override
@@ -130,6 +136,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           walletId: wallet.id,
           address: address.address,
         );
+        _watchPayjoin(payjoin.id);
         final payjoinQueryParameter =
             Uri.parse(payjoin.pjUri).queryParameters['pj'] ?? '';
 
@@ -511,6 +518,22 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     _watchLnReceiveSwap(swap.id);
 
     return swap;
+  }
+
+  void _watchPayjoin(String payjoinId) {
+    // Cancel the previous subscription if it exists
+    _payjoinSubscription?.cancel();
+    _payjoinSubscription =
+        _watchPayjoinUsecase.execute(ids: [payjoinId]).listen(
+      (updatedPayjoin) {
+        debugPrint(
+          '[ReceiveBloc] Watched payjoin ${updatedPayjoin.id} updated: ${updatedPayjoin.status}',
+        );
+        if (updatedPayjoin is PayjoinReceiver) {
+          //add(ReceivePayjoinUpdated(updatedPayjoin));
+        }
+      },
+    );
   }
 
   void _watchLnReceiveSwap(String swapId) {

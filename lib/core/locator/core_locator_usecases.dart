@@ -3,9 +3,9 @@ import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_updates_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/file_system_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/google_drive_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
@@ -123,8 +123,8 @@ Future<void> registerUsecases() async {
     () =>
         SendWithPayjoinUsecase(payjoinRepository: locator<PayjoinRepository>()),
   );
-  locator.registerFactory<GetPayjoinUpdatesUsecase>(
-    () => GetPayjoinUpdatesUsecase(
+  locator.registerFactory<WatchPayjoinUsecase>(
+    () => WatchPayjoinUsecase(
       payjoinWatcherService: locator<PayjoinWatcherService>(),
     ),
   );
