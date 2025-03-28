@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
+import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -77,8 +78,10 @@ class PaymentReceivedPage extends StatelessWidget {
             color: context.colour.surface,
           ),
           const Spacer(),
-          const ReceiveDetailsButton(),
-          const Gap(16),
+          /*ReceiveDetailsButton(
+            receiveState: receiveState,
+          ),
+          const Gap(16),*/
         ],
       ),
     );
@@ -86,9 +89,9 @@ class PaymentReceivedPage extends StatelessWidget {
 }
 
 class ReceiveDetailsButton extends StatelessWidget {
-  const ReceiveDetailsButton({
-    super.key,
-  });
+  const ReceiveDetailsButton({super.key, required this.receiveState});
+
+  final ReceiveState receiveState;
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +99,9 @@ class ReceiveDetailsButton extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: BBButton.big(
         label: 'Details',
-        onPressed: () {},
+        onPressed: () {
+          // TODO: Navigate to the details screen
+        },
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
       ),
