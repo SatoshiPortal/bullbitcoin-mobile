@@ -628,7 +628,6 @@ class WalletManagerServiceImpl implements WalletManagerService {
           walletTxs.add(
             LnSwapTransactionDetail(
               amount: tx.amount,
-              txId: tx.txid,
               walletId: walletId,
               network: network,
               confirmationTime: tx.confirmationTime,
