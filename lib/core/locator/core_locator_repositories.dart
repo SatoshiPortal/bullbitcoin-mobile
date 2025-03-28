@@ -1,4 +1,3 @@
-
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
@@ -149,10 +148,7 @@ Future<void> registerRepositories() async {
         LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
   );
 
-    locator.registerLazySingleton<WordListRepository>(
-      () => WordListRepositoryImpl(),
-    );
-
+  locator.registerLazySingleton<WordListRepository>(
+    () => WordListRepositoryImpl(),
+  );
 }
-
-

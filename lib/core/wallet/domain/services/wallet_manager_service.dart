@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
-
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 
 abstract class WalletManagerService {
   Future<bool> doDefaultWalletsExist({required Environment environment});
@@ -48,6 +48,7 @@ abstract class WalletManagerService {
   });
   Future<Address> getLastUnusedAddress({required String walletId});
   Future<Address> getNewAddress({required String walletId});
+  Future<List<WalletTransaction>> getTransactions({required String walletId});
   Future<List<Utxo>> getUnspentUtxos({required String walletId});
   Future<bool> isOwnedByWallet({
     required String walletId,

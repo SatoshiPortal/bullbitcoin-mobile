@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
@@ -592,6 +593,49 @@ class WalletManagerServiceImpl implements WalletManagerService {
     );
 
     return addressWithOptionalData;
+  }
+
+  @override
+  Future<List<WalletTransaction>> getTransactions({
+    required String walletId,
+  }) async {
+    final wallet = _wallets[walletId];
+
+    if (wallet == null) {
+      throw WalletNotFoundException(walletId);
+    }
+    final transactions = await wallet.getTransactions(walletId);
+    final walletTxs = <WalletTransaction>[];
+    // check if the tx is a swap or buy/sell
+    for (final tx in transactions) {
+      switch (tx.type) {
+        case TxType.send:
+          SendTransactionDetail(
+            amount: tx.amount,
+            fees: tx.fees!,
+            txId: tx.txid,
+            walletId: walletId,
+          );
+        case TxType.receive:
+          // TODO: Handle this case.
+          ReceiveTransactionDetail(
+            amount: tx.amount,
+            fees: tx.fees,
+            txId: tx.txid,
+            walletId: walletId,
+          );
+        case TxType.self:
+          // TODO: Handle this case.
+          throw UnimplementedError();
+        case TxType.lnSwap:
+          // TODO: Handle this case.
+          throw UnimplementedError();
+        case TxType.chainSwap:
+          // TODO: Handle this case.
+          throw UnimplementedError();
+      }
+    }
+    return walletTxs;
   }
 }
 

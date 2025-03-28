@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/balance.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
@@ -201,6 +202,36 @@ class LwkWalletRepositoryImpl
 
   String get _lBtcAssetId =>
       _network == lwk.Network.testnet ? lwk.lTestAssetId : lwk.lBtcAssetId;
+
+  @override
+  Future<List<BaseWalletTransaction>> getTransactions(String walletId) async {
+    final transactions = await _wallet.txs();
+    final List<BaseWalletTransaction> walletTxs = [];
+    final assetID =
+        _network == lwk.Network.mainnet ? lwk.lBtcAssetId : lwk.lTestAssetId;
+
+    for (final tx in transactions) {
+      // check if the transaction is
+      final balances = tx.balances;
+      final finalBalance = balances
+              .where((e) => e.assetId == assetID)
+              .map((e) => e.value)
+              .firstOrNull ??
+          0;
+      final type = tx.kind == 'outgoing' ? TxType.send : TxType.receive;
+      final confirmationTime = tx.timestamp ?? 0;
+      final walletTx = BaseWalletTransaction(
+        txid: tx.txid,
+        type: type,
+        amount: finalBalance,
+        confirmationTime: confirmationTime != 0
+            ? DateTime.fromMillisecondsSinceEpoch(confirmationTime)
+            : null,
+      );
+      walletTxs.add(walletTx);
+    }
+    return walletTxs;
+  }
 }
 
 extension NetworkX on Network {
