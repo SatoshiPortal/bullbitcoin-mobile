@@ -594,6 +594,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       return null;
     }
     for (final swapModel in allSwapModels) {
+      if (swapModel.status == SwapStatus.pending.name) {
+        continue;
+      }
       final swap = swapModel.toEntity();
       if (swap.type == SwapType.lightningToBitcoin ||
           swap.type == SwapType.lightningToLiquid) {
