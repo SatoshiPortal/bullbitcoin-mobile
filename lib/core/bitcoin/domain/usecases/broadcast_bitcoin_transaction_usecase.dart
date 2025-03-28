@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/bitcoin/domain/repositories/bitcoin_blockchain_re
 
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 
 class BroadcastBitcoinTransactionUsecase {
   final SettingsRepository _settings;

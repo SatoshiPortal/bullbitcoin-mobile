@@ -1,5 +1,7 @@
-import 'package:bb_mobile/core/data/datasources/bitcoin_price_datasource.dart';
-import 'package:bb_mobile/core/domain/repositories/exchange_rate_repository.dart';
+
+
+import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 
 class ExchangeRateRepositoryImpl implements ExchangeRateRepository {
   final BitcoinPriceDatasource _bitcoinPrice;

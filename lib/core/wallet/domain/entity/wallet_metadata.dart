@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_metadata.freezed.dart';
 part 'wallet_metadata.g.dart';
+
 enum Network {
   bitcoinMainnet(
     coinType: 0,

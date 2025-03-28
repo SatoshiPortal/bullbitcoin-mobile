@@ -5,9 +5,9 @@ import 'package:bb_mobile/core/locator/core_locator_usecases.dart';
 
 class CoreLocator {
   static Future<void> setup() async {
-    registerDatasources();
-    registerRepositories();
-    registerServices();
-    registerUsecases();
+    await registerDatasources();
+    await registerRepositories();
+    await registerServices();
+    await registerUsecases();
   }
 }
