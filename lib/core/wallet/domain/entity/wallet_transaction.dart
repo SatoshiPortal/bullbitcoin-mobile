@@ -41,7 +41,6 @@ sealed class WalletTransaction with _$WalletTransaction {
   }) = ReceiveTransactionDetail;
   factory WalletTransaction.lnSwap({
     required String walletId,
-    required String txId,
     required int amount,
     DateTime? confirmationTime,
     required Network network,
