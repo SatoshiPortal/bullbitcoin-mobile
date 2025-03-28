@@ -1,7 +1,13 @@
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/transactions/bloc/transactions_bloc.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,97 +16,196 @@ class TransactionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        titleSpacing: 0,
-        title: TopBar(
-          title: 'Transactions',
-          onBack: () {
-            context.pop();
-          },
+    return BlocProvider(
+      create: (context) => locator<TransactionsCubit>(),
+      child: Scaffold(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          titleSpacing: 0,
+          title: TopBar(
+            title: 'Transactions',
+            onBack: () {
+              context.pop();
+            },
+          ),
+          backgroundColor: context.colour.onPrimary,
+          elevation: 0,
         ),
-        backgroundColor: context.colour.onPrimary,
-        elevation: 0,
+        body: const _Screen(),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const FilterRow(),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              children: [
-                const Gap(16.0),
-                BBText(
-                  'Today',
-                  style: context.font.bodyLarge?.copyWith(
-                    color: context.colour.outline,
-                  ),
-                ),
-                const Gap(8.0),
-                const TxItem(
-                  icon: Icons.arrow_downward,
-                  amount: '0.00162199 BTC',
-                  label: 'Label',
-                  date: 'Jan 03',
-                  walletType: 'Onchain',
-                  walletColor: Colors.orange,
-                ),
-                const TxItem(
-                  icon: Icons.arrow_downward,
-                  amount: '0.00162199 BTC',
-                  label: 'Label',
-                  date: 'Jan 03',
-                  walletType: 'Liquid',
-                  walletColor: Colors.yellow,
-                ),
-                const TxItem(
-                  icon: Icons.swap_horiz,
-                  amount: '0.00162199 BTC',
-                  label: 'Label',
-                  date: 'Jan 03',
-                  walletType: 'Instant',
-                  walletColor: Colors.amber,
-                ),
-                const Gap(16.0),
-                BBText(
-                  'March 2025',
-                  style: context.font.bodyLarge?.copyWith(
-                    color: context.colour.outline,
-                  ),
-                ),
-                const Gap(8.0),
-                const TxItem(
-                  icon: Icons.arrow_downward,
-                  amount: '0.00162199 BTC',
-                  label: 'Label',
-                  date: 'Jan 03',
-                  walletType: 'Onchain',
-                  walletColor: Colors.orange,
-                ),
-                const TxItem(
-                  icon: Icons.arrow_downward,
-                  amount: '0.00162199 BTC',
-                  label: 'Label',
-                  date: 'Jan 03',
-                  walletType: 'Liquid',
-                  walletColor: Colors.yellow,
-                ),
-                const TxItem(
-                  icon: Icons.swap_horiz,
-                  amount: '0.00162199 BTC',
-                  label: 'Label',
-                  date: 'Jan 03',
-                  walletType: 'Instant',
-                  walletColor: Colors.amber,
-                ),
-              ],
+    );
+  }
+}
+
+class _Screen extends StatelessWidget {
+  const _Screen();
+
+  @override
+  Widget build(BuildContext context) {
+    final loading =
+        context.select((TransactionsCubit cubit) => cubit.state.loadingTxs);
+    final err = context.select((TransactionsCubit cubit) => cubit.state.err);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const FilterRow(),
+        if (loading) const LinearProgressIndicator(),
+        if (err != null)
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: BBText(
+              'Error - $err',
+              style: context.font.bodyLarge,
+              color: context.colour.error,
             ),
           ),
-        ],
-      ),
+        const Expanded(
+          child: TxsList(),
+        ),
+      ],
+    );
+  }
+}
+
+class TxsList extends StatelessWidget {
+  const TxsList({
+    super.key,
+  });
+
+  (IconData, Color, String) getTxDetails(
+    BuildContext context,
+    WalletTransaction tx,
+  ) {
+    final network = tx.network;
+
+    IconData icon;
+    Color color;
+    String walletType;
+
+    switch (network) {
+      case Network.bitcoinMainnet:
+      case Network.bitcoinTestnet:
+        color = context.colour.onTertiary;
+        walletType = 'Bitcoin';
+
+      case Network.liquidMainnet:
+      case Network.liquidTestnet:
+        color = context.colour.tertiary;
+        walletType = 'Liquid';
+    }
+
+    final type = tx.type;
+    switch (type) {
+      case TxType.send:
+        icon = Icons.arrow_upward;
+
+      case TxType.receive:
+        icon = Icons.arrow_downward;
+
+      case TxType.self:
+        icon = Icons.swap_horiz;
+
+      case TxType.lnSwap:
+        icon = Icons.swap_horiz;
+
+      case TxType.chainSwap:
+        icon = Icons.swap_horiz;
+    }
+
+    return (icon, color, walletType);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final txs =
+        context.select((TransactionsCubit cubit) => cubit.state.transactions);
+
+    final List<TxItem> txItems = [];
+    if (txs != null) {
+      for (final tx in txs) {
+        final (icon, color, type) = getTxDetails(context, tx);
+        txItems.add(
+          TxItem(
+            icon: icon,
+            amount: tx.amount,
+            label: 'Label',
+            date: tx.confirmationTime?.toIso8601String(),
+            walletType: type,
+            walletColor: color,
+          ),
+        );
+      }
+    }
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      children: [
+        const Gap(16.0),
+        ...txItems,
+        // BBText(
+        //   'Today',
+        //   style: context.font.bodyLarge?.copyWith(
+        //     color: context.colour.outline,
+        //   ),
+        // ),
+        // const Gap(8.0),
+        // const TxItem(
+        //   icon: Icons.arrow_downward,
+        //   amount: '0.00162199 BTC',
+        //   label: 'Label',
+        //   date: 'Jan 03',
+        //   walletType: 'Onchain',
+        //   walletColor: Colors.orange,
+        // ),
+        // const TxItem(
+        //   icon: Icons.arrow_downward,
+        //   amount: '0.00162199 BTC',
+        //   label: 'Label',
+        //   date: 'Jan 03',
+        //   walletType: 'Liquid',
+        //   walletColor: Colors.yellow,
+        // ),
+        // const TxItem(
+        //   icon: Icons.swap_horiz,
+        //   amount: '0.00162199 BTC',
+        //   label: 'Label',
+        //   date: 'Jan 03',
+        //   walletType: 'Instant',
+        //   walletColor: Colors.amber,
+        // ),
+        // const Gap(16.0),
+        // BBText(
+        //   'March 2025',
+        //   style: context.font.bodyLarge?.copyWith(
+        //     color: context.colour.outline,
+        //   ),
+        // ),
+        // const Gap(8.0),
+        // const TxItem(
+        //   icon: Icons.arrow_downward,
+        //   amount: '0.00162199 BTC',
+        //   label: 'Label',
+        //   date: 'Jan 03',
+        //   walletType: 'Onchain',
+        //   walletColor: Colors.orange,
+        // ),
+        // const TxItem(
+        //   icon: Icons.arrow_downward,
+        //   amount: '0.00162199 BTC',
+        //   label: 'Label',
+        //   date: 'Jan 03',
+        //   walletType: 'Liquid',
+        //   walletColor: Colors.yellow,
+        // ),
+        // const TxItem(
+        //   icon: Icons.swap_horiz,
+        //   amount: '0.00162199 BTC',
+        //   label: 'Label',
+        //   date: 'Jan 03',
+        //   walletType: 'Instant',
+        //   walletColor: Colors.amber,
+        // ),
+      ],
     );
   }
 }
@@ -201,9 +306,9 @@ class TxItem extends StatelessWidget {
   });
 
   final IconData icon;
-  final String amount;
+  final int amount;
   final String? label;
-  final String date;
+  final String? date;
   final String walletType;
   final Color walletColor;
 
@@ -235,8 +340,9 @@ class TxItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                BBText(
+                CurrencyText(
                   amount,
+                  showFiat: false,
                   style: context.font.bodyLarge,
                 ),
                 if (label != null)
@@ -267,22 +373,31 @@ class TxItem extends StatelessWidget {
                 ),
               ),
               const Gap(4.0),
-              Row(
-                children: [
-                  BBText(
-                    date,
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.colour.outline,
+              if (date != null)
+                Row(
+                  children: [
+                    BBText(
+                      date!,
+                      style: context.font.labelSmall?.copyWith(
+                        color: context.colour.outline,
+                      ),
                     ),
+                    const Gap(4.0),
+                    Icon(
+                      Icons.check_circle,
+                      size: 12.0,
+                      color: context.colour.inverseSurface,
+                    ),
+                  ],
+                )
+              else ...[
+                BBText(
+                  'Pending',
+                  style: context.font.labelSmall?.copyWith(
+                    color: context.colour.outline,
                   ),
-                  const Gap(4.0),
-                  Icon(
-                    Icons.check_circle,
-                    size: 12.0,
-                    color: context.colour.inverseSurface,
-                  ),
-                ],
-              ),
+                ),
+              ],
             ],
           ),
         ],

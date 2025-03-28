@@ -604,8 +604,11 @@ class WalletManagerServiceImpl implements WalletManagerService {
     if (wallet == null) {
       throw WalletNotFoundException(walletId);
     }
+    final metadata = await _walletMetadata.get(walletId);
+    final network = metadata?.network;
     final transactions = await wallet.getTransactions(walletId);
     final walletTxs = <WalletTransaction>[];
+
     // check if the tx is a swap or buy/sell
     for (final tx in transactions) {
       switch (tx.type) {
@@ -615,6 +618,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
             fees: tx.fees!,
             txId: tx.txid,
             walletId: walletId,
+            network: network!,
           );
         case TxType.receive:
           // TODO: Handle this case.
@@ -623,6 +627,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
             fees: tx.fees,
             txId: tx.txid,
             walletId: walletId,
+            network: network!,
           );
         case TxType.self:
           // TODO: Handle this case.
