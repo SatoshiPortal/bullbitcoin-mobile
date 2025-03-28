@@ -1,4 +1,3 @@
-
 import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
@@ -35,6 +34,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/build_transaction_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
@@ -173,6 +173,12 @@ Future<void> registerUsecases() async {
       watcherService: locator<SwapWatcherService>(
         instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
       ),
+    ),
+  );
+
+  locator.registerFactory<GetWalletTransactionsUsecase>(
+    () => GetWalletTransactionsUsecase(
+      walletManager: locator<WalletManagerService>(),
     ),
   );
 }

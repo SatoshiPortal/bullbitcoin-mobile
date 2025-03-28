@@ -9,6 +9,7 @@ import 'package:bb_mobile/features/sell/ui/sell_screen.dart';
 import 'package:bb_mobile/features/send/ui/send_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/transactions/tranactions_locator.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transactions_screen.dart';
 import 'package:bb_mobile/ui/screens/dev_page.dart';
 import 'package:bb_mobile/ui/screens/route_error_screen.dart';
@@ -137,7 +138,10 @@ class AppRouter {
       GoRoute(
         name: AppRoute.txs.name,
         path: AppRoute.txs.path,
-        builder: (context, state) => const TransactionsScreen(),
+        builder: (context, state) {
+          TransactionsLocator.setup();
+          return const TransactionsScreen();
+        },
       ),
       ReceiveRouter.route,
       DevPages.devStart,
