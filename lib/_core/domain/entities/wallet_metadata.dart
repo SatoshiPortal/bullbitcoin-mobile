@@ -103,6 +103,8 @@ class WalletMetadata with _$WalletMetadata {
     required String xpub,
     required String externalPublicDescriptor,
     required String internalPublicDescriptor,
+    @Default(false) bool isEncryptedVaultTested,
+    @Default(false) bool isPhysicalBackupTested,
     required WalletSource source,
   }) = _WalletMetadata;
   const WalletMetadata._();

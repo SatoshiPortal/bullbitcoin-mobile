@@ -10,6 +10,7 @@ import 'package:bb_mobile/onboarding/domain/usecases/create_default_wallets_usec
 import 'package:bb_mobile/recover_wallet/domain/entities/backup_info.dart';
 import 'package:bb_mobile/recover_wallet/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
+import 'package:bb_mobile/recover_wallet/domain/usecases/update_default_wallet_vault_status_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -29,6 +30,8 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     required FetchLatestGoogleDriveBackupUsecase
         fetchLatestGoogleDriveBackupUsecase,
     required FetchBackupFromFileSystemUsecase fetchBackupFromFileSystemUsecase,
+    required UpdateDefaultWalletVaultStatusUsecase
+        updateDefaultWalletVaultStatusUsecase,
     bool useTestWallet = false,
   })  : _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
         _selectFileFromPathUsecase = selectFilePathUsecase,
@@ -39,6 +42,8 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
         _fetchLatestGoogleDriveBackupUsecase =
             fetchLatestGoogleDriveBackupUsecase,
         _fetchBackupFromFileSystemUsecase = fetchBackupFromFileSystemUsecase,
+        _updateDefaultWalletVaultStatusUsecase =
+            updateDefaultWalletVaultStatusUsecase,
         super(const RecoverWalletState()) {
     on<RecoverWalletWordsCountChanged>(_onWordsCountChanged);
     on<RecoverWalletWordChanged>(_onWordChanged);
@@ -66,6 +71,8 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
   final FetchLatestGoogleDriveBackupUsecase
       _fetchLatestGoogleDriveBackupUsecase;
   final FetchBackupFromFileSystemUsecase _fetchBackupFromFileSystemUsecase;
+  final UpdateDefaultWalletVaultStatusUsecase
+      _updateDefaultWalletVaultStatusUsecase;
 
   void _importTestableWallet(
     ImportTestableWallet event,
@@ -308,6 +315,10 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
         backupFile: event.backupFile,
         backupKey: event.backupKey,
       );
+
+      // Update vault status on successful decryption
+      await _updateDefaultWalletVaultStatusUsecase.execute();
+
       emit(
         state.copyWith(
           recoverWalletStatus: const RecoverWalletStatus.success(),
@@ -318,6 +329,10 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
       debugPrint(
         'Default wallet already exists. Please delete it before restoring from backup.',
       );
+
+      // Also update vault status when wallet already exists
+      await _updateDefaultWalletVaultStatusUsecase.execute();
+
       emit(
         state.copyWith(
           recoverWalletStatus: const RecoverWalletStatus.success(),

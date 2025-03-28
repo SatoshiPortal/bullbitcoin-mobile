@@ -21,6 +21,8 @@ class WalletMetadataModel with _$WalletMetadataModel {
     required String source,
     @Default(false) bool isDefault,
     @Default(false) bool isTorEnabledOnStartup,
+    @Default(false) bool isEncryptedVaultTested,
+    @Default(false) bool isPhysicalBackupTested,
     @Default('') String label,
   }) = _WalletMetadataModel;
   const WalletMetadataModel._();
@@ -47,6 +49,8 @@ class WalletMetadataModel with _$WalletMetadataModel {
       xpub: entity.xpub,
       externalPublicDescriptor: entity.externalPublicDescriptor,
       internalPublicDescriptor: entity.internalPublicDescriptor,
+      isEncryptedVaultTested: entity.isEncryptedVaultTested,
+      isPhysicalBackupTested: entity.isPhysicalBackupTested,
       source: entity.source.name,
       isDefault: entity.isDefault,
       isTorEnabledOnStartup: entity.isTorEnabledOnStartup,
@@ -69,6 +73,8 @@ class WalletMetadataModel with _$WalletMetadataModel {
       externalPublicDescriptor: externalPublicDescriptor,
       internalPublicDescriptor: internalPublicDescriptor,
       source: WalletSource.fromName(source),
+      isEncryptedVaultTested: isEncryptedVaultTested,
+      isPhysicalBackupTested: isPhysicalBackupTested,
       isDefault: isDefault,
       label: label,
     );

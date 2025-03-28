@@ -1,4 +1,5 @@
 import 'package:bb_mobile/_core/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/_core/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/_core/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/_core/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/_core/domain/usecases/fetch_backup_from_file_system_usecase.dart';
@@ -10,6 +11,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
+import 'package:bb_mobile/recover_wallet/domain/usecases/update_default_wallet_vault_status_usecase.dart';
 import 'package:bb_mobile/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
 
 class RecoverWalletLocator {
@@ -22,10 +24,17 @@ class RecoverWalletLocator {
         walletManager: locator<WalletManagerService>(),
       ),
     );
+    locator.registerFactory<UpdateDefaultWalletVaultStatusUsecase>(
+      () => UpdateDefaultWalletVaultStatusUsecase(
+        walletMetadataRepository: locator<WalletMetadataRepository>(),
+      ),
+    );
 
     // Blocs
     locator.registerFactory<RecoverWalletBloc>(
       () => RecoverWalletBloc(
+        updateDefaultWalletVaultStatusUsecase:
+            locator<UpdateDefaultWalletVaultStatusUsecase>(),
         findMnemonicWordsUsecase: locator<FindMnemonicWordsUsecase>(),
         createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
         selectFilePathUsecase: locator<SelectFileFromPathUsecase>(),
