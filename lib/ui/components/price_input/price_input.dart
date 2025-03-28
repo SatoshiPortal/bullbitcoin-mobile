@@ -12,6 +12,7 @@ class PriceInput extends StatelessWidget {
     required this.amountEquivalent,
     required this.availableCurrencies,
     required this.onCurrencyChanged,
+    required this.onNoteChanged,
   });
 
   final String amount;
@@ -19,6 +20,7 @@ class PriceInput extends StatelessWidget {
   final String amountEquivalent;
   final List<String> availableCurrencies;
   final Function(String) onCurrencyChanged;
+  final Function(String) onNoteChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +50,7 @@ class PriceInput extends StatelessWidget {
               onTap: () async {
                 final renderBox = equivalentKey.currentContext!
                     .findRenderObject()! as RenderBox;
-                final offset = renderBox.localToGlobal(Offset.zero);
+                final offset = renderBox.localToGlobal(Offset.zero) / 3;
                 final size = renderBox.size;
                 final screenWidth = MediaQuery.of(context).size.width;
                 const menuWidth = 148.0;
@@ -57,6 +59,7 @@ class PriceInput extends StatelessWidget {
 
                 final selected = await showMenu<String>(
                   context: context,
+                  color: context.colour.onPrimary,
                   position: RelativeRect.fromLTRB(
                     left,
                     offset.dy + size.height + 8,
@@ -87,7 +90,10 @@ class PriceInput extends StatelessWidget {
                                     children: [
                                       //_getCurrencyIcon(code),
                                       const SizedBox(width: 8),
-                                      Text(code),
+                                      BBText(
+                                        code,
+                                        style: context.font.bodyLarge,
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -124,10 +130,11 @@ class PriceInput extends StatelessWidget {
             width: 200,
             alignment: Alignment.center,
             child: TextField(
+              onChanged: onNoteChanged,
               textAlignVertical: TextAlignVertical.center,
               textAlign: TextAlign.center,
-              expands: true,
-              maxLines: null,
+              // expands: true,
+
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(2),
@@ -135,7 +142,7 @@ class PriceInput extends StatelessWidget {
                 ),
                 fillColor: context.colour.secondaryFixedDim,
                 filled: true,
-                floatingLabelAlignment: FloatingLabelAlignment.center,
+                // floatingLabelAlignment: FloatingLabelAlignment.center,
                 hintText: 'Add note',
                 hintStyle: context.font.labelSmall!.copyWith(
                   color: context.colour.surfaceContainer,

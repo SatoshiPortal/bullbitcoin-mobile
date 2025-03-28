@@ -26,6 +26,9 @@ class ReceiveAmountEntry extends StatelessWidget {
       currency: inputCurrency,
       amountEquivalent: amountEquivalent,
       availableCurrencies: availableInputCurrencies,
+      onNoteChanged: (note) {
+        context.read<ReceiveBloc>().add(ReceiveNoteChanged(note));
+      },
       onCurrencyChanged: (currencyCode) {
         context
             .read<ReceiveBloc>()

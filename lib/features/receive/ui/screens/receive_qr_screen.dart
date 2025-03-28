@@ -134,6 +134,10 @@ class ReceiveInfoDetails extends StatelessWidget {
       (bloc) => bloc.state.note,
     );
 
+    final isLn = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state is LightningReceiveState,
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -230,14 +234,15 @@ class ReceiveInfoDetails extends StatelessWidget {
                     ],
                   ),
                   const Spacer(),
-                  IconButton(
-                    onPressed: () async {
-                      await ReceiveEnterNote.showBottomSheet(context);
-                    },
-                    visualDensity: VisualDensity.compact,
-                    iconSize: 20,
-                    icon: const Icon(Icons.edit),
-                  ),
+                  if (!isLn)
+                    IconButton(
+                      onPressed: () async {
+                        await ReceiveEnterNote.showBottomSheet(context);
+                      },
+                      visualDensity: VisualDensity.compact,
+                      iconSize: 20,
+                      icon: const Icon(Icons.edit),
+                    ),
                 ],
               ),
             ),
