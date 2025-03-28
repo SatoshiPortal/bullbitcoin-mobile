@@ -805,7 +805,7 @@ class BoltzDatasource {
         },
         onError: (error) {
           debugPrint('Boltz WebSocket error: $error');
-          _swapUpdatesController.addError(error as Error);
+          _swapUpdatesController.addError(error.toString());
         },
         onDone: () {},
       );
