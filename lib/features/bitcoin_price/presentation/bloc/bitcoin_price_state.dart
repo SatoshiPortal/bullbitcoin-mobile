@@ -28,7 +28,6 @@ sealed class BitcoinPriceState with _$BitcoinPriceState {
     }
   }
 
-  // write a sats formatting method that adds a comma every 3 digits
   String displaySatsAmount(int satsAmount) {
     final currency = NumberFormat('#,##0', 'en_US');
     return currency.format(satsAmount);
