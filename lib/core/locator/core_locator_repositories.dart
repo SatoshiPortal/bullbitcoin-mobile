@@ -16,7 +16,9 @@ import 'package:bb_mobile/core/recoverbull/domain/repositories/google_drive_repo
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository_impl.dart';
+import 'package:bb_mobile/core/seed/data/repository/word_list_repository_impl.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
+import 'package:bb_mobile/core/seed/domain/repositories/word_list_repository.dart';
 import 'package:bb_mobile/core/settings/data/repository/settings_repository_impl.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
@@ -146,4 +148,11 @@ Future<void> registerRepositories() async {
     instanceName:
         LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
   );
+
+    locator.registerLazySingleton<WordListRepository>(
+      () => WordListRepositoryImpl(),
+    );
+
 }
+
+
