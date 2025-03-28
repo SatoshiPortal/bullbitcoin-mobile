@@ -1,6 +1,5 @@
 import 'dart:async';
 
-
 import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
@@ -8,6 +7,7 @@ import 'package:bb_mobile/core/settings/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:test/test.dart';
@@ -20,6 +20,7 @@ void main() {
 
   setUpAll(() async {
     await Future.wait([
+      dotenv.load(isOptional: true),
       Hive.initFlutter(),
       core.init(),
     ]);

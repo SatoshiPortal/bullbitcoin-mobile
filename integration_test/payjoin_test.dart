@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_wallet
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:test/test.dart';
@@ -36,6 +37,7 @@ void main() {
 
   setUpAll(() async {
     await Future.wait([
+      dotenv.load(isOptional: true),
       Hive.initFlutter(),
       core.init(),
     ]);
