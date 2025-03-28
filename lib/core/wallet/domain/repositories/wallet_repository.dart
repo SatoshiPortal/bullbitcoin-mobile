@@ -1,9 +1,8 @@
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/balance.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:boltz/boltz.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 
 abstract class WalletRepository {
   // Wallet repo

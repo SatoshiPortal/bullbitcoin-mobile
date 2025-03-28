@@ -1,7 +1,6 @@
 // TODO: Create a Transaction entity first
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
-import 'package:bdk_flutter/bdk_flutter.dart';
 
 class GetWalletTransactionsUsecase {
   final WalletManagerService _manager;
