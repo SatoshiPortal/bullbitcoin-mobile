@@ -101,7 +101,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       case SwapStatus.completed:
       case SwapStatus.expired:
       case SwapStatus.failed:
-        _swapStreamController.add(swap);
+        // No processing needed for these statuses anymore
         return;
     }
   }
@@ -129,7 +129,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     );
     // TODO: add label to txid
     await _boltzRepo.updateSwap(swap: updatedSwap);
-    _swapStreamController.add(swap);
   }
 
   Future<void> _processSendBitcoinToLnRefund({
@@ -148,7 +147,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       absoluteFees: swap.claimFee!,
     );
     // TODO: add label to txid
-    _swapStreamController.add(swap);
   }
 
   Future<void> _processReceiveLnToLiquidClaim({
@@ -175,7 +173,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       );
       // TODO: add label to txid
       await _boltzRepo.updateSwap(swap: updatedSwap);
-      _swapStreamController.add(swap);
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -197,7 +194,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       absoluteFees: swap.claimFee!,
     );
     // TODO: add label to txid
-    _swapStreamController.add(swap);
   }
 
   Future<void> _processSendBitcoinToLnCoopSign({
@@ -206,7 +202,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     await _boltzRepo.coopSignBitcoinToLightningSwap(
       swapId: swap.id,
     );
-    _swapStreamController.add(swap);
   }
 
   Future<void> _processSendLiquidToLnCoopSign({
@@ -215,7 +210,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     await _boltzRepo.coopSignLiquidToLightningSwap(
       swapId: swap.id,
     );
-    _swapStreamController.add(swap);
   }
 
   Future<void> _processChainLiquidToBitcoinClaim({
@@ -241,7 +235,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       liquidRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
-    _swapStreamController.add(swap);
   }
 
   Future<void> _processChainBitcoinToLiquidRefund({
@@ -260,7 +253,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       bitcoinRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
-    _swapStreamController.add(swap);
   }
 
   Future<void> _processChainBitcoinToLiquidClaim({
@@ -286,7 +278,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       bitcoinRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
-    _swapStreamController.add(swap);
   }
 
   Future<void> _processChainLiquidToBitcoinRefund({
@@ -305,6 +296,5 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       liquidRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
-    _swapStreamController.add(swap);
   }
 }

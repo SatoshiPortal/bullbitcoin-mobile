@@ -166,28 +166,30 @@ class ReceiveRouter {
                 receiveState: receiveState,
               );
             },
-          ),
-          GoRoute(
-            path: ReceiveRoute.paymentReceived.path,
-            parentNavigatorKey: AppRouter.rootNavigatorKey,
-            builder: (context, state) {
-              final receiveState = state.extra! as LightningReceiveState;
+            routes: [
+              GoRoute(
+                path: ReceiveRoute.paymentReceived.path,
+                parentNavigatorKey: AppRouter.rootNavigatorKey,
+                builder: (context, state) {
+                  final receiveState = state.extra! as LightningReceiveState;
 
-              return ReceivePaymentReceivedScreen(
-                receiveState: receiveState,
-              );
-            },
-          ),
-          GoRoute(
-            path: ReceiveRoute.details.path,
-            parentNavigatorKey: AppRouter.rootNavigatorKey,
-            builder: (context, state) {
-              final receiveState = state.extra! as BitcoinReceiveState;
+                  return ReceivePaymentReceivedScreen(
+                    receiveState: receiveState,
+                  );
+                },
+              ),
+              GoRoute(
+                path: ReceiveRoute.details.path,
+                parentNavigatorKey: AppRouter.rootNavigatorKey,
+                builder: (context, state) {
+                  final receiveState = state.extra! as BitcoinReceiveState;
 
-              return ReceiveDetailsScreen(
-                receiveState: receiveState,
-              );
-            },
+                  return ReceiveDetailsScreen(
+                    receiveState: receiveState,
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),

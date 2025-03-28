@@ -78,10 +78,10 @@ class PaymentReceivedPage extends StatelessWidget {
             color: context.colour.surface,
           ),
           const Spacer(),
-          ReceiveDetailsButton(
+          /*ReceiveDetailsButton(
             receiveState: receiveState,
           ),
-          const Gap(16),
+          const Gap(16),*/
         ],
       ),
     );
@@ -100,13 +100,7 @@ class ReceiveDetailsButton extends StatelessWidget {
       child: BBButton.big(
         label: 'Details',
         onPressed: () {
-          // Currently, only lightning payments have this screen, so we can
-          // use the receiveLightning path. If liquid or bitcoin also reuse this
-          // screen, we can add a switch here.
-          context.go(
-            '${ReceiveRoute.receiveLightning.path}/${ReceiveRoute.details.path}',
-            extra: receiveState,
-          );
+          // TODO: Navigate to the details screen
         },
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
