@@ -24,11 +24,11 @@ sealed class BitcoinPriceState with _$BitcoinPriceState {
       final btcAmount = (satsAmount / 100000000).toStringAsFixed(8);
       return '${_removeTrailingZeros(btcAmount)} BTC';
     } else {
-      return '${displaySatsAmount(satsAmount)} sats';
+      return '${_displaySatsAmount(satsAmount)} sats';
     }
   }
 
-  String displaySatsAmount(int satsAmount) {
+  String _displaySatsAmount(int satsAmount) {
     final currency = NumberFormat('#,##0', 'en_US');
     return currency.format(satsAmount);
   }
