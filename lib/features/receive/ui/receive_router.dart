@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
+import 'package:bb_mobile/features/receive/ui/screens/receive_details_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_payment_in_progress_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_payment_received_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
@@ -18,7 +19,8 @@ enum ReceiveRoute {
   amount('amount'),
   qr('qr'),
   paymentInProgress('payment-in-progress'),
-  paymentReceived('payment-received');
+  paymentReceived('payment-received'),
+  details('details');
 
   final String path;
 
@@ -61,11 +63,20 @@ class ReceiveRouter {
                   previous.isPaymentReceived != true &&
                   current.isPaymentReceived == true,
               listener: (context, receiveState) {
-                // Show the payment received screen when the payment was received
-                context.go(
-                  '${state.matchedLocation}/${ReceiveRoute.paymentReceived.path}',
-                  extra: receiveState,
-                );
+                if (receiveState is LightningReceiveState) {
+                  // For a Lightning receive, show the payment received screen
+                  //  when the payment/swap is completed.
+                  context.go(
+                    '${state.matchedLocation}/${ReceiveRoute.paymentReceived.path}',
+                    extra: receiveState,
+                  );
+                } else {
+                  // For Bitcoin and Liquid receives, it goes directly to the details screen
+                  context.go(
+                    '${state.matchedLocation}/${ReceiveRoute.details.path}',
+                    extra: receiveState,
+                  );
+                }
               },
             ),
           ],
@@ -100,6 +111,17 @@ class ReceiveRouter {
               final receiveState = state.extra! as BitcoinReceiveState;
 
               return ReceivePaymentReceivedScreen(
+                receiveState: receiveState,
+              );
+            },
+          ),
+          GoRoute(
+            path: ReceiveRoute.details.path,
+            parentNavigatorKey: AppRouter.rootNavigatorKey,
+            builder: (context, state) {
+              final receiveState = state.extra! as BitcoinReceiveState;
+
+              return ReceiveDetailsScreen(
                 receiveState: receiveState,
               );
             },
@@ -156,6 +178,17 @@ class ReceiveRouter {
               );
             },
           ),
+          GoRoute(
+            path: ReceiveRoute.details.path,
+            parentNavigatorKey: AppRouter.rootNavigatorKey,
+            builder: (context, state) {
+              final receiveState = state.extra! as BitcoinReceiveState;
+
+              return ReceiveDetailsScreen(
+                receiveState: receiveState,
+              );
+            },
+          ),
         ],
       ),
       GoRoute(
@@ -182,6 +215,17 @@ class ReceiveRouter {
               final receiveState = state.extra! as LiquidReceiveState;
 
               return ReceivePaymentReceivedScreen(
+                receiveState: receiveState,
+              );
+            },
+          ),
+          GoRoute(
+            path: ReceiveRoute.details.path,
+            parentNavigatorKey: AppRouter.rootNavigatorKey,
+            builder: (context, state) {
+              final receiveState = state.extra! as BitcoinReceiveState;
+
+              return ReceiveDetailsScreen(
                 receiveState: receiveState,
               );
             },

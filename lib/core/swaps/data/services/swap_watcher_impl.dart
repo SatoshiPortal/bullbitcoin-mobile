@@ -31,6 +31,9 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         debugPrint(
           'SwapWatcher received swap update: ${swap.id}:${swap.status}',
         );
+        // Notify the rest of the app about the swap update before processing it
+        // which changes the status of the swap again
+        _swapStreamController.add(swap);
         await _processSwap(swap);
       },
       onError: (error) {
