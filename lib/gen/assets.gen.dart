@@ -43,13 +43,8 @@ class $AssetsIconsGen {
   AssetGenImage get swap => const AssetGenImage('assets/icons/swap.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [
-    btc,
-    dollar,
-    rightArrow,
-    settingsLine,
-    swap,
-  ];
+  List<AssetGenImage> get values =>
+      [btc, dollar, rightArrow, settingsLine, swap];
 }
 
 class $AssetsImagesGen {
@@ -80,14 +75,8 @@ class $AssetsImagesGen {
       const AssetGenImage('assets/images/swap_icon_white.png');
 
   /// List of all assets
-  List<AssetGenImage> get values => [
-    arrowDown,
-    arrowDownWhite,
-    iconBtc,
-    iconLbtc,
-    swapIcon,
-    swapIconWhite,
-  ];
+  List<AssetGenImage> get values =>
+      [arrowDown, arrowDownWhite, iconBtc, iconLbtc, swapIcon, swapIconWhite];
 }
 
 class $AssetsImages2Gen {
@@ -127,57 +116,48 @@ class $AssetsImages2Gen {
 
   /// List of all assets
   List<dynamic> get values => [
-    bbLogoSmall,
-    bbLogo,
-    bbSync,
-    bgRed,
-    bgLong,
-    cubesLoading,
-    dropdownUpdown,
-    successTick,
-    whitebullwithtext,
-  ];
+        bbLogoSmall,
+        bbLogo,
+        bbSync,
+        bgRed,
+        bgLong,
+        cubesLoading,
+        dropdownUpdown,
+        successTick,
+        whitebullwithtext
+      ];
 }
 
 class Assets {
   const Assets._();
 
   static const AssetGenImage arrowDown = AssetGenImage('assets/arrow_down.png');
-  static const AssetGenImage arrowDownWhite = AssetGenImage(
-    'assets/arrow_down_white.png',
-  );
-  static const AssetGenImage bbLogoRed = AssetGenImage(
-    'assets/bb-logo-red.png',
-  );
-  static const AssetGenImage bbLogoSmall = AssetGenImage(
-    'assets/bb-logo-small.png',
-  );
-  static const AssetGenImage bbLogoWhiteSplash = AssetGenImage(
-    'assets/bb-logo-white-splash.png',
-  );
-  static const AssetGenImage bbLogoWhite = AssetGenImage(
-    'assets/bb-logo-white.png',
-  );
+  static const AssetGenImage arrowDownWhite =
+      AssetGenImage('assets/arrow_down_white.png');
+  static const AssetGenImage bbLogoRed =
+      AssetGenImage('assets/bb-logo-red.png');
+  static const AssetGenImage bbLogoSmall =
+      AssetGenImage('assets/bb-logo-small.png');
+  static const AssetGenImage bbLogoWhiteSplash =
+      AssetGenImage('assets/bb-logo-white-splash.png');
+  static const AssetGenImage bbLogoWhite =
+      AssetGenImage('assets/bb-logo-white.png');
   static const AssetGenImage bbLogo2 = AssetGenImage('assets/bb-logo2.png');
   static const AssetGenImage bbWhite = AssetGenImage('assets/bb-white.png');
   static const String bip39English = 'assets/bip39_english.txt';
   static const AssetGenImage ccLogo = AssetGenImage('assets/cc-logo.png');
-  static const AssetGenImage customLocation = AssetGenImage(
-    'assets/custom_location.png',
-  );
+  static const AssetGenImage customLocation =
+      AssetGenImage('assets/custom_location.png');
   static const String edit = 'assets/edit.svg';
-  static const AssetGenImage encryptedVault = AssetGenImage(
-    'assets/encrypted_vault.png',
-  );
-  static const AssetGenImage googleDrive = AssetGenImage(
-    'assets/google_drive.png',
-  );
+  static const AssetGenImage encryptedVault =
+      AssetGenImage('assets/encrypted_vault.png');
+  static const AssetGenImage googleDrive =
+      AssetGenImage('assets/google_drive.png');
   static const $AssetsI18nGen i18n = $AssetsI18nGen();
   static const AssetGenImage icloud = AssetGenImage('assets/icloud.png');
   static const AssetGenImage iconlarge = AssetGenImage('assets/iconlarge.png');
-  static const AssetGenImage iconnewRed = AssetGenImage(
-    'assets/iconnew-red.png',
-  );
+  static const AssetGenImage iconnewRed =
+      AssetGenImage('assets/iconnew-red.png');
   static const AssetGenImage iconnew = AssetGenImage('assets/iconnew.png');
   static const $AssetsIconsGen icons = $AssetsIconsGen();
   static const $AssetsImagesGen images = $AssetsImagesGen();
@@ -185,59 +165,59 @@ class Assets {
   static const String loaderanimation = 'assets/loaderanimation.json';
   static const String newAddress = 'assets/new-address.svg';
   static const AssetGenImage nfcScan = AssetGenImage('assets/nfc_scan.png');
-  static const AssetGenImage physicalBackup = AssetGenImage(
-    'assets/physical_backup.png',
-  );
+  static const AssetGenImage physicalBackup =
+      AssetGenImage('assets/physical_backup.png');
   static const String refresh = 'assets/refresh.svg';
   static const String requestPayment = 'assets/request-payment.svg';
   static const AssetGenImage splash = AssetGenImage('assets/splash.png');
   static const AssetGenImage textlogo = AssetGenImage('assets/textlogo.png');
-  static const AssetGenImage txStatusComplete = AssetGenImage(
-    'assets/tx_status_complete.png',
-  );
-  static const AssetGenImage txStatusFailed = AssetGenImage(
-    'assets/tx_status_failed.png',
-  );
-  static const AssetGenImage txStatusPending = AssetGenImage(
-    'assets/tx_status_pending.png',
-  );
+  static const AssetGenImage txStatusComplete =
+      AssetGenImage('assets/tx_status_complete.png');
+  static const AssetGenImage txStatusFailed =
+      AssetGenImage('assets/tx_status_failed.png');
+  static const AssetGenImage txStatusPending =
+      AssetGenImage('assets/tx_status_pending.png');
 
   /// List of all assets
   static List<dynamic> get values => [
-    arrowDown,
-    arrowDownWhite,
-    bbLogoRed,
-    bbLogoSmall,
-    bbLogoWhiteSplash,
-    bbLogoWhite,
-    bbLogo2,
-    bbWhite,
-    bip39English,
-    ccLogo,
-    customLocation,
-    edit,
-    encryptedVault,
-    googleDrive,
-    icloud,
-    iconlarge,
-    iconnewRed,
-    iconnew,
-    loaderanimation,
-    newAddress,
-    nfcScan,
-    physicalBackup,
-    refresh,
-    requestPayment,
-    splash,
-    textlogo,
-    txStatusComplete,
-    txStatusFailed,
-    txStatusPending,
-  ];
+        arrowDown,
+        arrowDownWhite,
+        bbLogoRed,
+        bbLogoSmall,
+        bbLogoWhiteSplash,
+        bbLogoWhite,
+        bbLogo2,
+        bbWhite,
+        bip39English,
+        ccLogo,
+        customLocation,
+        edit,
+        encryptedVault,
+        googleDrive,
+        icloud,
+        iconlarge,
+        iconnewRed,
+        iconnew,
+        loaderanimation,
+        newAddress,
+        nfcScan,
+        physicalBackup,
+        refresh,
+        requestPayment,
+        splash,
+        textlogo,
+        txStatusComplete,
+        txStatusFailed,
+        txStatusPending
+      ];
 }
 
 class AssetGenImage {
-  const AssetGenImage(this._assetName, {this.size, this.flavors = const {}});
+  const AssetGenImage(
+    this._assetName, {
+    this.size,
+    this.flavors = const {},
+  });
 
   final String _assetName;
 
@@ -297,8 +277,15 @@ class AssetGenImage {
     );
   }
 
-  ImageProvider provider({AssetBundle? bundle, String? package}) {
-    return AssetImage(_assetName, bundle: bundle, package: package);
+  ImageProvider provider({
+    AssetBundle? bundle,
+    String? package,
+  }) {
+    return AssetImage(
+      _assetName,
+      bundle: bundle,
+      package: package,
+    );
   }
 
   String get path => _assetName;
