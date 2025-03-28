@@ -357,7 +357,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       final lightningReceiveState = state as LightningReceiveState;
 
       // Reset the swap and error before creating a new swap
-      emit(lightningReceiveState.copyWith(swap: null, error: null));
+      emit(
+        lightningReceiveState.copyWith(
+          swap: null,
+          error: null,
+          note: state.note,
+        ),
+      );
 
       LnReceiveSwap? swap;
       try {
@@ -367,7 +373,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           note: lightningReceiveState.note,
         );
 
-        emit(lightningReceiveState.copyWith(swap: swap, error: null));
+        emit(
+          lightningReceiveState.copyWith(
+            swap: swap,
+            error: null,
+            // note: lightningReceiveState.note,
+          ),
+        );
       } catch (e) {
         emit(state.copyWith(error: e));
         return;
@@ -402,7 +414,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           note: note,
         );
 
-        emit(lightningReceiveState.copyWith(swap: swap, error: null));
+        emit(
+          lightningReceiveState.copyWith(
+            swap: swap,
+            error: null,
+            note: note,
+          ),
+        );
       } catch (e) {
         emit(state.copyWith(error: e));
         return;

@@ -135,6 +135,7 @@ class SendAmountScreen extends StatelessWidget {
               currency: '',
               amountEquivalent: '',
               availableCurrencies: const [],
+              onNoteChanged: (note) {},
               onCurrencyChanged: (currencyCode) {},
             ),
             const Gap(82),
