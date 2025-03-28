@@ -43,7 +43,6 @@ class TorDatasourceImpl implements TorDatasource {
 
   @override
   Future<void> start() async {
-    print("Is Tor started: ${_tor.started}");
     if (!_tor.started) {
       await _tor.start();
     }
