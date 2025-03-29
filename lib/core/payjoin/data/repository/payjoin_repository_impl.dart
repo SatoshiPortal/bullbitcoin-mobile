@@ -1,6 +1,5 @@
 import 'dart:async';
 
-
 import 'package:bb_mobile/core/bitcoin/data/datasources/bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
@@ -191,6 +190,26 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     );
 
     return model.toEntity() as PayjoinSender;
+  }
+
+  @override
+  Future<PayjoinReceiver> broadcastOriginalTransaction({
+    required String payjoinId,
+    required Uint8List originalTxBytes,
+    required ElectrumServer electrumServer,
+  }) async {
+    final blockchain = await BitcoinBlockchainDatasource.fromElectrumServer(
+      ElectrumServerModel.fromEntity(electrumServer),
+    );
+
+    final txId = await blockchain.broadcastTransaction(originalTxBytes);
+
+    final model = await _source.completeReceiver(
+      payjoinId,
+      txId: txId,
+    );
+
+    return model.toEntity() as PayjoinReceiver;
   }
 }
 

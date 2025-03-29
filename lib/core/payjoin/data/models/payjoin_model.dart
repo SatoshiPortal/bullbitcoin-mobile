@@ -17,6 +17,7 @@ sealed class PayjoinModel with _$PayjoinModel {
     required BigInt maxFeeRateSatPerVb,
     @Uint8ListJsonConverter() Uint8List? originalTxBytes,
     String? proposalPsbt,
+    String? txId,
     @Default(false) bool isExpired,
     @Default(false) bool isCompleted,
   }) = PayjoinReceiverModel;
@@ -52,6 +53,7 @@ sealed class PayjoinModel with _$PayjoinModel {
         walletId: model.walletId,
         originalTxBytes: model.originalTxBytes,
         proposalPsbt: model.proposalPsbt,
+        txId: model.txId,
       ),
       sender: (model) => Payjoin.sender(
         status: isCompleted

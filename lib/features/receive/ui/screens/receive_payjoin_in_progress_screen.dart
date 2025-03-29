@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ReceivePaymentReceivedScreen extends StatelessWidget {
-  const ReceivePaymentReceivedScreen({
+class ReceivePayjoinInProgressScreen extends StatelessWidget {
+  const ReceivePayjoinInProgressScreen({
     super.key,
     required this.receiveState,
   });
@@ -38,7 +38,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
             },
           ),
         ),
-        body: PaymentReceivedPage(
+        body: PayjoinInProgressPage(
           receiveState: receiveState,
         ),
         // child: AmountPage(),
@@ -47,9 +47,8 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
   }
 }
 
-class PaymentReceivedPage extends StatelessWidget {
-  const PaymentReceivedPage({
-    super.key,
+class PayjoinInProgressPage extends StatelessWidget {
+  const PayjoinInProgressPage({
     required this.receiveState,
   });
 
@@ -63,13 +62,17 @@ class PaymentReceivedPage extends StatelessWidget {
         children: [
           const Spacer(),
           BBText(
-            'Payment received',
+            'Payjoin in progress',
             style: context.font.headlineLarge,
           ),
-          const Gap(24),
+          BBText(
+            'Wait for the sender to finish the payjoin transaction',
+            style: context.font.headlineMedium,
+          ),
+          const Gap(16),
           BBText(
             receiveState.formattedConfirmedAmountBitcoin,
-            style: context.font.displaySmall,
+            style: context.font.headlineLarge,
           ),
           const Gap(4),
           BBText(
@@ -78,7 +81,11 @@ class PaymentReceivedPage extends StatelessWidget {
             color: context.colour.surface,
           ),
           const Spacer(),
-          ReceiveDetailsButton(
+          BBText(
+            "No time to wait or did the payjoin fail on the sender's side?",
+            style: context.font.bodyLarge,
+          ),
+          ReceiveBroadcastPayjoinButton(
             receiveState: receiveState,
           ),
           const Gap(16),
@@ -88,8 +95,8 @@ class PaymentReceivedPage extends StatelessWidget {
   }
 }
 
-class ReceiveDetailsButton extends StatelessWidget {
-  const ReceiveDetailsButton({super.key, required this.receiveState});
+class ReceiveBroadcastPayjoinButton extends StatelessWidget {
+  const ReceiveBroadcastPayjoinButton({super.key, required this.receiveState});
 
   final ReceiveState receiveState;
 
@@ -98,8 +105,10 @@ class ReceiveDetailsButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: BBButton.big(
-        label: 'Details',
+        label: 'Receive payment normally',
         onPressed: () {
+          // Todo: broadcast the payjoin transaction
+          // context.read<ReceiveBloc>().add(const ReceivePayjoinBroadcasted());
           context.go(ReceiveRoute.details.path, extra: receiveState);
         },
         bgColor: context.colour.secondary,

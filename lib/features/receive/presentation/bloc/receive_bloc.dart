@@ -60,6 +60,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceiveNoteChanged>(_onNoteChanged);
     on<ReceiveAddressOnlyToggled>(_onAddressOnlyToggled);
     on<ReceiveNewAddressGenerated>(_onNewAddressGenerated);
+    on<ReceivePayjoinUpdated>(_onPayjoinUpdated);
     on<ReceiveLightningSwapUpdated>(_onLightningSwapUpdated);
   }
 
@@ -136,14 +137,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           walletId: wallet.id,
           address: address.address,
         );
+        // The payjoin receiver is created, now we can watch it for updates
         _watchPayjoin(payjoin.id);
-        final payjoinQueryParameter =
-            Uri.parse(payjoin.pjUri).queryParameters['pj'] ?? '';
 
-        emit(
-          (state as BitcoinReceiveState)
-              .copyWith(payjoinQueryParameter: payjoinQueryParameter),
-        );
+        emit((state as BitcoinReceiveState).copyWith(payjoin: payjoin));
       } catch (e) {
         debugPrint('Payjoin receiver creation failed: $e');
         emit(state.copyWith(error: e));
@@ -488,6 +485,28 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
   }
 
+  Future<void> _onPayjoinUpdated(
+    ReceivePayjoinUpdated event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    final updatedPayjoin = event.payjoin;
+    // Make sure the state is a Bitcoin state and the correct payjoin is updated
+    if (state is BitcoinReceiveState) {
+      final bitcoinReceiveState = state as BitcoinReceiveState;
+      if (bitcoinReceiveState.payjoin?.id != null &&
+          updatedPayjoin.id == bitcoinReceiveState.payjoin!.id) {
+        emit(
+          bitcoinReceiveState.copyWith(
+            payjoin: updatedPayjoin,
+            txId: bitcoinReceiveState.txId.isEmpty
+                ? updatedPayjoin.txId ?? ''
+                : bitcoinReceiveState.txId,
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _onLightningSwapUpdated(
     ReceiveLightningSwapUpdated event,
     Emitter<ReceiveState> emit,
@@ -530,7 +549,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           '[ReceiveBloc] Watched payjoin ${updatedPayjoin.id} updated: ${updatedPayjoin.status}',
         );
         if (updatedPayjoin is PayjoinReceiver) {
-          //add(ReceivePayjoinUpdated(updatedPayjoin));
+          add(ReceivePayjoinUpdated(updatedPayjoin));
         }
       },
     );

@@ -1,7 +1,9 @@
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_details_screen.dart';
+import 'package:bb_mobile/features/receive/ui/screens/receive_payjoin_in_progress_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_payment_in_progress_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_payment_received_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
@@ -18,6 +20,7 @@ enum ReceiveRoute {
   receiveLiquid('/receive-liquid'),
   amount('amount'),
   qr('qr'),
+  payjoinInProgress('payjoin-in-progress'),
   paymentInProgress('payment-in-progress'),
   paymentReceived('payment-received'),
   details('details');
@@ -49,8 +52,16 @@ class ReceiveRouter {
                   previous.isPaymentInProgress != true &&
                   current.isPaymentInProgress == true,
               listener: (context, receiveState) {
-                // Currently only lightning payments have a payment in progress screen
-                if (receiveState is LightningReceiveState) {
+                if (receiveState is BitcoinReceiveState &&
+                    receiveState.payjoin?.status == PayjoinStatus.requested) {
+                  // For a Payjoin receive, show the payment in progress screen
+                  //  when the payment/swap is completed.
+                  context.go(
+                    '${state.matchedLocation}/${ReceiveRoute.payjoinInProgress.path}',
+                    extra: receiveState,
+                  );
+                  return;
+                } else if (receiveState is LightningReceiveState) {
                   context.go(
                     '${state.matchedLocation}/${ReceiveRoute.paymentInProgress.path}',
                     extra: receiveState,
@@ -105,15 +116,28 @@ class ReceiveRouter {
                 const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
-            path: ReceiveRoute.paymentReceived.path,
+            path: ReceiveRoute.payjoinInProgress.path,
             parentNavigatorKey: AppRouter.rootNavigatorKey,
             builder: (context, state) {
               final receiveState = state.extra! as BitcoinReceiveState;
 
-              return ReceivePaymentReceivedScreen(
+              return ReceivePayjoinInProgressScreen(
                 receiveState: receiveState,
               );
             },
+            routes: [
+              GoRoute(
+                path: ReceiveRoute.details.path,
+                parentNavigatorKey: AppRouter.rootNavigatorKey,
+                builder: (context, state) {
+                  final receiveState = state.extra! as BitcoinReceiveState;
+
+                  return ReceiveDetailsScreen(
+                    receiveState: receiveState,
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: ReceiveRoute.details.path,
@@ -177,17 +201,20 @@ class ReceiveRouter {
                     receiveState: receiveState,
                   );
                 },
-              ),
-              GoRoute(
-                path: ReceiveRoute.details.path,
-                parentNavigatorKey: AppRouter.rootNavigatorKey,
-                builder: (context, state) {
-                  final receiveState = state.extra! as BitcoinReceiveState;
+                routes: [
+                  GoRoute(
+                    path: ReceiveRoute.details.path,
+                    parentNavigatorKey: AppRouter.rootNavigatorKey,
+                    builder: (context, state) {
+                      final receiveState =
+                          state.extra! as LightningReceiveState;
 
-                  return ReceiveDetailsScreen(
-                    receiveState: receiveState,
-                  );
-                },
+                      return ReceiveDetailsScreen(
+                        receiveState: receiveState,
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -211,21 +238,10 @@ class ReceiveRouter {
                 const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
-            path: ReceiveRoute.paymentReceived.path,
-            parentNavigatorKey: AppRouter.rootNavigatorKey,
-            builder: (context, state) {
-              final receiveState = state.extra! as LiquidReceiveState;
-
-              return ReceivePaymentReceivedScreen(
-                receiveState: receiveState,
-              );
-            },
-          ),
-          GoRoute(
             path: ReceiveRoute.details.path,
             parentNavigatorKey: AppRouter.rootNavigatorKey,
             builder: (context, state) {
-              final receiveState = state.extra! as BitcoinReceiveState;
+              final receiveState = state.extra! as LiquidReceiveState;
 
               return ReceiveDetailsScreen(
                 receiveState: receiveState,
