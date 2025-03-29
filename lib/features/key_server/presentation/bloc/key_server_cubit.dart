@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/check_key_server_connection_usecase.dart';
@@ -6,13 +7,12 @@ import 'package:bb_mobile/features/key_server/domain/usecases/restore_backup_key
 import 'package:bb_mobile/features/key_server/domain/usecases/store_backup_key_into_server_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/trash_backup_key_from_server_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/validators/password_validator.dart';
-import 'package:bb_mobile/features/recover_wallet/domain/entities/backup_info.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'key_server_state.dart';
 part 'key_server_cubit.freezed.dart';
+part 'key_server_state.dart';
 
 //TODO; Re-initalie tor connection check on all keyserver operations
 class KeyServerCubit extends Cubit<KeyServerState> {
