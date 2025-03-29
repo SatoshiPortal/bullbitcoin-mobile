@@ -207,14 +207,11 @@ class LwkWalletRepositoryImpl
   Future<List<BaseWalletTransaction>> getTransactions(String walletId) async {
     final transactions = await _wallet.txs();
     final List<BaseWalletTransaction> walletTxs = [];
-    final assetID =
-        _network == lwk.Network.mainnet ? lwk.lBtcAssetId : lwk.lTestAssetId;
-
     for (final tx in transactions) {
       // check if the transaction is
       final balances = tx.balances;
       final finalBalance = balances
-              .where((e) => e.assetId == assetID)
+              .where((e) => e.assetId == _lBtcAssetId)
               .map((e) => e.value)
               .firstOrNull ??
           0;
