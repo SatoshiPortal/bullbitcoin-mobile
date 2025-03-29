@@ -1,0 +1,25 @@
+import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
+import 'package:bb_mobile/ui/components/buttons/button.dart';
+import 'package:bb_mobile/ui/themes/app_theme.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+class RecoverWalletButton extends StatelessWidget {
+  const RecoverWalletButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.big(
+      label: 'Recover Wallet Backup',
+      bgColor: Colors.transparent,
+      textColor: context.colour.onPrimary,
+      iconData: Icons.history_edu,
+      outlined: true,
+      onPressed: () async {
+        context.goNamed(OnboardingSubroute.recoverOptions.name);
+      },
+    );
+  }
+}
