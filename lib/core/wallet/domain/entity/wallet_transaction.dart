@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_transaction.freezed.dart';
+part 'wallet_transaction.g.dart';
 
 @freezed
 class BaseWalletTransaction with _$BaseWalletTransaction {
