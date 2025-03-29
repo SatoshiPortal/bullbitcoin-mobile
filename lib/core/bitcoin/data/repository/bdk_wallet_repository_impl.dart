@@ -385,6 +385,8 @@ class BdkWalletRepositoryImpl
       final fees = tx.fee;
       final confirmationDateTime = tx.confirmationTime?.timestamp.toInt() ?? 0;
       final walletTx = BaseWalletTransaction(
+        walletId: walletId,
+        network: _wallet.network().network,
         txid: txid,
         type: type,
         amount: amount,

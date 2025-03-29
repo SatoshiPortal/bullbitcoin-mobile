@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 
 abstract class SwapRepository {
   // LIMITS
@@ -122,8 +123,8 @@ abstract class SwapRepository {
   Future<Swap> getSwap({
     required String swapId,
   });
-  Future<Swap?> getSwapByTxId({
-    required String txid,
+  Future<WalletTransaction?> getSwapWalletTx({
+    required BaseWalletTransaction baseWalletTx,
   });
   Future<List<Swap>> getOngoingSwaps();
   Future<List<Swap>> getAllSwaps();

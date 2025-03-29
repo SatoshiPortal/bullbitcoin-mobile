@@ -609,63 +609,30 @@ class WalletManagerServiceImpl implements WalletManagerService {
     required String walletId,
   }) async {
     final wallet = _wallets[walletId];
-
     if (wallet == null) {
       throw WalletNotFoundException(walletId);
     }
     final metadata = await _walletMetadata.get(walletId);
     final network = metadata?.network;
-    final transactions = await wallet.getTransactions(walletId);
+    final baseWalletTxs = await wallet.getTransactions(walletId);
     final walletTxs = <WalletTransaction>[];
     final swapRepository =
         network!.isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
-    for (final tx in transactions) {
-      // check if a swap with this txid exists
-      // check if this is a payjoin
-      final swap = await swapRepository.getSwapByTxId(txid: tx.txid);
-      if (swap != null) {
-        if (swap.isLnReceiveSwap || swap.isLnSendSwap) {
-          walletTxs.add(
-            LnSwapTransactionDetail(
-              amount: tx.amount,
-              walletId: walletId,
-              network: network,
-              confirmationTime: tx.confirmationTime,
-              swap: swap,
-            ),
-          );
-        } else if (swap.isChainSwap) {
-          walletTxs.add(
-            ChainSwapTransactionDetail(
-              amount: tx.amount,
-              walletId: walletId,
-              network: network,
-              confirmationTime: tx.confirmationTime,
-              swap: swap,
-            ),
-          );
-        }
-      } else if (tx.type == TxType.send) {
+    for (final baseWalletTx in baseWalletTxs) {
+      // get associated label
+      final swapTx = await swapRepository.getSwapWalletTx(
+        baseWalletTx: baseWalletTx,
+      );
+      // TODO: check if transaction is a payjoin
+      if (swapTx != null) {
+        walletTxs.add(swapTx);
+      } else if (baseWalletTx.type == TxType.send) {
         walletTxs.add(
-          SendTransactionDetail(
-            amount: tx.amount,
-            fees: tx.fees!,
-            txId: tx.txid,
-            walletId: walletId,
-            network: network,
-            confirmationTime: tx.confirmationTime,
-          ),
+          SendTransactionFactory.fromBaseWalletTx(baseWalletTx),
         );
-      } else if (tx.type == TxType.receive) {
+      } else if (baseWalletTx.type == TxType.receive) {
         walletTxs.add(
-          ReceiveTransactionDetail(
-            amount: tx.amount,
-            fees: tx.fees,
-            txId: tx.txid,
-            walletId: walletId,
-            network: network,
-            confirmationTime: tx.confirmationTime,
-          ),
+          ReceiveTransactionFactory.fromBaseWalletTx(baseWalletTx),
         );
       }
     }

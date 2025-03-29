@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDatasource _boltz;
@@ -587,12 +588,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<Swap?> getSwapByTxId({required String txid}) async {
-    // TODO: implement getSwapByTxId
+  Future<WalletTransaction?> getSwapWalletTx({
+    required BaseWalletTransaction baseWalletTx,
+  }) async {
     final allSwapModels = await _boltz.storage.getAll();
     if (allSwapModels.isEmpty) {
       return null;
     }
+
     for (final swapModel in allSwapModels) {
       if (swapModel.status == SwapStatus.pending.name) {
         continue;
@@ -601,22 +604,32 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       if (swap.type == SwapType.lightningToBitcoin ||
           swap.type == SwapType.lightningToLiquid) {
         final receiveLnSwap = swap as LnReceiveSwap;
-        if (receiveLnSwap.receiveTxid == txid) {
-          return swap;
+        if (receiveLnSwap.receiveTxid == baseWalletTx.txid) {
+          return LnSwapTransactionFactory.fromBaseWalletTx(
+            baseWalletTx,
+            swap,
+          );
         }
       } else if (swap.type == SwapType.bitcoinToLightning ||
           swap.type == SwapType.liquidToLightning) {
         final sendLnSwap = swap as LnSendSwap;
 
-        if (sendLnSwap.sendTxid == txid) {
-          return swap;
+        if (sendLnSwap.sendTxid == baseWalletTx.txid) {
+          return LnSwapTransactionFactory.fromBaseWalletTx(
+            baseWalletTx,
+            swap,
+          );
         }
       } else if (swap.type == SwapType.bitcoinToLiquid ||
           swap.type == SwapType.liquidToBitcoin) {
         final chainSwap = swap as ChainSwap;
 
-        if (chainSwap.sendTxid == txid || chainSwap.receiveTxid == txid) {
-          return swap;
+        if (chainSwap.sendTxid == baseWalletTx.txid ||
+            chainSwap.receiveTxid == baseWalletTx.txid) {
+          return ChainSwapTransactionFactory.fromBaseWalletTx(
+            baseWalletTx,
+            swap,
+          );
         }
       }
     }

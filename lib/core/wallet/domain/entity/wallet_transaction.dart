@@ -8,6 +8,8 @@ part 'wallet_transaction.g.dart';
 @freezed
 class BaseWalletTransaction with _$BaseWalletTransaction {
   const factory BaseWalletTransaction({
+    required String walletId,
+    required Network network,
     required String txid,
     required TxType type,
     required int amount,
@@ -69,6 +71,62 @@ sealed class WalletTransaction with _$WalletTransaction {
       self: (_) => TxType.self,
       lnSwap: (_) => TxType.lnSwap,
       chainSwap: (_) => TxType.chainSwap,
+    );
+  }
+}
+
+extension SendTransactionFactory on SendTransactionDetail {
+  static SendTransactionDetail fromBaseWalletTx(BaseWalletTransaction tx) {
+    return SendTransactionDetail(
+      walletId: tx.walletId,
+      txId: tx.txid,
+      amount: tx.amount,
+      fees: tx.fees ?? 0,
+      confirmationTime: tx.confirmationTime,
+      network: tx.network,
+    );
+  }
+}
+
+extension ReceiveTransactionFactory on ReceiveTransactionDetail {
+  static ReceiveTransactionDetail fromBaseWalletTx(BaseWalletTransaction tx) {
+    return ReceiveTransactionDetail(
+      walletId: tx.walletId,
+      txId: tx.txid,
+      amount: tx.amount,
+      confirmationTime: tx.confirmationTime,
+      fees: tx.fees,
+      network: tx.network,
+    );
+  }
+}
+
+extension LnSwapTransactionFactory on LnSwapTransactionDetail {
+  static LnSwapTransactionDetail fromBaseWalletTx(
+    BaseWalletTransaction tx,
+    Swap swap,
+  ) {
+    return LnSwapTransactionDetail(
+      walletId: tx.walletId,
+      amount: tx.amount,
+      confirmationTime: tx.confirmationTime,
+      network: tx.network,
+      swap: swap,
+    );
+  }
+}
+
+extension ChainSwapTransactionFactory on ChainSwapTransactionDetail {
+  static ChainSwapTransactionDetail fromBaseWalletTx(
+    BaseWalletTransaction tx,
+    Swap swap,
+  ) {
+    return ChainSwapTransactionDetail(
+      walletId: tx.walletId,
+      amount: tx.amount,
+      confirmationTime: tx.confirmationTime,
+      network: tx.network,
+      swap: swap,
     );
   }
 }

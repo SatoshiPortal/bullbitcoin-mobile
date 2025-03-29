@@ -221,6 +221,10 @@ class LwkWalletRepositoryImpl
       final type = tx.kind == 'outgoing' ? TxType.send : TxType.receive;
       final confirmationTime = tx.timestamp ?? 0;
       final walletTx = BaseWalletTransaction(
+        walletId: walletId,
+        network: _network == lwk.Network.mainnet
+            ? Network.liquidMainnet
+            : Network.liquidTestnet,
         txid: tx.txid,
         type: type,
         amount: finalBalance,
