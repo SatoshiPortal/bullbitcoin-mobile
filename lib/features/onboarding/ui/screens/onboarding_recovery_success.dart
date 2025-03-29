@@ -36,7 +36,7 @@ class OnboardingRecoverySuccess extends StatelessWidget {
                 ),
                 const Gap(8),
                 BBText(
-                  'Wallet imported successfully',
+                  'Wallet recovered successfully',
                   style: context.font.headlineLarge,
                 ),
               ],

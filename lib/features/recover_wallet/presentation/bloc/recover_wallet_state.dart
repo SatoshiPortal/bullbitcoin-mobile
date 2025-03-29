@@ -1,10 +1,5 @@
 part of 'recover_wallet_bloc.dart';
 
-enum LoadingType {
-  general,
-  googleSignIn,
-}
-
 @freezed
 sealed class RecoverWalletStatus with _$RecoverWalletStatus {
   const factory RecoverWalletStatus.initial() = _Initial;
@@ -14,27 +9,17 @@ sealed class RecoverWalletStatus with _$RecoverWalletStatus {
 }
 
 @freezed
-sealed class RecoverProvider with _$RecoverProvider {
-  const factory RecoverProvider.googleDrive() = _GoogleDrive;
-  const factory RecoverProvider.iCloud() = _ICloud;
-  const factory RecoverProvider.fileSystem(String fileAsString) = _FileSystem;
-}
-
-@freezed
 sealed class RecoverWalletState implements _$RecoverWalletState {
   const factory RecoverWalletState({
-    @Default(false) bool fromOnboarding,
-    @Default(RecoverWalletStatus.initial())
-    RecoverWalletStatus recoverWalletStatus,
     @Default(12) int wordsCount,
     // @Default([]) List<({String word, bool tapped})> words,
+    @Default(RecoverWalletStatus.initial())
+    RecoverWalletStatus recoverWalletStatus,
     @Default({}) Map<int, String> validWords,
     @Default({}) Map<int, List<String>> hintWords,
     @Default('') String passphrase,
     @Default(ScriptType.bip84) ScriptType scriptType,
     @Default('') String label,
-    @Default(RecoverProvider.googleDrive()) RecoverProvider backupProvider,
-    @Default(BackupInfo(backupFile: '')) BackupInfo encryptedInfo,
   }) = _RecoverWalletState;
   const RecoverWalletState._();
   bool get hasAllValidWords =>

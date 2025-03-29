@@ -1,7 +1,11 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_recovery.dart';
+import 'package:bb_mobile/features/onboarding/ui/screens/choose_encrypted_vault_provider_screen.dart';
+import 'package:bb_mobile/features/onboarding/ui/screens/fetched_backup_info_screen.dart';
+import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_recovery.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_recovery_success.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
+import 'package:bb_mobile/features/onboarding/ui/screens/recover_options.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
@@ -10,8 +14,12 @@ import 'package:go_router/go_router.dart';
 
 enum OnboardingSubroute {
   splash('splash'),
-  recover('recover'),
-  success('success');
+  recoverOptions('recover-options'),
+  chooseRecoverProvider('choose-recover-provider'),
+  backupInfo('recoverd-backup-info'),
+  recoverFromEncrypted('recover-from-encrypted'),
+  recoverFromPhysical('recover-from-physical'),
+  recoverSuccess('recover-success');
 
   final String path;
 
@@ -37,22 +45,11 @@ class OnboardingRouter {
           listeners: [
             BlocListener<OnboardingBloc, OnboardingState>(
               listenWhen: (previous, current) =>
-                  previous.creating != current.creating &&
-                  current.step == OnboardingStep.createSucess,
+                  (current.step == OnboardingStep.create) &&
+                  current.onboardingStepStatus ==
+                      const OnboardingStepStatus.success(),
               listener: (context, state) {
                 context.goNamed(AppRoute.home.name);
-              },
-            ),
-            BlocListener<OnboardingBloc, OnboardingState>(
-              listenWhen: (previous, current) => previous.step != current.step,
-              listener: (context, state) {
-                if (state.step == OnboardingStep.recoverySuccess) {
-                  context.goNamed(OnboardingSubroute.success.name);
-                }
-
-                if (state.step == OnboardingStep.recoveryWords) {
-                  context.pushNamed(OnboardingSubroute.recover.name);
-                }
               },
             ),
           ],
@@ -71,13 +68,38 @@ class OnboardingRouter {
                 builder: (context, state) => const OnboardingSplash(),
               ),
               GoRoute(
-                name: OnboardingSubroute.recover.name,
-                path: OnboardingSubroute.recover.path,
-                builder: (context, state) => const OnboardingRecovery(),
+                name: OnboardingSubroute.recoverFromPhysical.name,
+                path: OnboardingSubroute.recoverFromPhysical.path,
+                builder: (context, state) => const OnboardingPhysicalRecovery(),
               ),
               GoRoute(
-                name: OnboardingSubroute.success.name,
-                path: OnboardingSubroute.success.path,
+                name: OnboardingSubroute.recoverFromEncrypted.name,
+                path: OnboardingSubroute.recoverFromEncrypted.path,
+                builder: (context, state) => const OnboardingPhysicalRecovery(),
+              ),
+              GoRoute(
+                name: OnboardingSubroute.recoverOptions.name,
+                path: OnboardingSubroute.recoverOptions.path,
+                builder: (context, state) => const OnboardingRecoverOptions(),
+              ),
+              GoRoute(
+                name: OnboardingSubroute.backupInfo.name,
+                path: OnboardingSubroute.backupInfo.path,
+                builder: (context, state) {
+                  final backupInfo = state.extra! as BackupInfo;
+                  return FetchedBackupInfoScreen(
+                    encryptedInfo: backupInfo,
+                  );
+                },
+              ),
+              GoRoute(
+                name: OnboardingSubroute.chooseRecoverProvider.name,
+                path: OnboardingSubroute.chooseRecoverProvider.path,
+                builder: (context, state) => const ChooseVaultProviderScreen(),
+              ),
+              GoRoute(
+                name: OnboardingSubroute.recoverSuccess.name,
+                path: OnboardingSubroute.recoverSuccess.path,
                 builder: (context, state) => const OnboardingRecoverySuccess(),
               ),
             ],
