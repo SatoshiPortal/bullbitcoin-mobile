@@ -224,7 +224,7 @@ class LwkWalletRepositoryImpl
             : Network.liquidTestnet,
         txid: tx.txid,
         type: type,
-        amount: finalBalance,
+        amount: finalBalance.abs(),
         confirmationTime: confirmationTime != 0
             ? DateTime.fromMillisecondsSinceEpoch(confirmationTime * 1000)
             : null,
