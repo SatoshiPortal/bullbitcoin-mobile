@@ -28,56 +28,6 @@ class KeyLoadingScreen extends StatelessWidget {
   }
 }
 
-class BackupSuccessScreen extends StatelessWidget {
-  const BackupSuccessScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ProgressScreen(
-      description:
-          'Now let’s test your backup to make sure everything was done properly.',
-      title: 'Backup completed!',
-      isLoading: false,
-      buttonText: 'Test Backup',
-      onTap: () => context.pushNamed(
-        RecoverWalletSubroute.chooseRecoverProvider.name,
-        extra: false,
-      ),
-    );
-  }
-}
-
-class RecoverSuccessScreen extends StatelessWidget {
-  final String backupKey;
-  final String backupFile;
-  final bool fromOnboarding;
-
-  const RecoverSuccessScreen({
-    super.key,
-    required this.backupKey,
-    required this.backupFile,
-    required this.fromOnboarding,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ProgressScreen(
-      title: fromOnboarding
-          ? 'Wallet recovered successfully!'
-          : 'Test completed successfully!',
-      description: fromOnboarding
-          ? ''
-          : 'You are able to recover access to a lost Bitcoin wallet',
-      isLoading: false,
-      buttonText: 'Done',
-      onTap: () => context.goNamed(
-        AppRoute.home.name,
-        extra: false,
-      ),
-    );
-  }
-}
-
 class KeyServerFlow extends StatelessWidget {
   const KeyServerFlow({
     super.key,
