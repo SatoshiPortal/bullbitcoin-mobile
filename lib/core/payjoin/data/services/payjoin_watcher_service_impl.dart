@@ -83,11 +83,16 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
   Future<void> _processPayjoinProposal(PayjoinSender payjoin) async {
     final walletId = payjoin.walletId;
     final proposalPsbt = payjoin.proposalPsbt;
-    final environment = await _settings.getEnvironment();
-    final network = Network.fromEnvironment(
-      isTestnet: environment.isTestnet,
-      isLiquid: false,
-    );
+    // Get the correct network from the wallet metadata using the walletId from
+    //  the payjoin to be able to get the correct Electrum server to broadcast
+    //  the transaction.
+    final wallet = await _walletManager.getWallet(walletId);
+    if (wallet == null) {
+      debugPrint('Wallet not found for id: $walletId');
+      // TODO: Mark the payjoin as failed
+      return;
+    }
+    final network = wallet.network;
     final electrumServer =
         await _electrumServer.getElectrumServer(network: network);
 
