@@ -4,17 +4,21 @@ import 'package:bb_mobile/features/key_server/ui/screens/enter_screen.dart';
 import 'package:bb_mobile/features/key_server/ui/screens/recover_with_backup_key_screen.dart';
 import 'package:bb_mobile/features/key_server/ui/screens/recover_with_secret_screen.dart';
 import 'package:bb_mobile/features/key_server/ui/widgets/error_screen.dart';
-import 'package:bb_mobile/features/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
-import 'package:bb_mobile/features/recover_wallet/ui/recover_wallet_router.dart';
+import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
-import 'package:bb_mobile/ui/components/template/screen_template.dart'
-    show StackedPage;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
-    show BlocBuilder, BlocProvider, MultiBlocProvider, ReadContext;
+    show
+        BlocBuilder,
+        BlocListener,
+        BlocProvider,
+        MultiBlocListener,
+        MultiBlocProvider,
+        ReadContext,
+        WatchContext;
 import 'package:go_router/go_router.dart';
 
 class KeyLoadingScreen extends StatelessWidget {
@@ -50,127 +54,113 @@ class KeyServerFlow extends StatelessWidget {
               flow: CurrentKeyServerFlow.fromString(currentFlow ?? ''),
             ),
         ),
-        BlocProvider.value(value: locator<RecoverWalletBloc>()),
+        BlocProvider.value(value: locator<OnboardingBloc>()),
       ],
-      child: Builder(
-        builder: (context) {
-          return BlocBuilder<RecoverWalletBloc, RecoverWalletState>(
-            builder: (context, walletState) {
-              return BlocBuilder<KeyServerCubit, KeyServerState>(
-                buildWhen: (previous, current) =>
-                    previous.currentFlow != current.currentFlow ||
-                    previous.status != current.status ||
-                    previous.password != current.password ||
-                    previous.secretStatus != current.secretStatus,
-                builder: (context, state) {
-                  // Show loading screen in these cases:
-                  // 1. When any key server operation is in progress
-                  // 2. When we've successfully recovered the secret but wallet recovery is not yet completed
-                  // (either it's still in progress or it failed)
-                  if (state.status ==
-                          const KeyServerOperationStatus.loading() ||
-                      (state.status ==
-                              const KeyServerOperationStatus.success() &&
-                          state.secretStatus == SecretStatus.recovered &&
-                          walletState.recoverWalletStatus !=
-                              const RecoverWalletStatus.success())) {
-                    // Add decrypt event if needed and keep showing loading
-                    if (state.status ==
-                            const KeyServerOperationStatus.success() &&
-                        state.secretStatus == SecretStatus.recovered &&
-                        walletState.recoverWalletStatus ==
-                            const RecoverWalletStatus.initial()) {
-                      context.read<RecoverWalletBloc>().add(
-                            DecryptRecoveryFile(
-                              backupKey: state.backupKey,
-                              backupFile: state.backupFile,
-                            ),
-                          );
-                    }
-                    return const KeyLoadingScreen();
-                  }
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<OnboardingBloc, OnboardingState>(
+            listener: (context, walletState) {
+              final keyState = context.read<KeyServerCubit>().state;
+              if (keyState.status == const KeyServerOperationStatus.success() &&
+                  keyState.secretStatus == SecretStatus.recovered &&
+                  walletState.onboardingStepStatus ==
+                      const OnboardingStepStatus.success()) {
+                context.goNamed(OnboardingSubroute.recoverSuccess.name);
+              }
+            },
+          ),
+          BlocListener<BackupWalletBloc, BackupWalletState>(
+            listener: (context, state) {
+              if (state.status == const BackupWalletStatus.success()) {
+                context.goNamed(BackupWalletSubroute.backupSuccess.name);
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<KeyServerCubit, KeyServerState>(
+          buildWhen: (previous, current) =>
+              previous.currentFlow != current.currentFlow ||
+              previous.status != current.status ||
+              previous.password != current.password ||
+              previous.secretStatus != current.secretStatus,
+          builder: (context, state) {
+            final walletState = context.watch<OnboardingBloc>().state;
 
-                  if (state.status.maybeWhen(
-                    failure: (_) => true,
-                    orElse: () => false,
-                  )) {
-                    return ErrorScreen(
-                      message: state.status.maybeWhen(
-                        failure: (message) => message,
-                        orElse: () => 'An error occurred',
+            // Show loading screen
+            if (state.status == const KeyServerOperationStatus.loading() ||
+                (state.status == const KeyServerOperationStatus.success() &&
+                    state.secretStatus == SecretStatus.recovered &&
+                    walletState.onboardingStepStatus !=
+                        const OnboardingStepStatus.success())) {
+              if (state.status == const KeyServerOperationStatus.success() &&
+                  state.secretStatus == SecretStatus.recovered &&
+                  walletState.onboardingStepStatus ==
+                      const OnboardingStepStatus.none()) {
+                context.read<OnboardingBloc>().add(
+                      StartWalletRecovery(
+                        backupKey: state.backupKey,
+                        backupFile: state.backupFile,
                       ),
-                      title: 'Oops! Something went wrong',
-                      onRetry: () {
-                        context.read<KeyServerCubit>().clearError();
-                        context.read<KeyServerCubit>().updateKeyServerState(
-                              flow: CurrentKeyServerFlow.enter,
-                            );
-                      },
                     );
-                  }
+              }
+              return const KeyLoadingScreen();
+            }
 
-                  if (state.status ==
-                          const KeyServerOperationStatus.success() &&
-                      state.secretStatus == SecretStatus.stored) {
-                    return const BackupSuccessScreen();
-                  }
-
-                  if (state.status ==
-                          const KeyServerOperationStatus.success() &&
-                      state.secretStatus == SecretStatus.recovered &&
-                      walletState.recoverWalletStatus ==
-                          const RecoverWalletStatus.success()) {
-                    return RecoverSuccessScreen(
-                      backupKey: state.backupKey,
-                      fromOnboarding: fromOnboarding,
-                      backupFile: state.backupFile,
+            // Show error screen
+            if (state.status.maybeWhen(
+              failure: (_) => true,
+              orElse: () => false,
+            )) {
+              return ErrorScreen(
+                message: state.status.maybeWhen(
+                  failure: (message) => message,
+                  orElse: () => 'An error occurred',
+                ),
+                title: 'Oops! Something went wrong',
+                onRetry: () {
+                  context.read<KeyServerCubit>()
+                    ..clearError()
+                    ..updateKeyServerState(
+                      flow: CurrentKeyServerFlow.enter,
                     );
-                  }
-
-                  return switch (state.currentFlow) {
-                    CurrentKeyServerFlow.enter => const EnterScreen(),
-                    CurrentKeyServerFlow.confirm => const ConfirmScreen(),
-                    CurrentKeyServerFlow.recovery => RecoverWithSecretScreen(
-                        fromOnboarding: fromOnboarding,
-                      ),
-                    CurrentKeyServerFlow.delete => const EnterScreen(),
-                    CurrentKeyServerFlow.recoveryWithBackupKey =>
-                      RecoverWithBackupKeyScreen(
-                        fromOnboarding: fromOnboarding,
-                      ),
-                  };
                 },
               );
-            },
-          );
-        },
-      ),
-    );
-  }
-}
+            }
 
-class PageLayout extends StatelessWidget {
-  const PageLayout({
-    required this.bottomChild,
-    required this.children,
-    this.bottomHeight,
-  });
+            if (walletState.onboardingStepStatus.maybeWhen(
+              error: (_) => true,
+              orElse: () => false,
+            )) {
+              return ErrorScreen(
+                message: state.status.maybeWhen(
+                  failure: (message) => message,
+                  orElse: () => 'An error occurred',
+                ),
+                title: 'Oops! Something went wrong',
+                onRetry: () {
+                  context.read<KeyServerCubit>()
+                    ..clearError()
+                    ..updateKeyServerState(
+                      flow: CurrentKeyServerFlow.enter,
+                    );
+                },
+              );
+            }
 
-  final Widget bottomChild;
-  final List<Widget> children;
-  final double? bottomHeight;
-
-  @override
-  Widget build(BuildContext context) {
-    return StackedPage(
-      bottomChildHeight:
-          bottomHeight ?? MediaQuery.of(context).size.height * 0.11,
-      bottomChild: bottomChild,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: children,
+            // Show flow screens
+            return switch (state.currentFlow) {
+              CurrentKeyServerFlow.enter => const EnterScreen(),
+              CurrentKeyServerFlow.confirm => const ConfirmScreen(),
+              CurrentKeyServerFlow.recovery => RecoverWithSecretScreen(
+                  fromOnboarding: fromOnboarding,
+                ),
+              CurrentKeyServerFlow.delete => const EnterScreen(),
+              CurrentKeyServerFlow.recoveryWithBackupKey =>
+                RecoverWithBackupKeyScreen(
+                  fromOnboarding: fromOnboarding,
+                ),
+            };
+          },
         ),
       ),
     );
