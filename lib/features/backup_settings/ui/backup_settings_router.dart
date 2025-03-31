@@ -1,10 +1,10 @@
 import 'package:bb_mobile/features/backup_wallet/ui/screens/backup_options_screen.dart';
-import 'package:bb_mobile/features/recover_wallet/ui/screens/recover_options_screen.dart';
+import 'package:bb_mobile/features/test_wallet_backup/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:go_router/go_router.dart';
 
 enum BackupSettingsSubroute {
   backupOptions('backup-options'),
-  recoverOptions('recover-options');
+  testbackupOptions('test-backup-options');
 
   final String path;
 
@@ -19,11 +19,9 @@ class BackupSettingsSettingsRouter {
       builder: (context, state) => const BackupOptionsScreen(),
     ),
     GoRoute(
-      name: BackupSettingsSubroute.recoverOptions.name,
-      path: BackupSettingsSubroute.recoverOptions.path,
-      builder: (context, state) => RecoverOptionsScreen(
-        fromOnboarding: (state.extra as bool?) ?? false,
-      ),
+      name: BackupSettingsSubroute.testbackupOptions.name,
+      path: BackupSettingsSubroute.testbackupOptions.path,
+      builder: (context, state) => const ChooseVaultProviderScreen(),
     ),
   ];
 }

@@ -1,5 +1,7 @@
+import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class BackupSuccessScreen extends StatelessWidget {
   const BackupSuccessScreen({super.key});
@@ -12,11 +14,10 @@ class BackupSuccessScreen extends StatelessWidget {
       title: 'Backup completed!',
       isLoading: false,
       buttonText: 'Test Backup',
-      onTap: () => {},
-      // context.pushNamed(
-      //   RecoverWalletSubroute.chooseRecoverProvider.name,
-      //   extra: false,
-      // ),
+      onTap: () => context.goNamed(
+        SettingsSubroute.backupSettings.name,
+        extra: false,
+      ),
     );
   }
 }
