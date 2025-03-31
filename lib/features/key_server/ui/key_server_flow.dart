@@ -8,6 +8,8 @@ import 'package:bb_mobile/features/key_server/ui/screens/recover_with_secret_scr
 import 'package:bb_mobile/features/key_server/ui/widgets/error_screen.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
+import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
+import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:flutter/material.dart';
@@ -57,23 +59,47 @@ class KeyServerFlow extends StatelessWidget {
             ),
         ),
         BlocProvider.value(value: locator<OnboardingBloc>()),
+        BlocProvider.value(value: locator<BackupWalletBloc>()),
+        BlocProvider.value(value: locator<TestWalletBackupBloc>()),
       ],
       child: MultiBlocListener(
         listeners: [
           BlocListener<OnboardingBloc, OnboardingState>(
-            listener: (context, walletState) {
+            listener: (context, onBoardingState) {
               final keyState = context.read<KeyServerCubit>().state;
               if (keyState.status == const KeyServerOperationStatus.success() &&
                   keyState.secretStatus == SecretStatus.recovered &&
-                  walletState.onboardingStepStatus ==
+                  onBoardingState.onboardingStepStatus ==
                       const OnboardingStepStatus.success()) {
                 context.goNamed(OnboardingSubroute.recoverSuccess.name);
               }
             },
           ),
-          BlocListener<BackupWalletBloc, BackupWalletState>(
+          BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
+            listenWhen: (previous, current) =>
+                previous.isSuccess != current.isSuccess ||
+                previous.error != current.error,
             listener: (context, state) {
-              if (state.status == const BackupWalletStatus.success()) {
+              print("TestWalletBackupBloc listener");
+              if (state.isSuccess && state.error.isEmpty) {
+                context
+                    .goNamed(TestWalletBackupSubroute.backupTestSuccess.name);
+              }
+            },
+          ),
+          // BlocListener<BackupWalletBloc, BackuponBoardingState>(
+          //   listener: (context, state) {
+          //     if (state.status == const BackupWalletStatus.success()) {
+          //       context.goNamed(BackupWalletSubroute.backupSuccess.name);
+          //     }
+          //   },
+          // ),
+          BlocListener<KeyServerCubit, KeyServerState>(
+            listenWhen: (previous, current) =>
+                previous.secretStatus != current.secretStatus,
+            listener: (context, state) {
+              if (state.status == const KeyServerOperationStatus.success() &&
+                  state.secretStatus == SecretStatus.stored) {
                 context.goNamed(BackupWalletSubroute.backupSuccess.name);
               }
             },
@@ -86,24 +112,36 @@ class KeyServerFlow extends StatelessWidget {
               previous.password != current.password ||
               previous.secretStatus != current.secretStatus,
           builder: (context, state) {
-            final walletState = context.watch<OnboardingBloc>().state;
-
+            final onBoardingState = context.watch<OnboardingBloc>().state;
+            final testWalletBackupState =
+                context.watch<TestWalletBackupBloc>().state;
             // Show loading screen
             if (state.status == const KeyServerOperationStatus.loading() ||
                 (state.status == const KeyServerOperationStatus.success() &&
                     state.secretStatus == SecretStatus.recovered &&
-                    walletState.onboardingStepStatus !=
+                    onBoardingState.onboardingStepStatus !=
                         const OnboardingStepStatus.success())) {
               if (state.status == const KeyServerOperationStatus.success() &&
-                  state.secretStatus == SecretStatus.recovered &&
-                  walletState.onboardingStepStatus ==
-                      const OnboardingStepStatus.none()) {
-                context.read<OnboardingBloc>().add(
-                      StartWalletRecovery(
-                        backupKey: state.backupKey,
-                        backupFile: state.backupFile,
-                      ),
-                    );
+                  state.secretStatus == SecretStatus.recovered) {
+                if (fromOnboarding &&
+                    onBoardingState.onboardingStepStatus ==
+                        const OnboardingStepStatus.none()) {
+                  context.read<OnboardingBloc>().add(
+                        StartWalletRecovery(
+                          backupKey: state.backupKey,
+                          backupFile: state.backupFile,
+                        ),
+                      );
+                } else if (!testWalletBackupState.isLoading &&
+                    testWalletBackupState.error.isEmpty &&
+                    !fromOnboarding) {
+                  context.read<TestWalletBackupBloc>().add(
+                        StartBackupTesting(
+                          backupKey: state.backupKey,
+                          backupFile: state.backupFile,
+                        ),
+                      );
+                }
               }
               return const KeyLoadingScreen();
             }
@@ -128,8 +166,14 @@ class KeyServerFlow extends StatelessWidget {
                 },
               );
             }
-
-            if (walletState.onboardingStepStatus.maybeWhen(
+            if (!testWalletBackupState.isLoading &&
+                testWalletBackupState.error.isNotEmpty) {
+              return ErrorScreen(
+                message: testWalletBackupState.error,
+                title: 'Oops! Something went wrong',
+              );
+            }
+            if (onBoardingState.onboardingStepStatus.maybeWhen(
               error: (_) => true,
               orElse: () => false,
             )) {
