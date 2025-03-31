@@ -37,4 +37,9 @@ abstract class PayjoinRepository {
     required String finalizedPsbt,
     required ElectrumServer electrumServer,
   });
+  Future<PayjoinReceiver> broadcastOriginalTransaction({
+    required String payjoinId,
+    required Uint8List originalTxBytes,
+    required ElectrumServer electrumServer,
+  });
 }

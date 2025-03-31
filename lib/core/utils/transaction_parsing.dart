@@ -22,4 +22,13 @@ class TransactionParsing {
     final tx = await bdk.PartiallySignedTransaction.fromString(psbt);
     return tx.extractTx().txid();
   }
+
+  static Future<String> getTxIdFromTransactionBytes(
+    Uint8List transactionBytes,
+  ) async {
+    final tx = await bdk.Transaction.fromBytes(
+      transactionBytes: transactionBytes,
+    );
+    return tx.txid();
+  }
 }

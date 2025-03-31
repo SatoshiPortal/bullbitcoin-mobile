@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
@@ -34,6 +35,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required CreateReceiveSwapUsecase createReceiveSwapUsecase,
     required ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase,
+    required BroadcastOriginalTransactionUsecase
+        broadcastOriginalTransactionUsecase,
     required WatchPayjoinUsecase watchPayjoinUsecase,
     required WatchSwapUsecase watchSwapUsecase,
     Wallet? wallet,
@@ -46,6 +49,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         _getReceiveAddressUsecase = getReceiveAddressUsecase,
         _createReceiveSwapUsecase = createReceiveSwapUsecase,
         _receiveWithPayjoinUsecase = receiveWithPayjoinUsecase,
+        _broadcastOriginalTransactionUsecase =
+            broadcastOriginalTransactionUsecase,
         _watchPayjoinUsecase = watchPayjoinUsecase,
         _watchSwapUsecase = watchSwapUsecase,
         _wallet = wallet,
@@ -60,6 +65,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceiveNoteChanged>(_onNoteChanged);
     on<ReceiveAddressOnlyToggled>(_onAddressOnlyToggled);
     on<ReceiveNewAddressGenerated>(_onNewAddressGenerated);
+    on<ReceivePayjoinUpdated>(_onPayjoinUpdated);
+    on<ReceivePayjoinOriginalTxBroadcasted>(_onPayjoinOriginalTxBroadcasted);
     on<ReceiveLightningSwapUpdated>(_onLightningSwapUpdated);
   }
 
@@ -70,6 +77,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final ReceiveWithPayjoinUsecase _receiveWithPayjoinUsecase;
+  final BroadcastOriginalTransactionUsecase
+      _broadcastOriginalTransactionUsecase;
   final CreateReceiveSwapUsecase _createReceiveSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
@@ -136,14 +145,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           walletId: wallet.id,
           address: address.address,
         );
+        // The payjoin receiver is created, now we can watch it for updates
         _watchPayjoin(payjoin.id);
-        final payjoinQueryParameter =
-            Uri.parse(payjoin.pjUri).queryParameters['pj'] ?? '';
 
-        emit(
-          (state as BitcoinReceiveState)
-              .copyWith(payjoinQueryParameter: payjoinQueryParameter),
-        );
+        emit((state as BitcoinReceiveState).copyWith(payjoin: payjoin));
       } catch (e) {
         debugPrint('Payjoin receiver creation failed: $e');
         emit(state.copyWith(error: e));
@@ -488,6 +493,46 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     }
   }
 
+  Future<void> _onPayjoinUpdated(
+    ReceivePayjoinUpdated event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    final updatedPayjoin = event.payjoin;
+    // Make sure the state is a Bitcoin state and the correct payjoin is updated
+    if (state is BitcoinReceiveState) {
+      final bitcoinReceiveState = state as BitcoinReceiveState;
+      if (bitcoinReceiveState.payjoin?.id != null &&
+          updatedPayjoin.id == bitcoinReceiveState.payjoin!.id) {
+        emit(
+          bitcoinReceiveState.copyWith(
+            payjoin: updatedPayjoin,
+            txId: bitcoinReceiveState.txId.isEmpty
+                ? updatedPayjoin.txId ?? ''
+                : bitcoinReceiveState.txId,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _onPayjoinOriginalTxBroadcasted(
+    ReceivePayjoinOriginalTxBroadcasted event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    if (state is BitcoinReceiveState) {
+      final bitcoinReceiveState = state as BitcoinReceiveState;
+      final payjoin = bitcoinReceiveState.payjoin;
+      if (payjoin != null && payjoin.originalTxBytes != null) {
+        try {
+          await _broadcastOriginalTransactionUsecase.execute(payjoin);
+        } catch (e) {
+          // TODO: In the ui, show the error if it is a BroadcastOriginalTransactionException
+          emit(state.copyWith(error: e));
+        }
+      }
+    }
+  }
+
   Future<void> _onLightningSwapUpdated(
     ReceiveLightningSwapUpdated event,
     Emitter<ReceiveState> emit,
@@ -530,7 +575,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           '[ReceiveBloc] Watched payjoin ${updatedPayjoin.id} updated: ${updatedPayjoin.status}',
         );
         if (updatedPayjoin is PayjoinReceiver) {
-          //add(ReceivePayjoinUpdated(updatedPayjoin));
+          add(ReceivePayjoinUpdated(updatedPayjoin));
         }
       },
     );

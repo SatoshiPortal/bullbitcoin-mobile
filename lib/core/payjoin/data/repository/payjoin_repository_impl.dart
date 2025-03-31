@@ -191,6 +191,26 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     return model.toEntity() as PayjoinSender;
   }
+
+  @override
+  Future<PayjoinReceiver> broadcastOriginalTransaction({
+    required String payjoinId,
+    required Uint8List originalTxBytes,
+    required ElectrumServer electrumServer,
+  }) async {
+    final blockchain = await BitcoinBlockchainDatasource.fromElectrumServer(
+      ElectrumServerModel.fromEntity(electrumServer),
+    );
+
+    final txId = await blockchain.broadcastTransaction(originalTxBytes);
+
+    final model = await _source.completeReceiver(
+      payjoinId,
+      txId: txId,
+    );
+
+    return model.toEntity() as PayjoinReceiver;
+  }
 }
 
 class NoInputsToPayjoinException implements Exception {

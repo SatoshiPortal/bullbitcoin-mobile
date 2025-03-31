@@ -1,8 +1,10 @@
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
@@ -187,6 +189,13 @@ Future<void> registerUsecases() async {
         instanceName:
             LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
       ),
+    ),
+  );
+  locator.registerFactory<BroadcastOriginalTransactionUsecase>(
+    () => BroadcastOriginalTransactionUsecase(
+      electrumServerRepository: locator<ElectrumServerRepository>(),
+      walletMetadataRepository: locator<WalletMetadataRepository>(),
+      payjoinRepository: locator<PayjoinRepository>(),
     ),
   );
 }

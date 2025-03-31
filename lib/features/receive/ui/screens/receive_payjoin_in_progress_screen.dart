@@ -9,8 +9,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class ReceivePaymentReceivedScreen extends StatelessWidget {
-  const ReceivePaymentReceivedScreen({super.key});
+class ReceivePayjoinInProgressScreen extends StatelessWidget {
+  const ReceivePayjoinInProgressScreen({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,15 +35,14 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
             },
           ),
         ),
-        body: const PaymentReceivedPage(),
-        // child: AmountPage(),
+        body: const PayjoinInProgressPage(),
       ),
     );
   }
 }
 
-class PaymentReceivedPage extends StatelessWidget {
-  const PaymentReceivedPage({super.key});
+class PayjoinInProgressPage extends StatelessWidget {
+  const PayjoinInProgressPage();
 
   @override
   Widget build(BuildContext context) {
@@ -54,17 +55,20 @@ class PaymentReceivedPage extends StatelessWidget {
 
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Spacer(),
           BBText(
-            'Payment received',
+            'Payjoin in progress',
             style: context.font.headlineLarge,
           ),
-          const Gap(24),
+          BBText(
+            'Wait for the sender to finish the payjoin transaction',
+            style: context.font.bodyMedium,
+          ),
+          const Gap(16),
           BBText(
             amountBitcoin,
-            style: context.font.displaySmall,
+            style: context.font.headlineLarge,
           ),
           const Gap(4),
           BBText(
@@ -72,34 +76,42 @@ class PaymentReceivedPage extends StatelessWidget {
             style: context.font.bodyLarge,
             color: context.colour.surface,
           ),
-          const Spacer(),
-          const ReceiveDetailsButton(),
-          const Gap(16),
+          const Gap(84),
+          const ReceiveBroadcastPayjoinButton(),
         ],
       ),
     );
   }
 }
 
-class ReceiveDetailsButton extends StatelessWidget {
-  const ReceiveDetailsButton({super.key});
+class ReceiveBroadcastPayjoinButton extends StatelessWidget {
+  const ReceiveBroadcastPayjoinButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: BBButton.big(
-        label: 'Details',
-        onPressed: () {
-          // We need to pass the bloc to the details screen since it is outside
-          // of the Shellroute where the bloc is created.
-          context.go(
-            '${GoRouterState.of(context).matchedLocation}/${ReceiveRoute.details.path}',
-            extra: context.read<ReceiveBloc>(),
-          );
-        },
-        bgColor: context.colour.secondary,
-        textColor: context.colour.onSecondary,
+      child: Column(
+        children: [
+          BBText(
+            "No time to wait or did the payjoin fail on the sender's side?",
+            style: context.font.titleMedium,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+          ),
+          const Gap(16),
+          BBButton.big(
+            label: 'Receive payment normally',
+            onPressed: () {
+              debugPrint('Receive payment normally');
+              context.read<ReceiveBloc>().add(
+                    const ReceivePayjoinOriginalTxBroadcasted(),
+                  );
+            },
+            bgColor: context.colour.secondary,
+            textColor: context.colour.onSecondary,
+          ),
+        ],
       ),
     );
   }

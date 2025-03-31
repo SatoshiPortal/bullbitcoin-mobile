@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
@@ -29,6 +31,12 @@ class BitcoinBlockchainDatasource {
   Future<String> broadcastPsbt(String finalizedPsbt) async {
     final psbt = await bdk.PartiallySignedTransaction.fromString(finalizedPsbt);
     final tx = psbt.extractTx();
+    final txId = await _blockchain.broadcast(transaction: tx);
+    return txId;
+  }
+
+  Future<String> broadcastTransaction(Uint8List transaction) async {
+    final tx = await bdk.Transaction.fromBytes(transactionBytes: transaction);
     final txId = await _blockchain.broadcast(transaction: tx);
     return txId;
   }

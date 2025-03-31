@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:isolate';
 
-
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -319,6 +318,25 @@ class PayjoinDatasource {
     required String txId,
   }) async {
     final model = await get(uri) as PayjoinSenderModel?;
+
+    if (model == null) {
+      throw Exception('No model found');
+    }
+
+    final updatedModel = model.copyWith(
+      txId: txId,
+      isCompleted: true, // Nothing more to do from the sender side
+    );
+    await _store(updatedModel);
+
+    return updatedModel;
+  }
+
+  Future<PayjoinReceiverModel> completeReceiver(
+    String id, {
+    required String txId,
+  }) async {
+    final model = await get(id) as PayjoinReceiverModel?;
 
     if (model == null) {
       throw Exception('No model found');
@@ -730,8 +748,6 @@ class PayjoinDatasource {
     }
   }
 }
-
-
 
 class PayjoinNotFoundException implements Exception {
   final String message;
