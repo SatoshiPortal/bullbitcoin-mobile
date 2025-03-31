@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/recover_wallet/ui/recover_wallet_router.dart';
 import 'package:bb_mobile/features/settings/ui/screens/language_settings_screen.dart';
+import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:go_router/go_router.dart';
 
 enum SettingsSubroute {
@@ -36,7 +37,7 @@ class SettingsRouter {
       routes: [
         ...BackupSettingsSettingsRouter.routes,
         ...BackupWalletRouter.routes,
-        ...RecoverWalletRouter.routes,
+        ...TestWalletBackupRouter.routes,
       ],
     ),
 
