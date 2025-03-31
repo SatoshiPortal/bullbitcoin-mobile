@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 
-
 abstract class PayjoinRepository {
   Stream<PayjoinReceiver> get requestsForReceivers;
   Stream<PayjoinSender> get proposalsForSenders;
@@ -25,6 +24,7 @@ abstract class PayjoinRepository {
     required double networkFeesSatPerVb,
   });
   Future<List<Payjoin>> getAll({int? offset, int? limit, bool? completed});
+
   Future<PayjoinReceiver> processRequest({
     required String id,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
@@ -35,6 +35,11 @@ abstract class PayjoinRepository {
   Future<PayjoinSender> broadcastPsbt({
     required String payjoinId,
     required String finalizedPsbt,
+    required ElectrumServer electrumServer,
+  });
+  Future<PayjoinReceiver> broadcastOriginalTransaction({
+    required String payjoinId,
+    required Uint8List originalTxBytes,
     required ElectrumServer electrumServer,
   });
 }

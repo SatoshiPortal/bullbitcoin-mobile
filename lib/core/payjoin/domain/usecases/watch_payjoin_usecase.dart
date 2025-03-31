@@ -1,11 +1,10 @@
-
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
 
-class GetPayjoinUpdatesUsecase {
+class WatchPayjoinUsecase {
   final PayjoinWatcherService _payjoinWatcher;
 
-  const GetPayjoinUpdatesUsecase({
+  const WatchPayjoinUsecase({
     required PayjoinWatcherService payjoinWatcherService,
   }) : _payjoinWatcher = payjoinWatcherService;
 
@@ -20,13 +19,13 @@ class GetPayjoinUpdatesUsecase {
         },
       );
     } catch (e) {
-      throw PayjoinUpdatesException(e.toString());
+      throw WatchPayjoinException(e.toString());
     }
   }
 }
 
-class PayjoinUpdatesException implements Exception {
+class WatchPayjoinException implements Exception {
   final String message;
 
-  PayjoinUpdatesException(this.message);
+  WatchPayjoinException(this.message);
 }

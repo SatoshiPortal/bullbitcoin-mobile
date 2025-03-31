@@ -36,14 +36,14 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 title: Text(context.loc.pinCodeSettingsLabel),
                 onTap: () {
-                  context.pushNamed(SettingsSubroute.pinCode.name);
+                  // context.pushNamed(SettingsSubroute.pinCode.name);
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),
               ListTile(
                 title: Text(context.loc.languageSettingsLabel),
                 onTap: () {
-                  context.pushNamed(SettingsSubroute.language.name);
+                  // context.pushNamed(SettingsSubroute.language.name);
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),

@@ -24,22 +24,22 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class WalletManagerServiceImpl implements WalletManagerService {
-  final WalletMetadataRepository _walletMetadata;
-  final SeedRepository _seed;
-  final ElectrumServerRepository _electrum;
+  final WalletMetadataRepository _walletMetadataRepository;
+  final SeedRepository _seedRepository;
+  final ElectrumServerRepository _electrumServerRepository;
   final Map<String, WalletRepository> _wallets = {};
 
   WalletManagerServiceImpl({
     required WalletMetadataRepository walletMetadataRepository,
     required SeedRepository seedRepository,
     required ElectrumServerRepository electrumServerRepository,
-  })  : _walletMetadata = walletMetadataRepository,
-        _seed = seedRepository,
-        _electrum = electrumServerRepository;
+  })  : _walletMetadataRepository = walletMetadataRepository,
+        _seedRepository = seedRepository,
+        _electrumServerRepository = electrumServerRepository;
 
   @override
   Future<bool> doDefaultWalletsExist({required Environment environment}) async {
-    final wallets = await _walletMetadata.getAll();
+    final wallets = await _walletMetadataRepository.getAll();
 
     final defaultWalletsOfEnvironment = wallets
         .where(
@@ -66,7 +66,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
       if (wallet.source != WalletSource.mnemonic) {
         return false;
       }
-      final hasSeed = await _seed.exists(wallet.masterFingerprint);
+      final hasSeed = await _seedRepository.exists(wallet.masterFingerprint);
       if (!hasSeed) {
         return false;
       }
@@ -77,7 +77,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
 
   @override
   Future<void> initExistingWallets() async {
-    final walletsMetadata = await _walletMetadata.getAll();
+    final walletsMetadata = await _walletMetadataRepository.getAll();
 
     for (final metadata in walletsMetadata) {
       final wallet =
@@ -94,7 +94,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
     String label = '',
     bool isDefault = false,
   }) async {
-    final metadata = await _walletMetadata.deriveFromSeed(
+    final metadata = await _walletMetadataRepository.deriveFromSeed(
       seed: seed,
       network: network,
       scriptType: scriptType,
@@ -107,8 +107,8 @@ class WalletManagerServiceImpl implements WalletManagerService {
     // Now that both the metadata as the wallet datasource instance were created successfully
     //  we can store both the wallet metadata as the seed
     await Future.wait([
-      _walletMetadata.store(metadata),
-      _seed.store(
+      _walletMetadataRepository.store(metadata),
+      _seedRepository.store(
         fingerprint: seed.masterFingerprint,
         seed: seed,
       ),
@@ -146,7 +146,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
     required ScriptType scriptType,
     required String label,
   }) async {
-    final metadata = await _walletMetadata.deriveFromXpub(
+    final metadata = await _walletMetadataRepository.deriveFromXpub(
       xpub: xpub,
       network: network,
       scriptType: scriptType,
@@ -156,7 +156,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
     final wallet =
         await _createPublicWalletRepository(walletMetadata: metadata);
 
-    await _walletMetadata.store(metadata);
+    await _walletMetadataRepository.store(metadata);
 
     await _registerWalletRepository(id: metadata.id, wallet: wallet);
 
@@ -183,7 +183,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
   @override
   Future<Wallet> getWallet(String id) async {
     final wallet = _wallets[id];
-    final metadata = await _walletMetadata.get(id);
+    final metadata = await _walletMetadataRepository.get(id);
 
     if (wallet == null || metadata == null) {
       throw WalletNotFoundException(id);
@@ -216,7 +216,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
   }) async {
     final wallets = <Wallet>[];
     for (final walletEntry in _wallets.entries) {
-      final metadata = await _walletMetadata.get(walletEntry.key);
+      final metadata = await _walletMetadataRepository.get(walletEntry.key);
 
       if (metadata == null) {
         continue;
@@ -319,13 +319,13 @@ class WalletManagerServiceImpl implements WalletManagerService {
   @override
   Future<Wallet> sync({required String walletId}) async {
     final wallet = _wallets[walletId];
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _walletMetadataRepository.get(walletId);
 
     if (wallet == null || metadata == null) {
       throw WalletNotFoundException(walletId);
     }
 
-    final electrumServer = await _electrum.getElectrumServer(
+    final electrumServer = await _electrumServerRepository.getElectrumServer(
       network: metadata.network,
     );
     try {
@@ -339,8 +339,10 @@ class WalletManagerServiceImpl implements WalletManagerService {
 
   @override
   Future<List<Wallet>> syncAll({Environment? environment}) async {
-    for (final walletId in _wallets.keys) {
-      final metadata = await _walletMetadata.get(walletId);
+    final walletIds = List<String>.from(_wallets.keys);
+
+    for (final walletId in walletIds) {
+      final metadata = await _walletMetadataRepository.get(walletId);
       if (metadata == null ||
           (environment != null &&
               metadata.network.isMainnet != environment.isMainnet)) {
@@ -445,7 +447,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
   }
 
   Future<WalletRepository?> _getWalletWithPrivateKey(String id) async {
-    final walletMetadata = await _walletMetadata.get(id);
+    final walletMetadata = await _walletMetadataRepository.get(id);
 
     if (walletMetadata == null) {
       return null;
@@ -482,7 +484,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
         dbPath: dbPath,
       );
     } else {
-      final electrumServer = await _electrum.getElectrumServer(
+      final electrumServer = await _electrumServerRepository.getElectrumServer(
         network: walletMetadata.network,
       );
 
@@ -499,7 +501,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
     required WalletMetadata walletMetadata,
   }) async {
     final dbPath = await _getWalletDbPath(walletMetadata.id);
-    final seed = await _seed.get(walletMetadata.masterFingerprint);
+    final seed = await _seedRepository.get(walletMetadata.masterFingerprint);
 
     if (seed is! MnemonicSeed) {
       throw WrongSeedTypeException(
@@ -518,7 +520,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
         dbPath: dbPath,
       );
     } else {
-      final electrumServer = await _electrum.getElectrumServer(
+      final electrumServer = await _electrumServerRepository.getElectrumServer(
         network: walletMetadata.network,
       );
       return LwkWalletRepositoryImpl.private(
@@ -596,46 +598,14 @@ class WalletManagerServiceImpl implements WalletManagerService {
   }
 
   @override
-  Future<List<WalletTransaction>> getTransactions({
+  Future<List<BaseWalletTransaction>> getBaseTransactions({
     required String walletId,
   }) async {
     final wallet = _wallets[walletId];
-
     if (wallet == null) {
       throw WalletNotFoundException(walletId);
     }
-    final transactions = await wallet.getTransactions(walletId);
-    final walletTxs = <WalletTransaction>[];
-    // check if the tx is a swap or buy/sell
-    for (final tx in transactions) {
-      switch (tx.type) {
-        case TxType.send:
-          SendTransactionDetail(
-            amount: tx.amount,
-            fees: tx.fees!,
-            txId: tx.txid,
-            walletId: walletId,
-          );
-        case TxType.receive:
-          // TODO: Handle this case.
-          ReceiveTransactionDetail(
-            amount: tx.amount,
-            fees: tx.fees,
-            txId: tx.txid,
-            walletId: walletId,
-          );
-        case TxType.self:
-          // TODO: Handle this case.
-          throw UnimplementedError();
-        case TxType.lnSwap:
-          // TODO: Handle this case.
-          throw UnimplementedError();
-        case TxType.chainSwap:
-          // TODO: Handle this case.
-          throw UnimplementedError();
-      }
-    }
-    return walletTxs;
+    return await wallet.getTransactions(walletId);
   }
 }
 

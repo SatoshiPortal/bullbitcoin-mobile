@@ -207,25 +207,26 @@ class LwkWalletRepositoryImpl
   Future<List<BaseWalletTransaction>> getTransactions(String walletId) async {
     final transactions = await _wallet.txs();
     final List<BaseWalletTransaction> walletTxs = [];
-    final assetID =
-        _network == lwk.Network.mainnet ? lwk.lBtcAssetId : lwk.lTestAssetId;
-
     for (final tx in transactions) {
       // check if the transaction is
       final balances = tx.balances;
       final finalBalance = balances
-              .where((e) => e.assetId == assetID)
+              .where((e) => e.assetId == _lBtcAssetId)
               .map((e) => e.value)
               .firstOrNull ??
           0;
       final type = tx.kind == 'outgoing' ? TxType.send : TxType.receive;
       final confirmationTime = tx.timestamp ?? 0;
       final walletTx = BaseWalletTransaction(
+        walletId: walletId,
+        network: _network == lwk.Network.mainnet
+            ? Network.liquidMainnet
+            : Network.liquidTestnet,
         txid: tx.txid,
         type: type,
-        amount: finalBalance,
+        amount: finalBalance.abs(),
         confirmationTime: confirmationTime != 0
-            ? DateTime.fromMillisecondsSinceEpoch(confirmationTime)
+            ? DateTime.fromMillisecondsSinceEpoch(confirmationTime * 1000)
             : null,
       );
       walletTxs.add(walletTx);

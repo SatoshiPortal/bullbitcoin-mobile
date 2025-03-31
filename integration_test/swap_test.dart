@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usec
 import 'package:bb_mobile/locator.dart';
 import 'package:boltz/boltz.dart' as boltz;
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:test/test.dart';
@@ -50,6 +51,7 @@ void main() {
 
   setUpAll(() async {
     await Future.wait([
+      dotenv.load(isOptional: true),
       Hive.initFlutter(),
       boltz.LibBoltz.init(),
       lwk.LibLwk.init(),

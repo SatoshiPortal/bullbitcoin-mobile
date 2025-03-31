@@ -13,7 +13,7 @@ class ReceiveState with _$ReceiveState {
     @Default('') String inputAmount,
     BigInt? confirmedAmountSat,
     @Default('') String note,
-    @Default('') String payjoinQueryParameter,
+    PayjoinReceiver? payjoin,
     @Default(false) bool isAddressOnly,
     @Default('') String txId,
     Object? error,
@@ -101,22 +101,35 @@ class ReceiveState with _$ReceiveState {
   String get qrData {
     switch (this) {
       case final BitcoinReceiveState bitcoinState:
+        final payjoin = bitcoinState.payjoin;
         if (bitcoinState.isAddressOnly ||
             (confirmedAmountSat == null &&
                 bitcoinState.note.isEmpty &&
-                bitcoinState.payjoinQueryParameter.isEmpty)) {
+                payjoin == null)) {
           return bitcoinState.address;
         }
-        final bip21Uri = Uri(
+
+        Uri bip21Uri = Uri(
           scheme: 'bitcoin',
           path: bitcoinState.address,
           queryParameters: {
             if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
             if (bitcoinState.note.isNotEmpty) 'message': bitcoinState.note,
-            if (bitcoinState.payjoinQueryParameter.isNotEmpty)
-              'pj': bitcoinState.payjoinQueryParameter,
           },
         );
+
+        // Add payjoin parameters if available
+        if (payjoin != null) {
+          final pjUri = Uri.parse(payjoin.pjUri);
+          bip21Uri = bip21Uri.replace(
+            queryParameters: {
+              if (bip21Uri.queryParameters.isNotEmpty)
+                ...bip21Uri.queryParameters,
+              'pj': pjUri.queryParameters['pj'],
+              'pjos': pjUri.queryParameters['pjos'],
+            },
+          );
+        }
         return bip21Uri.toString();
       case final LightningReceiveState lightningState:
         return lightningState.swap?.invoice ?? '';
@@ -160,19 +173,26 @@ class ReceiveState with _$ReceiveState {
   }
 
   String get formattedConfirmedAmountBitcoin {
-    final currencyFormatter = NumberFormat.currency(
-      name: bitcoinUnit.code,
-      decimalDigits: bitcoinUnit.decimals,
-      customPattern: '#,##0.00 ¤',
-    );
-    final formatted = currencyFormatter
-        .format(
-          bitcoinUnit == BitcoinUnit.sats
-              ? confirmedAmountSat?.toDouble() ?? 0
-              : confirmedAmountBtc,
-        )
-        .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-    return formatted;
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      // For sats, use integer formatting without decimals
+      final currencyFormatter = NumberFormat.currency(
+        name: bitcoinUnit.code,
+        decimalDigits: 0, // Use 0 decimals for sats
+        customPattern: '#,##0 ¤',
+      );
+      return currencyFormatter.format(confirmedAmountSat?.toInt() ?? 0);
+    } else {
+      // For BTC, use the standard decimal formatting
+      final currencyFormatter = NumberFormat.currency(
+        name: bitcoinUnit.code,
+        decimalDigits: bitcoinUnit.decimals,
+        customPattern: '#,##0.00 ¤',
+      );
+      final formatted = currencyFormatter
+          .format(confirmedAmountBtc)
+          .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
+      return formatted;
+    }
   }
 
   String get formattedConfirmedAmountFiat {
@@ -187,18 +207,26 @@ class ReceiveState with _$ReceiveState {
   String get formattedAmountInputEquivalent {
     if (isInputAmountFiat) {
       // If the input is in fiat, the equivalent should be in bitcoin
-      final equivalentAmount = bitcoinUnit == BitcoinUnit.sats
-          ? inputAmountSat.toDouble()
-          : inputAmountBtc;
-      final currencyFormatter = NumberFormat.currency(
-        name: bitcoinUnit.code,
-        decimalDigits: bitcoinUnit.decimals,
-        customPattern: '#,##0.00 ¤',
-      );
-      final formatted = currencyFormatter
-          .format(equivalentAmount)
-          .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-      return formatted;
+      if (bitcoinUnit == BitcoinUnit.sats) {
+        // For sats, use integer formatting without decimals
+        final currencyFormatter = NumberFormat.currency(
+          name: bitcoinUnit.code,
+          decimalDigits: 0, // Use 0 decimals for sats
+          customPattern: '#,##0 ¤',
+        );
+        return currencyFormatter.format(inputAmountSat.toInt());
+      } else {
+        // For BTC, use the standard decimal formatting
+        final currencyFormatter = NumberFormat.currency(
+          name: bitcoinUnit.code,
+          decimalDigits: bitcoinUnit.decimals,
+          customPattern: '#,##0.00 ¤',
+        );
+        final formatted = currencyFormatter
+            .format(inputAmountBtc)
+            .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
+        return formatted;
+      }
     } else {
       // If the input is in bitcoin, the equivalent should be in fiat
       final currencyFormatter = NumberFormat.currency(
@@ -214,6 +242,12 @@ class ReceiveState with _$ReceiveState {
     switch (this) {
       case final LightningReceiveState state:
         return state.swap != null && state.swap!.status == SwapStatus.claimable;
+      case final BitcoinReceiveState state:
+        // From the moment the payjoin request is received, it can be broadcasted,
+        // so we consider it in progress since it is a valid transaction from the sender
+        // and the user can choose to broadcast it.
+        return state.payjoin != null &&
+            state.payjoin!.status == PayjoinStatus.requested;
       case _:
         return false;
     }
@@ -235,7 +269,7 @@ class ReceiveState with _$ReceiveState {
   bool get isPayjoinLoading {
     if (this is BitcoinReceiveState) {
       final state = this as BitcoinReceiveState;
-      return state.payjoinQueryParameter.isEmpty &&
+      return state.payjoin == null &&
           state.error is! ReceivePayjoinException &&
           !state.isAddressOnly;
     }

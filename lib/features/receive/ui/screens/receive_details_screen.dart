@@ -4,16 +4,12 @@ import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceiveDetailsScreen extends StatelessWidget {
-  const ReceiveDetailsScreen({
-    super.key,
-    required this.receiveState,
-  });
-
-  final ReceiveState receiveState;
+  const ReceiveDetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +32,7 @@ class ReceiveDetailsScreen extends StatelessWidget {
             },
           ),
         ),
-        body: DetailsPage(
-          receiveState: receiveState,
-        ),
+        body: const DetailsPage(),
         // child: AmountPage(),
       ),
     );
@@ -46,14 +40,17 @@ class ReceiveDetailsScreen extends StatelessWidget {
 }
 
 class DetailsPage extends StatelessWidget {
-  const DetailsPage({
-    required this.receiveState,
-  });
-
-  final ReceiveState receiveState;
+  const DetailsPage();
 
   @override
   Widget build(BuildContext context) {
+    // Using read instead of select or watch is ok here,
+    //  since the amounts can not be changed at this point anymore.
+    final amountBitcoin =
+        context.read<ReceiveBloc>().state.formattedConfirmedAmountBitcoin;
+    final amountFiat =
+        context.read<ReceiveBloc>().state.formattedConfirmedAmountFiat;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -68,12 +65,12 @@ class DetailsPage extends StatelessWidget {
           ),
           const Gap(16),
           BBText(
-            receiveState.formattedConfirmedAmountBitcoin,
+            amountBitcoin,
             style: context.font.headlineLarge,
           ),
           const Gap(4),
           BBText(
-            '~${receiveState.formattedConfirmedAmountFiat}',
+            '~$amountFiat',
             style: context.font.bodyLarge,
             color: context.colour.surface,
           ),

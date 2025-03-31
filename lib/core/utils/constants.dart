@@ -25,6 +25,7 @@ class HiveBoxNameConstants {
   static const walletMetadata = 'walletMetadata';
   static const pdkPayjoins = 'pdkPayjoins';
   static const boltzSwaps = 'boltzSwaps';
+  static const labels = 'labels';
 }
 
 class PayjoinConstants {
@@ -81,4 +82,6 @@ class LocatorInstanceNameConstants {
       'boltzTestnetSwapRepository';
   static const boltzSwapWatcherInstanceName = 'boltzSwapWatcher';
   static const boltzTestnetSwapWatcherInstanceName = 'boltzTestnetSwapWatcher';
+  static const String labelsHiveStorageDatasourceInstanceName =
+      'labelsHiveStorageDatasource';
 }

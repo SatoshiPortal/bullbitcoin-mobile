@@ -1,11 +1,13 @@
+import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_updates_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/file_system_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/google_drive_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
@@ -38,6 +40,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/build_transaction_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/locator.dart';
@@ -133,8 +136,8 @@ Future<void> registerUsecases() async {
     () =>
         SendWithPayjoinUsecase(payjoinRepository: locator<PayjoinRepository>()),
   );
-  locator.registerFactory<GetPayjoinUpdatesUsecase>(
-    () => GetPayjoinUpdatesUsecase(
+  locator.registerFactory<WatchPayjoinUsecase>(
+    () => WatchPayjoinUsecase(
       payjoinWatcherService: locator<PayjoinWatcherService>(),
     ),
   );
@@ -183,6 +186,27 @@ Future<void> registerUsecases() async {
       watcherService: locator<SwapWatcherService>(
         instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
       ),
+    ),
+  );
+
+  locator.registerFactory<GetWalletTransactionsUsecase>(
+    () => GetWalletTransactionsUsecase(
+      walletManager: locator<WalletManagerService>(),
+      testnetSwapRepository: locator<SwapRepository>(
+        instanceName:
+            LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
+      ),
+      mainnetSwapRepository: locator<SwapRepository>(
+        instanceName:
+            LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+      ),
+    ),
+  );
+  locator.registerFactory<BroadcastOriginalTransactionUsecase>(
+    () => BroadcastOriginalTransactionUsecase(
+      electrumServerRepository: locator<ElectrumServerRepository>(),
+      walletMetadataRepository: locator<WalletMetadataRepository>(),
+      payjoinRepository: locator<PayjoinRepository>(),
     ),
   );
 }
