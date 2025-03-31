@@ -18,8 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lwk/lwk.dart';
-// ignore: implementation_imports
-import 'package:payjoin_flutter/src/generated/frb_generated.dart';
+import 'package:payjoin_flutter/common.dart';
 
 Future main() async {
   runZonedGuarded(() async {
@@ -30,7 +29,7 @@ Future main() async {
       LibLwk.init(),
       BoltzCore.init(),
       LibBip85.init(),
-      core.init(),
+      PConfig.initializeApp(),
       dotenv.load(isOptional: true),
     ]);
 
