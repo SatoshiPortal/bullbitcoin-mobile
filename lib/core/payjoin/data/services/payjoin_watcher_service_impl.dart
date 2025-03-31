@@ -33,8 +33,26 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
         payjoin,
       );
     });
-    _payjoin.proposalsForSenders
-        .listen((payjoin) => _processPayjoinProposal(payjoin));
+    _payjoin.proposalsForSenders.listen((payjoin) async {
+      debugPrint('Received payjoin proposal: ${payjoin.id}');
+      // Add the payjoin with proposal status to the stream so listeners can know
+      //  that a payjoin proposal was received.
+      _payjoinStreamController.add(payjoin);
+      // Process the payjoin proposal
+      await _processPayjoinProposal(payjoin);
+    });
+    _payjoin.expiredPayjoins.listen((payjoin) async {
+      debugPrint('Payjoin expired: ${payjoin.id}');
+      // Add the payjoin with expired status to the stream so listeners can know
+      //  that a payjoin has expired.
+      _payjoinStreamController.add(payjoin);
+
+      if (payjoin is PayjoinReceiver && payjoin.originalTxBytes != null) {
+        // If the payjoin is a receiver and it has the original transaction bytes
+        //  at expiration, we broadcast the original transaction automatically.
+        await _broadcastOriginalTransaction(payjoin);
+      }
+    });
   }
 
   @override

@@ -35,6 +35,7 @@ class PayjoinConstants {
   ];
   static const String directoryUrl = 'https://payjo.in';
   static const directoryPollingInterval = 5;
+  static const defaultExpireAfterSec = 60 * 60 * 24; // 24 hours
 }
 
 class ApiServiceConstants {

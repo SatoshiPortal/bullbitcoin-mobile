@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 abstract class PayjoinRepository {
   Stream<PayjoinReceiver> get requestsForReceivers;
   Stream<PayjoinSender> get proposalsForSenders;
+  Stream<Payjoin> get expiredPayjoins;
   Future<List<TxInput>> getInputsFromOngoingPayjoins();
   Future<PayjoinReceiver> createPayjoinReceiver({
     required String walletId,
@@ -22,8 +23,13 @@ abstract class PayjoinRepository {
     required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
+    int? expireAfterSec,
   });
-  Future<List<Payjoin>> getAll({int? offset, int? limit, bool? completed});
+  Future<List<Payjoin>> getAll({
+    int? offset,
+    int? limit,
+    //bool? completed,
+  });
 
   Future<PayjoinReceiver> processRequest({
     required String id,

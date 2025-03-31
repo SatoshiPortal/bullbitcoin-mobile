@@ -54,7 +54,7 @@ class PayjoinDatasource {
   Stream<PayjoinSenderModel> get proposalsForSenders =>
       _proposalSentController.stream.asBroadcastStream();
 
-  Stream<PayjoinModel> get expired =>
+  Stream<PayjoinModel> get expiredPayjoins =>
       _expiredController.stream.asBroadcastStream();
 
   Future<PayjoinReceiverModel> createReceiver({
@@ -65,6 +65,8 @@ class PayjoinDatasource {
     int? expireAfterSec,
   }) async {
     try {
+      final expirySec =
+          expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
       final payjoinDirectory = await Url.fromStr(_payjoinDirectoryUrl);
 
       Url? ohttpRelay;
@@ -93,8 +95,7 @@ class PayjoinDatasource {
         directory: payjoinDirectory,
         ohttpKeys: ohttpKeys,
         ohttpRelay: ohttpRelay,
-        expireAfter:
-            expireAfterSec == null ? null : BigInt.from(expireAfterSec),
+        expireAfter: BigInt.from(expirySec),
       );
 
       // Create and store the model to keep track of the payjoin session
@@ -104,6 +105,8 @@ class PayjoinDatasource {
         walletId: walletId,
         pjUri: receiver.pjUriBuilder().build().asString(),
         maxFeeRateSatPerVb: maxFeeRateSatPerVb,
+        expireAt: (DateTime.now().millisecondsSinceEpoch ~/ 1000) +
+            expirySec, // Expire after the given seconds
       ) as PayjoinReceiverModel;
       await _store(model);
 
@@ -128,7 +131,9 @@ class PayjoinDatasource {
     required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
+    int? expireAfterSec,
   }) async {
+    final expirySec = expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
     final uri = await Uri.fromStr(bip21);
 
     PjUri pjUri;
@@ -156,6 +161,8 @@ class PayjoinDatasource {
       sender: senderJson,
       walletId: walletId,
       originalPsbt: originalPsbt,
+      expireAt: (DateTime.now().millisecondsSinceEpoch ~/ 1000) +
+          expirySec, // Expire after the given seconds
     ) as PayjoinSenderModel;
     await _store(model);
 
@@ -184,7 +191,7 @@ class PayjoinDatasource {
     }
   }
 
-  Future<List<PayjoinModel>> getAll({bool onlyOngoing = true}) async {
+  Future<List<PayjoinModel>> getAll({bool onlyOngoing = false}) async {
     final entries = await _storage.getAll();
     final models = <PayjoinModel>[];
 
@@ -379,12 +386,11 @@ class PayjoinDatasource {
         await _store(model);
 
         // Send the updated payjoin model to the higher repository layers for
-        //  processing and notification to the user
+        //  processing and/or notification to the user
         if (model.isExpired) {
           _expiredController.add(model);
         } else {
-          // If the message is not because of an expiration it means a request
-          //  was received
+          // If not expired, it means a request was received
           _payjoinRequestedController.add(model);
         }
       }
@@ -416,8 +422,7 @@ class PayjoinDatasource {
         if (model.isExpired) {
           _expiredController.add(model);
         } else {
-          // If the message is not because of an expiration it means a proposal
-          //  was received
+          // If not expired, it means a proposal was received
           _proposalSentController.add(model);
         }
       }
@@ -700,12 +705,18 @@ class PayjoinDatasource {
   }
 
   Future<void> _resumePayjoins() async {
-    final models = await getAll();
+    final models = await getAll(onlyOngoing: true);
     for (final model in models) {
-      if (model.isCompleted || model.isExpired) {
-        continue;
-      }
-      if (model is PayjoinReceiverModel) {
+      if (model.isExpireAtPassed) {
+        // If the payjoin is expired, we should update the model and
+        //  store it as expired so it won't be processed again unnecessarily.
+        final updatedModel = model.copyWith(
+          isExpired: true,
+        );
+        await _store(updatedModel);
+        // Notify the repository layers that the payjoin has expired
+        _expiredController.add(model);
+      } else if (model is PayjoinReceiverModel) {
         if (model.originalTxBytes == null) {
           // If the original tx bytes are not present, it means the receiver
           //  needs to listen for a payjoin request from the sender, we do this

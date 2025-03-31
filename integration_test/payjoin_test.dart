@@ -110,10 +110,12 @@ void main() {
       late StreamSubscription<Payjoin> payjoinSubscription;
       late Completer<bool> payjoinReceiverProposedEvent;
       late Completer<bool> payjoinSenderCompletedEvent;
+      late Completer<bool> payjoinReceiverExpiredEvent;
 
       setUp(() async {
         payjoinReceiverProposedEvent = Completer();
         payjoinSenderCompletedEvent = Completer();
+        payjoinReceiverExpiredEvent = Completer();
 
         payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
           debugPrint('Payjoin event for ${payjoin.id}: ${payjoin.status}');
@@ -121,6 +123,8 @@ void main() {
             case PayjoinReceiver _:
               if (payjoin.status == PayjoinStatus.proposed) {
                 payjoinReceiverProposedEvent.complete(true);
+              } else if (payjoin.status == PayjoinStatus.expired) {
+                payjoinReceiverExpiredEvent.complete(true);
               }
             case PayjoinSender _:
               if (payjoin.status == PayjoinStatus.completed) {
@@ -214,8 +218,37 @@ void main() {
       test('should fail if the sender does not have enough funds', () {});
 
       test(
-        'should broadcast the original transaction if the payjoin is expired',
-        () {},
+        'should expire if time to wait for a request is over',
+        () async {
+          // Make the payjoin receiver expire before it polls the
+          //  payjoin directory for the first time.
+          const expireAfterSec = PayjoinConstants.directoryPollingInterval - 1;
+          // Generate receiver address from receiver wallet
+          final address = await walletManagerService.getNewAddress(
+            walletId: receiverWallet.id,
+          );
+
+          // Start a receiver session with the expiration time
+          final payjoin = await receiveWithPayjoinUsecase.execute(
+            walletId: receiverWallet.id,
+            address: address.address,
+            expireAfterSec: expireAfterSec,
+          );
+          debugPrint('Payjoin receiver created: ${payjoin.id}');
+
+          final didReceiverExpire = await Future.any(
+            [
+              payjoinReceiverExpiredEvent.future,
+              Future.delayed(
+                const Duration(
+                  seconds: PayjoinConstants.directoryPollingInterval * 2,
+                ),
+                () => false,
+              ),
+            ],
+          );
+          expect(didReceiverExpire, true);
+        },
       );
 
       tearDown(() {

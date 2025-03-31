@@ -15,6 +15,7 @@ sealed class PayjoinModel with _$PayjoinModel {
     required String walletId,
     required String pjUri,
     required BigInt maxFeeRateSatPerVb,
+    @Default(0) int expireAt,
     @Uint8ListJsonConverter() Uint8List? originalTxBytes,
     String? proposalPsbt,
     String? txId,
@@ -26,6 +27,7 @@ sealed class PayjoinModel with _$PayjoinModel {
     required String sender,
     required String walletId,
     required String originalPsbt,
+    @Default(0) int expireAt,
     String? proposalPsbt,
     String? txId,
     @Default(false) bool isExpired,
@@ -35,6 +37,9 @@ sealed class PayjoinModel with _$PayjoinModel {
 
   factory PayjoinModel.fromJson(Map<String, dynamic> json) =>
       _$PayjoinModelFromJson(json);
+
+  bool get isExpireAtPassed =>
+      DateTime.now().millisecondsSinceEpoch ~/ 1000 > expireAt;
 
   Payjoin toEntity() {
     return map(
