@@ -3,10 +3,6 @@ targets:
     builders:
       json_serializable:
         options:
-          # Options configure how source code is generated for every
-          # `@JsonSerializable`-annotated class in the package.
-          #
-          # The default value for each is listed.
           any_map: false
           checked: false
           constructor: ""
@@ -19,3 +15,6 @@ targets:
           generic_argument_factories: false
           ignore_unannotated: false
           include_if_null: true
+      flutter_gen_runner: # or flutter_gen
+        options: 
+          output: lib/generated/flutter_gen

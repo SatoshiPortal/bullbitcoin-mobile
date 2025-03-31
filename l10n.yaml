@@ -1,7 +1,7 @@
-arb-dir: lib/l10n
-output-dir: lib/l10n/generated/i18n
+arb-dir: localization
+output-dir: lib/generated/l10n
 template-arb-file: app_en.arb
-output-localization-file: app_localizations.dart
+output-localization-file: localization.dart
 untranslated-messages-file: untranslated-messages.txt
 nullable-getter: false
 synthetic-package: false # needed after flutter_gen is deprecated: https://docs.flutter.dev/release/breaking-changes/flutter-generate-i10n-source
