@@ -1,4 +1,3 @@
-
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 
@@ -13,6 +12,7 @@ class SendWithPayjoinUsecase {
     required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
+    int? expireAfterSec,
   }) {
     try {
       return _payjoinRepository.createPayjoinSender(
@@ -20,6 +20,7 @@ class SendWithPayjoinUsecase {
         bip21: bip21,
         originalPsbt: originalPsbt,
         networkFeesSatPerVb: networkFeesSatPerVb,
+        expireAfterSec: expireAfterSec,
       );
     } catch (e) {
       throw SendPayjoinException(e.toString());

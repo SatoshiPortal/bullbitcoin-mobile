@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
@@ -34,11 +35,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       _source.proposalsForSenders.map(
         (payjoinModel) => payjoinModel.toEntity() as PayjoinSender,
       );
+  @override
+  Stream<Payjoin> get expiredPayjoins => _source.expiredPayjoins.map(
+        (payjoinModel) => payjoinModel.toEntity(),
+      );
 
   @override
   Future<List<TxInput>> getInputsFromOngoingPayjoins() async {
     final inputs = <TxInput>[];
-    final payjoins = await _source.getAll();
+    final payjoins = await _source.getAll(onlyOngoing: true);
     for (final payjoin in payjoins) {
       String? psbt;
       switch (payjoin) {
@@ -90,6 +95,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
+    int? expireAfterSec,
   }) async {
     // Create the payjoin sender session
     final model = await _source.createSender(
@@ -97,6 +103,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       bip21: bip21,
       originalPsbt: originalPsbt,
       networkFeesSatPerVb: networkFeesSatPerVb,
+      expireAfterSec: expireAfterSec,
     );
 
     // Return a payjoin entity with send details
@@ -109,7 +116,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<List<Payjoin>> getAll({
     int? offset,
     int? limit,
-    bool? completed,
+    //bool? completed,
   }) async {
     final models = await _source.getAll();
 
