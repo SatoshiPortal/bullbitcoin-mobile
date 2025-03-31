@@ -125,7 +125,6 @@ class TestWalletBackupBloc
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      print('Testing backup: ${BackupInfo(backupFile: event.backupFile).id}');
       emit(state.copyWith(isLoading: true, error: '', isSuccess: false));
 
       try {

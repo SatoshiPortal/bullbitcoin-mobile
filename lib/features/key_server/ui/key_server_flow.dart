@@ -80,7 +80,6 @@ class KeyServerFlow extends StatelessWidget {
                 previous.isSuccess != current.isSuccess ||
                 previous.error != current.error,
             listener: (context, state) {
-              print("TestWalletBackupBloc listener");
               if (state.isSuccess && state.error.isEmpty) {
                 context
                     .goNamed(TestWalletBackupSubroute.backupTestSuccess.name);
