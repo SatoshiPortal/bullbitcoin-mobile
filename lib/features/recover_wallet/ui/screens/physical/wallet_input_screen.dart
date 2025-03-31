@@ -37,7 +37,7 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fromOnboarding = true;
+    const fromOnboarding = true;
 
     return SafeArea(
       child: Stack(
