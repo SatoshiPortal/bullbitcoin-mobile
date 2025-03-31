@@ -15,11 +15,13 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       emit(state.copyWith(loading: true));
       //Todo; add logic to check if the backup is tested in wallet metadata
       // For now, we will just set the default values
-      await getDefaultWalletMetadataUsecase.execute();
+      final defaultWallet = await getDefaultWalletMetadataUsecase.execute();
       emit(
         state.copyWith(
-          isDefaultPhysicalBackupTested: false,
-          isDefaultEncryptedBackupTested: false,
+          isDefaultPhysicalBackupTested: defaultWallet.isPhysicalBackupTested,
+          isDefaultEncryptedBackupTested: defaultWallet.isEncryptedVaultTested,
+          lastPhysicalBackup: defaultWallet.lastestPhysicalBackup,
+          lastEncryptedBackup: defaultWallet.lastestEncryptedBackup,
           loading: false,
         ),
       );

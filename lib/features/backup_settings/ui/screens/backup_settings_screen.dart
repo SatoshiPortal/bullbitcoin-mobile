@@ -49,17 +49,19 @@ class _Screen extends StatelessWidget {
           body: SafeArea(
             child: state.loading
                 ? const Center(child: CircularProgressIndicator())
-                : const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 32),
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Gap(20),
-                        _BackupTestStatusWidget(),
-                        Gap(30),
-                        _RecoverOrTestBackupButton(),
-                        Gap(5),
-                        _StartBackupButton(),
+                        const Gap(20),
+                        const _BackupTestStatusWidget(),
+                        const Gap(30),
+                        if (state.lastEncryptedBackup != null ||
+                            state.lastPhysicalBackup != null)
+                          const _TestBackupButton(),
+                        const Gap(5),
+                        const _StartBackupButton(),
                       ],
                     ),
                   ),
@@ -126,15 +128,15 @@ class _StatusRow extends StatelessWidget {
   }
 }
 
-class _RecoverOrTestBackupButton extends StatelessWidget {
-  const _RecoverOrTestBackupButton();
+class _TestBackupButton extends StatelessWidget {
+  const _TestBackupButton();
 
   @override
   Widget build(BuildContext context) {
     return BBButton.big(
-      label: 'Recover or Test Backup',
+      label: 'Test Backup',
       onPressed: () => context.pushNamed(
-        BackupSettingsSubroute.recoverOptions.name,
+        BackupSettingsSubroute.testbackupOptions.name,
         extra: false,
       ),
       borderColor: context.colour.secondary,
