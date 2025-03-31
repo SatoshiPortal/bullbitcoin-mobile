@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
@@ -8,22 +7,13 @@ import 'package:recoverbull/recoverbull.dart';
 
 class TorRepositoryImpl implements TorRepository {
   final TorDatasource _torDatasource;
-  bool _initialized = false;
 
   TorRepositoryImpl(this._torDatasource);
 
-  Future<void> _ensureInitialized() async {
-    if (!_initialized) {
-      await start();
-      _initialized = true;
-    }
-  }
-
   @override
-  Future<bool> isTorReady() async {
+  Future<bool> get isTorReady async {
     try {
-      await _ensureInitialized();
-      return _torDatasource.isReady;
+      return await _torDatasource.isReady;
     } catch (e) {
       return false;
     }
@@ -31,11 +21,8 @@ class TorRepositoryImpl implements TorRepository {
 
   @override
   Future<SOCKSSocket> createSocket() async {
-    await _ensureInitialized();
-
-    final isReady = await isTorReady();
-    if (!isReady) {
-      throw Exception('Tor is not ready');
+    if (!(await isTorReady)) {
+      throw Exception('Tor is not ready yet!');
     }
 
     return await SOCKSSocket.create(
@@ -46,13 +33,16 @@ class TorRepositoryImpl implements TorRepository {
 
   @override
   Future<void> start() async {
-    await _torDatasource.start();
+    await _torDatasource.enable();
     debugPrint('Tor started at port: ${_torDatasource.port}');
   }
 
   @override
   Future<void> stop() async {
-    await _torDatasource.kill();
+    await _torDatasource.disable();
     debugPrint('Tor stopped');
   }
+
+  @override
+  bool get isStarted => _torDatasource.isEnabled;
 }
