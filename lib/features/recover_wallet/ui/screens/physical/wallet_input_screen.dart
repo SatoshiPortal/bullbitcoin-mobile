@@ -37,8 +37,7 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fromOnboarding =
-        context.select((RecoverWalletBloc _) => _.state.fromOnboarding);
+    final fromOnboarding = true;
 
     return SafeArea(
       child: Stack(
