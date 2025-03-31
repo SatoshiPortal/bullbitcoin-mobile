@@ -48,7 +48,6 @@ abstract class WalletManagerService {
   });
   Future<Address> getLastUnusedAddress({required String walletId});
   Future<Address> getNewAddress({required String walletId});
-  Future<List<WalletTransaction>> getTransactions({required String walletId});
   Future<List<Utxo>> getUnspentUtxos({required String walletId});
   Future<bool> isOwnedByWallet({
     required String walletId,
@@ -66,4 +65,7 @@ abstract class WalletManagerService {
     bool replaceByFees,
   });
   Future<Transaction> sign({required String walletId, required Transaction tx});
+  Future<List<BaseWalletTransaction>> getBaseTransactions({
+    required String walletId,
+  });
 }

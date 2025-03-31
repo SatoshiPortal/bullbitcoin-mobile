@@ -24,6 +24,7 @@ abstract class PayjoinRepository {
     required double networkFeesSatPerVb,
   });
   Future<List<Payjoin>> getAll({int? offset, int? limit, bool? completed});
+
   Future<PayjoinReceiver> processRequest({
     required String id,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,

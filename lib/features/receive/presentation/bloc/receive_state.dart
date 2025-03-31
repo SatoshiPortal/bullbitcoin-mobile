@@ -173,19 +173,26 @@ class ReceiveState with _$ReceiveState {
   }
 
   String get formattedConfirmedAmountBitcoin {
-    final currencyFormatter = NumberFormat.currency(
-      name: bitcoinUnit.code,
-      decimalDigits: bitcoinUnit.decimals,
-      customPattern: '#,##0.00 ¤',
-    );
-    final formatted = currencyFormatter
-        .format(
-          bitcoinUnit == BitcoinUnit.sats
-              ? confirmedAmountSat?.toDouble() ?? 0
-              : confirmedAmountBtc,
-        )
-        .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-    return formatted;
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      // For sats, use integer formatting without decimals
+      final currencyFormatter = NumberFormat.currency(
+        name: bitcoinUnit.code,
+        decimalDigits: 0, // Use 0 decimals for sats
+        customPattern: '#,##0 ¤',
+      );
+      return currencyFormatter.format(confirmedAmountSat?.toInt() ?? 0);
+    } else {
+      // For BTC, use the standard decimal formatting
+      final currencyFormatter = NumberFormat.currency(
+        name: bitcoinUnit.code,
+        decimalDigits: bitcoinUnit.decimals,
+        customPattern: '#,##0.00 ¤',
+      );
+      final formatted = currencyFormatter
+          .format(confirmedAmountBtc)
+          .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
+      return formatted;
+    }
   }
 
   String get formattedConfirmedAmountFiat {
@@ -200,18 +207,26 @@ class ReceiveState with _$ReceiveState {
   String get formattedAmountInputEquivalent {
     if (isInputAmountFiat) {
       // If the input is in fiat, the equivalent should be in bitcoin
-      final equivalentAmount = bitcoinUnit == BitcoinUnit.sats
-          ? inputAmountSat.toDouble()
-          : inputAmountBtc;
-      final currencyFormatter = NumberFormat.currency(
-        name: bitcoinUnit.code,
-        decimalDigits: bitcoinUnit.decimals,
-        customPattern: '#,##0.00 ¤',
-      );
-      final formatted = currencyFormatter
-          .format(equivalentAmount)
-          .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-      return formatted;
+      if (bitcoinUnit == BitcoinUnit.sats) {
+        // For sats, use integer formatting without decimals
+        final currencyFormatter = NumberFormat.currency(
+          name: bitcoinUnit.code,
+          decimalDigits: 0, // Use 0 decimals for sats
+          customPattern: '#,##0 ¤',
+        );
+        return currencyFormatter.format(inputAmountSat.toInt());
+      } else {
+        // For BTC, use the standard decimal formatting
+        final currencyFormatter = NumberFormat.currency(
+          name: bitcoinUnit.code,
+          decimalDigits: bitcoinUnit.decimals,
+          customPattern: '#,##0.00 ¤',
+        );
+        final formatted = currencyFormatter
+            .format(inputAmountBtc)
+            .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
+        return formatted;
+      }
     } else {
       // If the input is in bitcoin, the equivalent should be in fiat
       final currencyFormatter = NumberFormat.currency(
