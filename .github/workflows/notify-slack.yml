@@ -4,6 +4,10 @@ on:
   pull_request:
     types:
       - closed
+      - opened
+  push:
+    branches:
+      - develop
 
 jobs:
   merged_on_develop:
@@ -17,6 +21,36 @@ jobs:
           payload: |
             {
               "text": "<${{ github.event.pull_request.html_url }}|PR Merged> into *develop* 👀 *${{ github.event.pull_request.title }}* by *${{ github.event.pull_request.user.login }}*",
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
+
+  pr_created:
+    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack Notification
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "New PR Created: *${{ github.event.pull_request.title }}* by *${{ github.event.pull_request.user.login }}* - <${{ github.event.pull_request.html_url }}|View PR>"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
+
+  push_to_develop:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack Notification
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "New Push to Develop: *${{ github.event.head_commit.message }}* by *${{ github.event.pusher.name }}* - <${{ github.event.repository.html_url }}/commit/${{ github.sha }}|View Commit>"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
