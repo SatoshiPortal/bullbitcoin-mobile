@@ -179,6 +179,14 @@ Future<void> registerUsecases() async {
   locator.registerFactory<GetWalletTransactionsUsecase>(
     () => GetWalletTransactionsUsecase(
       walletManager: locator<WalletManagerService>(),
+      testnetSwapRepository: locator<SwapRepository>(
+        instanceName:
+            LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
+      ),
+      mainnetSwapRepository: locator<SwapRepository>(
+        instanceName:
+            LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+      ),
     ),
   );
 }

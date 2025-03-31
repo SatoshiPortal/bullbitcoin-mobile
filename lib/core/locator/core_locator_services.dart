@@ -51,14 +51,6 @@ Future<void> registerServices() async {
       walletMetadataRepository: locator<WalletMetadataRepository>(),
       seedRepository: locator<SeedRepository>(),
       electrumServerRepository: locator<ElectrumServerRepository>(),
-      testnetSwapRepository: locator<SwapRepository>(
-        instanceName:
-            LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
-      ) as BoltzSwapRepositoryImpl,
-      mainnetSwapRepository: locator<SwapRepository>(
-        instanceName:
-            LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-      ) as BoltzSwapRepositoryImpl,
     ),
   );
   locator.registerLazySingleton<PayjoinWatcherService>(
