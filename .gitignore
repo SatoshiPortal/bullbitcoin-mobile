@@ -25,11 +25,12 @@ op/config/.env
 op/builds
 
 # Generated files
+lib/generated
 *.freezed.dart
 *.g.dart
 
 # l10n internationalization related
-lib/_l10n/generated/*
+localization*.dart
 untranslated-messages.txt
 
 # Dev preferences
