@@ -1,10 +1,9 @@
-import 'package:bb_mobile/features/backup_wallet/data/constants/backup_providers.dart'
-    show backupProviders;
-import 'package:bb_mobile/features/backup_wallet/domain/entities/backup_provider_entity.dart';
-import 'package:bb_mobile/features/backup_wallet/ui/widgets/option_tag.dart';
-import 'package:bb_mobile/features/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
-import 'package:bb_mobile/features/recover_wallet/ui/recover_wallet_router.dart';
+import 'package:bb_mobile/core/recoverbull/data/constants/backup_providers.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_entity.dart';
+import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/ui/components/cards/tag_card.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -16,10 +15,8 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ChooseVaultProviderScreen extends StatefulWidget {
-  final bool fromOnboarding;
   const ChooseVaultProviderScreen({
     super.key,
-    this.fromOnboarding = false,
   });
 
   @override
@@ -30,92 +27,73 @@ class ChooseVaultProviderScreen extends StatefulWidget {
 class _ChooseVaultProviderScreenState extends State<ChooseVaultProviderScreen> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => locator<RecoverWalletBloc>(),
-      child: _Screen(widget.fromOnboarding),
+    return BlocProvider<OnboardingBloc>(
+      create: (_) => locator<OnboardingBloc>(),
+      child: const _Screen(),
     );
   }
 }
 
 class _Screen extends StatelessWidget {
-  final bool fromOnboarding;
-  const _Screen(this.fromOnboarding);
+  const _Screen();
+
+  void _handleProviderTap(BuildContext context, BackupProviderEntity provider) {
+    if (provider == backupProviders[0]) {
+      context.read<OnboardingBloc>().add(const SelectGoogleDriveRecovery());
+    } else if (provider == backupProviders[2]) {
+      context.read<OnboardingBloc>().add(const SelectFileSystemRecovery());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<RecoverWalletBloc, RecoverWalletState>(
+    return BlocConsumer<OnboardingBloc, OnboardingState>(
       listenWhen: (previous, current) =>
-          previous.recoverWalletStatus != current.recoverWalletStatus,
-      listener: (context, state) {
-        state.recoverWalletStatus.when(
-          initial: () => {},
-          loading: () {},
-          success: () {
-            if (!state.encryptedInfo.isCorrupted) {
+          previous.onboardingStepStatus != current.onboardingStepStatus,
+      listener: (context, state) => state.onboardingStepStatus.when(
+        loading: () => {},
+        success: () => {
+          if (!state.backupInfo.isCorrupted)
+            {
               context.pushNamed(
-                RecoverWalletSubroute.backupInfo.name,
-                extra: (state.encryptedInfo, fromOnboarding),
-              );
-            }
-          },
-          failure: (message) {
-            //TODO; create a proper error screen or widget
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            );
-          },
-        );
-      },
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            forceMaterialTransparency: true,
-            automaticallyImplyLeading: false,
-            flexibleSpace: TopBar(
-              onBack: () => context.pop(),
-              title: fromOnboarding ? "Choose vault location" : "Test backup",
-            ),
+                OnboardingSubroute.retrievedBackupInfo.name,
+                extra: state.backupInfo,
+              ),
+            },
+        },
+        none: () => {},
+        error: debugPrint,
+      ),
+      builder: (context, state) => Scaffold(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: TopBar(
+            onBack: () => context.pop(),
+            title: 'Recover Wallet',
           ),
-          body: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (!fromOnboarding) ...[
-                  BBText(
-                    'Test to make sure you can retrieve your encrypted vault.',
-                    style: context.font.bodySmall?.copyWith(
-                      color: context.colour.outline,
-                    ),
-                    maxLines: 2,
-                    textAlign: TextAlign.center,
-                  ),
-                  const Gap(30),
-                ] else
-                  const SizedBox.shrink(),
-                _ProviderTile(
-                  provider: backupProviders[0],
-                  onTap: () => context.read<RecoverWalletBloc>().add(
-                        const SelectGoogleDriveRecovery(),
+        ),
+        body: state.onboardingStepStatus == const OnboardingStepStatus.loading()
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: context.colour.primary,
+                ),
+              )
+            : Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    for (final provider in backupProviders) ...[
+                      _ProviderTile(
+                        provider: provider,
+                        onTap: () => _handleProviderTap(context, provider),
                       ),
+                      if (provider != backupProviders.last) const Gap(16),
+                    ],
+                  ],
                 ),
-                const Gap(16),
-                _ProviderTile(
-                  provider: backupProviders[1],
-                  onTap: () {},
-                ),
-                const Gap(16),
-                _ProviderTile(
-                  provider: backupProviders[2],
-                  onTap: () => context.read<RecoverWalletBloc>().add(
-                        const SelectFileSystemRecovery(),
-                      ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+              ),
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
+import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization.dart';
+import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/init_wallets_usecase.dart';
-import 'package:bb_mobile/features/app_startup/domain/usecases/initialize_tor_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:flutter/foundation.dart';
@@ -21,16 +22,21 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
         checkForExistingDefaultWalletsUsecase,
     required InitExistingWalletsUsecase initExistingWalletsUsecase,
     required InitializeTorUsecase initializeTorUsecase,
+    required CheckForTorInitializationOnStartupUsecase
+        checkForTorInitializationOnStartupUsecase,
   })  : _resetAppDataUsecase = resetAppDataUsecase,
         _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
         _checkForExistingDefaultWalletsUsecase =
             checkForExistingDefaultWalletsUsecase,
         _initExistingWalletsUsecase = initExistingWalletsUsecase,
         _initializeTorUsecase = initializeTorUsecase,
+        _checkForTorInitializationOnStartupUsecase =
+            checkForTorInitializationOnStartupUsecase,
         super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
-
+  final CheckForTorInitializationOnStartupUsecase
+      _checkForTorInitializationOnStartupUsecase;
   final ResetAppDataUsecase _resetAppDataUsecase;
   final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
   final CheckForExistingDefaultWalletsUsecase
@@ -44,7 +50,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   ) async {
     emit(const AppStartupState.loadingInProgress());
     try {
-      await _initializeTorUsecase.execute();
+      // Run Tor initialization in background
 
       final doDefaultWalletsExist =
           await _checkForExistingDefaultWalletsUsecase.execute();
@@ -52,6 +58,12 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
 
       if (doDefaultWalletsExist) {
         await _initExistingWalletsUsecase.execute();
+        final isTorIniatizationEnabled =
+            await _checkForTorInitializationOnStartupUsecase.execute();
+
+        if (isTorIniatizationEnabled) {
+          await _initializeTorUsecase.execute();
+        }
         isPinCodeSet = await _checkPinCodeExistsUsecase.execute();
         // Other startup logic can be added here, e.g. payjoin sessions resume
       } else {

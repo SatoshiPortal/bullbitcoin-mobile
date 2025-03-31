@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
-import 'package:bb_mobile/features/key_server/ui/key_server_flow.dart';
+import 'package:bb_mobile/features/key_server/ui/widgets/page_layout.dart';
 import 'package:bb_mobile/router.dart' show AppRoute;
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';

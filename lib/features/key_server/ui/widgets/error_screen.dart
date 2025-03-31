@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/key_server/ui/key_server_flow.dart';
+import 'package:bb_mobile/features/key_server/ui/widgets/page_layout.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';

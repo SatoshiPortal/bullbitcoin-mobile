@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
-import 'package:bb_mobile/features/recover_wallet/domain/entities/backup_info.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -12,11 +12,9 @@ import 'package:intl/intl.dart';
 
 class FetchedBackupInfoScreen extends StatelessWidget {
   final BackupInfo encryptedInfo;
-  final bool fromOnboarding;
   const FetchedBackupInfoScreen({
     super.key,
     required this.encryptedInfo,
-    this.fromOnboarding = false,
   });
 
   @override
@@ -26,12 +24,8 @@ class FetchedBackupInfoScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          onBack: () => fromOnboarding
-              ? context.pop()
-              : context.pushNamed(
-                  AppRoute.home.name,
-                ),
-          title: fromOnboarding ? 'Recover Wallet' : 'Test Backup',
+          onBack: () => context.pop(),
+          title: 'Recover Wallet',
         ),
       ),
       body: Padding(
@@ -76,7 +70,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                   extra: (
                     encryptedInfo.backupFile,
                     CurrentKeyServerFlow.recoveryWithBackupKey.name,
-                    fromOnboarding
+                    true
                   ),
                 ),
                 bgColor: Colors.transparent,
@@ -92,7 +86,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                 extra: (
                   encryptedInfo.backupFile,
                   CurrentKeyServerFlow.recovery.name,
-                  fromOnboarding
+                  true
                 ),
               ),
               bgColor: context.colour.secondary,

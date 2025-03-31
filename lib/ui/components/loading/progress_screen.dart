@@ -45,7 +45,7 @@ class ProgressScreen extends StatelessWidget {
               Center(
                 child: isLoading
                     ? Image.network(
-                        "https://s3-alpha-sig.figma.com/img/8bc4/c05f/a9d95a1e4eb48bca4e89c563d5a731a1?Expires=1743379200&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=myGDtu84V4GK2t7tVds~kU5wFPWTeWVzDMGsT0uaM85y6bI9HWRkTzZ6KHUVGqVjk4Idi58QobhqJ7ZvY-3Hr~41DOWJkec-hTQGp~sXYJgDa7ZG3teaIyGdDZynf0BQLEDHqh8x~3tSl3YM-S-BiklqpxldGSbLo989DdTpBDJdY12l8U8CSaG7HsxpY4Ttlm4H0ygg4P0WI0qCHkV-70yUvTgBdQTkwMg1pRhlKII8acDeBy1kYhh-kEJPi92Io-qcstvsXUf7LuRFYEzhDVQCvs3Oy8RDRu-0P2UMpiFO36Vu~1YlITO~ffn8rUjsrvWjt0J97ko1-lC7wXVgJw_",
+                        "https://s3-alpha-sig.figma.com/img/8bc4/c05f/a9d95a1e4eb48bca4e89c563d5a731a1?Expires=1744588800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=mzHul7JycaOyzgh1Xx3FGcoUj9Hbg4vjRQIYTfvyzFwLzPZkX4aAKXvrUiTkeYX-fV8kPJDWkBi3z3YDuzK-Q80widmpuIPGgVYuKDGVD~6p-sN8D7yy-QNEjCh3G3BDvSSaWigX2KBJTQqbjKkBNORlkdgUA~iw7TL8GLz0s~0VyYO5aEnBBWlfBwRZjfeZZhKSe8tOAzQr5FEIHewYBI91tFQfaxSe6ps155kIXbDTDH-IwwhSQDx1y0iuFTo6BuzXMnCIeMayrHpWhKkqjTKa~6PiRD9KTDbseQPMpbWTBZnHlseL3yXDjN~8YGx32hLz7athKI5Zpq6d10fKaw__",
                         width: 200,
                         height: 200,
                         fit: BoxFit.cover,

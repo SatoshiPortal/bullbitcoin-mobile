@@ -1,6 +1,6 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
-import 'package:bb_mobile/features/recover_wallet/domain/entities/backup_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:recoverbull/recoverbull.dart';
 

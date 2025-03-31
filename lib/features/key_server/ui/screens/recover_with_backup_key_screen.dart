@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -58,7 +59,9 @@ class _RecoverWithBackupKeyScreenState
               forceMaterialTransparency: true,
               flexibleSpace: TopBar(
                 title: 'Enter backup key manually',
-                onBack: () => context.pop(),
+                onBack: () => widget.fromOnboarding
+                    ? context.pop()
+                    : context.go(AppRoute.home.path),
               ),
             ),
             body: SafeArea(
@@ -102,17 +105,20 @@ class _RecoverWithBackupKeyScreenState
                       value: state.backupKey,
                     ),
                     const Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        context.read<KeyServerCubit>().autoFetchKey();
-                      },
-                      child: BBText(
-                        'Automatically Fetch key >>',
-                        style: context.font.bodySmall?.copyWith(
-                          color: context.colour.inversePrimary,
+                    if (widget.fromOnboarding)
+                      const SizedBox.shrink()
+                    else
+                      GestureDetector(
+                        onTap: () {
+                          context.read<KeyServerCubit>().autoFetchKey();
+                        },
+                        child: BBText(
+                          'Automatically Fetch key >>',
+                          style: context.font.bodySmall?.copyWith(
+                            color: context.colour.inversePrimary,
+                          ),
                         ),
                       ),
-                    ),
                     const Gap(20),
                     BBButton.big(
                       label: 'Decrypt vault',

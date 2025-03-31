@@ -1,13 +1,11 @@
-import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/create_wallet_button.dart';
+import 'package:bb_mobile/features/onboarding/ui/widgets/recover_backup_button.dart';
 import 'package:bb_mobile/gen/assets.gen.dart';
-import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({
@@ -61,8 +59,12 @@ class _Actions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final creating =
-        context.select((OnboardingBloc bloc) => bloc.state.creatingOnSplash());
+    final creating = context.select(
+      (OnboardingBloc bloc) =>
+          bloc.state.onboardingStepStatus ==
+              const OnboardingStepStatus.loading() &&
+          bloc.state.step == OnboardingStep.create,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -76,23 +78,7 @@ class _Actions extends StatelessWidget {
         else ...[
           const CreateWalletButton(),
           const Gap(10),
-          //TODO; Move physical wallet recovery to recover wallet feature
-          BBButton.big(
-            label: 'Recover Wallet Backup',
-            bgColor: Colors.transparent,
-            textColor: context.colour.onPrimary,
-            iconData: Icons.history_edu,
-            outlined: true,
-            onPressed: () async {
-              // context
-              //     .read<OnboardingBloc>()
-              //     .add(const OnboardingGoToRecoverStep());
-              context.pushNamed(
-                BackupSettingsSubroute.recoverOptions.name,
-                extra: true,
-              );
-            },
-          ),
+          const RecoverWalletButton(),
         ],
       ],
     );

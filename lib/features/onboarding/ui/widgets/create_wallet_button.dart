@@ -11,8 +11,12 @@ class CreateWalletButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final creating =
-        context.select((OnboardingBloc bloc) => bloc.state.creatingOnSplash());
+    final creating = context.select(
+      (OnboardingBloc bloc) =>
+          bloc.state.onboardingStepStatus ==
+              const OnboardingStepStatus.loading() &&
+          bloc.state.step == OnboardingStep.create,
+    );
 
     return BBButton.big(
       label: 'Create New Wallet',

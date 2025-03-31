@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/app_bar.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/seed_word.dart';
@@ -6,37 +7,50 @@ import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
-class OnboardingRecovery extends StatelessWidget {
-  const OnboardingRecovery({super.key});
+class OnboardingPhysicalRecovery extends StatelessWidget {
+  const OnboardingPhysicalRecovery({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: OnboardingAppBar(),
-      body: SafeArea(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Column(
+    return BlocListener<OnboardingBloc, OnboardingState>(
+      listenWhen: (previous, current) =>
+          previous.step != current.step ||
+          previous.onboardingStepStatus != current.onboardingStepStatus,
+      listener: (context, state) {
+        if (state.step == OnboardingStep.recover &&
+            state.onboardingStepStatus ==
+                const OnboardingStepStatus.success()) {
+          context.goNamed(OnboardingSubroute.recoverSuccess.name);
+        }
+      },
+      child: const Scaffold(
+        appBar: OnboardingAppBar(),
+        body: SafeArea(
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Gap(40),
+                    _WordGrid(),
+                    Gap(80),
+                  ],
+                ),
+              ),
+              Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Gap(40),
-                  _WordGrid(),
-                  Gap(80),
+                  _Button(),
+                  SizedBox(height: 20),
                 ],
               ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _Button(),
-                SizedBox(height: 20),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -74,11 +88,12 @@ class _Button extends StatelessWidget {
     final hasAllValidWords =
         context.select((OnboardingBloc _) => _.state.hasAllValidWords());
 
-    final creating = context.select(
-      (OnboardingBloc _) => _.state.creating,
+    final loading = context.select(
+      (OnboardingBloc _) =>
+          _.state.onboardingStepStatus == const OnboardingStepStatus.loading(),
     );
 
-    if (creating) {
+    if (loading) {
       return const Center(
         child: CircularProgressIndicator(),
       );

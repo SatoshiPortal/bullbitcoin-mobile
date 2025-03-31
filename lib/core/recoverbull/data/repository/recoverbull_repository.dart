@@ -99,7 +99,12 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
 
   @override
   Future<void> checkKeyServerConnectionWithTor() async {
-    final isTorReady = await torRepository.isTorReady();
+    if (!torRepository.isStarted) {
+      debugPrint('Starting Tor');
+      await torRepository.start();
+    }
+    final isTorReady = await torRepository.isTorReady;
+    debugPrint('isTorReady: $isTorReady');
     if (!isTorReady) {
       throw Exception('Tor is not ready');
     }

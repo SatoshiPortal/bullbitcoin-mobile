@@ -1,5 +1,6 @@
 part of 'key_server_cubit.dart';
 
+// TODO; movethis enum to core
 enum CurrentKeyServerFlow {
   enter,
   confirm,

@@ -5,7 +5,7 @@ class BackupInfo {
   final String backupFile;
 
   const BackupInfo({required this.backupFile});
-
+  const BackupInfo.empty() : backupFile = '';
   // Domain-specific getters that encapsulate BullBackup usage
   bool get isCorrupted {
     try {

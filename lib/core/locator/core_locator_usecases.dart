@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_fil
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
@@ -32,6 +33,9 @@ import 'package:bb_mobile/core/settings/domain/usecases/get_language_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/tor/domain/repositories/tor_repository.dart';
+import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization.dart';
+import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
@@ -39,7 +43,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/build_transaction_usecase.
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
-import 'package:bb_mobile/features/recover_wallet/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 
 Future<void> registerUsecases() async {
@@ -50,7 +53,15 @@ Future<void> registerUsecases() async {
       walletMetadataRepository: locator<WalletMetadataRepository>(),
     ),
   );
-
+  // Register InitializeTorUsecase using TorRepository
+  locator.registerFactory<InitializeTorUsecase>(
+    () => InitializeTorUsecase(locator<TorRepository>()),
+  );
+  locator.registerFactory<CheckForTorInitializationOnStartupUsecase>(
+    () => CheckForTorInitializationOnStartupUsecase(
+      walletMetadataRepository: locator<WalletMetadataRepository>(),
+    ),
+  );
   locator.registerFactory<ConnectToGoogleDriveUsecase>(
     () => ConnectToGoogleDriveUsecase(locator<GoogleDriveRepository>()),
   );

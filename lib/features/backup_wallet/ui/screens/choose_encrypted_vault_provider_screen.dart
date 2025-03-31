@@ -1,15 +1,13 @@
 import 'dart:ui';
-
-import 'package:bb_mobile/features/backup_wallet/data/constants/backup_providers.dart'
-    show backupProviders;
-import 'package:bb_mobile/features/backup_wallet/domain/entities/backup_provider_entity.dart';
+import 'package:bb_mobile/core/recoverbull/data/constants/backup_providers.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_entity.dart';
 import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
-import 'package:bb_mobile/features/backup_wallet/ui/widgets/option_tag.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/key_server/ui/widgets/error_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart' show AppRoute;
+import 'package:bb_mobile/ui/components/cards/tag_card.dart';
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart'
     show ProgressScreen;
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';

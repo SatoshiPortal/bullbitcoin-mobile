@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart'
     show HowToDecideSheetBackupOption;
-import 'package:bb_mobile/features/backup_wallet/ui/widgets/option_tag.dart';
-import 'package:bb_mobile/features/recover_wallet/ui/recover_wallet_router.dart';
+import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
+import 'package:bb_mobile/ui/components/cards/tag_card.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -11,20 +11,15 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class RecoverOptionsScreen extends StatefulWidget {
-  final bool fromOnboarding;
-  const RecoverOptionsScreen({super.key, required this.fromOnboarding});
+class OnboardingRecoverOptions extends StatefulWidget {
+  const OnboardingRecoverOptions({super.key});
 
   @override
-  State<RecoverOptionsScreen> createState() => _RecoverOptionsScreenState();
+  State<OnboardingRecoverOptions> createState() =>
+      _OnboardingRecoverOptionsState();
 }
 
-class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
+class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,9 +57,9 @@ class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
                     'Anonymous backup with strong encryption using your cloud.',
                 tag: 'Easy and simple (1 minute)',
                 onTap: () => context.pushNamed(
-                  RecoverWalletSubroute
+                  OnboardingSubroute
                       .chooseRecoverProvider.name, // ChooseVaultProviderScreen
-                  extra: widget.fromOnboarding,
+                  extra: true,
                 ),
               ),
               const Gap(16),
@@ -79,8 +74,8 @@ class _RecoverOptionsScreenState extends State<RecoverOptionsScreen> {
                 description:
                     'Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.',
                 tag: 'Trustless (take your time)',
-                onTap: () =>
-                    context.pushNamed(RecoverWalletSubroute.physical.name),
+                onTap: () => context
+                    .pushNamed(OnboardingSubroute.recoverFromPhysical.name),
               ),
               const Gap(16),
               GestureDetector(

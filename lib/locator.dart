@@ -12,6 +12,7 @@ import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/recover_wallet/recover_wallet_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
+import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt locator = GetIt.instance;
@@ -36,6 +37,7 @@ class AppLocator {
     ReceiveLocator.setup();
     BackupSettingsLocator.setup();
     BackupWalletLocator.setup();
+    TestWalletBackupLocator.setup();
     ImportWatchOnlyWalletLocator.setup();
   }
 }

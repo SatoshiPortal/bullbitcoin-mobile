@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-
 import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
@@ -24,8 +23,12 @@ class CreateEncryptedVaultUsecase {
   Future<String> execute() async {
     try {
       // The default wallet is used to derive the backup key
-      final defaultMetadata = await walletMetadataRepository.getDefault();
-
+      final defaultMetadata =
+          (await walletMetadataRepository.getDefault()).copyWith(
+        lastestEncryptedBackup: DateTime.now(),
+        isTorEnabledOnStartup: true,
+      );
+      await walletMetadataRepository.store(defaultMetadata);
       final defaultFingerprint = defaultMetadata.masterFingerprint;
       final defaultSeed = await seedRepository.get(defaultFingerprint);
       final defaultSeedModel = SeedModel.fromEntity(defaultSeed);
@@ -55,7 +58,6 @@ class CreateEncryptedVaultUsecase {
         backupKey,
         plaintext,
       );
-
       // Add the BIP85 derivation path (backup key) to the backup file
       final mapBackup = json.decode(encryptedBackup);
       mapBackup['path'] = derivationPath;
