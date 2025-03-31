@@ -46,8 +46,13 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
       final metadata = decodedRecoverbullWallets.metadata;
       final availableWallets = await walletMetadataRepository.getAll();
       for (final wallet in availableWallets) {
-        if (wallet.isDefault) {
-          if (wallet == metadata) {
+        if (wallet.isDefault && wallet.network == Network.bitcoinMainnet) {
+          if (wallet.masterFingerprint == metadata.masterFingerprint) {
+            walletMetadataRepository.store(
+              wallet.copyWith(
+                lastestEncryptedBackup: DateTime.now(),
+              ),
+            );
             throw const DefaultWalletAlreadyExistsError();
           } else {
             throw const WalletMismatchError();
@@ -65,15 +70,28 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
           network: metadata.network,
           scriptType: metadata.scriptType,
           isDefault: metadata.isDefault,
+          label: metadata.label,
         ),
         walletManagerService.createWallet(
           seed: seed,
           network: liquidNetwork,
           scriptType: metadata.scriptType,
           isDefault: metadata.isDefault,
+          label: metadata.label,
         ),
       ]);
       debugPrint('Default wallets created');
+      final recoveredWallet = await walletMetadataRepository.getDefault();
+      walletMetadataRepository.store(
+        recoveredWallet.copyWith(
+          isTorEnabledOnStartup: metadata.isTorEnabledOnStartup,
+          isEncryptedVaultTested: true,
+          isPhysicalBackupTested: metadata.isPhysicalBackupTested,
+          lastestEncryptedBackup: metadata.lastestEncryptedBackup,
+          lastestPhysicalBackup: metadata.lastestPhysicalBackup,
+        ),
+      );
+      debugPrint('Default wallet updated');
     } catch (e) {
       debugPrint('$RestoreEncryptedVaultFromBackupKeyUsecase: $e');
       rethrow;
