@@ -1,0 +1,21 @@
+name: Notify Slack
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  merged_on_develop:
+    if: github.event.pull_request.merged == true && github.base_ref == 'develop'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Slack Notification
+        uses: slackapi/slack-github-action@v2.0.0
+        with:
+          payload: |
+            {
+              "text": "<${{ github.event.pull_request.html_url }}|PR Merged> into *develop* 👀 *${{ github.event.pull_request.title }}* by *${{ github.event.pull_request.user.login }}*",
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
