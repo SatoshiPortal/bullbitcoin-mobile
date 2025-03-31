@@ -4,10 +4,6 @@ sealed class OnboardingEvent {
   const OnboardingEvent();
 }
 
-class OnboardingGoToRecoverStep extends OnboardingEvent {
-  const OnboardingGoToRecoverStep();
-}
-
 class OnboardingGoBack extends OnboardingEvent {
   const OnboardingGoBack();
 }
