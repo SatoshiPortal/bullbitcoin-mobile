@@ -1,21 +1,18 @@
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceivePayjoinInProgressScreen extends StatelessWidget {
   const ReceivePayjoinInProgressScreen({
     super.key,
-    required this.receiveState,
   });
-
-  final ReceiveState receiveState;
 
   @override
   Widget build(BuildContext context) {
@@ -38,57 +35,49 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
             },
           ),
         ),
-        body: PayjoinInProgressPage(
-          receiveState: receiveState,
-        ),
-        // child: AmountPage(),
+        body: const PayjoinInProgressPage(),
       ),
     );
   }
 }
 
 class PayjoinInProgressPage extends StatelessWidget {
-  const PayjoinInProgressPage({
-    required this.receiveState,
-  });
-
-  final ReceiveState receiveState;
+  const PayjoinInProgressPage();
 
   @override
   Widget build(BuildContext context) {
+    // Using read instead of select or watch is ok here,
+    //  since the amounts can not be changed at this point anymore.
+    final amountBitcoin =
+        context.read<ReceiveBloc>().state.formattedConfirmedAmountBitcoin;
+    final amountFiat =
+        context.read<ReceiveBloc>().state.formattedConfirmedAmountFiat;
+
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Spacer(),
           BBText(
             'Payjoin in progress',
             style: context.font.headlineLarge,
           ),
           BBText(
             'Wait for the sender to finish the payjoin transaction',
-            style: context.font.headlineMedium,
+            style: context.font.bodyMedium,
           ),
           const Gap(16),
           BBText(
-            receiveState.formattedConfirmedAmountBitcoin,
+            amountBitcoin,
             style: context.font.headlineLarge,
           ),
           const Gap(4),
           BBText(
-            '~${receiveState.formattedConfirmedAmountFiat}',
+            '~$amountFiat',
             style: context.font.bodyLarge,
             color: context.colour.surface,
           ),
-          const Spacer(),
-          BBText(
-            "No time to wait or did the payjoin fail on the sender's side?",
-            style: context.font.bodyLarge,
-          ),
-          ReceiveBroadcastPayjoinButton(
-            receiveState: receiveState,
-          ),
-          const Gap(16),
+          const Gap(84),
+          const ReceiveBroadcastPayjoinButton(),
         ],
       ),
     );
@@ -96,23 +85,33 @@ class PayjoinInProgressPage extends StatelessWidget {
 }
 
 class ReceiveBroadcastPayjoinButton extends StatelessWidget {
-  const ReceiveBroadcastPayjoinButton({super.key, required this.receiveState});
-
-  final ReceiveState receiveState;
+  const ReceiveBroadcastPayjoinButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: BBButton.big(
-        label: 'Receive payment normally',
-        onPressed: () {
-          // Todo: broadcast the payjoin transaction
-          // context.read<ReceiveBloc>().add(const ReceivePayjoinBroadcasted());
-          context.go(ReceiveRoute.details.path, extra: receiveState);
-        },
-        bgColor: context.colour.secondary,
-        textColor: context.colour.onSecondary,
+      child: Column(
+        children: [
+          BBText(
+            "No time to wait or did the payjoin fail on the sender's side?",
+            style: context.font.titleMedium,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+          ),
+          const Gap(16),
+          BBButton.big(
+            label: 'Receive payment normally',
+            onPressed: () {
+              debugPrint('Receive payment normally');
+              context.read<ReceiveBloc>().add(
+                    const ReceivePayjoinOriginalTxBroadcasted(),
+                  );
+            },
+            bgColor: context.colour.secondary,
+            textColor: context.colour.onSecondary,
+          ),
+        ],
       ),
     );
   }

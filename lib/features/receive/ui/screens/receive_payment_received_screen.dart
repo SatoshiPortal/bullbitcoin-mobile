@@ -6,16 +6,12 @@ import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceivePaymentReceivedScreen extends StatelessWidget {
-  const ReceivePaymentReceivedScreen({
-    super.key,
-    required this.receiveState,
-  });
-
-  final ReceiveState receiveState;
+  const ReceivePaymentReceivedScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +34,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
             },
           ),
         ),
-        body: PaymentReceivedPage(
-          receiveState: receiveState,
-        ),
+        body: const PaymentReceivedPage(),
         // child: AmountPage(),
       ),
     );
@@ -48,15 +42,17 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
 }
 
 class PaymentReceivedPage extends StatelessWidget {
-  const PaymentReceivedPage({
-    super.key,
-    required this.receiveState,
-  });
-
-  final ReceiveState receiveState;
+  const PaymentReceivedPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Using read instead of select or watch is ok here,
+    //  since the amounts can not be changed at this point anymore.
+    final amountBitcoin =
+        context.read<ReceiveBloc>().state.formattedConfirmedAmountBitcoin;
+    final amountFiat =
+        context.read<ReceiveBloc>().state.formattedConfirmedAmountFiat;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -68,19 +64,17 @@ class PaymentReceivedPage extends StatelessWidget {
           ),
           const Gap(24),
           BBText(
-            receiveState.formattedConfirmedAmountBitcoin,
+            amountBitcoin,
             style: context.font.displaySmall,
           ),
           const Gap(4),
           BBText(
-            '~${receiveState.formattedConfirmedAmountFiat}',
+            '~$amountFiat',
             style: context.font.bodyLarge,
             color: context.colour.surface,
           ),
           const Spacer(),
-          ReceiveDetailsButton(
-            receiveState: receiveState,
-          ),
+          const ReceiveDetailsButton(),
           const Gap(16),
         ],
       ),
@@ -89,9 +83,7 @@ class PaymentReceivedPage extends StatelessWidget {
 }
 
 class ReceiveDetailsButton extends StatelessWidget {
-  const ReceiveDetailsButton({super.key, required this.receiveState});
-
-  final ReceiveState receiveState;
+  const ReceiveDetailsButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +92,12 @@ class ReceiveDetailsButton extends StatelessWidget {
       child: BBButton.big(
         label: 'Details',
         onPressed: () {
-          context.go(ReceiveRoute.details.path, extra: receiveState);
+          // We need to pass the bloc to the details screen since it is outside
+          // of the Shellroute where the bloc is created.
+          context.go(
+            '${GoRouterState.of(context).matchedLocation}/${ReceiveRoute.details.path}',
+            extra: context.read<ReceiveBloc>(),
+          );
         },
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,

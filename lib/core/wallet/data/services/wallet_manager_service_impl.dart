@@ -614,23 +614,27 @@ class WalletManagerServiceImpl implements WalletManagerService {
     for (final tx in transactions) {
       switch (tx.type) {
         case TxType.send:
-          walletTxs.add(SendTransactionDetail(
-            amount: tx.amount,
-            fees: tx.fees!,
-            txId: tx.txid,
-            walletId: walletId,
-            network: network!,
-            confirmationTime: tx.confirmationTime,
-          ));
+          walletTxs.add(
+            SendTransactionDetail(
+              amount: tx.amount,
+              fees: tx.fees!,
+              txId: tx.txid,
+              walletId: walletId,
+              network: network!,
+              confirmationTime: tx.confirmationTime,
+            ),
+          );
         case TxType.receive:
-          walletTxs.add(ReceiveTransactionDetail(
-            amount: tx.amount,
-            fees: tx.fees,
-            txId: tx.txid,
-            walletId: walletId,
-            network: network!,
-            confirmationTime: tx.confirmationTime,
-          ));
+          walletTxs.add(
+            ReceiveTransactionDetail(
+              amount: tx.amount,
+              fees: tx.fees,
+              txId: tx.txid,
+              walletId: walletId,
+              network: network!,
+              confirmationTime: tx.confirmationTime,
+            ),
+          );
         case TxType.self:
           // TODO: Handle this case.
           throw UnimplementedError();

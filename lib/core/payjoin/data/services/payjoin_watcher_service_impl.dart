@@ -4,27 +4,22 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repo
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:flutter/material.dart';
 
 class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
   final PayjoinRepository _payjoin;
   final ElectrumServerRepository _electrumServer;
-  final SettingsRepository _settings;
   final WalletManagerService _walletManager;
   final StreamController<Payjoin> _payjoinStreamController;
 
   PayjoinWatcherServiceImpl({
     required PayjoinRepository payjoinRepository,
     required ElectrumServerRepository electrumServerRepository,
-    required SettingsRepository settingsRepository,
     required WalletManagerService walletManagerService,
   })  : _payjoin = payjoinRepository,
         _electrumServer = electrumServerRepository,
-        _settings = settingsRepository,
         _walletManager = walletManagerService,
         _payjoinStreamController = StreamController<Payjoin>.broadcast() {
     // Listen to payjoin events from the repository and process them

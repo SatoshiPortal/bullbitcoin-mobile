@@ -1,4 +1,3 @@
-
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/payjoin/data/services/payjoin_watcher_service_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
@@ -6,7 +5,6 @@ import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.d
 import 'package:bb_mobile/core/seed/data/services/mnemonic_seed_factory_impl.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/data/services/swap_watcher_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
@@ -58,7 +56,6 @@ Future<void> registerServices() async {
     () => PayjoinWatcherServiceImpl(
       payjoinRepository: locator<PayjoinRepository>(),
       electrumServerRepository: locator<ElectrumServerRepository>(),
-      settingsRepository: locator<SettingsRepository>(),
       walletManagerService: locator<WalletManagerService>(),
     ),
   );

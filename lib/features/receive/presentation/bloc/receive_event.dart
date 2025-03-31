@@ -19,6 +19,8 @@ class ReceiveEvent with _$ReceiveEvent {
       ReceiveNewAddressGenerated;
   const factory ReceiveEvent.receivePayjoinUpdated(PayjoinReceiver payjoin) =
       ReceivePayjoinUpdated;
+  const factory ReceiveEvent.receivePayjoinOriginalTxBroadcasted() =
+      ReceivePayjoinOriginalTxBroadcasted;
   const factory ReceiveEvent.receiveLightningSwapUpdated(LnReceiveSwap swap) =
       ReceiveLightningSwapUpdated;
 }

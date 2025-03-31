@@ -24,7 +24,8 @@ class TransactionParsing {
   }
 
   static Future<String> getTxIdFromTransactionBytes(
-      Uint8List transactionBytes) async {
+    Uint8List transactionBytes,
+  ) async {
     final tx = await bdk.Transaction.fromBytes(
       transactionBytes: transactionBytes,
     );
