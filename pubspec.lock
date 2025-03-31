@@ -442,10 +442,10 @@ packages:
     dependency: "direct main"
     description:
       name: extension_google_sign_in_as_googleapis_auth
-      sha256: bcf4f8dedcc1e66ce5fe98fbd98cc86ed25ad7fce0511e8d6cdc46ccbf421e8e
+      sha256: "0dcb17e399f62e897ac78f0a402a3cb6ab9313ced8b2bf131f684d317e05c9ab"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.12"
+    version: "2.0.13"
   extra_alignments:
     dependency: "direct main"
     description:
@@ -888,10 +888,10 @@ packages:
     dependency: transitive
     description:
       name: googleapis_auth
-      sha256: befd71383a955535060acde8792e7efc11d2fccd03dd1d3ec434e85b68775938
+      sha256: b81fe352cc4a330b3710d2b7ad258d9bcef6f909bb759b306bf42973a7d046db
       url: "https://pub.dev"
     source: hosted
-    version: "1.6.0"
+    version: "2.0.0"
   graphs:
     dependency: transitive
     description:
@@ -1270,9 +1270,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "0-22"
-      resolved-ref: "2c7fec23efc12a071e1a3f7a979c455ee15a26fa"
-      url: "https://github.com/DanGould/payjoin-flutter"
+      ref: main
+      resolved-ref: "9d5e311a3d283272132cc5e0682161f5596eab6d"
+      url: "https://github.com/LtbLightning/payjoin-flutter"
     source: git
     version: "0.22.0"
   permission_handler:
