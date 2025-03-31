@@ -1,4 +1,3 @@
-
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -15,6 +14,11 @@ class WalletMetadataModel with _$WalletMetadataModel {
     required bool isLiquid,
     required bool isMainnet,
     required bool isTestnet,
+    @Default(false) bool isTorEnabledOnStartup,
+    @Default(false) bool isEncryptedVaultTested,
+    @Default(false) bool isPhysicalBackupTested,
+    int? lastestEncryptedBackup,
+    int? lastestPhysicalBackup,
     required String scriptType,
     required String xpub,
     required String externalPublicDescriptor,
@@ -45,6 +49,13 @@ class WalletMetadataModel with _$WalletMetadataModel {
       isTestnet: entity.network.isTestnet,
       scriptType: entity.scriptType.name,
       xpub: entity.xpub,
+      isTorEnabledOnStartup: entity.isTorEnabledOnStartup,
+      isEncryptedVaultTested: entity.isEncryptedVaultTested,
+      isPhysicalBackupTested: entity.isPhysicalBackupTested,
+      lastestEncryptedBackup:
+          entity.lastestEncryptedBackup?.toUtc().millisecondsSinceEpoch,
+      lastestPhysicalBackup:
+          entity.lastestPhysicalBackup?.toUtc().millisecondsSinceEpoch,
       externalPublicDescriptor: entity.externalPublicDescriptor,
       internalPublicDescriptor: entity.internalPublicDescriptor,
       source: entity.source.name,
@@ -62,6 +73,15 @@ class WalletMetadataModel with _$WalletMetadataModel {
         isTestnet: isTestnet,
         isLiquid: isLiquid,
       ),
+      isTorEnabledOnStartup: isTorEnabledOnStartup,
+      isEncryptedVaultTested: isEncryptedVaultTested,
+      isPhysicalBackupTested: isPhysicalBackupTested,
+      lastestEncryptedBackup: lastestEncryptedBackup != null
+          ? DateTime.fromMillisecondsSinceEpoch(lastestEncryptedBackup!)
+          : null,
+      lastestPhysicalBackup: lastestPhysicalBackup != null
+          ? DateTime.fromMillisecondsSinceEpoch(lastestPhysicalBackup!)
+          : null,
       scriptType: ScriptType.fromName(scriptType),
       xpub: xpub,
       externalPublicDescriptor: externalPublicDescriptor,

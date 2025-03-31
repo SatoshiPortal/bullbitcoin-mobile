@@ -95,6 +95,11 @@ class WalletMetadata with _$WalletMetadata {
     @Default('') String label,
     required Network network,
     @Default(false) bool isDefault,
+    @Default(false) bool isTorEnabledOnStartup,
+    @Default(false) bool isEncryptedVaultTested,
+    @Default(false) bool isPhysicalBackupTested,
+    DateTime? lastestEncryptedBackup,
+    DateTime? lastestPhysicalBackup,
     // The fingerprint of the BIP32 root/master key (if a seed was used to derive the wallet)
     @Default('') String masterFingerprint,
     required String xpubFingerprint,

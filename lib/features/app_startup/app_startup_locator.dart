@@ -1,4 +1,3 @@
-
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization.dart';
@@ -41,15 +40,12 @@ class AppStartupLocator {
       ),
     );
 
-    // Register InitializeTorUsecase using TorRepository
-    locator.registerFactory<InitializeTorUsecase>(
-      () => InitializeTorUsecase(locator<TorRepository>()),
-    );
-
     // Bloc
     locator.registerFactory<AppStartupBloc>(
       () => AppStartupBloc(
         resetAppDataUsecase: locator<ResetAppDataUsecase>(),
+        checkForTorInitializationOnStartupUsecase:
+            locator<CheckForTorInitializationOnStartupUsecase>(),
         checkPinCodeExistsUsecase: locator<CheckPinCodeExistsUsecase>(),
         checkForExistingDefaultWalletsUsecase:
             locator<CheckForExistingDefaultWalletsUsecase>(),
