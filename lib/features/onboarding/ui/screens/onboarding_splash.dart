@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/create_wallet_button.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/recover_backup_button.dart';
-import 'package:bb_mobile/gen/assets.gen.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

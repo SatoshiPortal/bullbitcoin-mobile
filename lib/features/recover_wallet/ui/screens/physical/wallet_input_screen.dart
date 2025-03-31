@@ -1,10 +1,7 @@
 import 'package:bb_mobile/features/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
-import 'package:bb_mobile/features/recover_wallet/ui/widgets/label_input_field.dart';
 import 'package:bb_mobile/features/recover_wallet/ui/widgets/mnemonic_word_input_field.dart';
-import 'package:bb_mobile/features/recover_wallet/ui/widgets/passphrase_input_field.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/segment/segmented_small.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,8 +34,6 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const fromOnboarding = true;
-
     return SafeArea(
       child: Stack(
         children: [
@@ -63,18 +58,6 @@ class _Screen extends StatelessWidget {
                         // ),
                         const Gap(40),
 
-                        if (!fromOnboarding) ...[
-                          SegmentedSmall(
-                            items: const {'12', '24'},
-                            selected: '12',
-                            onSelected: (s) {},
-                          ),
-                          // MnemonicWordsCountSelection(
-                          //   selectedWordsCount: wordsCount,
-                          // ),
-
-                          const SizedBox(height: 33),
-                        ],
                         GridView.builder(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 24,
@@ -102,19 +85,6 @@ class _Screen extends StatelessWidget {
                     );
                   },
                 ),
-                if (!fromOnboarding) ...[
-                  const Gap(54),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: PassphraseInputField(),
-                  ),
-                  const Gap(16),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: LabelInputField(),
-                  ),
-                  const Gap(54),
-                ],
                 const SizedBox(height: 80),
               ],
             ),
