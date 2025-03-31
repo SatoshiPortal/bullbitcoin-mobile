@@ -2,9 +2,8 @@ import 'dart:ui';
 
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart'
     show HowToDecideSheetBackupOption;
-import 'package:bb_mobile/features/backup_wallet/ui/widgets/option_tag.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
-import 'package:bb_mobile/features/recover_wallet/ui/recover_wallet_router.dart';
+import 'package:bb_mobile/ui/components/cards/tag_card.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';

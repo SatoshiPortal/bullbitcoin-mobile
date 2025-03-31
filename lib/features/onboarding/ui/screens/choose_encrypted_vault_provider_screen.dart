@@ -1,10 +1,9 @@
-import 'package:bb_mobile/features/backup_wallet/data/constants/backup_providers.dart'
-    show backupProviders;
-import 'package:bb_mobile/features/backup_wallet/domain/entities/backup_provider_entity.dart';
-import 'package:bb_mobile/features/backup_wallet/ui/widgets/option_tag.dart';
+import 'package:bb_mobile/core/recoverbull/data/constants/backup_providers.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_entity.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/ui/components/cards/tag_card.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';

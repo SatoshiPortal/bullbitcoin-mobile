@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/backup_wallet/data/constants/backup_security_infos.dart';
+import 'package:bb_mobile/core/recoverbull/data/constants/backup_security_infos.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart' show BBButton;
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
