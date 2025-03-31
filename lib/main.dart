@@ -7,7 +7,7 @@ import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_blo
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/l10n/generated/i18n/app_localizations.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';

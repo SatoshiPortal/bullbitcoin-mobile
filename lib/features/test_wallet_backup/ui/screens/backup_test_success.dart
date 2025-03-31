@@ -1,4 +1,4 @@
-import 'package:bb_mobile/gen/assets.gen.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -26,9 +26,7 @@ class BackupTestSuccessScreen extends StatelessWidget {
                   height: 200,
                   width: 200,
                   child: Gif(
-                    image: AssetImage(
-                      Assets.images2.successTick.path,
-                    ),
+                    image: AssetImage(Assets.images2.successTick.path),
                     autostart: Autostart.once,
                     height: 200,
                     width: 200,

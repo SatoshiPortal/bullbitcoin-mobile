@@ -1,4 +1,4 @@
-import 'package:bb_mobile/l10n/generated/i18n/app_localizations.dart';
+import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:flutter/material.dart';
 
 extension BuildContextX on BuildContext {

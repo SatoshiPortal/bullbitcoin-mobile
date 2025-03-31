@@ -1,4 +1,4 @@
-import 'package:bb_mobile/gen/assets.gen.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';

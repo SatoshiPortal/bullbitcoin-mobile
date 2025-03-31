@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/gen/assets.gen.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/cards/action_card.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
