@@ -5,25 +5,25 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'labels.freezed.dart';
 part 'labels.g.dart';
 
-enum BIP329Type { tx, address, pubkey, input, output, xpub }
+enum LabelType { tx, address, pubkey, input, output, xpub }
 
+// BIP329 Standard Label
 @freezed
-class Bip329Label with _$Bip329Label {
-  const factory Bip329Label({
-    required BIP329Type type,
+class Label with _$Label {
+  const factory Label({
+    required LabelType type,
     required String ref,
     required String label,
     String? origin,
     bool? spendable,
-  }) = _Bip329Label;
-  const Bip329Label._();
+  }) = _Label;
+  const Label._();
 
-  factory Bip329Label.fromJson(Map<String, dynamic> json) =>
-      _$Bip329LabelFromJson(json);
+  factory Label.fromJson(Map<String, dynamic> json) => _$LabelFromJson(json);
 
   // ignore: prefer_constructors_over_static_methods
-  static Bip329Label create({
-    required BIP329Type type,
+  static Label create({
+    required LabelType type,
     required String ref,
     required String label,
     String? origin,
@@ -31,7 +31,7 @@ class Bip329Label with _$Bip329Label {
   }) {
     final sanitizedLabel = label.replaceAll(',', '');
 
-    return Bip329Label(
+    return Label(
       type: type,
       ref: ref,
       label: sanitizedLabel,
@@ -41,23 +41,23 @@ class Bip329Label with _$Bip329Label {
   }
 }
 
-extension LabelTypeExtension on BIP329Type {
+extension LabelTypeExtension on LabelType {
   String get value {
     switch (this) {
-      case BIP329Type.tx:
+      case LabelType.tx:
         return 'tx';
-      case BIP329Type.address:
+      case LabelType.address:
         return 'address';
-      case BIP329Type.pubkey:
+      case LabelType.pubkey:
         return 'pubkey';
-      case BIP329Type.input:
+      case LabelType.input:
         return 'input';
-      case BIP329Type.output:
+      case LabelType.output:
         return 'output';
-      case BIP329Type.xpub:
+      case LabelType.xpub:
         return 'xpub';
     }
   }
 
-  set fromString(String value) => BIP329Type.values.byName(value);
+  set fromString(String value) => LabelType.values.byName(value);
 }

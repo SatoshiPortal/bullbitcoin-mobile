@@ -1,13 +1,13 @@
 import 'package:bb_mobile/core/wallet/domain/entity/labels.dart';
 
-class Bip329LabelModel {
+class LabelModel {
   final String type;
   final String ref;
   final String label; // Single label instead of a list
   final String? origin;
   final bool? spendable;
 
-  Bip329LabelModel({
+  LabelModel({
     required this.type,
     required this.ref,
     required this.label,
@@ -16,8 +16,8 @@ class Bip329LabelModel {
   });
 
   // Convert from entity to model
-  factory Bip329LabelModel.fromEntity(Bip329Label entity) {
-    return Bip329LabelModel(
+  factory LabelModel.fromEntity(Label entity) {
+    return LabelModel(
       type: entity.type.value,
       ref: entity.ref,
       label: entity.label,
@@ -27,8 +27,8 @@ class Bip329LabelModel {
   }
 
   // Convert from model to entity
-  Bip329Label toEntity() {
-    return Bip329Label(
+  Label toEntity() {
+    return Label(
       type: _typeFromString(type),
       ref: ref,
       label: label,
@@ -37,29 +37,29 @@ class Bip329LabelModel {
     );
   }
 
-  // Helper to convert string to BIP329Type enum
-  BIP329Type _typeFromString(String typeStr) {
+  // Helper to convert string to LabelType enum
+  LabelType _typeFromString(String typeStr) {
     switch (typeStr) {
       case 'tx':
-        return BIP329Type.tx;
+        return LabelType.tx;
       case 'address':
-        return BIP329Type.address;
+        return LabelType.address;
       case 'pubkey':
-        return BIP329Type.pubkey;
+        return LabelType.pubkey;
       case 'input':
-        return BIP329Type.input;
+        return LabelType.input;
       case 'output':
-        return BIP329Type.output;
+        return LabelType.output;
       case 'xpub':
-        return BIP329Type.xpub;
+        return LabelType.xpub;
       default:
         throw ArgumentError('Invalid label type: $typeStr');
     }
   }
 
   // Convert from json to model
-  factory Bip329LabelModel.fromJson(Map<String, dynamic> json) {
-    return Bip329LabelModel(
+  factory LabelModel.fromJson(Map<String, dynamic> json) {
+    return LabelModel(
       type: json['type'] as String,
       ref: json['ref'] as String,
       label: json['label'] as String,
