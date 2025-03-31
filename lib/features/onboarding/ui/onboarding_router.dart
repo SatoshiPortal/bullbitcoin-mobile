@@ -16,7 +16,7 @@ enum OnboardingSubroute {
   splash('splash'),
   recoverOptions('recover-options'),
   chooseRecoverProvider('choose-recover-provider'),
-  backupInfo('recoverd-backup-info'),
+  retrievedBackupInfo('retrieved-backup-info'),
   recoverFromEncrypted('recover-from-encrypted'),
   recoverFromPhysical('recover-from-physical'),
   recoverSuccess('recover-success');
@@ -83,8 +83,8 @@ class OnboardingRouter {
                 builder: (context, state) => const OnboardingRecoverOptions(),
               ),
               GoRoute(
-                name: OnboardingSubroute.backupInfo.name,
-                path: OnboardingSubroute.backupInfo.path,
+                name: OnboardingSubroute.retrievedBackupInfo.name,
+                path: OnboardingSubroute.retrievedBackupInfo.path,
                 builder: (context, state) {
                   final backupInfo = state.extra! as BackupInfo;
                   return FetchedBackupInfoScreen(

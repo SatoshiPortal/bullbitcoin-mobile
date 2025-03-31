@@ -56,7 +56,7 @@ class _Screen extends StatelessWidget {
           if (!state.backupInfo.isCorrupted)
             {
               context.pushNamed(
-                OnboardingSubroute.backupInfo.name,
+                OnboardingSubroute.retrievedBackupInfo.name,
                 extra: state.backupInfo,
               ),
             },
