@@ -21,6 +21,7 @@ class Bip329Label with _$Bip329Label {
   factory Bip329Label.fromJson(Map<String, dynamic> json) =>
       _$Bip329LabelFromJson(json);
 
+  // ignore: prefer_constructors_over_static_methods
   static Bip329Label create({
     required BIP329Type type,
     required String ref,
