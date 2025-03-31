@@ -1270,9 +1270,9 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "0-22"
-      resolved-ref: "2c7fec23efc12a071e1a3f7a979c455ee15a26fa"
-      url: "https://github.com/DanGould/payjoin-flutter"
+      ref: main
+      resolved-ref: "9d5e311a3d283272132cc5e0682161f5596eab6d"
+      url: "https://github.com/LtbLightning/payjoin-flutter"
     source: git
     version: "0.22.0"
   permission_handler:
