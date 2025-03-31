@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
+import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
-import 'package:bb_mobile/features/recover_wallet/domain/errors/recover_wallet_error.dart';
 import 'package:flutter/foundation.dart';
 
 /// If the key server is down
@@ -33,12 +33,6 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final availableWallets = await walletMetadataRepository.getAll();
-      for (final wallet in availableWallets) {
-        if (wallet.isDefault) {
-          throw const DefaultWalletAlreadyExistsError();
-        }
-      }
       final plaintext =
           recoverBullRepository.restoreBackupFile(backupFile, backupKey);
 
@@ -50,7 +44,16 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
         mnemonicWords: decodedRecoverbullWallets.mnemonic,
       );
       final metadata = decodedRecoverbullWallets.metadata;
-
+      final availableWallets = await walletMetadataRepository.getAll();
+      for (final wallet in availableWallets) {
+        if (wallet.isDefault) {
+          if (wallet == metadata) {
+            throw const DefaultWalletAlreadyExistsError();
+          } else {
+            throw const WalletMismatchError();
+          }
+        }
+      }
       final liquidNetwork = metadata.network.isMainnet
           ? Network.liquidMainnet
           : Network.liquidTestnet;
