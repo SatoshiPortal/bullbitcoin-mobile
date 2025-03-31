@@ -10,23 +10,23 @@ on:
       - develop
 
 jobs:
-  merged_on_develop:
-    if: github.event.pull_request.merged == true && github.base_ref == 'develop'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Send Slack Notification
-        uses: slackapi/slack-github-action@v2.0.0
-        with:
-          webhook-type: incoming-webhook
-          payload: |
-            {
-              "text": "<${{ github.event.pull_request.html_url }}|PR Merged> into *develop* 👀 *${{ github.event.pull_request.title }}* by *${{ github.event.pull_request.user.login }}*",
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
+  # merged_on_develop:
+  #   if: github.event.pull_request.merged == true && github.base_ref == 'develop'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Send Slack Notification
+  #       uses: slackapi/slack-github-action@v2.0.0
+  #       with:
+  #         webhook-type: incoming-webhook
+  #         payload: |
+  #           {
+  #             "text": "<${{ github.event.pull_request.html_url }}|PR Merged> into *develop* 👀 *${{ github.event.pull_request.title }}* by *${{ github.event.pull_request.user.login }}*",
+  #           }
+  #       env:
+  #         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
 
-  pr_created:
-    if: github.event_name == 'pull_request' && github.event.action == 'opened'
+  pr_created_on_develop:
+    if: github.event.pull_request.opened == true && github.base_ref == 'develop'
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack Notification
@@ -35,7 +35,7 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "New PR Created: *${{ github.event.pull_request.title }}* by *${{ github.event.pull_request.user.login }}* - <${{ github.event.pull_request.html_url }}|View PR>"
+              "text": "🔎 | PR on *develop* <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}> by *${{ github.event.pull_request.user.login }}*"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
@@ -50,7 +50,7 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "New Push to Develop: *${{ github.event.head_commit.message }}* by *${{ github.event.pusher.name }}* - <${{ github.event.repository.html_url }}/commit/${{ github.sha }}|View Commit>"
+              "text": "🔄 | Commit on *develop* <${{ github.event.repository.html_url }}/commit/${{ github.sha }}|${{ github.event.head_commit.message }}> by *${{ github.event.pusher.name }}* "
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
