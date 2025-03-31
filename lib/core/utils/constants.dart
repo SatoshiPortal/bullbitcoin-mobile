@@ -82,4 +82,6 @@ class LocatorInstanceNameConstants {
       'boltzTestnetSwapRepository';
   static const boltzSwapWatcherInstanceName = 'boltzSwapWatcher';
   static const boltzTestnetSwapWatcherInstanceName = 'boltzTestnetSwapWatcher';
+  static const String labelsHiveStorageDatasourceInstanceName =
+      'labelsHiveStorageDatasource';
 }

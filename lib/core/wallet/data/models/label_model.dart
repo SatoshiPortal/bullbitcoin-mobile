@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/wallet/domain/entity/labels.dart';
 class LabelModel {
   final String type;
   final String ref;
-  final String label; // Single label instead of a list
+  final String label;
   final String? origin;
   final bool? spendable;
 
@@ -15,7 +15,6 @@ class LabelModel {
     this.spendable,
   });
 
-  // Convert from entity to model
   factory LabelModel.fromEntity(Label entity) {
     return LabelModel(
       type: entity.type.value,
@@ -26,7 +25,6 @@ class LabelModel {
     );
   }
 
-  // Convert from model to entity
   Label toEntity() {
     return Label(
       type: _typeFromString(type),
@@ -37,7 +35,6 @@ class LabelModel {
     );
   }
 
-  // Helper to convert string to LabelType enum
   LabelType _typeFromString(String typeStr) {
     switch (typeStr) {
       case 'tx':
@@ -57,7 +54,6 @@ class LabelModel {
     }
   }
 
-  // Convert from json to model
   factory LabelModel.fromJson(Map<String, dynamic> json) {
     return LabelModel(
       type: json['type'] as String,
@@ -68,7 +64,6 @@ class LabelModel {
     );
   }
 
-  // Convert from model to json
   Map<String, dynamic> toJson() {
     return {
       'type': type,
