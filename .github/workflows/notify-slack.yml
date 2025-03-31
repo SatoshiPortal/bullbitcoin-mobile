@@ -35,7 +35,7 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "🔎 | PR on *develop* <${{ github.event.pull_request.html_url }}|${{ github.event.pull_request.title }}> by *${{ github.event.pull_request.user.login }}*"
+              "text": "🔎 | <${{ github.event.pull_request.html_url }}|PR on develop> ${{ github.event.pull_request.title }} by *${{ github.event.pull_request.user.login }}*"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
@@ -50,7 +50,7 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "🔄 | Commit on *develop* <${{ github.event.repository.html_url }}/commit/${{ github.sha }}|${{ github.event.head_commit.message }}> by *${{ github.event.pusher.name }}* "
+              "text": "🔄 | <${{ github.event.repository.html_url }}/commit/${{ github.sha }}|Commit on develop> ${{ github.event.head_commit.message }} by *${{ github.event.pusher.name }}*"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
