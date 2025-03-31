@@ -5,6 +5,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'wallet_transaction.freezed.dart';
 part 'wallet_transaction.g.dart';
 
+// This is the base type that is first translated from the datasource
+// It only knows if a transaction is Bitcoin/Liquid Send/Receive
 @freezed
 class BaseWalletTransaction with _$BaseWalletTransaction {
   const factory BaseWalletTransaction({
@@ -22,6 +24,8 @@ class BaseWalletTransaction with _$BaseWalletTransaction {
       _$BaseWalletTransactionFromJson(json);
 }
 
+// This is the final type that is translated from a BaseWalletTransaction
+// It knows the specific details of the transaction like if its a swap, payjoin etc.
 @freezed
 sealed class WalletTransaction with _$WalletTransaction {
   const WalletTransaction._();
@@ -40,6 +44,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     DateTime? confirmationTime,
     int? fees,
     required Network network,
+    List<String>? labels,
   }) = ReceiveTransactionDetail;
   factory WalletTransaction.lnSwap({
     required String walletId,
@@ -47,6 +52,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     DateTime? confirmationTime,
     required Network network,
     required Swap swap,
+    List<String>? labels,
   }) = LnSwapTransactionDetail;
   factory WalletTransaction.chainSwap({
     required String walletId,
@@ -54,6 +60,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     DateTime? confirmationTime,
     required Network network,
     required Swap swap,
+    List<String>? labels,
   }) = ChainSwapTransactionDetail;
   factory WalletTransaction.self({
     required String walletId,
@@ -62,6 +69,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     required int fees,
     DateTime? confirmationTime,
     required Network network,
+    List<String>? labels,
   }) = SelfTransactionDetail;
 
   TxType get type {

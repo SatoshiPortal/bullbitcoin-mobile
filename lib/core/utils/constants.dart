@@ -25,6 +25,7 @@ class HiveBoxNameConstants {
   static const walletMetadata = 'walletMetadata';
   static const pdkPayjoins = 'pdkPayjoins';
   static const boltzSwaps = 'boltzSwaps';
+  static const labels = 'labels';
 }
 
 class PayjoinConstants {
