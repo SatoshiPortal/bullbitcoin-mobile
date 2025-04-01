@@ -4,11 +4,11 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
+import 'package:bb_mobile/features/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:flutter/foundation.dart';
 
 /// If the key server is down
@@ -16,11 +16,13 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
   final RecoverBullRepository recoverBullRepository;
   final WalletManagerService walletManagerService;
   final WalletMetadataRepository walletMetadataRepository;
+  final CreateDefaultWalletsUsecase createDefaultWalletsUsecase;
 
   RestoreEncryptedVaultFromBackupKeyUsecase({
     required this.recoverBullRepository,
     required this.walletManagerService,
     required this.walletMetadataRepository,
+    required this.createDefaultWalletsUsecase,
   });
 
   Future<void> execute({
@@ -40,9 +42,6 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
       final decodedRecoverbullWallets =
           RecoverBullWallet.fromJson(decodedPlaintext);
 
-      final seed = Seed.mnemonic(
-        mnemonicWords: decodedRecoverbullWallets.mnemonic,
-      );
       final metadata = decodedRecoverbullWallets.metadata;
       final availableWallets = await walletMetadataRepository.getAll();
       for (final wallet in availableWallets) {
@@ -59,31 +58,10 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
           }
         }
       }
-      final liquidNetwork = metadata.network.isMainnet
-          ? Network.liquidMainnet
-          : Network.liquidTestnet;
+      await createDefaultWalletsUsecase.execute(
+        mnemonicWords: decodedRecoverbullWallets.mnemonic,
+      );
 
-      final bitcoinNetwork = metadata.network.isMainnet
-          ? Network.bitcoinMainnet
-          : Network.bitcoinTestnet;
-
-      // The default wallets should be 1 Bitcoin and 1 Liquid wallet.
-      await Future.wait([
-        walletManagerService.createWallet(
-          seed: seed,
-          network: bitcoinNetwork,
-          scriptType: metadata.scriptType,
-          isDefault: metadata.isDefault,
-          label: metadata.label,
-        ),
-        walletManagerService.createWallet(
-          seed: seed,
-          network: liquidNetwork,
-          scriptType: metadata.scriptType,
-          isDefault: metadata.isDefault,
-          label: metadata.label,
-        ),
-      ]);
       debugPrint('Default wallets created');
       final recoveredWallet = await walletMetadataRepository.getDefault();
       walletMetadataRepository.store(

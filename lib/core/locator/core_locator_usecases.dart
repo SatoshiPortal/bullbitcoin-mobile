@@ -43,6 +43,7 @@ import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dar
 import 'package:bb_mobile/core/wallet/domain/usecases/build_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -91,6 +92,7 @@ Future<void> registerUsecases() async {
       recoverBullRepository: locator<RecoverBullRepository>(),
       walletManagerService: locator<WalletManagerService>(),
       walletMetadataRepository: locator<WalletMetadataRepository>(),
+      createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
     ),
   );
   locator.registerFactory<FindMnemonicWordsUsecase>(
