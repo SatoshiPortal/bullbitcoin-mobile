@@ -63,11 +63,15 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
           ? Network.liquidMainnet
           : Network.liquidTestnet;
 
+      final bitcoinNetwork = metadata.network.isMainnet
+          ? Network.bitcoinMainnet
+          : Network.bitcoinTestnet;
+
       // The default wallets should be 1 Bitcoin and 1 Liquid wallet.
       await Future.wait([
         walletManagerService.createWallet(
           seed: seed,
-          network: metadata.network,
+          network: bitcoinNetwork,
           scriptType: metadata.scriptType,
           isDefault: metadata.isDefault,
           label: metadata.label,
