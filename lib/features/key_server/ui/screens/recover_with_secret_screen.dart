@@ -27,12 +27,12 @@ class RecoverWithSecretScreen extends StatelessWidget {
           onBack: () =>
               fromOnboarding ? context.pop() : context.go(AppRoute.home.path),
           title:
-              "Enter your${fromOnboarding ? '' : 'backup'} ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'}",
+              "Enter your ${fromOnboarding ? '' : 'backup'} ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'}",
         ),
       ),
       body: PageLayout(
         bottomChild: const RecoverButton(),
-        bottomHeight: 72,
+        // bottomHeight: 90,
         children: [
           if (fromOnboarding) const Gap(100) else const Gap(10),
           BBText(

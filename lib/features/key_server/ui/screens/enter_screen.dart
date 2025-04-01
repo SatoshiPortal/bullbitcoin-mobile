@@ -30,7 +30,7 @@ class EnterScreen extends StatelessWidget {
       ),
       body: PageLayout(
         bottomChild: const ConfirmButton(),
-        bottomHeight: 80,
+        // bottomHeight: 80,
         children: [
           BBText(
             'You must memorize this ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'} to recover access to your wallet. It must be at least 6 digits. If you lose this ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'} you cannot recover your backup.',

@@ -30,7 +30,7 @@ class ConfirmScreen extends StatelessWidget {
       ),
       body: PageLayout(
         bottomChild: const ConfirmButton(),
-        bottomHeight: 80,
+        // bottomHeight: 80,
         children: [
           const Gap(100),
           BBText(
