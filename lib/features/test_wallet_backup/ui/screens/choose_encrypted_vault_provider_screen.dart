@@ -87,11 +87,11 @@ class _Screen extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    const Gap(20),
                     BBText(
                       'Test to make sure you can retrieve your encrypted vault.',
                       style: context.font.bodySmall,
                     ),
+                    const Gap(20),
                     for (final provider in backupProviders) ...[
                       _ProviderTile(
                         provider: provider,

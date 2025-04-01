@@ -15,7 +15,7 @@ class ReceiveDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, _) async {
+      onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
 
         context.go(AppRoute.home.path);

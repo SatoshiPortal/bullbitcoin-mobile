@@ -15,7 +15,7 @@ class BackupSuccessScreen extends StatelessWidget {
       isLoading: false,
       buttonText: 'Test Backup',
       onTap: () => context.goNamed(
-        SettingsSubroute.backupSettings.name,
+        BackupSettingsSubroute.testbackupOptions.name,
         extra: false,
       ),
     );

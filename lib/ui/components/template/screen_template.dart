@@ -23,7 +23,7 @@ class StackedPage extends StatelessWidget {
             width: double.infinity,
             height: bottomChildHeight,
             padding:
-                const EdgeInsets.only(bottom: 16, top: 8, left: 16, right: 16),
+                const EdgeInsets.only(bottom: 32, top: 8, left: 16, right: 16),
             alignment: Alignment.bottomCenter,
             child: bottomChild,
           ),

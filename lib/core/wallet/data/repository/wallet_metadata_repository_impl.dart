@@ -1,4 +1,3 @@
-
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -48,7 +47,7 @@ class WalletMetadataRepositoryImpl implements WalletMetadataRepository {
   }
 
   @override
-  Future<void> store(WalletMetadata metadata) async {
+  Future<void> store(WalletMetadata metadata) {
     final model = WalletMetadataModel.fromEntity(metadata);
     return _source.store(model);
   }
