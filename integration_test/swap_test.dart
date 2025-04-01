@@ -157,9 +157,9 @@ void main() {
           amountSat: 1001,
         );
         debugPrint('Fees:\n');
-        debugPrint('Boltz Fee: ${swap.boltzFee}\n');
-        debugPrint('Lockup Fee: ${swap.lockupFee}\n');
-        debugPrint('Claim Fee: ${swap.claimFee}\n');
+        debugPrint('Boltz Fee: ${swap.fees?.boltzFee!}\n');
+        debugPrint('Lockup Fee: ${swap.fees?.lockupFee}\n');
+        debugPrint('Claim Fee: ${swap.fees?.claimFee}\n');
         expect(swap, isNotNull);
         receiveLbtcSwapId = swap.id;
         expect(swap.status, SwapStatus.pending);
@@ -227,9 +227,7 @@ void main() {
         final receiveSwap = await swapRepositoryMainnet.getSwap(
           swapId: receiveLbtcSwapId,
         ) as LnReceiveSwap;
-        final totalSwapFees = receiveSwap.boltzFee! +
-            receiveSwap.claimFee! +
-            receiveSwap.lockupFee!;
+        final totalSwapFees = receiveSwap.fees?.totalFees ?? 0;
         debugPrint('Total Swap Fees: $totalSwapFees');
         final decodedInvoice = await swapRepositoryMainnet.decodeInvoice(
           invoice: receiveSwap.invoice,

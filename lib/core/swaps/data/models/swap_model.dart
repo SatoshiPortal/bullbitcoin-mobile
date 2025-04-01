@@ -1,4 +1,3 @@
-
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -82,9 +81,7 @@ sealed class SwapModel with _$SwapModel {
         invoice,
         receiveAddress,
         receiveTxid,
-        boltzFee,
-        lockupFee,
-        claimFee,
+        fees,
         completionTime,
       ) {
         return SwapModel.lnReceive(
@@ -99,9 +96,9 @@ sealed class SwapModel with _$SwapModel {
           receiveAddress: receiveAddress,
           receiveTxid: receiveTxid,
           completionTime: completionTime?.millisecondsSinceEpoch,
-          boltzFees: boltzFee,
-          lockupFees: lockupFee,
-          claimFees: claimFee,
+          boltzFees: fees?.boltzFee,
+          lockupFees: fees?.lockupFee,
+          claimFees: fees?.claimFee,
         );
       },
       lnSend: (
@@ -117,9 +114,7 @@ sealed class SwapModel with _$SwapModel {
         preimage,
         refundAddress,
         refundTxid,
-        boltzFee,
-        lockupFee,
-        claimFee,
+        fees,
         completionTime,
       ) {
         return SwapModel.lnSend(
@@ -136,9 +131,9 @@ sealed class SwapModel with _$SwapModel {
           refundAddress: refundAddress,
           refundTxid: refundTxid,
           completionTime: completionTime?.millisecondsSinceEpoch,
-          boltzFees: boltzFee,
-          lockupFees: lockupFee,
-          claimFees: claimFee,
+          boltzFees: fees?.boltzFee,
+          lockupFees: fees?.lockupFee,
+          claimFees: fees?.claimFee,
         );
       },
       chain: (
@@ -155,9 +150,7 @@ sealed class SwapModel with _$SwapModel {
         receiveTxid,
         refundAddress,
         refundTxid,
-        boltzFee,
-        lockupFee,
-        claimFee,
+        fees,
         completionTime,
       ) {
         return SwapModel.chain(
@@ -175,9 +168,9 @@ sealed class SwapModel with _$SwapModel {
           refundAddress: refundAddress,
           refundTxid: refundTxid,
           completionTime: completionTime?.millisecondsSinceEpoch,
-          boltzFees: boltzFee,
-          lockupFees: lockupFee,
-          claimFees: claimFee,
+          boltzFees: fees?.boltzFee,
+          lockupFees: fees?.lockupFee,
+          claimFees: fees?.claimFee,
         );
       },
     );
@@ -201,9 +194,11 @@ sealed class SwapModel with _$SwapModel {
         invoice: model.invoice,
         receiveAddress: model.receiveAddress,
         receiveTxid: model.receiveTxid,
-        boltzFee: model.boltzFees,
-        lockupFee: model.lockupFees,
-        claimFee: model.claimFees,
+        fees: SwapFees(
+          boltzFee: model.boltzFees,
+          lockupFee: model.lockupFees,
+          claimFee: model.claimFees,
+        ),
         completionTime: model.completionTime != null
             ? DateTime.fromMillisecondsSinceEpoch(model.completionTime!)
             : null,
@@ -221,9 +216,11 @@ sealed class SwapModel with _$SwapModel {
         preimage: model.preimage,
         refundAddress: model.refundAddress,
         refundTxid: model.refundTxid,
-        boltzFee: model.boltzFees,
-        lockupFee: model.lockupFees,
-        claimFee: model.claimFees,
+        fees: SwapFees(
+          boltzFee: model.boltzFees,
+          lockupFee: model.lockupFees,
+          claimFee: model.claimFees,
+        ),
         completionTime: model.completionTime != null
             ? DateTime.fromMillisecondsSinceEpoch(model.completionTime!)
             : null,
@@ -242,9 +239,11 @@ sealed class SwapModel with _$SwapModel {
         receiveTxid: model.receiveTxid,
         refundAddress: model.refundAddress,
         refundTxid: model.refundTxid,
-        boltzFee: model.boltzFees,
-        lockupFee: model.lockupFees,
-        claimFee: model.claimFees,
+        fees: SwapFees(
+          boltzFee: model.boltzFees,
+          lockupFee: model.lockupFees,
+          claimFee: model.claimFees,
+        ),
         completionTime: model.completionTime != null
             ? DateTime.fromMillisecondsSinceEpoch(model.completionTime!)
             : null,

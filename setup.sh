@@ -13,4 +13,7 @@ dart run build_runner build --delete-conflicting-outputs
 echo "🌐 Generates translations files"
 flutter gen-l10n
 
+echo "🙈 Set git pre-commit hooks"
+git config --local core.hooksPath .git_hooks/
+
 echo "🚀 Setup complete!"

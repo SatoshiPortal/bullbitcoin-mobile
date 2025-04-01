@@ -14,6 +14,8 @@ abstract class SwapRepository {
     required int amountSat,
     required bool isTestnet,
     required String electrumUrl,
+    required String claimAddress,
+    String? description,
   });
 
   Future<String> claimLightningToLiquidSwap({
@@ -28,6 +30,8 @@ abstract class SwapRepository {
     required int amountSat,
     required bool isTestnet,
     required String electrumUrl,
+    required String claimAddress,
+    String? description,
   });
 
   Future<String> claimLightningToBitcoinSwap({

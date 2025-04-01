@@ -1,0 +1,14 @@
+#!/bin/sh
+echo "Begin pre-commit hook"
+
+result=$(flutter analyze)
+exitCode=$?
+
+if [ $exitCode  -ne 0 ]; then
+  echo "$result"
+  echo "Flutter analyze found issues, please fix them."
+  exit 1
+fi
+echo "Finished running flutter analyze command."
+
+echo "End pre-commit hook"

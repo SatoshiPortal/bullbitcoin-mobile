@@ -27,6 +27,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required int amountSat,
     required bool isTestnet,
     required String electrumUrl,
+    required String claimAddress,
+    String? description,
   }) async {
     final index = await _nextRevKeyIndex(walletId);
     final btcLnSwap = await _boltz.createBtcReverseSwap(
@@ -36,6 +38,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       outAmount: amountSat,
       isTestnet: isTestnet,
       electrumUrl: electrumUrl,
+      magicRouteHintAddress: claimAddress,
+      description: description,
     );
     return btcLnSwap.toEntity() as LnReceiveSwap;
   }
@@ -68,6 +72,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required int amountSat,
     required bool isTestnet,
     required String electrumUrl,
+    required String claimAddress,
+    String? description,
   }) async {
     final index = await _nextRevKeyIndex(walletId);
     final lbtcLnSwap = await _boltz.createLBtcReverseSwap(
@@ -77,6 +83,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       outAmount: amountSat,
       isTestnet: isTestnet,
       electrumUrl: electrumUrl,
+      magicRouteHintAddress: claimAddress,
+      description: description,
     );
 
     return lbtcLnSwap.toEntity() as LnReceiveSwap;

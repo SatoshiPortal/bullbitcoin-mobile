@@ -43,7 +43,6 @@ import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dar
 import 'package:bb_mobile/core/wallet/domain/usecases/build_transaction_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -143,20 +142,7 @@ Future<void> registerUsecases() async {
       payjoinWatcherService: locator<PayjoinWatcherService>(),
     ),
   );
-  locator.registerFactory<CreateReceiveSwapUsecase>(
-    () => CreateReceiveSwapUsecase(
-      walletManager: locator<WalletManagerService>(),
-      swapRepository: locator<SwapRepository>(
-        instanceName:
-            LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-      ),
-      swapRepositoryTestnet: locator<SwapRepository>(
-        instanceName:
-            LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
-      ),
-      seedRepository: locator<SeedRepository>(),
-    ),
-  );
+
   locator.registerFactory<BuildTransactionUsecase>(
     () => BuildTransactionUsecase(
       payjoinRepository: locator<PayjoinRepository>(),

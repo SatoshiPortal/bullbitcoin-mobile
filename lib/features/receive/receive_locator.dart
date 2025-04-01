@@ -37,6 +37,7 @@ class ReceiveLocator {
               .boltzTestnetSwapRepositoryInstanceName,
         ),
         seedRepository: locator<SeedRepository>(),
+        getNewAddressUsecase: locator<GetReceiveAddressUsecase>(),
       ),
     );
 

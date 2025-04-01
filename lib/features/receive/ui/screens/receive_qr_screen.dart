@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_enter_note.dart';
@@ -7,6 +8,7 @@ import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/components/toggle/switch.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
@@ -138,6 +140,8 @@ class ReceiveInfoDetails extends StatelessWidget {
       (bloc) => bloc.state is LightningReceiveState,
     );
 
+    if (isLn) return const ReceiveLnInfoDetails();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -249,6 +253,193 @@ class ReceiveInfoDetails extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class ReceiveLnInfoDetails extends StatelessWidget {
+  const ReceiveLnInfoDetails({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bitcoinAmount = context.select<ReceiveBloc, String>(
+      (bloc) => bloc.state.formattedConfirmedAmountBitcoin,
+    );
+    final amountEquivalent = context.select<ReceiveBloc, String>(
+      (bloc) => bloc.state.formattedConfirmedAmountFiat,
+    );
+    final note = context.select<ReceiveBloc, String>(
+      (bloc) => bloc.state.note,
+    );
+
+    return AnimatedContainer(
+      duration: 300.ms,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: context.colour.onPrimary,
+        borderRadius: BorderRadius.circular(2),
+        border: Border.all(color: context.colour.surface),
+        boxShadow: [
+          BoxShadow(
+            offset: const Offset(0, 2),
+            color: context.colour.surfaceContainer,
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 24,
+              bottom: 10,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BBText(
+                  'Amount',
+                  style: context.font.bodySmall,
+                  color: context.colour.surfaceContainer,
+                ),
+                const Spacer(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    BBText(
+                      bitcoinAmount,
+                      style: context.font.bodyMedium,
+                    ),
+                    BBText(
+                      '~$amountEquivalent',
+                      style: context.font.labelSmall,
+                      color: context.colour.surfaceContainer,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          if (note.isNotEmpty) ...[
+            Container(color: context.colour.surface, height: 1),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 8,
+                right: 8,
+                top: 10,
+                bottom: 12,
+              ),
+              child: Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      BBText(
+                        'Note',
+                        style: context.font.labelSmall,
+                        color: context.colour.outline,
+                      ),
+                      const Gap(4),
+                      BBText(
+                        note.isNotEmpty ? note : '',
+                        style: context.font.bodyMedium,
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                ],
+              ),
+            ),
+          ],
+          const ReceiveLnFeesDetails(),
+        ],
+      ),
+    );
+  }
+}
+
+class ReceiveLnFeesDetails extends StatefulWidget {
+  const ReceiveLnFeesDetails({super.key});
+
+  @override
+  State<ReceiveLnFeesDetails> createState() => _ReceiveLnFeesDetailsState();
+}
+
+class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
+  bool expanded = false;
+
+  Widget _feeRow(BuildContext context, String label, int amt) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          BBText(
+            label,
+            style: context.font.bodySmall,
+            color: context.colour.surfaceContainer,
+          ),
+          const Spacer(),
+          CurrencyText(
+            amt,
+            showFiat: false,
+            style: context.font.bodySmall,
+            color: context.colour.surfaceContainer,
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final swap = context.select((ReceiveBloc bloc) => bloc.state.getSwap);
+    if (swap == null) return const SizedBox.shrink();
+
+    return Column(
+      children: [
+        Container(color: context.colour.surface, height: 1),
+        const Gap(8),
+        InkWell(
+          splashColor: Colors.transparent,
+          splashFactory: NoSplash.splashFactory,
+          highlightColor: Colors.transparent,
+          onTap: () {
+            setState(() {
+              expanded = !expanded;
+            });
+          },
+          child: Row(
+            children: [
+              BBText(
+                'Total Fee',
+                style: context.font.bodySmall,
+                color: context.colour.surfaceContainer,
+              ),
+              const Spacer(),
+              CurrencyText(
+                swap.fees?.totalFees ?? 0,
+                showFiat: false,
+                style: context.font.bodyLarge,
+                color: context.colour.outlineVariant,
+              ),
+              const Gap(4),
+              Icon(
+                expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                color: context.colour.primary,
+              ),
+            ],
+          ),
+        ),
+        const Gap(12),
+        if (expanded) ...[
+          Container(color: context.colour.surface, height: 1),
+          _feeRow(context, 'Lockup network fee', swap.fees?.lockupFee ?? 0),
+          _feeRow(context, 'Claim network fee', swap.fees?.claimFee ?? 0),
+          _feeRow(context, 'Boltz network fee', swap.fees?.boltzFee ?? 0),
+          const Gap(16),
+        ],
+      ],
     );
   }
 }
