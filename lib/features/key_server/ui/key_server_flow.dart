@@ -32,7 +32,7 @@ class KeyLoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return const ProgressScreen(
       description:
-          'Completing your backup over Tor.\nThis can take upto a minute.',
+          'Connecting to Key Server over Tor.\nThis can take upto a minute.',
     );
   }
 }
