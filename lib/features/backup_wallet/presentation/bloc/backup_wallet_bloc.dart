@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
@@ -58,7 +58,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       // First update the state with the selected provider
       emit(
         state.copyWith(
-          backupProvider: BackupProvider.fileSystem(filePath),
+          vaultProvider: VaultProvider.fileSystem(filePath),
           status: const BackupWalletStatus.success(),
         ),
       );
@@ -93,7 +93,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       // First update the state with the selected provider
       emit(
         state.copyWith(
-          backupProvider: const BackupProvider.googleDrive(),
+          vaultProvider: const VaultProvider.googleDrive(),
           status: const BackupWalletStatus.success(),
         ),
       );
@@ -124,7 +124,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
 
       emit(state.copyWith(backupFile: encryptedBackup));
 
-      await state.backupProvider.when(
+      await state.vaultProvider.when(
         fileSystem: (filePath) async {
           if (filePath.isEmpty) throw Exception('No file path selected');
           await saveToFileSystemUsecase.execute(filePath, encryptedBackup);

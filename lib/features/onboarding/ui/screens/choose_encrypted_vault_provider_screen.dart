@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/data/constants/backup_providers.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_entity.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/locator.dart';
