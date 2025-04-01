@@ -8,11 +8,11 @@ import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:flutter/foundation.dart';
+
 import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
