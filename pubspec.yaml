@@ -23,7 +23,7 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_secure_storage: ^9.1.0
   flutter_hooks: ^0.20.3
-  flutter_barcode_scanner: ^2.0.0
+  # flutter_barcode_scanner: ^2.0.0
   # file_picker: ^5.2.3
   # nfc_manager: ^3.2.0
   modal_bottom_sheet: ^3.0.0-pre
