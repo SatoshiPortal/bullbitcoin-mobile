@@ -12,17 +12,17 @@ class SecureStorageDatasourceImpl implements KeyValueStorageDatasource<String> {
   }
 
   @override
-  Future<Map<String, String>> getAll() async {
+  Future<Map<String, String>> getAll() {
     return _storage.readAll();
   }
 
   @override
-  Future<String?> getValue(String key) async {
+  Future<String?> getValue(String key) {
     return _storage.read(key: key);
   }
 
   @override
-  Future<bool> hasValue(String key) async {
+  Future<bool> hasValue(String key) {
     return _storage.containsKey(key: key);
   }
 

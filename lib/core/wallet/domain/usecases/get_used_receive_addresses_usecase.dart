@@ -1,5 +1,3 @@
-
-
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 
@@ -14,7 +12,7 @@ class GetUsedReceiveAddressesUsecase {
     required String walletId,
     int? limit,
     int? offset,
-  }) async {
+  }) {
     final addresses = _walletManager.getUsedReceiveAddresses(
       walletId: walletId,
       limit: limit,

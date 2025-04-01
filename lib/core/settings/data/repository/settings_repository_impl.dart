@@ -43,7 +43,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<void> setLanguage(Language language) async {
+  Future<void> setLanguage(Language language) {
     return _storage.saveValue(
       key: SettingsConstants.languageKey,
       value: language.name,
@@ -61,7 +61,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<void> setCurrency(String currencyCode) async {
+  Future<void> setCurrency(String currencyCode) {
     return _storage.saveValue(
       key: SettingsConstants.currencyKey,
       value: currencyCode,
@@ -76,7 +76,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<void> setHideAmounts(bool hide) async {
+  Future<void> setHideAmounts(bool hide) {
     return _storage.saveValue(
       key: SettingsConstants.hideAmountsKey,
       value: hide.toString(),

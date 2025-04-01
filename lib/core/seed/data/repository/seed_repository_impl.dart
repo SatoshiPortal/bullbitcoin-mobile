@@ -9,7 +9,7 @@ class SeedRepositoryImpl implements SeedRepository {
   const SeedRepositoryImpl({required SeedDatasource source}) : _source = source;
 
   @override
-  Future<void> store({required String fingerprint, required Seed seed}) async {
+  Future<void> store({required String fingerprint, required Seed seed}) {
     final model = SeedModel.fromEntity(seed);
     return _source.store(fingerprint: fingerprint, seed: model);
   }
@@ -21,12 +21,8 @@ class SeedRepositoryImpl implements SeedRepository {
   }
 
   @override
-  Future<bool> exists(String fingerprint) async {
-    return _source.exists(fingerprint);
-  }
+  Future<bool> exists(String fingerprint) => _source.exists(fingerprint);
 
   @override
-  Future<void> delete(String fingerprint) async {
-    return _source.delete(fingerprint);
-  }
+  Future<void> delete(String fingerprint) => _source.delete(fingerprint);
 }

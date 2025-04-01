@@ -513,7 +513,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<void> updateSwap({required Swap swap}) async {
+  Future<void> updateSwap({required Swap swap}) {
     return _boltz.storage.store(SwapModel.fromEntity(swap));
   }
 

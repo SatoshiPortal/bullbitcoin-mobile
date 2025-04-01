@@ -14,7 +14,7 @@ class TrashBackupKeyFromServerUsecase {
   Future<void> execute({
     required String password,
     required String backupFile,
-  }) async {
+  }) {
     try {
       final backupInfo = BackupInfo(backupFile: backupFile);
       if (backupInfo.isCorrupted) {

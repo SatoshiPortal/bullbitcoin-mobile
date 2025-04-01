@@ -442,7 +442,7 @@ class PayjoinDatasource {
 
     // Listen for and register new receivers sent from the main isolate
     receivePort.listen(
-      (data) async {
+      (data) {
         log('[Receivers Isolate] Received data in receivers isolate: $data');
         final receiverModel =
             PayjoinReceiverModel.fromJson(data as Map<String, dynamic>);

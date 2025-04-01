@@ -370,7 +370,7 @@ class WalletManagerServiceImpl implements WalletManagerService {
   Future<bool> isOwnedByWallet({
     required String walletId,
     required Uint8List scriptBytes,
-  }) async {
+  }) {
     final wallet = _wallets[walletId];
 
     if (wallet == null) {
