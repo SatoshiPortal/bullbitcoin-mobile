@@ -9,8 +9,7 @@ import 'package:bb_mobile/features/key_server/ui/widgets/error_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart' show AppRoute;
 import 'package:bb_mobile/ui/components/cards/tag_card.dart';
-import 'package:bb_mobile/ui/components/loading/progress_screen.dart'
-    show ProgressScreen;
+import 'package:bb_mobile/ui/components/loading/status_screen.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -54,7 +53,7 @@ class _Screen extends StatelessWidget {
                 context: context,
                 barrierDismissible: false,
                 barrierColor: Colors.white,
-                builder: (_) => ProgressScreen(
+                builder: (_) => StatusScreen(
                   title: "You will need to sign-in to Google Drive",
                   description:
                       "Google will ask you to share personal information with this app.",
@@ -112,9 +111,13 @@ class _Screen extends StatelessWidget {
               context: context,
               barrierDismissible: false,
               barrierColor: Colors.white,
-              builder: (_) => ErrorScreen(
+              builder: (_) => StatusScreen(
+                hasError: true,
+                errorMessage: message,
                 title: 'Oops! Something went wrong',
-                message: message,
+                description: message,
+                buttonText: 'Close',
+                onTap: () => Navigator.of(context).pop(),
               ),
             );
           },
