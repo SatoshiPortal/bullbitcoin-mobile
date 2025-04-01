@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
+    show CurrentKeyServerFlow, SecretStatus;
 import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';

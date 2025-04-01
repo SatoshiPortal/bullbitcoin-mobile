@@ -14,16 +14,9 @@ sealed class BackupWalletStatus with _$BackupWalletStatus {
 }
 
 @freezed
-sealed class BackupProvider with _$BackupProvider {
-  const factory BackupProvider.googleDrive() = _GoogleDrive;
-  const factory BackupProvider.iCloud() = _ICloud;
-  const factory BackupProvider.fileSystem(String filePath) = _FileSystem;
-}
-
-@freezed
 sealed class BackupWalletState with _$BackupWalletState {
   const factory BackupWalletState({
-    @Default(BackupProvider.googleDrive()) BackupProvider backupProvider,
+    @Default(VaultProvider.googleDrive()) VaultProvider vaultProvider,
     @Default('') String backupFile,
     @Default(BackupWalletStatus.initial()) BackupWalletStatus status,
   }) = _BackupWalletState;
