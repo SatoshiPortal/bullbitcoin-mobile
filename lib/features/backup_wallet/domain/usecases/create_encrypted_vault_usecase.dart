@@ -26,7 +26,6 @@ class CreateEncryptedVaultUsecase {
       final defaultMetadata =
           (await walletMetadataRepository.getDefault()).copyWith(
         lastestEncryptedBackup: DateTime.now(),
-        isTorEnabledOnStartup: true,
       );
       await walletMetadataRepository.store(defaultMetadata);
       final defaultFingerprint = defaultMetadata.masterFingerprint;
