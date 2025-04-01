@@ -109,22 +109,18 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Future<void> _processReceiveLnToBitcoinClaim({
     required LnReceiveSwap swap,
   }) async {
-    final address = await _walletManager.getNewAddress(
-      walletId: swap.receiveWalletId,
-    );
-    if (!address.isBitcoin) {
-      throw Exception('Claim Address is not a Bitcoin address');
+    final receiveAddress = swap.receiveAddress;
+    if (receiveAddress == null) {
+      throw Exception('Receive address is null');
     }
-    // TODO: add label to bitcoin address
-
     final claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
       swapId: swap.id,
       absoluteFees: swap.claimFee!,
-      bitcoinAddress: address.address,
+      bitcoinAddress: swap.receiveAddress!,
     );
     final updatedSwap = swap.copyWith(
       receiveTxid: claimTxId,
-      receiveAddress: address.address,
+      receiveAddress: swap.receiveAddress,
       status: SwapStatus.completed,
     );
     // TODO: add label to txid
@@ -153,25 +149,22 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     required LnReceiveSwap swap,
   }) async {
     try {
-      final address = await _walletManager.getNewAddress(
-        walletId: swap.receiveWalletId,
-      );
-
-      if (!address.isLiquid) {
-        throw Exception('Claim Address is not a Liquid address');
+      final receiveAddress = swap.receiveAddress;
+      if (receiveAddress == null) {
+        throw Exception('Receive address is null');
       }
-      // TODO: add label to liquid address
+      // TODO: add label to liquid address based on swap.invoice.description
       final claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
         swapId: swap.id,
         absoluteFees: swap.claimFee!,
-        liquidAddress: address.address,
+        liquidAddress: receiveAddress,
       );
       final updatedSwap = swap.copyWith(
         receiveTxid: claimTxId,
-        receiveAddress: address.address,
+        receiveAddress: receiveAddress,
         status: SwapStatus.completed,
       );
-      // TODO: add label to txid
+      // TODO: add label to txid based on swap.invoice.description
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e) {
       debugPrint(e.toString());

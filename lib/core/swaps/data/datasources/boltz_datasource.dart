@@ -1,6 +1,5 @@
 import 'dart:async';
 
-
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart' as swap_entity;
@@ -41,6 +40,8 @@ class BoltzDatasource {
     required int outAmount,
     required bool isTestnet,
     required String electrumUrl,
+    required String magicRouteHintAddress,
+    String? description,
   }) async {
     final fees = Fees(boltzUrl: _httpsUrl);
     final reverseFees = await fees.reverse();
@@ -51,6 +52,8 @@ class BoltzDatasource {
       network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
       electrumUrl: electrumUrl,
       boltzUrl: _httpsUrl,
+      outAddress: magicRouteHintAddress,
+      description: description,
     );
     await _boltzStore.storeBtcLnSwap(btcLnSwap);
     final swapModel = SwapModel.lnReceive(
@@ -65,6 +68,7 @@ class BoltzDatasource {
       boltzFees: (reverseFees.btcFees.percentage * outAmount / 100).ceil(),
       lockupFees: reverseFees.btcFees.minerFees.lockup.toInt(),
       claimFees: reverseFees.btcFees.minerFees.claim.toInt(),
+      receiveAddress: magicRouteHintAddress,
     );
     await _boltzStore.store(swapModel);
     subscribeToSwaps([swapModel.id]);
@@ -93,6 +97,8 @@ class BoltzDatasource {
     required int outAmount,
     required bool isTestnet,
     required String electrumUrl,
+    required String magicRouteHintAddress,
+    String? description,
   }) async {
     try {
       final fees = Fees(boltzUrl: _httpsUrl);
@@ -104,6 +110,8 @@ class BoltzDatasource {
         network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
         electrumUrl: electrumUrl,
         boltzUrl: _httpsUrl,
+        outAddress: magicRouteHintAddress,
+        description: description,
       );
 
       await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
@@ -120,6 +128,7 @@ class BoltzDatasource {
         boltzFees: (reverseFees.lbtcFees.percentage * outAmount / 100).ceil(),
         lockupFees: reverseFees.lbtcFees.minerFees.lockup.toInt(),
         claimFees: reverseFees.lbtcFees.minerFees.claim.toInt(),
+        receiveAddress: magicRouteHintAddress,
       );
 
       await _boltzStore.store(swapModel);

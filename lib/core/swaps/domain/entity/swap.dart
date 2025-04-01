@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap.freezed.dart';
+
 // These types are different than the ones from Boltz to decouple the app from the Boltz API
 enum SwapType {
   lightningToBitcoin,
@@ -284,10 +285,12 @@ class Invoice {
   final int sats;
   final bool isExpired;
   final String? magicBip21;
+  final String? description;
 
   const Invoice({
     required this.sats,
     required this.isExpired,
     this.magicBip21,
+    this.description,
   });
 }

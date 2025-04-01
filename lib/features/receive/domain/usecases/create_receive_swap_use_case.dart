@@ -1,31 +1,35 @@
-
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_use_case.dart';
 
 class CreateReceiveSwapUsecase {
   final WalletManagerService _walletManager;
   final SwapRepository _swapRepository;
   final SwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
+  final GetReceiveAddressUsecase _getNewAddressUsecase;
 
   CreateReceiveSwapUsecase({
     required WalletManagerService walletManager,
     required SwapRepository swapRepository,
     required SwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
+    required GetReceiveAddressUsecase getNewAddressUsecase,
   })  : _walletManager = walletManager,
         _swapRepository = swapRepository,
         _swapRepositoryTestnet = swapRepositoryTestnet,
-        _seedRepository = seedRepository;
+        _seedRepository = seedRepository,
+        _getNewAddressUsecase = getNewAddressUsecase;
 
   Future<LnReceiveSwap> execute({
     required String walletId,
     required SwapType type,
     required int amountSat,
+    String? description,
   }) async {
     try {
       final wallet = await _walletManager.getWallet(walletId);
@@ -71,6 +75,11 @@ class CreateReceiveSwapUsecase {
           ? ApiServiceConstants.bbLiquidElectrumTestUrlPath
           : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
+      final claimAddress = await _getNewAddressUsecase.execute(
+        walletId: walletId,
+        newAddress: true,
+      );
+
       switch (type) {
         case SwapType.lightningToBitcoin:
           return await swapRepository.createLightningToBitcoinSwap(
@@ -79,6 +88,8 @@ class CreateReceiveSwapUsecase {
             isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic,
             electrumUrl: btcElectrumUrl,
+            claimAddress: claimAddress.address,
+            description: description,
           );
 
         case SwapType.lightningToLiquid:
@@ -88,6 +99,8 @@ class CreateReceiveSwapUsecase {
             isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic,
             electrumUrl: lbtcElectrumUrl,
+            claimAddress: claimAddress.address,
+            description: description,
           );
         default:
           throw Exception(
