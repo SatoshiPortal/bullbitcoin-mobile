@@ -19,7 +19,7 @@ class GoogleDriveAppDatasource {
 
   Future<void> connect() async {
     try {
-      GoogleSignInAccount? account = await _google.signInSilently();
+      GoogleSignInAccount? account = await _google.signIn();
 
       if (account == null) {
         debugPrint('Silent sign-in failed, attempting interactive sign-in...');
