@@ -74,6 +74,7 @@ class ReceiveRouter {
               listeners: [
                 BlocListener<ReceiveBloc, ReceiveState>(
                   listenWhen: (previous, current) =>
+                      // makes sure it doesn't go from payment received to payment in progress again
                       previous.isPaymentReceived != true &&
                       previous.isPaymentInProgress != true &&
                       current.isPaymentInProgress == true,
@@ -81,15 +82,18 @@ class ReceiveRouter {
                     final bloc = context.read<ReceiveBloc>();
                     final matched = GoRouterState.of(context).matchedLocation;
 
+                    // For a Payjoin or Lightning receive, show the payment in progress screen
+                    //  when the payjoin is requested or swap is claimable.
+                    // Since the payment in progress route is outside of the ShellRoute,
+                    // it uses the root navigator and so doesn't have the ReceiveBloc
+                    //  in the context. We need to pass it as an extra parameter.
                     if (state is BitcoinReceiveState &&
                         state.payjoin?.status == PayjoinStatus.requested) {
                       context.go(
                         '$matched/${ReceiveRoute.payjoinInProgress.path}',
                         extra: bloc,
                       );
-                    }
-
-                    if (state is LightningReceiveState) {
+                    } else if (state is LightningReceiveState) {
                       context.go(
                         '$matched/${ReceiveRoute.paymentInProgress.path}',
                         extra: bloc,
