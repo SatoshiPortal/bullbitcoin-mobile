@@ -275,4 +275,12 @@ class ReceiveState with _$ReceiveState {
     }
     return false;
   }
+
+  LnReceiveSwap? get getSwap {
+    if (this is LightningReceiveState) {
+      return (this as LightningReceiveState).swap;
+    }
+
+    return null;
+  }
 }
