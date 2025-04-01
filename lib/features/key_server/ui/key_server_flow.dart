@@ -71,7 +71,7 @@ class KeyServerFlow extends StatelessWidget {
               if (keyState.status == const KeyServerOperationStatus.success() &&
                   keyState.secretStatus == SecretStatus.recovered &&
                   onBoardingState.onboardingStepStatus ==
-                      const OnboardingStepStatus.success()) {
+                      OnboardingStepStatus.success) {
                 context.goNamed(OnboardingSubroute.recoverSuccess.name);
               }
             },
@@ -120,12 +120,12 @@ class KeyServerFlow extends StatelessWidget {
                 (state.status == const KeyServerOperationStatus.success() &&
                     state.secretStatus == SecretStatus.recovered &&
                     onBoardingState.onboardingStepStatus !=
-                        const OnboardingStepStatus.success())) {
+                        OnboardingStepStatus.success)) {
               if (state.status == const KeyServerOperationStatus.success() &&
                   state.secretStatus == SecretStatus.recovered) {
                 if (fromOnboarding &&
                     onBoardingState.onboardingStepStatus ==
-                        const OnboardingStepStatus.none()) {
+                        OnboardingStepStatus.none) {
                   context.read<OnboardingBloc>().add(
                         StartWalletRecovery(
                           backupKey: state.backupKey,
@@ -173,10 +173,7 @@ class KeyServerFlow extends StatelessWidget {
                 title: 'Oops! Something went wrong',
               );
             }
-            if (onBoardingState.onboardingStepStatus.maybeWhen(
-              error: (_) => true,
-              orElse: () => false,
-            )) {
+            if (onBoardingState.statusError.isNotEmpty) {
               return ErrorScreen(
                 message: state.status.maybeWhen(
                   failure: (message) => message,

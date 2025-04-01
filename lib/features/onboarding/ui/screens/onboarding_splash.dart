@@ -37,13 +37,7 @@ class OnboardingSplash extends StatelessWidget {
                     right: 16,
                     bottom: 40,
                   ),
-                  child: loading
-                      ? Center(
-                          child: CircularProgressIndicator(
-                            color: context.colour.onPrimary,
-                          ),
-                        )
-                      : const _Actions(),
+                  child: _Actions(loading: loading),
                 ),
               ],
             ),
@@ -55,21 +49,26 @@ class OnboardingSplash extends StatelessWidget {
 }
 
 class _Actions extends StatelessWidget {
-  const _Actions();
+  const _Actions({
+    required this.loading,
+  });
+
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
-    final creating = context.select(
-      (OnboardingBloc bloc) =>
-          bloc.state.onboardingStepStatus ==
-              const OnboardingStepStatus.loading() &&
-          bloc.state.step == OnboardingStep.create,
-    );
+    bool creating = false;
+
+    if (!loading) {
+      creating = context.select(
+        (OnboardingBloc bloc) => bloc.state.loadingCreate(),
+      );
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (creating)
+        if (creating || loading)
           Center(
             child: CircularProgressIndicator(
               color: context.colour.onPrimary,

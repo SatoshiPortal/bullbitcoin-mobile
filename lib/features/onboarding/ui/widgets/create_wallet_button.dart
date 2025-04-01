@@ -13,8 +13,7 @@ class CreateWalletButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final creating = context.select(
       (OnboardingBloc bloc) =>
-          bloc.state.onboardingStepStatus ==
-              const OnboardingStepStatus.loading() &&
+          bloc.state.onboardingStepStatus == OnboardingStepStatus.loading &&
           bloc.state.step == OnboardingStep.create,
     );
 

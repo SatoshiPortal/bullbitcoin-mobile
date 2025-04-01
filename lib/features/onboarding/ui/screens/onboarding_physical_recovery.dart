@@ -20,8 +20,7 @@ class OnboardingPhysicalRecovery extends StatelessWidget {
           previous.onboardingStepStatus != current.onboardingStepStatus,
       listener: (context, state) {
         if (state.step == OnboardingStep.recover &&
-            state.onboardingStepStatus ==
-                const OnboardingStepStatus.success()) {
+            state.onboardingStepStatus == OnboardingStepStatus.success) {
           context.goNamed(OnboardingSubroute.recoverSuccess.name);
         }
       },
@@ -90,7 +89,7 @@ class _Button extends StatelessWidget {
 
     final loading = context.select(
       (OnboardingBloc _) =>
-          _.state.onboardingStepStatus == const OnboardingStepStatus.loading(),
+          _.state.onboardingStepStatus == OnboardingStepStatus.loading,
     );
 
     if (loading) {

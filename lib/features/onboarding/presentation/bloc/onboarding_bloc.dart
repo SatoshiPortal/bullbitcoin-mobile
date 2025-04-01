@@ -67,7 +67,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     debugPrint('Error: $error');
     emit(
       state.copyWith(
-        onboardingStepStatus: OnboardingStepStatus.error(error),
+        statusError: error,
       ),
     );
   }
@@ -79,14 +79,17 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     try {
       emit(
         state.copyWith(
-          onboardingStepStatus: const OnboardingStepStatus.loading(),
+          onboardingStepStatus: OnboardingStepStatus.loading,
           step: OnboardingStep.create,
         ),
       );
+      await Future.delayed(const Duration(seconds: 2));
+
       await _createDefaultWalletsUsecase.execute();
+      await Future.delayed(const Duration(seconds: 2));
       emit(
         state.copyWith(
-          onboardingStepStatus: const OnboardingStepStatus.success(),
+          onboardingStepStatus: OnboardingStepStatus.success,
         ),
       );
     } catch (e) {
@@ -126,7 +129,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     try {
       emit(
         state.copyWith(
-          onboardingStepStatus: const OnboardingStepStatus.loading(),
+          onboardingStepStatus: OnboardingStepStatus.loading,
           step: OnboardingStep.recover,
         ),
       );
@@ -141,7 +144,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
 
       emit(
         state.copyWith(
-          onboardingStepStatus: const OnboardingStepStatus.success(),
+          onboardingStepStatus: OnboardingStepStatus.success,
         ),
       );
     } catch (e) {
@@ -153,7 +156,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     try {
       emit(
         state.copyWith(
-          onboardingStepStatus: const OnboardingStepStatus.loading(),
+          onboardingStepStatus: OnboardingStepStatus.loading,
         ),
       );
 
@@ -165,7 +168,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       );
       emit(
         state.copyWith(
-          onboardingStepStatus: const OnboardingStepStatus.success(),
+          onboardingStepStatus: OnboardingStepStatus.success,
           backupInfo: BackupInfo(backupFile: encryptedBackup as String),
         ),
       );
@@ -181,7 +184,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     try {
       emit(
         state.copyWith(
-          onboardingStepStatus: const OnboardingStepStatus.loading(),
+          onboardingStepStatus: OnboardingStepStatus.loading,
         ),
       );
       await _restoreEncryptedVaultFromBackupKeyUsecase.execute(
@@ -190,7 +193,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       );
       emit(
         state.copyWith(
-          onboardingStepStatus: const OnboardingStepStatus.success(),
+          onboardingStepStatus: OnboardingStepStatus.success,
         ),
       );
       return;
@@ -210,7 +213,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     try {
       emit(
         state.copyWith(
-          onboardingStepStatus: const OnboardingStepStatus.loading(),
+          onboardingStepStatus: OnboardingStepStatus.loading,
         ),
       );
 
@@ -239,7 +242,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     try {
       emit(
         state.copyWith(
-          onboardingStepStatus: const OnboardingStepStatus.loading(),
+          onboardingStepStatus: OnboardingStepStatus.loading,
         ),
       );
 

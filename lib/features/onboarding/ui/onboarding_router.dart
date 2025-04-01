@@ -45,9 +45,8 @@ class OnboardingRouter {
           listeners: [
             BlocListener<OnboardingBloc, OnboardingState>(
               listenWhen: (previous, current) =>
-                  (current.step == OnboardingStep.create) &&
-                  current.onboardingStepStatus ==
-                      const OnboardingStepStatus.success(),
+                  previous.createSuccess() != current.createSuccess() &&
+                  current.createSuccess(),
               listener: (context, state) {
                 context.goNamed(AppRoute.home.name);
               },

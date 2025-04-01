@@ -50,20 +50,27 @@ class _Screen extends StatelessWidget {
     return BlocConsumer<OnboardingBloc, OnboardingState>(
       listenWhen: (previous, current) =>
           previous.onboardingStepStatus != current.onboardingStepStatus,
-      listener: (context, state) => state.onboardingStepStatus.when(
-        loading: () => {},
-        success: () => {
-          if (!state.backupInfo.isCorrupted)
-            {
-              context.pushNamed(
-                OnboardingSubroute.retrievedBackupInfo.name,
-                extra: state.backupInfo,
-              ),
-            },
-        },
-        none: () => {},
-        error: debugPrint,
-      ),
+      listener: (context, state) {
+        if (state.onboardingStepStatus == OnboardingStepStatus.loading ||
+            state.onboardingStepStatus == OnboardingStepStatus.none) {
+          return;
+        }
+
+        if (state.onboardingStepStatus == OnboardingStepStatus.success) {
+          if (!state.backupInfo.isCorrupted) {
+            context.pushNamed(
+              OnboardingSubroute.recoverFromEncrypted.name,
+              extra: state.backupInfo,
+            );
+            return;
+          }
+        }
+
+        if (state.statusError.isNotEmpty) {
+          debugPrint(state.statusError);
+          return;
+        }
+      },
       builder: (context, state) => Scaffold(
         appBar: AppBar(
           forceMaterialTransparency: true,
@@ -73,7 +80,7 @@ class _Screen extends StatelessWidget {
             title: 'Recover Wallet',
           ),
         ),
-        body: state.onboardingStepStatus == const OnboardingStepStatus.loading()
+        body: state.onboardingStepStatus == OnboardingStepStatus.loading
             ? Center(
                 child: CircularProgressIndicator(
                   color: context.colour.primary,
