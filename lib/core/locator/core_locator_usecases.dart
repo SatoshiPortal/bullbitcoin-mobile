@@ -21,6 +21,7 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usec
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/word_list_repository.dart';
+import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/core/seed/domain/usecases/find_mnemonic_words_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
@@ -43,6 +44,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/build_transaction_usecase.
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
+import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/locator.dart';
 
 Future<void> registerUsecases() async {
@@ -207,6 +209,13 @@ Future<void> registerUsecases() async {
       electrumServerRepository: locator<ElectrumServerRepository>(),
       walletMetadataRepository: locator<WalletMetadataRepository>(),
       payjoinRepository: locator<PayjoinRepository>(),
+    ),
+  );
+  locator.registerFactory<RecoverOrCreateWalletUsecase>(
+    () => RecoverOrCreateWalletUsecase(
+      settingsRepository: locator<SettingsRepository>(),
+      mnemonicSeedFactory: locator<MnemonicSeedFactory>(),
+      walletManager: locator<WalletManagerService>(),
     ),
   );
 }
