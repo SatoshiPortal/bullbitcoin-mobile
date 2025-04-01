@@ -115,7 +115,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     }
     final claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
       swapId: swap.id,
-      absoluteFees: swap.claimFee!,
+      absoluteFees: swap.fees!.claimFee!,
       bitcoinAddress: swap.receiveAddress!,
     );
     final updatedSwap = swap.copyWith(
@@ -140,7 +140,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     await _boltzRepo.refundBitcoinToLightningSwap(
       swapId: swap.id,
       bitcoinAddress: address.address,
-      absoluteFees: swap.claimFee!,
+      absoluteFees: swap.fees!.claimFee!,
     );
     // TODO: add label to txid
   }
@@ -156,7 +156,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       // TODO: add label to liquid address based on swap.invoice.description
       final claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
         swapId: swap.id,
-        absoluteFees: swap.claimFee!,
+        absoluteFees: swap.fees!.claimFee!,
         liquidAddress: receiveAddress,
       );
       final updatedSwap = swap.copyWith(
@@ -184,7 +184,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     await _boltzRepo.refundLiquidToLightningSwap(
       swapId: swap.id,
       liquidAddress: address.address,
-      absoluteFees: swap.claimFee!,
+      absoluteFees: swap.fees!.claimFee!,
     );
     // TODO: add label to txid
   }
@@ -223,7 +223,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     // TODO: add label to bitcoin claim address
     await _boltzRepo.claimLiquidToBitcoinSwap(
       swapId: swap.id,
-      absoluteFees: swap.claimFee!,
+      absoluteFees: swap.fees!.claimFee!,
       bitcoinClaimAddress: claimAddress.address,
       liquidRefundAddress: refundAddress.address,
     );
@@ -242,7 +242,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     // TODO: add label to bitcoin refund address
     await _boltzRepo.refundBitcoinToLiquidSwap(
       swapId: swap.id,
-      absoluteFees: swap.claimFee!,
+      absoluteFees: swap.fees!.claimFee!,
       bitcoinRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
@@ -266,7 +266,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     // TODO: add label to bitcoin claim address
     await _boltzRepo.claimBitcoinToLiquidSwap(
       swapId: swap.id,
-      absoluteFees: swap.claimFee!,
+      absoluteFees: swap.fees!.claimFee!,
       liquidClaimAddress: claimAddress.address,
       bitcoinRefundAddress: refundAddress.address,
     );
@@ -285,7 +285,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     // TODO: add label to liquid refund address
     await _boltzRepo.refundLiquidToBitcoinSwap(
       swapId: swap.id,
-      absoluteFees: swap.claimFee!,
+      absoluteFees: swap.fees!.claimFee!,
       liquidRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid

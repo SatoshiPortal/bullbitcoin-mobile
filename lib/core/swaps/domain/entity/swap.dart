@@ -3,7 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap.freezed.dart';
 
-// These types are different than the ones from Boltz to decouple the app from the Boltz API
 enum SwapType {
   lightningToBitcoin,
   lightningToLiquid,
@@ -24,9 +23,32 @@ enum SwapStatus {
   failed,
 }
 
+class SwapFees {
+  final int? boltzFee;
+  final int? lockupFee;
+  final int? claimFee;
+
+  const SwapFees({
+    this.boltzFee,
+    this.lockupFee,
+    this.claimFee,
+  });
+
+  int? get totalFees {
+    if (boltzFee == null && lockupFee == null && claimFee == null) {
+      return null;
+    }
+
+    int total = 0;
+    if (boltzFee != null) total += boltzFee!;
+    if (lockupFee != null) total += lockupFee!;
+    if (claimFee != null) total += claimFee!;
+    return total;
+  }
+}
+
 @freezed
 sealed class Swap with _$Swap {
-  // Lightning Receive Swap (reverse swap)
   const factory Swap.lnReceive({
     required String id,
     required int keyIndex,
@@ -38,13 +60,10 @@ sealed class Swap with _$Swap {
     required String invoice,
     String? receiveAddress,
     String? receiveTxid,
-    int? boltzFee,
-    int? lockupFee,
-    int? claimFee,
+    SwapFees? fees,
     DateTime? completionTime,
   }) = LnReceiveSwap;
 
-  // Lightning Send Swap (submarine swap)
   const factory Swap.lnSend({
     required String id,
     required int keyIndex,
@@ -58,13 +77,10 @@ sealed class Swap with _$Swap {
     String? preimage,
     String? refundAddress,
     String? refundTxid,
-    int? boltzFee,
-    int? lockupFee,
-    int? claimFee,
+    SwapFees? fees,
     DateTime? completionTime,
   }) = LnSendSwap;
 
-  // Chain Swap (between BTC and L-BTC)
   const factory Swap.chain({
     required String id,
     required int keyIndex,
@@ -79,20 +95,16 @@ sealed class Swap with _$Swap {
     String? receiveTxid,
     String? refundAddress,
     String? refundTxid,
-    int? boltzFee,
-    int? lockupFee,
-    int? claimFee,
+    SwapFees? fees,
     DateTime? completionTime,
   }) = ChainSwap;
 
   const Swap._();
 
-  // These getters can still be used across all types
   bool get isLnReceiveSwap => this is LnReceiveSwap;
   bool get isLnSendSwap => this is LnSendSwap;
   bool get isChainSwap => this is ChainSwap;
 
-  // Helper to get the common fields regardless of type
   @override
   String get id => when(
         lnReceive: (
@@ -108,8 +120,6 @@ sealed class Swap with _$Swap {
           _________,
           __________,
           ___________,
-          ____________,
-          _____________,
         ) =>
             id,
         lnSend: (
@@ -127,8 +137,6 @@ sealed class Swap with _$Swap {
           ___________,
           ____________,
           _____________,
-          ______________,
-          _______________,
         ) =>
             id,
         chain: (
@@ -147,8 +155,6 @@ sealed class Swap with _$Swap {
           ____________,
           _____________,
           ______________,
-          _______________,
-          ________________,
         ) =>
             id,
       );
@@ -168,8 +174,6 @@ sealed class Swap with _$Swap {
           _________,
           __________,
           ___________,
-          ____________,
-          _____________,
         ) =>
             type,
         lnSend: (
@@ -187,8 +191,6 @@ sealed class Swap with _$Swap {
           ___________,
           ____________,
           _____________,
-          ______________,
-          _______________,
         ) =>
             type,
         chain: (
@@ -207,8 +209,6 @@ sealed class Swap with _$Swap {
           ____________,
           _____________,
           ______________,
-          _______________,
-          ________________,
         ) =>
             type,
       );
@@ -228,8 +228,6 @@ sealed class Swap with _$Swap {
           _________,
           __________,
           ___________,
-          ____________,
-          _____________,
         ) =>
             status,
         lnSend: (
@@ -247,8 +245,6 @@ sealed class Swap with _$Swap {
           ___________,
           ____________,
           _____________,
-          ______________,
-          _______________,
         ) =>
             status,
         chain: (
@@ -267,10 +263,62 @@ sealed class Swap with _$Swap {
           ____________,
           _____________,
           ______________,
-          _______________,
-          ________________,
         ) =>
             status,
+      );
+
+  @override
+  SwapFees? get fees => when(
+        lnReceive: (
+          _,
+          __,
+          ___,
+          ____,
+          _____,
+          ______,
+          _______,
+          ________,
+          _________,
+          __________,
+          fees,
+          ___________,
+        ) =>
+            fees,
+        lnSend: (
+          _,
+          __,
+          ___,
+          ____,
+          _____,
+          ______,
+          _______,
+          ________,
+          _________,
+          __________,
+          ___________,
+          ____________,
+          fees,
+          _____________,
+        ) =>
+            fees,
+        chain: (
+          _,
+          __,
+          ___,
+          ____,
+          _____,
+          ______,
+          _______,
+          ________,
+          _________,
+          __________,
+          ___________,
+          ____________,
+          _____________,
+          fees,
+          ______________,
+        ) =>
+            fees,
       );
 }
 
