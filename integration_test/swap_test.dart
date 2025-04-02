@@ -55,8 +55,8 @@ void main() {
       Hive.initFlutter(),
       boltz.LibBoltz.init(),
       lwk.LibLwk.init(),
+      AppLocator.setup(),
     ]);
-    await AppLocator.setup();
     await locator<SetEnvironmentUsecase>().execute(Environment.mainnet);
 
     walletManagerService = locator<WalletManagerService>();

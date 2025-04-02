@@ -53,6 +53,8 @@ Future<void> registerDatasources() async {
 
   //  - Labels
   final labelsBox = await Hive.openBox<String>(HiveBoxNameConstants.labels);
+  final labelsByRefBox =
+      await Hive.openBox<String>(HiveBoxNameConstants.labelsByRef);
 
   // Register the Hive storage datasource for labels
   locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
@@ -60,13 +62,22 @@ Future<void> registerDatasources() async {
     instanceName:
         LocatorInstanceNameConstants.labelsHiveStorageDatasourceInstanceName,
   );
+  locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
+    () => HiveStorageDatasourceImpl<String>(labelsByRefBox),
+    instanceName: LocatorInstanceNameConstants
+        .labelByRefHiveStorageDatasourceInstanceName,
+  );
 
   // Register the LabelStorageDatasource
   locator.registerLazySingleton<LabelStorageDatasource>(
     () => LabelStorageDatasource(
-      labelStorage: locator<KeyValueStorageDatasource<String>>(
+      mainLabelStorage: locator<KeyValueStorageDatasource<String>>(
         instanceName: LocatorInstanceNameConstants
             .labelsHiveStorageDatasourceInstanceName,
+      ),
+      refLabelStorage: locator<KeyValueStorageDatasource<String>>(
+        instanceName: LocatorInstanceNameConstants
+            .labelByRefHiveStorageDatasourceInstanceName,
       ),
     ),
   );
