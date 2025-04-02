@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -92,16 +93,14 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   void _onDetached() => debugPrint('detached');
 
-  void _onResumed() {
+  Future<void> _onResumed() async {
     debugPrint('resumed');
-    // locator<CheckPinCodeExistsUsecase>().execute().then((exists) {
-    //   if (exists) {
-    //     AppRouter.router.pushNamed(
-    //       AppRoute.appUnlock.name,
-    //       extra: () => AppRouter.router.pop(),
-    //     );
-    //   }
-    // });
+    try {
+      await locator<RestartSwapWatcherUsecase>().execute();
+      debugPrint('Restarted Swap Watcher!');
+    } catch (e) {
+      debugPrint('Error during app resume: $e');
+    }
   }
 
   void _onInactive() => debugPrint('inactive');

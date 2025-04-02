@@ -3,30 +3,14 @@ name: Notify Slack
 on:
   pull_request:
     types:
-      - closed
       - opened
   push:
     branches:
       - develop
 
 jobs:
-  # merged_on_develop:
-  #   if: github.event.pull_request.merged == true && github.base_ref == 'develop'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Send Slack Notification
-  #       uses: slackapi/slack-github-action@v2.0.0
-  #       with:
-  #         webhook-type: incoming-webhook
-  #         payload: |
-  #           {
-  #             "text": "<${{ github.event.pull_request.html_url }}|PR Merged> into *develop* 👀 *${{ github.event.pull_request.title }}* by *${{ github.event.pull_request.user.login }}*",
-  #           }
-  #       env:
-  #         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
-
-  pr_created_on_develop:
-    if: github.event.pull_request.opened == true && github.base_ref == 'develop'
+  created_on_develop:
+    if: github.event.pull_request.merged == false && github.event_name != 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack Notification
@@ -35,13 +19,13 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "🔎 | <${{ github.event.pull_request.html_url }}|PR on develop> ${{ github.event.pull_request.title }} by *${{ github.event.pull_request.user.login }}*"
+              "text": "👀 | <${{ github.event.pull_request.html_url }}|Pull Request> ${{ github.event.pull_request.title }} by *${{ github.event.pull_request.user.login }}*"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}
 
   push_to_develop:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - name: Send Slack Notification
@@ -50,7 +34,7 @@ jobs:
           webhook-type: incoming-webhook
           payload: |
             {
-              "text": "🔄 | <${{ github.event.repository.html_url }}/commit/${{ github.sha }}|Commit on develop> ${{ github.event.head_commit.message }} by *${{ github.event.pusher.name }}*"
+              "text": "🔄 | <${{ github.event.repository.html_url }}/commit/${{ github.sha }}|Commit> ${{ github.event.head_commit.message }} by *${{ github.event.pusher.name }}*"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_TEAM_PORTEFEUILLE }}

@@ -43,7 +43,7 @@ class KeyServerFlow extends StatefulWidget {
 class _KeyServerFlowState extends State<KeyServerFlow> {
   @override
   Widget build(BuildContext context) {
-    return PopScope(
+  return PopScope(
       canPop: false,
       child: MultiBlocProvider(
         providers: [
@@ -114,6 +114,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
       ),
     );
   }
+
 
   bool _isLoading(
           KeyServerState k, OnboardingState o, TestWalletBackupState t) =>

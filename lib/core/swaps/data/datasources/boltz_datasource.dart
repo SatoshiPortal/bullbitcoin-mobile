@@ -586,7 +586,6 @@ class BoltzDatasource {
             if (swapCompleted || swapFailed || swapExpired) {
               // Unsubscribe from the swap if it's in a terminal state
               unsubscribeToSwaps([swapId]);
-              return;
             }
             // Process the event
             SwapModel? updatedSwapModel;

@@ -558,6 +558,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       walletId: walletId,
       type: SwapType.lightningToLiquid,
       amountSat: amountSat.toInt(),
+      description: note,
     );
 
     _watchLnReceiveSwap(swap.id);

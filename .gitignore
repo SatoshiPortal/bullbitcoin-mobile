@@ -63,7 +63,8 @@ migrate_working_dir/
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
-**/ios/Runner/TestFlight.xcconfig
+**/ios/Flutter/Release.xcconfig
+**/ios/Flutter/Debug.xcconfig
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies

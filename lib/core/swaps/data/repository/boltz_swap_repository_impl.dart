@@ -543,9 +543,11 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     return allSwaps
         .where(
           (swap) =>
-              swap.status != SwapStatus.completed ||
-              swap.status != SwapStatus.expired ||
-              swap.status != SwapStatus.failed,
+              swap.status == SwapStatus.pending ||
+              swap.status == SwapStatus.paid ||
+              swap.status == SwapStatus.claimable ||
+              swap.status == SwapStatus.refundable ||
+              swap.status == SwapStatus.canCoop,
         )
         .toList();
   }

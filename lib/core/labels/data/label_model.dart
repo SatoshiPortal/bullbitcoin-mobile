@@ -1,10 +1,14 @@
-import 'package:bb_mobile/core/wallet/domain/entity/labels.dart';
+import 'package:bb_mobile/core/labels/domain/label_entity.dart';
 
 class LabelModel {
   final String type;
+
   final String ref;
+
   final String label;
+
   final String? origin;
+
   final bool? spendable;
 
   LabelModel({
@@ -56,9 +60,9 @@ class LabelModel {
 
   factory LabelModel.fromJson(Map<String, dynamic> json) {
     return LabelModel(
-      type: json['type'] as String,
-      ref: json['ref'] as String,
-      label: json['label'] as String,
+      type: json['type'] as String? ?? '',
+      ref: json['ref'] as String? ?? '',
+      label: json['label'] as String? ?? '',
       origin: json['origin'] as String?,
       spendable: json['spendable'] as bool?,
     );

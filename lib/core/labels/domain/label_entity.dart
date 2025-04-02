@@ -2,8 +2,8 @@
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'labels.freezed.dart';
-part 'labels.g.dart';
+part 'label_entity.freezed.dart';
+part 'label_entity.g.dart';
 
 enum LabelType { tx, address, pubkey, input, output, xpub }
 
@@ -21,20 +21,17 @@ class Label with _$Label {
 
   factory Label.fromJson(Map<String, dynamic> json) => _$LabelFromJson(json);
 
-  // ignore: prefer_constructors_over_static_methods
-  static Label create({
+  factory Label.create({
     required LabelType type,
     required String ref,
     required String label,
     String? origin,
     bool? spendable,
   }) {
-    final sanitizedLabel = label.replaceAll(',', '');
-
     return Label(
       type: type,
       ref: ref,
-      label: sanitizedLabel,
+      label: label,
       origin: origin,
       spendable: spendable,
     );
