@@ -10,6 +10,8 @@ PODS:
   - bip85 (0.0.1):
     - Flutter
   - boltz (0.1.6)
+  - camera_avfoundation (0.0.1):
+    - Flutter
   - DKImagePickerController/Core (4.3.9):
     - DKImagePickerController/ImageDataManager
     - DKImagePickerController/Resource
@@ -101,6 +103,7 @@ DEPENDENCIES:
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
   - bip85 (from `.symlinks/plugins/bip85/ios`)
   - boltz (from `.symlinks/plugins/boltz/ios`)
+  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - document_file_save_plus (from `.symlinks/plugins/document_file_save_plus/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
@@ -138,6 +141,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/bip85/ios"
   boltz:
     :path: ".symlinks/plugins/boltz/ios"
+  camera_avfoundation:
+    :path: ".symlinks/plugins/camera_avfoundation/ios"
   document_file_save_plus:
     :path: ".symlinks/plugins/document_file_save_plus/ios"
   file_picker:
@@ -175,34 +180,35 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
-  bdk_flutter: 08274535b7bd58a09bfa9c3733474fb44133484c
-  bip85: 3059e217a3a606a100dd244f21d2fc61b0a1aa83
+  bdk_flutter: fb57a7400a7f3f181c5977bcdc2a5ef347ae4e7f
+  bip85: f656a7e6b23afda4960efb11c87d51d68e8be3db
   boltz: 6388ec2412f3753b63a9e65c97f87ea26f43bddc
+  camera_avfoundation: dd002b0330f4981e1bbcb46ae9b62829237459a4
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
-  document_file_save_plus: 47b52a647efb29f7d431af45a856ce1a841f32fc
-  file_picker: 9b3292d7c8bc68c8a7bf8eb78f730e49c8efc517
+  document_file_save_plus: 913d440d8b611ae19add4522ed578e3ed1483a2f
+  file_picker: 09aa5ec1ab24135ccd7a1621c46c84134bfd6655
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_file_dialog: ca8d7fbd1772d4f0c2777b4ab20a7787ef4e7dd8
-  flutter_keyboard_visibility: 4625131e43015dbbe759d9b20daaf77e0e3f6619
-  flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
-  flutter_secure_storage: 1ed9476fba7e7a782b22888f956cce43e2c62f13
-  google_sign_in_ios: 19297361f2c51d7d8ac0201b866ef1fa5d1f94a8
+  flutter_file_dialog: 4c014a45b105709a27391e266c277d7e588e9299
+  flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
+  flutter_native_splash: f71420956eb811e6d310720fee915f1d42852e7a
+  flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
+  google_sign_in_ios: 4111e87aa5e24a4404f00ea13479f35e571969cc
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
-  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
   lwk: 22e06bc5664247d6b2dac91cfe209b63b70dd580
-  no_screenshot: 6d183496405a3ab709a67a54e5cd0f639e94729e
-  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  no_screenshot: 67d110f12466f4913b488803d4e498d03ef2889e
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   payjoin_flutter: 6397d7b698cdad6453be4949ab6aca1863f6c5e5
-  permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
-  share_plus: 011d6fb4f9d2576b83179a3a5c5e323202cdabcf
+  share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
-  tor: 767208930250ef7be241963b75568c55c0a81890
-  url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
+  tor: 662a9f5b980b5c86decb8ba611de9bcd4c8286eb
+  url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 
 PODFILE CHECKSUM: 38934b16624b4fa72035a092e777e96d352e7058
 

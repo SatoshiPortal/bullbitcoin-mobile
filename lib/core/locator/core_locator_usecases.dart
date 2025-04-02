@@ -41,8 +41,10 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/build_transaction_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_balance_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/sync_all_wallets_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/locator.dart';
@@ -204,6 +206,23 @@ Future<void> registerUsecases() async {
       settingsRepository: locator<SettingsRepository>(),
       mnemonicSeedFactory: locator<MnemonicSeedFactory>(),
       walletManager: locator<WalletManagerService>(),
+    ),
+  );
+
+  // Register GetBalanceUsecase
+  locator.registerFactory<GetBalanceUsecase>(
+    () => GetBalanceUsecase(
+      walletManagerService: locator<WalletManagerService>(),
+    ),
+  );
+
+  // Register SyncAllWalletsUsecase
+  locator.registerFactory<SyncAllWalletsUsecase>(
+    () => SyncAllWalletsUsecase(
+      walletManagerService: locator<WalletManagerService>(),
+      swapWatcherService: locator<SwapWatcherService>(
+        instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
+      ),
     ),
   );
 }

@@ -1,7 +1,7 @@
-
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_balance_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/sync_all_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -12,9 +12,11 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({
     required GetWalletsUsecase getWalletsUsecase,
-    required WalletManagerService walletManagerService,
+    required SyncAllWalletsUsecase syncAllWalletsUsecase,
+    required GetBalanceUsecase getBalanceUsecase,
   })  : _getWalletsUsecase = getWalletsUsecase,
-        _walletManagerService = walletManagerService,
+        _syncAllWalletsUsecase = syncAllWalletsUsecase,
+        _getBalanceUsecase = getBalanceUsecase,
         super(const HomeState()) {
     on<HomeStarted>(_onStarted);
     on<HomeRefreshed>(_onRefreshed);
@@ -22,7 +24,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
-  final WalletManagerService _walletManagerService;
+  final SyncAllWalletsUsecase _syncAllWalletsUsecase;
+  final GetBalanceUsecase _getBalanceUsecase;
 
   Future<void> _onStarted(
     HomeStarted event,
@@ -76,19 +79,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         ),
       );
 
-      final wallets = await _walletManagerService.syncAll();
+      final wallets = await _syncAllWalletsUsecase.execute();
       final List<Wallet> updatedWallets = [];
       for (final w in wallets) {
-        final bal = await _walletManagerService.getBalance(
+        final bal = await _getBalanceUsecase.execute(
           walletId: w.id,
         );
 
         updatedWallets.add(w.copyWith(balanceSat: bal.totalSat));
       }
-
-      // TODO: Get transactions by implementing and using the Use Case instead of simulating a transaction sync
-      //  with a timeout
-      // await Future.delayed(const Duration(seconds: 2));
 
       emit(
         state.copyWith(

@@ -97,7 +97,8 @@ class _ScanScreenState extends State<ScanScreen> {
                           Clipboard.setData(ClipboardData(text: data));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text("Copied to clipboard")),
+                              content: Text("Copied to clipboard"),
+                            ),
                           );
 
                           // TODO: Example to parse the data in order to find out the payment type

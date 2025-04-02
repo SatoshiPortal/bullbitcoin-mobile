@@ -94,6 +94,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   void _onResumed() {
     debugPrint('resumed');
+    // TODO: SyncAllWalletsUsecase
     // locator<CheckPinCodeExistsUsecase>().execute().then((exists) {
     //   if (exists) {
     //     AppRouter.router.pushNamed(
