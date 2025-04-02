@@ -43,69 +43,73 @@ class KeyServerFlow extends StatefulWidget {
 class _KeyServerFlowState extends State<KeyServerFlow> {
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(
-          value: locator<KeyServerCubit>()
-            ..updateKeyServerState(
-              backupFile: widget.backupFile,
-              flow: CurrentKeyServerFlow.fromString(widget.currentFlow ?? ''),
-            ),
-        ),
-        BlocProvider.value(value: locator<OnboardingBloc>()),
-        BlocProvider.value(value: locator<BackupWalletBloc>()),
-        BlocProvider.value(value: locator<TestWalletBackupBloc>()),
-      ],
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<KeyServerCubit, KeyServerState>(
-            listener: _handleKeyServerStateChange,
+    return PopScope(
+      canPop: false,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(
+            value: locator<KeyServerCubit>()
+              ..updateKeyServerState(
+                backupFile: widget.backupFile,
+                flow: CurrentKeyServerFlow.fromString(widget.currentFlow ?? ''),
+              ),
           ),
-          BlocListener<OnboardingBloc, OnboardingState>(
-            listener: _handleOnboardingStateChange,
-          ),
-          BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
-            listener: _handleTestBackupStateChange,
-          ),
+          BlocProvider.value(value: locator<OnboardingBloc>()),
+          BlocProvider.value(value: locator<BackupWalletBloc>()),
+          BlocProvider.value(value: locator<TestWalletBackupBloc>()),
         ],
-        child: Builder(
-          builder: (context) {
-            final keyState = context.watch<KeyServerCubit>().state;
-            final onBoardingState = context.watch<OnboardingBloc>().state;
-            final testState = context.watch<TestWalletBackupBloc>().state;
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<KeyServerCubit, KeyServerState>(
+              listener: _handleKeyServerStateChange,
+            ),
+            BlocListener<OnboardingBloc, OnboardingState>(
+              listener: _handleOnboardingStateChange,
+            ),
+            BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
+              listener: _handleTestBackupStateChange,
+            ),
+          ],
+          child: Builder(
+            builder: (context) {
+              final keyState = context.watch<KeyServerCubit>().state;
+              final onBoardingState = context.watch<OnboardingBloc>().state;
+              final testState = context.watch<TestWalletBackupBloc>().state;
 
-            if (_isLoading(keyState, onBoardingState, testState) ||
-                _hasError(keyState, onBoardingState, testState)) {
-              return StatusScreen(
-                isLoading: _isLoading(keyState, onBoardingState, testState),
-                hasError: _hasError(keyState, onBoardingState, testState),
-                title: _getTitle(keyState, onBoardingState, testState),
-                description: _getMessage(keyState, onBoardingState, testState),
-                errorMessage:
-                    _getErrorMessage(keyState, onBoardingState, testState),
-                onTap: _hasError(keyState, onBoardingState, testState)
-                    ? () => _handleError(context)
-                    : null,
-              );
-            }
+              if (_isLoading(keyState, onBoardingState, testState) ||
+                  _hasError(keyState, onBoardingState, testState)) {
+                return StatusScreen(
+                  isLoading: _isLoading(keyState, onBoardingState, testState),
+                  hasError: _hasError(keyState, onBoardingState, testState),
+                  title: _getTitle(keyState, onBoardingState, testState),
+                  description:
+                      _getMessage(keyState, onBoardingState, testState),
+                  errorMessage:
+                      _getErrorMessage(keyState, onBoardingState, testState),
+                  onTap: _hasError(keyState, onBoardingState, testState)
+                      ? () => _handleError(context)
+                      : null,
+                );
+              }
 
-            switch (keyState.currentFlow) {
-              case CurrentKeyServerFlow.enter:
-                return const EnterScreen();
-              case CurrentKeyServerFlow.confirm:
-                return const ConfirmScreen();
-              case CurrentKeyServerFlow.recovery:
-                return RecoverWithSecretScreen(
-                  fromOnboarding: widget.fromOnboarding,
-                );
-              case CurrentKeyServerFlow.delete:
-                return const EnterScreen();
-              case CurrentKeyServerFlow.recoveryWithBackupKey:
-                return RecoverWithBackupKeyScreen(
-                  fromOnboarding: widget.fromOnboarding,
-                );
-            }
-          },
+              switch (keyState.currentFlow) {
+                case CurrentKeyServerFlow.enter:
+                  return const EnterScreen();
+                case CurrentKeyServerFlow.confirm:
+                  return const ConfirmScreen();
+                case CurrentKeyServerFlow.recovery:
+                  return RecoverWithSecretScreen(
+                    fromOnboarding: widget.fromOnboarding,
+                  );
+                case CurrentKeyServerFlow.delete:
+                  return const EnterScreen();
+                case CurrentKeyServerFlow.recoveryWithBackupKey:
+                  return RecoverWithBackupKeyScreen(
+                    fromOnboarding: widget.fromOnboarding,
+                  );
+              }
+            },
+          ),
         ),
       ),
     );
