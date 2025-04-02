@@ -49,65 +49,66 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<OnboardingBloc, OnboardingState>(
       builder: (context, state) {
-        return state.onboardingStepStatus.when(
-          none: () => _buildScaffold(context),
-          loading: () {
-            return Scaffold(
-              backgroundColor: context.colour.onSecondary,
-              body: ProgressScreen(
-                title: "You will need to sign-in to Google Drive",
-                description:
-                    "Google will ask you to share personal information with this app.",
-                isLoading: true,
-                extras: [
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "This information ",
-                          style: context.font.headlineMedium,
+        if (state.onboardingStepStatus == OnboardingStepStatus.none) {
+          return _buildScaffold(context);
+        } else if (state.onboardingStepStatus == OnboardingStepStatus.loading) {
+          return Scaffold(
+            backgroundColor: context.colour.onSecondary,
+            body: ProgressScreen(
+              title: "You will need to sign-in to Google Drive",
+              description:
+                  "Google will ask you to share personal information with this app.",
+              isLoading: true,
+              extras: [
+                Text.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "This information ",
+                        style: context.font.headlineMedium,
+                      ),
+                      TextSpan(
+                        text: "will not ",
+                        style: context.font.headlineLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
-                        TextSpan(
-                          text: "will not ",
-                          style: context.font.headlineLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      TextSpan(
+                        text: "leave your phone and is ",
+                        style: context.font.headlineMedium,
+                      ),
+                      TextSpan(
+                        text: "never ",
+                        style: context.font.headlineLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
-                        TextSpan(
-                          text: "leave your phone and is ",
-                          style: context.font.headlineMedium,
-                        ),
-                        TextSpan(
-                          text: "never ",
-                          style: context.font.headlineLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "shared with Bull Bitcoin.",
-                          style: context.font.headlineMedium,
-                        ),
-                      ],
-                    ),
-                    textAlign: TextAlign.center,
+                      ),
+                      TextSpan(
+                        text: "shared with Bull Bitcoin.",
+                        style: context.font.headlineMedium,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          },
-          success: () {
-            if (!state.backupInfo.isCorrupted) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.pushNamed(
-                  OnboardingSubroute.retrievedBackupInfo.name,
-                  extra: state.backupInfo,
-                );
-              });
-            }
-            return _buildScaffold(context);
-          },
-          error: (message) => _buildScaffold(context),
-        );
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        } else if (state.onboardingStepStatus == OnboardingStepStatus.success) {
+          if (!state.backupInfo.isCorrupted) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.pushNamed(
+                OnboardingSubroute.retrievedBackupInfo.name,
+                extra: state.backupInfo,
+              );
+            });
+          }
+          return _buildScaffold(context);
+        } else if (state.onboardingStepStatus == OnboardingStepStatus.none &&
+            state.statusError.isNotEmpty) {
+          return _buildScaffold(context);
+        }
+        return _buildScaffold(context);
       },
     );
   }
