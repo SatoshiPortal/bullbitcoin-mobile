@@ -59,7 +59,7 @@ class _Screen extends StatelessWidget {
         if (state.onboardingStepStatus == OnboardingStepStatus.success) {
           if (!state.backupInfo.isCorrupted) {
             context.pushNamed(
-              OnboardingSubroute.recoverFromEncrypted.name,
+              OnboardingSubroute.retrievedBackupInfo.name,
               extra: state.backupInfo,
             );
             return;
