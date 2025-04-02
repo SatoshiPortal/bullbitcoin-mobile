@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_balance_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -14,9 +15,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required GetWalletsUsecase getWalletsUsecase,
     required SyncAllWalletsUsecase syncAllWalletsUsecase,
     required GetBalanceUsecase getBalanceUsecase,
+    required RestartSwapWatcherUsecase restartSwapWatcherUsecase,
   })  : _getWalletsUsecase = getWalletsUsecase,
         _syncAllWalletsUsecase = syncAllWalletsUsecase,
         _getBalanceUsecase = getBalanceUsecase,
+        _restartSwapWatcherUsecase = restartSwapWatcherUsecase,
         super(const HomeState()) {
     on<HomeStarted>(_onStarted);
     on<HomeRefreshed>(_onRefreshed);
@@ -26,6 +29,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetWalletsUsecase _getWalletsUsecase;
   final SyncAllWalletsUsecase _syncAllWalletsUsecase;
   final GetBalanceUsecase _getBalanceUsecase;
+  final RestartSwapWatcherUsecase _restartSwapWatcherUsecase;
 
   Future<void> _onStarted(
     HomeStarted event,
@@ -78,7 +82,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           isSyncingTransactions: true,
         ),
       );
-
+      await _restartSwapWatcherUsecase.execute();
       final wallets = await _syncAllWalletsUsecase.execute();
       final List<Wallet> updatedWallets = [];
       for (final w in wallets) {

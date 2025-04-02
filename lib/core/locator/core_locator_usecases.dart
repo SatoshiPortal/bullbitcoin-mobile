@@ -33,6 +33,7 @@ import 'package:bb_mobile/core/settings/domain/usecases/get_hide_amounts_usecase
 import 'package:bb_mobile/core/settings/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/repositories/tor_repository.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization.dart';
@@ -209,17 +210,19 @@ Future<void> registerUsecases() async {
     ),
   );
 
-  // Register GetBalanceUsecase
   locator.registerFactory<GetBalanceUsecase>(
     () => GetBalanceUsecase(
       walletManagerService: locator<WalletManagerService>(),
     ),
   );
 
-  // Register SyncAllWalletsUsecase
   locator.registerFactory<SyncAllWalletsUsecase>(
     () => SyncAllWalletsUsecase(
       walletManagerService: locator<WalletManagerService>(),
+    ),
+  );
+  locator.registerFactory<RestartSwapWatcherUsecase>(
+    () => RestartSwapWatcherUsecase(
       swapWatcherService: locator<SwapWatcherService>(
         instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
       ),

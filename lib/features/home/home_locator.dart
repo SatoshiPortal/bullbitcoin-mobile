@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_balance_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_all_wallets_usecase.dart';
@@ -12,6 +13,7 @@ class HomeLocator {
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         syncAllWalletsUsecase: locator<SyncAllWalletsUsecase>(),
         getBalanceUsecase: locator<GetBalanceUsecase>(),
+        restartSwapWatcherUsecase: locator<RestartSwapWatcherUsecase>(),
       ),
     );
   }
