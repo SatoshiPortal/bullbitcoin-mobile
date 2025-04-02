@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/data/datasources/label_storage_datasource.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/labels.dart';
+import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
+import 'package:bb_mobile/core/labels/domain/label_entity.dart';
 
 class LabelRepository {
   final LabelStorageDatasource _labelStorage;

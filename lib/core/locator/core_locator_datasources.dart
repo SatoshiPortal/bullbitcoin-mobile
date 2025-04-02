@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
+import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/file_storage_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/google_drive_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
@@ -7,7 +8,6 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/s
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/label_storage_datasource.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';

@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/labels/data/label_model.dart';
+import 'package:bb_mobile/core/labels/domain/label_entity.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/label_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/labels.dart';
 
 class LabelStorageDatasource {
   final KeyValueStorageDatasource<String> _labelStorage;

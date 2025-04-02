@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entity/labels.dart';
+import 'package:bb_mobile/core/labels/domain/label_entity.dart';
 
 class LabelModel {
   final String type;
