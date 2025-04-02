@@ -7,19 +7,29 @@ import 'package:lwk/lwk.dart' as lwk;
 
 part 'payment_request.freezed.dart';
 
+enum PaymentType {
+  bitcoinAddress,
+  liquidAddress,
+  bolt11,
+  bip21,
+}
+
 @freezed
 class PaymentRequest with _$PaymentRequest {
   const factory PaymentRequest.bitcoin({
+    required PaymentType type,
     required Network network,
     required String address,
   }) = BitcoinRequest;
 
   const factory PaymentRequest.liquid({
+    required PaymentType type,
     required Network network,
     required String address,
   }) = LiquidRequest;
 
   const factory PaymentRequest.bolt11({
+    required PaymentType type,
     required Network network,
     required BigInt amount,
     required BigInt expiry,
@@ -32,6 +42,7 @@ class PaymentRequest with _$PaymentRequest {
   }) = Bolt11Request;
 
   const factory PaymentRequest.bip21({
+    required PaymentType type,
     required Network network,
     required String address,
     required String uri,
@@ -54,7 +65,9 @@ class PaymentRequest with _$PaymentRequest {
     try {
       final address =
           await bdk.Address.fromString(s: data, network: bdk.Network.bitcoin);
+
       return PaymentRequest.bitcoin(
+        type: PaymentType.bitcoinAddress,
         address: address.asString(),
         network: Network.bitcoinMainnet,
       );
@@ -63,7 +76,9 @@ class PaymentRequest with _$PaymentRequest {
     try {
       final address =
           await bdk.Address.fromString(s: data, network: bdk.Network.testnet);
+
       return PaymentRequest.bitcoin(
+        type: PaymentType.bitcoinAddress,
         address: address.asString(),
         network: Network.bitcoinTestnet,
       );
@@ -71,6 +86,7 @@ class PaymentRequest with _$PaymentRequest {
 
     try {
       final uri = bip21.decode(data);
+      const type = PaymentType.bip21;
       Network network;
       if (uri.urnScheme == 'bitcoin') {
         network = Network.bitcoinMainnet;
@@ -81,6 +97,7 @@ class PaymentRequest with _$PaymentRequest {
       }
 
       return PaymentRequest.bip21(
+        type: type,
         network: network,
         address: uri.address,
         uri: uri.toString(),
@@ -91,13 +108,17 @@ class PaymentRequest with _$PaymentRequest {
 
     try {
       final network = await lwk.Address.validate(addressString: data);
+      const type = PaymentType.liquidAddress;
+
       if (network.name == 'mainnet') {
         return PaymentRequest.liquid(
+          type: type,
           address: data,
           network: Network.liquidMainnet,
         );
       } else {
         return PaymentRequest.liquid(
+          type: type,
           address: data,
           network: Network.liquidTestnet,
         );
@@ -108,6 +129,7 @@ class PaymentRequest with _$PaymentRequest {
       final invoice = await boltz.DecodedInvoice.fromString(s: data);
 
       return PaymentRequest.bolt11(
+        type: PaymentType.bolt11,
         amount: invoice.msats,
         expiry: invoice.expiry,
         expiresIn: invoice.expiresIn,
