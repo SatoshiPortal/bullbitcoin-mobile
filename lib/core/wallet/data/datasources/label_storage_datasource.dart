@@ -29,7 +29,7 @@ class LabelStorageDatasource {
     return '${labelModel.type}_${labelModel.ref}_${labelModel.label}';
   }
 
-  Future<List<Label>> readAll() async {
+  Future<List<Label>?> readAll() async {
     final allEntries = await _labelStorage.getAll();
     final labels = <Label>[];
 
@@ -38,11 +38,13 @@ class LabelStorageDatasource {
       final labelModel = LabelModel.fromJson(jsonMap);
       labels.add(labelModel.toEntity());
     }
-
+    if (labels.isEmpty) {
+      return null;
+    }
     return labels;
   }
 
-  Future<List<Label>> readByRef(String ref) async {
+  Future<List<Label>?> readByRef(String ref) async {
     final allEntries = await _labelStorage.getAll();
     final labels = <Label>[];
 
@@ -53,28 +55,31 @@ class LabelStorageDatasource {
         labels.add(labelModel.toEntity());
       }
     }
-
+    if (labels.isEmpty) {
+      return null;
+    }
     return labels;
   }
 
-  Future<List<Label>> readByType(LabelType type) async {
+  Future<List<Label>?> readByType(LabelType type) async {
     final typeStr = type.value;
     final allEntries = await _labelStorage.getAll();
     final labels = <Label>[];
 
     for (final entry in allEntries.entries) {
-      // Check if the key starts with the specified type
       if (entry.key.startsWith('${typeStr}_')) {
         final jsonMap = jsonDecode(entry.value) as Map<String, dynamic>;
         final labelModel = LabelModel.fromJson(jsonMap);
         labels.add(labelModel.toEntity());
       }
     }
-
+    if (labels.isEmpty) {
+      return null;
+    }
     return labels;
   }
 
-  Future<List<Label>> readByTypeAndRef(
+  Future<List<Label>?> readByTypeAndRef(
     LabelType type,
     String ref,
   ) async {
@@ -90,7 +95,9 @@ class LabelStorageDatasource {
         labels.add(labelModel.toEntity());
       }
     }
-
+    if (labels.isEmpty) {
+      return null;
+    }
     return labels;
   }
 
@@ -115,7 +122,6 @@ class LabelStorageDatasource {
     }
   }
 
-  /// Deletes all labels
   Future<void> deleteAll() async {
     await _labelStorage.deleteAll();
   }
