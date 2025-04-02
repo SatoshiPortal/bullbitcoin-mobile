@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/sync_all_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -94,6 +95,11 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   void _onResumed() {
     debugPrint('resumed');
+    locator<SyncAllWalletsUsecase>().execute().then(
+          (value) => {
+            debugPrint('SyncAllWalletsUsecase executed'),
+          },
+        );
     // TODO: SyncAllWalletsUsecase
     // locator<CheckPinCodeExistsUsecase>().execute().then((exists) {
     //   if (exists) {
