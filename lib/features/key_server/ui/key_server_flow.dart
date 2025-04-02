@@ -50,160 +50,164 @@ class KeyServerFlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(
-          value: locator<KeyServerCubit>()
-            ..updateKeyServerState(
-              backupFile: backupFile,
-              flow: CurrentKeyServerFlow.fromString(currentFlow ?? ''),
-            ),
-        ),
-        BlocProvider.value(value: locator<OnboardingBloc>()),
-        BlocProvider.value(value: locator<BackupWalletBloc>()),
-        BlocProvider.value(value: locator<TestWalletBackupBloc>()),
-      ],
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<OnboardingBloc, OnboardingState>(
-            listener: (context, onBoardingState) {
-              final keyState = context.read<KeyServerCubit>().state;
-              if (keyState.status == const KeyServerOperationStatus.success() &&
-                  keyState.secretStatus == SecretStatus.recovered &&
-                  onBoardingState.onboardingStepStatus ==
-                      OnboardingStepStatus.success) {
-                context.goNamed(OnboardingSubroute.recoverSuccess.name);
-              }
-            },
+    return PopScope(
+      canPop: false,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(
+            value: locator<KeyServerCubit>()
+              ..updateKeyServerState(
+                backupFile: backupFile,
+                flow: CurrentKeyServerFlow.fromString(currentFlow ?? ''),
+              ),
           ),
-          BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
-            listenWhen: (previous, current) =>
-                previous.isSuccess != current.isSuccess ||
-                previous.error != current.error,
-            listener: (context, state) {
-              if (state.isSuccess && state.error.isEmpty) {
-                context
-                    .goNamed(TestWalletBackupSubroute.backupTestSuccess.name);
-              }
-            },
-          ),
-          // BlocListener<BackupWalletBloc, BackuponBoardingState>(
-          //   listener: (context, state) {
-          //     if (state.status == const BackupWalletStatus.success()) {
-          //       context.goNamed(BackupWalletSubroute.backupSuccess.name);
-          //     }
-          //   },
-          // ),
-          BlocListener<KeyServerCubit, KeyServerState>(
-            listenWhen: (previous, current) =>
-                previous.secretStatus != current.secretStatus,
-            listener: (context, state) {
-              if (state.status == const KeyServerOperationStatus.success() &&
-                  state.secretStatus == SecretStatus.stored) {
-                context.goNamed(BackupWalletSubroute.backupSuccess.name);
-              }
-            },
-          ),
+          BlocProvider.value(value: locator<OnboardingBloc>()),
+          BlocProvider.value(value: locator<BackupWalletBloc>()),
+          BlocProvider.value(value: locator<TestWalletBackupBloc>()),
         ],
-        child: BlocBuilder<KeyServerCubit, KeyServerState>(
-          buildWhen: (previous, current) =>
-              previous.currentFlow != current.currentFlow ||
-              previous.status != current.status ||
-              previous.password != current.password ||
-              previous.secretStatus != current.secretStatus,
-          builder: (context, state) {
-            final onBoardingState = context.watch<OnboardingBloc>().state;
-            final testWalletBackupState =
-                context.watch<TestWalletBackupBloc>().state;
-            // Show loading screen
-            if (state.status == const KeyServerOperationStatus.loading() ||
-                (state.status == const KeyServerOperationStatus.success() &&
-                    state.secretStatus == SecretStatus.recovered &&
-                    onBoardingState.onboardingStepStatus !=
-                        OnboardingStepStatus.success)) {
-              if (state.status == const KeyServerOperationStatus.success() &&
-                  state.secretStatus == SecretStatus.recovered) {
-                if (fromOnboarding &&
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<OnboardingBloc, OnboardingState>(
+              listener: (context, onBoardingState) {
+                final keyState = context.read<KeyServerCubit>().state;
+                if (keyState.status ==
+                        const KeyServerOperationStatus.success() &&
+                    keyState.secretStatus == SecretStatus.recovered &&
                     onBoardingState.onboardingStepStatus ==
-                        OnboardingStepStatus.none) {
-                  context.read<OnboardingBloc>().add(
-                        StartWalletRecovery(
-                          backupKey: state.backupKey,
-                          backupFile: state.backupFile,
-                        ),
-                      );
-                } else if (!testWalletBackupState.isLoading &&
-                    testWalletBackupState.error.isEmpty &&
-                    !fromOnboarding) {
-                  context.read<TestWalletBackupBloc>().add(
-                        StartBackupTesting(
-                          backupKey: state.backupKey,
-                          backupFile: state.backupFile,
-                        ),
-                      );
+                        OnboardingStepStatus.success) {
+                  context.goNamed(OnboardingSubroute.recoverSuccess.name);
                 }
+              },
+            ),
+            BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
+              listenWhen: (previous, current) =>
+                  previous.isSuccess != current.isSuccess ||
+                  previous.error != current.error,
+              listener: (context, state) {
+                if (state.isSuccess && state.error.isEmpty) {
+                  context
+                      .goNamed(TestWalletBackupSubroute.backupTestSuccess.name);
+                }
+              },
+            ),
+            // BlocListener<BackupWalletBloc, BackuponBoardingState>(
+            //   listener: (context, state) {
+            //     if (state.status == const BackupWalletStatus.success()) {
+            //       context.goNamed(BackupWalletSubroute.backupSuccess.name);
+            //     }
+            //   },
+            // ),
+            BlocListener<KeyServerCubit, KeyServerState>(
+              listenWhen: (previous, current) =>
+                  previous.secretStatus != current.secretStatus,
+              listener: (context, state) {
+                if (state.status == const KeyServerOperationStatus.success() &&
+                    state.secretStatus == SecretStatus.stored) {
+                  context.goNamed(BackupWalletSubroute.backupSuccess.name);
+                }
+              },
+            ),
+          ],
+          child: BlocBuilder<KeyServerCubit, KeyServerState>(
+            buildWhen: (previous, current) =>
+                previous.currentFlow != current.currentFlow ||
+                previous.status != current.status ||
+                previous.password != current.password ||
+                previous.secretStatus != current.secretStatus,
+            builder: (context, state) {
+              final onBoardingState = context.watch<OnboardingBloc>().state;
+              final testWalletBackupState =
+                  context.watch<TestWalletBackupBloc>().state;
+              // Show loading screen
+              if (state.status == const KeyServerOperationStatus.loading() ||
+                  (state.status == const KeyServerOperationStatus.success() &&
+                      state.secretStatus == SecretStatus.recovered &&
+                      onBoardingState.onboardingStepStatus !=
+                          OnboardingStepStatus.success)) {
+                if (state.status == const KeyServerOperationStatus.success() &&
+                    state.secretStatus == SecretStatus.recovered) {
+                  if (fromOnboarding &&
+                      onBoardingState.onboardingStepStatus ==
+                          OnboardingStepStatus.none) {
+                    context.read<OnboardingBloc>().add(
+                          StartWalletRecovery(
+                            backupKey: state.backupKey,
+                            backupFile: state.backupFile,
+                          ),
+                        );
+                  } else if (!testWalletBackupState.isLoading &&
+                      testWalletBackupState.error.isEmpty &&
+                      !fromOnboarding) {
+                    context.read<TestWalletBackupBloc>().add(
+                          StartBackupTesting(
+                            backupKey: state.backupKey,
+                            backupFile: state.backupFile,
+                          ),
+                        );
+                  }
+                }
+                return const KeyLoadingScreen();
               }
-              return const KeyLoadingScreen();
-            }
 
-            // Show error screen
-            if (state.status.maybeWhen(
-              failure: (_) => true,
-              orElse: () => false,
-            )) {
-              return ErrorScreen(
-                message: state.status.maybeWhen(
-                  failure: (message) => message,
-                  orElse: () => 'An error occurred',
-                ),
-                title: 'Oops! Something went wrong',
-                onRetry: () {
-                  context.read<KeyServerCubit>()
-                    ..clearError()
-                    ..updateKeyServerState(
-                      flow: CurrentKeyServerFlow.enter,
-                    );
-                },
-              );
-            }
-            if (!testWalletBackupState.isLoading &&
-                testWalletBackupState.error.isNotEmpty) {
-              return ErrorScreen(
-                message: testWalletBackupState.error,
-                title: 'Oops! Something went wrong',
-              );
-            }
-            if (onBoardingState.statusError.isNotEmpty) {
-              return ErrorScreen(
-                message: state.status.maybeWhen(
-                  failure: (message) => message,
-                  orElse: () => 'An error occurred',
-                ),
-                title: 'Oops! Something went wrong',
-                onRetry: () {
-                  context.read<KeyServerCubit>()
-                    ..clearError()
-                    ..updateKeyServerState(
-                      flow: CurrentKeyServerFlow.enter,
-                    );
-                },
-              );
-            }
+              // Show error screen
+              if (state.status.maybeWhen(
+                failure: (_) => true,
+                orElse: () => false,
+              )) {
+                return ErrorScreen(
+                  message: state.status.maybeWhen(
+                    failure: (message) => message,
+                    orElse: () => 'An error occurred',
+                  ),
+                  title: 'Oops! Something went wrong',
+                  onRetry: () {
+                    context.read<KeyServerCubit>()
+                      ..clearError()
+                      ..updateKeyServerState(
+                        flow: CurrentKeyServerFlow.enter,
+                      );
+                  },
+                );
+              }
+              if (!testWalletBackupState.isLoading &&
+                  testWalletBackupState.error.isNotEmpty) {
+                return ErrorScreen(
+                  message: testWalletBackupState.error,
+                  title: 'Oops! Something went wrong',
+                );
+              }
+              if (onBoardingState.statusError.isNotEmpty) {
+                return ErrorScreen(
+                  message: state.status.maybeWhen(
+                    failure: (message) => message,
+                    orElse: () => 'An error occurred',
+                  ),
+                  title: 'Oops! Something went wrong',
+                  onRetry: () {
+                    context.read<KeyServerCubit>()
+                      ..clearError()
+                      ..updateKeyServerState(
+                        flow: CurrentKeyServerFlow.enter,
+                      );
+                  },
+                );
+              }
 
-            // Show flow screens
-            return switch (state.currentFlow) {
-              CurrentKeyServerFlow.enter => const EnterScreen(),
-              CurrentKeyServerFlow.confirm => const ConfirmScreen(),
-              CurrentKeyServerFlow.recovery => RecoverWithSecretScreen(
-                  fromOnboarding: fromOnboarding,
-                ),
-              CurrentKeyServerFlow.delete => const EnterScreen(),
-              CurrentKeyServerFlow.recoveryWithBackupKey =>
-                RecoverWithBackupKeyScreen(
-                  fromOnboarding: fromOnboarding,
-                ),
-            };
-          },
+              // Show flow screens
+              return switch (state.currentFlow) {
+                CurrentKeyServerFlow.enter => const EnterScreen(),
+                CurrentKeyServerFlow.confirm => const ConfirmScreen(),
+                CurrentKeyServerFlow.recovery => RecoverWithSecretScreen(
+                    fromOnboarding: fromOnboarding,
+                  ),
+                CurrentKeyServerFlow.delete => const EnterScreen(),
+                CurrentKeyServerFlow.recoveryWithBackupKey =>
+                  RecoverWithBackupKeyScreen(
+                    fromOnboarding: fromOnboarding,
+                  ),
+              };
+            },
+          ),
         ),
       ),
     );
