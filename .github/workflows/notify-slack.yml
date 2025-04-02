@@ -6,7 +6,7 @@ on:
       - opened
   push:
     branches:
-      # - develop
+      - develop
       - slack-notify
 
 jobs:
