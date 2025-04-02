@@ -434,9 +434,9 @@ class _ReceiveLnFeesDetailsState extends State<ReceiveLnFeesDetails> {
         const Gap(12),
         if (expanded) ...[
           Container(color: context.colour.surface, height: 1),
-          _feeRow(context, 'Lockup network fee', swap.fees?.lockupFee ?? 0),
-          _feeRow(context, 'Claim network fee', swap.fees?.claimFee ?? 0),
-          _feeRow(context, 'Boltz network fee', swap.fees?.boltzFee ?? 0),
+          _feeRow(context, 'Lockup Network Fee', swap.fees?.lockupFee ?? 0),
+          _feeRow(context, 'Claim Network Fee', swap.fees?.claimFee ?? 0),
+          _feeRow(context, 'Boltz Swap Fee', swap.fees?.boltzFee ?? 0),
           const Gap(16),
         ],
       ],
