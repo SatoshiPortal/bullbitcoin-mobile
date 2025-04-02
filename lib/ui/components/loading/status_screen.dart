@@ -1,7 +1,7 @@
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:bb_mobile/ui/components/template/screen_template.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
+
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -53,6 +53,8 @@ class _StatusScreenState extends State<StatusScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = widget.hasError ? context.colour.error : null;
+
     return Scaffold(
       backgroundColor: context.colour.onSecondary,
       body: StackedPage(
@@ -64,59 +66,38 @@ class _StatusScreenState extends State<StatusScreen> {
                     : (widget.buttonText ?? 'Continue'),
                 onPressed: widget.onTap ?? () {},
                 textColor: context.colour.onPrimary,
-                bgColor: widget.hasError
-                    ? context.colour.error
-                    : context.colour.secondary,
+                bgColor: context.colour.secondary,
               )
             : const SizedBox.shrink(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (widget.isLoading)
-                ProgressScreen(
-                  isLoading: true,
-                  title: widget.title,
-                  description: widget.description,
-                )
-              else ...[
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
                 if (widget.hasError)
                   Icon(
-                    Icons.error_outline,
+                    Icons.error_outline_rounded,
                     size: 80,
-                    color: context.colour.error,
-                  ),
-                if (widget.title != null) ...[
-                  const Gap(16),
-                  BBText(
-                    widget.hasError
-                        ? (widget.errorMessage ?? 'An error occurred')
-                        : widget.title!,
-                    textAlign: TextAlign.center,
-                    style: context.font.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: widget.hasError ? context.colour.error : null,
-                    ),
-                  ),
-                ],
-                if (widget.description != null) ...[
-                  const Gap(16),
-                  BBText(
-                    widget.description!,
-                    textAlign: TextAlign.center,
-                    style: context.font.bodySmall?.copyWith(
-                      color: widget.hasError ? context.colour.error : null,
-                    ),
-                    maxLines: 3,
-                  ),
-                ],
-                if (widget.extras.isNotEmpty) ...[
+                    color: textColor,
+                  )
+                else
+                  const SizedBox.shrink(),
+                ProgressScreen(
+                  title: !widget.hasError
+                      ? widget.title
+                      : "Oops! Something went wrong",
+                  description: !widget.hasError
+                      ? widget.description
+                      : widget.errorMessage,
+                  isLoading: widget.isLoading && !widget.hasError,
+                ),
+                if (widget.extras.isNotEmpty && !widget.hasError) ...[
                   const Gap(16),
                   ...widget.extras,
                 ],
               ],
-            ],
+            ),
           ),
         ),
       ),
