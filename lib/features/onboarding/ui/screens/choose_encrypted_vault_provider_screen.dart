@@ -3,15 +3,13 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/ui/components/cards/tag_card.dart';
+import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
+import 'package:bb_mobile/ui/components/vault/vault_locations.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
-    show BlocConsumer, BlocProvider, ReadContext;
-import 'package:gap/gap.dart';
+    show BlocBuilder, BlocProvider, ReadContext;
 import 'package:go_router/go_router.dart';
 
 class ChooseVaultProviderScreen extends StatefulWidget {
@@ -42,153 +40,93 @@ class _Screen extends StatelessWidget {
       context.read<OnboardingBloc>().add(const SelectGoogleDriveRecovery());
     } else if (provider == backupProviders[2]) {
       context.read<OnboardingBloc>().add(const SelectFileSystemRecovery());
+    } else if (provider == backupProviders[3]) {
+      debugPrint('Selected provider: ${provider.name}, not supported yet');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<OnboardingBloc, OnboardingState>(
-      listenWhen: (previous, current) =>
-          previous.onboardingStepStatus != current.onboardingStepStatus,
-      listener: (context, state) => state.onboardingStepStatus.when(
-        loading: () => {},
-        success: () => {
-          if (!state.backupInfo.isCorrupted)
-            {
-              context.pushNamed(
-                OnboardingSubroute.retrievedBackupInfo.name,
-                extra: state.backupInfo,
-              ),
-            },
-        },
-        none: () => {},
-        error: debugPrint,
-      ),
-      builder: (context, state) => Scaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            onBack: () => context.pop(),
-            title: 'Recover Wallet',
-          ),
-        ),
-        body: state.onboardingStepStatus == const OnboardingStepStatus.loading()
-            ? Center(
-                child: CircularProgressIndicator(
-                  color: context.colour.primary,
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    for (final provider in backupProviders) ...[
-                      _ProviderTile(
-                        provider: provider,
-                        onTap: () => _handleProviderTap(context, provider),
-                      ),
-                      if (provider != backupProviders.last) const Gap(16),
-                    ],
-                  ],
-                ),
-              ),
-      ),
-    );
-  }
-}
-
-class _ProviderTile extends StatefulWidget {
-  final BackupProviderEntity provider;
-  final VoidCallback onTap;
-
-  const _ProviderTile({
-    required this.provider,
-    required this.onTap,
-  });
-
-  @override
-  State<_ProviderTile> createState() => _ProviderTileState();
-}
-
-class _ProviderTileState extends State<_ProviderTile>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _controller;
-  late final Animation<double> _scaleAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 150),
-      vsync: this,
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ScaleTransition(
-      scale: _scaleAnimation,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTapDown: (_) => _controller.forward(),
-          onTapUp: (_) => _controller.reverse(),
-          onTapCancel: () => _controller.reverse(),
-          onTap: () {
-            HapticFeedback.lightImpact();
-            widget.onTap();
-          },
-          borderRadius: BorderRadius.circular(8),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: context.colour.onPrimary,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 48,
-                    height: 48,
-                    child: Image.asset(
-                      widget.provider.iconPath,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const Gap(12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocBuilder<OnboardingBloc, OnboardingState>(
+      builder: (context, state) {
+        return state.onboardingStepStatus.when(
+          none: () => _buildScaffold(context),
+          loading: () {
+            return Scaffold(
+              backgroundColor: context.colour.onSecondary,
+              body: ProgressScreen(
+                title: "You will need to sign-in to Google Drive",
+                description:
+                    "Google will ask you to share personal information with this app.",
+                isLoading: true,
+                extras: [
+                  Text.rich(
+                    TextSpan(
                       children: [
-                        BBText(
-                          widget.provider.name,
+                        TextSpan(
+                          text: "This information ",
                           style: context.font.headlineMedium,
                         ),
-                        const Gap(10),
-                        OptionsTag(text: widget.provider.description),
+                        TextSpan(
+                          text: "will not ",
+                          style: context.font.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "leave your phone and is ",
+                          style: context.font.headlineMedium,
+                        ),
+                        TextSpan(
+                          text: "never ",
+                          style: context.font.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextSpan(
+                          text: "shared with Bull Bitcoin.",
+                          style: context.font.headlineMedium,
+                        ),
                       ],
                     ),
-                  ),
-                  const Gap(8),
-                  Icon(
-                    Icons.arrow_forward,
-                    color: context.colour.secondary,
+                    textAlign: TextAlign.center,
                   ),
                 ],
               ),
-            ),
-          ),
+            );
+          },
+          success: () {
+            if (!state.backupInfo.isCorrupted) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                context.pushNamed(
+                  OnboardingSubroute.retrievedBackupInfo.name,
+                  extra: state.backupInfo,
+                );
+              });
+            }
+            return _buildScaffold(context);
+          },
+          error: (message) => _buildScaffold(context),
+        );
+      },
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          onBack: () => context.pop(),
+          title: 'Recover Wallet',
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: VaultLocations(
+          onProviderSelected: (provider) =>
+              _handleProviderTap(context, provider),
         ),
       ),
     );
