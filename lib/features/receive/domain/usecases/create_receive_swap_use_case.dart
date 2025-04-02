@@ -32,6 +32,9 @@ class CreateReceiveSwapUsecase {
     String? description,
   }) async {
     try {
+      final descriptionText =
+          description?.isEmpty ?? true ? 'No Description' : description;
+
       final wallet = await _walletManager.getWallet(walletId);
       if (wallet == null) {
         throw Exception('Wallet not found');
@@ -89,7 +92,7 @@ class CreateReceiveSwapUsecase {
             mnemonic: mnemonic,
             electrumUrl: btcElectrumUrl,
             claimAddress: claimAddress.address,
-            description: description,
+            description: descriptionText,
           );
 
         case SwapType.lightningToLiquid:
@@ -100,7 +103,7 @@ class CreateReceiveSwapUsecase {
             mnemonic: mnemonic,
             electrumUrl: lbtcElectrumUrl,
             claimAddress: claimAddress.address,
-            description: description,
+            description: descriptionText,
           );
         default:
           throw Exception(
