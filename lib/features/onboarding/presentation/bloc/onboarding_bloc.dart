@@ -68,6 +68,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     debugPrint('Error: $error');
     emit(
       state.copyWith(
+        onboardingStepStatus: OnboardingStepStatus.none,
         statusError: error,
       ),
     );
