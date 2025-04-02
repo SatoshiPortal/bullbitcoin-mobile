@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/ui/components/loading/status_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
