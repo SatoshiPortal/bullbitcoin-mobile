@@ -17,7 +17,6 @@ part 'key_server_state.dart';
 
 //TODO; Re-initalie tor connection check on all keyserver operations
 class KeyServerCubit extends Cubit<KeyServerState> {
-  static const pinMax = 8;
   static const maxRetries = 2;
   static const retryDelay = Duration(seconds: 4);
 
@@ -115,7 +114,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }
 
   void enterKey(String value) {
-    if (state.password.length >= pinMax) return;
     updateKeyServerState(
       password: state.authInputType == AuthInputType.pin
           ? state.password + value
