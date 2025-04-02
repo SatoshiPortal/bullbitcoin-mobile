@@ -366,7 +366,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
             final result = await operation();
             emit(
               state.copyWith(
-                status: const KeyServerOperationStatus.success(),
                 torStatus: TorStatus.online,
               ),
             );
