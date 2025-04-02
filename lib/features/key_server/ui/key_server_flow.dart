@@ -70,7 +70,6 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
         ],
         child: Builder(
           builder: (context) {
-            print("Builder triggered");
             final keyState = context.watch<KeyServerCubit>().state;
             final onBoardingState = context.watch<OnboardingBloc>().state;
             final testState = context.watch<TestWalletBackupBloc>().state;
