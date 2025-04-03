@@ -17,13 +17,6 @@ enum OnboardingStepStatus {
 enum OnboardingStep { splash, create, recover }
 
 @freezed
-class VaultProvider with _$VaultProvider {
-  const factory VaultProvider.googleDrive() = GoogleDrive;
-  const factory VaultProvider.iCloud() = ICloud;
-  const factory VaultProvider.fileSystem(String fileAsString) = FileSystem;
-}
-
-@freezed
 sealed class OnboardingState with _$OnboardingState {
   const factory OnboardingState({
     @Default(OnboardingStep.splash) OnboardingStep step,

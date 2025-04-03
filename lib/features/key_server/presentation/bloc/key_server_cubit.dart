@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/check_key_server_connection_usecase.dart';
@@ -16,7 +17,6 @@ part 'key_server_state.dart';
 
 //TODO; Re-initalie tor connection check on all keyserver operations
 class KeyServerCubit extends Cubit<KeyServerState> {
-  static const pinMax = 8;
   static const maxRetries = 2;
   static const retryDelay = Duration(seconds: 4);
 
@@ -45,10 +45,25 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }
 
   Future<void> checkConnection() async {
-    await _handleServerOperation(
-      checkServerConnectionUsecase.execute,
-      'Check Connection',
-    );
+    if (state.torStatus == TorStatus.connecting) {
+      return;
+    }
+
+    try {
+      await _handleServerOperation(
+        checkServerConnectionUsecase.execute,
+        'Check Connection',
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          torStatus: TorStatus.offline,
+          status: const KeyServerOperationStatus.failure(
+            message: 'Connection failed. Please check Tor status.',
+          ),
+        ),
+      );
+    }
   }
 
   void clearError() =>
@@ -114,7 +129,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }
 
   void enterKey(String value) {
-    if (state.password.length >= pinMax) return;
     updateKeyServerState(
       password: state.authInputType == AuthInputType.pin
           ? state.password + value
@@ -365,7 +379,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
             final result = await operation();
             emit(
               state.copyWith(
-                status: const KeyServerOperationStatus.success(),
                 torStatus: TorStatus.online,
               ),
             );
@@ -373,6 +386,11 @@ class KeyServerCubit extends Cubit<KeyServerState> {
           } catch (e) {
             final isLastAttempt = attempt == maxRetries - 1;
             if (isLastAttempt) {
+              emit(
+                state.copyWith(
+                  torStatus: TorStatus.offline,
+                ),
+              );
               throw const KeyServerError.failedToConnect();
             }
             await Future.delayed(retryDelay);

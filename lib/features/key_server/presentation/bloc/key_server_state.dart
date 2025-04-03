@@ -1,26 +1,6 @@
 part of 'key_server_cubit.dart';
 
 // TODO; movethis enum to core
-enum CurrentKeyServerFlow {
-  enter,
-  confirm,
-  recovery,
-  recoveryWithBackupKey,
-  delete;
-
-  static CurrentKeyServerFlow fromString(String value) {
-    return CurrentKeyServerFlow.values.firstWhere(
-      (element) => element.name.toLowerCase() == value.toLowerCase(),
-      orElse: () => CurrentKeyServerFlow.enter,
-    );
-  }
-}
-
-enum AuthInputType { pin, password, backupKey }
-
-enum SecretStatus { initial, stored, recovered, deleted }
-
-enum TorStatus { online, offline, connecting, disconnecting }
 
 @freezed
 sealed class KeyServerOperationStatus with _$KeyServerOperationStatus {
@@ -34,7 +14,7 @@ sealed class KeyServerOperationStatus with _$KeyServerOperationStatus {
 @freezed
 class KeyServerState with _$KeyServerState {
   const factory KeyServerState({
-    @Default(TorStatus.online) TorStatus torStatus,
+    @Default(TorStatus.offline) TorStatus torStatus,
     @Default(CurrentKeyServerFlow.enter) CurrentKeyServerFlow currentFlow,
     @Default(AuthInputType.pin) AuthInputType authInputType,
     @Default(SecretStatus.initial) SecretStatus secretStatus,

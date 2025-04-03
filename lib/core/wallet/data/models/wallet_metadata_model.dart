@@ -14,7 +14,6 @@ class WalletMetadataModel with _$WalletMetadataModel {
     required bool isLiquid,
     required bool isMainnet,
     required bool isTestnet,
-    @Default(false) bool isTorEnabledOnStartup,
     @Default(false) bool isEncryptedVaultTested,
     @Default(false) bool isPhysicalBackupTested,
     int? lastestEncryptedBackup,
@@ -49,7 +48,6 @@ class WalletMetadataModel with _$WalletMetadataModel {
       isTestnet: entity.network.isTestnet,
       scriptType: entity.scriptType.name,
       xpub: entity.xpub,
-      isTorEnabledOnStartup: entity.isTorEnabledOnStartup,
       isEncryptedVaultTested: entity.isEncryptedVaultTested,
       isPhysicalBackupTested: entity.isPhysicalBackupTested,
       lastestEncryptedBackup:
@@ -73,7 +71,6 @@ class WalletMetadataModel with _$WalletMetadataModel {
         isTestnet: isTestnet,
         isLiquid: isLiquid,
       ),
-      isTorEnabledOnStartup: isTorEnabledOnStartup,
       isEncryptedVaultTested: isEncryptedVaultTested,
       isPhysicalBackupTested: isPhysicalBackupTested,
       lastestEncryptedBackup: lastestEncryptedBackup != null

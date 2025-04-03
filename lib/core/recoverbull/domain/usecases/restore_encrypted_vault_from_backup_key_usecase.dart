@@ -66,7 +66,6 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
       final recoveredWallet = await walletMetadataRepository.getDefault();
       walletMetadataRepository.store(
         recoveredWallet.copyWith(
-          isTorEnabledOnStartup: metadata.isTorEnabledOnStartup,
           isEncryptedVaultTested: true,
           isPhysicalBackupTested: metadata.isPhysicalBackupTested,
           lastestEncryptedBackup: metadata.lastestEncryptedBackup,
