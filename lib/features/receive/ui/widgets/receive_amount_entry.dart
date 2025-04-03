@@ -20,7 +20,12 @@ class ReceiveAmountEntry extends StatelessWidget {
     final amountEquivalent = context.select<ReceiveBloc, String>(
       (bloc) => bloc.state.formattedAmountInputEquivalent,
     );
-
+    final isBelowSwapLimit = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state.swapAmountBelowLimit,
+    );
+    final isAboveSwapLimit = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state.swapAmountAboveLimit,
+    );
     return PriceInput(
       amount: amount,
       currency: inputCurrency,
@@ -34,6 +39,11 @@ class ReceiveAmountEntry extends StatelessWidget {
             .read<ReceiveBloc>()
             .add(ReceiveAmountCurrencyChanged(currencyCode));
       },
+      error: isBelowSwapLimit
+          ? 'Amount below swap limit'
+          : isAboveSwapLimit
+              ? 'Amount above swap limit'
+              : null,
     );
   }
 }

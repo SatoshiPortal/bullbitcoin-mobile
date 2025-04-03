@@ -248,6 +248,25 @@ class ReceiveState with _$ReceiveState {
     return false;
   }
 
+  bool get isLightning => type == ReceiveType.lightning;
+
+  bool get swapAmountBelowLimit {
+    if (isLightning && inputAmount.isNotEmpty) {
+      return swapLimits != null && inputAmountSat.toInt() < swapLimits!.min;
+    }
+    return false;
+  }
+
+  bool get swapAmountAboveLimit {
+    if (isLightning) {
+      return swapLimits != null && inputAmountSat.toInt() > swapLimits!.max;
+    }
+    return false;
+  }
+
+  bool get isAmountValid =>
+      inputAmount.isEmpty || swapAmountBelowLimit || swapAmountAboveLimit;
+
   LnReceiveSwap? get getSwap {
     if (type == ReceiveType.lightning) {
       return lightningSwap;

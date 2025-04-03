@@ -15,27 +15,6 @@ class ReceiveAmountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     forceMaterialTransparency: true,
-    //     automaticallyImplyLeading: false,
-    //     flexibleSpace: TopBar(
-    //       title: 'Receive',
-    //       onBack: () {
-    //         if (context.canPop()) {
-    //           context.pop();
-    //         } else {
-    //           context.goNamed(AppRoute.home.name);
-    //         }
-    //       },
-    //     ),
-    //   ),
-    //   body: SingleChildScrollView(
-    //     child: AmountPage(onContinueNavigation: onContinueNavigation),
-    //     // child: AmountPage(),
-    //   ),
-    // );
-
     return AmountPage(onContinueNavigation: onContinueNavigation);
   }
 }
@@ -56,11 +35,11 @@ class AmountPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Gap(82),
+              Gap(64),
               ReceiveAmountEntry(),
-              Gap(82),
+              Gap(64),
               ReceiveNumberPad(),
-              Gap(82),
+              Gap(64),
             ],
           ),
         ),
@@ -109,7 +88,7 @@ class ReceiveAmountContinueButton extends StatelessWidget {
             context.pop();
           }
         },
-        disabled: context.watch<ReceiveBloc>().state.inputAmount.isEmpty,
+        disabled: context.watch<ReceiveBloc>().state.isAmountValid,
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
       ),

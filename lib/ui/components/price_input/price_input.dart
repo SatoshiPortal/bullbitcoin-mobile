@@ -13,6 +13,7 @@ class PriceInput extends StatelessWidget {
     required this.availableCurrencies,
     required this.onCurrencyChanged,
     required this.onNoteChanged,
+    this.error,
   });
 
   final String amount;
@@ -21,6 +22,7 @@ class PriceInput extends StatelessWidget {
   final List<String> availableCurrencies;
   final Function(String) onCurrencyChanged;
   final Function(String) onNoteChanged;
+  final String? error;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,17 @@ class PriceInput extends StatelessWidget {
 
     return Column(
       children: [
+        // if (error != null) ...[
+        // Padding(
+        // padding: const EdgeInsets.only(bottom: 8),
+        BBText(
+          error ?? '',
+          style: context.font.bodyLarge,
+          color: error != null ? context.colour.error : Colors.transparent,
+        ),
+        // ),
+        // ],
+        const Gap(8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
