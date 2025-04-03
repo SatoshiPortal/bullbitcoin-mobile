@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
@@ -10,16 +9,13 @@ import 'package:flutter/material.dart';
 
 class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
   final PayjoinRepository _payjoin;
-  final ElectrumServerRepository _electrumServer;
   final WalletManagerService _walletManager;
   final StreamController<Payjoin> _payjoinStreamController;
 
   PayjoinWatcherServiceImpl({
     required PayjoinRepository payjoinRepository,
-    required ElectrumServerRepository electrumServerRepository,
     required WalletManagerService walletManagerService,
   })  : _payjoin = payjoinRepository,
-        _electrumServer = electrumServerRepository,
         _walletManager = walletManagerService,
         _payjoinStreamController = StreamController<Payjoin>.broadcast() {
     // Listen to payjoin events from the repository and process them
@@ -94,11 +90,15 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
   }
 
   Future<void> _processPayjoinProposal(PayjoinSender payjoin) async {
-    final walletId = payjoin.walletId;
     final proposalPsbt = payjoin.proposalPsbt;
-    // Get the correct network from the wallet metadata using the walletId from
-    //  the payjoin to be able to get the correct Electrum server to broadcast
-    //  the transaction.
+
+    if (proposalPsbt == null) {
+      return;
+    }
+
+    // Get the correct network from the wallet of the payjoin to make sure the
+    //  tx is broadcasted on the correct network.
+    final walletId = payjoin.walletId;
     final wallet = await _walletManager.getWallet(walletId);
     if (wallet == null) {
       debugPrint('Wallet not found for id: $walletId');
@@ -106,12 +106,6 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
       return;
     }
     final network = wallet.network;
-    final electrumServer =
-        await _electrumServer.getElectrumServer(network: network);
-
-    if (proposalPsbt == null) {
-      return;
-    }
 
     try {
       final psbt = await Transaction.fromPsbtBase64(proposalPsbt);
@@ -122,7 +116,7 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
       final processedPayjoin = await _payjoin.broadcastPsbt(
         payjoinId: payjoin.id,
         finalizedPsbt: finalizedPsbt.toPsbtBase64(),
-        electrumServer: electrumServer,
+        network: network,
       );
 
       _payjoinStreamController.add(processedPayjoin);
@@ -137,9 +131,15 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
       debugPrint(
         'Broadcasting original transaction for payjoin: ${payjoin.id}',
       );
-      // Get the correct network from the wallet metadata using the walletId from
-      //  the payjoin to be able to get the correct Electrum server to broadcast
-      //  the transaction.
+
+      if (payjoin.originalTxBytes == null) {
+        debugPrint(
+            'No original transaction bytes to broadcast found for payjoin:'
+            ' ${payjoin.id}');
+        return;
+      }
+      // Get the network from the wallet of the payjoin to make sure the
+      //  tx is broadcasted on the correct network.
       final wallet = await _walletManager.getWallet(payjoin.walletId);
       if (wallet == null) {
         debugPrint('Wallet not found for id: ${payjoin.walletId}');
@@ -147,20 +147,11 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
         return;
       }
       final network = wallet.network;
-      final electrumServer =
-          await _electrumServer.getElectrumServer(network: network);
 
-      // Broadcast the original transaction using the Electrum server
-      if (payjoin.originalTxBytes == null) {
-        debugPrint(
-            'No original transaction bytes to broadcast found for payjoin:'
-            ' ${payjoin.id}');
-        return;
-      }
       final processedPayjoin = await _payjoin.broadcastOriginalTransaction(
         payjoinId: payjoin.id,
         originalTxBytes: payjoin.originalTxBytes!,
-        electrumServer: electrumServer,
+        network: network,
       );
       _payjoinStreamController.add(processedPayjoin);
     } catch (e) {

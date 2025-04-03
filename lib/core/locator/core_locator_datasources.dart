@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
+import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/file_storage_datasource.dart';
@@ -82,8 +85,6 @@ Future<void> registerDatasources() async {
     ),
   );
 
-  // Repositories
-  // Register TorRepository right after TorDatasource
   // - Google Drive Datasource
   locator.registerLazySingleton<GoogleDriveAppDatasource>(
     () => GoogleDriveAppDatasource(),
@@ -95,9 +96,31 @@ Future<void> registerDatasources() async {
       address: Uri.parse(ApiServiceConstants.bullBitcoinKeyServerApiUrlPath),
     ),
   );
-  // - FileStorageDataSource
 
+  // - FileStorageDataSource
   locator.registerLazySingleton<FileStorageDatasource>(
     () => FileStorageDatasource(filePicker: FilePicker.platform),
+  );
+
+  // Electrum Server Datasource
+  final electrumServersBox =
+      await Hive.openBox<String>(HiveBoxNameConstants.electrumServers);
+  locator.registerLazySingleton<ElectrumServerStorageDatasource>(
+    () => ElectrumServerStorageDatasource(
+      electrumServerStorage:
+          HiveStorageDatasourceImpl<String>(electrumServersBox),
+    ),
+  );
+
+  // Blockchain datasources
+  locator.registerLazySingleton<LiquidBlockchainDatasource>(
+    () => const LwkLiquidBlockchainDatasource(),
+    instanceName:
+        LocatorInstanceNameConstants.lwkLiquidBlockchainDatasourceInstanceName,
+  );
+  locator.registerLazySingleton<BitcoinBlockchainDatasource>(
+    () => const BdkBitcoinBlockchainDatasource(),
+    instanceName:
+        LocatorInstanceNameConstants.bdkBitcoinBlockchainDatasourceInstanceName,
   );
 }

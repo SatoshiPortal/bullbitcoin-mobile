@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -112,7 +113,7 @@ void main() {
       late Completer<bool> payjoinSenderCompletedEvent;
       late Completer<bool> payjoinReceiverExpiredEvent;
 
-      setUp(() async {
+      setUp(() {
         payjoinReceiverProposedEvent = Completer();
         payjoinSenderCompletedEvent = Completer();
         payjoinReceiverExpiredEvent = Completer();
@@ -161,8 +162,8 @@ void main() {
         final originalPsbt = await buildTransactionUsecase.execute(
           walletId: senderWallet.id,
           address: address.address,
-          amountSat: BigInt.from(1000),
-          feeRateSatPerVb: networkFeesSatPerVb,
+          amountSat: 1000,
+          networkFee: const NetworkFee.relative(networkFeesSatPerVb),
         );
 
         final payjoinSender = await sendWithPayjoinUsecase.execute(
@@ -264,7 +265,7 @@ void main() {
       final Map<String, Completer<bool>> payjoinCompleters = {};
       late StreamSubscription<Payjoin> payjoinSubscription;
 
-      setUp(() async {
+      setUp(() {
         payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
           debugPrint('Payjoin event for ${payjoin.id}: ${payjoin.status}');
           switch (payjoin) {
@@ -354,8 +355,8 @@ void main() {
               final originalPsbt = await buildTransactionUsecase.execute(
                 walletId: senderWallet.id,
                 address: receiverAddresses[i],
-                amountSat: BigInt.from(1000),
-                feeRateSatPerVb: networkFeesSatPerVb,
+                amountSat: 1000,
+                networkFee: const NetworkFee.relative(networkFeesSatPerVb),
               );
 
               final payjoinSender = await sendWithPayjoinUsecase.execute(
