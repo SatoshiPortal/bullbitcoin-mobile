@@ -2,7 +2,6 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:dio/dio.dart';
 
-/// Data source for fetching fee estimates
 class FeesDatasource {
   final Dio _http;
   final String _baseUrl;
@@ -25,8 +24,6 @@ class FeesDatasource {
     }
     final data = resp.data as Map<String, dynamic>;
     final fastestFee = data['fastestFee'] as int;
-    // final halfHourFee = data['halfHourFee'] as int;
-    // final hourFee = data['hourFee'] as int;
     final economyFee = data['economyFee'] as int;
     final minimumFee = data['minimumFee'] as int;
 
