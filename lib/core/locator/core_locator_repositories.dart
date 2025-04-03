@@ -1,3 +1,9 @@
+import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
+import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository_impl.dart';
+import 'package:bb_mobile/core/blockchain/data/repository/liquid_blockchain_repository_impl.dart';
+import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
@@ -112,6 +118,26 @@ Future<void> registerRepositories() async {
   locator.registerLazySingleton<PayjoinRepository>(
     () => PayjoinRepositoryImpl(
       payjoinDatasource: pdkPayjoinDataSource,
+      blockchainDatasource: locator<BitcoinBlockchainDatasource>(),
+      electrumServerDatasource: locator<ElectrumServerDatasource>(),
+    ),
+  );
+  locator.registerLazySingleton<LiquidBlockchainRepository>(
+    () => LiquidBlockchainRepositoryImpl(
+      blockchainDatasource: locator<LiquidBlockchainDatasource>(
+        instanceName: LocatorInstanceNameConstants
+            .lwkLiquidBlockchainDatasourceInstanceName,
+      ),
+      electrumServerDatasource: locator<ElectrumServerDatasource>(),
+    ),
+  );
+  locator.registerLazySingleton<BitcoinBlockchainRepository>(
+    () => BitcoinBlockchainRepositoryImpl(
+      blockchainDatasource: locator<BitcoinBlockchainDatasource>(
+        instanceName: LocatorInstanceNameConstants
+            .bdkBitcoinBlockchainDatasourceInstanceName,
+      ),
+      electrumServerDatasource: locator<ElectrumServerDatasource>(),
     ),
   );
   locator.registerLazySingleton<SwapRepository>(

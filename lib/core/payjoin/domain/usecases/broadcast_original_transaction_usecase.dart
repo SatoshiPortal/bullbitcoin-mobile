@@ -1,19 +1,15 @@
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
 
 class BroadcastOriginalTransactionUsecase {
   final PayjoinRepository _payjoin;
-  final ElectrumServerRepository _electrumServerRepository;
   final WalletMetadataRepository _walletMetadataRepository;
 
   BroadcastOriginalTransactionUsecase({
     required PayjoinRepository payjoinRepository,
-    required ElectrumServerRepository electrumServerRepository,
     required WalletMetadataRepository walletMetadataRepository,
   })  : _payjoin = payjoinRepository,
-        _electrumServerRepository = electrumServerRepository,
         _walletMetadataRepository = walletMetadataRepository;
 
   Future<PayjoinReceiver> execute(PayjoinReceiver payjoin) async {
@@ -25,9 +21,8 @@ class BroadcastOriginalTransactionUsecase {
         );
       }
 
-      // Get the network from the wallet metadata using the walletId from the
-      //  payjoin to be able to get the correct Electrum server to broadcast the
-      //  transaction.
+      // Get the network from the wallet metadata to make sure we are
+      // broadcasting the transaction to the correct network.
       final walletMetadata = await _walletMetadataRepository.get(
         payjoin.walletId,
       );
@@ -39,15 +34,12 @@ class BroadcastOriginalTransactionUsecase {
       }
 
       final network = walletMetadata.network;
-      final electrumServer = await _electrumServerRepository.getElectrumServer(
-        network: network,
-      );
 
       // Broadcast the original transaction using the Electrum server
       return await _payjoin.broadcastOriginalTransaction(
         payjoinId: payjoin.id,
         originalTxBytes: payjoin.originalTxBytes!,
-        electrumServer: electrumServer,
+        network: network,
       );
     } catch (e) {
       throw BroadcastOriginalTransactionException('$e');

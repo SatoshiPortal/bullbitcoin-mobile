@@ -1,0 +1,64 @@
+import 'dart:typed_data';
+
+import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+
+abstract class BitcoinBlockchainDatasource {
+  Future<String> broadcastPsbt(
+    String finalizedPsbt, {
+    required ElectrumServerModel electrumServer,
+  });
+
+  Future<String> broadcastTransaction(
+    Uint8List transaction, {
+    required ElectrumServerModel electrumServer,
+  });
+}
+
+class BdkBitcoinBlockchainDatasource implements BitcoinBlockchainDatasource {
+  const BdkBitcoinBlockchainDatasource();
+
+  Future<bdk.Blockchain> _createBlockchainFromElectrumServer(
+    ElectrumServerModel electrumServer,
+  ) async {
+    final blockchain = await bdk.Blockchain.create(
+      config: bdk.BlockchainConfig.electrum(
+        config: bdk.ElectrumConfig(
+          url: electrumServer.url,
+          socks5: electrumServer.socks5,
+          retry: electrumServer.retry,
+          timeout: electrumServer.timeout,
+          stopGap: BigInt.from(electrumServer.stopGap),
+          validateDomain: electrumServer.validateDomain,
+        ),
+      ),
+    );
+
+    return blockchain;
+  }
+
+  @override
+  Future<String> broadcastPsbt(
+    String finalizedPsbt, {
+    required ElectrumServerModel electrumServer,
+  }) async {
+    final blockchain =
+        await _createBlockchainFromElectrumServer(electrumServer);
+    final psbt = await bdk.PartiallySignedTransaction.fromString(finalizedPsbt);
+    final tx = psbt.extractTx();
+    final txId = await blockchain.broadcast(transaction: tx);
+    return txId;
+  }
+
+  @override
+  Future<String> broadcastTransaction(
+    Uint8List transaction, {
+    required ElectrumServerModel electrumServer,
+  }) async {
+    final blockchain =
+        await _createBlockchainFromElectrumServer(electrumServer);
+    final tx = await bdk.Transaction.fromBytes(transactionBytes: transaction);
+    final txId = await blockchain.broadcast(transaction: tx);
+    return txId;
+  }
+}

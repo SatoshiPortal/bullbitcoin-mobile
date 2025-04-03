@@ -1,4 +1,7 @@
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
@@ -197,9 +200,18 @@ Future<void> registerUsecases() async {
       ),
     ),
   );
+  locator.registerFactory<BroadcastLiquidTransactionUsecase>(
+    () => BroadcastLiquidTransactionUsecase(
+      liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
+    ),
+  );
+  locator.registerFactory<BroadcastBitcoinTransactionUsecase>(
+    () => BroadcastBitcoinTransactionUsecase(
+      bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
+    ),
+  );
   locator.registerFactory<BroadcastOriginalTransactionUsecase>(
     () => BroadcastOriginalTransactionUsecase(
-      electrumServerRepository: locator<ElectrumServerRepository>(),
       walletMetadataRepository: locator<WalletMetadataRepository>(),
       payjoinRepository: locator<PayjoinRepository>(),
     ),

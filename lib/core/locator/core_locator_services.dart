@@ -55,7 +55,6 @@ Future<void> registerServices() async {
   locator.registerLazySingleton<PayjoinWatcherService>(
     () => PayjoinWatcherServiceImpl(
       payjoinRepository: locator<PayjoinRepository>(),
-      electrumServerRepository: locator<ElectrumServerRepository>(),
       walletManagerService: locator<WalletManagerService>(),
     ),
   );

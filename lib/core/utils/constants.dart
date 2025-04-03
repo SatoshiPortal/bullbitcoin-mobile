@@ -88,4 +88,8 @@ class LocatorInstanceNameConstants {
       'labelsHiveStorageDatasource';
   static const String labelByRefHiveStorageDatasourceInstanceName =
       'labelByRefHiveStorageDatasource';
+  static const String lwkLiquidBlockchainDatasourceInstanceName =
+      'lwkLiquidBlockchainDatasourceInstanceName';
+  static const String bdkBitcoinBlockchainDatasourceInstanceName =
+      'bdkBitcoinBlockchainDatasourceInstanceName';
 }

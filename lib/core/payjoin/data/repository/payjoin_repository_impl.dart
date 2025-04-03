@@ -1,8 +1,7 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/bitcoin/data/datasources/bitcoin_blockchain_datasource.dart';
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
+import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
@@ -11,18 +10,25 @@ import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.da
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final PayjoinDatasource _source;
+  final BitcoinBlockchainDatasource _blockchain;
+  final ElectrumServerDatasource _electrumServer;
   // Lock to prevent the same utxo from being used in multiple payjoin proposals
   final Lock _lock;
 
   PayjoinRepositoryImpl({
     required PayjoinDatasource payjoinDatasource,
+    required BitcoinBlockchainDatasource blockchainDatasource,
+    required ElectrumServerDatasource electrumServerDatasource,
   })  : _source = payjoinDatasource,
+        _blockchain = blockchainDatasource,
+        _electrumServer = electrumServerDatasource,
         _lock = Lock();
 
   @override
@@ -183,13 +189,18 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<PayjoinSender> broadcastPsbt({
     required String payjoinId,
     required String finalizedPsbt,
-    required ElectrumServer electrumServer,
+    required Network network,
   }) async {
-    final blockchain = await BitcoinBlockchainDatasource.fromElectrumServer(
-      ElectrumServerModel.fromEntity(electrumServer),
-    );
+    final electrumServer = await _electrumServer.get(network: network);
 
-    final txId = await blockchain.broadcastPsbt(finalizedPsbt);
+    if (electrumServer == null) {
+      throw Exception('No electrum server found for network: $network');
+    }
+
+    final txId = await _blockchain.broadcastPsbt(
+      finalizedPsbt,
+      electrumServer: electrumServer,
+    );
 
     final model = await _source.completeSender(
       payjoinId,
@@ -203,13 +214,18 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<PayjoinReceiver> broadcastOriginalTransaction({
     required String payjoinId,
     required Uint8List originalTxBytes,
-    required ElectrumServer electrumServer,
+    required Network network,
   }) async {
-    final blockchain = await BitcoinBlockchainDatasource.fromElectrumServer(
-      ElectrumServerModel.fromEntity(electrumServer),
-    );
+    final electrumServer = await _electrumServer.get(network: network);
 
-    final txId = await blockchain.broadcastTransaction(originalTxBytes);
+    if (electrumServer == null) {
+      throw Exception('No electrum server found for network: $network');
+    }
+
+    final txId = await _blockchain.broadcastTransaction(
+      originalTxBytes,
+      electrumServer: electrumServer,
+    );
 
     final model = await _source.completeReceiver(
       payjoinId,
