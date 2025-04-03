@@ -35,6 +35,7 @@ import 'package:bb_mobile/core/settings/domain/usecases/get_hide_amounts_usecase
 import 'package:bb_mobile/core/settings/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/repositories/tor_repository.dart';
@@ -230,6 +231,21 @@ Future<void> registerUsecases() async {
       ),
     ),
   );
+
+  // Register GetSwapLimitsUsecase with mainnet and testnet repositories
+  locator.registerFactory<GetSwapLimitsUsecase>(
+    () => GetSwapLimitsUsecase(
+      mainnetSwapRepository: locator<SwapRepository>(
+        instanceName:
+            LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+      ),
+      testnetSwapRepository: locator<SwapRepository>(
+        instanceName:
+            LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
+      ),
+    ),
+  );
+
   locator.registerFactory<CreateLabelUsecase>(
     () => CreateLabelUsecase(
       labelRepository: locator<LabelRepository>(),

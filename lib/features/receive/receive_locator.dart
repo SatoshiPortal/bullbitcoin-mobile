@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/settings/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
@@ -61,6 +62,7 @@ class ReceiveLocator {
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
         createLabelUsecase: locator<CreateLabelUsecase>(),
+        getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
         wallet: wallet,
       ),
     );

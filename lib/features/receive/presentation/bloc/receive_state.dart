@@ -20,6 +20,7 @@ class ReceiveState with _$ReceiveState {
     BigInt? confirmedAmountSat,
     @Default('') String bitcoinAddress,
     LnReceiveSwap? lightningSwap,
+    SwapLimits? swapLimits,
     @Default('') String liquidAddress,
     @Default('') String note,
     PayjoinReceiver? payjoin,
@@ -37,6 +38,7 @@ class ReceiveState with _$ReceiveState {
     ];
   }
 
+  bool get swapLimitsFetched => swapLimits != null;
   bool get isInputAmountFiat => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
       .contains(inputAmountCurrencyCode);
 

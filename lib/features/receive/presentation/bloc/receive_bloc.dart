@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/settings/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
@@ -43,6 +44,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required WatchPayjoinUsecase watchPayjoinUsecase,
     required WatchSwapUsecase watchSwapUsecase,
     required CreateLabelUsecase createLabelUsecase,
+    required GetSwapLimitsUsecase getSwapLimitsUsecase,
     Wallet? wallet,
   })  : _getWalletsUsecase = getWalletsUsecase,
         _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
@@ -58,6 +60,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         _watchPayjoinUsecase = watchPayjoinUsecase,
         _watchSwapUsecase = watchSwapUsecase,
         _createLabelUsecase = createLabelUsecase,
+        _getSwapLimitsUsecase = getSwapLimitsUsecase,
         _wallet = wallet,
         // Lightning is the default when pressing the receive button on the home screen
         super(const ReceiveState()) {
@@ -89,6 +92,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final CreateLabelUsecase _createLabelUsecase;
+  final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final Wallet? _wallet;
   StreamSubscription<Payjoin>? _payjoinSubscription;
   StreamSubscription<Swap>? _swapSubscription;
@@ -184,7 +188,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           onlyLiquid: true,
           onlyDefaults: true,
         );
-
         wallet = wallets.first;
       }
 
@@ -194,6 +197,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         _convertSatsToCurrencyAmountUsecase.execute(),
         _getAvailableCurrenciesUsecase.execute(),
       ]);
+      final swapLimits = await _getSwapLimitsUsecase.execute(
+        type: SwapType.lightningToLiquid,
+        isTestnet: wallet.network.isTestnet,
+      );
 
       final bitcoinUnit = currencyValues[0] as BitcoinUnit;
       final fiatCurrency = currencyValues[1] as String;
@@ -207,6 +214,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           fiatCurrencyCode: fiatCurrency,
           exchangeRate: exchangeRate,
           bitcoinUnit: bitcoinUnit,
+          swapLimits: swapLimits,
           // Start entering the amount in bitcoin
           inputAmountCurrencyCode: bitcoinUnit.code,
         ),
@@ -375,6 +383,26 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       LnReceiveSwap? swap;
       Object? error;
       try {
+        // TODO: These errors should be in sats/btc based on the users
+        //  bitcoin unit settings
+        if (confirmedAmountSat.toInt() < state.swapLimits!.min) {
+          emit(
+            state.copyWith(
+              error: Exception(
+                'Minimum Swap Amount: ${state.swapLimits!.min} sats',
+              ),
+            ),
+          );
+        }
+        if (confirmedAmountSat.toInt() < state.swapLimits!.max) {
+          emit(
+            state.copyWith(
+              error: Exception(
+                'Maximum Swap Amount: ${state.swapLimits!.max} sats',
+              ),
+            ),
+          );
+        }
         swap = await _createReceiveSwapUsecase.execute(
           walletId: state.wallet!.id,
           type: SwapType.lightningToLiquid,
