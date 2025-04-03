@@ -57,7 +57,7 @@ abstract class WalletManagerService {
   Future<Transaction> buildUnsigned({
     required String walletId,
     required String address,
-    required MinerFee networkFee,
+    required NetworkFee networkFee,
     int? amountSat,
     List<TxInput>? unspendableInputs,
     bool? drain,

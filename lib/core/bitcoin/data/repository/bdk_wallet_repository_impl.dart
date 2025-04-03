@@ -228,7 +228,7 @@ class BdkWalletRepositoryImpl
   @override
   Future<Transaction> buildUnsigned({
     required String address,
-    required MinerFee networkFee,
+    required NetworkFee networkFee,
     int? amountSat,
     List<TxInput>? unspendableInputs,
     bool? drain,

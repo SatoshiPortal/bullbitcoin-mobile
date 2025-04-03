@@ -28,9 +28,9 @@ class FeesDatasource {
     final minimumFee = data['minimumFee'] as int;
 
     final feeOptions = FeeOptions(
-      fastest: MinerFee.relative(fastestFee.toDouble()),
-      economic: MinerFee.relative(economyFee.toDouble()),
-      slow: MinerFee.relative(minimumFee.toDouble()),
+      fastest: NetworkFee.relative(fastestFee.toDouble()),
+      economic: NetworkFee.relative(economyFee.toDouble()),
+      slow: NetworkFee.relative(minimumFee.toDouble()),
     );
 
     return feeOptions;
@@ -40,9 +40,9 @@ class FeesDatasource {
     required bool isTestnet,
   }) async {
     const feeOptions = FeeOptions(
-      fastest: MinerFee.relative(0.1),
-      economic: MinerFee.relative(0.1),
-      slow: MinerFee.relative(0.1),
+      fastest: NetworkFee.relative(0.1),
+      economic: NetworkFee.relative(0.1),
+      slow: NetworkFee.relative(0.1),
     );
 
     return feeOptions;

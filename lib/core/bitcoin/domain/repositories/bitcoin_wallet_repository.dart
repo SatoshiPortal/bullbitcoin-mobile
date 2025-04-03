@@ -8,7 +8,7 @@ abstract class BitcoinWalletRepository {
   Future<bool> isMine(Uint8List scriptBytes);
   Future<Transaction> buildUnsigned({
     required String address,
-    required MinerFee networkFee,
+    required NetworkFee networkFee,
     int? amountSat,
     List<TxInput>? unspendableInputs, // Utxos that should not be used
     bool? drain,

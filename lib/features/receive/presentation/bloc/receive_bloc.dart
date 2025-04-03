@@ -123,7 +123,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         _getCurrencyUsecase.execute(),
         _convertSatsToCurrencyAmountUsecase.execute(),
         _getAvailableCurrenciesUsecase.execute(),
-        _getReceiveAddressUsecase.execute(walletId: wallet.id)
+        _getReceiveAddressUsecase.execute(walletId: wallet.id),
       ]);
 
       final bitcoinUnit = futures[0] as BitcoinUnit;
@@ -446,11 +446,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveNewAddressGenerated event,
     Emitter<ReceiveState> emit,
   ) async {
-    emit(state.copyWith(
-      bitcoinAddress: '',
-      liquidAddress: '',
-      payjoin: null,
-    ));
+    emit(
+      state.copyWith(
+        bitcoinAddress: '',
+        liquidAddress: '',
+        payjoin: null,
+      ),
+    );
 
     try {
       if (state.wallet == null) {
@@ -479,11 +481,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             error = e;
           }
 
-          emit(state.copyWith(
-            bitcoinAddress: address.address,
-            payjoin: payjoin,
-            error: error,
-          ));
+          emit(
+            state.copyWith(
+              bitcoinAddress: address.address,
+              payjoin: payjoin,
+              error: error,
+            ),
+          );
 
         case ReceiveType.liquid:
           emit(state.copyWith(liquidAddress: address.address));

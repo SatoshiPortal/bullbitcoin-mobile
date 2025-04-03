@@ -19,7 +19,7 @@ class BuildTransactionUsecase {
   Future<Transaction> execute({
     required String walletId,
     required String address,
-    required MinerFee networkFee,
+    required NetworkFee networkFee,
     int? amountSat,
     bool drain = false,
     bool? ignoreUnspendableInputs,
