@@ -1,19 +1,19 @@
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 
-class GetBitcoinFeesUsecase {
+class GetNetworkFeesUsecase {
   final FeesRepository _feesRepository;
 
-  GetBitcoinFeesUsecase({
+  GetNetworkFeesUsecase({
     required FeesRepository feesRepository,
   }) : _feesRepository = feesRepository;
 
   Future<FeeOptions> execute({
-    required bool isTestnet,
+    required Network network,
   }) async {
-    // Get the fee options for the Bitcoin network
-    return await _feesRepository.getBitcoinNetworkFees(
-      isTestnet: isTestnet,
+    return await _feesRepository.getNetworkFees(
+      network: network,
     );
   }
 }
