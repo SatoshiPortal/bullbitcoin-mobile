@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/labels/data/label_repository.dart';
+import 'package:bb_mobile/core/labels/domain/label_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -12,6 +14,7 @@ class CreateReceiveSwapUsecase {
   final SwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
   final GetReceiveAddressUsecase _getNewAddressUsecase;
+  final LabelRepository _labelRepository;
 
   CreateReceiveSwapUsecase({
     required WalletManagerService walletManager,
@@ -19,11 +22,13 @@ class CreateReceiveSwapUsecase {
     required SwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
     required GetReceiveAddressUsecase getNewAddressUsecase,
+    required LabelRepository labelRepository,
   })  : _walletManager = walletManager,
         _swapRepository = swapRepository,
         _swapRepositoryTestnet = swapRepositoryTestnet,
         _seedRepository = seedRepository,
-        _getNewAddressUsecase = getNewAddressUsecase;
+        _getNewAddressUsecase = getNewAddressUsecase,
+        _labelRepository = labelRepository;
 
   Future<LnReceiveSwap> execute({
     required String walletId,
@@ -32,9 +37,6 @@ class CreateReceiveSwapUsecase {
     String? description,
   }) async {
     try {
-      final descriptionText =
-          description?.isEmpty ?? true ? 'No Description' : description;
-
       final wallet = await _walletManager.getWallet(walletId);
       if (wallet == null) {
         throw Exception('Wallet not found');
@@ -83,6 +85,17 @@ class CreateReceiveSwapUsecase {
         newAddress: true,
       );
 
+      if (description != null || description!.isNotEmpty) {
+        await _labelRepository.createLabel(
+          Label.create(
+            type: LabelType.address,
+            ref: claimAddress.address,
+            label: description,
+            origin: wallet.getOrigin(),
+          ),
+        );
+      }
+
       switch (type) {
         case SwapType.lightningToBitcoin:
           return await swapRepository.createLightningToBitcoinSwap(
@@ -92,7 +105,7 @@ class CreateReceiveSwapUsecase {
             mnemonic: mnemonic,
             electrumUrl: btcElectrumUrl,
             claimAddress: claimAddress.address,
-            description: descriptionText,
+            description: description,
           );
 
         case SwapType.lightningToLiquid:
@@ -103,7 +116,7 @@ class CreateReceiveSwapUsecase {
             mnemonic: mnemonic,
             electrumUrl: lbtcElectrumUrl,
             claimAddress: claimAddress.address,
-            description: descriptionText,
+            description: description,
           );
         default:
           throw Exception(

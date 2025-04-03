@@ -75,6 +75,7 @@ class ReceiveEnterNote extends StatelessWidget {
           BBButton.big(
             label: 'Save',
             onPressed: () {
+              context.read<ReceiveBloc>().add(const ReceiveNoteSaved());
               context.pop();
             },
             bgColor: context.colour.secondary,

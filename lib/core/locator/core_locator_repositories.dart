@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/core/labels/data/label_repository.dart';
+import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
@@ -146,6 +148,12 @@ Future<void> registerRepositories() async {
     ),
     instanceName:
         LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
+  );
+
+  locator.registerLazySingleton<LabelRepository>(
+    () => LabelRepository(
+      labelStorageDatasource: locator<LabelStorageDatasource>(),
+    ),
   );
 
   locator.registerLazySingleton<WordListRepository>(

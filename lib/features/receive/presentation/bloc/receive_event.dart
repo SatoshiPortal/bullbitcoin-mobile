@@ -13,6 +13,7 @@ class ReceiveEvent with _$ReceiveEvent {
   const factory ReceiveEvent.receiveAmountConfirmed() = ReceiveAmountConfirmed;
   const factory ReceiveEvent.receiveNoteChanged(String note) =
       ReceiveNoteChanged;
+  const factory ReceiveEvent.receiveNoteSaved() = ReceiveNoteSaved;
   const factory ReceiveEvent.receiveAddressOnlyToggled(bool isAddressOnly) =
       ReceiveAddressOnlyToggled;
   const factory ReceiveEvent.receiveNewAddressGenerated() =
