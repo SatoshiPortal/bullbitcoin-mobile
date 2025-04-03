@@ -1,5 +1,5 @@
-
 import 'package:bb_mobile/core/bitcoin/data/repository/bdk_wallet_repository_impl.dart';
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
@@ -19,30 +19,49 @@ class BuildTransactionUsecase {
   Future<Transaction> execute({
     required String walletId,
     required String address,
-    BigInt? amountSat,
-    double? feeRateSatPerVb,
-    bool? drain,
+    required MinerFee networkFee,
+    int? amountSat,
+    bool drain = false,
     bool? ignoreUnspendableInputs,
     List<TxInput>? selectableInputs,
     bool replaceByFees = true,
   }) async {
     try {
-      // Inputs that are already used in ongoing payjoin sessions should not be
-      //  used in other transactions.
-      final payjoinInputs = await _payjoin.getInputsFromOngoingPayjoins();
+      if (amountSat == null && drain == false) {
+        throw FailedToBuildTransactionException(
+          'Amount cannot be empty if drain is not true',
+        );
+      }
+      final wallet = await _walletManager.getWallet(walletId);
+      if (wallet == null) {
+        throw FailedToBuildTransactionException('Wallet not found');
+      }
 
-      debugPrint(
-        'Wallet id $walletId building psbt. PayjoinInputs: $payjoinInputs',
-      );
+      final isLiquid = wallet.network.isLiquid;
+      List<TxInput>? unspendableInputs;
+
+      // Only apply Payjoin logic for Bitcoin transactions
+      if (!isLiquid && ignoreUnspendableInputs != true) {
+        // For Bitcoin, check for ongoing Payjoin inputs
+        final payjoinInputs = await _payjoin.getInputsFromOngoingPayjoins();
+        unspendableInputs = payjoinInputs;
+        debugPrint(
+          'Bitcoin wallet id $walletId building psbt. PayjoinInputs: $payjoinInputs',
+        );
+      } else {
+        // For Liquid, ignore Payjoin completely
+        debugPrint(
+          'Liquid wallet id $walletId building psbt. No Payjoin support.',
+        );
+      }
 
       final psbt = await _walletManager.buildUnsigned(
         walletId: walletId,
         address: address,
         amountSat: amountSat,
-        feeRateSatPerVb: feeRateSatPerVb,
+        networkFee: networkFee,
         drain: drain,
-        unspendableInputs:
-            ignoreUnspendableInputs == true ? null : payjoinInputs,
+        unspendableInputs: unspendableInputs,
         selectableInputs: selectableInputs,
         replaceByFees: replaceByFees,
       );

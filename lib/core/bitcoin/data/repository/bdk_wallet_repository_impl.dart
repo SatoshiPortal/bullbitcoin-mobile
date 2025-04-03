@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/bitcoin/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/balance.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
@@ -227,9 +228,8 @@ class BdkWalletRepositoryImpl
   @override
   Future<Transaction> buildUnsigned({
     required String address,
-    BigInt? amountSat,
-    BigInt? absoluteFeeSat,
-    double? feeRateSatPerVb,
+    required MinerFee networkFee,
+    int? amountSat,
     List<TxInput>? unspendableInputs,
     bool? drain,
     List<TxInput>? selectedInputs,
@@ -251,7 +251,7 @@ class BdkWalletRepositoryImpl
       if (amountSat == null) {
         throw ArgumentError('amountSat is required');
       }
-      txBuilder = bdk.TxBuilder().addRecipient(script, amountSat);
+      txBuilder = bdk.TxBuilder().addRecipient(script, BigInt.from(amountSat));
     }
 
     if (selectedInputs != null && selectedInputs.isNotEmpty) {
@@ -262,11 +262,10 @@ class BdkWalletRepositoryImpl
     }
     if (replaceByFees) txBuilder.enableRbf();
 
-    // Set the fee rate or absolute fee
-    if (absoluteFeeSat != null) {
-      txBuilder = txBuilder.feeAbsolute(absoluteFeeSat);
-    } else if (feeRateSatPerVb != null) {
-      txBuilder = txBuilder.feeRate(feeRateSatPerVb);
+    if (networkFee.isAbsolute) {
+      txBuilder = txBuilder.feeAbsolute(BigInt.from(networkFee.value as int));
+    } else {
+      txBuilder = txBuilder.feeRate(networkFee.value.toDouble());
     }
 
     // Make sure utxos that are unspendable are not used

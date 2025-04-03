@@ -5,7 +5,9 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/bitcoin/data/repository/bdk_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/bitcoin/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/liquid/data/repository/lwk_wallet_repository_impl.dart';
+import 'package:bb_mobile/core/liquid/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
@@ -391,15 +393,14 @@ class WalletManagerServiceImpl implements WalletManagerService {
   Future<Transaction> buildUnsigned({
     required String walletId,
     required String address,
-    BigInt? amountSat,
-    BigInt? absoluteFeeSat,
-    double? feeRateSatPerVb,
+    required MinerFee networkFee,
+    int? amountSat,
     List<TxInput>? unspendableInputs,
     bool? drain,
     List<TxInput>? selectableInputs,
     bool replaceByFees = true,
   }) async {
-    final wallet = await _getWalletWithPrivateKey(walletId);
+    final wallet = await _getWalletWithPublicKey(walletId);
 
     if (wallet == null) {
       throw WalletNotFoundException(walletId);
@@ -411,12 +412,17 @@ class WalletManagerServiceImpl implements WalletManagerService {
       return bitcoinWallet.buildUnsigned(
         address: address,
         amountSat: amountSat,
-        absoluteFeeSat: absoluteFeeSat,
-        feeRateSatPerVb: feeRateSatPerVb,
+        networkFee: networkFee,
         unspendableInputs: unspendableInputs,
         drain: drain,
         selectedInputs: selectableInputs,
         replaceByFees: replaceByFees,
+      );
+    }
+    if (wallet is LiquidWalletRepository) {
+      // TODO: build for liquid
+      throw UnsupportedError(
+        'Liquid not supported yet',
       );
     }
 
@@ -454,6 +460,16 @@ class WalletManagerServiceImpl implements WalletManagerService {
     }
 
     return _createPrivateWalletRepository(walletMetadata: walletMetadata);
+  }
+
+  Future<WalletRepository?> _getWalletWithPublicKey(String id) async {
+    final walletMetadata = await _walletMetadataRepository.get(id);
+
+    if (walletMetadata == null) {
+      return null;
+    }
+
+    return _createPublicWalletRepository(walletMetadata: walletMetadata);
   }
 
   Future<void> _registerWalletRepository({

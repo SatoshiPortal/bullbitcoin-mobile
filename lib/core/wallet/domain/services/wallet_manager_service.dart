@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
@@ -56,9 +57,8 @@ abstract class WalletManagerService {
   Future<Transaction> buildUnsigned({
     required String walletId,
     required String address,
-    BigInt? amountSat,
-    BigInt? absoluteFeeSat,
-    double? feeRateSatPerVb,
+    required MinerFee networkFee,
+    int? amountSat,
     List<TxInput>? unspendableInputs,
     bool? drain,
     List<TxInput>? selectableInputs,
