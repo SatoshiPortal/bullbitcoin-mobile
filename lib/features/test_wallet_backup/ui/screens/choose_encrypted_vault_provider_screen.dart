@@ -9,7 +9,7 @@ import 'package:bb_mobile/ui/components/vault/vault_locations.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
-    show BlocBuilder, BlocProvider, ReadContext;
+    show BlocBuilder, BlocListener, BlocProvider, ReadContext;
 import 'package:go_router/go_router.dart';
 
 class ChooseVaultProviderScreen extends StatefulWidget {
@@ -43,7 +43,7 @@ class _Screen extends StatelessWidget {
     } else if (provider == backupProviders[2]) {
       context
           .read<TestWalletBackupBloc>()
-          .add(const SelectGoogleDriveBackupTest());
+          .add(const SelectFileSystemBackupTes());
     } else if (provider == backupProviders[3]) {
       debugPrint('Selected provider: ${provider.name}, not supported yet');
     }
@@ -51,84 +51,90 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
-      builder: (context, state) {
-        if (state.isLoading) {
-          return Scaffold(
-            backgroundColor: context.colour.onSecondary,
-            body: ProgressScreen(
-              title: "You will need to sign-in to Google Drive",
-              description:
-                  "Google will ask you to share personal information with this app.",
-              isLoading: true,
-              extras: [
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: "This information ",
-                        style: context.font.headlineMedium,
-                      ),
-                      TextSpan(
-                        text: "will not ",
-                        style: context.font.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: "leave your phone and is ",
-                        style: context.font.headlineMedium,
-                      ),
-                      TextSpan(
-                        text: "never ",
-                        style: context.font.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: "shared with Bull Bitcoin.",
-                        style: context.font.headlineMedium,
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          );
-        }
-        if (state.error.isNotEmpty) {
-          return Scaffold(
-            backgroundColor: context.colour.onSecondary,
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Error: ${state.error}',
-                    style: TextStyle(color: context.colour.error),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => context.pop(),
-                    child: const Text('Go Back'),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
+    return BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
+      listenWhen: (previous, current) =>
+          current.isSuccess != previous.isSuccess ||
+          current.error != previous.error,
+      listener: (context, state) {
         if (state.isSuccess && !state.backupInfo.isCorrupted) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            context.pushNamed(
-              TestWalletBackupSubroute.testBackupInfo.name,
-              extra: state.backupInfo,
-            );
+          // Mark that we're starting navigation
+          context.read<TestWalletBackupBloc>().add(const StartTransitioning());
+
+          // Capture the bloc before the async gap
+          final bloc = context.read<TestWalletBackupBloc>();
+
+          context
+              .pushNamed(
+            TestWalletBackupSubroute.testBackupInfo.name,
+            extra: state.backupInfo,
+          )
+              .then((_) {
+            // When we return from the route, end the navigation state
+            bloc.add(const EndTransitioning());
           });
         }
-        return _buildScaffold(context);
       },
+      child: BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
+        buildWhen: (previous, current) =>
+            current.isLoading != previous.isLoading ||
+            current.error != previous.error ||
+            current.isSuccess != previous.isSuccess ||
+            current.transitioning != previous.transitioning,
+        builder: (context, state) {
+          // Show loading screen during loading OR navigation to avoid flickers
+          if (state.isLoading || state.transitioning) {
+            return Scaffold(
+              backgroundColor: context.colour.onSecondary,
+              body: ProgressScreen(
+                title: (state.vaultProvider is GoogleDrive)
+                    ? "You will need to sign-in to Google Drive"
+                    : "Fetching from your device.",
+                description: (state.vaultProvider is GoogleDrive)
+                    ? "Google will ask you to share personal information with this app."
+                    : "",
+                isLoading: true,
+                extras: (state.vaultProvider is GoogleDrive)
+                    ? [
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "This information ",
+                                style: context.font.headlineMedium,
+                              ),
+                              TextSpan(
+                                text: "will not ",
+                                style: context.font.headlineLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: "leave your phone and is ",
+                                style: context.font.headlineMedium,
+                              ),
+                              TextSpan(
+                                text: "never ",
+                                style: context.font.headlineLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: "shared with Bull Bitcoin.",
+                                style: context.font.headlineMedium,
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ]
+                    : [],
+              ),
+            );
+          }
+
+          return _buildScaffold(context);
+        },
+      ),
     );
   }
 

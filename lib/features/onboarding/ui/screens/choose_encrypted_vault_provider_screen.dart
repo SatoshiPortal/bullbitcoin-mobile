@@ -9,7 +9,7 @@ import 'package:bb_mobile/ui/components/vault/vault_locations.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
-    show BlocBuilder, BlocProvider, ReadContext;
+    show BlocBuilder, BlocListener, BlocProvider, ReadContext;
 import 'package:go_router/go_router.dart';
 
 class ChooseVaultProviderScreen extends StatefulWidget {
@@ -32,9 +32,14 @@ class _ChooseVaultProviderScreenState extends State<ChooseVaultProviderScreen> {
   }
 }
 
-class _Screen extends StatelessWidget {
+class _Screen extends StatefulWidget {
   const _Screen();
 
+  @override
+  State<_Screen> createState() => _ScreenState();
+}
+
+class _ScreenState extends State<_Screen> {
   void _handleProviderTap(BuildContext context, BackupProviderEntity provider) {
     if (provider == backupProviders[0]) {
       context.read<OnboardingBloc>().add(const SelectGoogleDriveRecovery());
@@ -47,69 +52,91 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OnboardingBloc, OnboardingState>(
-      builder: (context, state) {
-        if (state.onboardingStepStatus == OnboardingStepStatus.none) {
-          return _buildScaffold(context);
-        } else if (state.onboardingStepStatus == OnboardingStepStatus.loading) {
-          return Scaffold(
-            backgroundColor: context.colour.onSecondary,
-            body: ProgressScreen(
-              title: "You will need to sign-in to Google Drive",
-              description:
-                  "Google will ask you to share personal information with this app.",
-              isLoading: true,
-              extras: [
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: "This information ",
-                        style: context.font.headlineMedium,
-                      ),
-                      TextSpan(
-                        text: "will not ",
-                        style: context.font.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: "leave your phone and is ",
-                        style: context.font.headlineMedium,
-                      ),
-                      TextSpan(
-                        text: "never ",
-                        style: context.font.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextSpan(
-                        text: "shared with Bull Bitcoin.",
-                        style: context.font.headlineMedium,
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          );
-        } else if (state.onboardingStepStatus == OnboardingStepStatus.success) {
-          if (!state.backupInfo.isCorrupted) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.pushNamed(
-                OnboardingSubroute.retrievedBackupInfo.name,
-                extra: state.backupInfo,
-              );
-            });
-          }
-          return _buildScaffold(context);
-        } else if (state.onboardingStepStatus == OnboardingStepStatus.none &&
-            state.statusError.isNotEmpty) {
-          return _buildScaffold(context);
+    return BlocListener<OnboardingBloc, OnboardingState>(
+      listenWhen: (previous, current) =>
+          current.onboardingStepStatus != previous.onboardingStepStatus,
+      listener: (context, state) {
+        if (state.onboardingStepStatus == OnboardingStepStatus.success &&
+            !state.backupInfo.isCorrupted) {
+          // Mark that we're starting navigation
+          context.read<OnboardingBloc>().add(const StartTransitioning());
+
+          // Capture the bloc before the async gap
+          final bloc = context.read<OnboardingBloc>();
+
+          context
+              .pushNamed(
+            OnboardingSubroute.retrievedBackupInfo.name,
+            extra: state.backupInfo,
+          )
+              .then((_) {
+            // When we return from the route, end the navigation state
+            if (mounted) {
+              bloc.add(const EndTransitioning());
+            }
+          });
         }
-        return _buildScaffold(context);
       },
+      child: BlocBuilder<OnboardingBloc, OnboardingState>(
+        buildWhen: (previous, current) =>
+            current.onboardingStepStatus != previous.onboardingStepStatus ||
+            current.transitioning != previous.transitioning,
+        builder: (context, state) {
+          // Show loading screen during loading OR navigation to avoid flickers
+          if (state.onboardingStepStatus == OnboardingStepStatus.loading ||
+              state.transitioning) {
+            return Scaffold(
+              backgroundColor: context.colour.onSecondary,
+              body: ProgressScreen(
+                title: (state.vaultProvider is GoogleDrive)
+                    ? "You will need to sign-in to Google Drive"
+                    : "Fetching from your device.",
+                description: (state.vaultProvider is GoogleDrive)
+                    ? "Google will ask you to share personal information with this app."
+                    : "",
+                isLoading: true,
+                extras: (state.vaultProvider is GoogleDrive)
+                    ? [
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "This information ",
+                                style: context.font.headlineMedium,
+                              ),
+                              TextSpan(
+                                text: "will not ",
+                                style: context.font.headlineLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: "leave your phone and is ",
+                                style: context.font.headlineMedium,
+                              ),
+                              TextSpan(
+                                text: "never ",
+                                style: context.font.headlineLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: "shared with Bull Bitcoin.",
+                                style: context.font.headlineMedium,
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ]
+                    : [],
+              ),
+            );
+          }
+
+          return _buildScaffold(context);
+        },
+      ),
     );
   }
 

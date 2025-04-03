@@ -15,7 +15,7 @@ import 'package:bb_mobile/ui/components/vault/vault_locations.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
-    show BlocBuilder, BlocProvider, ReadContext;
+    show BlocBuilder, BlocListener, BlocProvider, ReadContext;
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -55,72 +55,84 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<BackupWalletBloc, BackupWalletState>(
-      builder: (context, state) {
-        return state.status.when(
-          initial: () => _buildScaffold(context),
-          loading: (type) {
+    return BlocListener<BackupWalletBloc, BackupWalletState>(
+      listenWhen: (previous, current) => current.status != previous.status,
+      listener: (context, state) {
+        if (state.status == const BackupWalletStatus.success() &&
+            state.backupFile.isNotEmpty) {
+          context.read<BackupWalletBloc>().add(const StartTransitioning());
+          final bloc = context.read<BackupWalletBloc>();
+          context.pushNamed(
+            AppRoute.keyServerFlow.name,
+            extra: (
+              state.backupFile,
+              CurrentKeyServerFlow.enter.toString(),
+              false
+            ),
+          ).then((_) {
+            bloc.add(const EndTransitioning());
+          });
+        }
+      },
+      child: BlocBuilder<BackupWalletBloc, BackupWalletState>(
+        buildWhen: (previous, current) =>
+            current.status != previous.status ||
+            current.transitioning != previous.transitioning,
+        builder: (context, state) {
+          if ((state.status == const BackupWalletStatus.loading()) ||
+              state.transitioning) {
             return Scaffold(
               backgroundColor: context.colour.onSecondary,
               body: ProgressScreen(
-                title: "You will need to sign-in to Google Drive",
-                description:
-                    "Google will ask you to share personal information with this app.",
+                title: state.vaultProvider is GoogleDrive
+                    ? "You will need to sign-in to Google Drive"
+                    : "Saving to your device.",
+                description: state.vaultProvider is GoogleDrive
+                    ? "Google will ask you to share personal information with this app."
+                    : "",
                 isLoading: true,
-                extras: [
-                  Text.rich(
-                    TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "This information ",
-                          style: context.font.headlineMedium,
-                        ),
-                        TextSpan(
-                          text: "will not ",
-                          style: context.font.headlineLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+                extras: state.vaultProvider is GoogleDrive
+                    ? [
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "This information ",
+                                style: context.font.headlineMedium,
+                              ),
+                              TextSpan(
+                                text: "will not ",
+                                style: context.font.headlineLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: "leave your phone and is ",
+                                style: context.font.headlineMedium,
+                              ),
+                              TextSpan(
+                                text: "never ",
+                                style: context.font.headlineLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              TextSpan(
+                                text: "shared with Bull Bitcoin.",
+                                style: context.font.headlineMedium,
+                              ),
+                            ],
                           ),
+                          textAlign: TextAlign.center,
                         ),
-                        TextSpan(
-                          text: "leave your phone and is ",
-                          style: context.font.headlineMedium,
-                        ),
-                        TextSpan(
-                          text: "never ",
-                          style: context.font.headlineLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "shared with Bull Bitcoin.",
-                          style: context.font.headlineMedium,
-                        ),
-                      ],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                      ]
+                    : [],
               ),
             );
-          },
-          success: () {
-            if (state.backupFile.isNotEmpty) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                context.pushNamed(
-                  AppRoute.keyServerFlow.name,
-                  extra: (
-                    state.backupFile,
-                    CurrentKeyServerFlow.enter.toString(),
-                    false
-                  ),
-                );
-              });
-            }
-            return _buildScaffold(context);
-          },
-          failure: (message) => _buildScaffold(context),
-        );
-      },
+          }
+
+          return _buildScaffold(context);
+        },
+      ),
     );
   }
 
