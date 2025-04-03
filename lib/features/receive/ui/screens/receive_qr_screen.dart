@@ -325,29 +325,25 @@ class ReceiveLnInfoDetails extends StatelessWidget {
             Container(color: context.colour.surface, height: 1),
             Padding(
               padding: const EdgeInsets.only(
-                left: 8,
-                right: 8,
                 top: 10,
                 bottom: 12,
               ),
               child: Row(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BBText(
-                        'Note',
-                        style: context.font.labelSmall,
-                        color: context.colour.outline,
-                      ),
-                      const Gap(4),
-                      BBText(
-                        note.isNotEmpty ? note : '',
-                        style: context.font.bodyMedium,
-                      ),
-                    ],
+                  BBText(
+                    'Note',
+                    style: context.font.labelSmall,
+                    color: context.colour.outline,
                   ),
-                  const Spacer(),
+                  const Gap(24),
+                  Expanded(
+                    child: BBText(
+                      note.isNotEmpty ? note : '',
+                      style: context.font.bodyMedium,
+                      maxLines: 5,
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
                 ],
               ),
             ),
