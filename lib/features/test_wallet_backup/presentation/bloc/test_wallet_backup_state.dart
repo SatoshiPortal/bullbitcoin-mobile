@@ -8,5 +8,6 @@ class TestWalletBackupState with _$TestWalletBackupState {
     @Default(false) bool isSuccess,
     @Default(VaultProvider.googleDrive()) VaultProvider vaultProvider,
     @Default(BackupInfo.empty()) BackupInfo backupInfo,
+    @Default(false) bool transitioning,
   }) = _TestWalletBackupState;
 }

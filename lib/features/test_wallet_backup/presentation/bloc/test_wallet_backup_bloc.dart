@@ -39,6 +39,15 @@ class TestWalletBackupBloc
     on<SelectGoogleDriveBackupTest>(_onSelectGoogleDriveBackupTest);
     on<SelectFileSystemBackupTes>(_onSelectFileSystemBackupTest);
     on<StartBackupTesting>(_onStartBackupTesting);
+
+    // Add handlers for transitioning events
+    on<StartTransitioning>((event, emit) {
+      emit(state.copyWith(transitioning: true));
+    });
+
+    on<EndTransitioning>((event, emit) {
+      emit(state.copyWith(transitioning: false));
+    });
   }
 
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
@@ -88,7 +97,14 @@ class TestWalletBackupBloc
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true, error: '', isSuccess: false));
+      emit(
+        state.copyWith(
+          isLoading: true,
+          error: '',
+          isSuccess: false,
+          vaultProvider: const VaultProvider.fileSystem(""),
+        ),
+      );
 
       final selectedFile = await _selectFileFromPathUsecase.execute();
       if (selectedFile == null) {

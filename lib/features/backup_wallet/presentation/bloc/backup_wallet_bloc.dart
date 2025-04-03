@@ -37,6 +37,15 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     on<OnGoogleDriveBackupSelected>(_onGoogleDriveBackupSelected);
     on<OnICloudDriveBackupSelected>(_onICloudDriveBackupSelected);
     on<StartWalletBackup>(_onStartWalletBackup);
+
+    // Add handlers for transitioning events
+    on<StartTransitioning>((event, emit) {
+      emit(state.copyWith(transitioning: true));
+    });
+
+    on<EndTransitioning>((event, emit) {
+      emit(state.copyWith(transitioning: false));
+    });
   }
 
   Future<void> _onFileSystemBackupSelected(
@@ -46,7 +55,8 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     try {
       emit(
         state.copyWith(
-          status: const BackupWalletStatus.loading(LoadingType.general),
+          status: const BackupWalletStatus.loading(),
+          vaultProvider: const VaultProvider.fileSystem(''),
         ),
       );
       final filePath = await selectFolderPathUsecase.execute();
@@ -83,7 +93,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     try {
       emit(
         state.copyWith(
-          status: const BackupWalletStatus.loading(LoadingType.googleSignIn),
+          status: const BackupWalletStatus.loading(),
         ),
       );
 
@@ -116,7 +126,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     try {
       emit(
         state.copyWith(
-          status: const BackupWalletStatus.loading(LoadingType.general),
+          status: const BackupWalletStatus.loading(),
         ),
       );
 

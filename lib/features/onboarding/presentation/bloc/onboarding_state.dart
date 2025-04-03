@@ -1,17 +1,10 @@
 part of 'onboarding_bloc.dart';
 
-// @freezed
-// class OnboardingStepStatus with _$OnboardingStepStatus {
-//   const factory OnboardingStepStatus.none() = None;
-//   const factory OnboardingStepStatus.loading() = Loading;
-//   const factory OnboardingStepStatus.success() = Success;
-//   const factory OnboardingStepStatus.error(String error) = Error;
-// }
-
 enum OnboardingStepStatus {
   none,
   loading,
   success,
+  error,
 }
 
 enum OnboardingStep { splash, create, recover }
@@ -27,6 +20,7 @@ sealed class OnboardingState with _$OnboardingState {
     @Default(VaultProvider.googleDrive()) VaultProvider vaultProvider,
     @Default(BackupInfo.empty()) BackupInfo backupInfo,
     @Default('') String statusError,
+    @Default(false) bool transitioning,
   }) = _OnboardingState;
   const OnboardingState._();
 

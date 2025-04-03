@@ -19,3 +19,11 @@ class OnGoogleDriveBackupSelected extends BackupWalletEvent {
 class OnICloudDriveBackupSelected extends BackupWalletEvent {
   const OnICloudDriveBackupSelected();
 }
+
+class StartTransitioning extends BackupWalletEvent {
+  const StartTransitioning();
+}
+
+class EndTransitioning extends BackupWalletEvent {
+  const EndTransitioning();
+}
