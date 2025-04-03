@@ -1,64 +1,32 @@
 part of 'receive_bloc.dart';
 
+enum ReceiveType {
+  bitcoin,
+  lightning,
+  liquid,
+}
+
 @freezed
 class ReceiveState with _$ReceiveState {
-  const factory ReceiveState.bitcoin({
-    required Wallet wallet,
-    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
+  const factory ReceiveState({
+    @Default(ReceiveType.lightning) ReceiveType type,
+    Wallet? wallet,
+    BitcoinUnit? bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('') String fiatCurrencyCode,
     @Default(0) double exchangeRate,
     @Default('') String inputAmountCurrencyCode,
-    @Default('') String address,
     @Default('') String inputAmount,
     BigInt? confirmedAmountSat,
+    @Default('') String bitcoinAddress,
+    LnReceiveSwap? lightningSwap,
+    @Default('') String liquidAddress,
     @Default('') String note,
     PayjoinReceiver? payjoin,
     @Default(false) bool isAddressOnly,
     @Default('') String txId,
     Object? error,
-  }) = BitcoinReceiveState;
-  const factory ReceiveState.lightning({
-    required Wallet wallet,
-    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
-    @Default([]) List<String> fiatCurrencyCodes,
-    @Default('') String fiatCurrencyCode,
-    @Default(0) double exchangeRate,
-    @Default('') String inputAmountCurrencyCode,
-    @Default('') String inputAmount,
-    BigInt? confirmedAmountSat,
-    @Default('') String note,
-    LnReceiveSwap? swap,
-    Object? error,
-  }) = LightningReceiveState;
-  const factory ReceiveState.liquid({
-    required Wallet wallet,
-    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
-    @Default([]) List<String> fiatCurrencyCodes,
-    @Default('') String fiatCurrencyCode,
-    @Default(0) double exchangeRate,
-    @Default('') String inputAmountCurrencyCode,
-    @Default('') String address,
-    @Default('') String inputAmount,
-    BigInt? confirmedAmountSat,
-    @Default('') String note,
-    @Default('') String txId,
-    Object? error,
-  }) = LiquidReceiveState;
-  // Some default and optional variables are added to the network undefined state,
-  //  this is to have an initial state to set in the block and avoid null checks
-  //  in the business logic and the UI.
-  const factory ReceiveState.networkUndefined({
-    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
-    @Default([]) List<String> fiatCurrencyCodes,
-    @Default('') String fiatCurrencyCode,
-    @Default(0) double exchangeRate,
-    @Default('') String inputAmountCurrencyCode,
-    @Default('') String inputAmount,
-    BigInt? confirmedAmountSat,
-    @Default('') String note,
-    Object? error,
-  }) = NetworkUndefinedReceiveState;
+  }) = _ReceiveState;
   const ReceiveState._();
 
   List<String> get inputAmountCurrencyCodes {
@@ -99,68 +67,68 @@ class ReceiveState with _$ReceiveState {
   }
 
   String get qrData {
-    switch (this) {
-      case final BitcoinReceiveState bitcoinState:
-        final payjoin = bitcoinState.payjoin;
-        if (bitcoinState.isAddressOnly ||
-            (confirmedAmountSat == null &&
-                bitcoinState.note.isEmpty &&
-                payjoin == null)) {
-          return bitcoinState.address;
+    switch (type) {
+      case ReceiveType.bitcoin:
+        if (bitcoinAddress.isEmpty) {
+          return '';
+        }
+        if (isAddressOnly ||
+            (confirmedAmountSat == null && note.isEmpty && payjoin == null)) {
+          return bitcoinAddress;
         }
 
         Uri bip21Uri = Uri(
           scheme: 'bitcoin',
-          path: bitcoinState.address,
+          path: bitcoinAddress,
           queryParameters: {
             if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
-            if (bitcoinState.note.isNotEmpty) 'message': bitcoinState.note,
+            if (note.isNotEmpty) 'message': note,
           },
         );
 
         // Add payjoin parameters if available
         if (payjoin != null) {
-          final pjUri = Uri.parse(payjoin.pjUri);
+          final pjUri = Uri.parse(payjoin!.pjUri);
+          final queryParameters = {
+            if (bip21Uri.queryParameters.isNotEmpty)
+              ...bip21Uri.queryParameters,
+            'pj': pjUri.queryParameters['pj'],
+            'pjos': pjUri.queryParameters['pjos'],
+          };
           bip21Uri = bip21Uri.replace(
-            queryParameters: {
-              if (bip21Uri.queryParameters.isNotEmpty)
-                ...bip21Uri.queryParameters,
-              'pj': pjUri.queryParameters['pj'],
-              'pjos': pjUri.queryParameters['pjos'],
-            },
+            queryParameters: queryParameters,
           );
         }
         return bip21Uri.toString();
-      case final LightningReceiveState lightningState:
-        return lightningState.swap?.invoice ?? '';
-      case final LiquidReceiveState liquidState:
-        if (confirmedAmountSat == null && liquidState.note.isEmpty) {
-          return liquidState.address;
+      case ReceiveType.lightning:
+        return lightningSwap?.invoice ?? '';
+      case ReceiveType.liquid:
+        if (liquidAddress.isEmpty) {
+          return '';
+        }
+        if (confirmedAmountSat == null && note.isEmpty) {
+          return liquidAddress;
         }
         final bip21Uri = Uri(
           scheme: 'liquidnetwork',
-          path: liquidState.address,
+          path: liquidAddress,
           queryParameters: {
             if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
-            if (liquidState.note.isNotEmpty) 'message': liquidState.note,
+            if (note.isNotEmpty) 'message': note,
           },
         );
         return bip21Uri.toString();
-      case _:
-        return '';
     }
   }
 
   String get addressOrInvoiceOnly {
-    switch (this) {
-      case final BitcoinReceiveState bitcoinState:
-        return bitcoinState.address;
-      case final LightningReceiveState lightningState:
-        return lightningState.swap?.invoice ?? '';
-      case final LiquidReceiveState liquidState:
-        return liquidState.address;
-      case _:
-        return '';
+    switch (type) {
+      case ReceiveType.bitcoin:
+        return bitcoinAddress;
+      case ReceiveType.lightning:
+        return lightningSwap?.invoice ?? '';
+      case ReceiveType.liquid:
+        return liquidAddress;
     }
   }
 
@@ -173,10 +141,12 @@ class ReceiveState with _$ReceiveState {
   }
 
   String get formattedConfirmedAmountBitcoin {
-    if (bitcoinUnit == BitcoinUnit.sats) {
+    if (bitcoinUnit == null) {
+      return '';
+    } else if (bitcoinUnit == BitcoinUnit.sats) {
       // For sats, use integer formatting without decimals
       final currencyFormatter = NumberFormat.currency(
-        name: bitcoinUnit.code,
+        name: bitcoinUnit!.code,
         decimalDigits: 0, // Use 0 decimals for sats
         customPattern: '#,##0 ¤',
       );
@@ -184,8 +154,8 @@ class ReceiveState with _$ReceiveState {
     } else {
       // For BTC, use the standard decimal formatting
       final currencyFormatter = NumberFormat.currency(
-        name: bitcoinUnit.code,
-        decimalDigits: bitcoinUnit.decimals,
+        name: bitcoinUnit!.code,
+        decimalDigits: bitcoinUnit!.decimals,
         customPattern: '#,##0.00 ¤',
       );
       final formatted = currencyFormatter
@@ -207,10 +177,12 @@ class ReceiveState with _$ReceiveState {
   String get formattedAmountInputEquivalent {
     if (isInputAmountFiat) {
       // If the input is in fiat, the equivalent should be in bitcoin
-      if (bitcoinUnit == BitcoinUnit.sats) {
+      if (bitcoinUnit == null) {
+        return '';
+      } else if (bitcoinUnit == BitcoinUnit.sats) {
         // For sats, use integer formatting without decimals
         final currencyFormatter = NumberFormat.currency(
-          name: bitcoinUnit.code,
+          name: bitcoinUnit!.code,
           decimalDigits: 0, // Use 0 decimals for sats
           customPattern: '#,##0 ¤',
         );
@@ -218,8 +190,8 @@ class ReceiveState with _$ReceiveState {
       } else {
         // For BTC, use the standard decimal formatting
         final currencyFormatter = NumberFormat.currency(
-          name: bitcoinUnit.code,
-          decimalDigits: bitcoinUnit.decimals,
+          name: bitcoinUnit!.code,
+          decimalDigits: bitcoinUnit!.decimals,
           customPattern: '#,##0.00 ¤',
         );
         final formatted = currencyFormatter
@@ -239,46 +211,44 @@ class ReceiveState with _$ReceiveState {
   }
 
   bool get isPaymentInProgress {
-    switch (this) {
-      case final LightningReceiveState state:
-        return state.swap != null && state.swap!.status == SwapStatus.claimable;
-      case final BitcoinReceiveState state:
+    switch (type) {
+      case ReceiveType.bitcoin:
         // From the moment the payjoin request is received, it can be broadcasted,
         // so we consider it in progress since it is a valid transaction from the sender
         // and the user can choose to broadcast it.
-        return state.payjoin != null &&
-            state.payjoin!.status == PayjoinStatus.requested;
-      case _:
+        return payjoin != null && payjoin!.status == PayjoinStatus.requested;
+      case ReceiveType.lightning:
+        return lightningSwap != null &&
+            lightningSwap!.status == SwapStatus.claimable;
+      case ReceiveType.liquid:
         return false;
     }
   }
 
   bool get isPaymentReceived {
-    switch (this) {
-      case final LiquidReceiveState state:
-        return state.txId.isNotEmpty;
-      case final BitcoinReceiveState state:
-        return state.txId.isNotEmpty;
-      case final LightningReceiveState state:
-        return state.swap != null && state.swap!.status == SwapStatus.completed;
-      case _:
-        return false;
+    switch (type) {
+      case ReceiveType.bitcoin:
+        return txId.isNotEmpty;
+      case ReceiveType.lightning:
+        return lightningSwap != null &&
+            lightningSwap!.status == SwapStatus.completed;
+      case ReceiveType.liquid:
+        return txId.isNotEmpty;
     }
   }
 
   bool get isPayjoinLoading {
-    if (this is BitcoinReceiveState) {
-      final state = this as BitcoinReceiveState;
-      return state.payjoin == null &&
-          state.error is! ReceivePayjoinException &&
-          !state.isAddressOnly;
+    if (type == ReceiveType.bitcoin) {
+      return payjoin == null &&
+          error is! ReceivePayjoinException &&
+          !isAddressOnly;
     }
     return false;
   }
 
   LnReceiveSwap? get getSwap {
-    if (this is LightningReceiveState) {
-      return (this as LightningReceiveState).swap;
+    if (type == ReceiveType.lightning) {
+      return lightningSwap;
     }
 
     return null;

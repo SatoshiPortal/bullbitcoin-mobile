@@ -81,19 +81,20 @@ class ReceiveRouter {
                   listener: (context, state) {
                     final bloc = context.read<ReceiveBloc>();
                     final matched = GoRouterState.of(context).matchedLocation;
+                    final type = state.type;
 
                     // For a Payjoin or Lightning receive, show the payment in progress screen
                     //  when the payjoin is requested or swap is claimable.
                     // Since the payment in progress route is outside of the ShellRoute,
                     // it uses the root navigator and so doesn't have the ReceiveBloc
                     //  in the context. We need to pass it as an extra parameter.
-                    if (state is BitcoinReceiveState &&
+                    if (type == ReceiveType.bitcoin &&
                         state.payjoin?.status == PayjoinStatus.requested) {
                       context.go(
                         '$matched/${ReceiveRoute.payjoinInProgress.path}',
                         extra: bloc,
                       );
-                    } else if (state is LightningReceiveState) {
+                    } else if (type == ReceiveType.lightning) {
                       context.go(
                         '$matched/${ReceiveRoute.paymentInProgress.path}',
                         extra: bloc,
@@ -108,9 +109,10 @@ class ReceiveRouter {
                   listener: (context, state) {
                     final bloc = context.read<ReceiveBloc>();
                     final matched = GoRouterState.of(context).matchedLocation;
+                    final type = state.type;
 
-                    final path = switch (state) {
-                      LightningReceiveState _ =>
+                    final path = switch (type) {
+                      ReceiveType.lightning =>
                         '$matched/${ReceiveRoute.paymentReceived.path}',
                       _ => '$matched/${ReceiveRoute.details.path}',
                     };

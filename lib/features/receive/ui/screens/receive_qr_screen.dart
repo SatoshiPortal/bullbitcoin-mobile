@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_enter_note.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/copy_input.dart';
+import 'package:bb_mobile/ui/components/loading/loading_box_content.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/components/toggle/switch.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -20,10 +21,10 @@ class ReceiveQrPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isBitcoin = context.select(
-      (ReceiveBloc bloc) => bloc.state is BitcoinReceiveState,
+      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.bitcoin,
     );
     final isLightning = context.select(
-      (ReceiveBloc bloc) => bloc.state is LightningReceiveState,
+      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
     );
 
     return SingleChildScrollView(
@@ -60,17 +61,13 @@ class ReceiveQRDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLightning = context.select<ReceiveBloc, bool>(
-      (bloc) => bloc.state is LightningReceiveState,
+      (bloc) => bloc.state.type == ReceiveType.lightning,
     );
     final qrData = context.select<ReceiveBloc, String>(
       (bloc) => bloc.state.qrData,
     );
     final addressOrInvoiceOnly = context.select<ReceiveBloc, String>(
       (bloc) => bloc.state.addressOrInvoiceOnly,
-    );
-
-    final loadingPJ = context.select(
-      (ReceiveBloc bloc) => bloc.state.isPayjoinLoading,
     );
 
     return Column(
@@ -84,21 +81,12 @@ class ReceiveQRDetails extends StatelessWidget {
               color: context.colour.onPrimary,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: QrImageView(data: qrData),
+            child: qrData.isNotEmpty
+                ? QrImageView(data: qrData)
+                : const LoadingBoxContent(size: 200),
           ),
         ),
-        if (loadingPJ) ...[
-          const Gap(2),
-          Center(
-            child: BBText(
-              'Loading PayJoin parameters...',
-              style: context.font.labelMedium,
-            ),
-          ),
-          const Gap(2),
-        ] else ...[
-          const Gap(20),
-        ],
+        const Gap(20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
@@ -137,7 +125,7 @@ class ReceiveInfoDetails extends StatelessWidget {
     );
 
     final isLn = context.select<ReceiveBloc, bool>(
-      (bloc) => bloc.state is LightningReceiveState,
+      (bloc) => bloc.state.type == ReceiveType.lightning,
     );
 
     if (isLn) return const ReceiveLnInfoDetails();
@@ -189,17 +177,18 @@ class ReceiveInfoDetails extends StatelessWidget {
                   const Spacer(),
                   IconButton(
                     onPressed: () {
-                      final state = context.read<ReceiveBloc>().state;
-                      switch (state) {
-                        case LightningReceiveState _:
+                      final receiveType =
+                          context.read<ReceiveBloc>().state.type;
+                      switch (receiveType) {
+                        case ReceiveType.lightning:
                           context.push(
                             '${ReceiveRoute.receiveLightning.path}/${ReceiveRoute.amount.path}',
                           );
-                        case LiquidReceiveState _:
+                        case ReceiveType.liquid:
                           context.push(
                             '${ReceiveRoute.receiveLiquid.path}/${ReceiveRoute.amount.path}',
                           );
-                        case BitcoinReceiveState _:
+                        case ReceiveType.bitcoin:
                           context.push(
                             '${ReceiveRoute.receiveBitcoin.path}/${ReceiveRoute.amount.path}',
                           );
@@ -457,8 +446,8 @@ class ReceiveCopyAddress extends StatelessWidget {
           BBSwitch(
             value: context.select<ReceiveBloc, bool>(
               (bloc) =>
-                  bloc.state is BitcoinReceiveState &&
-                  (bloc.state as BitcoinReceiveState).isAddressOnly,
+                  bloc.state.type == ReceiveType.bitcoin &&
+                  bloc.state.isAddressOnly,
             ),
             onChanged: (addressOnly) => context
                 .read<ReceiveBloc>()

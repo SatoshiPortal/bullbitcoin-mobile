@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
@@ -59,7 +60,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         _createLabelUsecase = createLabelUsecase,
         _wallet = wallet,
         // Lightning is the default when pressing the receive button on the home screen
-        super(const ReceiveState.networkUndefined()) {
+        super(const ReceiveState()) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
     on<ReceiveLiquidStarted>(_onLiquidStarted);
@@ -103,6 +104,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     try {
+      // Emit a fresh state with the Bitcoin type
+      emit(const ReceiveState(type: ReceiveType.bitcoin));
+
       // If no wallet is passed through the constructor, get the default bitcoin wallet
       Wallet? wallet = _wallet;
       if (wallet == null) {
@@ -114,51 +118,48 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         wallet = wallets.first;
       }
 
-      // Emit the bitcoin state with the wallet already for the UI to update
-      emit(ReceiveState.bitcoin(wallet: wallet));
-
-      final address =
-          await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-
-      // Emit the address so the UI can already show it before the async operations are done
-      emit((state as BitcoinReceiveState).copyWith(address: address.address));
-
-      final currencyValues = await Future.wait([
+      final futures = await Future.wait([
         _getBitcoinUnitUseCase.execute(),
         _getCurrencyUsecase.execute(),
         _convertSatsToCurrencyAmountUsecase.execute(),
         _getAvailableCurrenciesUsecase.execute(),
+        _getReceiveAddressUsecase.execute(walletId: wallet.id)
       ]);
 
-      final bitcoinUnit = currencyValues[0] as BitcoinUnit;
-      final fiatCurrency = currencyValues[1] as String;
-      final exchangeRate = currencyValues[2] as double;
-      final fiatCurrencies = currencyValues[3] as List<String>;
+      final bitcoinUnit = futures[0] as BitcoinUnit;
+      final fiatCurrency = futures[1] as String;
+      final exchangeRate = futures[2] as double;
+      final fiatCurrencies = futures[3] as List<String>;
+      final address = futures[4] as Address;
+
+      PayjoinReceiver? payjoin;
+      Object? error;
+      try {
+        payjoin = await _receiveWithPayjoinUsecase.execute(
+          walletId: wallet.id,
+          address: address.address,
+        );
+        // The payjoin receiver is created, now we can watch it for updates
+        _watchPayjoin(payjoin.id);
+      } catch (e) {
+        debugPrint('Payjoin receiver creation failed: $e');
+        error = e;
+      }
 
       emit(
-        (state as BitcoinReceiveState).copyWith(
+        state.copyWith(
+          wallet: wallet,
           fiatCurrencyCodes: fiatCurrencies,
           fiatCurrencyCode: fiatCurrency,
           exchangeRate: exchangeRate,
           bitcoinUnit: bitcoinUnit,
           // Start entering the amount in bitcoin
           inputAmountCurrencyCode: bitcoinUnit.code,
+          bitcoinAddress: address.address,
+          payjoin: payjoin,
+          error: error,
         ),
       );
-
-      try {
-        final payjoin = await _receiveWithPayjoinUsecase.execute(
-          walletId: wallet.id,
-          address: address.address,
-        );
-        // The payjoin receiver is created, now we can watch it for updates
-        _watchPayjoin(payjoin.id);
-
-        emit((state as BitcoinReceiveState).copyWith(payjoin: payjoin));
-      } catch (e) {
-        debugPrint('Payjoin receiver creation failed: $e');
-        emit(state.copyWith(error: e));
-      }
     } catch (e) {
       emit(
         state.copyWith(error: e),
@@ -171,6 +172,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     try {
+      // Emit a fresh state with the Lightning type
+      emit(const ReceiveState());
+
       // If no wallet is passed through the constructor, get the default liquid wallet,
       //  which is the default wallet to receive lightning payments since fees are lower
       //  than on the bitcoin network.
@@ -183,10 +187,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
         wallet = wallets.first;
       }
-
-      // Emit the lightning state with the wallet already so the UI can already
-      // update before the async operations are done
-      emit(ReceiveState.lightning(wallet: wallet));
 
       final currencyValues = await Future.wait([
         _getBitcoinUnitUseCase.execute(),
@@ -202,6 +202,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       emit(
         state.copyWith(
+          wallet: wallet,
           fiatCurrencyCodes: fiatCurrencies,
           fiatCurrencyCode: fiatCurrency,
           exchangeRate: exchangeRate,
@@ -222,6 +223,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     try {
+      // Emit a fresh state with the Liquid type
+      emit(const ReceiveState(type: ReceiveType.liquid));
+
       // If no wallet is passed through the constructor, get the default bitcoin wallet
       Wallet? wallet = _wallet;
       if (wallet == null) {
@@ -233,17 +237,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         wallet = wallets.first;
       }
 
-      // Emit the liquid state with the wallet already so the UI can already
-      // update before the async operations are done
-      emit(ReceiveState.liquid(wallet: wallet));
-
       final address =
           await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-      emit(
-        (state as LiquidReceiveState).copyWith(
-          address: address.address,
-        ),
-      );
+
+      // Emit the state with the address already before the async calls
+      emit(state.copyWith(liquidAddress: address.address));
+
       final currencyValues = await Future.wait([
         _getBitcoinUnitUseCase.execute(),
         _getCurrencyUsecase.execute(),
@@ -257,7 +256,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       final fiatCurrencies = currencyValues[3] as List<String>;
 
       emit(
-        (state as LiquidReceiveState).copyWith(
+        state.copyWith(
+          wallet: wallet,
           fiatCurrencyCodes: fiatCurrencies,
           fiatCurrencyCode: fiatCurrency,
           exchangeRate: exchangeRate,
@@ -371,37 +371,29 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       ),
     );
 
-    if (state is LightningReceiveState) {
-      final lightningReceiveState = state as LightningReceiveState;
+    if (state.type == ReceiveType.lightning && state.wallet != null) {
+      LnReceiveSwap? swap;
+      Object? error;
+      try {
+        swap = await _createReceiveSwapUsecase.execute(
+          walletId: state.wallet!.id,
+          type: SwapType.lightningToLiquid,
+          amountSat: confirmedAmountSat.toInt(),
+          description: state.note,
+        );
+        // The swap is created, now we can watch it for updates
+        _watchLnReceiveSwap(swap.id);
+      } catch (e) {
+        debugPrint('Swap creation failed: $e');
+        error = e;
+      }
 
-      // Reset the swap and error before creating a new swap
       emit(
-        lightningReceiveState.copyWith(
-          swap: null,
-          error: null,
-          note: state.note,
+        state.copyWith(
+          lightningSwap: swap,
+          error: error,
         ),
       );
-
-      LnReceiveSwap? swap;
-      try {
-        swap = await _createLnReceiveSwap(
-          walletId: lightningReceiveState.wallet.id,
-          amountSat: confirmedAmountSat,
-          note: lightningReceiveState.note,
-        );
-
-        emit(
-          lightningReceiveState.copyWith(
-            swap: swap,
-            error: null,
-            // note: lightningReceiveState.note,
-          ),
-        );
-      } catch (e) {
-        emit(state.copyWith(error: e));
-        return;
-      }
     }
   }
 
@@ -409,41 +401,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveNoteChanged event,
     Emitter<ReceiveState> emit,
   ) async {
-    final note = event.note;
-
     emit(
-      state.copyWith(
-        note: note,
-      ),
+      state.copyWith(note: event.note),
     );
-
-    // Create a new swap if the description is still changed after the amount was already confirmed
-    if (state is LightningReceiveState && state.confirmedAmountSat != null) {
-      final lightningReceiveState = state as LightningReceiveState;
-
-      // Reset the swap and error before creating a new swap
-      emit(lightningReceiveState.copyWith(swap: null, error: null));
-
-      LnReceiveSwap? swap;
-      try {
-        swap = await _createLnReceiveSwap(
-          walletId: lightningReceiveState.wallet.id,
-          amountSat: lightningReceiveState.confirmedAmountSat!,
-          note: note,
-        );
-
-        emit(
-          lightningReceiveState.copyWith(
-            swap: swap,
-            error: null,
-            note: note,
-          ),
-        );
-      } catch (e) {
-        emit(state.copyWith(error: e));
-        return;
-      }
-    }
   }
 
   Future<void> _onNoteSaved(
@@ -452,22 +412,17 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async {
     try {
       final note = state.note;
-      if (state is BitcoinReceiveState && note.isNotEmpty) {
-        final bitcoinReceiveState = state as BitcoinReceiveState;
-        await _createLabelUsecase.execute(
-          walletId: bitcoinReceiveState.wallet.id,
-          type: LabelType.address,
-          ref: state.addressOrInvoiceOnly,
-          label: note,
-        );
-      } else if (state is LiquidReceiveState && note.isNotEmpty) {
-        final liquidReceiveState = state as LiquidReceiveState;
-        await _createLabelUsecase.execute(
-          walletId: liquidReceiveState.wallet.id,
-          type: LabelType.address,
-          ref: state.addressOrInvoiceOnly,
-          label: note,
-        );
+      switch (state.type) {
+        case ReceiveType.bitcoin:
+        case ReceiveType.liquid:
+          await _createLabelUsecase.execute(
+            walletId: state.wallet!.id,
+            type: LabelType.address,
+            ref: state.addressOrInvoiceOnly,
+            label: note,
+          );
+        case _:
+          break;
       }
     } catch (e) {
       emit(state.copyWith(error: e));
@@ -480,12 +435,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     // This toggle switch button is only available in the bitcoin receive screen
-    if (state is BitcoinReceiveState) {
-      final bitcoinReceiveState = state as BitcoinReceiveState;
+    if (state.type == ReceiveType.bitcoin) {
       emit(
-        bitcoinReceiveState.copyWith(
-          isAddressOnly: event.isAddressOnly,
-        ),
+        state.copyWith(isAddressOnly: event.isAddressOnly),
       );
     }
   }
@@ -494,30 +446,47 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveNewAddressGenerated event,
     Emitter<ReceiveState> emit,
   ) async {
+    emit(state.copyWith(
+      bitcoinAddress: '',
+      liquidAddress: '',
+      payjoin: null,
+    ));
+
     try {
-      switch (state) {
-        case final BitcoinReceiveState bitcoinReceiveState:
-          final address = await _getReceiveAddressUsecase.execute(
-            walletId: bitcoinReceiveState.wallet.id,
-            newAddress: true,
-          );
+      if (state.wallet == null) {
+        throw Exception('No wallet found');
+      }
 
-          emit(
-            bitcoinReceiveState.copyWith(
-              address: address.address,
-            ),
-          );
-        case final LiquidReceiveState liquidReceiveState:
-          final address = await _getReceiveAddressUsecase.execute(
-            walletId: liquidReceiveState.wallet.id,
-            newAddress: true,
-          );
+      final address = await _getReceiveAddressUsecase.execute(
+        walletId: state.wallet!.id,
+        newAddress: true,
+      );
 
-          emit(
-            liquidReceiveState.copyWith(
+      switch (state.type) {
+        case ReceiveType.bitcoin:
+          // If a new address is generated, we need to update the payjoin receiver as well
+          PayjoinReceiver? payjoin;
+          Object? error;
+          try {
+            payjoin = await _receiveWithPayjoinUsecase.execute(
+              walletId: state.wallet!.id,
               address: address.address,
-            ),
-          );
+            );
+            // The payjoin receiver is created, now we can watch it for updates
+            _watchPayjoin(payjoin.id);
+          } catch (e) {
+            debugPrint('Payjoin receiver creation failed: $e');
+            error = e;
+          }
+
+          emit(state.copyWith(
+            bitcoinAddress: address.address,
+            payjoin: payjoin,
+            error: error,
+          ));
+
+        case ReceiveType.liquid:
+          emit(state.copyWith(liquidAddress: address.address));
         default:
           break;
       }
@@ -534,19 +503,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async {
     final updatedPayjoin = event.payjoin;
     // Make sure the state is a Bitcoin state and the correct payjoin is updated
-    if (state is BitcoinReceiveState) {
-      final bitcoinReceiveState = state as BitcoinReceiveState;
-      if (bitcoinReceiveState.payjoin?.id != null &&
-          updatedPayjoin.id == bitcoinReceiveState.payjoin!.id) {
-        emit(
-          bitcoinReceiveState.copyWith(
-            payjoin: updatedPayjoin,
-            txId: bitcoinReceiveState.txId.isEmpty
-                ? updatedPayjoin.txId ?? ''
-                : bitcoinReceiveState.txId,
-          ),
-        );
-      }
+    if (state.type == ReceiveType.bitcoin &&
+        state.payjoin?.id != null &&
+        updatedPayjoin.id == state.payjoin!.id) {
+      emit(
+        state.copyWith(
+          payjoin: updatedPayjoin,
+          txId: state.txId.isEmpty ? updatedPayjoin.txId ?? '' : state.txId,
+        ),
+      );
     }
   }
 
@@ -554,16 +519,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceivePayjoinOriginalTxBroadcasted event,
     Emitter<ReceiveState> emit,
   ) async {
-    if (state is BitcoinReceiveState) {
-      final bitcoinReceiveState = state as BitcoinReceiveState;
-      final payjoin = bitcoinReceiveState.payjoin;
-      if (payjoin != null && payjoin.originalTxBytes != null) {
-        try {
-          await _broadcastOriginalTransactionUsecase.execute(payjoin);
-        } catch (e) {
-          // TODO: In the ui, show the error if it is a BroadcastOriginalTransactionException
-          emit(state.copyWith(error: e));
-        }
+    final payjoin = state.payjoin;
+    if (state.type == ReceiveType.bitcoin &&
+        payjoin != null &&
+        payjoin.originalTxBytes != null) {
+      try {
+        await _broadcastOriginalTransactionUsecase.execute(payjoin);
+      } catch (e) {
+        // TODO: In the ui, show the error if it is a BroadcastOriginalTransactionException
+        emit(state.copyWith(error: e));
       }
     }
   }
@@ -574,31 +538,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async {
     final updatedSwap = event.swap;
     // Make sure the state is a Lightning state and the correct swap is updated
-    if (state is LightningReceiveState) {
-      final lightningReceiveState = state as LightningReceiveState;
-      if (lightningReceiveState.swap?.id != null &&
-          updatedSwap.id == lightningReceiveState.swap!.id) {
-        emit(lightningReceiveState.copyWith(swap: updatedSwap));
-      }
+    if (state.type == ReceiveType.lightning &&
+        state.lightningSwap?.id != null &&
+        updatedSwap.id == state.lightningSwap!.id) {
+      emit(state.copyWith(lightningSwap: updatedSwap));
     }
-  }
-
-  Future<LnReceiveSwap> _createLnReceiveSwap({
-    required String walletId,
-    required BigInt amountSat,
-    String? note,
-  }) async {
-    // TODO: check how to pass a note/description
-    final swap = await _createReceiveSwapUsecase.execute(
-      walletId: walletId,
-      type: SwapType.lightningToLiquid,
-      amountSat: amountSat.toInt(),
-      description: note,
-    );
-
-    _watchLnReceiveSwap(swap.id);
-
-    return swap;
   }
 
   void _watchPayjoin(String payjoinId) {

@@ -12,6 +12,7 @@ class GetBalanceUsecase {
   Future<Balance> execute({
     required String walletId,
   }) async {
-    return _walletManagerService.getBalance(walletId: walletId);
+    final balance = await _walletManagerService.getBalance(walletId: walletId);
+    return balance;
   }
 }
