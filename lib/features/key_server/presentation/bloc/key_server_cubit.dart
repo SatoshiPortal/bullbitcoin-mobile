@@ -15,7 +15,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'key_server_cubit.freezed.dart';
 part 'key_server_state.dart';
 
-//TODO; Re-initalie tor connection check on all keyserver operations
 class KeyServerCubit extends Cubit<KeyServerState> {
   static const maxRetries = 2;
   static const retryDelay = Duration(seconds: 4);
@@ -204,14 +203,12 @@ class KeyServerCubit extends Cubit<KeyServerState> {
             );
           }
         } on KeyServerError catch (e) {
-          debugPrint('Key server error: ${e.message}');
           emit(
             state.copyWith(
               status: KeyServerOperationStatus.failure(message: e.message),
             ),
           );
         } catch (e) {
-          debugPrint('Unexpected error during key recovery: $e');
           emit(
             state.copyWith(
               status: const KeyServerOperationStatus.failure(
@@ -271,7 +268,6 @@ class KeyServerCubit extends Cubit<KeyServerState> {
         ),
       );
     } catch (e) {
-      debugPrint('Store key error: $e');
       if (e is KeyServerError) {
         emit(
           state.copyWith(
@@ -409,7 +405,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
       }
     } catch (e) {
       debugPrint('$operationName failed: ${(e as KeyServerError).message}');
-      throw 'Key server unavailable. Please check your connection.';
+      rethrow;
     }
     throw Exception('Unexpected error in $operationName');
   }

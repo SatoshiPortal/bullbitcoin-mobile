@@ -48,6 +48,14 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     on<SelectGoogleDriveRecovery>(_onSelectGoogleDriveRecovery);
     on<SelectFileSystemRecovery>(_onSelectFileSystemRecovery);
     on<StartWalletRecovery>(_onStartWalletRecovery);
+
+    on<StartTransitioning>((event, emit) {
+      emit(state.copyWith(transitioning: true));
+    });
+
+    on<EndTransitioning>((event, emit) {
+      emit(state.copyWith(transitioning: false));
+    });
   }
 
   final CreateDefaultWalletsUsecase _createDefaultWalletsUsecase;
@@ -216,6 +224,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
       emit(
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.loading,
+          vaultProvider: const VaultProvider.fileSystem(""),
         ),
       );
 

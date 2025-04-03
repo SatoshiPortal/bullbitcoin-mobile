@@ -20,3 +20,11 @@ class StartBackupTesting extends TestWalletBackupEvent {
   final String backupKey;
   final String backupFile;
 }
+
+class StartTransitioning extends TestWalletBackupEvent {
+  const StartTransitioning();
+}
+
+class EndTransitioning extends TestWalletBackupEvent {
+  const EndTransitioning();
+}

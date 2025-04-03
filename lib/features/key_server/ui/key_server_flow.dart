@@ -170,9 +170,18 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
   }
 
   void _handleError(BuildContext context) {
-    context.read<KeyServerCubit>()
-      ..clearError()
-      ..updateKeyServerState(flow: CurrentKeyServerFlow.enter);
+    if (CurrentKeyServerFlow.fromString(widget.currentFlow ?? '') ==
+        CurrentKeyServerFlow.recovery) {
+      context.read<KeyServerCubit>().updateKeyServerState(
+            backupFile: widget.backupFile,
+            status: const KeyServerOperationStatus.initial(),
+            flow: CurrentKeyServerFlow.fromString(widget.currentFlow ?? ''),
+          );
+    } else {
+      context.read<KeyServerCubit>()
+        ..clearError()
+        ..updateKeyServerState(flow: CurrentKeyServerFlow.enter);
+    }
   }
 
   void _handleRecoverySuccess(BuildContext context, KeyServerState state) {

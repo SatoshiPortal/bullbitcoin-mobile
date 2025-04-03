@@ -19,10 +19,11 @@ class KeyServerError implements Exception {
     } else if (e.code == 429) {
       final cooldownEnd =
           e.requestedAt?.add(Duration(minutes: e.cooldownInMinutes!));
-      final retryInMinutes = cooldownEnd?.difference(DateTime.now()).inMinutes;
+      final retryIn = cooldownEnd?.difference(DateTime.now());
+
       return KeyServerError._(
-        message: retryInMinutes != null
-            ? 'Rate-limited. Retry in $retryInMinutes minutes'
+        message: retryIn != null
+            ? 'Rate-limited. Retry in ${retryIn.inMinutes == 0 ? "${retryIn.inSeconds} seconds" : "${retryIn.inMinutes} minutes"} '
             : 'Rate-limited. Try again later',
         type: KeyServerErrorType.rateLimited,
       );

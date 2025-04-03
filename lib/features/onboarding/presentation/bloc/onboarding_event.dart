@@ -42,3 +42,11 @@ class StartWalletRecovery extends OnboardingEvent {
   final String backupKey;
   final String backupFile;
 }
+
+class StartTransitioning extends OnboardingEvent {
+  const StartTransitioning();
+}
+
+class EndTransitioning extends OnboardingEvent {
+  const EndTransitioning();
+}
