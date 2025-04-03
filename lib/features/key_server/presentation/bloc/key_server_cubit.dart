@@ -45,10 +45,25 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   }
 
   Future<void> checkConnection() async {
-    await _handleServerOperation(
-      checkServerConnectionUsecase.execute,
-      'Check Connection',
-    );
+    if (state.torStatus == TorStatus.connecting) {
+      return;
+    }
+
+    try {
+      await _handleServerOperation(
+        checkServerConnectionUsecase.execute,
+        'Check Connection',
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          torStatus: TorStatus.offline,
+          status: const KeyServerOperationStatus.failure(
+            message: 'Connection failed. Please check Tor status.',
+          ),
+        ),
+      );
+    }
   }
 
   void clearError() =>
@@ -371,6 +386,11 @@ class KeyServerCubit extends Cubit<KeyServerState> {
           } catch (e) {
             final isLastAttempt = attempt == maxRetries - 1;
             if (isLastAttempt) {
+              emit(
+                state.copyWith(
+                  torStatus: TorStatus.offline,
+                ),
+              );
               throw const KeyServerError.failedToConnect();
             }
             await Future.delayed(retryDelay);
