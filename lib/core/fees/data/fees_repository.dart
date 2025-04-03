@@ -10,14 +10,18 @@ class FeesRepository {
   }) : _feesDatasource = feesDatasource;
 
   Future<FeeOptions> getNetworkFees({required Network network}) async {
+    FeeOptions feeOptions;
+
     if (network.isBitcoin) {
-      return _feesDatasource.getBitcoinNetworkFeeOptions(
+      feeOptions = await _feesDatasource.getBitcoinNetworkFeeOptions(
         isTestnet: network.isTestnet,
       );
     } else {
-      return _feesDatasource.getLiquidNetworkFeeOptions(
+      feeOptions = await _feesDatasource.getLiquidNetworkFeeOptions(
         isTestnet: network.isTestnet,
       );
     }
+
+    return feeOptions;
   }
 }
