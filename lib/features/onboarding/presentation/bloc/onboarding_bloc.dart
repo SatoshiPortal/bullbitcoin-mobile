@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -67,6 +68,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     debugPrint('Error: $error');
     emit(
       state.copyWith(
+        onboardingStepStatus: OnboardingStepStatus.none,
         statusError: error,
       ),
     );

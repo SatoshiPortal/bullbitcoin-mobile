@@ -1,21 +1,21 @@
 import 'dart:ui';
+
 import 'package:bb_mobile/core/recoverbull/data/constants/backup_providers.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_entity.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
+    show CurrentKeyServerFlow;
 import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
-import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
-import 'package:bb_mobile/features/key_server/ui/widgets/error_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart' show AppRoute;
-import 'package:bb_mobile/ui/components/cards/tag_card.dart';
-import 'package:bb_mobile/ui/components/loading/progress_screen.dart'
-    show ProgressScreen;
+import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
+import 'package:bb_mobile/ui/components/vault/vault_locations.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
-    show BlocConsumer, BlocProvider, ReadContext;
+    show BlocBuilder, BlocProvider, ReadContext;
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,126 +39,115 @@ class _ChooseVaultProviderScreenState extends State<ChooseVaultProviderScreen> {
 
 class _Screen extends StatelessWidget {
   const _Screen();
+  void _handleProviderTap(BuildContext context, BackupProviderEntity provider) {
+    if (provider == backupProviders[0]) {
+      context.read<BackupWalletBloc>().add(
+            const OnGoogleDriveBackupSelected(),
+          );
+    } else if (provider == backupProviders[2]) {
+      context.read<BackupWalletBloc>().add(
+            const OnFileSystemBackupSelected(),
+          );
+    } else if (provider == backupProviders[3]) {
+      debugPrint('Selected provider: ${provider.name}, not supported yet');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<BackupWalletBloc, BackupWalletState>(
-      listenWhen: (previous, current) => previous.status != current.status,
-      listener: (context, state) {
-        state.status.when(
-          initial: () => {},
+    return BlocBuilder<BackupWalletBloc, BackupWalletState>(
+      builder: (context, state) {
+        return state.status.when(
+          initial: () => _buildScaffold(context),
           loading: (type) {
-            if (type == LoadingType.googleSignIn) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                barrierColor: Colors.white,
-                builder: (_) => ProgressScreen(
-                  title: "You will need to sign-in to Google Drive",
-                  description:
-                      "Google will ask you to share personal information with this app.",
-                  extras: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "This information ",
-                            style: context.font.headlineMedium,
+            return Scaffold(
+              backgroundColor: context.colour.onSecondary,
+              body: ProgressScreen(
+                title: "You will need to sign-in to Google Drive",
+                description:
+                    "Google will ask you to share personal information with this app.",
+                isLoading: true,
+                extras: [
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: "This information ",
+                          style: context.font.headlineMedium,
+                        ),
+                        TextSpan(
+                          text: "will not ",
+                          style: context.font.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
-                          TextSpan(
-                            text: "will not ",
-                            style: context.font.headlineLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        ),
+                        TextSpan(
+                          text: "leave your phone and is ",
+                          style: context.font.headlineMedium,
+                        ),
+                        TextSpan(
+                          text: "never ",
+                          style: context.font.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
-                          TextSpan(
-                            text: "leave your phone and is ",
-                            style: context.font.headlineMedium,
-                          ),
-                          TextSpan(
-                            text: "never ",
-                            style: context.font.headlineLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "shared with Bull Bitcoin.",
-                            style: context.font.headlineMedium,
-                          ),
-                        ],
-                      ),
-                      textAlign: TextAlign.center,
+                        ),
+                        TextSpan(
+                          text: "shared with Bull Bitcoin.",
+                          style: context.font.headlineMedium,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              );
-            }
-          },
-          success: () {
-            if (state.backupFile.isNotEmpty) {
-              context.pushNamed(
-                AppRoute.keyServerFlow.name,
-                extra: (
-                  state.backupFile,
-                  CurrentKeyServerFlow.enter.toString(),
-                  false
-                ),
-              );
-            }
-          },
-          failure: (message) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              barrierColor: Colors.white,
-              builder: (_) => ErrorScreen(
-                title: 'Oops! Something went wrong',
-                message: message,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             );
           },
+          success: () {
+            if (state.backupFile.isNotEmpty) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                context.pushNamed(
+                  AppRoute.keyServerFlow.name,
+                  extra: (
+                    state.backupFile,
+                    CurrentKeyServerFlow.enter.toString(),
+                    false
+                  ),
+                );
+              });
+            }
+            return _buildScaffold(context);
+          },
+          failure: (message) => _buildScaffold(context),
         );
       },
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            forceMaterialTransparency: true,
-            automaticallyImplyLeading: false,
-            flexibleSpace: TopBar(
-              onBack: () => context.pop(),
-              title: "Choose vault location",
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          onBack: () => context.pop(),
+          title: "Choose vault location",
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            VaultLocations(
+              onProviderSelected: (provider) =>
+                  _handleProviderTap(context, provider),
             ),
-          ),
-          body: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _ProviderTile(
-                  provider: backupProviders[0],
-                  onTap: () => context.read<BackupWalletBloc>().add(
-                        const OnGoogleDriveBackupSelected(),
-                      ),
-                ),
-                const Gap(16),
-                _ProviderTile(
-                  provider: backupProviders[1],
-                  onTap: () {},
-                ),
-                const Gap(16),
-                _ProviderTile(
-                  provider: backupProviders[2],
-                  onTap: () => context.read<BackupWalletBloc>().add(
-                        const OnFileSystemBackupSelected(),
-                      ),
-                ),
-                const Gap(16),
-                _HowToDecideButton(),
-              ],
-            ),
-          ),
-        );
-      },
+            const Gap(16),
+            _HowToDecideButton(),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -201,61 +190,6 @@ class _HowToDecideButton extends StatelessWidget {
             child: HowToDecideSheetBackupOption(),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ProviderTile extends StatelessWidget {
-  final BackupProviderEntity provider;
-  final VoidCallback onTap;
-
-  const _ProviderTile({
-    required this.provider,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: context.colour.onPrimary,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: 48,
-              height: 48,
-              child: Image.asset(
-                provider.iconPath,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const Gap(12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BBText(
-                    provider.name,
-                    style: context.font.headlineMedium,
-                  ),
-                  const Gap(10),
-                  OptionsTag(text: provider.description),
-                ],
-              ),
-            ),
-            const Gap(8),
-            Icon(
-              Icons.arrow_forward,
-              color: context.colour.secondary,
-            ),
-          ],
-        ),
       ),
     );
   }

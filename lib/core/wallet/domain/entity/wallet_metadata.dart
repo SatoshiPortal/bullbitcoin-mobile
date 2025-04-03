@@ -95,7 +95,6 @@ class WalletMetadata with _$WalletMetadata {
     @Default('') String label,
     required Network network,
     @Default(false) bool isDefault,
-    @Default(false) bool isTorEnabledOnStartup,
     @Default(false) bool isEncryptedVaultTested,
     @Default(false) bool isPhysicalBackupTested,
     DateTime? lastestEncryptedBackup,
@@ -113,4 +112,6 @@ class WalletMetadata with _$WalletMetadata {
 
   factory WalletMetadata.fromJson(Map<String, dynamic> json) =>
       _$WalletMetadataFromJson(json);
+
+  bool get isTorEnabledOnStartup => lastestEncryptedBackup != null;
 }

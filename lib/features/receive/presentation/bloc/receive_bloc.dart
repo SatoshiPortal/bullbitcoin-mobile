@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/label_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
@@ -40,6 +42,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         broadcastOriginalTransactionUsecase,
     required WatchPayjoinUsecase watchPayjoinUsecase,
     required WatchSwapUsecase watchSwapUsecase,
+    required CreateLabelUsecase createLabelUsecase,
     Wallet? wallet,
   })  : _getWalletsUsecase = getWalletsUsecase,
         _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
@@ -54,6 +57,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             broadcastOriginalTransactionUsecase,
         _watchPayjoinUsecase = watchPayjoinUsecase,
         _watchSwapUsecase = watchSwapUsecase,
+        _createLabelUsecase = createLabelUsecase,
         _wallet = wallet,
         // Lightning is the default when pressing the receive button on the home screen
         super(const ReceiveState()) {
@@ -64,6 +68,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceiveAmountConfirmed>(_onAmountConfirmed);
     on<ReceiveAmountCurrencyChanged>(_onAmountCurrencyChanged);
     on<ReceiveNoteChanged>(_onNoteChanged);
+    on<ReceiveNoteSaved>(_onNoteSaved);
     on<ReceiveAddressOnlyToggled>(_onAddressOnlyToggled);
     on<ReceiveNewAddressGenerated>(_onNewAddressGenerated);
     on<ReceivePayjoinUpdated>(_onPayjoinUpdated);
@@ -83,6 +88,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final CreateReceiveSwapUsecase _createReceiveSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
+  final CreateLabelUsecase _createLabelUsecase;
   final Wallet? _wallet;
   StreamSubscription<Payjoin>? _payjoinSubscription;
   StreamSubscription<Swap>? _swapSubscription;
@@ -398,6 +404,30 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     emit(
       state.copyWith(note: event.note),
     );
+  }
+
+  Future<void> _onNoteSaved(
+    ReceiveNoteSaved event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    try {
+      final note = state.note;
+      switch (state.type) {
+        case ReceiveType.bitcoin:
+        case ReceiveType.liquid:
+          await _createLabelUsecase.execute(
+            walletId: state.wallet!.id,
+            type: LabelType.address,
+            ref: state.addressOrInvoiceOnly,
+            label: note,
+          );
+        case _:
+          break;
+      }
+    } catch (e) {
+      emit(state.copyWith(error: e));
+      return;
+    }
   }
 
   Future<void> _onAddressOnlyToggled(

@@ -1,9 +1,9 @@
-
 import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
+
 @freezed
 class Wallet with _$Wallet {
   const factory Wallet({
@@ -74,5 +74,27 @@ class Wallet with _$Wallet {
       default:
         return false;
     }
+  }
+
+  String getOrigin() {
+    final networkPath = network == Network.bitcoinMainnet
+        ? '0h'
+        : network == Network.liquidMainnet
+            ? '1667h'
+            : '1h';
+
+    String scriptPath = '';
+    switch (scriptType) {
+      case ScriptType.bip84:
+        scriptPath = '84h';
+      case ScriptType.bip49:
+        scriptPath = '49h';
+      case ScriptType.bip44:
+        scriptPath = '44h';
+    }
+
+    const String accountPath = '0h';
+
+    return '[$masterFingerprint/$scriptPath/$networkPath/$accountPath]';
   }
 }

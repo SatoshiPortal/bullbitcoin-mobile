@@ -126,7 +126,7 @@ class PriceInput extends StatelessWidget {
         const Gap(14),
         Center(
           child: Container(
-            height: 40,
+            height: 50,
             width: 200,
             alignment: Alignment.center,
             child: TextField(
@@ -134,11 +134,15 @@ class PriceInput extends StatelessWidget {
               textAlignVertical: TextAlignVertical.center,
               textAlign: TextAlign.center,
               // expands: true,
-
+              // maxLines: 5,
+              // minLines: 1,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(2),
                   borderSide: BorderSide.none,
+                  // borderSide: BorderSide(
+                  //   color: context.colour.outline,
+                  // ),
                 ),
                 fillColor: context.colour.secondaryFixedDim,
                 filled: true,

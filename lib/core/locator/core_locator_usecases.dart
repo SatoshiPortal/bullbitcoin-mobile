@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repo
 import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/labels/data/label_repository.dart';
+import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
@@ -33,6 +35,7 @@ import 'package:bb_mobile/core/settings/domain/usecases/get_hide_amounts_usecase
 import 'package:bb_mobile/core/settings/domain/usecases/get_language_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/repositories/tor_repository.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization.dart';
@@ -209,20 +212,28 @@ Future<void> registerUsecases() async {
     ),
   );
 
-  // Register GetBalanceUsecase
   locator.registerFactory<GetBalanceUsecase>(
     () => GetBalanceUsecase(
       walletManagerService: locator<WalletManagerService>(),
     ),
   );
 
-  // Register SyncAllWalletsUsecase
   locator.registerFactory<SyncAllWalletsUsecase>(
     () => SyncAllWalletsUsecase(
       walletManagerService: locator<WalletManagerService>(),
+    ),
+  );
+  locator.registerFactory<RestartSwapWatcherUsecase>(
+    () => RestartSwapWatcherUsecase(
       swapWatcherService: locator<SwapWatcherService>(
         instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
       ),
+    ),
+  );
+  locator.registerFactory<CreateLabelUsecase>(
+    () => CreateLabelUsecase(
+      labelRepository: locator<LabelRepository>(),
+      walletManagerService: locator<WalletManagerService>(),
     ),
   );
 }
