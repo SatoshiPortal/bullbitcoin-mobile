@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
@@ -327,7 +328,10 @@ class WalletManagerServiceImpl implements WalletManagerService {
       throw WalletNotFoundException(walletId);
     }
 
+    // TODO: Should we get all the electrum servers and try another one if the
+    //  first one fails?
     final electrumServer = await _electrumServerRepository.getElectrumServer(
+      provider: ElectrumServerProvider.blockstream,
       network: metadata.network,
     );
     try {
@@ -500,7 +504,10 @@ class WalletManagerServiceImpl implements WalletManagerService {
         dbPath: dbPath,
       );
     } else {
+      // TODO: Should we get all the electrum servers and try another one if the
+      //  first one fails?
       final electrumServer = await _electrumServerRepository.getElectrumServer(
+        provider: ElectrumServerProvider.blockstream,
         network: walletMetadata.network,
       );
 
@@ -536,7 +543,10 @@ class WalletManagerServiceImpl implements WalletManagerService {
         dbPath: dbPath,
       );
     } else {
+      // TODO: Should we get all the electrum servers and try another one if the
+      //  first one fails?
       final electrumServer = await _electrumServerRepository.getElectrumServer(
+        provider: ElectrumServerProvider.blockstream,
         network: walletMetadata.network,
       );
       return LwkWalletRepositoryImpl.private(

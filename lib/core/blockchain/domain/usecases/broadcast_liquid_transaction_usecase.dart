@@ -2,8 +2,6 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
-
 class BroadcastLiquidTransactionUsecase {
   final LiquidBlockchainRepository _liquidBlockchain;
 
@@ -11,12 +9,14 @@ class BroadcastLiquidTransactionUsecase {
     required LiquidBlockchainRepository liquidBlockchainRepository,
   }) : _liquidBlockchain = liquidBlockchainRepository;
 
-  Future<String> execute(Uint8List transaction,
-      {required Network network}) async {
+  Future<String> execute(
+    Uint8List transaction, {
+    required bool isTestnet,
+  }) async {
     try {
       final txId = await _liquidBlockchain.broadcastTransaction(
         transaction,
-        network: network,
+        isTestnet: isTestnet,
       );
 
       return txId;

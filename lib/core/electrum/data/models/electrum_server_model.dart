@@ -1,5 +1,5 @@
-
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -7,48 +7,129 @@ part 'electrum_server_model.freezed.dart';
 part 'electrum_server_model.g.dart';
 
 @freezed
-class ElectrumServerModel with _$ElectrumServerModel {
-  factory ElectrumServerModel({
+sealed class ElectrumServerModel with _$ElectrumServerModel {
+  factory ElectrumServerModel.custom({
     required String url,
     String? socks5,
-    required int retry,
-    int? timeout,
-    required int stopGap,
-    required bool validateDomain,
+    @Default(20) int stopGap,
+    @Default(5) int timeout,
+    @Default(5) int retry,
+    @Default(true) bool validateDomain,
     required bool isTestnet,
     required bool isLiquid,
-  }) = _ElectrumServerModel;
+  }) = CustomElectrumServerModel;
+  factory ElectrumServerModel.bullBitcoin({
+    @Default(20) int stopGap,
+    @Default(5) int timeout,
+    @Default(5) int retry,
+    @Default(true) bool validateDomain,
+    required bool isTestnet,
+    required bool isLiquid,
+  }) = BullBitcoinElectrumServerModel;
+  factory ElectrumServerModel.blockstream({
+    @Default(20) int stopGap,
+    @Default(5) int timeout,
+    @Default(5) int retry,
+    @Default(true) bool validateDomain,
+    required bool isTestnet,
+    required bool isLiquid,
+  }) = BlockstreamElectrumServerModel;
   const ElectrumServerModel._();
 
   factory ElectrumServerModel.fromJson(Map<String, dynamic> json) =>
       _$ElectrumServerModelFromJson(json);
 
   factory ElectrumServerModel.fromEntity(ElectrumServer entity) {
-    return ElectrumServerModel(
-      url: entity.url,
-      socks5: entity.socks5,
-      retry: entity.retry,
-      timeout: entity.timeout,
-      stopGap: entity.stopGap,
-      validateDomain: entity.validateDomain,
-      isTestnet: entity.network.isTestnet,
-      isLiquid: entity.network.isLiquid,
-    );
+    switch (entity.provider) {
+      case ElectrumServerProvider.bullBitcoin:
+        return BullBitcoinElectrumServerModel(
+          retry: entity.retry,
+          timeout: entity.timeout,
+          stopGap: entity.stopGap,
+          validateDomain: entity.validateDomain,
+          isTestnet: entity.network.isTestnet,
+          isLiquid: entity.network.isLiquid,
+        );
+      case ElectrumServerProvider.blockstream:
+        return BlockstreamElectrumServerModel(
+          retry: entity.retry,
+          timeout: entity.timeout,
+          stopGap: entity.stopGap,
+          validateDomain: entity.validateDomain,
+          isTestnet: entity.network.isTestnet,
+          isLiquid: entity.network.isLiquid,
+        );
+      case ElectrumServerProvider.custom:
+        return CustomElectrumServerModel(
+          url: entity.url,
+          socks5: entity.socks5,
+          retry: entity.retry,
+          timeout: entity.timeout,
+          stopGap: entity.stopGap,
+          validateDomain: entity.validateDomain,
+          isTestnet: entity.network.isTestnet,
+          isLiquid: entity.network.isLiquid,
+        );
+    }
   }
 
   ElectrumServer toEntity() {
-    // toEntity is always to a custom ElectrumServer, since only the custom ones
-    //  should be stored as a model. The default ones are defined with constants
-    //  in the entity class.
-    return ElectrumServer.custom(
+    final network = Network.fromEnvironment(
+      isTestnet: isTestnet,
+      isLiquid: isLiquid,
+    );
+
+    final electrumServer = ElectrumServer(
+      provider: provider,
       url: url,
-      network:
-          Network.fromEnvironment(isTestnet: isTestnet, isLiquid: isLiquid),
-      socks5: socks5,
+      network: network,
       stopGap: stopGap,
-      timeout: timeout ?? 5,
+      timeout: timeout,
       retry: retry,
       validateDomain: validateDomain,
     );
+
+    return electrumServer;
+  }
+
+  String get url {
+    final network = Network.fromEnvironment(
+      isTestnet: isTestnet,
+      isLiquid: isLiquid,
+    );
+    return switch (this) {
+      BullBitcoinElectrumServerModel _ => switch (network) {
+          Network.bitcoinMainnet => ApiServiceConstants.bbElectrumUrl,
+          Network.bitcoinTestnet => ApiServiceConstants.bbElectrumTestUrl,
+          Network.liquidMainnet => ApiServiceConstants.bbLiquidElectrumUrlPath,
+          Network.liquidTestnet =>
+            ApiServiceConstants.bbLiquidElectrumTestUrlPath,
+        },
+      BlockstreamElectrumServerModel _ => switch (network) {
+          Network.bitcoinMainnet => ApiServiceConstants.publicElectrumUrl,
+          Network.bitcoinTestnet => ApiServiceConstants.publicElectrumTestUrl,
+          Network.liquidMainnet =>
+            ApiServiceConstants.publicLiquidElectrumUrlPath,
+          Network.liquidTestnet =>
+            ApiServiceConstants.publicliquidElectrumTestUrlPath,
+        },
+      final CustomElectrumServerModel custom => custom.url,
+    };
+  }
+
+  ElectrumServerProvider get provider {
+    return switch (this) {
+      BullBitcoinElectrumServerModel _ => ElectrumServerProvider.bullBitcoin,
+      BlockstreamElectrumServerModel _ => ElectrumServerProvider.blockstream,
+      CustomElectrumServerModel _ => ElectrumServerProvider.custom,
+    };
+  }
+
+  String? get socks5 {
+    return switch (this) {
+      final CustomElectrumServerModel custom => custom.socks5,
+      BullBitcoinElectrumServerModel _ => null,
+      BlockstreamElectrumServerModel _ => null,
+    };
   }
 }

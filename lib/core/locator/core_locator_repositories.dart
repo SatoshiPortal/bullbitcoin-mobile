@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_rep
 import 'package:bb_mobile/core/blockchain/data/repository/liquid_blockchain_repository_impl.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
-import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_datasource.dart';
+import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
@@ -83,7 +83,7 @@ Future<void> registerRepositories() async {
       await Hive.openBox<String>(HiveBoxNameConstants.electrumServers);
   locator.registerLazySingleton<ElectrumServerRepository>(
     () => ElectrumServerRepositoryImpl(
-      electrumServerDatasource: ElectrumServerDatasource(
+      electrumServerStorageDatasource: ElectrumServerStorageDatasource(
         electrumServerStorage:
             HiveStorageDatasourceImpl<String>(electrumServersBox),
       ),
@@ -118,8 +118,12 @@ Future<void> registerRepositories() async {
   locator.registerLazySingleton<PayjoinRepository>(
     () => PayjoinRepositoryImpl(
       payjoinDatasource: pdkPayjoinDataSource,
-      blockchainDatasource: locator<BitcoinBlockchainDatasource>(),
-      electrumServerDatasource: locator<ElectrumServerDatasource>(),
+      blockchainDatasource: locator<BitcoinBlockchainDatasource>(
+        instanceName: LocatorInstanceNameConstants
+            .bdkBitcoinBlockchainDatasourceInstanceName,
+      ),
+      electrumServerStorageDatasource:
+          locator<ElectrumServerStorageDatasource>(),
     ),
   );
   locator.registerLazySingleton<LiquidBlockchainRepository>(
@@ -128,7 +132,8 @@ Future<void> registerRepositories() async {
         instanceName: LocatorInstanceNameConstants
             .lwkLiquidBlockchainDatasourceInstanceName,
       ),
-      electrumServerDatasource: locator<ElectrumServerDatasource>(),
+      electrumServerStorageDatasource:
+          locator<ElectrumServerStorageDatasource>(),
     ),
   );
   locator.registerLazySingleton<BitcoinBlockchainRepository>(
@@ -137,7 +142,8 @@ Future<void> registerRepositories() async {
         instanceName: LocatorInstanceNameConstants
             .bdkBitcoinBlockchainDatasourceInstanceName,
       ),
-      electrumServerDatasource: locator<ElectrumServerDatasource>(),
+      electrumServerStorageDatasource:
+          locator<ElectrumServerStorageDatasource>(),
     ),
   );
   locator.registerLazySingleton<SwapRepository>(

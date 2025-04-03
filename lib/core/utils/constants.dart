@@ -6,7 +6,9 @@ class SettingsConstants {
   static const languageKey = 'language';
   static const currencyKey = 'currency';
   static const hideAmountsKey = 'hideAmounts';
-  static const electrumServerKeyPrefix = 'electrumServer';
+  static const blockstreamElectrumServerKeyPrefix = 'blockstreamElectrumServer';
+  static const bullBitcoinElectrumServerKeyPrefix = 'bullBitcoinElectrumServer';
+  static const customElectrumServerKeyPrefix = 'customElectrumServer';
   static const defaultCurrencyCode = 'CAD';
 }
 

@@ -2,29 +2,39 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
-import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_datasource.dart';
+import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
+import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 
 class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
   final LiquidBlockchainDatasource _blockchain;
-  final ElectrumServerDatasource _electrumServer;
+  final ElectrumServerStorageDatasource _electrumServerStorage;
 
   const LiquidBlockchainRepositoryImpl({
     required LiquidBlockchainDatasource blockchainDatasource,
-    required ElectrumServerDatasource electrumServerDatasource,
+    required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   })  : _blockchain = blockchainDatasource,
-        _electrumServer = electrumServerDatasource;
+        _electrumServerStorage = electrumServerStorageDatasource;
 
   @override
   Future<String> broadcastTransaction(
     Uint8List transaction, {
-    required Network network,
+    required bool isTestnet,
   }) async {
-    final electrumServerModel = await _electrumServer.get(network: network);
-
-    if (electrumServerModel == null) {
-      throw Exception('No electrum server found for network: $network');
-    }
+    // Todo: Should we first try the custom and only if it fails or doesn't exist
+    // try the default bullbitcoin and blockstream servers?
+    final electrumServerModel = await _electrumServerStorage.getByProvider(
+          ElectrumServerProvider.blockstream,
+          network: Network.fromEnvironment(
+            isTestnet: isTestnet,
+            isLiquid: true,
+          ),
+        ) ??
+        ElectrumServerModel.blockstream(
+          isTestnet: isTestnet,
+          isLiquid: true,
+        );
 
     return _blockchain.broadcastTransaction(
       transaction,

@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_datasource.dart';
+import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
+import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
@@ -18,17 +20,17 @@ import 'package:synchronized/synchronized.dart';
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final PayjoinDatasource _source;
   final BitcoinBlockchainDatasource _blockchain;
-  final ElectrumServerDatasource _electrumServer;
+  final ElectrumServerStorageDatasource _electrumServerStorage;
   // Lock to prevent the same utxo from being used in multiple payjoin proposals
   final Lock _lock;
 
   PayjoinRepositoryImpl({
     required PayjoinDatasource payjoinDatasource,
     required BitcoinBlockchainDatasource blockchainDatasource,
-    required ElectrumServerDatasource electrumServerDatasource,
+    required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   })  : _source = payjoinDatasource,
         _blockchain = blockchainDatasource,
-        _electrumServer = electrumServerDatasource,
+        _electrumServerStorage = electrumServerStorageDatasource,
         _lock = Lock();
 
   @override
@@ -191,11 +193,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required String finalizedPsbt,
     required Network network,
   }) async {
-    final electrumServer = await _electrumServer.get(network: network);
-
-    if (electrumServer == null) {
-      throw Exception('No electrum server found for network: $network');
-    }
+    // TODO: Should we get all the electrum servers and try another one if the
+    //  first one fails?
+    final electrumServer = await _electrumServerStorage.getByProvider(
+          ElectrumServerProvider.blockstream,
+          network: network,
+        ) ??
+        ElectrumServerModel.blockstream(
+          isTestnet: network.isTestnet,
+          isLiquid: network.isLiquid,
+        );
 
     final txId = await _blockchain.broadcastPsbt(
       finalizedPsbt,
@@ -216,11 +223,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required Uint8List originalTxBytes,
     required Network network,
   }) async {
-    final electrumServer = await _electrumServer.get(network: network);
-
-    if (electrumServer == null) {
-      throw Exception('No electrum server found for network: $network');
-    }
+    // TODO: Should we get all the electrum servers and try another one if the
+    //  first one fails?
+    final electrumServer = await _electrumServerStorage.getByProvider(
+          ElectrumServerProvider.blockstream,
+          network: network,
+        ) ??
+        ElectrumServerModel.blockstream(
+          isTestnet: network.isTestnet,
+          isLiquid: network.isLiquid,
+        );
 
     final txId = await _blockchain.broadcastTransaction(
       originalTxBytes,

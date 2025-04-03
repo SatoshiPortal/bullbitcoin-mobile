@@ -1,7 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
 
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
-
 class BroadcastBitcoinTransactionUsecase {
   final BitcoinBlockchainRepository _bitcoinBlockchain;
 
@@ -9,11 +7,11 @@ class BroadcastBitcoinTransactionUsecase {
     required BitcoinBlockchainRepository bitcoinBlockchainRepository,
   }) : _bitcoinBlockchain = bitcoinBlockchainRepository;
 
-  Future<String> execute(String psbt, {required Network network}) async {
+  Future<String> execute(String psbt, {required bool isTestnet}) async {
     try {
       final txId = await _bitcoinBlockchain.broadcastPsbt(
         psbt,
-        network: network,
+        isTestnet: isTestnet,
       );
 
       return txId;
