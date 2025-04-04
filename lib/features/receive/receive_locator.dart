@@ -13,7 +13,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_use_case.dart';
@@ -25,12 +25,12 @@ class ReceiveLocator {
     // Use cases
     locator.registerFactory<GetReceiveAddressUsecase>(
       () => GetReceiveAddressUsecase(
-        walletManager: locator<WalletManagerService>(),
+        walletRepository: locator<WalletRepository>(),
       ),
     );
     locator.registerFactory<CreateReceiveSwapUsecase>(
       () => CreateReceiveSwapUsecase(
-        walletManager: locator<WalletManagerService>(),
+        walletRepository: locator<WalletRepository>(),
         swapRepository: locator<SwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,

@@ -1,8 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_balance_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/sync_all_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -13,12 +11,8 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({
     required GetWalletsUsecase getWalletsUsecase,
-    required SyncAllWalletsUsecase syncAllWalletsUsecase,
-    required GetBalanceUsecase getBalanceUsecase,
     required RestartSwapWatcherUsecase restartSwapWatcherUsecase,
   })  : _getWalletsUsecase = getWalletsUsecase,
-        _syncAllWalletsUsecase = syncAllWalletsUsecase,
-        _getBalanceUsecase = getBalanceUsecase,
         _restartSwapWatcherUsecase = restartSwapWatcherUsecase,
         super(const HomeState()) {
     on<HomeStarted>(_onStarted);
@@ -27,8 +21,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
-  final SyncAllWalletsUsecase _syncAllWalletsUsecase;
-  final GetBalanceUsecase _getBalanceUsecase;
   final RestartSwapWatcherUsecase _restartSwapWatcherUsecase;
 
   Future<void> _onStarted(
@@ -83,20 +75,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         ),
       );
       await _restartSwapWatcherUsecase.execute();
-      final wallets = await _syncAllWalletsUsecase.execute();
-      final List<Wallet> updatedWallets = [];
-      for (final w in wallets) {
-        final bal = await _getBalanceUsecase.execute(
-          walletId: w.id,
-        );
-
-        updatedWallets.add(w.copyWith(balanceSat: bal.totalSat));
-      }
+      // The GetWalletsUsecase will sync the wallets if sync is not false
+      final wallets = await _getWalletsUsecase.execute();
 
       emit(
         state.copyWith(
           isSyncingTransactions: false,
-          wallets: updatedWallets,
+          wallets: wallets,
         ),
       );
     } catch (e) {

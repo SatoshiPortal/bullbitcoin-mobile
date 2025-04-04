@@ -4,19 +4,20 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:flutter/material.dart';
 
 class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
   final PayjoinRepository _payjoin;
-  final WalletManagerService _walletManager;
+  final WalletRepository _wallet;
   final StreamController<Payjoin> _payjoinStreamController;
 
   PayjoinWatcherServiceImpl({
     required PayjoinRepository payjoinRepository,
-    required WalletManagerService walletManagerService,
+    required WalletRepository walletRepository,
   })  : _payjoin = payjoinRepository,
-        _walletManager = walletManagerService,
+        _wallet = walletRepository,
         _payjoinStreamController = StreamController<Payjoin>.broadcast() {
     // Listen to payjoin events from the repository and process them
     _payjoin.requestsForReceivers.listen((payjoin) async {
@@ -99,12 +100,15 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
     // Get the correct network from the wallet of the payjoin to make sure the
     //  tx is broadcasted on the correct network.
     final walletId = payjoin.walletId;
-    final wallet = await _walletManager.getWallet(walletId);
-    if (wallet == null) {
+    Wallet wallet;
+    try {
+      wallet = await _wallet.getWallet(walletId);
+    } catch (e) {
       debugPrint('Wallet not found for id: $walletId');
       // TODO: Mark the payjoin as failed
       return;
     }
+
     final network = wallet.network;
 
     try {
@@ -140,9 +144,12 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
       }
       // Get the network from the wallet of the payjoin to make sure the
       //  tx is broadcasted on the correct network.
-      final wallet = await _walletManager.getWallet(payjoin.walletId);
-      if (wallet == null) {
-        debugPrint('Wallet not found for id: ${payjoin.walletId}');
+      final walletId = payjoin.walletId;
+      Wallet wallet;
+      try {
+        wallet = await _wallet.getWallet(walletId);
+      } catch (e) {
+        debugPrint('Wallet not found for id: $walletId');
         // TODO: Mark the payjoin as failed
         return;
       }

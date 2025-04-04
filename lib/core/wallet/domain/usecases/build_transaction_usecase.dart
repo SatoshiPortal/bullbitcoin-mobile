@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.da
 import 'package:bb_mobile/core/wallet/data/repository/bdk_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class BuildTransactionUsecase {

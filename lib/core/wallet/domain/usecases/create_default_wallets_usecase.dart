@@ -2,26 +2,26 @@ import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:flutter/material.dart';
 
 class CreateDefaultWalletsUsecase {
   final SeedRepository _seedRepository;
   final SettingsRepository _settingsRepository;
   final MnemonicSeedFactory _mnemonicSeedFactory;
-  final WalletManagerService _walletManager;
+  final WalletRepository _wallet;
 
   CreateDefaultWalletsUsecase({
     required SeedRepository seedRepository,
     required SettingsRepository settingsRepository,
     required MnemonicSeedFactory mnemonicSeedFactory,
-    required WalletManagerService walletManager,
+    required WalletRepository walletRepository,
   })  : _seedRepository = seedRepository,
         _settingsRepository = settingsRepository,
         _mnemonicSeedFactory = mnemonicSeedFactory,
-        _walletManager = walletManager;
+        _wallet = walletRepository;
 
-  Future<void> execute({
+  Future<List<Wallet>> execute({
     List<String>? mnemonicWords,
     String? passphrase,
   }) async {
@@ -52,14 +52,14 @@ class CreateDefaultWalletsUsecase {
           environment.isMainnet ? Network.liquidMainnet : Network.liquidTestnet;
 
       // The default wallets should be 1 Bitcoin and 1 Liquid wallet.
-      await Future.wait([
-        _walletManager.createWallet(
+      final defaultWallets = await Future.wait([
+        _wallet.createWallet(
           seed: mnemonicSeed,
           network: bitcoinNetwork,
           scriptType: scriptType,
           isDefault: true,
         ),
-        _walletManager.createWallet(
+        _wallet.createWallet(
           seed: mnemonicSeed,
           network: liquidNetwork,
           scriptType: scriptType,
@@ -68,9 +68,16 @@ class CreateDefaultWalletsUsecase {
       ]);
 
       debugPrint('Default wallets created');
+
+      return defaultWallets;
     } catch (e) {
-      //TODO: Handle error - delete all wallets
-      rethrow;
+      throw CreateDefaultWalletsException(e.toString());
     }
   }
+}
+
+class CreateDefaultWalletsException implements Exception {
+  final String message;
+
+  CreateDefaultWalletsException(this.message);
 }

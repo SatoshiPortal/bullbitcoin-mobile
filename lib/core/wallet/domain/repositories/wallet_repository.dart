@@ -17,13 +17,30 @@ abstract class WalletRepository {
     required String label,
   });
   // This should first sync to get the up to date wallet and balance
-  Future<Wallet> getWallet(String walletId);
+  Future<Wallet> getWallet(
+    String walletId, {
+    bool sync = true,
+  });
   // These should also sync the wallets before returning them
   Future<List<Wallet>> getWallets({
     Environment? environment,
     bool? onlyDefaults,
     bool? onlyBitcoin,
     bool? onlyLiquid,
+    bool sync = true,
+  });
+  // TODO: The recoverbull backup functionality should be moved to the wallet repo
+  // and instead of having the updateBackupInfo, doing the restore and backup create through the Wallet repository
+  Future<void> updateBackupInfo({
+    required bool isEncryptedVaultTested,
+    required bool isPhysicalBackupTested,
+    required DateTime? latestEncryptedBackup,
+    required DateTime? latestPhysicalBackup,
+    required String walletId,
+  });
+  Future<void> updateEncryptedBackupTime(
+    DateTime time, {
+    required String walletId,
   });
   //Future<void> sync(String walletId);
   //Future<BigInt> geTotalBalanceSat(); // Get it from the Wallet entity

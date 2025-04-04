@@ -1,25 +1,24 @@
 // TODO: ?
 // TODO: string invoice, walletId and return LnSendSwap
 
-
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class CreateSendSwapUsecase {
-  final WalletManagerService _walletManager;
+  final WalletRepository _walletRepository;
   final SwapRepository _swapRepository;
   final SwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
 
   CreateSendSwapUsecase({
-    required WalletManagerService walletManager,
+    required WalletRepository walletRepository,
     required SwapRepository swapRepository,
     required SwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
-  })  : _walletManager = walletManager,
+  })  : _walletRepository = walletRepository,
         _swapRepository = swapRepository,
         _swapRepositoryTestnet = swapRepositoryTestnet,
         _seedRepository = seedRepository;
@@ -31,10 +30,8 @@ class CreateSendSwapUsecase {
     required String invoice,
   }) async {
     try {
-      final wallet = await _walletManager.getWallet(walletId);
-      if (wallet == null) {
-        throw Exception('Wallet not found');
-      }
+      final wallet = await _walletRepository.getWallet(walletId);
+
       final swapRepository =
           wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
       final limits = await _swapRepository.getSwapLimits(type: type);

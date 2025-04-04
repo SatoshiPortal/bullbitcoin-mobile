@@ -1,14 +1,14 @@
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class GetWalletTransactionsUsecase {
-  final WalletManagerService _manager;
+  final WalletRepository _wallet;
   final SwapRepository _testnetSwapRepository;
   final SwapRepository _mainnetSwapRepository;
 
   GetWalletTransactionsUsecase({
-    required WalletManagerService walletManager,
+    required WalletRepository walletRepository,
     required SwapRepository testnetSwapRepository,
     required SwapRepository mainnetSwapRepository,
   })  : _manager = walletManager,

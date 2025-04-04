@@ -1,6 +1,5 @@
-
 import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class SignTransactionUsecase {

@@ -1,18 +1,17 @@
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class ImportXpubUsecase {
   final SettingsRepository _settings;
-  final WalletManagerService _walletManager;
+  final WalletRepository _wallet;
 
   ImportXpubUsecase({
     required SettingsRepository settingsRepository,
-    required WalletManagerService walletManagerService,
+    required WalletRepository walletRepository,
   })  : _settings = settingsRepository,
-        _walletManager = walletManagerService;
+        _wallet = walletRepository;
 
   Future<Wallet> execute({
     required String xpub,
@@ -25,7 +24,7 @@ class ImportXpubUsecase {
           ? Network.bitcoinMainnet
           : Network.bitcoinTestnet;
 
-      final wallet = await _walletManager.importWatchOnlyWallet(
+      final wallet = await _wallet.importWatchOnlyWallet(
         xpub: xpub,
         network: bitcoinNetwork,
         scriptType: scriptType,

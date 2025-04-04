@@ -45,14 +45,11 @@ import 'package:bb_mobile/core/tor/domain/repositories/tor_repository.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/build_transaction_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_balance_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/sync_all_wallets_usecase.dart';
-import 'package:bb_mobile/features/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -61,7 +58,7 @@ Future<void> registerUsecases() async {
   locator.registerFactory<CreateBackupKeyFromDefaultSeedUsecase>(
     () => CreateBackupKeyFromDefaultSeedUsecase(
       seedRepository: locator<SeedRepository>(),
-      walletMetadataRepository: locator<WalletMetadataRepository>(),
+      walletRepository: locator<WalletRepository>(),
     ),
   );
   // Register InitializeTorUsecase using TorRepository
@@ -70,7 +67,7 @@ Future<void> registerUsecases() async {
   );
   locator.registerFactory<CheckForTorInitializationOnStartupUsecase>(
     () => CheckForTorInitializationOnStartupUsecase(
-      walletMetadataRepository: locator<WalletMetadataRepository>(),
+      walletRepository: locator<WalletRepository>(),
     ),
   );
   locator.registerFactory<ConnectToGoogleDriveUsecase>(
@@ -99,8 +96,7 @@ Future<void> registerUsecases() async {
   locator.registerFactory<RestoreEncryptedVaultFromBackupKeyUsecase>(
     () => RestoreEncryptedVaultFromBackupKeyUsecase(
       recoverBullRepository: locator<RecoverBullRepository>(),
-      walletManagerService: locator<WalletManagerService>(),
-      walletMetadataRepository: locator<WalletMetadataRepository>(),
+      walletRepository: locator<WalletRepository>(),
       createDefaultWalletsUsecase: locator<CreateDefaultWalletsUsecase>(),
     ),
   );
@@ -132,10 +128,18 @@ Future<void> registerUsecases() async {
   locator.registerFactory<GetCurrencyUsecase>(
     () => GetCurrencyUsecase(settingsRepository: locator<SettingsRepository>()),
   );
+  locator.registerFactory<CreateDefaultWalletsUsecase>(
+    () => CreateDefaultWalletsUsecase(
+      seedRepository: locator<SeedRepository>(),
+      settingsRepository: locator<SettingsRepository>(),
+      mnemonicSeedFactory: locator<MnemonicSeedFactory>(),
+      walletRepository: locator<WalletRepository>(),
+    ),
+  );
   locator.registerFactory<GetWalletsUsecase>(
     () => GetWalletsUsecase(
       settingsRepository: locator<SettingsRepository>(),
-      walletManager: locator<WalletManagerService>(),
+      walletRepository: locator<WalletRepository>(),
     ),
   );
   locator.registerFactory<ReceiveWithPayjoinUsecase>(
@@ -213,7 +217,7 @@ Future<void> registerUsecases() async {
   );
   locator.registerFactory<BroadcastOriginalTransactionUsecase>(
     () => BroadcastOriginalTransactionUsecase(
-      walletMetadataRepository: locator<WalletMetadataRepository>(),
+      walletRepository: locator<WalletRepository>(),
       payjoinRepository: locator<PayjoinRepository>(),
     ),
   );
@@ -221,19 +225,8 @@ Future<void> registerUsecases() async {
     () => RecoverOrCreateWalletUsecase(
       settingsRepository: locator<SettingsRepository>(),
       mnemonicSeedFactory: locator<MnemonicSeedFactory>(),
-      walletManager: locator<WalletManagerService>(),
-    ),
-  );
-
-  locator.registerFactory<GetBalanceUsecase>(
-    () => GetBalanceUsecase(
-      walletManagerService: locator<WalletManagerService>(),
-    ),
-  );
-
-  locator.registerFactory<SyncAllWalletsUsecase>(
-    () => SyncAllWalletsUsecase(
-      walletManagerService: locator<WalletManagerService>(),
+      walletRepository: locator<WalletRepository>(),
+      seedRepository: locator<SeedRepository>(),
     ),
   );
   locator.registerFactory<RestartSwapWatcherUsecase>(
@@ -261,7 +254,7 @@ Future<void> registerUsecases() async {
   locator.registerFactory<CreateLabelUsecase>(
     () => CreateLabelUsecase(
       labelRepository: locator<LabelRepository>(),
-      walletManagerService: locator<WalletManagerService>(),
+      walletRepository: locator<WalletRepository>(),
     ),
   );
 }

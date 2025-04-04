@@ -3,21 +3,18 @@ import 'dart:async';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class SwapWatcherServiceImpl implements SwapWatcherService {
-  final WalletManagerService _walletManager;
   final BoltzSwapRepositoryImpl _boltzRepo;
 
   final StreamController<Swap> _swapStreamController =
       StreamController<Swap>.broadcast();
 
   SwapWatcherServiceImpl({
-    required WalletManagerService walletManager,
     required BoltzSwapRepositoryImpl boltzRepo,
-  })  : _walletManager = walletManager,
-        _boltzRepo = boltzRepo {
+  }) : _boltzRepo = boltzRepo {
     startWatching();
   }
 

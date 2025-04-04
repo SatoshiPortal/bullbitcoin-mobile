@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class GetWalletUtxosUsecase {
   final WalletManagerService _walletService;

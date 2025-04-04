@@ -1,14 +1,30 @@
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class CheckForTorInitializationOnStartupUsecase {
-  final WalletMetadataRepository walletMetadataRepository;
+  final WalletRepository _wallet;
 
   CheckForTorInitializationOnStartupUsecase({
-    required this.walletMetadataRepository,
-  });
+    required WalletRepository walletRepository,
+  }) : _wallet = walletRepository;
 
   Future<bool> execute() async {
-    final defaultWallet = await walletMetadataRepository.getDefault();
-    return defaultWallet.isTorEnabledOnStartup;
+    try {
+      final defaultWallets = await _wallet.getWallets(
+        onlyDefaults: true,
+        onlyBitcoin: true,
+        environment: Environment.mainnet,
+        sync: false,
+      );
+
+      if (defaultWallets.isEmpty) {
+        return false;
+      }
+
+      return defaultWallets[0].latestEncryptedBackup != null;
+    } catch (e) {
+      // Handle any exceptions that may occur
+      return false;
+    }
   }
 }

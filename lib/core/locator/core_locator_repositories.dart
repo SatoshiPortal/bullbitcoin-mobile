@@ -38,9 +38,11 @@ import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/core/tor/data/repository/tor_repository_impl.dart';
 import 'package:bb_mobile/core/tor/domain/repositories/tor_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/repository/wallet_metadata_repository_impl.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
+import 'package:bb_mobile/core/wallet/data/repository/wallet_repository_impl.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
@@ -69,24 +71,19 @@ Future<void> registerRepositories() async {
   );
   // await locator.isReady<RecoverBullRepository>();
 
-  final walletMetadataBox =
-      await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
-  locator.registerLazySingleton<WalletMetadataRepository>(
-    () => WalletMetadataRepositoryImpl(
-      source: WalletMetadataDatasource(
-        walletMetadataStorage:
-            HiveStorageDatasourceImpl<String>(walletMetadataBox),
-      ),
-    ),
-  );
-  final electrumServersBox =
-      await Hive.openBox<String>(HiveBoxNameConstants.electrumServers);
   locator.registerLazySingleton<ElectrumServerRepository>(
     () => ElectrumServerRepositoryImpl(
-      electrumServerStorageDatasource: ElectrumServerStorageDatasource(
-        electrumServerStorage:
-            HiveStorageDatasourceImpl<String>(electrumServersBox),
-      ),
+      electrumServerStorageDatasource:
+          locator<ElectrumServerStorageDatasource>(),
+    ),
+  );
+  locator.registerLazySingleton<WalletRepository>(
+    () => WalletRepositoryImpl(
+      walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+      bdkWalletDatasource: locator<BdkWalletDatasource>(),
+      lwkWalletDatasource: locator<LwkWalletDatasource>(),
+      electrumServerStorageDatasource:
+          locator<ElectrumServerStorageDatasource>(),
     ),
   );
   locator.registerLazySingleton<FileSystemRepository>(

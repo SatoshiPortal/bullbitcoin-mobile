@@ -5,11 +5,11 @@ import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_use_case.dart';
 
 class CreateReceiveSwapUsecase {
-  final WalletManagerService _walletManager;
+  final WalletRepository _walletRepository;
   final SwapRepository _swapRepository;
   final SwapRepository _swapRepositoryTestnet;
   final SeedRepository _seedRepository;
@@ -17,13 +17,13 @@ class CreateReceiveSwapUsecase {
   final LabelRepository _labelRepository;
 
   CreateReceiveSwapUsecase({
-    required WalletManagerService walletManager,
+    required WalletRepository walletRepository,
     required SwapRepository swapRepository,
     required SwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
     required GetReceiveAddressUsecase getNewAddressUsecase,
     required LabelRepository labelRepository,
-  })  : _walletManager = walletManager,
+  })  : _walletRepository = walletRepository,
         _swapRepository = swapRepository,
         _swapRepositoryTestnet = swapRepositoryTestnet,
         _seedRepository = seedRepository,
@@ -37,10 +37,8 @@ class CreateReceiveSwapUsecase {
     String? description,
   }) async {
     try {
-      final wallet = await _walletManager.getWallet(walletId);
-      if (wallet == null) {
-        throw Exception('Wallet not found');
-      }
+      final wallet = await _walletRepository.getWallet(walletId);
+
       final swapRepository =
           wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
       final limits = await _swapRepository.getSwapLimits(

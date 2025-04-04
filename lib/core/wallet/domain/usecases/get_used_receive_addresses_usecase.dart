@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class GetUsedReceiveAddressesUsecase {
   final WalletManagerService _walletManager;
 
   GetUsedReceiveAddressesUsecase({
-    required WalletManagerService walletManager,
+    required WalletRepository walletRepository,
   }) : _walletManager = walletManager;
 
   Future<List<Address>> execute({

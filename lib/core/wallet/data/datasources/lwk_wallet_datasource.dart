@@ -1,15 +1,14 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/lwk_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
-import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
@@ -74,7 +73,10 @@ class LwkWalletDatasource {
     final balances = await lwkWallet.balances();
 
     final lBtcAssetBalance = balances.firstWhere((balance) {
-      return balance.assetId == _lBtcAssetId;
+      final assetId = _lBtcAssetId(
+        Network.fromEnvironment(isTestnet: wallet.isTestnet, isLiquid: true),
+      );
+      return balance.assetId == assetId;
     }).value;
 
     final balance = BalanceModel(
@@ -154,7 +156,7 @@ class LwkWalletDatasource {
 
   Future<void> sync({
     required PublicLwkWalletModel wallet,
-    required ElectrumServer electrumServer,
+    required ElectrumServerModel electrumServer,
   }) async {
     final lwkWallet = await _createPublicWallet(
       ctDescriptor: wallet.combinedCtDescriptor,
@@ -182,7 +184,10 @@ class LwkWalletDatasource {
 
     // return balance;
     for (final utxo in utxos) {
-      if (utxo.unblinded.asset != _lBtcAssetId) {
+      final assetId = _lBtcAssetId(
+        Network.fromEnvironment(isTestnet: wallet.isTestnet, isLiquid: true),
+      );
+      if (utxo.unblinded.asset != assetId) {
         continue;
       }
 
