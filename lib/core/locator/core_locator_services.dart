@@ -15,7 +15,6 @@ Future<void> registerServices() async {
   // add swap watcher service
   locator.registerLazySingleton<SwapWatcherService>(
     () => SwapWatcherServiceImpl(
-      walletRepo: locator<WalletRepository>(),
       boltzRepo: locator<SwapRepository>(
         instanceName:
             LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
@@ -27,7 +26,6 @@ Future<void> registerServices() async {
   // add swap watcher service
   locator.registerLazySingleton<SwapWatcherService>(
     () => SwapWatcherServiceImpl(
-      walletRepo: locator<WalletRepository>(),
       boltzRepo: locator<SwapRepository>(
         instanceName:
             LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,

@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
@@ -131,5 +132,13 @@ Future<void> registerDatasources() async {
   );
   locator.registerLazySingleton<LwkWalletDatasource>(
     () => const LwkWalletDatasource(),
+  );
+  final walletMetadataBox =
+      await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
+  locator.registerLazySingleton<WalletMetadataDatasource>(
+    () => WalletMetadataDatasource(
+      walletMetadataStorage:
+          HiveStorageDatasourceImpl<String>(walletMetadataBox),
+    ),
   );
 }

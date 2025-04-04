@@ -16,7 +16,6 @@ abstract class WalletRepository {
     required ScriptType scriptType,
     required String label,
   });
-  // This should first sync to get the up to date wallet and balance
   Future<Wallet> getWallet(
     String walletId, {
     bool sync = true,
