@@ -49,6 +49,8 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
 
   // Base URL of the site
   final String _baseUrl = ApiServiceConstants.bbAuthUrl;
+  // Query parameter to generate API key
+  // final String _apiKeyQueryParam = dotenv.env['APIKEY_QUERY_PARAM'] ?? '';
 
   @override
   void initState() {
@@ -124,10 +126,7 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
 
   Future<void> _cookieManager() async {
     final cookieManager = WebviewCookieManager();
-    // await cookieManager.clearCookies();
-
-    final gotCookies =
-        await cookieManager.getCookies('https://$_baseUrl?generateAPIKey=xyz');
+    final gotCookies = await cookieManager.getCookies('https://$_baseUrl');
     bool containsSessionToken = false;
     bool containerCsrfToken = false;
     for (final item in gotCookies) {
@@ -140,7 +139,8 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
     }
 
     if (containerCsrfToken && containsSessionToken) {
-      final Uri url = Uri.parse('https://${dotenv.env['BBX_URL']}/');
+      // Keep the query parameter when navigating to BBX_URL
+      final Uri url = Uri.parse('https://${dotenv.env['BBX_URL']}');
       _controller.loadRequest(url);
     }
   }
@@ -374,6 +374,7 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
 
   Future<void> _loadUrlWithBasicAuth() async {
     try {
+      // Add the query parameter to the URL
       final Uri url = Uri.parse('https://$_baseUrl');
       _controller.loadRequest(url);
     } catch (e) {

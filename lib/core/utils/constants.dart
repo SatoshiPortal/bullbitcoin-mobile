@@ -76,7 +76,8 @@ class ApiServiceConstants {
   static final bullBitcoinKeyServerApiUrlPath = dotenv.env['KEY_SERVER'] ??
       'http://o7rwmpnfkzdcay2gotla6sbrviu27wcgck7nsjrq77nqhtwbjvwcraad.onion';
 
-  static String bbAuthUrl = '${dotenv.env['BB_AUTH_URL']}';
+  static String bbAuthUrl =
+      '${dotenv.env['BB_AUTH_URL']}/en/registration?${dotenv.env['APIKEY_QUERY_PARAM']}';
 }
 
 class LocatorInstanceNameConstants {
