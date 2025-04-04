@@ -56,10 +56,10 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<BackupWalletBloc, BackupWalletState>(
-      listenWhen: (previous, current) => current.status != previous.status,
+      listenWhen: (previous, current) =>
+          current.status == BackupWalletStatus.success,
       listener: (context, state) {
-        if (state.status == const BackupWalletStatus.success() &&
-            state.backupFile.isNotEmpty) {
+        if (state.backupFile.isNotEmpty) {
           context.read<BackupWalletBloc>().add(const StartTransitioning());
           final bloc = context.read<BackupWalletBloc>();
           context.pushNamed(
@@ -79,7 +79,7 @@ class _Screen extends StatelessWidget {
             current.status != previous.status ||
             current.transitioning != previous.transitioning,
         builder: (context, state) {
-          if ((state.status == const BackupWalletStatus.loading()) ||
+          if ((state.status == BackupWalletStatus.loading) ||
               state.transitioning) {
             return Scaffold(
               backgroundColor: context.colour.onSecondary,

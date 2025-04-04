@@ -1,11 +1,10 @@
 part of 'backup_wallet_bloc.dart';
 
-@freezed
-sealed class BackupWalletStatus with _$BackupWalletStatus {
-  const factory BackupWalletStatus.initial() = _Initial;
-  const factory BackupWalletStatus.loading() = _Loading;
-  const factory BackupWalletStatus.success() = _Success;
-  const factory BackupWalletStatus.failure(String message) = _Failure;
+enum BackupWalletStatus {
+  none,
+  loading,
+  success,
+  error,
 }
 
 @freezed
@@ -13,8 +12,9 @@ sealed class BackupWalletState with _$BackupWalletState {
   const factory BackupWalletState({
     @Default(VaultProvider.googleDrive()) VaultProvider vaultProvider,
     @Default('') String backupFile,
-    @Default(BackupWalletStatus.initial()) BackupWalletStatus status,
+    @Default(BackupWalletStatus.none) BackupWalletStatus status,
     @Default(false) bool transitioning,
+    @Default('') String statusError,
   }) = _BackupWalletState;
   const BackupWalletState._();
 }

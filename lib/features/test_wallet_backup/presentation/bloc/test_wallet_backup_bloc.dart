@@ -63,7 +63,11 @@ class TestWalletBackupBloc
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true, error: '', isSuccess: false));
+      emit(
+        state.copyWith(
+          status: TestWalletBackupStatus.loading,
+        ),
+      );
 
       await _connectToGoogleDriveUsecase.execute();
       emit(
@@ -76,17 +80,15 @@ class TestWalletBackupBloc
           await _fetchLatestGoogleDriveBackupUsecase.execute();
       emit(
         state.copyWith(
-          isLoading: false,
-          isSuccess: true,
+          status: TestWalletBackupStatus.success,
           backupInfo: BackupInfo(backupFile: encryptedBackup),
         ),
       );
     } catch (e) {
       emit(
         state.copyWith(
-          isLoading: false,
-          error: 'Failed to fetch backup: $e',
-          isSuccess: false,
+          status: TestWalletBackupStatus.error,
+          statusError: 'Failed to fetch backup: $e',
         ),
       );
     }
@@ -99,9 +101,7 @@ class TestWalletBackupBloc
     try {
       emit(
         state.copyWith(
-          isLoading: true,
-          error: '',
-          isSuccess: false,
+          status: TestWalletBackupStatus.loading,
           vaultProvider: const VaultProvider.fileSystem(""),
         ),
       );
@@ -121,17 +121,15 @@ class TestWalletBackupBloc
           await _fetchBackupFromFileSystemUsecase.execute(selectedFile);
       emit(
         state.copyWith(
-          isLoading: false,
-          isSuccess: true,
+          status: TestWalletBackupStatus.success,
           backupInfo: BackupInfo(backupFile: encryptedBackup),
         ),
       );
     } catch (e) {
       emit(
         state.copyWith(
-          isLoading: false,
-          error: 'Failed to fetch backup: $e',
-          isSuccess: false,
+          status: TestWalletBackupStatus.error,
+          statusError: 'Failed to fetch backup: $e',
         ),
       );
     }
@@ -142,7 +140,11 @@ class TestWalletBackupBloc
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true, error: '', isSuccess: false));
+      emit(
+        state.copyWith(
+          status: TestWalletBackupStatus.loading,
+        ),
+      );
 
       try {
         await _restoreEncryptedVaultFromBackupKeyUsecase.execute(
@@ -152,31 +154,29 @@ class TestWalletBackupBloc
         // If we get here, something went wrong because we expect DefaultWalletAlreadyExistsError
         emit(
           state.copyWith(
-            isLoading: false,
-            error: 'Unexpected success: backup should match existing wallet',
-            isSuccess: false,
+            status: TestWalletBackupStatus.error,
+            statusError:
+                'Unexpected success: backup should match existing wallet',
           ),
         );
       } catch (e) {
         if (e is DefaultWalletAlreadyExistsError) {
           try {
             await _updateEncryptedVaultTest.execute();
-            emit(state.copyWith(isLoading: false, isSuccess: true));
+            emit(state.copyWith(status: TestWalletBackupStatus.success));
           } catch (e) {
             emit(
               state.copyWith(
-                isLoading: false,
-                error: 'Failed to update vault: $e',
-                isSuccess: false,
+                status: TestWalletBackupStatus.error,
+                statusError: 'Write to storage failed: $e',
               ),
             );
           }
         } else if (e is WalletMismatchError) {
           emit(
             state.copyWith(
-              isLoading: false,
-              error: 'Backup does not match existing wallet',
-              isSuccess: false,
+              status: TestWalletBackupStatus.error,
+              statusError: 'Backup does not match existing wallet',
             ),
           );
         } else {
@@ -186,10 +186,9 @@ class TestWalletBackupBloc
     } catch (e) {
       emit(
         state.copyWith(
-          isLoading: false,
-          error:
+          status: TestWalletBackupStatus.error,
+          statusError:
               'Failed to test backup: ${BackupInfo(backupFile: event.backupFile).id}',
-          isSuccess: false,
         ),
       );
     }

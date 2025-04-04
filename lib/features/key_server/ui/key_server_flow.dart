@@ -122,7 +122,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
   ) =>
       k.status == const KeyServerOperationStatus.loading() ||
       o.onboardingStepStatus == OnboardingStepStatus.loading ||
-      t.isLoading;
+      t.status == TestWalletBackupStatus.loading;
 
   bool _hasError(
     KeyServerState k,
@@ -131,7 +131,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
   ) =>
       k.status.maybeWhen(failure: (_) => true, orElse: () => false) ||
       o.statusError.isNotEmpty ||
-      t.error.isNotEmpty;
+      t.status == TestWalletBackupStatus.error;
 
   String? _getTitle(
     KeyServerState k,
@@ -163,8 +163,8 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
       failure: (message) => message,
       orElse: () => o.statusError.isNotEmpty
           ? o.statusError
-          : t.error.isNotEmpty
-              ? t.error
+          : t.statusError.isNotEmpty
+              ? t.statusError
               : 'An error occurred',
     );
   }
@@ -196,8 +196,8 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
               backupFile: state.backupFile,
             ),
           );
-    } else if (!testWalletBackupState.isLoading &&
-        testWalletBackupState.error.isEmpty &&
+    } else if (!(testWalletBackupState.status ==
+            TestWalletBackupStatus.success) &&
         !widget.fromOnboarding) {
       context.read<TestWalletBackupBloc>().add(
             StartBackupTesting(
@@ -231,7 +231,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     BuildContext context,
     TestWalletBackupState state,
   ) {
-    if (state.isSuccess) {
+    if (state.status == TestWalletBackupStatus.success) {
       context.goNamed(TestWalletBackupSubroute.backupTestSuccess.name);
     }
   }
