@@ -1,7 +1,6 @@
-
 import 'package:bb_mobile/core/wallet/domain/entity/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:flutter/foundation.dart';
 

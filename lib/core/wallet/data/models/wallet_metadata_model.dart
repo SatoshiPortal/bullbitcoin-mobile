@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -37,55 +36,4 @@ class WalletMetadataModel with _$WalletMetadataModel {
   //  networks with the same xpub/seed.
   String get id =>
       '$xpubFingerprint:${isLiquid ? 'liquid' : 'bitcoin'}:${isTestnet ? 'testnet' : 'mainnet'}';
-
-  factory WalletMetadataModel.fromEntity(WalletMetadata entity) {
-    return WalletMetadataModel(
-      masterFingerprint: entity.masterFingerprint,
-      xpubFingerprint: entity.xpubFingerprint,
-      isBitcoin: entity.network.isBitcoin,
-      isLiquid: entity.network.isLiquid,
-      isMainnet: entity.network.isMainnet,
-      isTestnet: entity.network.isTestnet,
-      scriptType: entity.scriptType.name,
-      xpub: entity.xpub,
-      isEncryptedVaultTested: entity.isEncryptedVaultTested,
-      isPhysicalBackupTested: entity.isPhysicalBackupTested,
-      lastestEncryptedBackup:
-          entity.lastestEncryptedBackup?.toUtc().millisecondsSinceEpoch,
-      lastestPhysicalBackup:
-          entity.lastestPhysicalBackup?.toUtc().millisecondsSinceEpoch,
-      externalPublicDescriptor: entity.externalPublicDescriptor,
-      internalPublicDescriptor: entity.internalPublicDescriptor,
-      source: entity.source.name,
-      isDefault: entity.isDefault,
-      label: entity.label,
-    );
-  }
-
-  WalletMetadata toEntity() {
-    return WalletMetadata(
-      id: id,
-      masterFingerprint: masterFingerprint,
-      xpubFingerprint: xpubFingerprint,
-      network: Network.fromEnvironment(
-        isTestnet: isTestnet,
-        isLiquid: isLiquid,
-      ),
-      isEncryptedVaultTested: isEncryptedVaultTested,
-      isPhysicalBackupTested: isPhysicalBackupTested,
-      lastestEncryptedBackup: lastestEncryptedBackup != null
-          ? DateTime.fromMillisecondsSinceEpoch(lastestEncryptedBackup!)
-          : null,
-      lastestPhysicalBackup: lastestPhysicalBackup != null
-          ? DateTime.fromMillisecondsSinceEpoch(lastestPhysicalBackup!)
-          : null,
-      scriptType: ScriptType.fromName(scriptType),
-      xpub: xpub,
-      externalPublicDescriptor: externalPublicDescriptor,
-      internalPublicDescriptor: internalPublicDescriptor,
-      source: WalletSource.fromName(source),
-      isDefault: isDefault,
-      label: label,
-    );
-  }
 }

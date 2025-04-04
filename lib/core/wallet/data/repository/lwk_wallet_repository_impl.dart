@@ -2,16 +2,15 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/balance.dart';
+import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
 class LwkWalletRepositoryImpl
-    implements WalletRepository, LiquidWalletRepository {
+    implements WalletRepository, {
   final lwk.Network _network;
   final lwk.Wallet _wallet;
 

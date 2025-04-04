@@ -1,22 +1,45 @@
-import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/balance.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 abstract class WalletRepository {
-  // Wallet repo
-  Future<void> sync({required ElectrumServer electrumServer});
-  Future<Balance> getBalance();
-  Future<List<Utxo>> listUnspent();
+  Future<Wallet> createWallet({
+    required Seed seed,
+    required Network network,
+    required ScriptType scriptType,
+    String label,
+    bool isDefault,
+  });
+  Future<Wallet> importWatchOnlyWallet({
+    required String xpub,
+    required Network network,
+    required ScriptType scriptType,
+    required String label,
+  });
+  // This should first sync to get the up to date wallet and balance
+  Future<Wallet> getWallet(String walletId);
+  // These should also sync the wallets before returning them
+  Future<List<Wallet>> getWallets({
+    Environment? environment,
+    bool? onlyDefaults,
+    bool? onlyBitcoin,
+    bool? onlyLiquid,
+  });
+  //Future<void> sync(String walletId);
+  //Future<BigInt> geTotalBalanceSat(); // Get it from the Wallet entity
+  /*
+  // UTXO repo
+  Future<List<Utxo>> getUnspentUtxos({required String walletId});
+  // Address repo
   // Future<List<Address>> listAddresses();
-  // transaction repo
-  Future<Address> getAddressByIndex(int index);
-  Future<Address> getLastUnusedAddress();
+  Future<Address> getAddressByIndex(int index, {required String walletId});
+  Future<Address> getLastUnusedAddress({required String walletId});
   Future<Address>
-      getNewAddress(); // create receive transaction param(index/lastUnused)
-  Future<bool> isAddressUsed(String address);
-  Future<BigInt> getAddressBalanceSat(String address);
-  Future<List<BaseWalletTransaction>> getTransactions(String walletId);
+      getNewAddress({required String walletId}); // create receive transaction param(index/lastUnused)
+  Future<bool> isAddressUsed(String address, {required String walletId});
+  Future<BigInt> getAddressBalanceSat(String address, {required String walletId});
+  // transaction repo
+  Future<List<BaseWalletTransaction>> getTransactions({required String walletId});
   // labels: label datasource + repo (import/export bip329/label lookup)
+  */
 }

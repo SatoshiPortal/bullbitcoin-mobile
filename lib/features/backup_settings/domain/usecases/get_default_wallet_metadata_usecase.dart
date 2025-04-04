@@ -1,5 +1,4 @@
-
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
 
 class GetDefaultWalletMetadataUsecase {

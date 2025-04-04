@@ -8,7 +8,7 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/build_transaction_usecase.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_wallet_use_case.dart';

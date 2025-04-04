@@ -1,23 +1,24 @@
-
-
+import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 
 class RecoverOrCreateWalletUsecase {
   final SettingsRepository _settingsRepository;
   final MnemonicSeedFactory _mnemonicSeedFactory;
+  final SeedRepository _seedRepository;
   final WalletManagerService _walletManager;
 
   RecoverOrCreateWalletUsecase({
     required SettingsRepository settingsRepository,
     required MnemonicSeedFactory mnemonicSeedFactory,
+    required SeedRepository seedRepository,
     required WalletManagerService walletManager,
   })  : _settingsRepository = settingsRepository,
         _mnemonicSeedFactory = mnemonicSeedFactory,
+        _seedRepository = seedRepository,
         _walletManager = walletManager;
 
   Future<Wallet> execute({
@@ -38,7 +39,14 @@ class RecoverOrCreateWalletUsecase {
       passphrase: passphrase,
     );
 
-    final wallet = _walletManager.createWallet(
+    // Store the seed in the repository
+    await _seedRepository.store(
+      fingerprint: mnemonicSeed.masterFingerprint,
+      seed: mnemonicSeed,
+    );
+
+    // Now that the seed is stored, we can create the wallet
+    final wallet = await _walletManager.createWallet(
       seed: mnemonicSeed,
       network: bitcoinNetwork,
       scriptType: scriptType,

@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 abstract class PayjoinRepository {
   Stream<PayjoinReceiver> get requestsForReceivers;

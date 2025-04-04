@@ -1,20 +1,23 @@
-
+import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
 import 'package:flutter/material.dart';
 
 class CreateDefaultWalletsUsecase {
+  final SeedRepository _seedRepository;
   final SettingsRepository _settingsRepository;
   final MnemonicSeedFactory _mnemonicSeedFactory;
   final WalletManagerService _walletManager;
 
   CreateDefaultWalletsUsecase({
+    required SeedRepository seedRepository,
     required SettingsRepository settingsRepository,
     required MnemonicSeedFactory mnemonicSeedFactory,
     required WalletManagerService walletManager,
-  })  : _settingsRepository = settingsRepository,
+  })  : _seedRepository = seedRepository,
+        _settingsRepository = settingsRepository,
         _mnemonicSeedFactory = mnemonicSeedFactory,
         _walletManager = walletManager;
 
@@ -31,6 +34,11 @@ class CreateDefaultWalletsUsecase {
               mnemonicWords,
               passphrase: passphrase,
             );
+      // Store the seed in the repository
+      await _seedRepository.store(
+        fingerprint: mnemonicSeed.masterFingerprint,
+        seed: mnemonicSeed,
+      );
 
       // The current default script type for the wallets is BIP84
       const scriptType = ScriptType.bip84;

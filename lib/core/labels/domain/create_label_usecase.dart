@@ -1,16 +1,16 @@
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/labels/domain/label_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class CreateLabelUsecase {
   final LabelRepository _labelRepository;
-  final WalletManagerService _walletManagerService;
+  final WalletRepository _wallet;
 
   CreateLabelUsecase({
     required LabelRepository labelRepository,
-    required WalletManagerService walletManagerService,
+    required WalletRepository walletRepository,
   })  : _labelRepository = labelRepository,
-        _walletManagerService = walletManagerService;
+        _wallet = walletRepository;
 
   Future<Label> execute({
     required String walletId,
@@ -19,18 +19,28 @@ class CreateLabelUsecase {
     required String label,
     bool? spendable,
   }) async {
-    // Get the wallet to calculate origin
-    final wallet = await _walletManagerService.getWallet(walletId);
-    final origin = wallet?.getOrigin();
+    try {
+      // Get the wallet to calculate origin
+      final wallet = await _wallet.getWallet(walletId);
+      final origin = wallet.getOrigin();
 
-    final labelEntity = Label.create(
-      type: type,
-      ref: ref,
-      label: label,
-      origin: origin,
-      spendable: spendable,
-    );
-    await _labelRepository.createLabel(labelEntity);
-    return labelEntity;
+      final labelEntity = Label.create(
+        type: type,
+        ref: ref,
+        label: label,
+        origin: origin,
+        spendable: spendable,
+      );
+      await _labelRepository.createLabel(labelEntity);
+      return labelEntity;
+    } catch (e) {
+      throw CreateLabelException(e.toString());
+    }
   }
+}
+
+class CreateLabelException implements Exception {
+  final String message;
+
+  CreateLabelException(this.message);
 }
