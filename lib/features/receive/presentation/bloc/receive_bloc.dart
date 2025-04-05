@@ -179,16 +179,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // Emit a fresh state with the Lightning type
       emit(const ReceiveState());
 
+      final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
+      emit(state.copyWith(inputAmountCurrencyCode: bitcoinUnit.code));
+
+      final fiatCurrency = await _getCurrencyUsecase.execute();
+      emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
+
       // If no wallet is passed through the constructor, get the default liquid wallet,
       //  which is the default wallet to receive lightning payments since fees are lower
       //  than on the bitcoin network.
-      final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
-
-      emit(
-        state.copyWith(
-          inputAmountCurrencyCode: bitcoinUnit.code,
-        ),
-      );
       Wallet? wallet = _wallet;
       if (wallet == null) {
         final wallets = await _getWalletsUsecase.execute(
@@ -197,40 +196,19 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         );
         wallet = wallets.first;
       }
+      emit(state.copyWith(wallet: wallet));
 
-      emit(
-        state.copyWith(
-          wallet: wallet,
-        ),
-      );
       final swapLimits = await _getSwapLimitsUsecase.execute(
         type: SwapType.lightningToLiquid,
         isTestnet: wallet.network.isTestnet,
       );
+      emit(state.copyWith(swapLimits: swapLimits));
 
-      emit(
-        state.copyWith(
-          swapLimits: swapLimits,
-        ),
-      );
+      final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
+      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
 
-      final currencyValues = await Future.wait([
-        _getCurrencyUsecase.execute(),
-        _convertSatsToCurrencyAmountUsecase.execute(),
-        _getAvailableCurrenciesUsecase.execute(),
-      ]);
-
-      final fiatCurrency = currencyValues[0] as String;
-      final exchangeRate = currencyValues[1] as double;
-      final fiatCurrencies = currencyValues[2] as List<String>;
-
-      emit(
-        state.copyWith(
-          fiatCurrencyCodes: fiatCurrencies,
-          fiatCurrencyCode: fiatCurrency,
-          exchangeRate: exchangeRate,
-        ),
-      );
+      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
+      emit(state.copyWith(exchangeRate: exchangeRate));
     } catch (e) {
       emit(
         state.copyWith(error: e),
