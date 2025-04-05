@@ -107,8 +107,16 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     try {
-      // Emit a fresh state with the Bitcoin type
-      emit(const ReceiveState(type: ReceiveType.bitcoin));
+      // Emit a state with the Bitcoin type so the UI can update allready before
+      // the async data is loaded. Remove values that should
+      // not be shared between the different receive types. Currently only the
+      // amount and note shouldn't be shared.
+      emit(state.copyWith(
+        type: ReceiveType.bitcoin,
+        inputAmount: '',
+        confirmedAmountSat: null,
+        note: '',
+      ));
 
       // If no wallet is passed through the constructor, get the default bitcoin wallet
       Wallet? wallet = _wallet;
@@ -121,47 +129,67 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
       emit(state.copyWith(wallet: wallet));
 
-      final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
-      emit(
-        state.copyWith(
-          inputAmountCurrencyCode: bitcoinUnit.code,
+      if (state.bitcoinUnit == null) {
+        // If the bitcoin unit is not set yet, we need to get it from the settings
+        // And set the input amount currency code to the bitcoin unit code
+        // if no other currency code was selected yet.
+        final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
+        emit(state.copyWith(
           bitcoinUnit: bitcoinUnit,
-        ),
-      );
-
-      final fiatCurrency = await _getCurrencyUsecase.execute();
-      emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
-
-      final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
-      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
-
-      final address =
-          await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-
-      PayjoinReceiver? payjoin;
-      Object? error;
-      try {
-        payjoin = await _receiveWithPayjoinUsecase.execute(
-          walletId: wallet.id,
-          address: address.address,
-        );
-        // The payjoin receiver is created, now we can watch it for updates
-        _watchPayjoin(payjoin.id);
-      } catch (e) {
-        debugPrint('Payjoin receiver creation failed: $e');
-        error = e;
+          inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+              ? state.inputAmountCurrencyCode
+              : bitcoinUnit.code,
+        ));
       }
 
-      emit(
-        state.copyWith(
-          bitcoinAddress: address.address,
-          payjoin: payjoin,
-          error: error,
-        ),
-      );
+      if (state.fiatCurrencyCode.isEmpty) {
+        // If the fiat currency code is not set yet, we need to get it from the settings
+        final fiatCurrency = await _getCurrencyUsecase.execute();
+        emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
+      }
 
-      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
-      emit(state.copyWith(exchangeRate: exchangeRate));
+      if (state.fiatCurrencyCodes.isEmpty) {
+        // If the fiat currency codes are not set yet, we need to get them from the settings
+        final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
+        emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
+      }
+
+      if (state.bitcoinAddress.isEmpty) {
+        // If the bitcoin address is not set yet, we need to get it from the wallet
+        final address =
+            await _getReceiveAddressUsecase.execute(walletId: wallet.id);
+        emit(state.copyWith(bitcoinAddress: address.address));
+      }
+
+      if (state.payjoin == null) {
+        PayjoinReceiver? payjoin;
+        Object? error;
+        try {
+          payjoin = await _receiveWithPayjoinUsecase.execute(
+            walletId: wallet.id,
+            address: state.bitcoinAddress,
+          );
+          // The payjoin receiver is created, now we can watch it for updates
+          _watchPayjoin(payjoin.id);
+        } catch (e) {
+          debugPrint('Payjoin receiver creation failed: $e');
+          error = e;
+        }
+
+        emit(
+          state.copyWith(
+            payjoin: payjoin,
+            error: error,
+          ),
+        );
+      }
+
+      if (state.exchangeRate == 0) {
+        // If the exchange rate is not set yet, we need to get it from the settings
+        final exchangeRate =
+            await _convertSatsToCurrencyAmountUsecase.execute();
+        emit(state.copyWith(exchangeRate: exchangeRate));
+      }
     } catch (e) {
       emit(
         state.copyWith(error: e),
@@ -174,22 +202,44 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     try {
-      // Emit a fresh state with the Lightning type
-      emit(const ReceiveState());
+      // Emit a state with the Lightning type so the UI can update allready before
+      // the async data is loaded. Remove values that should
+      // not be shared between the different receive types. Currently only the
+      // amount and note shouldn't be shared. But for Lightning, also clear the
+      // swap since it goes to the amount screen first and so a new swap should
+      // be created anyways.
+      emit(state.copyWith(
+        type: ReceiveType.lightning,
+        lightningSwap: null,
+        inputAmount: '',
+        confirmedAmountSat: null,
+        note: '',
+      ));
 
-      final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
-      emit(
-        state.copyWith(
-          inputAmountCurrencyCode: bitcoinUnit.code,
+      if (state.bitcoinUnit == null) {
+        // If the bitcoin unit is not set yet, we need to get it from the settings
+        // And set the input amount currency code to the bitcoin unit code
+        // if no other currency code was selected yet.
+        final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
+        emit(state.copyWith(
           bitcoinUnit: bitcoinUnit,
-        ),
-      );
+          inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+              ? state.inputAmountCurrencyCode
+              : bitcoinUnit.code,
+        ));
+      }
 
-      final fiatCurrency = await _getCurrencyUsecase.execute();
-      emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
+      if (state.fiatCurrencyCode.isEmpty) {
+        // If the fiat currency code is not set yet, we need to get it from the settings
+        final fiatCurrency = await _getCurrencyUsecase.execute();
+        emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
+      }
 
-      final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
-      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
+      if (state.fiatCurrencyCodes.isEmpty) {
+        // If the fiat currency codes are not set yet, we need to get them from the settings
+        final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
+        emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
+      }
 
       // If no wallet is passed through the constructor, get the default liquid wallet,
       //  which is the default wallet to receive lightning payments since fees are lower
@@ -204,14 +254,21 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
       emit(state.copyWith(wallet: wallet));
 
-      final swapLimits = await _getSwapLimitsUsecase.execute(
-        type: SwapType.lightningToLiquid,
-        isTestnet: wallet.network.isTestnet,
-      );
-      emit(state.copyWith(swapLimits: swapLimits));
+      if (state.swapLimits == null) {
+        // If the swap limits are not set yet, fetch them.
+        final swapLimits = await _getSwapLimitsUsecase.execute(
+          type: SwapType.lightningToLiquid,
+          isTestnet: wallet.network.isTestnet,
+        );
+        emit(state.copyWith(swapLimits: swapLimits));
+      }
 
-      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
-      emit(state.copyWith(exchangeRate: exchangeRate));
+      if (state.exchangeRate == 0) {
+        // If the exchange rate is not set yet, we need to get it from the settings
+        final exchangeRate =
+            await _convertSatsToCurrencyAmountUsecase.execute();
+        emit(state.copyWith(exchangeRate: exchangeRate));
+      }
     } catch (e) {
       emit(
         state.copyWith(error: e),
@@ -224,22 +281,41 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     try {
-      // Emit a fresh state with the Liquid type
-      emit(const ReceiveState(type: ReceiveType.liquid));
+      // Emit a state with the Liquid type so the UI can update with the Liquid
+      // receive UI already before the async data is loaded. Remove values that should
+      // not be shared between the different receive types. Currently only the
+      // amount and note shouldn't be shared.
+      emit(state.copyWith(
+        type: ReceiveType.liquid,
+        inputAmount: '',
+        confirmedAmountSat: null,
+        note: '',
+      ));
 
-      final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
-      emit(
-        state.copyWith(
-          inputAmountCurrencyCode: bitcoinUnit.code,
+      if (state.bitcoinUnit == null) {
+        // If the bitcoin unit is not set yet, we need to get it from the settings
+        // And set the input amount currency code to the bitcoin unit code
+        // if no other currency code was selected yet.
+        final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
+        emit(state.copyWith(
           bitcoinUnit: bitcoinUnit,
-        ),
-      );
+          inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+              ? state.inputAmountCurrencyCode
+              : bitcoinUnit.code,
+        ));
+      }
 
-      final fiatCurrency = await _getCurrencyUsecase.execute();
-      emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
+      if (state.fiatCurrencyCode.isEmpty) {
+        // If the fiat currency code is not set yet, we need to get it from the settings
+        final fiatCurrency = await _getCurrencyUsecase.execute();
+        emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
+      }
 
-      final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
-      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
+      if (state.fiatCurrencyCodes.isEmpty) {
+        // If the fiat currency codes are not set yet, we need to get them from the settings
+        final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
+        emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
+      }
 
       // If no wallet is passed through the constructor, get the default liquid wallet
       Wallet? wallet = _wallet;
@@ -252,12 +328,19 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
       emit(state.copyWith(wallet: wallet));
 
-      final address =
-          await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-      emit(state.copyWith(liquidAddress: address.address));
+      if (state.liquidAddress.isEmpty) {
+        // If the liquid address is not set yet, we need to get it from the wallet
+        final address =
+            await _getReceiveAddressUsecase.execute(walletId: wallet.id);
+        emit(state.copyWith(liquidAddress: address.address));
+      }
 
-      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
-      emit(state.copyWith(exchangeRate: exchangeRate));
+      if (state.exchangeRate == 0) {
+        // If the exchange rate is not set yet, we need to get it from the settings
+        final exchangeRate =
+            await _convertSatsToCurrencyAmountUsecase.execute();
+        emit(state.copyWith(exchangeRate: exchangeRate));
+      }
     } catch (e) {
       emit(
         state.copyWith(error: e),
