@@ -265,7 +265,10 @@ class ReceiveState with _$ReceiveState {
   }
 
   bool get isAmountValid =>
-      inputAmount.isEmpty || swapAmountBelowLimit || swapAmountAboveLimit;
+      swapLimits == null ||
+      inputAmount.isEmpty ||
+      swapAmountBelowLimit ||
+      swapAmountAboveLimit;
 
   LnReceiveSwap? get getSwap {
     if (type == ReceiveType.lightning) {

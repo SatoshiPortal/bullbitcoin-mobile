@@ -14,7 +14,6 @@ import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
@@ -118,23 +117,26 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           onlyBitcoin: true,
           onlyDefaults: true,
         );
-
         wallet = wallets.first;
       }
+      emit(state.copyWith(wallet: wallet));
 
-      final futures = await Future.wait([
-        _getBitcoinUnitUseCase.execute(),
-        _getCurrencyUsecase.execute(),
-        _convertSatsToCurrencyAmountUsecase.execute(),
-        _getAvailableCurrenciesUsecase.execute(),
-        _getReceiveAddressUsecase.execute(walletId: wallet.id),
-      ]);
+      final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
+      emit(
+        state.copyWith(
+          inputAmountCurrencyCode: bitcoinUnit.code,
+          bitcoinUnit: bitcoinUnit,
+        ),
+      );
 
-      final bitcoinUnit = futures[0] as BitcoinUnit;
-      final fiatCurrency = futures[1] as String;
-      final exchangeRate = futures[2] as double;
-      final fiatCurrencies = futures[3] as List<String>;
-      final address = futures[4] as Address;
+      final fiatCurrency = await _getCurrencyUsecase.execute();
+      emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
+
+      final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
+      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
+
+      final address =
+          await _getReceiveAddressUsecase.execute(walletId: wallet.id);
 
       PayjoinReceiver? payjoin;
       Object? error;
@@ -152,18 +154,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       emit(
         state.copyWith(
-          wallet: wallet,
-          fiatCurrencyCodes: fiatCurrencies,
-          fiatCurrencyCode: fiatCurrency,
-          exchangeRate: exchangeRate,
-          bitcoinUnit: bitcoinUnit,
-          // Start entering the amount in bitcoin
-          inputAmountCurrencyCode: bitcoinUnit.code,
           bitcoinAddress: address.address,
           payjoin: payjoin,
           error: error,
         ),
       );
+
+      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
+      emit(state.copyWith(exchangeRate: exchangeRate));
     } catch (e) {
       emit(
         state.copyWith(error: e),
@@ -190,6 +188,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       final fiatCurrency = await _getCurrencyUsecase.execute();
       emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
 
+      final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
+      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
+
       // If no wallet is passed through the constructor, get the default liquid wallet,
       //  which is the default wallet to receive lightning payments since fees are lower
       //  than on the bitcoin network.
@@ -208,9 +209,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         isTestnet: wallet.network.isTestnet,
       );
       emit(state.copyWith(swapLimits: swapLimits));
-
-      final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
-      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
 
       final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
       emit(state.copyWith(exchangeRate: exchangeRate));
@@ -240,6 +238,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       final fiatCurrency = await _getCurrencyUsecase.execute();
       emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
 
+      final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
+      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
+
       // If no wallet is passed through the constructor, get the default liquid wallet
       Wallet? wallet = _wallet;
       if (wallet == null) {
@@ -254,9 +255,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       final address =
           await _getReceiveAddressUsecase.execute(walletId: wallet.id);
       emit(state.copyWith(liquidAddress: address.address));
-
-      final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
-      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
 
       final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
       emit(state.copyWith(exchangeRate: exchangeRate));
