@@ -180,7 +180,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       emit(const ReceiveState());
 
       final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
-      emit(state.copyWith(inputAmountCurrencyCode: bitcoinUnit.code));
+      emit(
+        state.copyWith(
+          inputAmountCurrencyCode: bitcoinUnit.code,
+          bitcoinUnit: bitcoinUnit,
+        ),
+      );
 
       final fiatCurrency = await _getCurrencyUsecase.execute();
       emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
@@ -224,46 +229,37 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // Emit a fresh state with the Liquid type
       emit(const ReceiveState(type: ReceiveType.liquid));
 
-      // If no wallet is passed through the constructor, get the default bitcoin wallet
+      final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
+      emit(
+        state.copyWith(
+          inputAmountCurrencyCode: bitcoinUnit.code,
+          bitcoinUnit: bitcoinUnit,
+        ),
+      );
+
+      final fiatCurrency = await _getCurrencyUsecase.execute();
+      emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
+
+      // If no wallet is passed through the constructor, get the default liquid wallet
       Wallet? wallet = _wallet;
       if (wallet == null) {
         final wallets = await _getWalletsUsecase.execute(
           onlyLiquid: true,
           onlyDefaults: true,
         );
-
         wallet = wallets.first;
       }
+      emit(state.copyWith(wallet: wallet));
 
       final address =
           await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-
-      // Emit the state with the address already before the async calls
       emit(state.copyWith(liquidAddress: address.address));
 
-      final currencyValues = await Future.wait([
-        _getBitcoinUnitUseCase.execute(),
-        _getCurrencyUsecase.execute(),
-        _convertSatsToCurrencyAmountUsecase.execute(),
-        _getAvailableCurrenciesUsecase.execute(),
-      ]);
+      final fiatCurrencies = await _getAvailableCurrenciesUsecase.execute();
+      emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
 
-      final bitcoinUnit = currencyValues[0] as BitcoinUnit;
-      final fiatCurrency = currencyValues[1] as String;
-      final exchangeRate = currencyValues[2] as double;
-      final fiatCurrencies = currencyValues[3] as List<String>;
-
-      emit(
-        state.copyWith(
-          wallet: wallet,
-          fiatCurrencyCodes: fiatCurrencies,
-          fiatCurrencyCode: fiatCurrency,
-          exchangeRate: exchangeRate,
-          bitcoinUnit: bitcoinUnit,
-          // Start entering the amount in bitcoin
-          inputAmountCurrencyCode: bitcoinUnit.code,
-        ),
-      );
+      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
+      emit(state.copyWith(exchangeRate: exchangeRate));
     } catch (e) {
       emit(
         state.copyWith(error: e),
