@@ -182,6 +182,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // If no wallet is passed through the constructor, get the default liquid wallet,
       //  which is the default wallet to receive lightning payments since fees are lower
       //  than on the bitcoin network.
+      final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
+
+      emit(
+        state.copyWith(
+          inputAmountCurrencyCode: bitcoinUnit.code,
+        ),
+      );
       Wallet? wallet = _wallet;
       if (wallet == null) {
         final wallets = await _getWalletsUsecase.execute(
@@ -191,32 +198,37 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         wallet = wallets.first;
       }
 
-      final currencyValues = await Future.wait([
-        _getBitcoinUnitUseCase.execute(),
-        _getCurrencyUsecase.execute(),
-        _convertSatsToCurrencyAmountUsecase.execute(),
-        _getAvailableCurrenciesUsecase.execute(),
-      ]);
+      emit(
+        state.copyWith(
+          wallet: wallet,
+        ),
+      );
       final swapLimits = await _getSwapLimitsUsecase.execute(
         type: SwapType.lightningToLiquid,
         isTestnet: wallet.network.isTestnet,
       );
 
-      final bitcoinUnit = currencyValues[0] as BitcoinUnit;
-      final fiatCurrency = currencyValues[1] as String;
-      final exchangeRate = currencyValues[2] as double;
-      final fiatCurrencies = currencyValues[3] as List<String>;
+      emit(
+        state.copyWith(
+          swapLimits: swapLimits,
+        ),
+      );
+
+      final currencyValues = await Future.wait([
+        _getCurrencyUsecase.execute(),
+        _convertSatsToCurrencyAmountUsecase.execute(),
+        _getAvailableCurrenciesUsecase.execute(),
+      ]);
+
+      final fiatCurrency = currencyValues[0] as String;
+      final exchangeRate = currencyValues[1] as double;
+      final fiatCurrencies = currencyValues[2] as List<String>;
 
       emit(
         state.copyWith(
-          wallet: wallet,
           fiatCurrencyCodes: fiatCurrencies,
           fiatCurrencyCode: fiatCurrency,
           exchangeRate: exchangeRate,
-          bitcoinUnit: bitcoinUnit,
-          swapLimits: swapLimits,
-          // Start entering the amount in bitcoin
-          inputAmountCurrencyCode: bitcoinUnit.code,
         ),
       );
     } catch (e) {
