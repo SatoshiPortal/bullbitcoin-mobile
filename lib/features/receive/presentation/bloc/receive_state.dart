@@ -264,7 +264,7 @@ class ReceiveState with _$ReceiveState {
     return false;
   }
 
-  bool get isAmountValid =>
+  bool get isSwapAmountValid =>
       swapLimits == null ||
       inputAmount.isEmpty ||
       swapAmountBelowLimit ||
