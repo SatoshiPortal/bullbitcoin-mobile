@@ -228,20 +228,12 @@ class TestWalletBackupBloc
         state.shuffleElementAt(event.shuffledIdx);
     if (isSelected) return;
     if (actualIdx != testMnemonic.length) {
-      emit(
-        state.copyWith(
-          status: TestWalletBackupStatus.error,
-          statusError: 'Invalid mnemonic order',
-        ),
-      );
       await Future.delayed(const Duration(milliseconds: 300));
       final shuffled = state.mnemonic.toList()..shuffle();
       emit(
         state.copyWith(
           shuffledMnemonic: shuffled,
           testMnemonicOrder: [], // Reset selection when order is wrong
-          status: TestWalletBackupStatus.none, // Clear error state
-          statusError: '', // Clear error message
         ),
       );
       return;
