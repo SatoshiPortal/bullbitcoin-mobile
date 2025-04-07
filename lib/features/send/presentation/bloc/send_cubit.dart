@@ -59,11 +59,10 @@ class SendCubit extends Cubit<SendState> {
       final paymentRequest =
           await _detectBitcoinStringUsecase.execute(data: address);
       final wallet = await _bestWalletUsecase.execute(request: paymentRequest);
-      final network = state.sendTypeFromRequest(paymentRequest);
       emit(
         state.copyWith(
           wallet: wallet,
-          sendType: network,
+          sendType: SendType.from(paymentRequest),
           step: SendStep.amount,
         ),
       );

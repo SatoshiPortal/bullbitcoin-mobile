@@ -11,7 +11,29 @@ part 'send_state.freezed.dart';
 enum SendType {
   bitcoin,
   lightning,
-  liquid,
+  liquid;
+
+  static SendType from(PaymentRequest paymentRequest) {
+    switch (paymentRequest) {
+      case BitcoinRequest():
+        return SendType.bitcoin;
+      case LiquidRequest():
+        return SendType.liquid;
+      case Bolt11Request():
+        return SendType.lightning;
+      case Bip21Request():
+        switch (paymentRequest.scheme) {
+          case 'bitcoin':
+            return SendType.bitcoin;
+          case 'liquid':
+            return SendType.liquid;
+          default:
+            throw Exception('Unknown scheme: ${paymentRequest.scheme}');
+        }
+      default:
+        throw Exception('Unknown payment type: ${paymentRequest.type}');
+    }
+  }
 }
 
 enum SendStep {
@@ -52,31 +74,4 @@ class SendState with _$SendState {
     Object? error,
   }) = _SendState;
   const SendState._();
-
-  SendType sendTypeFromRequest(PaymentRequest request) {
-    // BitcoinAddressOnly - bdk.Address
-    // LiquidAddressOnly - lwk.Address
-    // BitcoinBip21 - bdk.Address
-    // LiquidBip21 - lwk.Address
-    // Bolt11 - boltz.DecodedInvoice
-    // Bolt12 - boltz (pending)
-
-    if (request is BitcoinRequest) {
-      return SendType.bitcoin;
-    } else if (request is LiquidRequest) {
-      return SendType.liquid;
-    } else if (request is Bolt11Request) {
-      return SendType.lightning;
-    } else if (request is Bip21Request) {
-      if (request.scheme == 'bitcoin') {
-        return SendType.bitcoin;
-      } else if (request.scheme == 'liquid') {
-        return SendType.liquid;
-      } else {
-        throw Exception('Unknown scheme: ${request.scheme}');
-      }
-    } else {
-      throw Exception('Unknown request type: ${request.runtimeType}');
-    }
-  }
 }
