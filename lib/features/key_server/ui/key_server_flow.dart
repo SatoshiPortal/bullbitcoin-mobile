@@ -200,7 +200,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
             TestWalletBackupStatus.success) &&
         !widget.fromOnboarding) {
       context.read<TestWalletBackupBloc>().add(
-            StartBackupTesting(
+            StartVaultBackupTesting(
               backupKey: state.backupKey,
               backupFile: state.backupFile,
             ),
