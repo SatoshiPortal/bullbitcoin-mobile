@@ -80,6 +80,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(
         state.copyWith(
           isSyncingTransactions: true,
+          keyServerOffline: true,
         ),
       );
       await _restartSwapWatcherUsecase.execute();

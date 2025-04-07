@@ -35,7 +35,7 @@ class InfoCard extends StatelessWidget {
           children: [
             Container(
               width: 4,
-              height: 100,
+              height: 75,
               color: tagColor,
             ),
             Padding(
