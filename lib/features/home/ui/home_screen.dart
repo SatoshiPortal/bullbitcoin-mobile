@@ -56,9 +56,17 @@ class _ScreenState extends State<_Screen> {
           ? const Column(
               children: [
                 HomeTopSection(),
-                HomeErrors(),
-                HomeWalletCards(),
-                Spacer(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        HomeErrors(),
+                        HomeWalletCards(),
+                      ],
+                    ),
+                  ),
+                ),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 13.0),
                   child: HomeBottomButtons(),
