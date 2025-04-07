@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
@@ -38,19 +39,13 @@ class SendAddressScreen extends StatelessWidget {
         flexibleSpace: TopBar(
           title: 'Send',
           color: context.colour.secondaryFixedDim,
-          onBack: () {
-            context.pop();
-          },
+          onBack: () => context.pop(),
         ),
       ),
       body: Center(
         child: Stack(
           children: [
-            Expanded(
-              child: Container(
-                color: context.colour.secondaryFixedDim,
-              ),
-            ),
+            Expanded(child: Container(color: context.colour.secondaryFixedDim)),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -106,9 +101,7 @@ class SendAmountScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: 'Send',
-          onBack: () {
-            context.pop();
-          },
+          onBack: () => context.pop(),
         ),
       ),
       body: SingleChildScrollView(
@@ -119,13 +112,9 @@ class SendAmountScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: BBSegmentFull(
-                items: const {
-                  'Bitcoin',
-                  'Lightning',
-                  'Liquid',
-                },
+                items: SendType.values.map((e) => e.name).toSet(),
                 onSelected: (c) {},
-                initialValue: 'Bitcoin',
+                initialValue: SendType.values.first.name,
               ),
             ),
             const Gap(16),
@@ -175,9 +164,7 @@ class SendConfirmScreen extends StatelessWidget {
           title: 'Send',
           actionIcon: Icons.help_outline,
           onAction: () {},
-          onBack: () {
-            context.pop();
-          },
+          onBack: () => context.pop(),
         ),
       ),
       body: const SingleChildScrollView(
@@ -251,10 +238,7 @@ class _BottomButtons extends StatelessWidget {
 class _InfoSection extends StatelessWidget {
   const _InfoSection();
   Widget _divider(BuildContext context) {
-    return Container(
-      height: 1,
-      color: context.colour.secondaryFixedDim,
-    );
+    return Container(height: 1, color: context.colour.secondaryFixedDim);
   }
 
   @override
@@ -266,20 +250,15 @@ class _InfoSection extends StatelessWidget {
         children: [
           InfoRow(
             title: 'From',
-            details: BBText(
-              'Secure Bitcoin wallet',
-              style: context.font.bodyLarge,
-            ),
+            details:
+                BBText('Secure Bitcoin wallet', style: context.font.bodyLarge),
           ),
           _divider(context),
           InfoRow(
             title: 'To',
             details: Row(
               children: [
-                BBText(
-                  'bc1qphad...3aculnn',
-                  style: context.font.bodyLarge,
-                ),
+                BBText('bc1qphad...3aculnn', style: context.font.bodyLarge),
                 const Gap(4),
                 InkWell(
                   child: Icon(
@@ -297,10 +276,7 @@ class _InfoSection extends StatelessWidget {
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BBText(
-                  '42,000 SATS',
-                  style: context.font.bodyLarge,
-                ),
+                BBText('42,000 SATS', style: context.font.bodyLarge),
                 BBText(
                   '~35.60 CAD',
                   style: context.font.labelSmall,
@@ -312,10 +288,7 @@ class _InfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: 'Network fees',
-            details: BBText(
-              '1000 SATS',
-              style: context.font.bodyLarge,
-            ),
+            details: BBText('1000 SATS', style: context.font.bodyLarge),
           ),
           _divider(context),
           InfoRow(
@@ -397,10 +370,7 @@ class ConfirmTopArea extends StatelessWidget {
           ),
         ),
         const Gap(16),
-        BBText(
-          'Confirm Send',
-          style: context.font.bodyMedium,
-        ),
+        BBText('Confirm Send', style: context.font.bodyMedium),
         const Gap(4),
         BBText(
           '42,000 SATS',
@@ -424,9 +394,7 @@ class SendSendingScreen extends StatelessWidget {
         flexibleSpace: TopBar(
           title: 'Send',
           actionIcon: Icons.help_outline,
-          onBack: () {
-            context.pop();
-          },
+          onBack: () => context.pop(),
           onAction: () {},
         ),
       ),
@@ -442,15 +410,10 @@ class SendSendingScreen extends StatelessWidget {
                   Gif(
                     autostart: Autostart.loop,
                     height: 123,
-                    image: AssetImage(
-                      Assets.images2.cubesLoading.path,
-                    ),
+                    image: AssetImage(Assets.images2.cubesLoading.path),
                   ),
                   const Gap(8),
-                  BBText(
-                    'Sending...',
-                    style: context.font.headlineLarge,
-                  ),
+                  BBText('Sending...', style: context.font.headlineLarge),
                   const Gap(8),
                   BBText(
                     'The send is in progress. It might take a while for the Bitcoin transaction to confirm. You can close this screen and go home.',
