@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
@@ -5,8 +7,8 @@ import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dar
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/utxo/data/models/utxo_model.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 
@@ -97,5 +99,32 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     );
 
     return signedPsbt;
+  }
+
+  @override
+  Future<bool> isScriptOfWallet({
+    required String walletId,
+    required Uint8List script,
+  }) async {
+    final metadata = await _walletMetadata.get(walletId);
+
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+
+    if (!metadata.isBitcoin) {
+      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+    }
+
+    final wallet = PublicBdkWalletModel(
+      externalDescriptor: metadata.externalPublicDescriptor,
+      internalDescriptor: metadata.internalPublicDescriptor,
+      isTestnet: metadata.isTestnet,
+      dbName: metadata.id,
+    );
+
+    final isFromWallet = await _bdkWallet.isMine(script, wallet: wallet);
+
+    return isFromWallet;
   }
 }

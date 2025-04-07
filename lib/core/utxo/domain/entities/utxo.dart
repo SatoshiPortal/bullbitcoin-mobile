@@ -11,7 +11,7 @@ sealed class Utxo with _$Utxo {
     required int vout,
     BigInt? value,
     required Uint8List scriptPubkey,
-    String? label,
+    @Default(false) bool isFrozen,
   }) = _Utxo;
   const Utxo._();
 }

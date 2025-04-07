@@ -11,6 +11,8 @@ import 'package:bb_mobile/core/settings/settings_locator.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
 import 'package:bb_mobile/core/tor/tor_locator.dart';
+import 'package:bb_mobile/core/transaction/transaction_locator.dart';
+import 'package:bb_mobile/core/utxo/utxo_locator.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
 
 class CoreLocator {
@@ -25,6 +27,7 @@ class CoreLocator {
     await RecoverbullLocator.registerDatasources();
     SeedLocator.registerDatasources();
     StorageLocator.registerDatasourcer();
+    UtxoLocator.registerDatasources();
     await WalletLocator.registerDatasourceres();
   }
 
@@ -42,6 +45,8 @@ class CoreLocator {
     await SettingsLocator.registerRepositories();
     SwapsLocator.registerRepositories();
     WalletLocator.registerRepositories();
+    UtxoLocator.registerRepositories();
+    TransactionLocator.registerRepositories();
   }
 
   static void registerServices() {
@@ -62,5 +67,7 @@ class CoreLocator {
     SettingsLocator.registerUsecases();
     SwapsLocator.registerUsecases();
     TorLocator.registerUsecases();
+    TransactionLocator.registerUsecases();
+    UtxoLocator.registerUsecases();
   }
 }

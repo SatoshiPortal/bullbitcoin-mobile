@@ -4,10 +4,6 @@ abstract class TransactionRepository {
   Stream<Transaction> get transactions;
   Future<List<Transaction>> getTransactions({
     String? walletId,
-    int? limit,
-    int? offset,
   });
-  Future<Transaction> getTransaction({
-    required String txId,
-  });
+  Future<Transaction> getTransaction(String txId, {required String walletId});
 }

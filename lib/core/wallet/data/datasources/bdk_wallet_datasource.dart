@@ -4,11 +4,13 @@ import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart'
 import 'package:bb_mobile/core/address/data/models/address_model.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/transaction/data/datasources/transaction_datasource.dart';
+import 'package:bb_mobile/core/transaction/data/models/transaction_model.dart';
+import 'package:bb_mobile/core/utxo/data/datasources/utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
+import 'package:bb_mobile/core/utxo/data/models/utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/material.dart';
@@ -40,18 +42,14 @@ extension BdkNetworkX on bdk.Network {
   }
 }
 
-class BdkWalletDatasource implements AddressDatasource {
+class BdkWalletDatasource
+    implements AddressDatasource, TransactionDatasource, UtxoDatasource {
   const BdkWalletDatasource();
 
   Future<BalanceModel> getBalance({
     required PublicBdkWalletModel wallet,
   }) async {
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPublicWallet(wallet);
     final balanceInfo = bdkWallet.getBalance();
 
     final balance = BalanceModel(
@@ -70,12 +68,7 @@ class BdkWalletDatasource implements AddressDatasource {
     required PublicBdkWalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) async {
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPublicWallet(wallet);
     final blockchain = await bdk.Blockchain.create(
       config: bdk.BlockchainConfig.electrum(
         config: bdk.ElectrumConfig(
@@ -93,41 +86,13 @@ class BdkWalletDatasource implements AddressDatasource {
 
   Future<bool> isMine(
     Uint8List scriptBytes, {
-    required PublicBdkWalletModel wallet,
+    required PublicWalletModel wallet,
   }) async {
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPublicWallet(wallet);
     final script = bdk.ScriptBuf(bytes: scriptBytes);
     final isMine = bdkWallet.isMine(script: script);
 
     return isMine;
-  }
-
-  Future<List<UtxoModel>> listUnspent({
-    required PublicBdkWalletModel wallet,
-  }) async {
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
-    final unspent = bdkWallet.listUnspent();
-    final utxos = unspent
-        .map(
-          (unspent) => UtxoModel(
-            scriptPubkey: unspent.txout.scriptPubkey.bytes,
-            txId: unspent.outpoint.txid,
-            vout: unspent.outpoint.vout,
-            value: unspent.txout.value,
-          ),
-        )
-        .toList();
-    return utxos;
   }
 
   Future<String> buildPsbt({
@@ -140,12 +105,7 @@ class BdkWalletDatasource implements AddressDatasource {
     bool replaceByFee = true,
     required PublicBdkWalletModel wallet,
   }) async {
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPublicWallet(wallet);
     bdk.TxBuilder txBuilder;
 
     // Get the scriptPubkey from the address
@@ -214,13 +174,7 @@ class BdkWalletDatasource implements AddressDatasource {
     required PrivateBdkWalletModel wallet,
   }) async {
     final psbt = await bdk.PartiallySignedTransaction.fromString(unsignedPsbt);
-    final bdkWallet = await _createPrivateWallet(
-      scriptType: wallet.scriptType,
-      mnemonic: wallet.mnemonic,
-      passphrase: wallet.passphrase,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPrivateWallet(wallet);
 
     final isFinalized = await bdkWallet.sign(
       psbt: psbt,
@@ -242,49 +196,61 @@ class BdkWalletDatasource implements AddressDatasource {
     return psbt.asString();
   }
 
-  Future<List<WalletTransactionModel>> getTransactions(
-    String walletId, {
-    required PublicBdkWalletModel wallet,
+  /* Start UtxoDatasource methods */
+  @override
+  Future<List<UtxoModel>> getUtxos({
+    required PublicWalletModel wallet,
   }) async {
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
-    final transactions = bdkWallet.listTransactions(includeRaw: false);
-    final List<WalletTransactionModel> walletTxs = transactions
+    final bdkWallet = await _createPublicWallet(wallet);
+    final unspent = bdkWallet.listUnspent();
+    final utxos = unspent
         .map(
-          (tx) => WalletTransactionModel(
-            network: bdkWallet.network().network,
-            txId: tx.txid,
-            isIncoming:
-                tx.sent == BigInt.from(0) && tx.received > BigInt.from(0),
-            amount: tx.sent.toInt(),
-            fees: tx.fee?.toInt() ?? 0,
-            confirmationTimestamp: tx.confirmationTime?.timestamp.toInt(),
+          (unspent) => UtxoModel(
+            scriptPubkey: unspent.txout.scriptPubkey.bytes,
+            txId: unspent.outpoint.txid,
+            vout: unspent.outpoint.vout,
+            value: unspent.txout.value,
           ),
         )
         .toList();
+    return utxos;
+  }
+  /* End UtxoDatasource methods */
+
+  /* Start TransactionDatasource methods */
+  @override
+  Future<List<TransactionModel>> getTransactions({
+    required PublicWalletModel wallet,
+  }) async {
+    final bdkWallet = await _createPublicWallet(wallet);
+
+    final transactions = bdkWallet.listTransactions(includeRaw: false);
+    final List<TransactionModel> walletTxs = transactions.map(
+      (tx) {
+        final isIncoming = tx.received > tx.sent;
+        final netAmountSat =
+            isIncoming ? tx.received - tx.sent : tx.sent - tx.received;
+
+        return TransactionModel.bitcoin(
+          txId: tx.txid,
+          isIncoming: tx.received > tx.sent,
+          amountSat: netAmountSat.toInt(),
+          feeSat: tx.fee?.toInt() ?? 0,
+          confirmationTimestamp: tx.confirmationTime?.timestamp.toInt(),
+        );
+      },
+    ).toList();
 
     return walletTxs;
   }
+  /* End TransactionDatasource methods */
 
   /* Start AddressDatasource methods */
   @override
   Future<AddressModel> getNewAddress({
     required PublicWalletModel wallet,
   }) async {
-    if (wallet is! PublicBdkWalletModel) {
-      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
-    }
-
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPublicWallet(wallet);
     final addressInfo = bdkWallet.getAddress(
       addressIndex: const bdk.AddressIndex.increase(),
     );
@@ -299,16 +265,7 @@ class BdkWalletDatasource implements AddressDatasource {
   Future<AddressModel> getLastUnusedAddress({
     required PublicWalletModel wallet,
   }) async {
-    if (wallet is! PublicBdkWalletModel) {
-      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
-    }
-
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPublicWallet(wallet);
     final addressInfo = bdkWallet.getAddress(
       addressIndex: const bdk.AddressIndex.lastUnused(),
     );
@@ -324,16 +281,7 @@ class BdkWalletDatasource implements AddressDatasource {
     int index, {
     required PublicWalletModel wallet,
   }) async {
-    if (wallet is! PublicBdkWalletModel) {
-      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
-    }
-
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPublicWallet(wallet);
     final addressInfo = bdkWallet.getAddress(
       addressIndex: bdk.AddressIndex.peek(index: index),
     );
@@ -350,16 +298,7 @@ class BdkWalletDatasource implements AddressDatasource {
     required int limit,
     required int offset,
   }) async {
-    if (wallet is! PublicBdkWalletModel) {
-      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
-    }
-
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPublicWallet(wallet);
 
     final addresses = <BitcoinAddressModel>[];
     for (int i = offset; i < offset + limit; i++) {
@@ -383,16 +322,7 @@ class BdkWalletDatasource implements AddressDatasource {
     required int limit,
     required int offset,
   }) async {
-    if (wallet is! PublicBdkWalletModel) {
-      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
-    }
-
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPublicWallet(wallet);
 
     final addresses = <BitcoinAddressModel>[];
     for (int i = offset; i < offset + limit; i++) {
@@ -416,16 +346,7 @@ class BdkWalletDatasource implements AddressDatasource {
     String address, {
     required PublicWalletModel wallet,
   }) async {
-    if (wallet is! PublicBdkWalletModel) {
-      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
-    }
-
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPublicWallet(wallet);
     final transactions = bdkWallet.listTransactions(includeRaw: false);
 
     // TODO: Use future.wait to parallelize the loop and improve performance
@@ -453,16 +374,7 @@ class BdkWalletDatasource implements AddressDatasource {
     String address, {
     required PublicWalletModel wallet,
   }) async {
-    if (wallet is! PublicBdkWalletModel) {
-      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
-    }
-
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
+    final bdkWallet = await _createPublicWallet(wallet);
     final utxos = bdkWallet.listUnspent();
     BigInt balance = BigInt.zero;
 
@@ -481,25 +393,25 @@ class BdkWalletDatasource implements AddressDatasource {
   }
   /* End AddressDatasource methods */
 
-  Future<bdk.Wallet> _createPublicWallet({
-    required String externalDescriptor,
-    required String internalDescriptor,
-    required bool isTestnet,
-    required String dbName,
-  }) async {
-    final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+  Future<bdk.Wallet> _createPublicWallet(PublicWalletModel walletModel) async {
+    if (walletModel is! PublicBdkWalletModel) {
+      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
+    }
+
+    final network =
+        walletModel.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
 
     final external = await bdk.Descriptor.create(
-      descriptor: externalDescriptor,
+      descriptor: walletModel.externalDescriptor,
       network: network,
     );
     final internal = await bdk.Descriptor.create(
-      descriptor: internalDescriptor,
+      descriptor: walletModel.internalDescriptor,
       network: network,
     );
 
     // Create the database configuration
-    final dbPath = await _getDbPath(dbName);
+    final dbPath = await _getDbPath(walletModel.dbName);
     final dbConfig = bdk.DatabaseConfig.sqlite(
       config: bdk.SqliteDbConfiguration(path: dbPath),
     );
@@ -514,26 +426,27 @@ class BdkWalletDatasource implements AddressDatasource {
     return wallet;
   }
 
-  Future<bdk.Wallet> _createPrivateWallet({
-    required ScriptType scriptType,
-    required String mnemonic,
-    String? passphrase,
-    required bool isTestnet,
-    required String dbName,
-  }) async {
-    final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+  Future<bdk.Wallet> _createPrivateWallet(
+    PrivateWalletModel walletModel,
+  ) async {
+    if (walletModel is! PrivateBdkWalletModel) {
+      throw ArgumentError('Wallet must be of type PrivateBdkWalletModel');
+    }
 
-    final bdkMnemonic = await bdk.Mnemonic.fromString(mnemonic);
+    final network =
+        walletModel.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
+
+    final bdkMnemonic = await bdk.Mnemonic.fromString(walletModel.mnemonic);
     final secretKey = await bdk.DescriptorSecretKey.create(
       network: network,
       mnemonic: bdkMnemonic,
-      password: passphrase,
+      password: walletModel.passphrase,
     );
 
     bdk.Descriptor? external;
     bdk.Descriptor? internal;
 
-    switch (scriptType) {
+    switch (walletModel.scriptType) {
       case ScriptType.bip84:
         external = await bdk.Descriptor.newBip84(
           secretKey: secretKey,
@@ -570,7 +483,7 @@ class BdkWalletDatasource implements AddressDatasource {
     }
 
     // Create the database configuration
-    final dbPath = await _getDbPath(dbName);
+    final dbPath = await _getDbPath(walletModel.dbName);
     final dbConfig = bdk.DatabaseConfig.sqlite(
       config: bdk.SqliteDbConfiguration(path: dbPath),
     );

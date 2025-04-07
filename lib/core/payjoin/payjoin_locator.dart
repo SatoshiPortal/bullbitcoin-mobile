@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utxo/domain/repositories/utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
@@ -53,6 +54,7 @@ class PayjoinLocator {
         payjoinRepository: locator<PayjoinRepository>(),
         walletRepository: locator<WalletRepository>(),
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+        utxoRepository: locator<UtxoRepository>(),
       ),
     );
   }
