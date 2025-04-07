@@ -111,12 +111,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // the async data is loaded. Remove values that should
       // not be shared between the different receive types. Currently only the
       // amount and note shouldn't be shared.
-      emit(state.copyWith(
-        type: ReceiveType.bitcoin,
-        inputAmount: '',
-        confirmedAmountSat: null,
-        note: '',
-      ));
+      emit(
+        state.copyWith(
+          type: ReceiveType.bitcoin,
+          inputAmount: '',
+          confirmedAmountSat: null,
+          note: '',
+        ),
+      );
 
       // If no wallet is passed through the constructor, get the default bitcoin wallet
       Wallet? wallet = _wallet;
@@ -134,12 +136,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         // And set the input amount currency code to the bitcoin unit code
         // if no other currency code was selected yet.
         final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
-        emit(state.copyWith(
-          bitcoinUnit: bitcoinUnit,
-          inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
-              ? state.inputAmountCurrencyCode
-              : bitcoinUnit.code,
-        ));
+        emit(
+          state.copyWith(
+            bitcoinUnit: bitcoinUnit,
+            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+                ? state.inputAmountCurrencyCode
+                : bitcoinUnit.code,
+          ),
+        );
       }
 
       if (state.fiatCurrencyCode.isEmpty) {
@@ -208,25 +212,29 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // amount and note shouldn't be shared. But for Lightning, also clear the
       // swap since it goes to the amount screen first and so a new swap should
       // be created anyways.
-      emit(state.copyWith(
-        type: ReceiveType.lightning,
-        lightningSwap: null,
-        inputAmount: '',
-        confirmedAmountSat: null,
-        note: '',
-      ));
+      emit(
+        state.copyWith(
+          type: ReceiveType.lightning,
+          lightningSwap: null,
+          inputAmount: '',
+          confirmedAmountSat: null,
+          note: '',
+        ),
+      );
 
       if (state.bitcoinUnit == null) {
         // If the bitcoin unit is not set yet, we need to get it from the settings
         // And set the input amount currency code to the bitcoin unit code
         // if no other currency code was selected yet.
         final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
-        emit(state.copyWith(
-          bitcoinUnit: bitcoinUnit,
-          inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
-              ? state.inputAmountCurrencyCode
-              : bitcoinUnit.code,
-        ));
+        emit(
+          state.copyWith(
+            bitcoinUnit: bitcoinUnit,
+            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+                ? state.inputAmountCurrencyCode
+                : bitcoinUnit.code,
+          ),
+        );
       }
 
       if (state.fiatCurrencyCode.isEmpty) {
@@ -285,24 +293,28 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // receive UI already before the async data is loaded. Remove values that should
       // not be shared between the different receive types. Currently only the
       // amount and note shouldn't be shared.
-      emit(state.copyWith(
-        type: ReceiveType.liquid,
-        inputAmount: '',
-        confirmedAmountSat: null,
-        note: '',
-      ));
+      emit(
+        state.copyWith(
+          type: ReceiveType.liquid,
+          inputAmount: '',
+          confirmedAmountSat: null,
+          note: '',
+        ),
+      );
 
       if (state.bitcoinUnit == null) {
         // If the bitcoin unit is not set yet, we need to get it from the settings
         // And set the input amount currency code to the bitcoin unit code
         // if no other currency code was selected yet.
         final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
-        emit(state.copyWith(
-          bitcoinUnit: bitcoinUnit,
-          inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
-              ? state.inputAmountCurrencyCode
-              : bitcoinUnit.code,
-        ));
+        emit(
+          state.copyWith(
+            bitcoinUnit: bitcoinUnit,
+            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
+                ? state.inputAmountCurrencyCode
+                : bitcoinUnit.code,
+          ),
+        );
       }
 
       if (state.fiatCurrencyCode.isEmpty) {
