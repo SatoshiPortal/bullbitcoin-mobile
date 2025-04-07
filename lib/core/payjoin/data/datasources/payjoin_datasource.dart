@@ -263,7 +263,7 @@ class PayjoinDatasource {
           ),
           PsbtInput(
             witnessUtxo:
-                TxOut(value: input.value, scriptPubkey: input.scriptPubkey),
+                TxOut(value: input.value!, scriptPubkey: input.scriptPubkey),
             redeemScript: input.redeemScriptRawOutputScript.isEmpty
                 ? null
                 : await Script.newInstance(

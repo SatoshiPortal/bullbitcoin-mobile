@@ -1,5 +1,7 @@
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 abstract class WalletRepository {
@@ -28,8 +30,24 @@ abstract class WalletRepository {
     bool? onlyLiquid,
     bool sync = true,
   });
+  Future<String> buildPsbt({
+    required String walletId,
+    required String address,
+    required int amountSat,
+    required NetworkFee networkFee,
+    bool? drain,
+    List<Utxo>? unspendable,
+    List<Utxo>? selected,
+    bool? replaceByFee,
+  });
+  Future<String> signPsbt({
+    required String walletId,
+    required String psbt,
+  });
   // TODO: The recoverbull backup functionality should be moved to the wallet repo
-  // and instead of having the updateBackupInfo, doing the restore and backup create through the Wallet repository
+  // and instead of having the updateBackupInfo and updateEncryptedBackupTime methods,
+  //  doing the restore and backup create through the Wallet repository should
+  //  implicitly update the backup info and encrypted backup time of the metadata.
   Future<void> updateBackupInfo({
     required bool isEncryptedVaultTested,
     required bool isPhysicalBackupTested,

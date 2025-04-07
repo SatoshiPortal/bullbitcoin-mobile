@@ -9,7 +9,7 @@ abstract class PayjoinRepository {
   Stream<PayjoinReceiver> get requestsForReceivers;
   Stream<PayjoinSender> get proposalsForSenders;
   Stream<Payjoin> get expiredPayjoins;
-  Future<List<TxInput>> getInputsFromOngoingPayjoins();
+  Future<List<Utxo>> getInputsFromOngoingPayjoins();
   Future<PayjoinReceiver> createPayjoinReceiver({
     required String walletId,
     required bool isTestnet,
@@ -29,13 +29,16 @@ abstract class PayjoinRepository {
     int? limit,
     //bool? completed,
   });
-
   Future<PayjoinReceiver> processRequest({
     required String id,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
     required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
     required List<Utxo> unspentUtxos,
     required FutureOr<String> Function(String) processPsbt,
+  });
+  Future<String> signPsbt({
+    required String walletId,
+    required String psbt,
   });
   Future<PayjoinSender> broadcastPsbt({
     required String payjoinId,

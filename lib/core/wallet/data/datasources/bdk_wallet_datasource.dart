@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart';
+import 'package:bb_mobile/core/address/data/models/address_model.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/bdk_wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/tx_input_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
@@ -38,7 +40,7 @@ extension BdkNetworkX on bdk.Network {
   }
 }
 
-class BdkWalletDatasource {
+class BdkWalletDatasource implements AddressDatasource {
   const BdkWalletDatasource();
 
   Future<BalanceModel> getBalance({
@@ -89,61 +91,6 @@ class BdkWalletDatasource {
     await bdkWallet.sync(blockchain: blockchain);
   }
 
-  Future<(int, String)> getNewAddress({
-    required PublicBdkWalletModel wallet,
-  }) async {
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
-    final addressInfo = bdkWallet.getAddress(
-      addressIndex: const bdk.AddressIndex.increase(),
-    );
-
-    final index = addressInfo.index;
-    final address = addressInfo.address.asString();
-
-    return (index, address);
-  }
-
-  Future<String> getAddressByIndex(
-    int index, {
-    required PublicBdkWalletModel wallet,
-  }) async {
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
-    final addressInfo = bdkWallet.getAddress(
-      addressIndex: bdk.AddressIndex.peek(index: index),
-    );
-
-    return addressInfo.address.asString();
-  }
-
-  Future<(int, String)> getLastUnusedAddress({
-    required PublicBdkWalletModel wallet,
-  }) async {
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
-    final addressInfo = bdkWallet.getAddress(
-      addressIndex: const bdk.AddressIndex.lastUnused(),
-    );
-
-    final index = addressInfo.index;
-    final address = addressInfo.address.asString();
-
-    return (index, address);
-  }
-
   Future<bool> isMine(
     Uint8List scriptBytes, {
     required PublicBdkWalletModel wallet,
@@ -185,13 +132,12 @@ class BdkWalletDatasource {
 
   Future<String> buildPsbt({
     required String address,
-    required bool isTestnet,
     required NetworkFee networkFee,
     int? amountSat,
-    List<TxInputModel>? unspendableInputs,
+    List<UtxoModel>? unspendable,
     bool? drain,
-    List<TxInputModel>? selectedInputs,
-    bool replaceByFees = true,
+    List<UtxoModel>? selected,
+    bool replaceByFee = true,
     required PublicBdkWalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(
@@ -205,7 +151,7 @@ class BdkWalletDatasource {
     // Get the scriptPubkey from the address
     final bdkAddress = await bdk.Address.fromString(
       s: address,
-      network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+      network: wallet.isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
     );
     final script = bdkAddress.scriptPubkey();
 
@@ -219,13 +165,13 @@ class BdkWalletDatasource {
       txBuilder = bdk.TxBuilder().addRecipient(script, BigInt.from(amountSat));
     }
 
-    if (selectedInputs != null && selectedInputs.isNotEmpty) {
-      final selectableOutPoints = selectedInputs
+    if (selected != null && selected.isNotEmpty) {
+      final selectableOutPoints = selected
           .map((input) => bdk.OutPoint(txid: input.txId, vout: input.vout))
           .toList();
       txBuilder.addUtxos(selectableOutPoints);
     }
-    if (replaceByFees) txBuilder.enableRbf();
+    if (replaceByFee) txBuilder.enableRbf();
 
     if (networkFee.isAbsolute) {
       txBuilder = txBuilder.feeAbsolute(BigInt.from(networkFee.value as int));
@@ -234,7 +180,7 @@ class BdkWalletDatasource {
     }
 
     // Make sure utxos that are unspendable are not used
-    final unspendableOutPoints = unspendableInputs
+    final unspendableOutPoints = unspendable
         ?.map((input) => bdk.OutPoint(txid: input.txId, vout: input.vout))
         .toList();
 
@@ -296,10 +242,184 @@ class BdkWalletDatasource {
     return psbt.asString();
   }
 
-  Future<bool> isAddressUsed(
-    String address, {
+  Future<List<WalletTransactionModel>> getTransactions(
+    String walletId, {
     required PublicBdkWalletModel wallet,
   }) async {
+    final bdkWallet = await _createPublicWallet(
+      externalDescriptor: wallet.externalDescriptor,
+      internalDescriptor: wallet.internalDescriptor,
+      isTestnet: wallet.isTestnet,
+      dbName: wallet.dbName,
+    );
+    final transactions = bdkWallet.listTransactions(includeRaw: false);
+    final List<WalletTransactionModel> walletTxs = transactions
+        .map(
+          (tx) => WalletTransactionModel(
+            network: bdkWallet.network().network,
+            txId: tx.txid,
+            isIncoming:
+                tx.sent == BigInt.from(0) && tx.received > BigInt.from(0),
+            amount: tx.sent.toInt(),
+            fees: tx.fee?.toInt() ?? 0,
+            confirmationTimestamp: tx.confirmationTime?.timestamp.toInt(),
+          ),
+        )
+        .toList();
+
+    return walletTxs;
+  }
+
+  /* Start AddressDatasource methods */
+  @override
+  Future<AddressModel> getNewAddress({
+    required PublicWalletModel wallet,
+  }) async {
+    if (wallet is! PublicBdkWalletModel) {
+      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
+    }
+
+    final bdkWallet = await _createPublicWallet(
+      externalDescriptor: wallet.externalDescriptor,
+      internalDescriptor: wallet.internalDescriptor,
+      isTestnet: wallet.isTestnet,
+      dbName: wallet.dbName,
+    );
+    final addressInfo = bdkWallet.getAddress(
+      addressIndex: const bdk.AddressIndex.increase(),
+    );
+
+    final index = addressInfo.index;
+    final address = addressInfo.address.asString();
+
+    return BitcoinAddressModel(index: index, address: address);
+  }
+
+  @override
+  Future<AddressModel> getLastUnusedAddress({
+    required PublicWalletModel wallet,
+  }) async {
+    if (wallet is! PublicBdkWalletModel) {
+      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
+    }
+
+    final bdkWallet = await _createPublicWallet(
+      externalDescriptor: wallet.externalDescriptor,
+      internalDescriptor: wallet.internalDescriptor,
+      isTestnet: wallet.isTestnet,
+      dbName: wallet.dbName,
+    );
+    final addressInfo = bdkWallet.getAddress(
+      addressIndex: const bdk.AddressIndex.lastUnused(),
+    );
+
+    final index = addressInfo.index;
+    final address = addressInfo.address.asString();
+
+    return BitcoinAddressModel(index: index, address: address);
+  }
+
+  @override
+  Future<AddressModel> getAddressByIndex(
+    int index, {
+    required PublicWalletModel wallet,
+  }) async {
+    if (wallet is! PublicBdkWalletModel) {
+      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
+    }
+
+    final bdkWallet = await _createPublicWallet(
+      externalDescriptor: wallet.externalDescriptor,
+      internalDescriptor: wallet.internalDescriptor,
+      isTestnet: wallet.isTestnet,
+      dbName: wallet.dbName,
+    );
+    final addressInfo = bdkWallet.getAddress(
+      addressIndex: bdk.AddressIndex.peek(index: index),
+    );
+
+    return BitcoinAddressModel(
+      index: addressInfo.index,
+      address: addressInfo.address.asString(),
+    );
+  }
+
+  @override
+  Future<List<AddressModel>> getReceiveAddresses({
+    required PublicWalletModel wallet,
+    required int limit,
+    required int offset,
+  }) async {
+    if (wallet is! PublicBdkWalletModel) {
+      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
+    }
+
+    final bdkWallet = await _createPublicWallet(
+      externalDescriptor: wallet.externalDescriptor,
+      internalDescriptor: wallet.internalDescriptor,
+      isTestnet: wallet.isTestnet,
+      dbName: wallet.dbName,
+    );
+
+    final addresses = <BitcoinAddressModel>[];
+    for (int i = offset; i < offset + limit; i++) {
+      final address = bdkWallet.getAddress(
+        addressIndex: bdk.AddressIndex.peek(index: i),
+      );
+
+      final model = BitcoinAddressModel(
+        index: address.index,
+        address: address.address.asString(),
+      );
+      addresses.add(model);
+    }
+
+    return addresses;
+  }
+
+  @override
+  Future<List<AddressModel>> getChangeAddresses({
+    required PublicWalletModel wallet,
+    required int limit,
+    required int offset,
+  }) async {
+    if (wallet is! PublicBdkWalletModel) {
+      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
+    }
+
+    final bdkWallet = await _createPublicWallet(
+      externalDescriptor: wallet.externalDescriptor,
+      internalDescriptor: wallet.internalDescriptor,
+      isTestnet: wallet.isTestnet,
+      dbName: wallet.dbName,
+    );
+
+    final addresses = <BitcoinAddressModel>[];
+    for (int i = offset; i < offset + limit; i++) {
+      final address = bdkWallet.getInternalAddress(
+        addressIndex: bdk.AddressIndex.peek(index: i),
+      );
+
+      final model = BitcoinAddressModel(
+        index: address.index,
+        address: address.address.asString(),
+      );
+
+      addresses.add(model);
+    }
+
+    return addresses;
+  }
+
+  @override
+  Future<bool> isAddressUsed(
+    String address, {
+    required PublicWalletModel wallet,
+  }) async {
+    if (wallet is! PublicBdkWalletModel) {
+      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
+    }
+
     final bdkWallet = await _createPublicWallet(
       externalDescriptor: wallet.externalDescriptor,
       internalDescriptor: wallet.internalDescriptor,
@@ -328,10 +448,15 @@ class BdkWalletDatasource {
     return false;
   }
 
+  @override
   Future<BigInt> getAddressBalanceSat(
     String address, {
-    required PublicBdkWalletModel wallet,
+    required PublicWalletModel wallet,
   }) async {
+    if (wallet is! PublicBdkWalletModel) {
+      throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
+    }
+
     final bdkWallet = await _createPublicWallet(
       externalDescriptor: wallet.externalDescriptor,
       internalDescriptor: wallet.internalDescriptor,
@@ -354,34 +479,7 @@ class BdkWalletDatasource {
 
     return balance;
   }
-
-  Future<List<WalletTransactionModel>> getTransactions(
-    String walletId, {
-    required PublicBdkWalletModel wallet,
-  }) async {
-    final bdkWallet = await _createPublicWallet(
-      externalDescriptor: wallet.externalDescriptor,
-      internalDescriptor: wallet.internalDescriptor,
-      isTestnet: wallet.isTestnet,
-      dbName: wallet.dbName,
-    );
-    final transactions = bdkWallet.listTransactions(includeRaw: false);
-    final List<WalletTransactionModel> walletTxs = transactions
-        .map(
-          (tx) => WalletTransactionModel(
-            network: bdkWallet.network().network,
-            txId: tx.txid,
-            isIncoming:
-                tx.sent == BigInt.from(0) && tx.received > BigInt.from(0),
-            amount: tx.sent.toInt(),
-            fees: tx.fee?.toInt() ?? 0,
-            confirmationTimestamp: tx.confirmationTime?.timestamp.toInt(),
-          ),
-        )
-        .toList();
-
-    return walletTxs;
-  }
+  /* End AddressDatasource methods */
 
   Future<bdk.Wallet> _createPublicWallet({
     required String externalDescriptor,

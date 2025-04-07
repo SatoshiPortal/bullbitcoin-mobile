@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/locator/core_locator.dart';
+import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
@@ -23,9 +23,13 @@ class AppLocator {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
     // Register core dependencies first
-    await CoreLocator.setup();
-    KeyServerLocator.setup();
+    await CoreLocator.registerDatasources();
+    await CoreLocator.registerRepositories();
+    CoreLocator.registerServices();
+    CoreLocator.registerUsecases();
+
     // Register feature-specific dependencies
+    KeyServerLocator.setup();
     PinCodeLocator.setup();
     AppStartupLocator.setup();
     AppUnlockLocator.setup();

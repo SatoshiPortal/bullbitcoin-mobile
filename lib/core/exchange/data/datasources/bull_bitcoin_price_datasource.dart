@@ -2,11 +2,11 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 
-class BitcoinPriceDatasource {
+class BullBitcoinPriceDatasource {
   final Dio _http;
   final _pricePath = '/public/price';
 
-  BitcoinPriceDatasource({
+  BullBitcoinPriceDatasource({
     required Dio bullBitcoinHttpClient,
   }) : _http = bullBitcoinHttpClient;
 

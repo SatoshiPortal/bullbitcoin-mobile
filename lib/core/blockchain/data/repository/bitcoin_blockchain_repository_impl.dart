@@ -6,11 +6,11 @@ import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 class BitcoinBlockchainRepositoryImpl implements BitcoinBlockchainRepository {
-  final BitcoinBlockchainDatasource _blockchain;
+  final BdkBitcoinBlockchainDatasource _blockchain;
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
   const BitcoinBlockchainRepositoryImpl({
-    required BitcoinBlockchainDatasource blockchainDatasource,
+    required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   })  : _blockchain = blockchainDatasource,
         _electrumServerStorage = electrumServerStorageDatasource;

@@ -1,18 +1,18 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart';
+import 'package:bb_mobile/core/address/data/models/address_model.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/lwk_wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
+import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
-class LwkWalletDatasource {
+class LwkWalletDatasource implements AddressDatasource {
   const LwkWalletDatasource();
 
   Future<String> _getDbPath(String dbName) async {
@@ -91,69 +91,6 @@ class LwkWalletDatasource {
     return balance;
   }
 
-  Future<Address> getNewAddress({
-    required PublicLwkWalletModel wallet,
-  }) async {
-    final lwkWallet = await _createPublicWallet(
-      ctDescriptor: wallet.combinedCtDescriptor,
-      dbName: wallet.dbName,
-      isTestnet: wallet.isTestnet,
-    );
-    final lastUnusedAddressInfo = await lwkWallet.addressLastUnused();
-    // this method will always return an index so ! is safe
-    // index will only be null when address is part of a TxOut
-
-    final newIndex = lastUnusedAddressInfo.index! + 1;
-    final addressInfo = await lwkWallet.address(index: newIndex);
-
-    final address = Address.liquid(
-      index: addressInfo.index!,
-      standard: addressInfo.standard,
-      confidential: addressInfo.confidential,
-    );
-
-    return address;
-  }
-
-  Future<Address> getAddressByIndex({
-    required PublicLwkWalletModel wallet,
-    required int index,
-  }) async {
-    final lwkWallet = await _createPublicWallet(
-      ctDescriptor: wallet.combinedCtDescriptor,
-      dbName: wallet.dbName,
-      isTestnet: wallet.isTestnet,
-    );
-    final addressInfo = await lwkWallet.address(index: index);
-
-    final address = Address.liquid(
-      index: addressInfo.index!,
-      standard: addressInfo.standard,
-      confidential: addressInfo.confidential,
-    );
-
-    return address;
-  }
-
-  Future<Address> getLastUnusedAddress({
-    required PublicLwkWalletModel wallet,
-  }) async {
-    final lwkWallet = await _createPublicWallet(
-      ctDescriptor: wallet.combinedCtDescriptor,
-      dbName: wallet.dbName,
-      isTestnet: wallet.isTestnet,
-    );
-    final addressInfo = await lwkWallet.addressLastUnused();
-
-    final address = Address.liquid(
-      index: addressInfo.index!,
-      standard: addressInfo.standard,
-      confidential: addressInfo.confidential,
-    );
-
-    return address;
-  }
-
   Future<void> sync({
     required PublicLwkWalletModel wallet,
     required ElectrumServerModel electrumServer,
@@ -167,64 +104,6 @@ class LwkWalletDatasource {
       electrumUrl: electrumServer.url,
       validateDomain: electrumServer.validateDomain,
     );
-  }
-
-  Future<BigInt> getAddressBalanceSat({
-    required PublicLwkWalletModel wallet,
-    required String address,
-  }) async {
-    final lwkWallet = await _createPublicWallet(
-      ctDescriptor: wallet.combinedCtDescriptor,
-      dbName: wallet.dbName,
-      isTestnet: wallet.isTestnet,
-    );
-    final utxos = await lwkWallet.utxos();
-
-    BigInt balance = BigInt.zero;
-
-    // return balance;
-    for (final utxo in utxos) {
-      final assetId = _lBtcAssetId(
-        Network.fromEnvironment(isTestnet: wallet.isTestnet, isLiquid: true),
-      );
-      if (utxo.unblinded.asset != assetId) {
-        continue;
-      }
-
-      if (utxo.address.confidential == address ||
-          utxo.address.standard == address) {
-        balance += utxo.unblinded.value;
-      }
-    }
-
-    return balance;
-  }
-
-  Future<bool> isAddressUsed({
-    required PublicLwkWalletModel wallet,
-    required String address,
-  }) async {
-    final lwkWallet = await _createPublicWallet(
-      ctDescriptor: wallet.combinedCtDescriptor,
-      dbName: wallet.dbName,
-      isTestnet: wallet.isTestnet,
-    );
-    final txs = await lwkWallet.txs();
-    final txOutputLists = txs.map((tx) => tx.outputs).toList();
-
-    final outputs = txOutputLists.expand((list) => list).toList();
-    if (outputs.isEmpty) {
-      return false;
-    }
-
-    final isUsed = await Future.any(
-      outputs.map((output) async {
-        return output.address.confidential == address ||
-            output.address.standard == address;
-      }),
-    );
-
-    return isUsed;
   }
 
   Future<List<Utxo>> listUnspent({
@@ -251,12 +130,201 @@ class LwkWalletDatasource {
     return unspent;
   }
 
+  /* Start AddressDatasource methods */
+  @override
+  Future<AddressModel> getNewAddress({
+    required PublicWalletModel wallet,
+  }) async {
+    if (wallet is! PublicLwkWalletModel) {
+      throw Exception('Wallet is not an LWK wallet');
+    }
+
+    final lwkWallet = await _createPublicWallet(
+      ctDescriptor: wallet.combinedCtDescriptor,
+      dbName: wallet.dbName,
+      isTestnet: wallet.isTestnet,
+    );
+    final lastUnusedAddressInfo = await lwkWallet.addressLastUnused();
+
+    // this method will always return an index so ! is safe
+    // index will only be null when address is part of a TxOut
+    final newIndex = lastUnusedAddressInfo.index! + 1;
+    final addressInfo = await lwkWallet.address(index: newIndex);
+
+    final address = LiquidAddressModel(
+      index: addressInfo.index!,
+      standard: addressInfo.standard,
+      confidential: addressInfo.confidential,
+    );
+
+    return address;
+  }
+
+  @override
+  Future<AddressModel> getLastUnusedAddress({
+    required PublicWalletModel wallet,
+  }) async {
+    if (wallet is! PublicLwkWalletModel) {
+      throw Exception('Wallet is not an LWK wallet');
+    }
+
+    final lwkWallet = await _createPublicWallet(
+      ctDescriptor: wallet.combinedCtDescriptor,
+      dbName: wallet.dbName,
+      isTestnet: wallet.isTestnet,
+    );
+    final addressInfo = await lwkWallet.addressLastUnused();
+
+    final address = LiquidAddressModel(
+      index: addressInfo.index!,
+      standard: addressInfo.standard,
+      confidential: addressInfo.confidential,
+    );
+
+    return address;
+  }
+
+  @override
+  Future<AddressModel> getAddressByIndex(
+    int index, {
+    required PublicWalletModel wallet,
+  }) async {
+    if (wallet is! PublicLwkWalletModel) {
+      throw Exception('Wallet is not an LWK wallet');
+    }
+
+    final lwkWallet = await _createPublicWallet(
+      ctDescriptor: wallet.combinedCtDescriptor,
+      dbName: wallet.dbName,
+      isTestnet: wallet.isTestnet,
+    );
+    final addressInfo = await lwkWallet.address(index: index);
+
+    final address = LiquidAddressModel(
+      index: addressInfo.index!,
+      standard: addressInfo.standard,
+      confidential: addressInfo.confidential,
+    );
+
+    return address;
+  }
+
+  @override
+  Future<List<AddressModel>> getReceiveAddresses({
+    required PublicWalletModel wallet,
+    required int limit,
+    required int offset,
+  }) async {
+    if (wallet is! PublicLwkWalletModel) {
+      throw Exception('Wallet is not an LWK wallet');
+    }
+
+    final lwkWallet = await _createPublicWallet(
+      ctDescriptor: wallet.combinedCtDescriptor,
+      dbName: wallet.dbName,
+      isTestnet: wallet.isTestnet,
+    );
+
+    final addresses = <LiquidAddressModel>[];
+    for (int i = offset; i < offset + limit; i++) {
+      final addressInfo = await lwkWallet.address(index: i);
+      final address = LiquidAddressModel(
+        index: addressInfo.index!,
+        standard: addressInfo.standard,
+        confidential: addressInfo.confidential,
+      );
+      addresses.add(address);
+    }
+    return addresses;
+  }
+
+  @override
+  Future<List<AddressModel>> getChangeAddresses({
+    required PublicWalletModel wallet,
+    required int limit,
+    required int offset,
+  }) async {
+    // Lwk does not support change addresses at the moment
+    // so we return an empty list
+    return [];
+  }
+
+  @override
+  Future<bool> isAddressUsed(
+    String address, {
+    required PublicWalletModel wallet,
+  }) async {
+    if (wallet is! PublicLwkWalletModel) {
+      throw Exception('Wallet is not an LWK wallet');
+    }
+
+    final lwkWallet = await _createPublicWallet(
+      ctDescriptor: wallet.combinedCtDescriptor,
+      dbName: wallet.dbName,
+      isTestnet: wallet.isTestnet,
+    );
+    final txs = await lwkWallet.txs();
+    final txOutputLists = txs.map((tx) => tx.outputs).toList();
+
+    final outputs = txOutputLists.expand((list) => list).toList();
+    if (outputs.isEmpty) {
+      return false;
+    }
+
+    final isUsed = await Future.any(
+      outputs.map((output) async {
+        return output.address.confidential == address ||
+            output.address.standard == address;
+      }),
+    );
+
+    return isUsed;
+  }
+
+  @override
+  Future<BigInt> getAddressBalanceSat(
+    String address, {
+    required PublicWalletModel wallet,
+  }) async {
+    if (wallet is! PublicLwkWalletModel) {
+      throw Exception('Wallet is not an LWK wallet');
+    }
+
+    final lwkWallet = await _createPublicWallet(
+      ctDescriptor: wallet.combinedCtDescriptor,
+      dbName: wallet.dbName,
+      isTestnet: wallet.isTestnet,
+    );
+    final utxos = await lwkWallet.utxos();
+
+    BigInt balance = BigInt.zero;
+
+    // return balance;
+    for (final utxo in utxos) {
+      final assetId = _lBtcAssetId(
+        Network.fromEnvironment(isTestnet: wallet.isTestnet, isLiquid: true),
+      );
+      if (utxo.unblinded.asset != assetId) {
+        continue;
+      }
+
+      if (utxo.address.confidential == address ||
+          utxo.address.standard == address) {
+        balance += utxo.unblinded.value;
+      }
+    }
+
+    return balance;
+  }
+  /* End AddressDatasource methods */
+
   String _lBtcAssetId(Network network) {
     return network == Network.liquidTestnet
         ? lwk.lTestAssetId
         : lwk.lBtcAssetId;
   }
 
+  /*
   Future<List<WalletTransactionModel>> getTransactions(
     String walletId,
     Network network, {
@@ -289,9 +357,9 @@ class LwkWalletDatasource {
       walletTxs.add(walletTx);
     }
     return walletTxs;
-  }
+  }*/
 
-  Future<String> buildPsbt({
+  Future<String> buildPset({
     required String address,
     required NetworkFee networkFee,
     int? amountSat,
@@ -306,21 +374,17 @@ class LwkWalletDatasource {
     if (networkFee.isAbsolute) {
       throw Exception('Absolute fee is not supported for liquid yet!');
     }
-    final psbt = await lwkWallet.buildLbtcTx(
+    final pset = await lwkWallet.buildLbtcTx(
       sats: BigInt.from(amountSat ?? 0),
       outAddress: address,
       feeRate: networkFee.value.toDouble(),
       drain: drain,
     );
-    return psbt;
+    return pset;
   }
 
-  Future<Uint8List> signPsbt({
-    required String psbt,
-    required Network network,
-    required NetworkFee networkFee,
-    int? amountSat,
-    bool drain = false,
+  Future<Uint8List> signPset(
+    String pset, {
     required PrivateLwkWalletModel wallet,
   }) async {
     final lwkWallet = await _createPrivateWallet(
@@ -328,13 +392,10 @@ class LwkWalletDatasource {
       dbName: wallet.dbName,
       isTestnet: wallet.isTestnet,
     );
-    if (networkFee.isAbsolute) {
-      throw Exception('Absolute fee is not supported for liquid yet!');
-    }
 
     final signedBytes = await lwkWallet.signTx(
-      network: network.lwkNetwork,
-      pset: psbt,
+      network: wallet.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet,
+      pset: pset,
       mnemonic: wallet.mnemonic,
     );
 

@@ -1,20 +1,23 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/address/domain/repositories/address_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class SwapWatcherServiceImpl implements SwapWatcherService {
   final BoltzSwapRepositoryImpl _boltzRepo;
+  final AddressRepository _addressRepository;
 
   final StreamController<Swap> _swapStreamController =
       StreamController<Swap>.broadcast();
 
   SwapWatcherServiceImpl({
     required BoltzSwapRepositoryImpl boltzRepo,
-  }) : _boltzRepo = boltzRepo {
+    required AddressRepository addressRepository,
+  })  : _boltzRepo = boltzRepo,
+        _addressRepository = addressRepository {
     startWatching();
   }
 
@@ -127,7 +130,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Future<void> _processSendBitcoinToLnRefund({
     required LnSendSwap swap,
   }) async {
-    final address = await _walletManager.getNewAddress(
+    final address = await _addressRepository.getNewAddress(
       walletId: swap.sendWalletId,
     );
     if (!address.isBitcoin) {
@@ -171,7 +174,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Future<void> _processSendLiquidToLnRefund({
     required LnSendSwap swap,
   }) async {
-    final address = await _walletManager.getNewAddress(
+    final address = await _addressRepository.getNewAddress(
       walletId: swap.sendWalletId,
     );
     if (!address.isLiquid) {
@@ -205,13 +208,13 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Future<void> _processChainLiquidToBitcoinClaim({
     required ChainSwap swap,
   }) async {
-    final claimAddress = await _walletManager.getNewAddress(
+    final claimAddress = await _addressRepository.getNewAddress(
       walletId: swap.receiveWalletId!,
     );
     if (!claimAddress.isBitcoin) {
       throw Exception('Claim address is not a Bitcoin address');
     }
-    final refundAddress = await _walletManager.getNewAddress(
+    final refundAddress = await _addressRepository.getNewAddress(
       walletId: swap.sendWalletId,
     );
     if (!refundAddress.isLiquid) {
@@ -230,7 +233,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Future<void> _processChainBitcoinToLiquidRefund({
     required ChainSwap swap,
   }) async {
-    final refundAddress = await _walletManager.getNewAddress(
+    final refundAddress = await _addressRepository.getNewAddress(
       walletId: swap.sendWalletId,
     );
     if (!refundAddress.isBitcoin) {
@@ -248,13 +251,13 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Future<void> _processChainBitcoinToLiquidClaim({
     required ChainSwap swap,
   }) async {
-    final claimAddress = await _walletManager.getNewAddress(
+    final claimAddress = await _addressRepository.getNewAddress(
       walletId: swap.receiveWalletId!,
     );
     if (!claimAddress.isLiquid) {
       throw Exception('Claim address is not a Liquid address');
     }
-    final refundAddress = await _walletManager.getNewAddress(
+    final refundAddress = await _addressRepository.getNewAddress(
       walletId: swap.sendWalletId,
     );
     if (!refundAddress.isBitcoin) {
@@ -273,7 +276,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Future<void> _processChainLiquidToBitcoinRefund({
     required ChainSwap swap,
   }) async {
-    final refundAddress = await _walletManager.getNewAddress(
+    final refundAddress = await _addressRepository.getNewAddress(
       walletId: swap.sendWalletId,
     );
     if (!refundAddress.isLiquid) {

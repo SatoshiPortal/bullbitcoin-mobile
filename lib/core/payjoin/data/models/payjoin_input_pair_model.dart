@@ -13,7 +13,7 @@ class PayjoinInputPairModel with _$PayjoinInputPairModel {
     @Default([]) List<int> scriptSigRawOutputScript,
     @Default(0xFFFFFFFF) int sequence,
     @Default([]) List<Uint8List> witness,
-    required BigInt value,
+    BigInt? value,
     required Uint8List scriptPubkey,
     @Default([]) List<int> redeemScriptRawOutputScript,
     @Default([]) List<int> witnessScriptRawOutputScript,

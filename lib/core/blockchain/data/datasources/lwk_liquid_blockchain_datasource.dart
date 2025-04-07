@@ -2,17 +2,9 @@ import 'dart:typed_data';
 
 import 'package:lwk/lwk.dart' as lwk;
 
-abstract class LiquidBlockchainDatasource {
-  Future<String> broadcastTransaction(
-    Uint8List transaction, {
-    required String electrumServerUrl,
-  });
-}
-
-class LwkLiquidBlockchainDatasource implements LiquidBlockchainDatasource {
+class LwkLiquidBlockchainDatasource {
   const LwkLiquidBlockchainDatasource();
 
-  @override
   Future<String> broadcastTransaction(
     Uint8List transaction, {
     required String electrumServerUrl,

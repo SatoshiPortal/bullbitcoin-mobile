@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+/*import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/wallet/data/repository/bdk_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
@@ -80,3 +80,4 @@ class FailedToBuildTransactionException implements Exception {
 
   FailedToBuildTransactionException(this.message);
 }
+*/

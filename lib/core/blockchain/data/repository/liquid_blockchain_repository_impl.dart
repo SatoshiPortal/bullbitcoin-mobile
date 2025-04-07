@@ -8,11 +8,11 @@ import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
-  final LiquidBlockchainDatasource _blockchain;
+  final LwkLiquidBlockchainDatasource _blockchain;
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
   const LiquidBlockchainRepositoryImpl({
-    required LiquidBlockchainDatasource blockchainDatasource,
+    required LwkLiquidBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   })  : _blockchain = blockchainDatasource,
         _electrumServerStorage = electrumServerStorageDatasource;

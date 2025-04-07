@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+/*import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
@@ -52,3 +52,4 @@ class GetWalletTransactionsUsecase {
     return allTransactions;
   }
 }
+*/

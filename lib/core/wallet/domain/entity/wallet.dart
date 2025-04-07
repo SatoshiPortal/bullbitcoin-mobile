@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
@@ -104,7 +103,6 @@ class Wallet with _$Wallet {
     required String internalPublicDescriptor,
     required WalletSource source,
     required BigInt balanceSat,
-    @Default([]) List<Transaction> recentTransactions,
     @Default(false) bool isEncryptedVaultTested,
     @Default(false) bool isPhysicalBackupTested,
     DateTime? latestEncryptedBackup,

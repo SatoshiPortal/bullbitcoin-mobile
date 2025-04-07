@@ -3,21 +3,24 @@ import 'dart:async';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:flutter/material.dart';
 
 class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
   final PayjoinRepository _payjoin;
   final WalletRepository _wallet;
+  final BitcoinWalletRepository _bitcoinWallet;
   final StreamController<Payjoin> _payjoinStreamController;
 
   PayjoinWatcherServiceImpl({
     required PayjoinRepository payjoinRepository,
     required WalletRepository walletRepository,
+    required BitcoinWalletRepository bitcoinWalletRepository,
   })  : _payjoin = payjoinRepository,
         _wallet = walletRepository,
+        _bitcoinWallet = bitcoinWalletRepository,
         _payjoinStreamController = StreamController<Payjoin>.broadcast() {
     // Listen to payjoin events from the repository and process them
     _payjoin.requestsForReceivers.listen((payjoin) async {
@@ -112,14 +115,12 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
     final network = wallet.network;
 
     try {
-      final psbt = await Transaction.fromPsbtBase64(proposalPsbt);
-
       final finalizedPsbt =
-          await _walletManager.sign(walletId: walletId, tx: psbt);
+          await _bitcoinWallet.signPsbt(proposalPsbt, walletId: walletId);
 
       final processedPayjoin = await _payjoin.broadcastPsbt(
         payjoinId: payjoin.id,
-        finalizedPsbt: finalizedPsbt.toPsbtBase64(),
+        finalizedPsbt: finalizedPsbt,
         network: network,
       );
 

@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_use_case.dart';
+import 'package:bb_mobile/core/address/usecases/get_receive_address_use_case.dart';
 
 class CreateReceiveSwapUsecase {
   final WalletRepository _walletRepository;

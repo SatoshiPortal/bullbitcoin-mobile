@@ -2,17 +2,14 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'address.freezed.dart';
 
-enum AddressKind {
-  deposit,
-  change,
+enum AddressKeyChain {
+  internal,
   external,
 }
 
 enum AddressStatus {
   unused,
-  active,
   used,
-  copied,
 }
 
 @freezed
@@ -20,31 +17,42 @@ sealed class Address with _$Address {
   const Address._();
 
   factory Address.bitcoin({
+    required String walletId,
     required String address,
     required int index,
-    AddressKind? kind,
-    AddressStatus? state,
-    String? spentTxId,
-    bool? spendable,
-    BigInt? highestPreviousBalance,
-    BigInt? balanceSat,
+    //String? label,
+    required AddressKeyChain keyChain,
+    required AddressStatus status,
+    // String? txId, TODO: analyze if it is not better to add a GetTransactionFromAddress function in the TransactionRepository and get the txId from there in a use case
+    int? highestPreviousBalanceSat,
+    int? balanceSat,
   }) = BitcoinAddress;
 
   factory Address.liquid({
+    required String walletId,
     required String standard, // Standard address
     required String confidential, // Confidential address
     required int index,
-    AddressKind? kind,
-    AddressStatus? state,
-    String? spentTxId,
-    bool? spendable,
-    BigInt? highestPreviousBalanceSat,
-    BigInt? balanceSat,
+    //String? label,
+    required AddressKeyChain keyChain,
+    required AddressStatus status,
+    //String? txId,
+    int? highestPreviousBalanceSat,
+    int? balanceSat,
   }) = LiquidAddress;
 
   // TODO: Validate if the standard or confidential address should be used
   String get address => when(
-        bitcoin: (address, _, __, ___, ____, _____, ______, _______) => address,
+        bitcoin: (
+          address,
+          _,
+          __,
+          ___,
+          ____,
+          _____,
+          ______,
+        ) =>
+            address,
         liquid: (
           standard,
           confidential,
@@ -54,13 +62,20 @@ sealed class Address with _$Address {
           _____,
           ______,
           _______,
-          ________,
         ) =>
             confidential,
       );
 
   String get standardAddress => when(
-        bitcoin: (address, __, ___, ____, _____, ______, _______, ________) =>
+        bitcoin: (
+          address,
+          __,
+          ___,
+          ____,
+          _____,
+          ______,
+          _______,
+        ) =>
             address,
         liquid: (
           standard,
@@ -71,7 +86,6 @@ sealed class Address with _$Address {
           _____,
           ______,
           _______,
-          ________,
         ) =>
             standard,
       );

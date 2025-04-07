@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+/*import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class GetWalletUtxosUsecase {
@@ -11,4 +11,4 @@ class GetWalletUtxosUsecase {
   Future<List<Utxo>> execute({required String walletId}) async {
     return await _walletService.getUnspentUtxos(walletId: walletId);
   }
-}
+}*/

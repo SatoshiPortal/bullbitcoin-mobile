@@ -1,0 +1,17 @@
+import 'dart:typed_data';
+
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+
+abstract class LiquidWalletRepository {
+  Future<String> buildPset({
+    required String walletId,
+    required String address,
+    required int amountSat,
+    required NetworkFee networkFee,
+    bool? drain,
+  });
+  Future<Uint8List> signPset(
+    String pset, {
+    required String walletId,
+  });
+}

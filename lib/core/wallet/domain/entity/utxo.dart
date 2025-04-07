@@ -9,7 +9,7 @@ sealed class Utxo with _$Utxo {
   const factory Utxo({
     required String txId,
     required int vout,
-    required BigInt value,
+    BigInt? value,
     required Uint8List scriptPubkey,
     String? label,
   }) = _Utxo;
