@@ -2,13 +2,15 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
 // import 'package:bb_mobile/features/test_wallet_backup/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/fetched_backup_info_screen.dart';
+import 'package:bb_mobile/features/test_wallet_backup/ui/screens/test_physical_backup_screen.dart'
+    show TestPhysicalBackupFlow;
 import 'package:go_router/go_router.dart';
 
 enum TestWalletBackupSubroute {
   // chooseBackupTestProvider('choose-backup-test-provider'),
   testBackupInfo('test-backup-info'),
-  //TODO: add physical backup subroutes
-  // physical('backup-physical'),
+  testPhysicalBackup('test-physical-backup'),
+
   backupTestSuccess('backup-test-success'),
   ;
 
@@ -39,6 +41,13 @@ class TestWalletBackupRouter {
       name: TestWalletBackupSubroute.backupTestSuccess.name,
       builder: (context, state) {
         return const BackupTestSuccessScreen();
+      },
+    ),
+    GoRoute(
+      path: TestWalletBackupSubroute.testPhysicalBackup.path,
+      name: TestWalletBackupSubroute.testPhysicalBackup.name,
+      builder: (context, state) {
+        return const TestPhysicalBackupFlow();
       },
     ),
   ];

@@ -8,7 +8,9 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/update_encrypted_vault_test.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_encrypted_vault_verification_usecase.dart.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_physical_backup_verification_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_default_mnemonic_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -26,7 +28,11 @@ class TestWalletBackupBloc
     required FetchLatestGoogleDriveBackupUsecase
         fetchLatestGoogleDriveBackupUsecase,
     required FetchBackupFromFileSystemUsecase fetchBackupFromFileSystemUsecase,
-    required UpdateEncryptedVaultTest updateEncryptedVaultTest,
+    required CompleteEncryptedVaultVerificationUsecase
+        completeEncryptedVaultVerificationUsecase,
+    required CompletePhysicalBackupVerificationUsecase
+        completePhysicalBackupVerificationUsecase,
+    required LoadDefaultMnemonicUsecase loadDefaultMnemonicUsecase,
   })  : _selectFileFromPathUsecase = selectFileFromPathUsecase,
         _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
         _restoreEncryptedVaultFromBackupKeyUsecase =
@@ -34,12 +40,23 @@ class TestWalletBackupBloc
         _fetchLatestGoogleDriveBackupUsecase =
             fetchLatestGoogleDriveBackupUsecase,
         _fetchBackupFromFileSystemUsecase = fetchBackupFromFileSystemUsecase,
-        _updateEncryptedVaultTest = updateEncryptedVaultTest,
-        super(const TestWalletBackupState()) {
+        _completeEncryptedVaultVerificationUsecase =
+            completeEncryptedVaultVerificationUsecase,
+        _completePhysicalBackupVerificationUsecase =
+            completePhysicalBackupVerificationUsecase,
+        _loadDefaultMnemonicUsecase = loadDefaultMnemonicUsecase,
+        super(TestWalletBackupState()) {
     on<SelectGoogleDriveBackupTest>(_onSelectGoogleDriveBackupTest);
     on<SelectFileSystemBackupTes>(_onSelectFileSystemBackupTest);
-    on<StartBackupTesting>(_onStartBackupTesting);
-
+    on<StartVaultBackupTesting>(_onStartVaultBackupTesting);
+    on<OnWordsSelected>(_onWordsSelected);
+    on<VerifyPhysicalBackup>(_verifyPhysicalBackup);
+    on<LoadSeedForVerification>(_loadSeedForVerification);
+    on<StartPhysicalBackupVerification>((event, emit) {
+      emit(state.copyWith(
+        status: TestWalletBackupStatus.verifying,
+      ));
+    });
     // Add handlers for transitioning events
     on<StartTransitioning>((event, emit) {
       emit(state.copyWith(transitioning: true));
@@ -57,13 +74,21 @@ class TestWalletBackupBloc
   final FetchLatestGoogleDriveBackupUsecase
       _fetchLatestGoogleDriveBackupUsecase;
   final FetchBackupFromFileSystemUsecase _fetchBackupFromFileSystemUsecase;
-  final UpdateEncryptedVaultTest _updateEncryptedVaultTest;
+  final CompleteEncryptedVaultVerificationUsecase
+      _completeEncryptedVaultVerificationUsecase;
+  final CompletePhysicalBackupVerificationUsecase
+      _completePhysicalBackupVerificationUsecase;
+  final LoadDefaultMnemonicUsecase _loadDefaultMnemonicUsecase;
   Future<void> _onSelectGoogleDriveBackupTest(
     SelectGoogleDriveBackupTest event,
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true, error: '', isSuccess: false));
+      emit(
+        state.copyWith(
+          status: TestWalletBackupStatus.loading,
+        ),
+      );
 
       await _connectToGoogleDriveUsecase.execute();
       emit(
@@ -76,17 +101,15 @@ class TestWalletBackupBloc
           await _fetchLatestGoogleDriveBackupUsecase.execute();
       emit(
         state.copyWith(
-          isLoading: false,
-          isSuccess: true,
+          status: TestWalletBackupStatus.success,
           backupInfo: BackupInfo(backupFile: encryptedBackup),
         ),
       );
     } catch (e) {
       emit(
         state.copyWith(
-          isLoading: false,
-          error: 'Failed to fetch backup: $e',
-          isSuccess: false,
+          status: TestWalletBackupStatus.error,
+          statusError: 'Failed to fetch backup: $e',
         ),
       );
     }
@@ -99,9 +122,7 @@ class TestWalletBackupBloc
     try {
       emit(
         state.copyWith(
-          isLoading: true,
-          error: '',
-          isSuccess: false,
+          status: TestWalletBackupStatus.loading,
           vaultProvider: const VaultProvider.fileSystem(""),
         ),
       );
@@ -121,28 +142,30 @@ class TestWalletBackupBloc
           await _fetchBackupFromFileSystemUsecase.execute(selectedFile);
       emit(
         state.copyWith(
-          isLoading: false,
-          isSuccess: true,
+          status: TestWalletBackupStatus.success,
           backupInfo: BackupInfo(backupFile: encryptedBackup),
         ),
       );
     } catch (e) {
       emit(
         state.copyWith(
-          isLoading: false,
-          error: 'Failed to fetch backup: $e',
-          isSuccess: false,
+          status: TestWalletBackupStatus.error,
+          statusError: 'Failed to fetch backup: $e',
         ),
       );
     }
   }
 
-  Future<void> _onStartBackupTesting(
-    StartBackupTesting event,
+  Future<void> _onStartVaultBackupTesting(
+    StartVaultBackupTesting event,
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      emit(state.copyWith(isLoading: true, error: '', isSuccess: false));
+      emit(
+        state.copyWith(
+          status: TestWalletBackupStatus.loading,
+        ),
+      );
 
       try {
         await _restoreEncryptedVaultFromBackupKeyUsecase.execute(
@@ -152,31 +175,29 @@ class TestWalletBackupBloc
         // If we get here, something went wrong because we expect DefaultWalletAlreadyExistsError
         emit(
           state.copyWith(
-            isLoading: false,
-            error: 'Unexpected success: backup should match existing wallet',
-            isSuccess: false,
+            status: TestWalletBackupStatus.error,
+            statusError:
+                'Unexpected success: backup should match existing wallet',
           ),
         );
       } catch (e) {
         if (e is DefaultWalletAlreadyExistsError) {
           try {
-            await _updateEncryptedVaultTest.execute();
-            emit(state.copyWith(isLoading: false, isSuccess: true));
+            await _completeEncryptedVaultVerificationUsecase.execute();
+            emit(state.copyWith(status: TestWalletBackupStatus.success));
           } catch (e) {
             emit(
               state.copyWith(
-                isLoading: false,
-                error: 'Failed to update vault: $e',
-                isSuccess: false,
+                status: TestWalletBackupStatus.error,
+                statusError: 'Write to storage failed: $e',
               ),
             );
           }
         } else if (e is WalletMismatchError) {
           emit(
             state.copyWith(
-              isLoading: false,
-              error: 'Backup does not match existing wallet',
-              isSuccess: false,
+              status: TestWalletBackupStatus.error,
+              statusError: 'Backup does not match existing wallet',
             ),
           );
         } else {
@@ -186,12 +207,130 @@ class TestWalletBackupBloc
     } catch (e) {
       emit(
         state.copyWith(
-          isLoading: false,
-          error:
+          status: TestWalletBackupStatus.error,
+          statusError:
               'Failed to test backup: ${BackupInfo(backupFile: event.backupFile).id}',
-          isSuccess: false,
         ),
       );
+    }
+  }
+
+  /// Handles word selection during backup verification
+  /// Validates word order and updates test state
+  Future<void> _onWordsSelected(
+    OnWordsSelected event,
+    Emitter<TestWalletBackupState> emit,
+  ) async {
+    final testMnemonic = state.testMnemonicOrder.toList();
+    if (testMnemonic.length == 12) return;
+
+    final (word, isSelected, actualIdx) =
+        state.shuffleElementAt(event.shuffledIdx);
+    if (isSelected) return;
+    if (actualIdx != testMnemonic.length) {
+      await Future.delayed(const Duration(milliseconds: 300));
+      final shuffled = state.mnemonic.toList()..shuffle();
+      emit(
+        state.copyWith(
+          shuffledMnemonic: shuffled,
+          testMnemonicOrder: [], // Reset selection when order is wrong
+        ),
+      );
+      return;
+    }
+
+    // Add the selected word to testMnemonicOrder
+    testMnemonic.add(
+      (
+        word: word,
+        shuffleIdx: event.shuffledIdx,
+        selectedActualIdx: actualIdx,
+      ),
+    );
+
+    // Emit new state with updated testMnemonicOrder
+    emit(
+      state.copyWith(
+        testMnemonicOrder: testMnemonic,
+        statusError: '',
+      ),
+    );
+  }
+
+  Future<void> _loadSeedForVerification(LoadSeedForVerification event,
+      Emitter<TestWalletBackupState> emit) async {
+    try {
+      emit(
+        state.copyWith(
+          status: TestWalletBackupStatus.loading,
+        ),
+      );
+      final mnemonic = await _loadDefaultMnemonicUsecase.execute();
+      emit(
+        state.copyWith(
+          mnemonic: mnemonic,
+          status: TestWalletBackupStatus.success,
+          shuffledMnemonic: mnemonic.toList()..shuffle(),
+          testMnemonicOrder: [],
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: TestWalletBackupStatus.error,
+          statusError: 'Failed to load seed for verification: $e',
+        ),
+      );
+    }
+  }
+
+  Future<void> _verifyPhysicalBackup(
+      VerifyPhysicalBackup event, Emitter<TestWalletBackupState> emit) async {
+    try {
+      if (state.mnemonic.isEmpty) {
+        emit(state.copyWith(
+          status: TestWalletBackupStatus.error,
+          statusError: 'No mnemonic loaded',
+        ));
+        return;
+      }
+
+      if (state.testMnemonicOrder.length != state.mnemonic.length) {
+        emit(state.copyWith(
+          status: TestWalletBackupStatus.error,
+          statusError: 'Please select all words',
+        ));
+        return;
+      }
+
+      // Get the words in order from testMnemonicOrder
+      final submittedWords =
+          state.testMnemonicOrder.map((e) => e.word).toList();
+
+      // Compare with original mnemonic
+      final isCorrect = List.generate(
+        state.mnemonic.length,
+        (i) => state.mnemonic[i] == submittedWords[i],
+      ).every((matched) => matched);
+
+      if (isCorrect) {
+        await _completePhysicalBackupVerificationUsecase.execute();
+        emit(state.copyWith(status: TestWalletBackupStatus.success));
+      } else {
+        // Reset test state when wrong
+        final shuffled = state.mnemonic.toList()..shuffle();
+        emit(state.copyWith(
+          status: TestWalletBackupStatus.error,
+          statusError: 'Incorrect word order. Please try again.',
+          shuffledMnemonic: shuffled,
+          testMnemonicOrder: [],
+        ));
+      }
+    } catch (e) {
+      emit(state.copyWith(
+        status: TestWalletBackupStatus.error,
+        statusError: 'Verification failed: $e',
+      ));
     }
   }
 }
