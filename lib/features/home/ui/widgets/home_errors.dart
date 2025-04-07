@@ -22,7 +22,7 @@ class HomeErrors extends StatelessWidget {
               title: 'Key Server Offline',
               description: "Report the issue to support",
               tagColor: context.colour.error,
-              bgColor: context.colour.onPrimary,
+              bgColor: context.colour.secondaryFixedDim,
             ),
         ],
       ),
