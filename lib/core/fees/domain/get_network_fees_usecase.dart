@@ -12,8 +12,6 @@ class GetNetworkFeesUsecase {
   Future<FeeOptions> execute({
     required Network network,
   }) async {
-    return await _feesRepository.getNetworkFees(
-      network: network,
-    );
+    return await _feesRepository.getNetworkFees(network: network);
   }
 }
