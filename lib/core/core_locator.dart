@@ -27,6 +27,7 @@ class CoreLocator {
     await RecoverbullLocator.registerDatasources();
     SeedLocator.registerDatasources();
     StorageLocator.registerDatasourcer();
+    await SwapsLocator.registerDatasources();
     UtxoLocator.registerDatasources();
     await WalletLocator.registerDatasourceres();
   }
@@ -69,5 +70,6 @@ class CoreLocator {
     TorLocator.registerUsecases();
     TransactionLocator.registerUsecases();
     UtxoLocator.registerUsecases();
+    WalletLocator.registerUsecases();
   }
 }

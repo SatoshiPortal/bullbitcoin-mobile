@@ -71,7 +71,9 @@ class ReceiveState with _$ReceiveState {
   String get qrData {
     switch (type) {
       case ReceiveType.bitcoin:
-        if (bitcoinAddress.isEmpty) {
+        if (bitcoinAddress.isEmpty || isPayjoinLoading) {
+          // Wait for the address and also for the payjoin in case not only the
+          // address should be shown.
           return '';
         }
         if (isAddressOnly ||
@@ -264,8 +266,11 @@ class ReceiveState with _$ReceiveState {
     return false;
   }
 
-  bool get isAmountValid =>
-      inputAmount.isEmpty || swapAmountBelowLimit || swapAmountAboveLimit;
+  bool get isSwapAmountValid =>
+      swapLimits == null ||
+      inputAmount.isEmpty ||
+      swapAmountBelowLimit ||
+      swapAmountAboveLimit;
 
   LnReceiveSwap? get getSwap {
     if (type == ReceiveType.lightning) {

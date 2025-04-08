@@ -88,7 +88,7 @@ class ReceiveAmountContinueButton extends StatelessWidget {
             context.pop();
           }
         },
-        disabled: context.watch<ReceiveBloc>().state.isAmountValid,
+        disabled: context.watch<ReceiveBloc>().state.isSwapAmountValid,
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
       ),

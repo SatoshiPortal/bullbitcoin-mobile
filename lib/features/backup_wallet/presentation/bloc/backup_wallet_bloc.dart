@@ -55,13 +55,13 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     try {
       emit(
         state.copyWith(
-          status: const BackupWalletStatus.loading(),
+          status: BackupWalletStatus.loading,
           vaultProvider: const VaultProvider.fileSystem(''),
         ),
       );
       final filePath = await selectFolderPathUsecase.execute();
       if (filePath == null) {
-        emit(state.copyWith(status: const BackupWalletStatus.initial()));
+        emit(state.copyWith(status: BackupWalletStatus.none));
         return;
       }
 
@@ -69,7 +69,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       emit(
         state.copyWith(
           vaultProvider: VaultProvider.fileSystem(filePath),
-          status: const BackupWalletStatus.success(),
+          status: BackupWalletStatus.success,
         ),
       );
 
@@ -78,9 +78,8 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     } catch (e) {
       emit(
         state.copyWith(
-          status: const BackupWalletStatus.failure(
-            'Failed to select file system path',
-          ),
+          status: BackupWalletStatus.error,
+          statusError: 'Failed to select file system path',
         ),
       );
     }
@@ -93,7 +92,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     try {
       emit(
         state.copyWith(
-          status: const BackupWalletStatus.loading(),
+          status: BackupWalletStatus.loading,
         ),
       );
 
@@ -104,7 +103,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       emit(
         state.copyWith(
           vaultProvider: const VaultProvider.googleDrive(),
-          status: const BackupWalletStatus.success(),
+          status: BackupWalletStatus.success,
         ),
       );
 
@@ -114,9 +113,8 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       debugPrint('Error connecting to Google Drive: $e');
       emit(
         state.copyWith(
-          status: const BackupWalletStatus.failure(
-            'Failed to connect to Google Drive',
-          ),
+          status: BackupWalletStatus.error,
+          statusError: 'Failed to connect to Google Drive',
         ),
       );
     }
@@ -126,7 +124,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     try {
       emit(
         state.copyWith(
-          status: const BackupWalletStatus.loading(),
+          status: BackupWalletStatus.loading,
         ),
       );
 
@@ -145,12 +143,13 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
         iCloud: () => throw UnimplementedError('iCloud backup not implemented'),
       );
 
-      emit(state.copyWith(status: const BackupWalletStatus.success()));
+      emit(state.copyWith(status: BackupWalletStatus.success));
     } catch (e) {
       debugPrint('Failed to save the backup: $e');
       emit(
         state.copyWith(
-          status: const BackupWalletStatus.failure('Failed to save the backup'),
+          status: BackupWalletStatus.error,
+          statusError: 'Failed to save the backup',
         ),
       );
     }

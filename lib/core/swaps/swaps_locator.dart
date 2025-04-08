@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/address/domain/repositories/address_repository.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
@@ -11,8 +12,19 @@ import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecas
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:hive/hive.dart';
 
 class SwapsLocator {
+  static Future<void> registerDatasources() async {
+    final boltzSwapsBox =
+        await Hive.openBox<String>(HiveBoxNameConstants.boltzSwaps);
+    locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
+      () => HiveStorageDatasourceImpl<String>(boltzSwapsBox),
+      instanceName: LocatorInstanceNameConstants
+          .boltzSwapsHiveStorageDatasourceInstanceName,
+    );
+  }
+
   static void registerRepositories() {
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(

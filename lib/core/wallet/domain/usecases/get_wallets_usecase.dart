@@ -30,15 +30,11 @@ class GetWalletsUsecase {
       );
 
       if (wallets.isEmpty) {
-        throw GetWalletsException('No wallets found');
+        throw Exception('No wallets found');
       }
 
       return wallets;
     } catch (e) {
-      if (e is GetWalletsException) {
-        rethrow;
-      }
-
       throw GetWalletsException('$e');
     }
   }

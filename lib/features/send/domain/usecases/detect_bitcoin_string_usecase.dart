@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entity/payment_request.dart';
+import 'package:bb_mobile/features/send/domain/entities/payment_request.dart';
 import 'package:flutter/foundation.dart';
 
 class DetectBitcoinStringUsecase {

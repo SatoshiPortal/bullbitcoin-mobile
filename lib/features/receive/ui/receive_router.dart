@@ -34,13 +34,6 @@ class ReceiveRouter {
   static final GlobalKey<NavigatorState> _shellNavigatorKey =
       GlobalKey<NavigatorState>();
 
-  static String getReceiveFlow(String location) {
-    if (location.contains('/receive-bitcoin')) return 'bitcoin';
-    if (location.contains('/receive-lightning')) return 'lightning';
-    if (location.contains('/receive-liquid')) return 'liquid';
-    return 'unknown';
-  }
-
   static final route = ShellRoute(
     navigatorKey: _shellNavigatorKey,
     builder: (context, state, child) {
@@ -48,81 +41,63 @@ class ReceiveRouter {
       //  of the incoming route
       final wallet = state.uri.queryParameters['wallet'] as Wallet?;
 
-      final location = GoRouterState.of(context).matchedLocation;
-      final flow = getReceiveFlow(location);
-
-      // Make sure the ReceiveScaffold with the network selection is not rebuild when switching networks,
-      // so keep it outside of the BlocProvider.
-      // The bloc is recreated when the flow changes (bitcoin, lightning, liquid), but shouldn't be recreated
-      // when navigating in the same flow, that's where the KeyedSubtree comes in.
+      // Make sure the ReceiveScaffold with the network selection is not rebuild
+      //  when switching networks, so keep it outside of the BlocProvider.
       return ReceiveScaffold(
-        child: KeyedSubtree(
-          key: ValueKey(flow),
-          child: BlocProvider<ReceiveBloc>(
-            create: (_) {
-              final bloc = locator<ReceiveBloc>(param1: wallet);
-              if (flow == 'bitcoin') {
-                bloc.add(const ReceiveBitcoinStarted());
-              } else if (flow == 'lightning') {
-                bloc.add(const ReceiveLightningStarted());
-              } else if (flow == 'liquid') {
-                bloc.add(const ReceiveLiquidStarted());
-              }
-              return bloc;
-            },
-            child: MultiBlocListener(
-              listeners: [
-                BlocListener<ReceiveBloc, ReceiveState>(
-                  listenWhen: (previous, current) =>
-                      // makes sure it doesn't go from payment received to payment in progress again
-                      previous.isPaymentReceived != true &&
-                      previous.isPaymentInProgress != true &&
-                      current.isPaymentInProgress == true,
-                  listener: (context, state) {
-                    final bloc = context.read<ReceiveBloc>();
-                    final matched = GoRouterState.of(context).matchedLocation;
-                    final type = state.type;
+        child: BlocProvider<ReceiveBloc>(
+          create: (_) => locator<ReceiveBloc>(param1: wallet),
+          child: MultiBlocListener(
+            listeners: [
+              BlocListener<ReceiveBloc, ReceiveState>(
+                listenWhen: (previous, current) =>
+                    // makes sure it doesn't go from payment received to payment in progress again
+                    previous.isPaymentReceived != true &&
+                    previous.isPaymentInProgress != true &&
+                    current.isPaymentInProgress == true,
+                listener: (context, state) {
+                  final bloc = context.read<ReceiveBloc>();
+                  final matched = GoRouterState.of(context).matchedLocation;
+                  final type = state.type;
 
-                    // For a Payjoin or Lightning receive, show the payment in progress screen
-                    //  when the payjoin is requested or swap is claimable.
-                    // Since the payment in progress route is outside of the ShellRoute,
-                    // it uses the root navigator and so doesn't have the ReceiveBloc
-                    //  in the context. We need to pass it as an extra parameter.
-                    if (type == ReceiveType.bitcoin &&
-                        state.payjoin?.status == PayjoinStatus.requested) {
-                      context.go(
-                        '$matched/${ReceiveRoute.payjoinInProgress.path}',
-                        extra: bloc,
-                      );
-                    } else if (type == ReceiveType.lightning) {
-                      context.go(
-                        '$matched/${ReceiveRoute.paymentInProgress.path}',
-                        extra: bloc,
-                      );
-                    }
-                  },
-                ),
-                BlocListener<ReceiveBloc, ReceiveState>(
-                  listenWhen: (previous, current) =>
-                      previous.isPaymentReceived != true &&
-                      current.isPaymentReceived == true,
-                  listener: (context, state) {
-                    final bloc = context.read<ReceiveBloc>();
-                    final matched = GoRouterState.of(context).matchedLocation;
-                    final type = state.type;
+                  // For a Payjoin or Lightning receive, show the payment in progress screen
+                  //  when the payjoin is requested or swap is claimable.
+                  // Since the payment in progress route is outside of the ShellRoute,
+                  // it uses the root navigator and so doesn't have the ReceiveBloc
+                  //  in the context. We need to pass it as an extra parameter.
+                  if (type == ReceiveType.bitcoin &&
+                      state.payjoin?.status == PayjoinStatus.requested) {
+                    context.go(
+                      '$matched/${ReceiveRoute.payjoinInProgress.path}',
+                      extra: bloc,
+                    );
+                  } else if (type == ReceiveType.lightning) {
+                    context.go(
+                      '$matched/${ReceiveRoute.paymentInProgress.path}',
+                      extra: bloc,
+                    );
+                  }
+                },
+              ),
+              BlocListener<ReceiveBloc, ReceiveState>(
+                listenWhen: (previous, current) =>
+                    previous.isPaymentReceived != true &&
+                    current.isPaymentReceived == true,
+                listener: (context, state) {
+                  final bloc = context.read<ReceiveBloc>();
+                  final matched = GoRouterState.of(context).matchedLocation;
+                  final type = state.type;
 
-                    final path = switch (type) {
-                      ReceiveType.lightning =>
-                        '$matched/${ReceiveRoute.paymentReceived.path}',
-                      _ => '$matched/${ReceiveRoute.details.path}',
-                    };
+                  final path = switch (type) {
+                    ReceiveType.lightning =>
+                      '$matched/${ReceiveRoute.paymentReceived.path}',
+                    _ => '$matched/${ReceiveRoute.details.path}',
+                  };
 
-                    context.go(path, extra: bloc);
-                  },
-                ),
-              ],
-              child: child,
-            ),
+                  context.go(path, extra: bloc);
+                },
+              ),
+            ],
+            child: child,
           ),
         ),
       );
@@ -133,6 +108,10 @@ class ReceiveRouter {
         name: ReceiveRoute.receiveBitcoin.name,
         path: ReceiveRoute.receiveBitcoin.path,
         pageBuilder: (context, state) {
+          // This is the entry route for the bitcoin receive flow when coming from
+          // another receive network (lightning or liquid) or from a different flow.
+          // So we should start the bitcoin flow here:
+          context.read<ReceiveBloc>().add(const ReceiveBitcoinStarted());
           return const NoTransitionPage(child: ReceiveQrPage());
         },
         routes: [
@@ -186,6 +165,10 @@ class ReceiveRouter {
         name: ReceiveRoute.receiveLightning.name,
         path: ReceiveRoute.receiveLightning.path,
         pageBuilder: (context, state) {
+          // This is the entry route for the lightning receive flow when coming from
+          // another receive network (bitcoin or liquid) or from a different flow.
+          // So we should start the lightning flow here:
+          context.read<ReceiveBloc>().add(const ReceiveLightningStarted());
           return NoTransitionPage(
             child: ReceiveAmountScreen(
               onContinueNavigation: () => context.push(
@@ -255,9 +238,11 @@ class ReceiveRouter {
         name: ReceiveRoute.receiveLiquid.name,
         path: ReceiveRoute.receiveLiquid.path,
         pageBuilder: (context, state) {
-          return const NoTransitionPage(
-            child: ReceiveQrPage(),
-          );
+          // This is the entry route for the liquid receive flow when coming from
+          // another receive network (lightning or bitcoin) or from a different flow.
+          // So we should start the liquid flow here:
+          context.read<ReceiveBloc>().add(const ReceiveLiquidStarted());
+          return const NoTransitionPage(child: ReceiveQrPage());
         },
         routes: [
           GoRoute(

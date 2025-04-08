@@ -12,13 +12,32 @@ class SelectFileSystemBackupTes extends TestWalletBackupEvent {
   const SelectFileSystemBackupTes();
 }
 
-class StartBackupTesting extends TestWalletBackupEvent {
-  const StartBackupTesting({
+class StartVaultBackupTesting extends TestWalletBackupEvent {
+  const StartVaultBackupTesting({
     required this.backupKey,
     required this.backupFile,
   });
   final String backupKey;
   final String backupFile;
+}
+
+class OnWordsSelected extends TestWalletBackupEvent {
+  const OnWordsSelected({
+    required this.shuffledIdx,
+  });
+  final int shuffledIdx;
+}
+
+class LoadSeedForVerification extends TestWalletBackupEvent {
+  const LoadSeedForVerification();
+}
+
+class StartPhysicalBackupVerification extends TestWalletBackupEvent {
+  const StartPhysicalBackupVerification();
+}
+
+class VerifyPhysicalBackup extends TestWalletBackupEvent {
+  const VerifyPhysicalBackup();
 }
 
 class StartTransitioning extends TestWalletBackupEvent {

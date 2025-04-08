@@ -53,10 +53,11 @@ class _Screen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
       listenWhen: (previous, current) =>
-          current.isSuccess != previous.isSuccess ||
-          current.error != previous.error,
+          current.status != previous.status ||
+          current.statusError != previous.statusError,
       listener: (context, state) {
-        if (state.isSuccess && !state.backupInfo.isCorrupted) {
+        if (state.status == TestWalletBackupStatus.success &&
+            !state.backupInfo.isCorrupted) {
           // Mark that we're starting navigation
           context.read<TestWalletBackupBloc>().add(const StartTransitioning());
 
@@ -76,13 +77,13 @@ class _Screen extends StatelessWidget {
       },
       child: BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
         buildWhen: (previous, current) =>
-            current.isLoading != previous.isLoading ||
-            current.error != previous.error ||
-            current.isSuccess != previous.isSuccess ||
+            current.status != previous.status ||
+            current.statusError != previous.statusError ||
             current.transitioning != previous.transitioning,
         builder: (context, state) {
           // Show loading screen during loading OR navigation to avoid flickers
-          if (state.isLoading || state.transitioning) {
+          if (state.status == TestWalletBackupStatus.loading ||
+              state.transitioning) {
             return Scaffold(
               backgroundColor: context.colour.onSecondary,
               body: ProgressScreen(
