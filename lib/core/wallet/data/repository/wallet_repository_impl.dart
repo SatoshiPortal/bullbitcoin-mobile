@@ -162,9 +162,13 @@ class WalletRepositoryImpl implements WalletRepository {
           (wallet) =>
               (environment == null ||
                   wallet.isMainnet == environment.isMainnet) &&
-              (onlyDefaults == false || wallet.isDefault) &&
-              (onlyBitcoin == false || wallet.isBitcoin) &&
-              (onlyLiquid == false || wallet.isLiquid),
+              (onlyDefaults == null ||
+                  onlyDefaults == false ||
+                  wallet.isDefault) &&
+              (onlyBitcoin == null ||
+                  onlyBitcoin == false ||
+                  wallet.isBitcoin) &&
+              (onlyLiquid == null || onlyLiquid == false || wallet.isLiquid),
         )
         .toList();
 
