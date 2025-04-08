@@ -4,16 +4,30 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:go_router/go_router.dart';
 import 'package:webview_cookie_manager/webview_cookie_manager.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
+
+/// Provider wrapper for the BullBitcoinWebView
+class BullBitcoinWebViewProvider extends StatelessWidget {
+  const BullBitcoinWebViewProvider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => ExchangeCubit(),
+      child: const BullBitcoinWebView(),
+    );
+  }
+}
 
 class BullBitcoinWebView extends StatefulWidget {
   const BullBitcoinWebView({super.key});
@@ -24,16 +38,8 @@ class BullBitcoinWebView extends StatefulWidget {
 
 class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
   late final WebViewController _controller;
-  bool _isLoading = true;
-  bool _hasError = false;
-  String _errorMessage = '';
   Timer? _cookieCheckTimer;
-  bool _authenticated = false;
-  String? _currentUrl;
-  Map<String, String> _allCookies = {};
-  final Map<String, Map<String, String>> _iframeCookies = {};
-
-  final String _targetAuthCookie = 'bb_session';
+  bool _webViewInitialized = false;
 
   final List<String> _ignoredCookies = [
     'i18n',
@@ -45,16 +51,13 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
     'hl',
   ];
 
-  final String _baseUrl = ApiServiceConstants.bbAuthUrl;
-
-  // Variable to track cookie polling attempts
-  int _cookieCheckAttempts = 0;
-  final int _maxCookieCheckAttempts =
-      30; // Maximum 30 polling attempts (1 minute at 2-second intervals)
-
-  // Add variables to track API key generation
-  bool _apiKeyGenerating = false;
-  String? _apiKeyResponse;
+  // Add these fields to track URLs that indicate login flow
+  final String _baseAccountsUrl = 'https://accounts05.bullbitcoin.dev';
+  final String _loginUrl = 'login';
+  final String _registrationUrl = 'registration';
+  final String _verificationUrlPrefix = 'verification';
+  final String _successUrl = 'https://accounts05.bullbitcoin.dev/en';
+  String? _previousUrl;
 
   @override
   void initState() {
@@ -66,38 +69,51 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (url) {
-            setState(() {
-              _isLoading = true;
-              _currentUrl = url;
-            });
+            if (!mounted) return;
+            context.read<ExchangeCubit>().setLoading(true);
+            context.read<ExchangeCubit>().setCurrentUrl(url);
+
+            // Store previous URL for comparison
+            _previousUrl = context.read<ExchangeCubit>().state.currentUrl;
+
+            // Check if the URL change indicates successful login
+            _checkForSuccessfulLogin(url);
           },
           onPageFinished: (url) {
-            setState(() {
-              _isLoading = false;
-              _currentUrl = url;
-            });
+            if (!mounted) return;
+            context.read<ExchangeCubit>().setLoading(false);
+            context.read<ExchangeCubit>().setCurrentUrl(url);
+
             // Reset cookie check attempts on new page load
-            _cookieCheckAttempts = 0;
+            context.read<ExchangeCubit>().resetCookieCheckAttempts();
+
             // Add a small delay before checking cookies to ensure page is fully loaded
             Future.delayed(const Duration(milliseconds: 500), () {
-              _checkAllCookies();
-              _startCookiePolling();
+              if (mounted) {
+                _checkAllCookies();
+                _startCookiePolling();
+              }
             });
           },
           onUrlChange: (UrlChange change) {
             final currentUrl = change.url;
-            if (currentUrl != null) {
-              setState(() => _currentUrl = currentUrl);
+            if (currentUrl != null && mounted) {
+              // Store previous URL for comparison
+              _previousUrl = context.read<ExchangeCubit>().state.currentUrl;
+
+              context.read<ExchangeCubit>().setCurrentUrl(currentUrl);
               _checkAllCookies();
+
+              // Check if the URL change indicates successful login
+              _checkForSuccessfulLogin(currentUrl);
             }
           },
           onWebResourceError: (WebResourceError error) {
             debugPrint('WebView error: ${error.description}');
-            setState(() {
-              _hasError = true;
-              _errorMessage = '${error.errorType}: ${error.description}';
-              _isLoading = false;
-            });
+            if (!mounted) return;
+            context.read<ExchangeCubit>().setError(
+                  message: '${error.errorType}: ${error.description}',
+                );
             _stopCookiePolling();
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
@@ -112,7 +128,7 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
       )
       // Set a more authentic user agent
       ..setUserAgent(
-        'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1',
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15.0 Safari/604.1',
       );
 
     if (Platform.isAndroid) {
@@ -124,15 +140,29 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
       final iosController = _controller.platform as WebKitWebViewController;
       iosController.setAllowsBackForwardNavigationGestures(true);
     }
+  }
 
-    _loadUrlWithBasicAuth();
-    _cookieManager();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Initialize webview after the widget is fully built and provider is available
+    if (!_webViewInitialized) {
+      _webViewInitialized = true;
+      _loadUrlWithBasicAuth();
+      _cookieManager();
+    }
   }
 
   Future<void> _cookieManager() async {
+    if (!mounted) return;
+
+    final cubit = context.read<ExchangeCubit>();
+
     try {
       final cookieManager = WebviewCookieManager();
-      final gotCookies = await cookieManager.getCookies('https://$_baseUrl');
+      final gotCookies =
+          await cookieManager.getCookies('https://${cubit.baseUrl}');
 
       // Debug logging for all cookies
       if (gotCookies.isNotEmpty) {
@@ -141,13 +171,15 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
           debugPrint('${cookie.name}: ${cookie.value}');
 
           // Check for session cookie
-          if (cookie.name == _targetAuthCookie) {
+          if (cookie.name == cubit.targetAuthCookie) {
             debugPrint('BB_SESSION FOUND DURING INITIALIZATION!');
-            // Don't use the removed method
-            setState(() {
-              _authenticated = true;
-              _allCookies[_targetAuthCookie] = cookie.value;
-            });
+            // Update state with authentication and cookie
+            if (!mounted) return;
+            final updatedCookies =
+                Map<String, String>.from(cubit.state.allCookies);
+            updatedCookies[cubit.targetAuthCookie] = cookie.value;
+            cubit.updateCookies(updatedCookies);
+            cubit.setAuthenticated(true);
             _stopCookiePolling();
             return;
           }
@@ -188,11 +220,19 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
   }
 
   void _startCookiePolling() {
+    if (!mounted) return;
+    final cubit = context.read<ExchangeCubit>();
     if (_cookieCheckTimer != null) return; // Already polling
 
     _cookieCheckTimer = Timer.periodic(const Duration(seconds: 2), (_) {
-      _cookieCheckAttempts++;
-      if (_cookieCheckAttempts > _maxCookieCheckAttempts) {
+      if (!mounted) {
+        _stopCookiePolling();
+        return;
+      }
+
+      cubit.incrementCookieCheckAttempts();
+      if (cubit.state.cookieCheckAttempts >
+          cubit.state.maxCookieCheckAttempts) {
         debugPrint(
           'Reached maximum cookie polling attempts. Stopping polling.',
         );
@@ -202,7 +242,9 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
       _checkAllCookies();
     });
 
-    debugPrint('Started cookie polling (attempt $_cookieCheckAttempts)');
+    debugPrint(
+      'Started cookie polling (attempt ${cubit.state.cookieCheckAttempts})',
+    );
   }
 
   void _stopCookiePolling() {
@@ -211,17 +253,21 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
   }
 
   Future<void> _checkAllCookies() async {
-    if (_authenticated) return; // Already authenticated
+    if (!mounted) return;
+    final cubit = context.read<ExchangeCubit>();
+    if (cubit.state.authenticated) return; // Already authenticated
 
     // Only use native cookie detection since it's working
     await _checkNativeCookies();
   }
 
-  // Check cookies using the native cookie manager
   Future<bool> _checkNativeCookies() async {
+    if (!mounted) return false;
+    final cubit = context.read<ExchangeCubit>();
     try {
       final cookieManager = WebviewCookieManager();
-      final nativeCookies = await cookieManager.getCookies('https://$_baseUrl');
+      final nativeCookies =
+          await cookieManager.getCookies('https://${cubit.baseUrl}');
 
       debugPrint('Native cookie count: ${nativeCookies.length}');
 
@@ -231,19 +277,19 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
         cookieMap[cookie.name] = cookie.value;
       }
 
-      setState(() {
-        _allCookies = cookieMap;
-      });
+      if (!mounted) return false;
+      cubit.updateCookies(cookieMap);
 
       // Find the session cookie
       for (final cookie in nativeCookies) {
-        if (cookie.name == _targetAuthCookie) {
+        if (cookie.name == cubit.targetAuthCookie) {
           debugPrint('===== SESSION COOKIE FOUND =====');
           debugPrint('bb_session=${cookie.value}');
           debugPrint('================================');
 
           // Mark as authenticated but don't pop context
-          _authenticated = true;
+          if (!mounted) return false;
+          cubit.setAuthenticated(true);
           _stopCookiePolling();
 
           // Generate API key when cookie is found
@@ -258,13 +304,15 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
     return false;
   }
 
-  // Generate API key with improved error handling for iOS
-  Future<void> _generateApiKey() async {
-    if (_apiKeyGenerating) return;
+  // Rest of your methods with mounted checks...
+  // ...
 
-    setState(() {
-      _apiKeyGenerating = true;
-    });
+  Future<void> _generateApiKey() async {
+    if (!mounted) return;
+    final cubit = context.read<ExchangeCubit>();
+    if (cubit.state.apiKeyGenerating) return;
+
+    cubit.setApiKeyGenerating(true);
 
     debugPrint('Attempting to generate API key...');
 
@@ -323,25 +371,24 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
       try {
         final responseData = json.decode(jsonString);
 
-        setState(() {
-          _apiKeyResponse = jsonString;
-          _apiKeyGenerating = false;
-        });
+        cubit.setApiKeyResponse(jsonString);
+        cubit.setApiKeyGenerating(false);
 
         // Log the response
         debugPrint('===== API KEY GENERATION RESPONSE =====');
         debugPrint(const JsonEncoder.withIndent('  ').convert(responseData));
         debugPrint('======================================');
+
+        // Store the API key data
+        await cubit.storeApiKey(responseData as Map<String, dynamic>);
       } catch (parseError) {
         debugPrint('Failed to parse API response: $parseError');
         debugPrint('Raw response: $jsonString');
 
         // Try to clean up the response if it's a string
         if (jsonString.contains('apiKey')) {
-          setState(() {
-            _apiKeyResponse = '{"apiKeyRawResponse": $jsonString}';
-            _apiKeyGenerating = false;
-          });
+          cubit.setApiKeyResponse('{"apiKeyRawResponse": $jsonString}');
+          cubit.setApiKeyGenerating(false);
         } else {
           throw Exception('Invalid JSON response: $jsonString');
         }
@@ -352,14 +399,13 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
       // Try alternative approach if the first one fails
       await _tryAlternativeApiKeyGeneration();
 
-      setState(() {
-        _apiKeyGenerating = false;
-      });
+      cubit.setApiKeyGenerating(false);
     }
   }
 
-  // Alternative API key generation approach for iOS
   Future<void> _tryAlternativeApiKeyGeneration() async {
+    if (!mounted) return;
+    final cubit = context.read<ExchangeCubit>();
     debugPrint('Trying alternative API key generation method...');
 
     try {
@@ -402,10 +448,9 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
       // Wait a bit and then set a placeholder response
       await Future.delayed(const Duration(seconds: 2));
 
-      setState(() {
-        _apiKeyResponse =
-            '{"info": "Alternative API request submitted. Check console logs for details."}';
-      });
+      cubit.setApiKeyResponse(
+        '{"info": "Alternative API request submitted. Check console logs for details."}',
+      );
 
       debugPrint('Alternative API generation request completed');
     } catch (e) {
@@ -414,248 +459,142 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
   }
 
   Future<void> _loadUrlWithBasicAuth() async {
+    if (!mounted) return;
+    final cubit = context.read<ExchangeCubit>();
     try {
       // Add the query parameter to the URL
-      final Uri url = Uri.parse('https://$_baseUrl');
+      final Uri url = Uri.parse('https://${cubit.baseUrl}');
       _controller.loadRequest(url);
     } catch (e) {
       debugPrint('Error loading URL with basic auth: $e');
-      setState(() {
-        _hasError = true;
-        _errorMessage = 'Failed to load the page: $e';
+      if (!mounted) return;
+      cubit.setError(message: 'Failed to load the page: $e');
+    }
+  }
+
+  // Add this method to check for successful login based on URL changes
+  void _checkForSuccessfulLogin(String currentUrl) {
+    if (!mounted) return;
+
+    // Ignore if we don't have a previous URL yet
+    if (_previousUrl == null) return;
+
+    debugPrint('URL changed: $_previousUrl -> $currentUrl');
+
+    // Check if we came from login, registration, or verification
+    // and now we're at the main account page
+    final wasOnAuthFlow = _previousUrl!.contains(_loginUrl) ||
+        _previousUrl!.contains(_registrationUrl) ||
+        _previousUrl!.contains(_verificationUrlPrefix);
+
+    final isOnMainPage = currentUrl == _successUrl;
+
+    // If we navigated from login/registration/verification to the main page,
+    // we've successfully logged in
+    if (wasOnAuthFlow && isOnMainPage) {
+      debugPrint(
+        'Successful login detected: URL changed from auth flow to main page',
+      );
+
+      // Allow a brief moment to see the success page
+      Future.delayed(const Duration(milliseconds: 500), () async {
+        if (!mounted) return;
+
+        // Ensure we have cookies and API key if needed
+        if (!context.read<ExchangeCubit>().state.authenticated) {
+          await _checkAllCookies();
+          await _generateApiKey();
+        }
+
+        // Show popup dialog instead of closing the webview
+        _showLoginSuccessDialog();
       });
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 0,
-        flexibleSpace: const SizedBox.shrink(),
-        forceMaterialTransparency: true,
-      ),
-      body: SafeArea(
-        child: Stack(
+  // Add this helper method to identify the previous URL type
+  String _getPreviousUrlType(String url) {
+    if (url == _loginUrl) return 'login';
+    if (url == _registrationUrl) return 'registration';
+    if (url.startsWith(_verificationUrlPrefix)) return 'verification';
+    return 'unknown';
+  }
+
+  // Add this new method to show the success popup
+  void _showLoginSuccessDialog() {
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const AlertDialog(
+        title: Text('Login Successful'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            if (_hasError)
-              _ErrorView(
-                message: _errorMessage,
-                onRetry: () => Navigator.of(context).pop(),
-              )
-            else
-              WebViewWidget(controller: _controller),
-            if (_isLoading && !_hasError)
-              const Center(child: CircularProgressIndicator()),
-
-            // Show API key generation indicator
-            if (_apiKeyGenerating)
-              ColoredBox(
-                // ignore: deprecated_member_use
-                color: Colors.black.withOpacity(0.5),
-                child: const Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircularProgressIndicator(),
-                      SizedBox(height: 16),
-                      Text(
-                        'Generating API key...',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-            // Add debug button in non-production builds
-            if (!const bool.fromEnvironment('dart.vm.product'))
-              Positioned(
-                bottom: 16,
-                right: 16,
-                child: FloatingActionButton.small(
-                  heroTag: 'debugBtn',
-                  // ignore: deprecated_member_use
-                  backgroundColor: Colors.black.withOpacity(0.7),
-                  onPressed: () => _showDebugDialog(context),
-                  child: const Icon(Icons.bug_report, color: Colors.white),
-                ),
-              ),
+            Icon(Icons.check_circle_outline, color: Colors.green, size: 64),
+            SizedBox(height: 16),
+            Text('You are now logged in to Bull Bitcoin!'),
+            SizedBox(height: 8),
+            Text('You can return to the wallet now.'),
           ],
         ),
       ),
     );
   }
 
-  void _showCookiesDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Cookie Debug'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Current URL: $_currentUrl'),
-              Text('Authenticated: $_authenticated'),
-              Text('Polling attempts: $_cookieCheckAttempts'),
-              const Divider(),
-              const Text(
-                'Cookies:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              if (_allCookies.isEmpty)
-                const Text('No cookies found')
-              else
-                ..._allCookies.entries.map(
-                  (entry) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text('${entry.key}: ${entry.value}'),
-                  ),
-                ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _checkNativeCookies();
-                },
-                child: const Text('Check Cookies Now'),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  final cookieValue = _allCookies[_targetAuthCookie];
-                  if (cookieValue != null) {
-                    // Return to the previous screen with the cookie
-                    context.pop({
-                      'authenticated': true,
-                      'cookieName': _targetAuthCookie,
-                      'cookieValue': cookieValue,
-                      'allCookies': _allCookies,
-                      'timestamp': DateTime.now().millisecondsSinceEpoch,
-                    });
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('No session cookie found')),
-                    );
-                  }
-                },
-                child: const Text('Return with Cookie'),
-              ),
-            ],
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<ExchangeCubit, ExchangeState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            toolbarHeight: 0,
+            flexibleSpace: const SizedBox.shrink(),
+            forceMaterialTransparency: true,
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
+          body: SafeArea(
+            child: Stack(
+              children: [
+                if (state.hasError)
+                  _ErrorView(
+                    message: state.errorMessage,
+                    onRetry: () => Navigator.of(context).pop(),
+                  )
+                else
+                  WebViewWidget(controller: _controller),
+                if (state.isLoading && !state.hasError)
+                  const Center(child: CircularProgressIndicator()),
 
-  void _showDebugDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Debug Information'),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('URL: $_currentUrl'),
-              Text('Authenticated: $_authenticated'),
-              const Divider(),
-              const Text(
-                'Cookies:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              if (_allCookies.isEmpty)
-                const Text('No cookies found')
-              else
-                ..._allCookies.entries.map(
-                  (entry) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Text('${entry.key}: ${entry.value}'),
+                // Show API key generation indicator
+                if (state.apiKeyGenerating)
+                  ColoredBox(
+                    // ignore: deprecated_member_use
+                    color: Colors.black.withOpacity(0.5),
+                    child: const Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 16),
+                          Text(
+                            'Generating API key...',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-
-              // Show API key response if available
-              if (_apiKeyResponse != null) ...[
-                const Divider(),
-                const Text(
-                  'API Key Response:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(_apiKeyResponse!),
-                ),
               ],
-
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _checkNativeCookies,
-                      child: const Text('Check Cookies'),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _generateApiKey,
-                      child: const Text('Generate API Key'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.of(context).pop(
-                      {
-                        'authenticated': _authenticated,
-                        'cookieName': _targetAuthCookie,
-                        'cookieValue': _allCookies[_targetAuthCookie],
-                        'allCookies': _allCookies,
-                        'apiKeyResponse': _apiKeyResponse != null
-                            ? json.decode(_apiKeyResponse!)
-                            : null,
-                        'timestamp': DateTime.now().millisecondsSinceEpoch,
-                      },
-                    );
-                  },
-                  child: const Text('Return with Data'),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
+
+  // Rest of your code
+  // ...
 }
 
 class _ErrorView extends StatelessWidget {
