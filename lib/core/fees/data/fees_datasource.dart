@@ -7,9 +7,9 @@ class FeesDatasource {
   final String _baseUrl;
 
   FeesDatasource({
-    required Dio http,
+    Dio? http,
     String? baseUrl,
-  })  : _http = http,
+  })  : _http = http ?? Dio(),
         _baseUrl = baseUrl ?? 'https://${ApiServiceConstants.bbMempoolUrlPath}';
 
   Future<FeeOptions> getBitcoinNetworkFeeOptions({
