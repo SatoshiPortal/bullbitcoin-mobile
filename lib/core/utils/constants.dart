@@ -97,4 +97,6 @@ class LocatorInstanceNameConstants {
       'lwkLiquidBlockchainDatasourceInstanceName';
   static const String bdkBitcoinBlockchainDatasourceInstanceName =
       'bdkBitcoinBlockchainDatasourceInstanceName';
+  static const String bullBitcoinAPIKeyDatasourceInstanceName =
+      'bullBitcoinAPIKeyDatasourceInstanceName';
 }

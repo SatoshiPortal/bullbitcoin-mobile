@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/api_key_storage_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/file_storage_datasource.dart';
@@ -38,6 +39,18 @@ Future<void> registerDatasources() async {
     ),
     instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
   );
+
+  // BB Exchange API Key Storage
+  locator.registerLazySingleton<ApiKeyStorageDatasource>(
+    () => ApiKeyStorageDatasource(
+      secureStorage: locator<KeyValueStorageDatasource<String>>(
+        instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
+      ),
+    ),
+    instanceName:
+        LocatorInstanceNameConstants.bullBitcoinAPIKeyDatasourceInstanceName,
+  );
+
   //  - Bull Bitcoin API
   final bbApiDatasource = BitcoinPriceDatasource(
     bullBitcoinHttpClient: Dio(
