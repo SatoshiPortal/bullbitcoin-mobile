@@ -40,6 +40,7 @@ class AppLocator {
     BitcoinPriceLocator.setup();
     HomeLocator.setup();
     ReceiveLocator.setup();
+    SendLocator.setup();
     BackupSettingsLocator.setup();
     BackupWalletLocator.setup();
     TestWalletBackupLocator.setup();
