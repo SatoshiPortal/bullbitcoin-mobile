@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/address/domain/repositories/address_repository.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
@@ -7,11 +8,11 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usec
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utxo/domain/repositories/utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/build_transaction_usecase.dart';
-import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_or_create_wallet_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/foundation.dart';
@@ -21,11 +22,13 @@ import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:test/test.dart';
 
 void main() {
-  late WalletManagerService walletManagerService;
+  late WalletRepository walletRepository;
+  late AddressRepository addressRepository;
+  late UtxoRepository utxoRepository;
   late PayjoinWatcherService payjoinWatcherService;
   late ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase;
   late SendWithPayjoinUsecase sendWithPayjoinUsecase;
-  late BuildTransactionUsecase buildTransactionUsecase;
+  late PrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
   late Wallet receiverWallet;
   late Wallet senderWallet;
 
@@ -48,11 +51,13 @@ void main() {
     // Make sure we are running in testnet environment
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
 
-    walletManagerService = locator<WalletManagerService>();
+    walletRepository = locator<WalletRepository>();
+    addressRepository = locator<AddressRepository>();
+    utxoRepository = locator<UtxoRepository>();
     payjoinWatcherService = locator<PayjoinWatcherService>();
     receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
     sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
-    buildTransactionUsecase = locator<BuildTransactionUsecase>();
+    prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
 
     receiverWallet = await locator<RecoverOrCreateWalletUsecase>().execute(
       mnemonicWords: receiverMnemonic.split(' '),
@@ -70,31 +75,33 @@ void main() {
 
   setUp(() async {
     // Sync the wallets before every other test
-    await walletManagerService.syncAll();
+    await walletRepository.getWallets(sync: true);
 
     debugPrint('Wallets synced');
   });
 
   test('Wallets have funds to payjoin', () async {
-    final senderBalance = await walletManagerService.getBalance(
-      walletId: senderWallet.id,
+    senderWallet = await walletRepository.getWallet(
+      senderWallet.id,
     );
-    final receiverBalance = await walletManagerService.getBalance(
-      walletId: receiverWallet.id,
+    final senderBalance = senderWallet.balanceSat;
+    receiverWallet = await walletRepository.getWallet(
+      receiverWallet.id,
     );
+    final receiverBalance = receiverWallet.balanceSat;
     debugPrint('Sender balance: $senderBalance');
     debugPrint('Receiver balance: $receiverBalance');
 
-    if (senderBalance.totalSat == BigInt.zero) {
-      final address = await walletManagerService.getNewAddress(
+    if (senderBalance == BigInt.zero) {
+      final address = await addressRepository.getNewAddress(
         walletId: senderWallet.id,
       );
       debugPrint(
         'Send some funds to ${address.address} before running the integration test again',
       );
     }
-    if (receiverBalance.totalSat == BigInt.zero) {
-      final address = await walletManagerService.getNewAddress(
+    if (receiverBalance == BigInt.zero) {
+      final address = await addressRepository.getNewAddress(
         walletId: receiverWallet.id,
       );
       debugPrint(
@@ -102,8 +109,8 @@ void main() {
       );
     }
 
-    expect(senderBalance.totalSat.toInt(), greaterThan(0));
-    expect(receiverBalance.totalSat.toInt(), greaterThan(0));
+    expect(senderBalance.toInt(), greaterThan(0));
+    expect(receiverBalance.toInt(), greaterThan(0));
   });
 
   group('Payjoin Integration Tests', () {
@@ -137,7 +144,7 @@ void main() {
 
       test('should work with one receiver and one sender', () async {
         // Generate receiver address
-        final address = await walletManagerService.getNewAddress(
+        final address = await addressRepository.getNewAddress(
           walletId: receiverWallet.id,
         );
         debugPrint('Receive address generated: ${address.address}');
@@ -159,7 +166,7 @@ void main() {
 
         // Build the psbt with the sender wallet
         const networkFeesSatPerVb = 1000.0;
-        final originalPsbt = await buildTransactionUsecase.execute(
+        final originalPsbt = await prepareBitcoinSendUsecase.execute(
           walletId: senderWallet.id,
           address: address.address,
           amountSat: 1000,
@@ -169,7 +176,7 @@ void main() {
         final payjoinSender = await sendWithPayjoinUsecase.execute(
           walletId: senderWallet.id,
           bip21: pjUri.toString(),
-          originalPsbt: originalPsbt.toPsbtBase64(),
+          originalPsbt: originalPsbt,
           networkFeesSatPerVb: networkFeesSatPerVb,
         );
         debugPrint('Payjoin sender created: ${payjoinSender.id}');
@@ -225,7 +232,7 @@ void main() {
           //  payjoin directory for the first time.
           const expireAfterSec = PayjoinConstants.directoryPollingInterval - 1;
           // Generate receiver address from receiver wallet
-          final address = await walletManagerService.getNewAddress(
+          final address = await addressRepository.getNewAddress(
             walletId: receiverWallet.id,
           );
 
@@ -259,7 +266,7 @@ void main() {
 
     group('with multiple ongoing payjoins', () {
       const numberOfPayjoins = 2;
-      const networkFeesSatPerVb = 500.0;
+      const networkFeesSatPerVb = 250.0;
       final List<String> receiverAddresses = [];
       final List<Uri> payjoinUris = [];
       final Map<String, Completer<bool>> payjoinCompleters = {};
@@ -287,16 +294,16 @@ void main() {
         () {
           test('should have wallets with enough utxos', () async {
             // Make sure the wallets have a different utxo for every payjoin
-            final receiverUtxos = await walletManagerService.getUnspentUtxos(
+            final receiverUtxos = await utxoRepository.getUtxos(
               walletId: receiverWallet.id,
             );
-            final senderUtxos = await walletManagerService.getUnspentUtxos(
+            final senderUtxos = await utxoRepository.getUtxos(
               walletId: senderWallet.id,
             );
             debugPrint('Receiver utxos: ${receiverUtxos.length}');
             debugPrint('Sender utxos: ${senderUtxos.length}');
             if (receiverUtxos.length < numberOfPayjoins) {
-              final address = await walletManagerService.getNewAddress(
+              final address = await addressRepository.getNewAddress(
                 walletId: receiverWallet.id,
               );
               debugPrint(
@@ -304,7 +311,7 @@ void main() {
               );
             }
             if (senderUtxos.length < numberOfPayjoins) {
-              final address = await walletManagerService.getNewAddress(
+              final address = await addressRepository.getNewAddress(
                 walletId: senderWallet.id,
               );
               debugPrint(
@@ -322,7 +329,7 @@ void main() {
             // Set up multiple receiver sessions
             for (int i = 0; i < numberOfPayjoins; i++) {
               // Generate receiver address
-              final address = await walletManagerService.getNewAddress(
+              final address = await addressRepository.getNewAddress(
                 walletId: receiverWallet.id,
               );
               debugPrint('Receive address generated: ${address.address}');
@@ -352,7 +359,7 @@ void main() {
             // Set up multiple sender sessions
             for (int i = 0; i < numberOfPayjoins; i++) {
               // Build the psbt with the sender wallet
-              final originalPsbt = await buildTransactionUsecase.execute(
+              final originalPsbt = await prepareBitcoinSendUsecase.execute(
                 walletId: senderWallet.id,
                 address: receiverAddresses[i],
                 amountSat: 1000,
@@ -362,7 +369,7 @@ void main() {
               final payjoinSender = await sendWithPayjoinUsecase.execute(
                 walletId: senderWallet.id,
                 bip21: payjoinUris[i].toString(),
-                originalPsbt: originalPsbt.toPsbtBase64(),
+                originalPsbt: originalPsbt,
                 networkFeesSatPerVb: networkFeesSatPerVb,
               );
               debugPrint('Payjoin sender created: ${payjoinSender.id}');

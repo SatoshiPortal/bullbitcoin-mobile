@@ -9,26 +9,38 @@ import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final PayjoinDatasource _source;
-  final BitcoinBlockchainDatasource _blockchain;
+  final WalletMetadataDatasource _walletMetadata;
+  final SeedDatasource _seed;
+  final BdkWalletDatasource _bdkWallet;
+  final BdkBitcoinBlockchainDatasource _blockchain;
   final ElectrumServerStorageDatasource _electrumServerStorage;
   // Lock to prevent the same utxo from being used in multiple payjoin proposals
   final Lock _lock;
 
   PayjoinRepositoryImpl({
     required PayjoinDatasource payjoinDatasource,
-    required BitcoinBlockchainDatasource blockchainDatasource,
+    required WalletMetadataDatasource walletMetadataDatasource,
+    required SeedDatasource seedDatasource,
+    required BdkWalletDatasource bdkWalletDatasource,
+    required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   })  : _source = payjoinDatasource,
+        _walletMetadata = walletMetadataDatasource,
+        _seed = seedDatasource,
+        _bdkWallet = bdkWalletDatasource,
         _blockchain = blockchainDatasource,
         _electrumServerStorage = electrumServerStorageDatasource,
         _lock = Lock();
@@ -49,8 +61,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
 
   @override
-  Future<List<TxInput>> getInputsFromOngoingPayjoins() async {
-    final inputs = <TxInput>[];
+  Future<List<Utxo>> getInputsFromOngoingPayjoins() async {
+    final inputs = <Utxo>[];
     final payjoins = await _source.getAll(onlyOngoing: true);
     for (final payjoin in payjoins) {
       String? psbt;
@@ -185,6 +197,35 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     });
 
     return payjoinReceiver;
+  }
+
+  @override
+  Future<String> signPsbt({
+    required String walletId,
+    required String psbt,
+  }) async {
+    final walletMetadata = await _walletMetadata.get(walletId);
+
+    if (walletMetadata == null) {
+      throw Exception('Wallet metadata not found');
+    }
+
+    final seed = await _seed.get(
+      walletMetadata.masterFingerprint,
+    ) as MnemonicSeed;
+    final mnemonic = seed.mnemonicWords.join(' ');
+
+    final wallet = PrivateBdkWalletModel(
+      scriptType: ScriptType.fromName(walletMetadata.scriptType),
+      mnemonic: mnemonic,
+      passphrase: seed.passphrase,
+      isTestnet: walletMetadata.isTestnet,
+      dbName: walletId,
+    );
+
+    final signedPsbt = await _bdkWallet.signPsbt(psbt, wallet: wallet);
+
+    return signedPsbt;
   }
 
   @override

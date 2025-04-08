@@ -1,13 +1,13 @@
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
+import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +21,7 @@ class SendCubit extends Cubit<SendState> {
     required ConvertSatsToCurrencyAmountUsecase
         convertSatsToCurrencyAmountUsecase,
     required GetNetworkFeesUsecase getNetworkFeesUsecase,
-    required GetWalletUtxosUsecase getWalletUtxosUsecase,
+    required GetUtxosUsecase getUtxosUsecase,
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
   })  : _getCurrencyUsecase = getCurrencyUsecase,
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
@@ -31,7 +31,7 @@ class SendCubit extends Cubit<SendState> {
         _bestWalletUsecase = bestWalletUsecase,
         _detectBitcoinStringUsecase = detectBitcoinStringUsecase,
         _getNetworkFeesUsecase = getNetworkFeesUsecase,
-        _getWalletUtxosUsecase = getWalletUtxosUsecase,
+        _getUtxosUsecase = getUtxosUsecase,
         super(const SendState());
 
   final SelectBestWalletUsecase _bestWalletUsecase;
@@ -41,7 +41,7 @@ class SendCubit extends Cubit<SendState> {
   final GetBitcoinUnitUsecase _getBitcoinUnitUseCase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
-  final GetWalletUtxosUsecase _getWalletUtxosUsecase;
+  final GetUtxosUsecase _getUtxosUsecase;
 
   void backClicked() {
     if (state.step == SendStep.address) {
@@ -174,9 +174,11 @@ class SendCubit extends Cubit<SendState> {
     String maxAmount = '';
 
     if (state.selectedUtxos.isNotEmpty) {
+      // Todo: utxo.value should be non-null again when the frozen utxo stuff is fixed
+      // then we can remove the fallback to BigInt.zero on utxo.value
       final totalSats = state.selectedUtxos.fold<BigInt>(
         BigInt.zero,
-        (sum, utxo) => sum + utxo.value,
+        (sum, utxo) => sum + (utxo.value ?? BigInt.zero),
       );
       maxAmount = totalSats.toString();
     } else {
@@ -194,7 +196,7 @@ class SendCubit extends Cubit<SendState> {
     if (state.wallet == null) return;
 
     try {
-      final utxos = await _getWalletUtxosUsecase.execute(
+      final utxos = await _getUtxosUsecase.execute(
         walletId: state.wallet!.id,
       );
       emit(state.copyWith(utxos: utxos));

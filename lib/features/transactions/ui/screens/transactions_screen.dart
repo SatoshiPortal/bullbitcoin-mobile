@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/core/transaction/domain/entities/transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/bloc/transactions_bloc.dart';
 import 'package:bb_mobile/locator.dart';
@@ -76,9 +76,10 @@ class TxsList extends StatelessWidget {
 
   (IconData, Color, String) getTxDetails(
     BuildContext context,
-    WalletTransaction tx,
+    Transaction tx,
   ) {
-    final network = tx.network;
+    // TODO: define DetailedTransaction entity with all the details
+    const network = Network.bitcoinMainnet; //tx.network;
 
     IconData icon;
     Color color;
@@ -95,13 +96,15 @@ class TxsList extends StatelessWidget {
         color = context.colour.tertiary;
         walletType = 'Liquid';
     }
+    /*
     if (tx.type == TxType.lnSwap) {
       walletType = 'Lightning';
-    }
+    }*/
 
+    /*
     final type = tx.type;
     switch (type) {
-      case TxType.send:
+      case TxtType.send:
         icon = Icons.arrow_upward;
 
       case TxType.receive:
@@ -115,6 +118,13 @@ class TxsList extends StatelessWidget {
 
       case TxType.chainSwap:
         icon = Icons.swap_horiz;
+    }*/
+    final direction = tx.direction;
+    switch (direction) {
+      case TransactionDirection.outgoing:
+        icon = Icons.arrow_upward;
+      case _:
+        icon = Icons.arrow_downward;
     }
 
     return (icon, color, walletType);
@@ -137,7 +147,7 @@ class TxsList extends StatelessWidget {
         txItems.add(
           TxItem(
             icon: icon,
-            amount: tx.amount,
+            amount: tx.amountSat,
             label: 'Label',
             date: formattedDate,
             walletType: type,

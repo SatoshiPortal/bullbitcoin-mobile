@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/locator/core_locator.dart';
+import 'package:bb_mobile/core/core_locator.dart';
 import 'package:bb_mobile/features/app_startup/app_startup_locator.dart';
 import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/recover_wallet/recover_wallet_locator.dart';
+import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:get_it/get_it.dart';
@@ -23,9 +24,13 @@ class AppLocator {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
     // Register core dependencies first
-    await CoreLocator.setup();
-    KeyServerLocator.setup();
+    await CoreLocator.registerDatasources();
+    await CoreLocator.registerRepositories();
+    CoreLocator.registerServices();
+    CoreLocator.registerUsecases();
+
     // Register feature-specific dependencies
+    KeyServerLocator.setup();
     PinCodeLocator.setup();
     AppStartupLocator.setup();
     AppUnlockLocator.setup();
@@ -39,5 +44,6 @@ class AppLocator {
     BackupWalletLocator.setup();
     TestWalletBackupLocator.setup();
     ImportWatchOnlyWalletLocator.setup();
+    SendLocator.setup();
   }
 }

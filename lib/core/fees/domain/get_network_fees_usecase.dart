@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 class GetNetworkFeesUsecase {
   final FeesRepository _feesRepository;

@@ -1,8 +1,7 @@
-
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/key_server/data/services/backup_key_service.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/check_key_server_connection_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/derive_backup_key_from_default_wallet_usecase.dart';
@@ -18,7 +17,7 @@ class KeyServerLocator {
     locator.registerLazySingleton<BackupKeyService>(
       () => BackupKeyService(
         seedRepository: locator<SeedRepository>(),
-        walletMetadataRepository: locator<WalletMetadataRepository>(),
+        walletRepository: locator<WalletRepository>(),
       ),
     );
     // Use cases

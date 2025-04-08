@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/exchange/domain/usecases/save_api_key_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/features/exchange/domain/save_api_key_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

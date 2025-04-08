@@ -1,19 +1,29 @@
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
   final SettingsRepository _settingsRepository;
-  final WalletManagerService _walletManager;
+  final WalletRepository _walletRepository;
 
   CheckForExistingDefaultWalletsUsecase({
     required SettingsRepository settingsRepository,
-    required WalletManagerService walletManager,
+    required WalletRepository walletRepository,
   })  : _settingsRepository = settingsRepository,
-        _walletManager = walletManager;
+        _walletRepository = walletRepository;
 
   Future<bool> execute() async {
     // Check if wallets exist for the selected environment
     final environment = await _settingsRepository.getEnvironment();
-    return _walletManager.doDefaultWalletsExist(environment: environment);
+    final defaultWallets = await _walletRepository.getWallets(
+      onlyDefaults: true,
+      environment: environment,
+    );
+
+    // Check if there are any default wallets
+    if (defaultWallets.isNotEmpty) {
+      return true; // Default wallets exist
+    } else {
+      return false; // No default wallets found
+    }
   }
 }

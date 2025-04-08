@@ -1,16 +1,16 @@
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_metadata_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class BroadcastOriginalTransactionUsecase {
   final PayjoinRepository _payjoin;
-  final WalletMetadataRepository _walletMetadataRepository;
+  final WalletRepository _wallet;
 
   BroadcastOriginalTransactionUsecase({
     required PayjoinRepository payjoinRepository,
-    required WalletMetadataRepository walletMetadataRepository,
+    required WalletRepository walletRepository,
   })  : _payjoin = payjoinRepository,
-        _walletMetadataRepository = walletMetadataRepository;
+        _wallet = walletRepository;
 
   Future<PayjoinReceiver> execute(PayjoinReceiver payjoin) async {
     try {
@@ -21,19 +21,15 @@ class BroadcastOriginalTransactionUsecase {
         );
       }
 
-      // Get the network from the wallet metadata to make sure we are
+      // Get the network from the wallet to make sure we are
       // broadcasting the transaction to the correct network.
-      final walletMetadata = await _walletMetadataRepository.get(
+      // No need to sync the wallet data, since we just need the network info
+      // which is static.
+      final wallet = await _wallet.getWallet(
         payjoin.walletId,
       );
 
-      if (walletMetadata == null) {
-        throw BroadcastOriginalTransactionException(
-          'Wallet metadata not found for walletId: ${payjoin.walletId}',
-        );
-      }
-
-      final network = walletMetadata.network;
+      final network = wallet.network;
 
       // Broadcast the original transaction using the Electrum server
       return await _payjoin.broadcastOriginalTransaction(

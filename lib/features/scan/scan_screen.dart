@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:bb_mobile/core/wallet/domain/entity/payment_request.dart';
+
 import 'package:bb_mobile/features/scan/scan_service.dart';
+import 'package:bb_mobile/features/send/domain/entities/payment_request.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

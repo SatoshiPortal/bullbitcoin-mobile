@@ -1,10 +1,9 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/features/send/domain/entities/payment_request.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'send_state.freezed.dart';
@@ -26,11 +25,10 @@ enum SendStep {
 @freezed
 class SendState with _$SendState {
   const factory SendState({
-    // address
     @Default(SendStep.address) SendStep step,
     @Default(SendType.lightning) SendType sendType,
+    // input
     @Default('') String addressOrInvoice,
-    // amount
     Wallet? wallet,
     @Default('') String amount,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
@@ -39,16 +37,18 @@ class SendState with _$SendState {
     @Default('') String inputAmountCurrencyCode,
     @Default(0) double exchangeRate,
     @Default('') String label,
-    // confirm
     @Default([]) List<Utxo> utxos,
     @Default([]) List<Utxo> selectedUtxos,
     @Default(false) bool replaceByFee,
     FeeOptions? feesList,
     NetworkFee? selectedFee,
     int? customFee,
-    //
-    WalletTransaction? transaction,
-    LnSendSwap? swap,
+    // prepare
+    String? bitcoinPsbt,
+    String? liquidTransaction,
+    LnSendSwap? lightningSwap,
+    // confirm
+    String? txId,
     Object? error,
   }) = _SendState;
   const SendState._();

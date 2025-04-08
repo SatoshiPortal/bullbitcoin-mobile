@@ -1,19 +1,25 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 
 abstract class BitcoinWalletRepository {
-  Future<bool> isMine(Uint8List scriptBytes);
-  Future<Transaction> buildUnsigned({
+  Future<String> buildPsbt({
+    required String walletId,
     required String address,
-    required NetworkFee networkFee,
     int? amountSat,
-    List<TxInput>? unspendableInputs, // Utxos that should not be used
+    required NetworkFee networkFee,
     bool? drain,
-    List<TxInput>? selectedInputs,
-    bool replaceByFees,
+    List<Utxo>? unspendable,
+    List<Utxo>? selected,
+    bool? replaceByFee,
   });
-  Future<Transaction> sign(Transaction tx);
+  Future<String> signPsbt(
+    String psbt, {
+    required String walletId,
+  });
+  Future<bool> isScriptOfWallet({
+    required String walletId,
+    required Uint8List script,
+  });
 }

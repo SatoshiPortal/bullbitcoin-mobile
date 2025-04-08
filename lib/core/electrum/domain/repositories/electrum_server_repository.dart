@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 abstract class ElectrumServerRepository {
   Future<void> setElectrumServer(ElectrumServer server);

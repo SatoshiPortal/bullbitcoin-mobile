@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'payjoin_input_pair_model.freezed.dart';
@@ -13,7 +13,7 @@ class PayjoinInputPairModel with _$PayjoinInputPairModel {
     @Default([]) List<int> scriptSigRawOutputScript,
     @Default(0xFFFFFFFF) int sequence,
     @Default([]) List<Uint8List> witness,
-    required BigInt value,
+    BigInt? value,
     required Uint8List scriptPubkey,
     @Default([]) List<int> redeemScriptRawOutputScript,
     @Default([]) List<int> witnessScriptRawOutputScript,

@@ -2,15 +2,14 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 abstract class PayjoinRepository {
   Stream<PayjoinReceiver> get requestsForReceivers;
   Stream<PayjoinSender> get proposalsForSenders;
   Stream<Payjoin> get expiredPayjoins;
-  Future<List<TxInput>> getInputsFromOngoingPayjoins();
+  Future<List<Utxo>> getInputsFromOngoingPayjoins();
   Future<PayjoinReceiver> createPayjoinReceiver({
     required String walletId,
     required bool isTestnet,
@@ -30,13 +29,16 @@ abstract class PayjoinRepository {
     int? limit,
     //bool? completed,
   });
-
   Future<PayjoinReceiver> processRequest({
     required String id,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
     required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
     required List<Utxo> unspentUtxos,
     required FutureOr<String> Function(String) processPsbt,
+  });
+  Future<String> signPsbt({
+    required String walletId,
+    required String psbt,
   });
   Future<PayjoinSender> broadcastPsbt({
     required String payjoinId,

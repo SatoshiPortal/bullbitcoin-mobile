@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/address/usecases/get_receive_address_use_case.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
@@ -5,7 +7,6 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transa
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
@@ -13,24 +14,17 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
-import 'package:bb_mobile/features/receive/domain/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 
 class ReceiveLocator {
   static void setup() {
-    // Use cases
-    locator.registerFactory<GetReceiveAddressUsecase>(
-      () => GetReceiveAddressUsecase(
-        walletManager: locator<WalletManagerService>(),
-      ),
-    );
     locator.registerFactory<CreateReceiveSwapUsecase>(
       () => CreateReceiveSwapUsecase(
-        walletManager: locator<WalletManagerService>(),
+        walletRepository: locator<WalletRepository>(),
         swapRepository: locator<SwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,

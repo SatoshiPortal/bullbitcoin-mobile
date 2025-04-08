@@ -1,14 +1,14 @@
-import 'package:bb_mobile/core/wallet/domain/entity/tx_input.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/foundation.dart';
 
 class TransactionParsing {
-  static Future<List<TxInput>> extractInputsFromPsbt(String psbt) async {
+  static Future<List<Utxo>> extractInputsFromPsbt(String psbt) async {
     debugPrint('Extracting inputs from psbt: $psbt');
     final tx = await bdk.PartiallySignedTransaction.fromString(psbt);
     final inputs = await tx.extractTx().input();
     final txInputs = inputs.map((input) {
-      return TxInput(
+      return Utxo(
         txId: input.previousOutput.txid,
         vout: input.previousOutput.vout,
         scriptPubkey: input.scriptSig.bytes,

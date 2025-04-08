@@ -4,7 +4,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/features/exchange/domain/save_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/save_api_key_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/locator.dart';

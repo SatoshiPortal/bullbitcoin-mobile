@@ -1,6 +1,5 @@
-
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/services/wallet_manager_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/domain/usecases/import_xpub_use_case.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -10,7 +9,7 @@ class ImportWatchOnlyWalletLocator {
     locator.registerFactory<ImportXpubUsecase>(
       () => ImportXpubUsecase(
         settingsRepository: locator<SettingsRepository>(),
-        walletManagerService: locator<WalletManagerService>(),
+        walletRepository: locator<WalletRepository>(),
       ),
     );
   }

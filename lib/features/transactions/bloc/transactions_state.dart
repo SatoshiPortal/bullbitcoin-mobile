@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/core/transaction/domain/entities/transaction.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transactions_state.freezed.dart';
@@ -6,16 +6,16 @@ part 'transactions_state.freezed.dart';
 @freezed
 class TransactionsState with _$TransactionsState {
   const factory TransactionsState({
-    List<WalletTransaction>? transactions,
+    List<Transaction>? transactions,
     @Default(false) bool loadingTxs,
     Object? err,
   }) = _TransactionsState;
   const TransactionsState._();
 
-  List<WalletTransaction> get sortedTransactions {
+  List<Transaction> get sortedTransactions {
     if (transactions == null) return [];
 
-    final txList = List<WalletTransaction>.from(transactions!);
+    final txList = List<Transaction>.from(transactions!);
     txList.sort((a, b) {
       // If both transactions have confirmationTime, sort by time (newest first)
       if (a.confirmationTime != null && b.confirmationTime != null) {

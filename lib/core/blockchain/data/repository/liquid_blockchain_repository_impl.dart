@@ -5,14 +5,14 @@ import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
-  final LiquidBlockchainDatasource _blockchain;
+  final LwkLiquidBlockchainDatasource _blockchain;
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
   const LiquidBlockchainRepositoryImpl({
-    required LiquidBlockchainDatasource blockchainDatasource,
+    required LwkLiquidBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   })  : _blockchain = blockchainDatasource,
         _electrumServerStorage = electrumServerStorageDatasource;

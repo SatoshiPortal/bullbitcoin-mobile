@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_metadata.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'electrum_server_model.freezed.dart';
