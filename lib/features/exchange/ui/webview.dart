@@ -4,8 +4,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 
+import 'package:bb_mobile/features/exchange/domain/save_api_key_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +25,9 @@ class BullBitcoinWebViewProvider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ExchangeCubit(),
+      create: (_) => ExchangeCubit(
+        saveApiKeyUsecase: locator<SaveApiKeyUsecase>(),
+      ),
       child: const BullBitcoinWebView(),
     );
   }
@@ -53,10 +57,9 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
 
   // Add these fields to track URLs that indicate login flow
   final String _baseAccountsUrl = 'https://accounts05.bullbitcoin.dev';
-  final String _loginUrl = 'login';
-  final String _registrationUrl = 'registration';
-  final String _verificationUrlPrefix = 'verification';
-  final String _successUrl = 'https://accounts05.bullbitcoin.dev/en';
+  final String _loginUrlPattern = 'login';
+  final String _registrationUrlPattern = 'registration';
+  final String _verificationUrlPattern = 'verification';
   String? _previousUrl;
 
   @override
@@ -483,11 +486,13 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
 
     // Check if we came from login, registration, or verification
     // and now we're at the main account page
-    final wasOnAuthFlow = _previousUrl!.contains(_loginUrl) ||
-        _previousUrl!.contains(_registrationUrl) ||
-        _previousUrl!.contains(_verificationUrlPrefix);
+    final wasOnAuthFlow = _previousUrl!.contains(_loginUrlPattern) ||
+        _previousUrl!.contains(_registrationUrlPattern) ||
+        _previousUrl!.contains(_verificationUrlPattern);
 
-    final isOnMainPage = currentUrl == _successUrl;
+    final isOnMainPage = !currentUrl.contains(_loginUrlPattern) &&
+        !currentUrl.contains(_registrationUrlPattern) &&
+        !currentUrl.contains(_verificationUrlPattern);
 
     // If we navigated from login/registration/verification to the main page,
     // we've successfully logged in
@@ -514,9 +519,9 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
 
   // Add this helper method to identify the previous URL type
   String _getPreviousUrlType(String url) {
-    if (url == _loginUrl) return 'login';
-    if (url == _registrationUrl) return 'registration';
-    if (url.startsWith(_verificationUrlPrefix)) return 'verification';
+    if (url == _loginUrlPattern) return 'login';
+    if (url == _registrationUrlPattern) return 'registration';
+    if (url.startsWith(_verificationUrlPattern)) return 'verification';
     return 'unknown';
   }
 
@@ -526,10 +531,9 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
 
     showDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (context) => const AlertDialog(
-        title: Text('Login Successful'),
-        content: Column(
+      builder: (context) => AlertDialog(
+        title: const Text('Login Successful'),
+        content: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.check_circle_outline, color: Colors.green, size: 64),
@@ -539,6 +543,12 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
             Text('You can return to the wallet now.'),
           ],
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }

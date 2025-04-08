@@ -1,11 +1,19 @@
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/exchange/domain/save_api_key_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Exchange Cubit
 class ExchangeCubit extends Cubit<ExchangeState> {
-  ExchangeCubit() : super(const ExchangeState());
+  ExchangeCubit({
+    required SaveApiKeyUsecase saveApiKeyUsecase,
+  })  : _saveApiKeyUsecase = saveApiKeyUsecase,
+        super(
+          const ExchangeState(),
+        );
+
+  final SaveApiKeyUsecase _saveApiKeyUsecase;
 
   final String targetAuthCookie = 'bb_session';
   final String baseUrl = ApiServiceConstants.bbAuthUrl;
@@ -52,11 +60,26 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     emit(state.copyWith(apiKeyResponse: response));
   }
 
-  // Method to store API key - skeleton implementation
+  // Updated method to store API key
   Future<void> storeApiKey(Map<String, dynamic> apiKeyData) async {
-    // TODO: Implement API key storage logic
-    // This would potentially store the API key in secure storage
-    // or pass it to another part of the application
-    debugPrint('Storing API key: $apiKeyData');
+    try {
+      debugPrint('Storing API key: $apiKeyData');
+
+      final jsonString = state.apiKeyResponse;
+      if (jsonString == null || jsonString.isEmpty) {
+        debugPrint('No API key response available to store');
+        return;
+      }
+
+      final success = await _saveApiKeyUsecase.execute(jsonString);
+
+      if (success) {
+        debugPrint('API key successfully stored');
+      } else {
+        debugPrint('Failed to store API key');
+      }
+    } catch (e) {
+      debugPrint('Error in storeApiKey: $e');
+    }
   }
 }

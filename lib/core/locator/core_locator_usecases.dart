@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/api_key_storage_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
@@ -52,6 +53,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_balance_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/sync_all_wallets_usecase.dart';
+import 'package:bb_mobile/features/exchange/domain/save_api_key_usecase.dart';
 import 'package:bb_mobile/features/onboarding/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_wallet_use_case.dart';
 import 'package:bb_mobile/locator.dart';
@@ -255,6 +257,13 @@ Future<void> registerUsecases() async {
         instanceName:
             LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
       ),
+    ),
+  );
+
+  // Register SaveApiKeyUsecase
+  locator.registerFactory<SaveApiKeyUsecase>(
+    () => SaveApiKeyUsecase(
+      apiKeyStorage: locator<ApiKeyStorageDatasource>(),
     ),
   );
 

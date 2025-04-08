@@ -47,8 +47,6 @@ Future<void> registerDatasources() async {
         instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
       ),
     ),
-    instanceName:
-        LocatorInstanceNameConstants.bullBitcoinAPIKeyDatasourceInstanceName,
   );
 
   //  - Bull Bitcoin API
