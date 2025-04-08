@@ -78,7 +78,8 @@ class TestWalletBackupState with _$TestWalletBackupState {
 
   // Implement the methods here using the helper class
   (String word, bool isSelected, int actualIdx) shuffleElementAt(
-      int shuffleIdx) {
+    int shuffleIdx,
+  ) {
     return TestWalletBackupStateMethods(
       shuffledMnemonic: shuffledMnemonic,
       mnemonic: mnemonic,

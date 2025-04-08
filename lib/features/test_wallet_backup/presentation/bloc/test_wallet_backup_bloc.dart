@@ -53,9 +53,11 @@ class TestWalletBackupBloc
     on<VerifyPhysicalBackup>(_verifyPhysicalBackup);
     on<LoadSeedForVerification>(_loadSeedForVerification);
     on<StartPhysicalBackupVerification>((event, emit) {
-      emit(state.copyWith(
-        status: TestWalletBackupStatus.verifying,
-      ));
+      emit(
+        state.copyWith(
+          status: TestWalletBackupStatus.verifying,
+        ),
+      );
     });
     // Add handlers for transitioning events
     on<StartTransitioning>((event, emit) {
@@ -257,8 +259,10 @@ class TestWalletBackupBloc
     );
   }
 
-  Future<void> _loadSeedForVerification(LoadSeedForVerification event,
-      Emitter<TestWalletBackupState> emit) async {
+  Future<void> _loadSeedForVerification(
+    LoadSeedForVerification event,
+    Emitter<TestWalletBackupState> emit,
+  ) async {
     try {
       emit(
         state.copyWith(
@@ -285,21 +289,27 @@ class TestWalletBackupBloc
   }
 
   Future<void> _verifyPhysicalBackup(
-      VerifyPhysicalBackup event, Emitter<TestWalletBackupState> emit) async {
+    VerifyPhysicalBackup event,
+    Emitter<TestWalletBackupState> emit,
+  ) async {
     try {
       if (state.mnemonic.isEmpty) {
-        emit(state.copyWith(
-          status: TestWalletBackupStatus.error,
-          statusError: 'No mnemonic loaded',
-        ));
+        emit(
+          state.copyWith(
+            status: TestWalletBackupStatus.error,
+            statusError: 'No mnemonic loaded',
+          ),
+        );
         return;
       }
 
       if (state.testMnemonicOrder.length != state.mnemonic.length) {
-        emit(state.copyWith(
-          status: TestWalletBackupStatus.error,
-          statusError: 'Please select all words',
-        ));
+        emit(
+          state.copyWith(
+            status: TestWalletBackupStatus.error,
+            statusError: 'Please select all words',
+          ),
+        );
         return;
       }
 
@@ -319,18 +329,22 @@ class TestWalletBackupBloc
       } else {
         // Reset test state when wrong
         final shuffled = state.mnemonic.toList()..shuffle();
-        emit(state.copyWith(
-          status: TestWalletBackupStatus.error,
-          statusError: 'Incorrect word order. Please try again.',
-          shuffledMnemonic: shuffled,
-          testMnemonicOrder: [],
-        ));
+        emit(
+          state.copyWith(
+            status: TestWalletBackupStatus.error,
+            statusError: 'Incorrect word order. Please try again.',
+            shuffledMnemonic: shuffled,
+            testMnemonicOrder: [],
+          ),
+        );
       }
     } catch (e) {
-      emit(state.copyWith(
-        status: TestWalletBackupStatus.error,
-        statusError: 'Verification failed: $e',
-      ));
+      emit(
+        state.copyWith(
+          status: TestWalletBackupStatus.error,
+          statusError: 'Verification failed: $e',
+        ),
+      );
     }
   }
 }

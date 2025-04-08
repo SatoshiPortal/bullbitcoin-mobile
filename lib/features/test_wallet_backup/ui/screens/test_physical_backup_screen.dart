@@ -93,10 +93,11 @@ class TestPhysicalBackupScreen extends StatelessWidget {
               'Store it somewhere safe.',
               textAlign: TextAlign.center,
               style: context.font.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: context.colour.surface,
-                  letterSpacing: 0,
-                  fontSize: 12),
+                fontWeight: FontWeight.w700,
+                color: context.colour.surface,
+                letterSpacing: 0,
+                fontSize: 12,
+              ),
             ),
             const Gap(32),
             SingleChildScrollView(
@@ -155,7 +156,9 @@ class TestPhysicalBackupScreen extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 16),
+                      horizontal: 12,
+                      vertical: 16,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -193,7 +196,7 @@ class TestPhysicalBackupScreen extends StatelessWidget {
               },
               bgColor: context.colour.secondary,
               textColor: context.colour.onSecondary,
-            )
+            ),
           ],
         ),
       ),
@@ -240,7 +243,10 @@ class ShuffledMnemonicScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 2,
               style: context.font.headlineLarge?.copyWith(
-                  fontWeight: FontWeight.w600, fontSize: 16, letterSpacing: 0),
+                fontWeight: FontWeight.w600,
+                fontSize: 16,
+                letterSpacing: 0,
+              ),
             ),
             const Gap(20),
             Builder(
@@ -539,10 +545,11 @@ class RecoveryPhraseWord extends StatelessWidget {
                   child: BBText(
                     number < 10 ? '0$number' : '$number',
                     style: context.font.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
-                        letterSpacing: 0.15,
-                        color: context.colour.onPrimary),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                      letterSpacing: 0.15,
+                      color: context.colour.onPrimary,
+                    ),
                   ),
                 ),
               ),
@@ -555,9 +562,10 @@ class RecoveryPhraseWord extends StatelessWidget {
                 textAlign: TextAlign.start,
                 maxLines: 2,
                 style: context.font.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
-                    color: context.colour.secondary),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                  color: context.colour.secondary,
+                ),
               ),
             ),
           ],

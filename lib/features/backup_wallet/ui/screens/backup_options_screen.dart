@@ -72,19 +72,20 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                     ),
                     const Gap(16),
                     BackupOptionCard(
-                        icon: Image.asset(
-                          'assets/physical_backup.png',
-                          width: 36,
-                          height: 45,
-                          fit: BoxFit.cover,
-                        ),
-                        title: 'Physical backup',
-                        description:
-                            'Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.',
-                        tag: 'Trustless (take your time)',
-                        onTap: () => context.pushNamed(
-                              TestWalletBackupSubroute.testPhysicalBackup.name,
-                            )),
+                      icon: Image.asset(
+                        'assets/physical_backup.png',
+                        width: 36,
+                        height: 45,
+                        fit: BoxFit.cover,
+                      ),
+                      title: 'Physical backup',
+                      description:
+                          'Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.',
+                      tag: 'Trustless (take your time)',
+                      onTap: () => context.pushNamed(
+                        TestWalletBackupSubroute.testPhysicalBackup.name,
+                      ),
+                    ),
                     const Gap(16),
                     GestureDetector(
                       onTap: () {
