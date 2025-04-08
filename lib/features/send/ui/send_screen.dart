@@ -1,5 +1,15 @@
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
+import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
@@ -11,9 +21,32 @@ import 'package:bb_mobile/ui/components/segment/segmented_full.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
+
+class SendFlow extends StatelessWidget {
+  const SendFlow({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => SendCubit(
+        bestWalletUsecase: locator<SelectBestWalletUsecase>(),
+        detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
+        getCurrencyUsecase: locator<GetCurrencyUsecase>(),
+        getBitcoinUnitUseCase: locator<GetBitcoinUnitUsecase>(),
+        convertSatsToCurrencyAmountUsecase:
+            locator<ConvertSatsToCurrencyAmountUsecase>(),
+        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
+        getAvailableCurrenciesUsecase: locator<GetAvailableCurrenciesUsecase>(),
+        getUtxosUsecase: locator<GetUtxosUsecase>(),
+      ),
+      child: const SendScreen(),
+    );
+  }
+}
 
 class SendScreen extends StatelessWidget {
   const SendScreen({super.key});
@@ -124,7 +157,9 @@ class SendAmountScreen extends StatelessWidget {
               currency: '',
               amountEquivalent: '',
               availableCurrencies: const [],
-              onNoteChanged: (note) {},
+              onNoteChanged: (note) {
+                context.read<SendCubit>().noteChanged(note);
+              },
               onCurrencyChanged: (currencyCode) {},
             ),
             const Gap(82),

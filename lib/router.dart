@@ -123,7 +123,7 @@ class AppRouter {
       GoRoute(
         name: AppRoute.send.name,
         path: AppRoute.send.path,
-        builder: (context, state) => const SendScreen(),
+        builder: (context, state) => const SendFlow(),
       ),
       GoRoute(
         name: AppRoute.sell.name,

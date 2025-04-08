@@ -9,9 +9,7 @@ import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_useca
 import 'package:bb_mobile/locator.dart';
 
 class SendLocator {
-  static void setup() {
-    registerUsecases();
-  }
+  static void setup() => registerUsecases();
 
   static void registerUsecases() {
     locator.registerLazySingleton<ConfirmBitcoinSendUsecase>(
