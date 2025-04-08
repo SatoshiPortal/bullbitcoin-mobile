@@ -46,7 +46,8 @@ class LwkWalletDatasource
   }
 
   Future<lwk.Wallet> _createPrivateWallet(
-      PrivateWalletModel walletModel) async {
+    PrivateWalletModel walletModel,
+  ) async {
     if (walletModel is! PrivateLwkWalletModel) {
       throw Exception('Wallet is not an LWK wallet');
     }
