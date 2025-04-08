@@ -5,7 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class BalanceRow extends StatelessWidget {
-  const BalanceRow({super.key});
+  final String balance;
+  final String currencyCode;
+  final void Function() onMaxPressed;
+
+  const BalanceRow({
+    super.key,
+    required this.balance,
+    required this.currencyCode,
+    required this.onMaxPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +37,7 @@ class BalanceRow extends StatelessWidget {
               ),
               const Gap(4),
               BBText(
-                '53.34 CAD',
+                '$balance $currencyCode',
                 style: context.font.labelMedium,
                 color: context.colour.secondary,
               ),
@@ -40,7 +49,7 @@ class BalanceRow extends StatelessWidget {
                 bgColor: context.colour.secondaryFixedDim,
                 textColor: context.colour.secondary,
                 textStyle: context.font.labelLarge,
-                onPressed: () {},
+                onPressed: () => onMaxPressed(),
               ),
               const Gap(8),
             ],
