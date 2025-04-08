@@ -28,7 +28,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     try {
-      final wallets = await _getWalletsUsecase.execute(sync: true);
+      // Don't sync the wallets here so the wallet list is shown immediately
+      // and the sync is done after that
+      final wallets = await _getWalletsUsecase.execute();
 
       emit(
         HomeState(status: HomeStatus.success, wallets: wallets),

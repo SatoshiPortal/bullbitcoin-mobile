@@ -17,43 +17,44 @@ sealed class Address with _$Address {
   const Address._();
 
   factory Address.bitcoin({
-    required String walletId,
-    required String address,
     required int index,
+    required String address,
     //String? label,
     required AddressKeyChain keyChain,
     required AddressStatus status,
     // String? txId, TODO: analyze if it is not better to add a GetTransactionFromAddress function in the TransactionRepository and get the txId from there in a use case
     int? highestPreviousBalanceSat,
     int? balanceSat,
+    required String walletId,
   }) = BitcoinAddress;
 
   factory Address.liquid({
-    required String walletId,
+    required int index,
     required String standard, // Standard address
     required String confidential, // Confidential address
-    required int index,
     //String? label,
     required AddressKeyChain keyChain,
     required AddressStatus status,
     //String? txId,
     int? highestPreviousBalanceSat,
     int? balanceSat,
+    required String walletId,
   }) = LiquidAddress;
 
   // TODO: Validate if the standard or confidential address should be used
   String get address => when(
         bitcoin: (
+          index,
           address,
           _,
           __,
           ___,
           ____,
           _____,
-          ______,
         ) =>
             address,
         liquid: (
+          index,
           standard,
           confidential,
           __,
@@ -61,31 +62,30 @@ sealed class Address with _$Address {
           ____,
           _____,
           ______,
-          _______,
         ) =>
             confidential,
       );
 
   String get standardAddress => when(
         bitcoin: (
+          index,
           address,
           __,
           ___,
           ____,
           _____,
           ______,
-          _______,
         ) =>
             address,
         liquid: (
+          index,
           standard,
-          _,
+          confidential,
           __,
           ___,
           ____,
           _____,
           ______,
-          _______,
         ) =>
             standard,
       );
