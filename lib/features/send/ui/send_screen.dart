@@ -42,7 +42,9 @@ class SendFlow extends StatelessWidget {
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         getAvailableCurrenciesUsecase: locator<GetAvailableCurrenciesUsecase>(),
         getUtxosUsecase: locator<GetUtxosUsecase>(),
-      ),
+      )
+        ..getCurrencies()
+        ..getExchangeRate(),
       child: const SendScreen(),
     );
   }
@@ -137,50 +139,59 @@ class SendAmountScreen extends StatelessWidget {
           onBack: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: BBSegmentFull(
-                items: SendType.values.map((e) => e.name).toSet(),
-                onSelected: (c) {},
-                initialValue: SendType.values.first.name,
-              ),
+      body: BlocBuilder<SendCubit, SendState>(
+        builder: (context, state) {
+          final cubit = context.read<SendCubit>();
+
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Gap(10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: BBSegmentFull(
+                    items: SendType.values.map((e) => e.name).toSet(),
+                    onSelected: (c) {},
+                    initialValue: SendType.values.first.name,
+                  ),
+                ),
+                const Gap(16),
+                const Gap(82),
+                PriceInput(
+                  amount: state.amount,
+                  currency: state.bitcoinUnit.name,
+                  amountEquivalent:
+                      '${state.amount.isEmpty ? '' : state.fiatApproximatedAmount} ${state.fiatCurrencyCode}',
+                  availableCurrencies: state.fiatCurrencyCodes,
+                  onNoteChanged: cubit.noteChanged,
+                  onCurrencyChanged: cubit.currencyCodeChanged,
+                ),
+                const Gap(82),
+                BalanceRow(
+                  balance: state.balanceApproximatedAmount,
+                  currencyCode: state.fiatCurrencyCode,
+                  onMaxPressed: cubit.onMaxPressed,
+                ),
+                DialPad(
+                  onNumberPressed: cubit.onNumberPressed,
+                  onBackspacePressed: cubit.onBackspacePressed,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: BBButton.big(
+                    label: 'Continue',
+                    onPressed: () {},
+                    disabled: true,
+                    bgColor: context.colour.secondary,
+                    textColor: context.colour.onSecondary,
+                  ),
+                ),
+                const Gap(24),
+              ],
             ),
-            const Gap(16),
-            const Gap(82),
-            PriceInput(
-              amount: '',
-              currency: '',
-              amountEquivalent: '',
-              availableCurrencies: const [],
-              onNoteChanged: (note) {
-                context.read<SendCubit>().noteChanged(note);
-              },
-              onCurrencyChanged: (currencyCode) {},
-            ),
-            const Gap(82),
-            const BalanceRow(),
-            DialPad(
-              onNumberPressed: (number) => debugPrint(number),
-              onBackspacePressed: () => debugPrint('backspace'),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: BBButton.big(
-                label: 'Continue',
-                onPressed: () {},
-                disabled: true,
-                bgColor: context.colour.secondary,
-                textColor: context.colour.onSecondary,
-              ),
-            ),
-            const Gap(24),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

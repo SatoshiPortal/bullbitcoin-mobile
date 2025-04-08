@@ -56,6 +56,8 @@ class SendState with _$SendState {
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('') String fiatCurrencyCode,
+    @Default('') String fiatApproximatedAmount,
+    @Default('') String balanceApproximatedAmount,
     @Default('') String inputAmountCurrencyCode,
     @Default(0) double exchangeRate,
     @Default('') String label,
