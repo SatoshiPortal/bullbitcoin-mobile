@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/exchange/data/datasources/api_key_storage_datasou
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:flutter/foundation.dart';
 
-/// Usecase to save API key from JSON response to secure storage
 class SaveApiKeyUsecase {
   final ApiKeyStorageDatasource apiKeyStorage;
 

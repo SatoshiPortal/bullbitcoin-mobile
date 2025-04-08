@@ -18,7 +18,6 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
-/// Provider wrapper for the BullBitcoinWebView
 class BullBitcoinWebViewProvider extends StatelessWidget {
   const BullBitcoinWebViewProvider({super.key});
 
@@ -74,18 +73,15 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
           onPageStarted: (url) {
             if (!mounted) return;
             context.read<ExchangeCubit>().setLoading(true);
-            context.read<ExchangeCubit>().setCurrentUrl(url);
-
-            // Store previous URL for comparison
             _previousUrl = context.read<ExchangeCubit>().state.currentUrl;
-
+            context.read<ExchangeCubit>().setCurrentUrl(url);
             // Check if the URL change indicates successful login
             _checkForSuccessfulLogin(url);
           },
           onPageFinished: (url) {
             if (!mounted) return;
             context.read<ExchangeCubit>().setLoading(false);
-            context.read<ExchangeCubit>().setCurrentUrl(url);
+            // context.read<ExchangeCubit>().setCurrentUrl(url);
 
             // Reset cookie check attempts on new page load
             context.read<ExchangeCubit>().resetCookieCheckAttempts();
@@ -289,15 +285,10 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
           debugPrint('===== SESSION COOKIE FOUND =====');
           debugPrint('bb_session=${cookie.value}');
           debugPrint('================================');
-
-          // Mark as authenticated but don't pop context
           if (!mounted) return false;
           cubit.setAuthenticated(true);
           _stopCookiePolling();
-
-          // Generate API key when cookie is found
           _generateApiKey();
-
           return true;
         }
       }
@@ -306,9 +297,6 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
     }
     return false;
   }
-
-  // Rest of your methods with mounted checks...
-  // ...
 
   Future<void> _generateApiKey() async {
     if (!mounted) return;
@@ -320,15 +308,12 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
     debugPrint('Attempting to generate API key...');
 
     try {
-      // First, try a simpler approach
       await _controller.runJavaScript('''
         console.log('Preparing to generate API key...');
       ''');
 
-      // Add a small delay to ensure JavaScript context is ready
       await Future.delayed(const Duration(milliseconds: 500));
 
-      // Use a simpler JavaScript approach that's more compatible with iOS
       final result = await _controller.runJavaScriptReturningResult('''
         (function() {
           var xhr = new XMLHttpRequest();
@@ -388,7 +373,6 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
         debugPrint('Failed to parse API response: $parseError');
         debugPrint('Raw response: $jsonString');
 
-        // Try to clean up the response if it's a string
         if (jsonString.contains('apiKey')) {
           cubit.setApiKeyResponse('{"apiKeyRawResponse": $jsonString}');
           cubit.setApiKeyGenerating(false);
@@ -399,9 +383,7 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
     } catch (e) {
       debugPrint('Error generating API key: $e');
 
-      // Try alternative approach if the first one fails
       await _tryAlternativeApiKeyGeneration();
-
       cubit.setApiKeyGenerating(false);
     }
   }
@@ -412,7 +394,6 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
     debugPrint('Trying alternative API key generation method...');
 
     try {
-      // Inject a form submission approach which might be more compatible
       await _controller.runJavaScript('''
         (function() {
           // Create an invisible iframe to handle the response
@@ -448,7 +429,6 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
         })();
       ''');
 
-      // Wait a bit and then set a placeholder response
       await Future.delayed(const Duration(seconds: 2));
 
       cubit.setApiKeyResponse(
@@ -465,7 +445,6 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
     if (!mounted) return;
     final cubit = context.read<ExchangeCubit>();
     try {
-      // Add the query parameter to the URL
       final Uri url = Uri.parse('https://${cubit.baseUrl}');
       _controller.loadRequest(url);
     } catch (e) {
@@ -478,14 +457,9 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
   // Add this method to check for successful login based on URL changes
   void _checkForSuccessfulLogin(String currentUrl) {
     if (!mounted) return;
-
-    // Ignore if we don't have a previous URL yet
     if (_previousUrl == null) return;
-
     debugPrint('URL changed: $_previousUrl -> $currentUrl');
 
-    // Check if we came from login, registration, or verification
-    // and now we're at the main account page
     final wasOnAuthFlow = _previousUrl!.contains(_loginUrlPattern) ||
         _previousUrl!.contains(_registrationUrlPattern) ||
         _previousUrl!.contains(_verificationUrlPattern);
@@ -519,9 +493,9 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
 
   // Add this helper method to identify the previous URL type
   String _getPreviousUrlType(String url) {
-    if (url == _loginUrlPattern) return 'login';
-    if (url == _registrationUrlPattern) return 'registration';
-    if (url.startsWith(_verificationUrlPattern)) return 'verification';
+    if (url.contains(_loginUrlPattern)) return 'login';
+    if (url.contains(_registrationUrlPattern)) return 'registration';
+    if (url.contains(_verificationUrlPattern)) return 'verification';
     return 'unknown';
   }
 

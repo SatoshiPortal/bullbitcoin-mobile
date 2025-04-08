@@ -1,4 +1,3 @@
-// Simple version without freezed for easier implementation if desired
 class ExchangeApiKeyModel {
   final String id;
   final String key;
