@@ -30,8 +30,10 @@ class LocalStorageFrozenUtxoDatasource implements FrozenUtxoDatasource {
   }
 
   @override
-  Future<void> freezeUtxo(
-      {required String walletId, required UtxoModel utxo}) async {
+  Future<void> freezeUtxo({
+    required String walletId,
+    required UtxoModel utxo,
+  }) async {
     await _lock.synchronized(() {});
   }
 
@@ -45,8 +47,10 @@ class LocalStorageFrozenUtxoDatasource implements FrozenUtxoDatasource {
   }
 
   @override
-  Future<void> unfreezeUtxo(
-      {required String walletId, required UtxoModel utxo}) async {
+  Future<void> unfreezeUtxo({
+    required String walletId,
+    required UtxoModel utxo,
+  }) async {
     await _lock.synchronized(() {});
   }
 }

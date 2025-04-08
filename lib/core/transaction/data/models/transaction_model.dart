@@ -23,8 +23,13 @@ sealed class TransactionModel with _$TransactionModel {
 
   Transaction toEntity({required String walletId}) {
     return when(
-      bitcoin: (String txId, bool isIncoming, int amountSat, int feeSat,
-              int? confirmationTimestamp) =>
+      bitcoin: (
+        String txId,
+        bool isIncoming,
+        int amountSat,
+        int feeSat,
+        int? confirmationTimestamp,
+      ) =>
           Transaction.bitcoin(
         walletId: walletId,
         direction: isIncoming
@@ -40,8 +45,13 @@ sealed class TransactionModel with _$TransactionModel {
             ? DateTime.fromMillisecondsSinceEpoch(confirmationTimestamp * 1000)
             : null,
       ),
-      liquid: (String txId, bool isIncoming, int amountSat, int feeSat,
-              int? confirmationTimestamp) =>
+      liquid: (
+        String txId,
+        bool isIncoming,
+        int amountSat,
+        int feeSat,
+        int? confirmationTimestamp,
+      ) =>
           Transaction.liquid(
         walletId: walletId,
         direction: isIncoming

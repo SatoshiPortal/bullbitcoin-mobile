@@ -36,4 +36,15 @@ sealed class HomeState with _$HomeState {
         0,
         (previousValue, element) => previousValue + element.balanceSat.toInt(),
       );
+
+  bool showBackupWarning() {
+    final defaultWallets = wallets.where((wallet) => wallet.isDefault);
+    return defaultWallets.isNotEmpty &&
+        defaultWallets.any(
+          (wallet) =>
+              !wallet.isEncryptedVaultTested &&
+              !wallet.isPhysicalBackupTested &&
+              wallet.balanceSat > BigInt.from(0),
+        );
+  }
 }

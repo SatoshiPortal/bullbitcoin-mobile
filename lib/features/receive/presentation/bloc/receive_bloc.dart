@@ -115,7 +115,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         state.copyWith(
           type: ReceiveType.bitcoin,
           inputAmount: '',
-          confirmedAmountSat: null,
           note: '',
         ),
       );
@@ -217,7 +216,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           type: ReceiveType.lightning,
           lightningSwap: null,
           inputAmount: '',
-          confirmedAmountSat: null,
           note: '',
         ),
       );
@@ -297,7 +295,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         state.copyWith(
           type: ReceiveType.liquid,
           inputAmount: '',
-          confirmedAmountSat: null,
           note: '',
         ),
       );

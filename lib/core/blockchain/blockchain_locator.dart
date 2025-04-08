@@ -16,7 +16,8 @@ class BlockchainLocator {
     );
 
     locator.registerLazySingleton<LwkLiquidBlockchainDatasource>(
-        () => const LwkLiquidBlockchainDatasource());
+      () => const LwkLiquidBlockchainDatasource(),
+    );
   }
 
   static void registerRepositories() {

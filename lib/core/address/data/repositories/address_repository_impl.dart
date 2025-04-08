@@ -117,9 +117,15 @@ class AddressRepositoryImpl implements AddressRepository {
 
     final addressModels = keyChain == AddressKeyChain.external
         ? await walletDatasource.getReceiveAddresses(
-            wallet: walletModel, limit: limit, offset: offset)
+            wallet: walletModel,
+            limit: limit,
+            offset: offset,
+          )
         : await walletDatasource.getChangeAddresses(
-            wallet: walletModel, limit: limit, offset: offset);
+            wallet: walletModel,
+            limit: limit,
+            offset: offset,
+          );
 
     final addresses = await Future.wait(
       addressModels.map(

@@ -14,12 +14,19 @@ class HomeErrors extends StatelessWidget {
     final keyServerOffline = context.select(
       (HomeBloc bloc) => bloc.state.keyServerOffline,
     );
+    final showBackupWarning = context.select(
+      (HomeBloc bloc) => bloc.state.showBackupWarning(),
+    );
+    final warningsExist = keyServerOffline || showBackupWarning;
+    if (!warningsExist) {
+      return const SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.only(left: 13.0, right: 13, top: 13),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BackupCard(onTap: () {}),
+          if (showBackupWarning) BackupCard(onTap: () {}),
           const Gap(8),
           if (keyServerOffline)
             InfoCard(

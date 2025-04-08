@@ -44,29 +44,34 @@ class TransactionRepositoryImpl implements TransactionRepository {
           environment == null || environment.isTestnet == metadata.isTestnet,
     );
 
-    final transactionLists =
-        await Future.wait(filterWalletsMetadata.map((wallet) async {
-      final walletDatasource = wallet.isBitcoin ? _bdkWallet : _lwkWallet;
-      final walletModel = wallet.isBitcoin
-          ? PublicBdkWalletModel(
-              externalDescriptor: wallet.externalPublicDescriptor,
-              internalDescriptor: wallet.internalPublicDescriptor,
-              isTestnet: wallet.isTestnet,
-              dbName: wallet.id,
-            )
-          : PublicLwkWalletModel(
-              combinedCtDescriptor: wallet.externalPublicDescriptor,
-              isTestnet: wallet.isTestnet,
-              dbName: wallet.id,
-            );
-      final transactionModels =
-          await walletDatasource.getTransactions(wallet: walletModel);
-      return transactionModels
-          .map((transactionModel) => transactionModel.toEntity(
-                walletId: wallet.id,
-              ))
-          .toList();
-    }));
+    final transactionLists = await Future.wait(
+      filterWalletsMetadata.map(
+        (wallet) async {
+          final walletDatasource = wallet.isBitcoin ? _bdkWallet : _lwkWallet;
+          final walletModel = wallet.isBitcoin
+              ? PublicBdkWalletModel(
+                  externalDescriptor: wallet.externalPublicDescriptor,
+                  internalDescriptor: wallet.internalPublicDescriptor,
+                  isTestnet: wallet.isTestnet,
+                  dbName: wallet.id,
+                )
+              : PublicLwkWalletModel(
+                  combinedCtDescriptor: wallet.externalPublicDescriptor,
+                  isTestnet: wallet.isTestnet,
+                  dbName: wallet.id,
+                );
+          final transactionModels =
+              await walletDatasource.getTransactions(wallet: walletModel);
+          return transactionModels
+              .map(
+                (transactionModel) => transactionModel.toEntity(
+                  walletId: wallet.id,
+                ),
+              )
+              .toList();
+        },
+      ),
+    );
     final transactions =
         transactionLists.expand((transaction) => transaction).toList();
 

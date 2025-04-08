@@ -200,11 +200,13 @@ class WalletRepositoryImpl implements WalletRepository {
             isPhysicalBackupTested: entry.value.isPhysicalBackupTested,
             latestEncryptedBackup: entry.value.latestEncryptedBackup != null
                 ? DateTime.fromMillisecondsSinceEpoch(
-                    entry.value.latestEncryptedBackup!)
+                    entry.value.latestEncryptedBackup!,
+                  )
                 : null,
             latestPhysicalBackup: entry.value.latestPhysicalBackup != null
                 ? DateTime.fromMillisecondsSinceEpoch(
-                    entry.value.latestPhysicalBackup!)
+                    entry.value.latestPhysicalBackup!,
+                  )
                 : null,
           ),
         )
