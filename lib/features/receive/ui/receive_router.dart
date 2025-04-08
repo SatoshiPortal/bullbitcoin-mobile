@@ -45,7 +45,10 @@ class ReceiveRouter {
       //  when switching networks, so keep it outside of the BlocProvider.
       return ReceiveScaffold(
         child: BlocProvider<ReceiveBloc>(
-          create: (_) => locator<ReceiveBloc>(param1: wallet),
+          create: (_) => locator<ReceiveBloc>(param1: wallet)
+            ..add(
+              const ReceiveLightningStarted(),
+            ),
           child: MultiBlocListener(
             listeners: [
               BlocListener<ReceiveBloc, ReceiveState>(
@@ -110,8 +113,12 @@ class ReceiveRouter {
         pageBuilder: (context, state) {
           // This is the entry route for the bitcoin receive flow when coming from
           // another receive network (lightning or liquid) or from a different flow.
-          // So we should start the bitcoin flow here:
-          context.read<ReceiveBloc>().add(const ReceiveBitcoinStarted());
+          // So we should start the bitcoin flow here if the state is not already
+          //  in the bitcoin flow.
+          final bloc = context.read<ReceiveBloc>();
+          if (bloc.state.type != ReceiveType.bitcoin) {
+            bloc.add(const ReceiveBitcoinStarted());
+          }
           return const NoTransitionPage(child: ReceiveQrPage());
         },
         routes: [
@@ -165,10 +172,14 @@ class ReceiveRouter {
         name: ReceiveRoute.receiveLightning.name,
         path: ReceiveRoute.receiveLightning.path,
         pageBuilder: (context, state) {
-          // This is the entry route for the lightning receive flow when coming from
-          // another receive network (bitcoin or liquid) or from a different flow.
-          // So we should start the lightning flow here:
-          context.read<ReceiveBloc>().add(const ReceiveLightningStarted());
+          // This is the entry route for the lightning receive flow.
+          // We need to check if the state is already in the lightning flow,
+          //  otherwise, when coming from another receive network or flow,
+          //  we need to start it here.
+          final bloc = context.read<ReceiveBloc>();
+          if (bloc.state.type != ReceiveType.lightning) {
+            bloc.add(const ReceiveLightningStarted());
+          }
           return NoTransitionPage(
             child: ReceiveAmountScreen(
               onContinueNavigation: () => context.push(
@@ -240,8 +251,12 @@ class ReceiveRouter {
         pageBuilder: (context, state) {
           // This is the entry route for the liquid receive flow when coming from
           // another receive network (lightning or bitcoin) or from a different flow.
-          // So we should start the liquid flow here:
-          context.read<ReceiveBloc>().add(const ReceiveLiquidStarted());
+          // So if the state is already in the liquid flow, we don't have to do
+          //  anything, else we need to start it here.
+          final bloc = context.read<ReceiveBloc>();
+          if (bloc.state.type != ReceiveType.liquid) {
+            bloc.add(const ReceiveLiquidStarted());
+          }
           return const NoTransitionPage(child: ReceiveQrPage());
         },
         routes: [
