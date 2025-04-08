@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/foundation.dart';
 

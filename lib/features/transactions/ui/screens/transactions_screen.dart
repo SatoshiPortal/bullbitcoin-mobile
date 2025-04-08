@@ -79,7 +79,7 @@ class TxsList extends StatelessWidget {
     Transaction tx,
   ) {
     // TODO: define DetailedTransaction entity with all the details
-    final network = Network.bitcoinMainnet; //tx.network;
+    const network = Network.bitcoinMainnet; //tx.network;
 
     IconData icon;
     Color color;

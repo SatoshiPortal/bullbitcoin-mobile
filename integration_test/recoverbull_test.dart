@@ -19,7 +19,7 @@ import 'package:lwk/lwk.dart';
 import 'package:test/test.dart';
 
 void main() {
-  late WalletManagerService walletManagerService;
+  late WalletRepository walletRepository;
   late TorRepository torRepository;
   late CheckKeyServerConnectionUsecase checkKeyServerConnection;
   late CreateEncryptedVaultUsecase createEncryptedVault;
@@ -65,7 +65,7 @@ void main() {
       await AppLocator.setup();
 
       torRepository = locator<TorRepository>();
-      walletManagerService = locator<WalletManagerService>();
+      walletRepository = locator<WalletRepository>();
       locator<RecoverBullRepository>();
       checkKeyServerConnection = locator<CheckKeyServerConnectionUsecase>();
       createEncryptedVault = locator<CreateEncryptedVaultUsecase>();
@@ -167,8 +167,7 @@ void main() {
 
       // Verify final state
       debugPrint('Verifying wallet state...');
-      await walletManagerService.syncAll();
-      final wallets = await walletManagerService.getWallets();
+      final wallets = await walletRepository.getWallets(sync: true);
       expect(wallets, isNotEmpty);
       debugPrint('Test completed successfully');
     },

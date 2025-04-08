@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

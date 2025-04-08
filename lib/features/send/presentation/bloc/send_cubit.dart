@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

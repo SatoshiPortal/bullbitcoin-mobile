@@ -107,7 +107,7 @@ class WalletRepositoryImpl implements WalletRepository {
   }
 
   @override
-  Future<Wallet> getWallet(String walletId, {bool sync = true}) async {
+  Future<Wallet> getWallet(String walletId, {bool sync = false}) async {
     final metadata = await _walletMetadata.get(walletId);
 
     if (metadata == null) {
@@ -150,7 +150,7 @@ class WalletRepositoryImpl implements WalletRepository {
     bool? onlyDefaults,
     bool? onlyBitcoin,
     bool? onlyLiquid,
-    bool sync = true,
+    bool sync = false,
   }) async {
     final wallets = await _walletMetadata.getAll();
     if (wallets.isEmpty) {

@@ -16,7 +16,7 @@ class GetWalletsUsecase {
     bool? onlyDefaults,
     bool? onlyBitcoin,
     bool? onlyLiquid,
-    bool sync = true,
+    bool sync = false,
   }) async {
     try {
       final environment = await _settingsRepository.getEnvironment();

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 abstract class PayjoinRepository {

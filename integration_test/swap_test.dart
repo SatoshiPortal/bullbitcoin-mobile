@@ -6,9 +6,8 @@ import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
-import 'package:bb_mobile/features/onboarding/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
@@ -20,7 +19,7 @@ import 'package:lwk/lwk.dart' as lwk;
 import 'package:test/test.dart';
 
 void main() {
-  late WalletManagerService walletManagerService;
+  late WalletRepository walletRepository;
   late CreateReceiveSwapUsecase receiveSwapUsecase;
   // late SwapWatcherService swapWatcherTestnetService;
   late SwapWatcherService swapWatcherMainnetService;
@@ -59,7 +58,7 @@ void main() {
     ]);
     await locator<SetEnvironmentUsecase>().execute(Environment.mainnet);
 
-    walletManagerService = locator<WalletManagerService>();
+    walletRepository = locator<WalletRepository>();
     // Use the testnet swap watcher service
     // swapWatcherTestnetService = locator<SwapWatcherService>(
     //   instanceName:
@@ -82,7 +81,7 @@ void main() {
     await locator<CreateDefaultWalletsUsecase>().execute(
       mnemonicWords: baseMnemonic.split(' '),
     );
-    final wallets = await walletManagerService.getWallets();
+    final wallets = await walletRepository.getWallets();
     instantWallet = wallets.firstWhere(
       (wallet) => wallet.network == Network.liquidMainnet,
     );
@@ -91,20 +90,16 @@ void main() {
     );
     debugPrint('Wallets created');
 
-    await walletManagerService.syncAll();
+    await walletRepository.getWallets(sync: true);
     debugPrint('Wallets synced');
   });
 
-  test('Wallets have funds to swap', () async {
-    final liquidBalance = await walletManagerService.getBalance(
-      walletId: instantWallet.id,
-    );
-    final bitcoinBalance = await walletManagerService.getBalance(
-      walletId: secureWallet.id,
-    );
+  test('Wallets have funds to swap', () {
+    final liquidBalance = instantWallet.balanceSat;
+    final bitcoinBalance = secureWallet.balanceSat;
     debugPrint('Liquid balance: $liquidBalance');
     debugPrint('Bitcoin balance: $bitcoinBalance');
-    initLiquidBalance = liquidBalance.totalSat.toInt();
+    initLiquidBalance = liquidBalance.toInt();
     // initBitcoinBalance = bitcoinBalance.totalSat.toInt();
   });
 
@@ -117,7 +112,7 @@ void main() {
       late Completer<bool> bitcoinSendCompletedEvent;
       late Completer<bool> liquidSendCompletedEvent;
 
-      setUpAll(() async {
+      setUpAll(() {
         bitcoinReceiveCompletedEvent = Completer();
         liquidReceiveCompletedEvent = Completer();
         bitcoinSendCompletedEvent = Completer();
@@ -220,10 +215,9 @@ void main() {
           'Waiting 60 seconds for transaction to confirm to check balances',
         );
         await Future.delayed(const Duration(seconds: 60));
-        await walletManagerService.sync(walletId: instantWallet.id);
-        final liquidBalance = await walletManagerService.getBalance(
-          walletId: instantWallet.id,
-        );
+        instantWallet =
+            await walletRepository.getWallet(instantWallet.id, sync: true);
+        final liquidBalance = instantWallet.balanceSat;
         final receiveSwap = await swapRepositoryMainnet.getSwap(
           swapId: receiveLbtcSwapId,
         ) as LnReceiveSwap;
@@ -238,11 +232,11 @@ void main() {
             initLiquidBalance + receivableAmount;
         debugPrint('Expected Balance: $expectedLiquidBalanceAfterSwap');
         debugPrint(
-          'Liquid Balance (totalSat): ${liquidBalance.totalSat.toInt()}',
+          'Liquid Balance (totalSat): ${liquidBalance.toInt()}',
         );
         expect(
           expectedLiquidBalanceAfterSwap,
-          liquidBalance.totalSat.toInt(),
+          liquidBalance.toInt(),
           reason: 'Liquid balance should increment by (invoice amount - fees)',
         );
       });

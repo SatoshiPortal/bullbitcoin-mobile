@@ -2,13 +2,13 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/utxo/data/models/utxo_model.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
-import 'package:bb_mobile/core/utxo/data/models/utxo_model.dart';
-import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 
@@ -29,7 +29,7 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
   Future<String> buildPsbt({
     required String walletId,
     required String address,
-    required int amountSat,
+    int? amountSat,
     required NetworkFee networkFee,
     bool? drain,
     List<Utxo>? unspendable,
@@ -82,7 +82,8 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
-    final seed = await _seed.get(metadata.masterFingerprint) as MnemonicSeed;
+    final seed =
+        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
     final mnemonic = seed.mnemonicWords.join(' ');
 
     final wallet = PrivateBdkWalletModel(

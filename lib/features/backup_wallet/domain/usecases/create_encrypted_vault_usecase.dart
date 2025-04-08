@@ -28,7 +28,6 @@ class CreateEncryptedVaultUsecase {
       final defaultBitcoinWallets = await _walletRepository.getWallets(
         onlyBitcoin: true,
         onlyDefaults: true,
-        sync: false,
       );
 
       if (defaultBitcoinWallets.isEmpty) {

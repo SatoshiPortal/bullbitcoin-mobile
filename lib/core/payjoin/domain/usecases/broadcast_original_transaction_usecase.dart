@@ -27,7 +27,6 @@ class BroadcastOriginalTransactionUsecase {
       // which is static.
       final wallet = await _wallet.getWallet(
         payjoin.walletId,
-        sync: false,
       );
 
       final network = wallet.network;

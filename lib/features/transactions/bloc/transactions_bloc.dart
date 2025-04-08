@@ -22,6 +22,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       emit(state.copyWith(loadingTxs: true, err: null));
       final wallets = await _getWalletsUsecase.execute(
         onlyDefaults: true,
+        sync: true,
       );
       final List<Transaction> txs = [];
       for (final wallet in wallets) {

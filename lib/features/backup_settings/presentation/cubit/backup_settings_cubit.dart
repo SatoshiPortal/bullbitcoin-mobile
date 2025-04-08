@@ -21,7 +21,6 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
       final defaultBitcoinWallets = await _getWalletsUsecase.execute(
         onlyBitcoin: true,
         onlyDefaults: true,
-        sync: false,
       );
 
       if (defaultBitcoinWallets.isEmpty) {

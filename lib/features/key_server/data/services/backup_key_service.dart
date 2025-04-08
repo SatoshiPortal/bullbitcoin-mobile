@@ -25,7 +25,6 @@ class BackupKeyService {
         onlyDefaults: true,
         onlyBitcoin: true,
         environment: Environment.mainnet,
-        sync: false,
       );
 
       if (defaultWallets.isEmpty) {

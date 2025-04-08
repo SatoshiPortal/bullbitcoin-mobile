@@ -17,7 +17,6 @@ class CheckForExistingDefaultWalletsUsecase {
     final defaultWallets = await _walletRepository.getWallets(
       onlyDefaults: true,
       environment: environment,
-      sync: false,
     );
 
     // Check if there are any default wallets

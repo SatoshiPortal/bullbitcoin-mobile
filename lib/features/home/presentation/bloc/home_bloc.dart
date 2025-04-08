@@ -28,7 +28,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     try {
-      final wallets = await _getWalletsUsecase.execute();
+      final wallets = await _getWalletsUsecase.execute(sync: true);
 
       emit(
         HomeState(status: HomeStatus.success, wallets: wallets),
@@ -45,7 +45,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     try {
-      final wallets = await _getWalletsUsecase.execute();
+      final wallets = await _getWalletsUsecase.execute(sync: true);
 
       emit(
         state.copyWith(
@@ -75,8 +75,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         ),
       );
       await _restartSwapWatcherUsecase.execute();
-      // The GetWalletsUsecase will sync the wallets if sync is not false
-      final wallets = await _getWalletsUsecase.execute();
+      final wallets = await _getWalletsUsecase.execute(sync: true);
 
       emit(
         state.copyWith(

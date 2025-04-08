@@ -18,7 +18,7 @@ abstract class WalletRepository {
   });
   Future<Wallet> getWallet(
     String walletId, {
-    bool sync = true,
+    bool sync = false,
   });
   // These should also sync the wallets before returning them
   Future<List<Wallet>> getWallets({
@@ -26,7 +26,7 @@ abstract class WalletRepository {
     bool? onlyDefaults,
     bool? onlyBitcoin,
     bool? onlyLiquid,
-    bool sync = true,
+    bool sync = false,
   });
   // TODO: The recoverbull backup functionality should be moved to the wallet repo
   // and instead of having the updateBackupInfo and updateEncryptedBackupTime methods,
@@ -43,21 +43,4 @@ abstract class WalletRepository {
     DateTime time, {
     required String walletId,
   });
-  //Future<void> sync(String walletId);
-  //Future<BigInt> geTotalBalanceSat(); // Get it from the Wallet entity
-  /*
-  // UTXO repo
-  Future<List<Utxo>> getUnspentUtxos({required String walletId});
-  // Address repo
-  // Future<List<Address>> listAddresses();
-  Future<Address> getAddressByIndex(int index, {required String walletId});
-  Future<Address> getLastUnusedAddress({required String walletId});
-  Future<Address>
-      getNewAddress({required String walletId}); // create receive transaction param(index/lastUnused)
-  Future<bool> isAddressUsed(String address, {required String walletId});
-  Future<BigInt> getAddressBalanceSat(String address, {required String walletId});
-  // transaction repo
-  Future<List<BaseWalletTransaction>> getTransactions({required String walletId});
-  // labels: label datasource + repo (import/export bip329/label lookup)
-  */
 }

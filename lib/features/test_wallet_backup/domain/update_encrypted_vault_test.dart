@@ -14,7 +14,6 @@ class UpdateEncryptedVaultTest {
         onlyDefaults: true,
         onlyBitcoin: true,
         environment: Environment.mainnet,
-        sync: false,
       );
       if (defaultWallets.isEmpty) {
         throw Exception('No default wallet found');

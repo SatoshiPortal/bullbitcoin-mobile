@@ -7,7 +7,7 @@ abstract class BitcoinWalletRepository {
   Future<String> buildPsbt({
     required String walletId,
     required String address,
-    required int amountSat,
+    int? amountSat,
     required NetworkFee networkFee,
     bool? drain,
     List<Utxo>? unspendable,
