@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -16,25 +17,26 @@ class BackupSettingsCubit extends Cubit<BackupSettingsState> {
   Future<void> checkBackupStatus() async {
     try {
       emit(state.copyWith(loading: true));
-      //Todo; add logic to check if the backup is tested in wallet metadata
-      // For now, we will just set the default values
-      final defaultBitcoinWallets = await _getWalletsUsecase.execute(
-        onlyBitcoin: true,
+
+      final defaultWallets = await _getWalletsUsecase.execute(
         onlyDefaults: true,
       );
-
-      if (defaultBitcoinWallets.isEmpty) {
+      if (defaultWallets.isEmpty) {
         emit(state.copyWith(loading: false));
         return;
       }
-      // There should be only one default Bitcoin wallet
-      final defaultWallet = defaultBitcoinWallets.first;
       emit(
         state.copyWith(
-          isDefaultPhysicalBackupTested: defaultWallet.isPhysicalBackupTested,
-          isDefaultEncryptedBackupTested: defaultWallet.isEncryptedVaultTested,
-          lastPhysicalBackup: defaultWallet.latestPhysicalBackup,
-          lastEncryptedBackup: defaultWallet.latestEncryptedBackup,
+          isDefaultPhysicalBackupTested:
+              defaultWallets.every((e) => e.isPhysicalBackupTested),
+          isDefaultEncryptedBackupTested:
+              defaultWallets.every((e) => e.isEncryptedVaultTested),
+          lastPhysicalBackup: defaultWallets
+              .firstWhere((e) => e.network == Network.bitcoinMainnet)
+              .latestPhysicalBackup,
+          lastEncryptedBackup: defaultWallets
+              .firstWhere((e) => e.network == Network.bitcoinMainnet)
+              .latestEncryptedBackup,
           loading: false,
         ),
       );
