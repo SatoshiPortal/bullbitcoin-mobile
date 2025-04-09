@@ -20,7 +20,7 @@ class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
   Future<String> broadcastTransaction(
     Uint8List transaction, {
     required bool isTestnet,
-  }) async {
+  }) {
     // Todo: Should we first try the custom and only if it fails or doesn't exist
     // try the default bullbitcoin and blockstream servers?
     // final electrumServerModel = await _electrumServerStorage.getByProvider(
