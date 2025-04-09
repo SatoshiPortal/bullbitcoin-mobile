@@ -336,7 +336,7 @@ class LwkWalletDatasource
     final pset = await lwkWallet.buildLbtcTx(
       sats: BigInt.from(amountSat ?? 0),
       outAddress: address,
-      feeRate: networkFee.value.toDouble(),
+      feeRate: networkFee.value.toDouble() * 1000,
       drain: drain,
     );
     final decoded = await lwkWallet.decodeTx(pset: pset);
