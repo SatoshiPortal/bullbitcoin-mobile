@@ -367,6 +367,21 @@ class _InfoSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectedWallet = context.select(
+      (SendCubit cubit) => cubit.state.wallet,
+    );
+    final addressOrInvoice = context.select(
+      (SendCubit cubit) => cubit.state.addressOrInvoice,
+    );
+    final formattedBitcoinAmount = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
+    );
+    final formattedFiatEquivalent = context.select(
+      (SendCubit cubit) => cubit.state.fiatApproximatedAmount,
+    );
+    final selectedFees = context.select(
+      (SendCubit cubit) => cubit.state.selectedFee,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -375,14 +390,18 @@ class _InfoSection extends StatelessWidget {
           InfoRow(
             title: 'From',
             details:
-                BBText('Secure Bitcoin wallet', style: context.font.bodyLarge),
+                BBText(selectedWallet!.label, style: context.font.bodyLarge),
           ),
           _divider(context),
           InfoRow(
             title: 'To',
             details: Row(
               children: [
-                BBText('bc1qphad...3aculnn', style: context.font.bodyLarge),
+                BBText(
+                  addressOrInvoice,
+                  style: context.font.bodyLarge,
+                  maxLines: 5,
+                ),
                 const Gap(4),
                 InkWell(
                   child: Icon(
@@ -400,9 +419,9 @@ class _InfoSection extends StatelessWidget {
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BBText('42,000 SATS', style: context.font.bodyLarge),
+                BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
                 BBText(
-                  '~35.60 CAD',
+                  '~$formattedFiatEquivalent',
                   style: context.font.labelSmall,
                   color: context.colour.surfaceContainer,
                 ),
@@ -412,7 +431,10 @@ class _InfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: 'Network fees',
-            details: BBText('1000 SATS', style: context.font.bodyLarge),
+            details: BBText(
+              "${selectedFees?.value} sats/byte",
+              style: context.font.bodyLarge,
+            ),
           ),
           _divider(context),
           InfoRow(
@@ -476,6 +498,10 @@ class ConfirmTopArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final amountBitcoin = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
+    );
+
     return Column(
       // crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -497,7 +523,7 @@ class ConfirmTopArea extends StatelessWidget {
         BBText('Confirm Send', style: context.font.bodyMedium),
         const Gap(4),
         BBText(
-          '42,000 SATS',
+          amountBitcoin,
           style: context.font.displaySmall,
           color: context.colour.outlineVariant,
         ),

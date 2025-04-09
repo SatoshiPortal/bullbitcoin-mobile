@@ -183,8 +183,10 @@ class SendCubit extends Cubit<SendState> {
       state.copyWith(
         wallet: wallet,
         step: SendStep.confirm,
+        confirmedAmountSat: state.inputAmountSat,
       ),
     );
+    await loadFees();
   }
 
   void onMaxPressed() {
@@ -246,7 +248,7 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           feesList: fees,
           customFee: null,
-          selectedFee: fees.economic,
+          selectedFee: fees.fastest,
         ),
       );
     } catch (e) {
