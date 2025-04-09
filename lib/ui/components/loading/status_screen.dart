@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 /// A screen that handles three states: loading, success, and error
-/// Automatically pops on error after specified duration if autoPop is true
-class StatusScreen extends StatefulWidget {
+
+class StatusScreen extends StatelessWidget {
   final String? title;
   final String? description;
   final List<Widget> extras;
@@ -17,8 +17,6 @@ class StatusScreen extends StatefulWidget {
   final String? errorMessage;
   final VoidCallback? onTap;
   final String? buttonText;
-  final bool autoPop;
-  final Duration errorPopDelay;
 
   const StatusScreen({
     super.key,
@@ -30,41 +28,22 @@ class StatusScreen extends StatefulWidget {
     this.errorMessage,
     this.onTap,
     this.buttonText,
-    this.autoPop = true,
-    this.errorPopDelay = const Duration(seconds: 3),
   });
 
   @override
-  State<StatusScreen> createState() => _StatusScreenState();
-}
-
-class _StatusScreenState extends State<StatusScreen> {
-  @override
-  void initState() {
-    super.initState();
-    if (widget.hasError && widget.autoPop) {
-      Future.delayed(widget.errorPopDelay, () {
-        if (mounted && context.mounted) {
-          Navigator.of(context).pop();
-        }
-      });
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final textColor = widget.hasError ? context.colour.error : null;
+    final textColor = hasError ? context.colour.error : null;
 
     return Scaffold(
       backgroundColor: context.colour.onSecondary,
       body: StackedPage(
         bottomChildHeight: MediaQuery.of(context).size.height * 0.2,
-        bottomChild: (!widget.isLoading && widget.onTap != null)
+        bottomChild: (!isLoading && onTap != null)
             ? BBButton.big(
-                label: widget.hasError
-                    ? (widget.buttonText ?? 'Try Again')
-                    : (widget.buttonText ?? 'Continue'),
-                onPressed: widget.onTap ?? () {},
+                label: hasError
+                    ? (buttonText ?? 'Try Again')
+                    : (buttonText ?? 'Continue'),
+                onPressed: onTap ?? () {},
                 textColor: context.colour.onPrimary,
                 bgColor: context.colour.secondary,
               )
@@ -75,7 +54,7 @@ class _StatusScreenState extends State<StatusScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                if (widget.hasError)
+                if (hasError)
                   Icon(
                     Icons.error_outline_rounded,
                     size: 80,
@@ -84,17 +63,13 @@ class _StatusScreenState extends State<StatusScreen> {
                 else
                   const SizedBox.shrink(),
                 ProgressScreen(
-                  title: !widget.hasError
-                      ? widget.title
-                      : "Oops! Something went wrong",
-                  description: !widget.hasError
-                      ? widget.description
-                      : widget.errorMessage,
-                  isLoading: widget.isLoading && !widget.hasError,
+                  title: !hasError ? title : "Oops! Something went wrong",
+                  description: !hasError ? description : errorMessage,
+                  isLoading: isLoading && !hasError,
                 ),
-                if (widget.extras.isNotEmpty && !widget.hasError) ...[
+                if (extras.isNotEmpty && !hasError) ...[
                   const Gap(16),
-                  ...widget.extras,
+                  ...extras,
                 ],
               ],
             ),
