@@ -10,8 +10,8 @@ abstract class LiquidWalletRepository {
     required NetworkFee networkFee,
     bool? drain,
   });
-  Future<Uint8List> signPset(
-    String pset, {
+  Future<Uint8List> signPset({
+    required String pset,
     required String walletId,
   });
 }

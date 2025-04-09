@@ -57,8 +57,8 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
   }
 
   @override
-  Future<Uint8List> signPset(
-    String pset, {
+  Future<Uint8List> signPset({
+    required String pset,
     required String walletId,
   }) async {
     final metadata = await _walletMetadata.get(walletId);

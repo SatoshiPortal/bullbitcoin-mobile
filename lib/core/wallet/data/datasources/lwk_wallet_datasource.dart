@@ -330,11 +330,18 @@ class LwkWalletDatasource
     if (networkFee.isAbsolute) {
       throw Exception('Absolute fee is not supported for liquid yet!');
     }
+    debugPrint(
+      networkFee.value.toDouble().toString(),
+    );
     final pset = await lwkWallet.buildLbtcTx(
       sats: BigInt.from(amountSat ?? 0),
       outAddress: address,
       feeRate: networkFee.value.toDouble(),
       drain: drain,
+    );
+    final decoded = await lwkWallet.decodeTx(pset: pset);
+    debugPrint(
+      decoded.absoluteFees.toString(),
     );
     return pset;
   }

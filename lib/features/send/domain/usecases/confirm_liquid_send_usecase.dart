@@ -20,7 +20,7 @@ class ConfirmLiquidSendUsecase {
       // Get the wallet by ID
 
       final signedPsbt = await _liquidWalletRepository.signPset(
-        psbt,
+        pset: psbt,
         walletId: walletId,
       );
 
