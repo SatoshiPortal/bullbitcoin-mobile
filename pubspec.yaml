@@ -106,7 +106,10 @@ dependencies:
   bip85: ^1.0.3
   camera: ^0.11.1
   zxing2: ^0.2.3
-  webview_cookie_manager: ^2.0.6
+  webview_cookie_manager:
+    git:
+      url: https://github.com/fryette/webview_cookie_manager.git
+      ref: e03954491a6952e04d7fceeae4c4d074392c0fe2
   webview_flutter: ^4.10.0
   webview_flutter_android: ^4.3.4
   webview_flutter_wkwebview: ^3.18.5
