@@ -303,7 +303,7 @@ class LwkWalletDatasource
       // final confirmationTime = tx.timestamp ?? 0;
       final walletTx = TransactionModel.liquid(
         txId: tx.txid,
-        isIncoming: !isIncoming,
+        isIncoming: isIncoming,
         amountSat: finalBalance.abs(),
         feeSat: tx.fee.toInt(),
         confirmationTimestamp: tx.timestamp,
