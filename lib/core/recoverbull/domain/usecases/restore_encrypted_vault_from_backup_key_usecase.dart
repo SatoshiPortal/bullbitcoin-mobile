@@ -14,7 +14,7 @@ import 'package:flutter/foundation.dart';
 /// If the key server is down
 class RestoreEncryptedVaultFromBackupKeyUsecase {
   final RecoverBullRepository _recoverBull;
-  final WalletRepository _wallet;
+  final WalletRepository _walletRepository;
   final CreateDefaultWalletsUsecase _createDefaultWallets;
 
   RestoreEncryptedVaultFromBackupKeyUsecase({
@@ -22,7 +22,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
     required WalletRepository walletRepository,
     required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
   })  : _recoverBull = recoverBullRepository,
-        _wallet = walletRepository,
+        _walletRepository = walletRepository,
         _createDefaultWallets = createDefaultWalletsUsecase;
 
   Future<void> execute({
@@ -41,7 +41,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
       final decodedRecoverbullWallets =
           RecoverBullWallet.fromJson(decodedPlaintext);
 
-      final availableWallets = await _wallet.getWallets(
+      final availableWallets = await _walletRepository.getWallets(
         onlyDefaults: true,
         onlyBitcoin: true,
         environment: Environment.mainnet,
@@ -52,7 +52,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
         final defaultWallet = availableWallets.first;
         if (defaultWallet.masterFingerprint ==
             decodedRecoverbullWallets.masterFingerprint) {
-          _wallet.updateEncryptedBackupTime(
+          await _walletRepository.updateEncryptedBackupTime(
             DateTime.now(),
             walletId: defaultWallet.id,
           );
