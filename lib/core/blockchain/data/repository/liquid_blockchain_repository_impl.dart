@@ -38,8 +38,8 @@ class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
     return _blockchain.broadcastTransaction(
       transaction,
       electrumServerUrl: isTestnet
-          ? ApiServiceConstants.bbLiquidElectrumUrlPath
-          : ApiServiceConstants.publicliquidElectrumTestUrlPath,
+          ? ApiServiceConstants.publicliquidElectrumTestUrlPath
+          : ApiServiceConstants.bbLiquidElectrumUrlPath,
     );
   }
 }

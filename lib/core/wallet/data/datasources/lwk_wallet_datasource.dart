@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:flutter/material.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
@@ -99,11 +100,15 @@ class LwkWalletDatasource
     required PublicLwkWalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) async {
-    final lwkWallet = await _createPublicWallet(wallet);
-    await lwkWallet.sync(
-      electrumUrl: electrumServer.url,
-      validateDomain: electrumServer.validateDomain,
-    );
+    try {
+      final lwkWallet = await _createPublicWallet(wallet);
+      await lwkWallet.sync(
+        electrumUrl: electrumServer.url,
+        validateDomain: electrumServer.validateDomain,
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   /* Start UtxoDatasource methods */

@@ -8,8 +8,10 @@ import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dar
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,7 +28,10 @@ class SendCubit extends Cubit<SendState> {
     required GetUtxosUsecase getUtxosUsecase,
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
     required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
+    // ignore: avoid_unused_constructor_parameters
+    required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
     required ConfirmBitcoinSendUsecase confirmBitcoinSendUsecase,
+    required ConfirmLiquidSendUsecase confirmLiquidSendUsecase,
   })  : _getCurrencyUsecase = getCurrencyUsecase,
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
         _convertSatsToCurrencyAmountUsecase =
@@ -38,6 +43,7 @@ class SendCubit extends Cubit<SendState> {
         _getUtxosUsecase = getUtxosUsecase,
         _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
         _confirmBitcoinSendUsecase = confirmBitcoinSendUsecase,
+        _confirmLiquidSendUsecase = confirmLiquidSendUsecase,
         super(const SendState());
 
   // ignore: unused_field
@@ -50,7 +56,10 @@ class SendCubit extends Cubit<SendState> {
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetUtxosUsecase _getUtxosUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
+
+  // ignore: unused_field
   final ConfirmBitcoinSendUsecase _confirmBitcoinSendUsecase;
+  final ConfirmLiquidSendUsecase _confirmLiquidSendUsecase;
 
   void backClicked() {
     if (state.step == SendStep.address) {
@@ -276,7 +285,7 @@ class SendCubit extends Cubit<SendState> {
   Future<void> createTransaction() async {
     try {
       final psbt = await _prepareBitcoinSendUsecase.execute(
-        wallet: state.wallet!,
+        walletId: state.wallet!.id,
         address: state.addressOrInvoice,
         networkFee: state.selectedFee!,
         amountSat: state.confirmedAmountSat!.toInt(),
@@ -294,9 +303,10 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> confirmTransaction() async {
     try {
-      final txId = await _confirmBitcoinSendUsecase.execute(
+      final txId = await _confirmLiquidSendUsecase.execute(
         psbt: state.unsignedPsbt!,
-        wallet: state.wallet!,
+        walletId: state.wallet!.id,
+        isTestnet: state.wallet!.network.isTestnet,
       );
       emit(
         state.copyWith(

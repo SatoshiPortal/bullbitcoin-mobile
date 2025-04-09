@@ -6,7 +6,7 @@ abstract class LiquidWalletRepository {
   Future<String> buildPset({
     required String walletId,
     required String address,
-    required int amountSat,
+    int? amountSat,
     required NetworkFee networkFee,
     bool? drain,
   });

@@ -5,8 +5,10 @@ import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_reposit
 import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -18,8 +20,6 @@ class SendLocator {
       () => ConfirmBitcoinSendUsecase(
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
         bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
-        liquidWalletRepository: locator<LiquidWalletRepository>(),
-        liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
       ),
     );
     locator.registerLazySingleton<DetectBitcoinStringUsecase>(
@@ -29,7 +29,17 @@ class SendLocator {
       () => PrepareBitcoinSendUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<PrepareLiquidSendUsecase>(
+      () => PrepareLiquidSendUsecase(
         liquidWalletRepository: locator<LiquidWalletRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<ConfirmLiquidSendUsecase>(
+      () => ConfirmLiquidSendUsecase(
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
+        liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
       ),
     );
     locator.registerFactory<SelectBestWalletUsecase>(

@@ -1,12 +1,15 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -45,7 +48,9 @@ class SendFlow extends StatelessWidget {
         getAvailableCurrenciesUsecase: locator<GetAvailableCurrenciesUsecase>(),
         getUtxosUsecase: locator<GetUtxosUsecase>(),
         prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
+        prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
         confirmBitcoinSendUsecase: locator<ConfirmBitcoinSendUsecase>(),
+        confirmLiquidSendUsecase: locator<ConfirmLiquidSendUsecase>(),
       )
         ..getCurrencies()
         ..getExchangeRate(),
@@ -409,30 +414,28 @@ class _InfoSection extends StatelessWidget {
         children: [
           InfoRow(
             title: 'From',
-            details:
-                BBText(selectedWallet!.label, style: context.font.bodyLarge),
+            details: BBText(
+              selectedWallet!.label,
+              style: context.font.bodyLarge,
+            ),
           ),
           _divider(context),
           InfoRow(
             title: 'To',
-            details: Row(
-              children: [
-                BBText(
-                  addressOrInvoice,
-                  style: context.font.bodyLarge,
-                  maxLines: 4,
-                  textAlign: TextAlign.end,
-                ),
-                const Gap(4),
-                InkWell(
-                  child: Icon(
-                    Icons.copy,
-                    color: context.colour.primary,
-                    size: 16,
-                  ),
-                ),
-              ],
+            details: BBText(
+              addressOrInvoice,
+              style: context.font.bodyLarge,
+              maxLines: 4,
+              textAlign: TextAlign.end,
             ),
+            // const Gap(4),
+            // InkWell(
+            //   child: Icon(
+            //     Icons.copy,
+            //     color: context.colour.primary,
+            //     size: 16,
+            //   ),
+            // ),
           ),
           _divider(context),
           InfoRow(
@@ -464,7 +467,7 @@ class _InfoSection extends StatelessWidget {
               child: Row(
                 children: [
                   BBText(
-                    selectedFeeOption!.name,
+                    selectedFeeOption!.title(),
                     style: context.font.bodyLarge,
                     color: context.colour.primary,
                   ),
