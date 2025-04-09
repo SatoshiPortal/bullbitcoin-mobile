@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
@@ -16,7 +18,8 @@ class SendLocator {
       () => ConfirmBitcoinSendUsecase(
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
         bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
-        walletRepository: locator<WalletRepository>(),
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
+        liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
       ),
     );
     locator.registerLazySingleton<DetectBitcoinStringUsecase>(
@@ -26,6 +29,7 @@ class SendLocator {
       () => PrepareBitcoinSendUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
       ),
     );
     locator.registerFactory<SelectBestWalletUsecase>(

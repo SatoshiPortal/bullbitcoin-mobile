@@ -79,14 +79,15 @@ class SendState with _$SendState {
     @Default(false) bool replaceByFee,
     FeeOptions? feesList,
     NetworkFee? selectedFee,
+    FeeSelection? selectedFeeOption,
     int? customFee,
     // prepare
-    String? bitcoinPsbt,
-    String? liquidTransaction,
+    String? unsignedPsbt,
     LnSendSwap? lightningSwap,
     // confirm
     String? txId,
     Object? error,
+    @Default(false) bool sendMax,
   }) = _SendState;
   const SendState._();
   bool get isInputAmountFiat => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]

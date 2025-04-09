@@ -7,7 +7,9 @@ import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +25,8 @@ class SendCubit extends Cubit<SendState> {
     required GetNetworkFeesUsecase getNetworkFeesUsecase,
     required GetUtxosUsecase getUtxosUsecase,
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
+    required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
+    required ConfirmBitcoinSendUsecase confirmBitcoinSendUsecase,
   })  : _getCurrencyUsecase = getCurrencyUsecase,
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
         _convertSatsToCurrencyAmountUsecase =
@@ -32,6 +36,8 @@ class SendCubit extends Cubit<SendState> {
         _detectBitcoinStringUsecase = detectBitcoinStringUsecase,
         _getNetworkFeesUsecase = getNetworkFeesUsecase,
         _getUtxosUsecase = getUtxosUsecase,
+        _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
+        _confirmBitcoinSendUsecase = confirmBitcoinSendUsecase,
         super(const SendState());
 
   // ignore: unused_field
@@ -43,6 +49,8 @@ class SendCubit extends Cubit<SendState> {
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetUtxosUsecase _getUtxosUsecase;
+  final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
+  final ConfirmBitcoinSendUsecase _confirmBitcoinSendUsecase;
 
   void backClicked() {
     if (state.step == SendStep.address) {
@@ -249,6 +257,7 @@ class SendCubit extends Cubit<SendState> {
           feesList: fees,
           customFee: null,
           selectedFee: fees.fastest,
+          selectedFeeOption: FeeSelection.fastest,
         ),
       );
     } catch (e) {
@@ -264,9 +273,51 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(customFee: feeRate, selectedFee: null));
   }
 
-  void createTransaction() {}
+  Future<void> createTransaction() async {
+    try {
+      final psbt = await _prepareBitcoinSendUsecase.execute(
+        wallet: state.wallet!,
+        address: state.addressOrInvoice,
+        networkFee: state.selectedFee!,
+        amountSat: state.confirmedAmountSat!.toInt(),
+        drain: state.sendMax,
+      );
+      emit(
+        state.copyWith(
+          unsignedPsbt: psbt,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
 
-  void confirmTransaction() {}
+  Future<void> confirmTransaction() async {
+    try {
+      final txId = await _confirmBitcoinSendUsecase.execute(
+        psbt: state.unsignedPsbt!,
+        wallet: state.wallet!,
+      );
+      emit(
+        state.copyWith(
+          txId: txId,
+          step: SendStep.sent,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  Future<void> onConfirmTransactionClicked() async {
+    emit(
+      state.copyWith(
+        step: SendStep.sending,
+      ),
+    );
+    await createTransaction();
+    await confirmTransaction();
+  }
 
   Future<void> currencyCodeChanged(String currencyCode) async {
     await getExchangeRate(currencyCode: currencyCode);

@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:boltz/boltz.dart' as boltz;
 import 'package:dart_bip21/dart_bip21.dart';
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
@@ -61,86 +62,90 @@ class PaymentRequest with _$PaymentRequest {
     // Bolt12 - boltz (pending)
     // LnUrlWithdraw - boltz (pending)
     // LnUrlPay - boltz (pending)
-
     try {
-      final address =
-          await bdk.Address.fromString(s: data, network: bdk.Network.bitcoin);
+      try {
+        final address =
+            await bdk.Address.fromString(s: data, network: bdk.Network.bitcoin);
 
-      return PaymentRequest.bitcoin(
-        type: PaymentType.bitcoinAddress,
-        address: address.asString(),
-        network: Network.bitcoinMainnet,
-      );
-    } catch (_) {}
+        return PaymentRequest.bitcoin(
+          type: PaymentType.bitcoinAddress,
+          address: address.asString(),
+          network: Network.bitcoinMainnet,
+        );
+      } catch (_) {}
 
-    try {
-      final address =
-          await bdk.Address.fromString(s: data, network: bdk.Network.testnet);
+      try {
+        final address =
+            await bdk.Address.fromString(s: data, network: bdk.Network.testnet);
 
-      return PaymentRequest.bitcoin(
-        type: PaymentType.bitcoinAddress,
-        address: address.asString(),
-        network: Network.bitcoinTestnet,
-      );
-    } catch (_) {}
+        return PaymentRequest.bitcoin(
+          type: PaymentType.bitcoinAddress,
+          address: address.asString(),
+          network: Network.bitcoinTestnet,
+        );
+      } catch (_) {}
 
-    try {
-      final uri = bip21.decode(data);
-      const type = PaymentType.bip21;
-      Network network;
-      if (uri.urnScheme == 'bitcoin') {
-        network = Network.bitcoinMainnet;
-      } else if (uri.urnScheme == 'liquid') {
-        network = Network.liquidMainnet;
-      } else {
-        throw 'unhandled network'; // TODO(azad): ask how to deal with testnet
+      try {
+        final uri = bip21.decode(data);
+        const type = PaymentType.bip21;
+        Network network;
+        if (uri.urnScheme == 'bitcoin') {
+          network = Network.bitcoinMainnet;
+        } else if (uri.urnScheme == 'liquid') {
+          network = Network.liquidMainnet;
+        } else {
+          throw 'unhandled network'; // TODO(azad): ask how to deal with testnet
+        }
+
+        return PaymentRequest.bip21(
+          type: type,
+          network: network,
+          address: uri.address,
+          uri: uri.toString(),
+          scheme: uri.urnScheme,
+          options: uri.options,
+        );
+      } catch (_) {}
+
+      try {
+        final network = await lwk.Address.validate(addressString: data);
+        const type = PaymentType.liquidAddress;
+        debugPrint(network.name);
+        if (network.name == 'mainnet') {
+          return PaymentRequest.liquid(
+            type: type,
+            address: data,
+            network: Network.liquidMainnet,
+          );
+        } else {
+          return PaymentRequest.liquid(
+            type: type,
+            address: data,
+            network: Network.liquidTestnet,
+          );
+        }
+      } catch (e) {
+        debugPrint(e.toString());
       }
 
-      return PaymentRequest.bip21(
-        type: type,
-        network: network,
-        address: uri.address,
-        uri: uri.toString(),
-        scheme: uri.urnScheme,
-        options: uri.options,
-      );
-    } catch (_) {}
+      try {
+        final invoice = await boltz.DecodedInvoice.fromString(s: data);
 
-    try {
-      final network = await lwk.Address.validate(addressString: data);
-      const type = PaymentType.liquidAddress;
-
-      if (network.name == 'mainnet') {
-        return PaymentRequest.liquid(
-          type: type,
-          address: data,
-          network: Network.liquidMainnet,
+        return PaymentRequest.bolt11(
+          type: PaymentType.bolt11,
+          amount: invoice.msats,
+          expiry: invoice.expiry,
+          expiresIn: invoice.expiresIn,
+          expiresAt: invoice.expiresAt,
+          isExpired: invoice.isExpired,
+          network: Network.bitcoinMainnet, // TODO(azad): is it correct?
+          cltvExpDelta: invoice.cltvExpDelta,
+          preimageHash: invoice.preimageHash,
         );
-      } else {
-        return PaymentRequest.liquid(
-          type: type,
-          address: data,
-          network: Network.liquidTestnet,
-        );
-      }
-    } catch (_) {}
-
-    try {
-      final invoice = await boltz.DecodedInvoice.fromString(s: data);
-
-      return PaymentRequest.bolt11(
-        type: PaymentType.bolt11,
-        amount: invoice.msats,
-        expiry: invoice.expiry,
-        expiresIn: invoice.expiresIn,
-        expiresAt: invoice.expiresAt,
-        isExpired: invoice.isExpired,
-        network: Network.bitcoinMainnet, // TODO(azad): is it correct?
-        cltvExpDelta: invoice.cltvExpDelta,
-        preimageHash: invoice.preimageHash,
-      );
-    } catch (_) {}
-
-    throw 'Unsupported $PaymentRequest payload';
+      } catch (_) {}
+      throw 'Invalid payment request';
+    } catch (e) {
+      rethrow;
+    }
   }
 }

@@ -4,7 +4,9 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -42,6 +44,8 @@ class SendFlow extends StatelessWidget {
         getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         getAvailableCurrenciesUsecase: locator<GetAvailableCurrenciesUsecase>(),
         getUtxosUsecase: locator<GetUtxosUsecase>(),
+        prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
+        confirmBitcoinSendUsecase: locator<ConfirmBitcoinSendUsecase>(),
       )
         ..getCurrencies()
         ..getExchangeRate(),
@@ -347,14 +351,27 @@ class _BottomButtons extends StatelessWidget {
             textColor: context.colour.secondary,
           ),
           const Gap(12),
-          BBButton.big(
-            label: 'Confirm',
-            onPressed: () {},
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
-          ),
+          const ConfirmSendButton(),
         ],
       ),
+    );
+  }
+}
+
+class ConfirmSendButton extends StatelessWidget {
+  const ConfirmSendButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BBButton.big(
+      label: 'Confirm',
+      onPressed: () {
+        context.read<SendCubit>().onConfirmTransactionClicked();
+      },
+      bgColor: context.colour.secondary,
+      textColor: context.colour.onSecondary,
     );
   }
 }
@@ -382,6 +399,9 @@ class _InfoSection extends StatelessWidget {
     final selectedFees = context.select(
       (SendCubit cubit) => cubit.state.selectedFee,
     );
+    final selectedFeeOption = context.select(
+      (SendCubit cubit) => cubit.state.selectedFeeOption,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -400,7 +420,8 @@ class _InfoSection extends StatelessWidget {
                 BBText(
                   addressOrInvoice,
                   style: context.font.bodyLarge,
-                  maxLines: 5,
+                  maxLines: 4,
+                  textAlign: TextAlign.end,
                 ),
                 const Gap(4),
                 InkWell(
@@ -443,7 +464,7 @@ class _InfoSection extends StatelessWidget {
               child: Row(
                 children: [
                   BBText(
-                    'Fastest',
+                    selectedFeeOption!.name,
                     style: context.font.bodyLarge,
                     color: context.colour.primary,
                   ),

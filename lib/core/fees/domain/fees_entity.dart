@@ -62,3 +62,22 @@ class FeeOptions with _$FeeOptions {
     );
   }
 }
+
+enum FeeSelection {
+  fastest,
+  economic,
+  slow,
+}
+
+extension FeeSelectionName on FeeSelection {
+  String name() {
+    switch (this) {
+      case FeeSelection.fastest:
+        return 'Fastest';
+      case FeeSelection.economic:
+        return 'Economic';
+      case FeeSelection.slow:
+        return 'Slow';
+    }
+  }
+}
