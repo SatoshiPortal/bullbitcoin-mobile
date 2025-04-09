@@ -182,6 +182,9 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
         ..clearError()
         ..updateKeyServerState(flow: CurrentKeyServerFlow.enter);
     }
+    if (mounted && context.mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   void _handleRecoverySuccess(BuildContext context, KeyServerState state) {
