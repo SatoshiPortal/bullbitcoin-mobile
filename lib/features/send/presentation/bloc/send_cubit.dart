@@ -34,6 +34,7 @@ class SendCubit extends Cubit<SendState> {
         _getUtxosUsecase = getUtxosUsecase,
         super(const SendState());
 
+  // ignore: unused_field
   final SelectBestWalletUsecase _bestWalletUsecase;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
@@ -58,12 +59,9 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(addressOrInvoice: address));
       final paymentRequest =
           await _detectBitcoinStringUsecase.execute(data: address);
-      final wallet = await _bestWalletUsecase.execute(request: paymentRequest);
       emit(
         state.copyWith(
-          wallet: wallet,
           sendType: SendType.from(paymentRequest),
-          step: SendStep.amount,
         ),
       );
 
@@ -74,6 +72,13 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
+  void continueOnAddressConfirmed() {
+    emit(
+      state.copyWith(
+        step: SendStep.amount,
+      ),
+    );
+  }
   // TODO: remove if not used
   // Future<void> amountCurrencyChanged(String currencyCode) async {
   //   try {
@@ -166,6 +171,10 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(error: e.toString()));
     }
   }
+
+  // Future<void> onAmountConfirmed() async {
+  //   final wallet = await _bestWalletUsecase.execute(request: paymentRequest, state.amount);
+  // }
 
   void onMaxPressed() {
     if (state.wallet == null) return;

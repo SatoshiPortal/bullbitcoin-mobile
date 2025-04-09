@@ -13,7 +13,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
-import 'package:bb_mobile/ui/components/inputs/copy_input.dart';
+import 'package:bb_mobile/ui/components/inputs/paste_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/price_input/balance_row.dart';
 import 'package:bb_mobile/ui/components/price_input/price_input.dart';
@@ -55,10 +55,20 @@ class SendScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // return const SendAddressScreen();
-    return const SendAmountScreen();
-    // return const SendConfirmScreen();
-    // return const SendSendingScreen();
+    final step =
+        context.select<SendCubit, SendStep>((cubit) => cubit.state.step);
+    switch (step) {
+      case SendStep.address:
+        return const SendAddressScreen();
+      case SendStep.amount:
+        return const SendAmountScreen();
+      case SendStep.confirm:
+        return const SendConfirmScreen();
+      case SendStep.sending:
+        return const SendSendingScreen();
+      case SendStep.sent:
+        throw UnimplementedError();
+    }
   }
 }
 
@@ -67,6 +77,7 @@ class SendAddressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: read address from bloc
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -103,15 +114,9 @@ class SendAddressScreen extends StatelessWidget {
                       style: context.font.bodyMedium,
                     ),
                     const Gap(16),
-                    const CopyInput(text: 'BC1QYL7J673H...6Y6ALV70M0'),
+                    const AddressField(),
                     const Gap(13 + 16),
-                    BBButton.big(
-                      label: 'Continue',
-                      onPressed: () {},
-                      disabled: true,
-                      bgColor: context.colour.secondary,
-                      textColor: context.colour.onPrimary,
-                    ),
+                    const SendContinueWithAddressButton(),
                     const Gap(24),
                   ],
                 ),
@@ -120,6 +125,46 @@ class SendAddressScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class SendContinueWithAddressButton extends StatelessWidget {
+  const SendContinueWithAddressButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final error = context.select(
+      (SendCubit cubit) => cubit.state.error,
+    );
+    return BBButton.big(
+      label: 'Continue',
+      onPressed: () {
+        context.read<SendCubit>().continueOnAddressConfirmed();
+      },
+      disabled: error != null,
+      bgColor: context.colour.secondary,
+      textColor: context.colour.onPrimary,
+    );
+  }
+}
+
+class AddressField extends StatelessWidget {
+  const AddressField({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final address = context
+        .select<SendCubit, String>((cubit) => cubit.state.addressOrInvoice);
+    return PasteInput(
+      text: address,
+      onChanged: (text) {
+        context.read<SendCubit>().addressChanged(text);
+      },
     );
   }
 }
@@ -148,13 +193,9 @@ class SendAmountScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Gap(10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: BBSegmentFull(
-                    items: SendType.values.map((e) => e.name).toSet(),
-                    onSelected: (c) {},
-                    initialValue: SendType.values.first.name,
-                  ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: NetworkDisplay(),
                 ),
                 const Gap(16),
                 const Gap(82),
@@ -192,6 +233,27 @@ class SendAmountScreen extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class NetworkDisplay extends StatelessWidget {
+  const NetworkDisplay({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final sendType = context.select<SendCubit, SendType>(
+      (cubit) => cubit.state.sendType,
+    );
+
+    return IgnorePointer(
+      child: BBSegmentFull(
+        items: SendType.values.map((e) => e.displayName).toSet(),
+        onSelected: (c) {},
+        initialValue: sendType.displayName,
       ),
     );
   }

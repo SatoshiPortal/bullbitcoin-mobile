@@ -34,6 +34,17 @@ enum SendType {
         throw Exception('Unknown payment type: ${paymentRequest.type}');
     }
   }
+
+  String get displayName {
+    switch (this) {
+      case SendType.bitcoin:
+        return 'Bitcoin';
+      case SendType.lightning:
+        return 'Lightning';
+      case SendType.liquid:
+        return 'Liquid';
+    }
+  }
 }
 
 enum SendStep {
