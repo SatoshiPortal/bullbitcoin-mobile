@@ -417,6 +417,7 @@ class _InfoSection extends StatelessWidget {
             details: BBText(
               selectedWallet!.label,
               style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
             ),
           ),
           _divider(context),
@@ -425,7 +426,7 @@ class _InfoSection extends StatelessWidget {
             details: BBText(
               addressOrInvoice,
               style: context.font.bodyLarge,
-              maxLines: 4,
+              maxLines: 5,
               textAlign: TextAlign.end,
             ),
             // const Gap(4),
@@ -458,6 +459,7 @@ class _InfoSection extends StatelessWidget {
             details: BBText(
               "${selectedFees?.value} sats/byte",
               style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
             ),
           ),
           _divider(context),
@@ -465,11 +467,13 @@ class _InfoSection extends StatelessWidget {
             title: 'Fee Priority',
             details: InkWell(
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   BBText(
                     selectedFeeOption!.title(),
                     style: context.font.bodyLarge,
                     color: context.colour.primary,
+                    textAlign: TextAlign.end,
                   ),
                   const Gap(4),
                   Icon(
@@ -509,8 +513,10 @@ class InfoRow extends StatelessWidget {
             style: context.font.bodySmall,
             color: context.colour.surfaceContainer,
           ),
-          const Spacer(),
-          details,
+          const Gap(24),
+          Expanded(
+            child: details,
+          ),
         ],
       ),
     );

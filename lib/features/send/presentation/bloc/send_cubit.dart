@@ -28,7 +28,6 @@ class SendCubit extends Cubit<SendState> {
     required GetUtxosUsecase getUtxosUsecase,
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
     required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
-    // ignore: avoid_unused_constructor_parameters
     required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
     required ConfirmBitcoinSendUsecase confirmBitcoinSendUsecase,
     required ConfirmLiquidSendUsecase confirmLiquidSendUsecase,
@@ -42,6 +41,7 @@ class SendCubit extends Cubit<SendState> {
         _getNetworkFeesUsecase = getNetworkFeesUsecase,
         _getUtxosUsecase = getUtxosUsecase,
         _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
+        _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
         _confirmBitcoinSendUsecase = confirmBitcoinSendUsecase,
         _confirmLiquidSendUsecase = confirmLiquidSendUsecase,
         super(const SendState());
@@ -55,7 +55,9 @@ class SendCubit extends Cubit<SendState> {
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetUtxosUsecase _getUtxosUsecase;
+  // ignore: unused_field
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
+  final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
 
   // ignore: unused_field
   final ConfirmBitcoinSendUsecase _confirmBitcoinSendUsecase;
@@ -284,7 +286,7 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> createTransaction() async {
     try {
-      final psbt = await _prepareBitcoinSendUsecase.execute(
+      final psbt = await _prepareLiquidSendUsecase.execute(
         walletId: state.wallet!.id,
         address: state.addressOrInvoice,
         networkFee: state.selectedFee!,

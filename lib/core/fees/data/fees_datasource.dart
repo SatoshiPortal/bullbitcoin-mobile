@@ -40,7 +40,7 @@ class FeesDatasource {
     required bool isTestnet,
   }) async {
     const feeOptions = FeeOptions(
-      fastest: NetworkFee.relative(1),
+      fastest: NetworkFee.relative(0.1),
       economic: NetworkFee.relative(0.1),
       slow: NetworkFee.relative(0.1),
     );
