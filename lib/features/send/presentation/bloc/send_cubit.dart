@@ -286,18 +286,33 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> createTransaction() async {
     try {
-      final psbt = await _prepareLiquidSendUsecase.execute(
-        walletId: state.wallet!.id,
-        address: state.addressOrInvoice,
-        networkFee: state.selectedFee!,
-        amountSat: state.confirmedAmountSat!.toInt(),
-        drain: state.sendMax,
-      );
-      emit(
-        state.copyWith(
-          unsignedPsbt: psbt,
-        ),
-      );
+      if (state.wallet!.network.isLiquid) {
+        final psbt = await _prepareLiquidSendUsecase.execute(
+          walletId: state.wallet!.id,
+          address: state.addressOrInvoice,
+          networkFee: state.selectedFee!,
+          amountSat: state.confirmedAmountSat!.toInt(),
+          drain: state.sendMax,
+        );
+        emit(
+          state.copyWith(
+            unsignedPsbt: psbt,
+          ),
+        );
+      } else {
+        final psbt = await _prepareBitcoinSendUsecase.execute(
+          walletId: state.wallet!.id,
+          address: state.addressOrInvoice,
+          networkFee: state.selectedFee!,
+          amountSat: state.confirmedAmountSat!.toInt(),
+          drain: state.sendMax,
+        );
+        emit(
+          state.copyWith(
+            unsignedPsbt: psbt,
+          ),
+        );
+      }
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -305,17 +320,31 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> confirmTransaction() async {
     try {
-      final txId = await _confirmLiquidSendUsecase.execute(
-        psbt: state.unsignedPsbt!,
-        walletId: state.wallet!.id,
-        isTestnet: state.wallet!.network.isTestnet,
-      );
-      emit(
-        state.copyWith(
-          txId: txId,
-          step: SendStep.sent,
-        ),
-      );
+      if (state.wallet!.network.isLiquid) {
+        final txId = await _confirmLiquidSendUsecase.execute(
+          psbt: state.unsignedPsbt!,
+          walletId: state.wallet!.id,
+          isTestnet: state.wallet!.network.isTestnet,
+        );
+        emit(
+          state.copyWith(
+            txId: txId,
+            step: SendStep.sent,
+          ),
+        );
+      } else {
+        final txId = await _confirmBitcoinSendUsecase.execute(
+          psbt: state.unsignedPsbt!,
+          walletId: state.wallet!.id,
+          isTestnet: state.wallet!.network.isTestnet,
+        );
+        emit(
+          state.copyWith(
+            txId: txId,
+            step: SendStep.sent,
+          ),
+        );
+      }
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
