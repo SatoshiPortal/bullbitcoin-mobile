@@ -60,7 +60,7 @@ class CreateSendSwapUsecase {
           : ApiServiceConstants.bbElectrumUrl;
 
       final lbtcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.bbLiquidElectrumTestUrlPath
+          ? ApiServiceConstants.publicElectrumTestUrl
           : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {

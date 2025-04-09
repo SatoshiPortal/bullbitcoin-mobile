@@ -63,7 +63,6 @@ class ApiServiceConstants {
 
   // Liquid Electrum servers
   static const bbLiquidElectrumUrlPath = 'les.bullbitcoin.com:995';
-  static const bbLiquidElectrumTestUrlPath = 'blockstream.info:465';
   static const publicLiquidElectrumUrlPath = 'blockstream.info:995';
   static const publicliquidElectrumTestUrlPath = 'blockstream.info:465';
 
