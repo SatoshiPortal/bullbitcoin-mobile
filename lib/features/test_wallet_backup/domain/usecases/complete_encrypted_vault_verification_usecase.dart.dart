@@ -11,22 +11,21 @@ class CompleteEncryptedVaultVerificationUsecase {
     try {
       final defaultWallets = await _walletRepository.getWallets(
         onlyDefaults: true,
-        onlyBitcoin: true,
         environment: Environment.mainnet,
       );
       if (defaultWallets.isEmpty) {
         throw Exception('No default wallet found');
       }
 
-      // There should only be one default Bitcoin wallet
-      final defaultWallet = defaultWallets.first;
-      await _walletRepository.updateBackupInfo(
-        isEncryptedVaultTested: true,
-        isPhysicalBackupTested: defaultWallet.isPhysicalBackupTested,
-        latestEncryptedBackup: defaultWallet.latestEncryptedBackup,
-        latestPhysicalBackup: defaultWallet.latestPhysicalBackup,
-        walletId: defaultWallet.id,
-      );
+      for (final defaultWallet in defaultWallets) {
+        await _walletRepository.updateBackupInfo(
+          isEncryptedVaultTested: true,
+          isPhysicalBackupTested: defaultWallet.isPhysicalBackupTested,
+          latestEncryptedBackup: DateTime.now(),
+          latestPhysicalBackup: defaultWallet.latestPhysicalBackup,
+          walletId: defaultWallet.id,
+        );
+      }
     } catch (e) {
       throw CompleteEncryptedVaultVerificationException(e.toString());
     }
