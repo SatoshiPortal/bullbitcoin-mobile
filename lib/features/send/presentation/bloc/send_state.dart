@@ -87,4 +87,26 @@ class SendState with _$SendState {
     Object? error,
   }) = _SendState;
   const SendState._();
+  bool get isInputAmountFiat => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
+      .contains(inputAmountCurrencyCode);
+
+  BigInt get inputAmountSat {
+    BigInt amountSat = BigInt.zero;
+
+    if (amount.isNotEmpty) {
+      if (isInputAmountFiat) {
+        final amountFiat = double.tryParse(amount) ?? 0;
+        amountSat = BigInt.from(
+          amountFiat * 100000000 / exchangeRate,
+        );
+      } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+        amountSat = BigInt.tryParse(amount) ?? BigInt.zero;
+      } else {
+        final amountBtc = double.tryParse(amount) ?? 0;
+        amountSat = BigInt.from((amountBtc * 100000000).truncate());
+      }
+    }
+
+    return amountSat;
+  }
 }

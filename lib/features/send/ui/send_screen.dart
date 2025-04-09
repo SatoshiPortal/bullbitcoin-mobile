@@ -218,15 +218,9 @@ class SendAmountScreen extends StatelessWidget {
                   onNumberPressed: cubit.onNumberPressed,
                   onBackspacePressed: cubit.onBackspacePressed,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: BBButton.big(
-                    label: 'Continue',
-                    onPressed: () {},
-                    disabled: true,
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onSecondary,
-                  ),
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: SendAmountConfirmButton(),
                 ),
                 const Gap(24),
               ],
@@ -234,6 +228,28 @@ class SendAmountScreen extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+class SendAmountConfirmButton extends StatelessWidget {
+  const SendAmountConfirmButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final error = context.select(
+      (SendCubit cubit) => cubit.state.error,
+    );
+    return BBButton.big(
+      label: 'Continue',
+      onPressed: () {
+        context.read<SendCubit>().onAmountConfirmed();
+      },
+      disabled: error != null,
+      bgColor: context.colour.secondary,
+      textColor: context.colour.onPrimary,
     );
   }
 }

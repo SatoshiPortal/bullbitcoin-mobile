@@ -28,7 +28,7 @@ class SelectBestWalletUsecase {
 
       // Liquid
       if (request is LiquidRequest) {
-        _selectBestWallet(amountSat!, request.network, wallets);
+        return _selectBestWallet(amountSat!, request.network, wallets);
       }
 
       //Bip21
@@ -38,17 +38,25 @@ class SelectBestWalletUsecase {
 
         if (amount == null) throw 'The amount of satoshis should be specified';
 
-        _selectBestWallet(amount, request.network, wallets);
+        return _selectBestWallet(amount, request.network, wallets);
       }
 
       // Bolt11
       if (request is Bolt11Request) {
         try {
           // Use liquid
-          _selectBestWallet(request.amount, Network.liquidMainnet, wallets);
+          return _selectBestWallet(
+            request.amount,
+            Network.liquidMainnet,
+            wallets,
+          );
         } catch (_) {
           // unless liquid doesn’t have balance, use bitcoin
-          _selectBestWallet(request.amount, Network.bitcoinMainnet, wallets);
+          return _selectBestWallet(
+            request.amount,
+            Network.bitcoinMainnet,
+            wallets,
+          );
         }
       }
 

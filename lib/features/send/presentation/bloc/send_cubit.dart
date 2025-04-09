@@ -172,9 +172,20 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  // Future<void> onAmountConfirmed() async {
-  //   final wallet = await _bestWalletUsecase.execute(request: paymentRequest, state.amount);
-  // }
+  Future<void> onAmountConfirmed() async {
+    final paymentRequest =
+        await _detectBitcoinStringUsecase.execute(data: state.addressOrInvoice);
+    final wallet = await _bestWalletUsecase.execute(
+      request: paymentRequest,
+      amountSat: state.inputAmountSat,
+    );
+    emit(
+      state.copyWith(
+        wallet: wallet,
+        step: SendStep.confirm,
+      ),
+    );
+  }
 
   void onMaxPressed() {
     if (state.wallet == null) return;
