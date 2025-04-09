@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 abstract class WalletRepository {
+  Future<Stream<List<Wallet>>> get wallets;
   Future<Wallet> createWallet({
     required Seed seed,
     required Network network,

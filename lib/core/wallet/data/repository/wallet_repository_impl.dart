@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
@@ -18,6 +19,9 @@ class WalletRepositoryImpl implements WalletRepository {
   final LwkWalletDatasource _lwkWallet;
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
+  // Single StreamController to handle all wallet updates
+  final _walletUpdatesController = StreamController<List<Wallet>>.broadcast();
+
   WalletRepositoryImpl({
     required WalletMetadataDatasource walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
@@ -26,7 +30,137 @@ class WalletRepositoryImpl implements WalletRepository {
   })  : _walletMetadata = walletMetadataDatasource,
         _bdkWallet = bdkWalletDatasource,
         _lwkWallet = lwkWalletDatasource,
-        _electrumServerStorage = electrumServerStorageDatasource;
+        _electrumServerStorage = electrumServerStorageDatasource {
+    // Listen to wallet sync completion events from both datasources
+    _bdkWallet.syncedWallets.listen(_handleWalletSyncCompleted);
+    _lwkWallet.syncedWallets.listen(_handleWalletSyncCompleted);
+  }
+
+  // Check if a wallet is currently syncing by using the wallet model's dbName
+  bool isWalletSyncing(WalletMetadataModel metadata) {
+    if (metadata.isLiquid) {
+      return _lwkWallet.isWalletSyncing(metadata.id);
+    } else {
+      return _bdkWallet.isWalletSyncing(metadata.id);
+    }
+  }
+
+  // Get active sync for a wallet using the wallet model's dbName
+  Future<void>? getActiveSyncForWallet(WalletMetadataModel metadata) {
+    if (metadata.isLiquid) {
+      return _lwkWallet.getActiveSyncForWallet(metadata.id);
+    } else {
+      return _bdkWallet.getActiveSyncForWallet(metadata.id);
+    }
+  }
+
+  // Handler for wallet sync completion
+  Future<void> _handleWalletSyncCompleted(String walletId) async {
+    // When sync completes, update the wallet data and emit to stream
+    try {
+      final metadata = await _walletMetadata.get(walletId);
+      if (metadata != null) {
+        final wallet = await _buildWalletFromMetadata(metadata, sync: false);
+
+        // Emit the single updated wallet as a list with one element
+        _walletUpdatesController.add([wallet]);
+
+        // Also update the full wallets list
+        _updateWalletsStream();
+      }
+    } catch (e) {
+      // Handle any errors during the update process
+    }
+  }
+
+  // Helper method to build a Wallet entity from metadata
+  Future<Wallet> _buildWalletFromMetadata(
+    WalletMetadataModel metadata, {
+    required bool sync,
+  }) async {
+    // Get initial balance without waiting for sync
+    final balance = await _getBalance(metadata, sync: false);
+
+    // Create the wallet entity
+    final wallet = Wallet(
+      id: metadata.id,
+      label: metadata.label,
+      network: Network.fromEnvironment(
+        isTestnet: metadata.isTestnet,
+        isLiquid: metadata.isLiquid,
+      ),
+      isDefault: metadata.isDefault,
+      masterFingerprint: metadata.masterFingerprint,
+      xpubFingerprint: metadata.xpubFingerprint,
+      scriptType: ScriptType.fromName(metadata.scriptType),
+      xpub: metadata.xpub,
+      externalPublicDescriptor: metadata.externalPublicDescriptor,
+      internalPublicDescriptor: metadata.internalPublicDescriptor,
+      source: WalletSource.fromName(metadata.source),
+      balanceSat: balance.totalSat,
+      isEncryptedVaultTested: metadata.isEncryptedVaultTested,
+      isPhysicalBackupTested: metadata.isPhysicalBackupTested,
+      latestEncryptedBackup: metadata.latestEncryptedBackup != null
+          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestEncryptedBackup!)
+          : null,
+      latestPhysicalBackup: metadata.latestPhysicalBackup != null
+          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestPhysicalBackup!)
+          : null,
+    );
+
+    // Start the sync process if requested and not already syncing
+    if (sync && !isWalletSyncing(metadata)) {
+      _startWalletSync(metadata);
+    }
+    return wallet;
+  }
+
+  // Helper method to start wallet sync process
+  Future<void> _startWalletSync(WalletMetadataModel metadata) async {
+    try {
+      final electrumServer = await _electrumServerStorage.getByProvider(
+            ElectrumServerProvider.blockstream,
+            network: Network.fromEnvironment(
+              isTestnet: metadata.isTestnet,
+              isLiquid: metadata.isLiquid,
+            ),
+          ) ??
+          ElectrumServerModel.blockstream(
+            isTestnet: metadata.isTestnet,
+            isLiquid: metadata.isLiquid,
+          );
+
+      if (metadata.isLiquid) {
+        final wallet = PublicLwkWalletModel(
+          combinedCtDescriptor: metadata.externalPublicDescriptor,
+          isTestnet: metadata.isTestnet,
+          dbName: metadata.id,
+        );
+        await _lwkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+      } else {
+        final wallet = PublicBdkWalletModel(
+          externalDescriptor: metadata.externalPublicDescriptor,
+          internalDescriptor: metadata.internalPublicDescriptor,
+          isTestnet: metadata.isTestnet,
+          dbName: metadata.id,
+        );
+        await _bdkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+      }
+    } catch (e) {
+      // Error handling is managed by the datasources
+    }
+  }
+
+  // Method to update the wallets stream with the full list
+  Future<void> _updateWalletsStream() async {
+    final wallets = await getWallets();
+    _walletUpdatesController.add(wallets);
+  }
+
+  @override
+  Future<Stream<List<Wallet>>> get wallets async {
+    return _walletUpdatesController.stream;
+  }
 
   @override
   Future<Wallet> createWallet({
@@ -56,24 +190,13 @@ class WalletRepositoryImpl implements WalletRepository {
     );
     await _walletMetadata.store(metadata);
 
-    // Get the balance
-    final balance = await _getBalance(metadata, sync: sync);
+    // Create the wallet immediately
+    final wallet = await _buildWalletFromMetadata(metadata, sync: sync);
 
-    // Return the created wallet entity
-    return Wallet(
-      id: metadata.id,
-      label: metadata.label,
-      network: network,
-      isDefault: metadata.isDefault,
-      masterFingerprint: metadata.masterFingerprint,
-      xpubFingerprint: metadata.xpubFingerprint,
-      scriptType: ScriptType.fromName(metadata.scriptType),
-      xpub: metadata.xpub,
-      externalPublicDescriptor: metadata.externalPublicDescriptor,
-      internalPublicDescriptor: metadata.internalPublicDescriptor,
-      source: WalletSource.fromName(metadata.source),
-      balanceSat: balance.totalSat,
-    );
+    // Emit the newly created wallet as a list with one element
+    _walletUpdatesController.add([wallet]);
+
+    return wallet;
   }
 
   @override
@@ -92,27 +215,13 @@ class WalletRepositoryImpl implements WalletRepository {
     );
     await _walletMetadata.store(metadata);
 
-    // Fetch the balance (in the future maybe other details of the wallet too)
-    final balance = await _getBalance(metadata, sync: sync);
+    // Create the wallet immediately
+    final wallet = await _buildWalletFromMetadata(metadata, sync: sync);
 
-    // Return the created wallet entity
-    return Wallet(
-      id: metadata.id,
-      label: metadata.label,
-      network: Network.fromEnvironment(
-        isTestnet: metadata.isTestnet,
-        isLiquid: metadata.isLiquid,
-      ),
-      isDefault: metadata.isDefault,
-      masterFingerprint: metadata.masterFingerprint,
-      xpubFingerprint: metadata.xpubFingerprint,
-      scriptType: ScriptType.fromName(metadata.scriptType),
-      xpub: metadata.xpub,
-      externalPublicDescriptor: metadata.externalPublicDescriptor,
-      internalPublicDescriptor: metadata.internalPublicDescriptor,
-      source: WalletSource.fromName(metadata.source),
-      balanceSat: balance.totalSat,
-    );
+    // Emit the newly imported wallet as a list with one element
+    _walletUpdatesController.add([wallet]);
+
+    return wallet;
   }
 
   @override
@@ -120,37 +229,13 @@ class WalletRepositoryImpl implements WalletRepository {
     final metadata = await _walletMetadata.get(walletId);
 
     if (metadata == null) {
-      throw throw WalletNotFoundException(walletId);
+      throw WalletNotFoundException(walletId);
     }
-    // Get the balance
-    final balance = await _getBalance(metadata, sync: sync);
 
-    // Return the wallet entity
-    return Wallet(
-      id: metadata.id,
-      label: metadata.label,
-      network: Network.fromEnvironment(
-        isTestnet: metadata.isTestnet,
-        isLiquid: metadata.isLiquid,
-      ),
-      isDefault: metadata.isDefault,
-      masterFingerprint: metadata.masterFingerprint,
-      xpubFingerprint: metadata.xpubFingerprint,
-      scriptType: ScriptType.fromName(metadata.scriptType),
-      xpub: metadata.xpub,
-      externalPublicDescriptor: metadata.externalPublicDescriptor,
-      internalPublicDescriptor: metadata.internalPublicDescriptor,
-      source: WalletSource.fromName(metadata.source),
-      balanceSat: balance.totalSat,
-      isEncryptedVaultTested: metadata.isEncryptedVaultTested,
-      isPhysicalBackupTested: metadata.isPhysicalBackupTested,
-      latestEncryptedBackup: metadata.latestEncryptedBackup != null
-          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestEncryptedBackup!)
-          : null,
-      latestPhysicalBackup: metadata.latestPhysicalBackup != null
-          ? DateTime.fromMillisecondsSinceEpoch(metadata.latestPhysicalBackup!)
-          : null,
-    );
+    // Create and return wallet immediately
+    final wallet = await _buildWalletFromMetadata(metadata, sync: sync);
+
+    return wallet;
   }
 
   @override
@@ -181,45 +266,17 @@ class WalletRepositoryImpl implements WalletRepository {
         )
         .toList();
 
-    final balances = await Future.wait(
-      filteredWallets.map((wallet) => _getBalance(wallet, sync: sync)),
+    // Get initial wallets without waiting for sync
+    final initialWallets = await Future.wait(
+      filteredWallets.map(
+        (metadata) => _buildWalletFromMetadata(
+          metadata,
+          sync: sync,
+        ),
+      ),
     );
 
-    return filteredWallets
-        .asMap()
-        .entries
-        .map(
-          (entry) => Wallet(
-            id: entry.value.id,
-            label: entry.value.label,
-            network: Network.fromEnvironment(
-              isTestnet: entry.value.isTestnet,
-              isLiquid: entry.value.isLiquid,
-            ),
-            isDefault: entry.value.isDefault,
-            masterFingerprint: entry.value.masterFingerprint,
-            xpubFingerprint: entry.value.xpubFingerprint,
-            scriptType: ScriptType.fromName(entry.value.scriptType),
-            xpub: entry.value.xpub,
-            externalPublicDescriptor: entry.value.externalPublicDescriptor,
-            internalPublicDescriptor: entry.value.internalPublicDescriptor,
-            source: WalletSource.fromName(entry.value.source),
-            balanceSat: balances[entry.key].totalSat,
-            isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
-            isPhysicalBackupTested: entry.value.isPhysicalBackupTested,
-            latestEncryptedBackup: entry.value.latestEncryptedBackup != null
-                ? DateTime.fromMillisecondsSinceEpoch(
-                    entry.value.latestEncryptedBackup!,
-                  )
-                : null,
-            latestPhysicalBackup: entry.value.latestPhysicalBackup != null
-                ? DateTime.fromMillisecondsSinceEpoch(
-                    entry.value.latestPhysicalBackup!,
-                  )
-                : null,
-          ),
-        )
-        .toList();
+    return initialWallets;
   }
 
   @override
@@ -236,6 +293,12 @@ class WalletRepositoryImpl implements WalletRepository {
         latestEncryptedBackup: time.millisecondsSinceEpoch,
       ),
     );
+
+    // Update the wallet in stream after backup time changes
+    final updatedWallet = await getWallet(
+      walletId,
+    );
+    _walletUpdatesController.add([updatedWallet]);
   }
 
   @override
@@ -258,6 +321,12 @@ class WalletRepositoryImpl implements WalletRepository {
         latestPhysicalBackup: latestPhysicalBackup?.millisecondsSinceEpoch,
       ),
     );
+
+    // Update the wallet in stream after backup info changes
+    final updatedWallet = await getWallet(
+      walletId,
+    );
+    _walletUpdatesController.add([updatedWallet]);
   }
 
   Future<BalanceModel> _getBalance(
@@ -271,20 +340,10 @@ class WalletRepositoryImpl implements WalletRepository {
         isTestnet: metadata.isTestnet,
         dbName: metadata.id,
       );
-      final electrumServer = await _electrumServerStorage.getByProvider(
-            ElectrumServerProvider.blockstream,
-            network: Network.fromEnvironment(
-              isTestnet: metadata.isTestnet,
-              isLiquid: metadata.isTestnet,
-            ),
-          ) ??
-          ElectrumServerModel.blockstream(
-            isTestnet: metadata.isTestnet,
-            isLiquid: metadata.isLiquid,
-          );
 
-      if (sync) {
-        await _lwkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+      if (sync && !_lwkWallet.isWalletSyncing(metadata.id)) {
+        // Don't wait for sync here, we'll start it in background
+        _startWalletSync(metadata);
       }
 
       balance = await _lwkWallet.getBalance(wallet: wallet);
@@ -295,20 +354,10 @@ class WalletRepositoryImpl implements WalletRepository {
         isTestnet: metadata.isTestnet,
         dbName: metadata.id,
       );
-      final electrumServer = await _electrumServerStorage.getByProvider(
-            ElectrumServerProvider.blockstream,
-            network: Network.fromEnvironment(
-              isTestnet: metadata.isTestnet,
-              isLiquid: metadata.isTestnet,
-            ),
-          ) ??
-          ElectrumServerModel.blockstream(
-            isTestnet: metadata.isTestnet,
-            isLiquid: metadata.isLiquid,
-          );
 
-      if (sync) {
-        await _bdkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+      if (sync && !_bdkWallet.isWalletSyncing(metadata.id)) {
+        // Don't wait for sync here, we'll start it in background
+        _startWalletSync(metadata);
       }
 
       balance = await _bdkWallet.getBalance(wallet: wallet);
