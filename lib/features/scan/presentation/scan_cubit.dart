@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/scan/presentation/scan_state.dart';
 import 'package:bb_mobile/features/scan/scan_service.dart';
+import 'package:bb_mobile/features/send/domain/entities/payment_request.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,7 +10,7 @@ class ScanCubit extends Cubit<ScanState> {
   ScanCubit({required this.controller}) : super(ScanState.initial());
 
   Future<void> startScanning() async {
-    await controller.startImageStream((CameraImage image) {
+    await controller.startImageStream((CameraImage image) async {
       try {
         final yPlaneBytes = image.planes[0].bytes;
         final qrText = ScanService.decode(
@@ -19,7 +20,12 @@ class ScanCubit extends Cubit<ScanState> {
         );
 
         if (qrText.isNotEmpty) {
-          emit(state.copyWith(data: qrText));
+          PaymentRequest? pr;
+          try {
+            pr = await PaymentRequest.parse(qrText);
+          } catch (_) {}
+
+          emit(state.copyWith(data: qrText, paymentRequest: pr));
         }
       } catch (_) {}
     });

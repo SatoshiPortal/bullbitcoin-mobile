@@ -74,15 +74,22 @@ class _ScanWidgetState extends State<ScanWidget> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       color: Colors.black54,
-                      child: Text(
-                        state.data.length > 50
-                            ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
-                            : state.data,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
+                      child: Column(
+                        children: [
+                          if (state.paymentRequest != null)
+                            Text(
+                              '${state.paymentRequest!.type.name} on ${state.paymentRequest!.network.name}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          Text(
+                            state.data.length > 50
+                                ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
+                                : state.data,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ],
                       ),
                     ),
                   ),
