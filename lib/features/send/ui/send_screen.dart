@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/features/scan/scan_widget.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
@@ -86,7 +87,6 @@ class SendAddressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: read address from bloc
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -98,9 +98,9 @@ class SendAddressScreen extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: Stack(
+        child: Column(
           children: [
-            Expanded(child: Container(color: context.colour.secondaryFixedDim)),
+            const Expanded(child: ScanWidget()),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -148,6 +148,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
     final error = context.select(
       (SendCubit cubit) => cubit.state.error,
     );
+
     return BBButton.big(
       label: 'Continue',
       onPressed: () {
@@ -161,19 +162,16 @@ class SendContinueWithAddressButton extends StatelessWidget {
 }
 
 class AddressField extends StatelessWidget {
-  const AddressField({
-    super.key,
-  });
+  const AddressField({super.key});
 
   @override
   Widget build(BuildContext context) {
     final address = context
         .select<SendCubit, String>((cubit) => cubit.state.addressOrInvoice);
+
     return PasteInput(
       text: address,
-      onChanged: (text) {
-        context.read<SendCubit>().addressChanged(text);
-      },
+      onChanged: (text) => context.read<SendCubit>().addressChanged(text),
     );
   }
 }
