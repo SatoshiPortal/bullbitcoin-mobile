@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart';
@@ -12,13 +13,22 @@ import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:flutter/material.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
 class LwkWalletDatasource
     implements AddressDatasource, TransactionDatasource, UtxoDatasource {
-  const LwkWalletDatasource();
+  final Map<String, Completer<void>> _activeSyncs = {};
+  final _syncedWalletsController = StreamController<String>.broadcast();
+
+  Stream<String> get syncedWallets => _syncedWalletsController.stream;
+
+  bool isWalletSyncing(String walletId) => _activeSyncs.containsKey(walletId);
+
+  Future<void>? getActiveSyncForWallet(String walletId) =>
+      _activeSyncs[walletId]?.future;
+
+  LwkWalletDatasource();
 
   Future<String> _getDbPath(String dbName) async {
     final dir = await getApplicationDocumentsDirectory();
@@ -100,14 +110,33 @@ class LwkWalletDatasource
     required PublicLwkWalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) async {
+    // If there's already a sync in progress for this wallet, wait for it
+    if (isWalletSyncing(wallet.dbName)) {
+      await getActiveSyncForWallet(wallet.dbName);
+      return;
+    }
+
+    // Create new completer for this sync
+    final completer = Completer<void>();
+    _activeSyncs[wallet.dbName] = completer;
+
     try {
       final lwkWallet = await _createPublicWallet(wallet);
       await lwkWallet.sync(
         electrumUrl: electrumServer.url,
         validateDomain: electrumServer.validateDomain,
       );
+
+      // Notify listeners that wallet was synced
+      _syncedWalletsController.add(wallet.dbName);
+
+      // Complete the sync
+      completer.complete();
     } catch (e) {
-      debugPrint(e.toString());
+      completer.completeError(e);
+      rethrow;
+    } finally {
+      _activeSyncs.remove(wallet.dbName);
     }
   }
 

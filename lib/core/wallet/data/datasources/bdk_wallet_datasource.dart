@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart';
@@ -44,7 +45,17 @@ extension BdkNetworkX on bdk.Network {
 
 class BdkWalletDatasource
     implements AddressDatasource, TransactionDatasource, UtxoDatasource {
-  const BdkWalletDatasource();
+  final Map<String, Completer<void>> _activeSyncs = {};
+  final _syncedWalletsController = StreamController<String>.broadcast();
+
+  Stream<String> get syncedWallets => _syncedWalletsController.stream;
+
+  bool isWalletSyncing(String walletDb) => _activeSyncs.containsKey(walletDb);
+
+  Future<void>? getActiveSyncForWallet(String walletDb) =>
+      _activeSyncs[walletDb]?.future;
+
+  BdkWalletDatasource();
 
   Future<BalanceModel> getBalance({
     required PublicBdkWalletModel wallet,
@@ -68,20 +79,54 @@ class BdkWalletDatasource
     required PublicBdkWalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) async {
-    final bdkWallet = await _createPublicWallet(wallet);
-    final blockchain = await bdk.Blockchain.create(
-      config: bdk.BlockchainConfig.electrum(
-        config: bdk.ElectrumConfig(
-          url: electrumServer.url,
-          socks5: electrumServer.socks5,
-          retry: electrumServer.retry,
-          timeout: electrumServer.timeout,
-          stopGap: BigInt.from(electrumServer.stopGap),
-          validateDomain: electrumServer.validateDomain,
+    // If there's already a sync in progress for this wallet, wait for it
+    if (isWalletSyncing(wallet.dbName)) {
+      await getActiveSyncForWallet(wallet.dbName);
+      return;
+    }
+
+    // Create new completer for this sync
+    final completer = Completer<void>();
+    _activeSyncs[wallet.dbName] = completer;
+
+    try {
+      final bdkWallet = await _createPublicWallet(wallet);
+      final blockchain = await bdk.Blockchain.create(
+        config: bdk.BlockchainConfig.electrum(
+          config: bdk.ElectrumConfig(
+            url: electrumServer.url,
+            socks5: electrumServer.socks5,
+            retry: electrumServer.retry,
+            timeout: electrumServer.timeout,
+            stopGap: BigInt.from(electrumServer.stopGap),
+            validateDomain: electrumServer.validateDomain,
+          ),
         ),
-      ),
-    );
-    await bdkWallet.sync(blockchain: blockchain);
+      );
+      debugPrint(
+        "Syncing wallet ${wallet.dbName} with Electrum server ${electrumServer.url}",
+      );
+
+      // First perform the actual sync
+      await bdkWallet.sync(blockchain: blockchain);
+
+      // Then wait for the additional delay - properly awaited
+      debugPrint("Waiting additional 40 seconds for wallet ${wallet.dbName}");
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Notify listeners that wallet was synced
+      debugPrint("Wallet ${wallet.dbName} synced successfully");
+      _syncedWalletsController.add(wallet.dbName);
+
+      // Complete the sync
+      completer.complete();
+    } catch (e) {
+      debugPrint("Error syncing wallet ${wallet.dbName}: $e");
+      completer.completeError(e);
+      rethrow;
+    } finally {
+      _activeSyncs.remove(wallet.dbName);
+    }
   }
 
   Future<bool> isMine(
