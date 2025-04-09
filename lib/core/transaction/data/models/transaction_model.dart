@@ -21,7 +21,7 @@ sealed class TransactionModel with _$TransactionModel {
   }) = LiquidTransactionModel;
   const TransactionModel._();
 
-  Transaction toEntity({required String walletId}) {
+  WalletTransaction toEntity({required String walletId}) {
     return when(
       bitcoin: (
         String txId,
@@ -30,7 +30,7 @@ sealed class TransactionModel with _$TransactionModel {
         int feeSat,
         int? confirmationTimestamp,
       ) =>
-          Transaction.bitcoin(
+          WalletTransaction.bitcoin(
         walletId: walletId,
         direction: isIncoming
             ? TransactionDirection.incoming
@@ -52,7 +52,7 @@ sealed class TransactionModel with _$TransactionModel {
         int feeSat,
         int? confirmationTimestamp,
       ) =>
-          Transaction.liquid(
+          WalletTransaction.liquid(
         walletId: walletId,
         direction: isIncoming
             ? TransactionDirection.incoming

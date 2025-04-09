@@ -79,13 +79,12 @@ class TxsList extends StatelessWidget {
     Transaction tx,
   ) {
     // TODO: define DetailedTransaction entity with all the details
-    const network = Network.bitcoinMainnet; //tx.network;
 
     IconData icon;
     Color color;
     String walletType;
 
-    switch (network) {
+    switch (tx.network) {
       case Network.bitcoinMainnet:
       case Network.bitcoinTestnet:
         color = context.colour.onTertiary;
@@ -96,35 +95,18 @@ class TxsList extends StatelessWidget {
         color = context.colour.tertiary;
         walletType = 'Liquid';
     }
-    /*
     if (tx.type == TxType.lnSwap) {
       walletType = 'Lightning';
-    }*/
+    }
 
-    /*
-    final type = tx.type;
-    switch (type) {
-      case TxtType.send:
-        icon = Icons.arrow_upward;
-
-      case TxType.receive:
-        icon = Icons.arrow_downward;
-
-      case TxType.self:
-        icon = Icons.swap_horiz;
-
-      case TxType.lnSwap:
-        icon = Icons.arrow_downward;
-
-      case TxType.chainSwap:
-        icon = Icons.swap_horiz;
-    }*/
     final direction = tx.direction;
     switch (direction) {
       case TransactionDirection.outgoing:
         icon = Icons.arrow_upward;
-      case _:
+      case TransactionDirection.incoming:
         icon = Icons.arrow_downward;
+      case TransactionDirection.internal:
+        icon = Icons.sync;
     }
 
     return (icon, color, walletType);

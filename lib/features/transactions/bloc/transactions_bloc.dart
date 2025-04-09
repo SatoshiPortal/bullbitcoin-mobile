@@ -24,12 +24,16 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         onlyDefaults: true,
         sync: true,
       );
-      final List<Transaction> txs = [];
+
+      final List<Transaction> allTransactions = [];
+
       for (final wallet in wallets) {
-        final txs = await _getTransactionsUsecase.execute(walletId: wallet.id);
-        txs.addAll(txs);
+        final walletTransactions =
+            await _getTransactionsUsecase.execute(walletId: wallet.id);
+        allTransactions.addAll(walletTransactions);
       }
-      emit(state.copyWith(loadingTxs: false, transactions: txs));
+
+      emit(state.copyWith(loadingTxs: false, transactions: allTransactions));
     } catch (e) {
       emit(state.copyWith(loadingTxs: false, err: e));
     }

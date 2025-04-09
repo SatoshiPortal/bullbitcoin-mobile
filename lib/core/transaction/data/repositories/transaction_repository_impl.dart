@@ -21,10 +21,10 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
   @override
   // TODO: implement transactions
-  Stream<Transaction> get transactions => throw UnimplementedError();
+  Stream<WalletTransaction> get transactions => throw UnimplementedError();
 
   @override
-  Future<List<Transaction>> getTransactions({
+  Future<List<WalletTransaction>> getTransactions({
     String? walletId,
     Environment? environment,
   }) async {
@@ -44,42 +44,36 @@ class TransactionRepositoryImpl implements TransactionRepository {
           environment == null || environment.isTestnet == metadata.isTestnet,
     );
 
-    final transactionLists = await Future.wait(
-      filterWalletsMetadata.map(
-        (wallet) async {
-          final walletDatasource = wallet.isBitcoin ? _bdkWallet : _lwkWallet;
-          final walletModel = wallet.isBitcoin
-              ? PublicBdkWalletModel(
-                  externalDescriptor: wallet.externalPublicDescriptor,
-                  internalDescriptor: wallet.internalPublicDescriptor,
-                  isTestnet: wallet.isTestnet,
-                  dbName: wallet.id,
-                )
-              : PublicLwkWalletModel(
-                  combinedCtDescriptor: wallet.externalPublicDescriptor,
-                  isTestnet: wallet.isTestnet,
-                  dbName: wallet.id,
-                );
-          final transactionModels =
-              await walletDatasource.getTransactions(wallet: walletModel);
-          return transactionModels
-              .map(
-                (transactionModel) => transactionModel.toEntity(
-                  walletId: wallet.id,
-                ),
-              )
-              .toList();
-        },
-      ),
-    );
-    final transactions =
-        transactionLists.expand((transaction) => transaction).toList();
+    final List<WalletTransaction> transactions = [];
+
+    for (final wallet in filterWalletsMetadata) {
+      final walletDatasource = wallet.isBitcoin ? _bdkWallet : _lwkWallet;
+      final walletModel = wallet.isBitcoin
+          ? PublicBdkWalletModel(
+              externalDescriptor: wallet.externalPublicDescriptor,
+              internalDescriptor: wallet.internalPublicDescriptor,
+              isTestnet: wallet.isTestnet,
+              dbName: wallet.id,
+            )
+          : PublicLwkWalletModel(
+              combinedCtDescriptor: wallet.externalPublicDescriptor,
+              isTestnet: wallet.isTestnet,
+              dbName: wallet.id,
+            );
+
+      final transactionModels =
+          await walletDatasource.getTransactions(wallet: walletModel);
+
+      for (final transactionModel in transactionModels) {
+        transactions.add(transactionModel.toEntity(walletId: wallet.id));
+      }
+    }
 
     return transactions;
   }
 
   @override
-  Future<Transaction> getTransaction(
+  Future<WalletTransaction> getTransaction(
     String txId, {
     required String walletId,
   }) async {
