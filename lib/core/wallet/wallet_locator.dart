@@ -23,10 +23,10 @@ import 'package:hive/hive.dart';
 class WalletLocator {
   static Future<void> registerDatasourceres() async {
     locator.registerLazySingleton<BdkWalletDatasource>(
-      () => const BdkWalletDatasource(),
+      () => BdkWalletDatasource(),
     );
     locator.registerLazySingleton<LwkWalletDatasource>(
-      () => const LwkWalletDatasource(),
+      () => LwkWalletDatasource(),
     );
     final walletMetadataBox =
         await Hive.openBox<String>(HiveBoxNameConstants.walletMetadata);
