@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
+import 'package:bb_mobile/features/test_wallet_backup/ui/screens/choose_encrypted_vault_provider_screen.dart';
 // import 'package:bb_mobile/features/test_wallet_backup/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/fetched_backup_info_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/test_physical_backup_screen.dart'
@@ -7,7 +8,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/screens/test_physical_b
 import 'package:go_router/go_router.dart';
 
 enum TestWalletBackupSubroute {
-  // chooseBackupTestProvider('choose-backup-test-provider'),
+  chooseBackupTestProvider('choose-backup-test-provider'),
   testBackupInfo('test-backup-info'),
   testPhysicalBackup('test-physical-backup'),
 
@@ -21,11 +22,11 @@ enum TestWalletBackupSubroute {
 
 class TestWalletBackupRouter {
   static final routes = [
-    // GoRoute(
-    //   name: TestWalletBackupSubroute.chooseBackupTestProvider.name,
-    //   path: TestWalletBackupSubroute.chooseBackupTestProvider.path,
-    //   builder: (context, state) => const ChooseVaultProviderScreen(),
-    // ),
+    GoRoute(
+      name: TestWalletBackupSubroute.chooseBackupTestProvider.name,
+      path: TestWalletBackupSubroute.chooseBackupTestProvider.path,
+      builder: (context, state) => const ChooseVaultProviderScreen(),
+    ),
     GoRoute(
       name: TestWalletBackupSubroute.testBackupInfo.name,
       path: TestWalletBackupSubroute.testBackupInfo.path,
