@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet_transaction/data/datasources/wallet_transaction_datasource.dart';
 import 'package:bb_mobile/core/wallet_transaction/data/models/wallet_transaction_model.dart';
+import 'package:flutter/material.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
@@ -100,11 +101,15 @@ class LwkWalletDatasource
     required PublicWalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) async {
-    final lwkWallet = await _createPublicWallet(wallet);
-    await lwkWallet.sync(
-      electrumUrl: electrumServer.url,
-      validateDomain: electrumServer.validateDomain,
-    );
+    try {
+      final lwkWallet = await _createPublicWallet(wallet);
+      await lwkWallet.sync(
+        electrumUrl: electrumServer.url,
+        validateDomain: electrumServer.validateDomain,
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   /* Start UtxoDatasource methods */
@@ -286,9 +291,11 @@ class LwkWalletDatasource
     final transactions = await lwkWallet.txs();
     if (toAddress != null && toAddress.isNotEmpty) {
       transactions.removeWhere(
-        (tx) => tx.outputs.every((output) =>
-            output.address.standard != toAddress &&
-            output.address.confidential != toAddress),
+        (tx) => tx.outputs.every(
+          (output) =>
+              output.address.standard != toAddress &&
+              output.address.confidential != toAddress,
+        ),
       );
     }
     final List<WalletTransactionModel> walletTxs = [];
@@ -333,11 +340,18 @@ class LwkWalletDatasource
     if (networkFee.isAbsolute) {
       throw Exception('Absolute fee is not supported for liquid yet!');
     }
+    debugPrint(
+      networkFee.value.toDouble().toString(),
+    );
     final pset = await lwkWallet.buildLbtcTx(
       sats: BigInt.from(amountSat ?? 0),
       outAddress: address,
-      feeRate: networkFee.value.toDouble(),
+      feeRate: networkFee.value.toDouble() * 1000,
       drain: drain,
+    );
+    final decoded = await lwkWallet.decodeTx(pset: pset);
+    debugPrint(
+      decoded.absoluteFees.toString(),
     );
     return pset;
   }

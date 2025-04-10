@@ -218,6 +218,8 @@ class BoltzDatasource {
       creationTime: DateTime.now().millisecondsSinceEpoch,
       sendWalletId: walletId,
       invoice: invoice,
+      paymentAddress: btcLnSwap.scriptAddress,
+      paymentAmount: btcLnSwap.outAmount.toInt(),
       boltzFees: (submarineFees.btcFees.percentage *
               (btcLnSwap.outAmount.toInt()) /
               100)
@@ -261,6 +263,8 @@ class BoltzDatasource {
       creationTime: DateTime.now().millisecondsSinceEpoch,
       sendWalletId: walletId,
       invoice: invoice,
+      paymentAddress: lbtcLnSwap.scriptAddress,
+      paymentAmount: lbtcLnSwap.outAmount.toInt(),
       boltzFees: (submarineFees.lbtcFees.percentage *
               (lbtcLnSwap.outAmount.toInt()) /
               100)

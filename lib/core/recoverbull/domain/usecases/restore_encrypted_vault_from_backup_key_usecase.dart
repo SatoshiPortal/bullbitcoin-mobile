@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
@@ -14,7 +13,7 @@ import 'package:flutter/foundation.dart';
 /// If the key server is down
 class RestoreEncryptedVaultFromBackupKeyUsecase {
   final RecoverBullRepository _recoverBull;
-  final WalletRepository _wallet;
+  final WalletRepository _walletRepository;
   final CreateDefaultWalletsUsecase _createDefaultWallets;
 
   RestoreEncryptedVaultFromBackupKeyUsecase({
@@ -22,7 +21,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
     required WalletRepository walletRepository,
     required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
   })  : _recoverBull = recoverBullRepository,
-        _wallet = walletRepository,
+        _walletRepository = walletRepository,
         _createDefaultWallets = createDefaultWalletsUsecase;
 
   Future<void> execute({
@@ -41,18 +40,14 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
       final decodedRecoverbullWallets =
           RecoverBullWallet.fromJson(decodedPlaintext);
 
-      final availableWallets = await _wallet.getWallets(
+      final availableWallets = await _walletRepository.getWallets(
         onlyDefaults: true,
-        onlyBitcoin: true,
         environment: Environment.mainnet,
       );
-
-      if (availableWallets.isNotEmpty) {
-        // There should be only one default Bitcoin wallet for mainnet
-        final defaultWallet = availableWallets.first;
+      for (final defaultWallet in availableWallets) {
         if (defaultWallet.masterFingerprint ==
             decodedRecoverbullWallets.masterFingerprint) {
-          _wallet.updateEncryptedBackupTime(
+          await _walletRepository.updateEncryptedBackupTime(
             DateTime.now(),
             walletId: defaultWallet.id,
           );
@@ -62,25 +57,22 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
         }
       }
 
-      final wallets = await _createDefaultWallets.execute(
+      final restoredWallets = await _createDefaultWallets.execute(
         mnemonicWords: decodedRecoverbullWallets.mnemonic,
       );
-
       debugPrint('Default wallets created');
-      final bitcoinWallet = wallets.firstWhere(
-        (wallet) => wallet.network == Network.bitcoinMainnet,
-      );
-      final walletId = bitcoinWallet.id;
-      await _wallet.updateBackupInfo(
-        isEncryptedVaultTested: true,
-        isPhysicalBackupTested:
-            decodedRecoverbullWallets.isPhysicalBackupTested,
-        latestEncryptedBackup: decodedRecoverbullWallets.latestEncryptedBackup,
-        latestPhysicalBackup: decodedRecoverbullWallets.latestPhysicalBackup,
-        walletId: walletId,
-      );
+      for (final wallet in restoredWallets) {
+        await _walletRepository.updateBackupInfo(
+          isEncryptedVaultTested: true,
+          isPhysicalBackupTested:
+              decodedRecoverbullWallets.isPhysicalBackupTested,
+          latestEncryptedBackup: DateTime.now(),
+          latestPhysicalBackup: decodedRecoverbullWallets.latestPhysicalBackup,
+          walletId: wallet.id,
+        );
+      }
 
-      debugPrint('Default wallet updated');
+      debugPrint('Default wallets updated');
     } catch (e) {
       debugPrint('$RestoreEncryptedVaultFromBackupKeyUsecase: $e');
       rethrow;

@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
@@ -26,7 +26,7 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
   Future<String> buildPset({
     required String walletId,
     required String address,
-    required int amountSat,
+    int? amountSat,
     required NetworkFee networkFee,
     bool? drain,
   }) async {
@@ -57,8 +57,8 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
   }
 
   @override
-  Future<Uint8List> signPset(
-    String pset, {
+  Future<Uint8List> signPset({
+    required String pset,
     required String walletId,
   }) async {
     final metadata = await _walletMetadata.get(walletId);
@@ -71,7 +71,8 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
 
-    final seed = await _seed.get(metadata.masterFingerprint) as MnemonicSeed;
+    final seed =
+        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
     final mnemonic = seed.mnemonicWords.join(' ');
 
     final wallet = PrivateLwkWalletModel(

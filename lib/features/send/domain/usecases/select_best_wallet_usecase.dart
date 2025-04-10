@@ -1,22 +1,16 @@
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/send/domain/entities/payment_request.dart';
 import 'package:flutter/foundation.dart';
 
 class SelectBestWalletUsecase {
-  final WalletRepository _walletRepository;
-
-  SelectBestWalletUsecase({
-    required WalletRepository walletRepository,
-  }) : _walletRepository = walletRepository;
+  SelectBestWalletUsecase();
 
   Future<Wallet> execute({
+    required List<Wallet> wallets,
     required PaymentRequest request,
-    BigInt? amountSat,
-  }) async {
+    int? amountSat,
+  }) {
     try {
-      final wallets = await _walletRepository.getWallets(sync: true);
-
       if (request is BitcoinRequest || request is LiquidRequest) {
         if (amountSat == null) throw 'amountSat should be specified';
       }
@@ -34,7 +28,7 @@ class SelectBestWalletUsecase {
       //Bip21
       if (request is Bip21Request) {
         final uriAmount = BigInt.tryParse(request.options['amount'] as String);
-        final amount = uriAmount ?? amountSat;
+        final amount = uriAmount != null ? uriAmount.toInt() : amountSat;
 
         if (amount == null) throw 'The amount of satoshis should be specified';
 
@@ -46,14 +40,14 @@ class SelectBestWalletUsecase {
         try {
           // Use liquid
           return _selectBestWallet(
-            request.amount,
+            request.amountSat,
             Network.liquidMainnet,
             wallets,
           );
         } catch (_) {
           // unless liquid doesn’t have balance, use bitcoin
           return _selectBestWallet(
-            request.amount,
+            request.amountSat,
             Network.bitcoinMainnet,
             wallets,
           );
@@ -68,20 +62,22 @@ class SelectBestWalletUsecase {
   }
 
   Future<Wallet> _selectBestWallet(
-    BigInt satoshis,
+    int satoshis,
     Network network,
     List<Wallet> wallets,
   ) async {
     // Default first
     for (final w in wallets) {
-      if (w.isDefault && w.network == network && w.balanceSat >= satoshis) {
+      if (w.isDefault &&
+          w.network == network &&
+          w.balanceSat.toInt() >= satoshis) {
         return w;
       }
     }
 
     // Any wallet with enough funds from the same network
     for (final w in wallets) {
-      if (w.network == network && w.balanceSat >= satoshis) {
+      if (w.network == network && w.balanceSat.toInt() >= satoshis) {
         return w;
       }
     }

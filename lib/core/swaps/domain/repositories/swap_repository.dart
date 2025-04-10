@@ -41,7 +41,7 @@ abstract class SwapRepository {
     required int absoluteFees,
   });
   // SEND SWAPS
-  Future<Swap> createBitcoinToLightningSwap({
+  Future<LnSendSwap> createBitcoinToLightningSwap({
     required String mnemonic,
     required String walletId,
     required String invoice,
@@ -56,7 +56,7 @@ abstract class SwapRepository {
     required String bitcoinAddress,
     required int absoluteFees,
   });
-  Future<Swap> createLiquidToLightningSwap({
+  Future<LnSendSwap> createLiquidToLightningSwap({
     required String mnemonic,
     required String walletId,
     required String invoice,

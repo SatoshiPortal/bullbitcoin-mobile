@@ -6,12 +6,12 @@ abstract class LiquidWalletRepository {
   Future<String> buildPset({
     required String walletId,
     required String address,
-    required int amountSat,
+    int? amountSat,
     required NetworkFee networkFee,
     bool? drain,
   });
-  Future<Uint8List> signPset(
-    String pset, {
+  Future<Uint8List> signPset({
+    required String pset,
     required String walletId,
   });
 }

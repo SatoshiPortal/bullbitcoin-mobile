@@ -103,7 +103,7 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
           Network.bitcoinTestnet => ApiServiceConstants.bbElectrumTestUrl,
           Network.liquidMainnet => ApiServiceConstants.bbLiquidElectrumUrlPath,
           Network.liquidTestnet =>
-            ApiServiceConstants.bbLiquidElectrumTestUrlPath,
+            ApiServiceConstants.publicLiquidElectrumUrlPath,
         },
       BlockstreamElectrumServerModel _ => switch (network) {
           Network.bitcoinMainnet => ApiServiceConstants.publicElectrumUrl,

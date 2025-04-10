@@ -75,7 +75,7 @@ class CreateReceiveSwapUsecase {
           : ApiServiceConstants.bbElectrumUrl;
 
       final lbtcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.bbLiquidElectrumTestUrlPath
+          ? ApiServiceConstants.publicElectrumTestUrl
           : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       final claimAddress = await _getNewAddressUsecase.execute(

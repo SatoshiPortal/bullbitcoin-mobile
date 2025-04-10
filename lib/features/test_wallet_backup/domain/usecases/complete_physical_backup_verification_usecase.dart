@@ -11,7 +11,6 @@ class CompletePhysicalBackupVerificationUsecase {
   Future<void> execute() async {
     try {
       final defaultWallets = await _walletRepository.getWallets(
-        onlyBitcoin: true,
         onlyDefaults: true,
         environment: Environment.mainnet,
       );
@@ -19,15 +18,16 @@ class CompletePhysicalBackupVerificationUsecase {
         throw Exception('No default wallet found');
       }
       // There should only be one default Bitcoin wallet
-      final defaultWallet = defaultWallets.first;
 
-      await _walletRepository.updateBackupInfo(
-        walletId: defaultWallet.id,
-        isEncryptedVaultTested: defaultWallet.isEncryptedVaultTested,
-        isPhysicalBackupTested: true,
-        latestEncryptedBackup: defaultWallet.latestEncryptedBackup,
-        latestPhysicalBackup: DateTime.now(),
-      );
+      for (final defaultWallet in defaultWallets) {
+        await _walletRepository.updateBackupInfo(
+          walletId: defaultWallet.id,
+          isEncryptedVaultTested: defaultWallet.isEncryptedVaultTested,
+          isPhysicalBackupTested: true,
+          latestEncryptedBackup: defaultWallet.latestEncryptedBackup,
+          latestPhysicalBackup: DateTime.now(),
+        );
+      }
     } catch (e) {
       throw CompletePhysicalBackupVerificationException(e.toString());
     }

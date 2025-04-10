@@ -436,8 +436,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     }
 
     final swap = swapModel.toEntity();
-    if (swap.status != SwapStatus.paid) {
-      throw "Can only update status of a paid swap";
+    if (!(swap.status == SwapStatus.paid ||
+        swap.status == SwapStatus.canCoop)) {
+      throw "Can only update status of a paid or canCoop swap";
     }
 
     // Handle each type separately

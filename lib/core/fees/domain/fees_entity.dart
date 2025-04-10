@@ -70,7 +70,7 @@ enum FeeSelection {
 }
 
 extension FeeSelectionName on FeeSelection {
-  String name() {
+  String title() {
     switch (this) {
       case FeeSelection.fastest:
         return 'Fastest';
