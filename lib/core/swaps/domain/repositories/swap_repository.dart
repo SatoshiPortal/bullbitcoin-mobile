@@ -124,6 +124,11 @@ abstract class SwapRepository {
     required String invoice,
   });
 
+  Future<String> invoiceFromLnAddress({
+    required String lnAddress,
+    required int amountSat,
+  });
+
   // SWAP STORAGE UTILITY
   Future<Swap> getSwap({
     required String swapId,

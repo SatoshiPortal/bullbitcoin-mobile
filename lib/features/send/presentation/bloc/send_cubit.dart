@@ -232,6 +232,29 @@ class SendCubit extends Cubit<SendState> {
     emit(
       state.copyWith(
         amountConfirmedClicked: true,
+        confirmedAmountSat: state.inputAmountSat,
+      ),
+    );
+    if (state.sendType == SendType.lightning) {
+      final swapType = state.selectedWallet!.isInstant()
+          ? SwapType.liquidToLightning
+          : SwapType.bitcoinToLightning;
+      final swap = await _createSendSwapUsecase.execute(
+        walletId: state.selectedWallet!.id,
+        type: swapType,
+        lnAddress: state.addressOrInvoice,
+        amountSat: state.inputAmountSat,
+      );
+      emit(
+        state.copyWith(
+          amountConfirmedClicked: true,
+          step: SendStep.confirm,
+          lightningSwap: swap,
+        ),
+      );
+    }
+    emit(
+      state.copyWith(
         step: SendStep.confirm,
         confirmedAmountSat: state.inputAmountSat,
       ),

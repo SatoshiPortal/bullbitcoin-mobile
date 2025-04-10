@@ -21,6 +21,7 @@ enum SendType {
       case LiquidRequest():
         return SendType.liquid;
       case Bolt11Request():
+      case LnAddressRequest():
         return SendType.lightning;
       case Bip21Request():
         switch (paymentRequest.scheme) {

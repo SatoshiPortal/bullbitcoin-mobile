@@ -17,7 +17,7 @@ class SelectBestWalletUsecase {
 
       // Bitcoin
       if (request is BitcoinRequest) {
-        return _selectBestWallet(amountSat!, request.network, wallets);
+        _selectBestWallet(amountSat!, request.network, wallets);
       }
 
       // Liquid
@@ -48,6 +48,24 @@ class SelectBestWalletUsecase {
           // unless liquid doesn’t have balance, use bitcoin
           return _selectBestWallet(
             request.amountSat,
+            Network.bitcoinMainnet,
+            wallets,
+          );
+        }
+      }
+      // Bolt11
+      if (request is LnAddressRequest) {
+        try {
+          // Use liquid
+          return _selectBestWallet(
+            0,
+            Network.liquidMainnet,
+            wallets,
+          );
+        } catch (_) {
+          // unless liquid doesn’t have balance, use bitcoin
+          return _selectBestWallet(
+            0,
             Network.bitcoinMainnet,
             wallets,
           );

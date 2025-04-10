@@ -1,6 +1,3 @@
-// TODO: ?
-// TODO: string invoice, walletId and return LnSendSwap
-
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -27,13 +24,26 @@ class CreateSendSwapUsecase {
   Future<LnSendSwap> execute({
     required String walletId,
     required SwapType type,
-    required String invoice,
+    String? invoice,
+    String? lnAddress,
+    int? amountSat,
   }) async {
     try {
+      if (invoice == null && lnAddress == null) {
+        throw Exception('Invoice or lnAddress must be provided');
+      }
+      if (amountSat == null && lnAddress != null) {
+        throw Exception('Amount must be provided if lnAddress is used');
+      }
+      final finalInvoice = invoice ??
+          await _swapRepository.invoiceFromLnAddress(
+            lnAddress: lnAddress!,
+            amountSat: amountSat!,
+          );
       final wallet = await _walletRepository.getWallet(walletId);
       final swapRepository =
           wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
-      final decoded = await swapRepository.decodeInvoice(invoice: invoice);
+      final decoded = await swapRepository.decodeInvoice(invoice: finalInvoice);
 
       final limits = await _swapRepository.getSwapLimits(type: type);
       if (decoded.sats < limits.min) {
@@ -69,7 +79,7 @@ class CreateSendSwapUsecase {
         case SwapType.bitcoinToLightning:
           return await swapRepository.createBitcoinToLightningSwap(
             walletId: walletId,
-            invoice: invoice,
+            invoice: finalInvoice,
             isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: btcElectrumUrl,
@@ -78,7 +88,7 @@ class CreateSendSwapUsecase {
         case SwapType.liquidToLightning:
           return await swapRepository.createLiquidToLightningSwap(
             walletId: walletId,
-            invoice: invoice,
+            invoice: finalInvoice,
             isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: lbtcElectrumUrl,
