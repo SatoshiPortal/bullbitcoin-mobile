@@ -334,7 +334,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             txId: txId,
-            step: SendStep.sent,
+            step: SendStep.success,
           ),
         );
       } else {
@@ -346,7 +346,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             txId: txId,
-            step: SendStep.sent,
+            step: SendStep.success,
           ),
         );
       }
@@ -368,7 +368,7 @@ class SendCubit extends Cubit<SendState> {
   Future<void> currencyCodeChanged(String currencyCode) async {
     await getExchangeRate(currencyCode: currencyCode);
     emit(state.copyWith(fiatCurrencyCode: currencyCode));
-    await updateFiatApproximatedAmount();
+    // await updateFiatApproximatedAmount();
   }
 
   Future<void> getExchangeRate({String? currencyCode}) async {
@@ -383,18 +383,18 @@ class SendCubit extends Cubit<SendState> {
     return BigInt.parse(state.amount) / BigInt.parse('100000000');
   }
 
-  Future<void> updateFiatApproximatedAmount() async {
-    double btcAmount;
-    switch (state.bitcoinUnit) {
-      case BitcoinUnit.btc:
-        btcAmount = double.parse(state.amount);
-      case BitcoinUnit.sats:
-        btcAmount = approximateBtcFromSats(BigInt.parse(state.amount));
-    }
+  // Future<void> updateFiatApproximatedAmount() async {
+  //   double btcAmount;
+  //   switch (state.bitcoinUnit) {
+  //     case BitcoinUnit.btc:
+  //       btcAmount = double.parse(state.amount);
+  //     case BitcoinUnit.sats:
+  //       btcAmount = approximateBtcFromSats(BigInt.parse(state.amount));
+  //   }
 
-    final approximatedValue = btcAmount * state.exchangeRate;
-    emit(state.copyWith(fiatApproximatedAmount: approximatedValue.toString()));
-  }
+  //   final approximatedValue = btcAmount * state.exchangeRate;
+  //   emit(state.copyWith(fiatApproximatedAmount: approximatedValue.toString()));
+  // }
 
   void approximateBalance() {
     if (state.wallet == null) return;
@@ -407,7 +407,7 @@ class SendCubit extends Cubit<SendState> {
 
   void onNumberPressed(String n) {
     amountChanged(state.amount + n);
-    updateFiatApproximatedAmount();
+    // updateFiatApproximatedAmount();
   }
 
   void onBackspacePressed() {
@@ -416,6 +416,6 @@ class SendCubit extends Cubit<SendState> {
     final newAmount = state.amount.substring(0, state.amount.length - 1);
     emit(state.copyWith(amount: newAmount));
 
-    updateFiatApproximatedAmount();
+    // updateFiatApproximatedAmount();
   }
 }

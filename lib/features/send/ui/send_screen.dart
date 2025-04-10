@@ -76,8 +76,8 @@ class SendScreen extends StatelessWidget {
         return const SendConfirmScreen();
       case SendStep.sending:
         return const SendSendingScreen();
-      case SendStep.sent:
-        throw UnimplementedError();
+      case SendStep.success:
+        return const SendSucessScreen();
     }
   }
 }
@@ -212,7 +212,7 @@ class SendAmountScreen extends StatelessWidget {
                     amount: state.amount,
                     currency: state.bitcoinUnit.name,
                     amountEquivalent:
-                        '${state.amount.isEmpty ? '' : state.fiatApproximatedAmount} ${state.fiatCurrencyCode}',
+                        '${state.amount.isEmpty ? '' : state.formattedConfirmedAmountFiat} ${state.fiatCurrencyCode}',
                     availableCurrencies: state.fiatCurrencyCodes,
                     onNoteChanged: cubit.noteChanged,
                     onCurrencyChanged: cubit.currencyCodeChanged,
@@ -403,7 +403,7 @@ class _InfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
     );
     final formattedFiatEquivalent = context.select(
-      (SendCubit cubit) => cubit.state.fiatApproximatedAmount,
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
     final selectedFees = context.select(
       (SendCubit cubit) => cubit.state.selectedFee,
@@ -611,6 +611,75 @@ class SendSendingScreen extends StatelessWidget {
             const Spacer(flex: 2),
             BBButton.big(
               label: 'Go home',
+              onPressed: () {},
+              bgColor: context.colour.secondary,
+              textColor: context.colour.onSecondary,
+            ),
+            const Gap(32),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SendSucessScreen extends StatelessWidget {
+  const SendSucessScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final amount = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
+    );
+
+    final fiatEquivalent = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          title: 'Send',
+          actionIcon: Icons.close,
+          onAction: () {
+            context.pop();
+          },
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  const Gap(8),
+                  BBText('Successfully Sent', style: context.font.bodyLarge),
+                  const Gap(8),
+                  BBText(
+                    amount,
+                    style: context.font.displaySmall,
+                    maxLines: 4,
+                    textAlign: TextAlign.center,
+                  ),
+                  const Gap(4),
+                  BBText(
+                    '~$fiatEquivalent',
+                    style: context.font.bodyLarge,
+                    color: context.colour.surfaceContainer,
+                    maxLines: 4,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            const Spacer(flex: 2),
+            BBButton.big(
+              label: 'View Details',
               onPressed: () {},
               bgColor: context.colour.secondary,
               textColor: context.colour.onSecondary,
