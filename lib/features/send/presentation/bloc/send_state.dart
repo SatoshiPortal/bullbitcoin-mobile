@@ -94,6 +94,7 @@ class SendState with _$SendState {
   const SendState._();
   bool get isInputAmountFiat => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
       .contains(inputAmountCurrencyCode);
+
   int get inputAmountSat {
     BigInt amountSat = BigInt.zero;
 
@@ -272,5 +273,16 @@ class SendState with _$SendState {
   bool walletHasBalance() {
     if (selectedWallet == null) return false;
     return inputAmountSat <= selectedWallet!.balanceSat.toInt();
+  }
+
+  String sendTypeName() {
+    switch (sendType) {
+      case SendType.bitcoin:
+        return 'Send';
+      case SendType.lightning:
+        return 'Swap';
+      case SendType.liquid:
+        return 'Send';
+    }
   }
 }

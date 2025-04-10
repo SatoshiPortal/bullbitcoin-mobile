@@ -73,6 +73,7 @@ sealed class Swap with _$Swap {
     required DateTime creationTime,
     required String sendWalletId,
     required String invoice,
+    required String paymentAddress,
     String? sendTxid,
     String? preimage,
     String? refundAddress,
@@ -137,6 +138,7 @@ sealed class Swap with _$Swap {
           ___________,
           ____________,
           _____________,
+          ______________,
         ) =>
             id,
         chain: (
@@ -191,6 +193,7 @@ sealed class Swap with _$Swap {
           ___________,
           ____________,
           _____________,
+          ______________,
         ) =>
             type,
         chain: (
@@ -245,6 +248,7 @@ sealed class Swap with _$Swap {
           ___________,
           ____________,
           _____________,
+          ______________,
         ) =>
             status,
         chain: (
@@ -297,8 +301,9 @@ sealed class Swap with _$Swap {
           __________,
           ___________,
           ____________,
-          fees,
           _____________,
+          fees,
+          ______________,
         ) =>
             fees,
         chain: (

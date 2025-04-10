@@ -31,8 +31,8 @@ class PaymentRequest with _$PaymentRequest {
 
   const factory PaymentRequest.bolt11({
     required PaymentType type,
-    required Network network,
     required int amountSat,
+    required Network network,
     required int expiry,
     required int expiresIn,
     required int expiresAt,
@@ -146,23 +146,29 @@ class PaymentRequest with _$PaymentRequest {
 
       try {
         final invoice = await boltz.DecodedInvoice.fromString(s: data);
-        final sats = (invoice.msats ~/ BigInt.from(1000)).toInt();
+        final sats = invoice.msats.toInt() ~/ (1000);
 
         return PaymentRequest.bolt11(
           type: PaymentType.bolt11,
           amountSat: sats,
+          network: invoice.network == 'bitcoin'
+              ? Network.bitcoinMainnet
+              : Network.liquidMainnet,
           expiry: invoice.expiry.toInt(),
           expiresIn: invoice.expiresIn.toInt(),
           expiresAt: invoice.expiresAt.toInt(),
           isExpired: invoice.isExpired,
-          network: Network.fromName(invoice.network),
           cltvExpDelta: invoice.cltvExpDelta.toInt(),
           preimageHash: invoice.preimageHash,
           bip21: invoice.bip21,
         );
-      } catch (_) {}
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+
       throw 'Invalid payment request';
     } catch (e) {
+      debugPrint(e.toString());
       rethrow;
     }
   }

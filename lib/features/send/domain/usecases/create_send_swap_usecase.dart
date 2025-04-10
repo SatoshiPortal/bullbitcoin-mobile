@@ -1,6 +1,7 @@
 // TODO: ?
 // TODO: string invoice, walletId and return LnSendSwap
 
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
@@ -42,7 +43,8 @@ class CreateSendSwapUsecase {
         throw Exception('Maximum Swap Amount: $limits.max sats');
       }
 
-      final mnemonic = await _seedRepository.get(wallet.masterFingerprint);
+      final mnemonic =
+          await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
 
       if (wallet.network.isLiquid && type == SwapType.lightningToBitcoin) {
         throw Exception(
@@ -69,7 +71,7 @@ class CreateSendSwapUsecase {
             walletId: walletId,
             invoice: invoice,
             isTestnet: wallet.network.isTestnet,
-            mnemonic: mnemonic.toString(),
+            mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: btcElectrumUrl,
           );
 
@@ -78,7 +80,7 @@ class CreateSendSwapUsecase {
             walletId: walletId,
             invoice: invoice,
             isTestnet: wallet.network.isTestnet,
-            mnemonic: mnemonic.toString(),
+            mnemonic: mnemonic.mnemonicWords.join(' '),
             electrumUrl: lbtcElectrumUrl,
           );
         default:

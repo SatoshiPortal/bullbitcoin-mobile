@@ -320,6 +320,9 @@ class SendConfirmScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLnSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningSwap != null,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -331,19 +334,25 @@ class SendConfirmScreen extends StatelessWidget {
           onBack: () => context.pop(),
         ),
       ),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Gap(24),
-            ConfirmTopArea(),
-            Gap(40),
-            _InfoSection(),
-            Gap(65),
-            _Warning(),
-            Gap(52),
-            _BottomButtons(),
-            Gap(40),
+            const Gap(24),
+            if (isLnSwap)
+              const SwapSendConfirmTopArea()
+            else
+              const OnchainSendConfirmTopArea(),
+            const Gap(40),
+            if (isLnSwap)
+              const _SwapSendInfoSection()
+            else
+              const _OnchainSendInfoSection(),
+            const Gap(65),
+            const _Warning(),
+            const Gap(52),
+            const _BottomButtons(),
+            const Gap(40),
           ],
         ),
       ),
@@ -412,8 +421,8 @@ class ConfirmSendButton extends StatelessWidget {
   }
 }
 
-class _InfoSection extends StatelessWidget {
-  const _InfoSection();
+class _OnchainSendInfoSection extends StatelessWidget {
+  const _OnchainSendInfoSection();
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.colour.secondaryFixedDim);
   }
@@ -523,6 +532,101 @@ class _InfoSection extends StatelessWidget {
   }
 }
 
+class _SwapSendInfoSection extends StatelessWidget {
+  const _SwapSendInfoSection();
+  Widget _divider(BuildContext context) {
+    return Container(height: 1, color: context.colour.secondaryFixedDim);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedWallet = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet,
+    );
+    final addressOrInvoice = context.select(
+      (SendCubit cubit) => cubit.state.addressOrInvoice,
+    );
+    final formattedBitcoinAmount = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
+    );
+    final formattedFiatEquivalent = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
+    );
+    final swap = context.select(
+      (SendCubit cubit) => cubit.state.lightningSwap,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          InfoRow(
+            title: 'From',
+            details: BBText(
+              selectedWallet!.label,
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+          InfoRow(
+            title: 'Swap ID',
+            details: BBText(
+              swap!.id,
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+          InfoRow(
+            title: 'To',
+            details: BBText(
+              addressOrInvoice,
+              style: context.font.bodyLarge,
+              maxLines: 5,
+              textAlign: TextAlign.end,
+            ),
+            // const Gap(4),
+            // InkWell(
+            //   child: Icon(
+            //     Icons.copy,
+            //     color: context.colour.primary,
+            //     size: 16,
+            //   ),
+            // ),
+          ),
+          _divider(context),
+          InfoRow(
+            title: 'Amount',
+            details: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
+                BBText(
+                  '~$formattedFiatEquivalent',
+                  style: context.font.labelSmall,
+                  color: context.colour.surfaceContainer,
+                ),
+              ],
+            ),
+          ),
+          _divider(context),
+          InfoRow(
+            title: 'Total fees',
+            details: BBText(
+              "${swap.fees?.totalFees} sats",
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+        ],
+      ),
+    );
+  }
+}
+
 class InfoRow extends StatelessWidget {
   const InfoRow({
     super.key,
@@ -554,8 +658,8 @@ class InfoRow extends StatelessWidget {
   }
 }
 
-class ConfirmTopArea extends StatelessWidget {
-  const ConfirmTopArea({super.key});
+class OnchainSendConfirmTopArea extends StatelessWidget {
+  const OnchainSendConfirmTopArea({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -582,6 +686,47 @@ class ConfirmTopArea extends StatelessWidget {
         ),
         const Gap(16),
         BBText('Confirm Send', style: context.font.bodyMedium),
+        const Gap(4),
+        BBText(
+          amountBitcoin,
+          style: context.font.displaySmall,
+          color: context.colour.outlineVariant,
+        ),
+      ],
+    );
+  }
+}
+
+class SwapSendConfirmTopArea extends StatelessWidget {
+  const SwapSendConfirmTopArea({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final amountBitcoin = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
+    );
+    // final totalFees = context.select(
+    //   (SendCubit cubit) => cubit.state.lightningSwap?.fees?.totalFees,
+    // );
+    return Column(
+      // crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          alignment: Alignment.center,
+          height: 72,
+          width: 72,
+          decoration: BoxDecoration(
+            color: context.colour.secondaryFixedDim,
+            shape: BoxShape.circle,
+          ),
+          child: Image.asset(
+            Assets.icons.swap.path,
+            height: 24,
+            width: 24,
+          ),
+        ),
+        const Gap(16),
+        BBText('Confirm Swap', style: context.font.bodyMedium),
         const Gap(4),
         BBText(
           amountBitcoin,
