@@ -148,13 +148,16 @@ class SendContinueWithAddressButton extends StatelessWidget {
     final error = context.select(
       (SendCubit cubit) => cubit.state.error,
     );
+    final loadingBestWallet = context.select(
+      (SendCubit cubit) => cubit.state.loadingBestWallet,
+    );
 
     return BBButton.big(
       label: 'Continue',
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
-      disabled: error != null,
+      disabled: loadingBestWallet || error != null,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );
