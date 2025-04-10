@@ -1,22 +1,16 @@
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/send/domain/entities/payment_request.dart';
 import 'package:flutter/foundation.dart';
 
 class SelectBestWalletUsecase {
-  final WalletRepository _walletRepository;
-
-  SelectBestWalletUsecase({
-    required WalletRepository walletRepository,
-  }) : _walletRepository = walletRepository;
+  SelectBestWalletUsecase();
 
   Future<Wallet> execute({
+    required List<Wallet> wallets,
     required PaymentRequest request,
     BigInt? amountSat,
   }) async {
     try {
-      final wallets = await _walletRepository.getWallets(sync: true);
-
       if (request is BitcoinRequest || request is LiquidRequest) {
         if (amountSat == null) throw 'amountSat should be specified';
       }

@@ -63,7 +63,8 @@ class SendState with _$SendState {
     @Default(SendType.lightning) SendType sendType,
     // input
     @Default('') String addressOrInvoice,
-    Wallet? wallet,
+    @Default([]) List<Wallet> wallets,
+    Wallet? selectedWallet,
     @Default('') String amount,
     BigInt? confirmedAmountSat,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
@@ -194,11 +195,11 @@ class SendState with _$SendState {
   }
 
   String formattedWalletBalance() {
-    if (wallet == null) return '0';
+    if (selectedWallet == null) return '0';
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
       // Format as BTC with appropriate decimal places
-      final btcAmount = wallet!.balanceSat.toDouble() / 100000000;
+      final btcAmount = selectedWallet!.balanceSat.toDouble() / 100000000;
       final currencyFormatter = NumberFormat.currency(
         name: BitcoinUnit.btc.code,
         decimalDigits: BitcoinUnit.btc.decimals,
@@ -215,10 +216,10 @@ class SendState with _$SendState {
         decimalDigits: 0,
         customPattern: '#,##0 ¤',
       );
-      return currencyFormatter.format(wallet!.balanceSat.toInt());
+      return currencyFormatter.format(selectedWallet!.balanceSat.toInt());
     } else {
       // Format as fiat currency with 2 decimal places
-      final btcAmount = wallet!.balanceSat.toDouble() / 100000000;
+      final btcAmount = selectedWallet!.balanceSat.toDouble() / 100000000;
       final fiatAmount = btcAmount * exchangeRate;
       final currencyFormatter = NumberFormat.currency(
         name: inputAmountCurrencyCode,
@@ -229,9 +230,9 @@ class SendState with _$SendState {
   }
 
   String formattedApproximateBalance() {
-    if (wallet == null) return '0';
+    if (selectedWallet == null) return '0';
 
-    final satsBalance = wallet!.balanceSat;
+    final satsBalance = selectedWallet!.balanceSat;
     final btcBalance = satsBalance.toDouble() / 100000000;
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code ||
@@ -269,7 +270,7 @@ class SendState with _$SendState {
   }
 
   bool walletHasBalance() {
-    if (wallet == null) return false;
-    return inputAmountSat <= wallet!.balanceSat;
+    if (selectedWallet == null) return false;
+    return inputAmountSat <= selectedWallet!.balanceSat;
   }
 }

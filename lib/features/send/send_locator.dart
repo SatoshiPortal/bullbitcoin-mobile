@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
@@ -43,9 +42,7 @@ class SendLocator {
       ),
     );
     locator.registerFactory<SelectBestWalletUsecase>(
-      () => SelectBestWalletUsecase(
-        walletRepository: locator<WalletRepository>(),
-      ),
+      () => SelectBestWalletUsecase(),
     );
   }
 }

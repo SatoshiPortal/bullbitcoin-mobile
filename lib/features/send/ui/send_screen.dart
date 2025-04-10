@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/scan/scan_widget.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
@@ -52,9 +53,11 @@ class SendFlow extends StatelessWidget {
         prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
         confirmBitcoinSendUsecase: locator<ConfirmBitcoinSendUsecase>(),
         confirmLiquidSendUsecase: locator<ConfirmLiquidSendUsecase>(),
+        getWalletsUsecase: locator<GetWalletsUsecase>(),
       )
         ..getCurrencies()
-        ..getExchangeRate(),
+        ..getExchangeRate()
+        ..loadWallets(),
       child: const SendScreen(),
     );
   }
@@ -416,7 +419,7 @@ class _InfoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selectedWallet = context.select(
-      (SendCubit cubit) => cubit.state.wallet,
+      (SendCubit cubit) => cubit.state.selectedWallet,
     );
     final addressOrInvoice = context.select(
       (SendCubit cubit) => cubit.state.addressOrInvoice,

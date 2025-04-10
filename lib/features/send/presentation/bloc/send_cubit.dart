@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
@@ -31,6 +32,7 @@ class SendCubit extends Cubit<SendState> {
     required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
     required ConfirmBitcoinSendUsecase confirmBitcoinSendUsecase,
     required ConfirmLiquidSendUsecase confirmLiquidSendUsecase,
+    required GetWalletsUsecase getWalletsUsecase,
   })  : _getCurrencyUsecase = getCurrencyUsecase,
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
         _convertSatsToCurrencyAmountUsecase =
@@ -44,6 +46,7 @@ class SendCubit extends Cubit<SendState> {
         _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
         _confirmBitcoinSendUsecase = confirmBitcoinSendUsecase,
         _confirmLiquidSendUsecase = confirmLiquidSendUsecase,
+        _getWalletsUsecase = getWalletsUsecase,
         super(const SendState());
 
   // ignore: unused_field
@@ -55,6 +58,7 @@ class SendCubit extends Cubit<SendState> {
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetUtxosUsecase _getUtxosUsecase;
+  final GetWalletsUsecase _getWalletsUsecase;
   // ignore: unused_field
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
@@ -70,6 +74,15 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(step: SendStep.address));
     } else if (state.step == SendStep.confirm) {
       emit(state.copyWith(step: SendStep.amount));
+    }
+  }
+
+  Future<void> loadWallets() async {
+    try {
+      final wallets = await _getWalletsUsecase.execute();
+      emit(state.copyWith(wallets: wallets));
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
     }
   }
 
@@ -89,13 +102,15 @@ class SendCubit extends Cubit<SendState> {
 
     final paymentRequest =
         await _detectBitcoinStringUsecase.execute(data: state.addressOrInvoice);
+
     final wallet = await _bestWalletUsecase.execute(
+      wallets: state.wallets,
       request: paymentRequest,
       amountSat: state.inputAmountSat,
     );
     emit(
       state.copyWith(
-        wallet: wallet,
+        selectedWallet: wallet,
         sendType: SendType.from(paymentRequest),
       ),
     );
@@ -165,7 +180,12 @@ class SendCubit extends Cubit<SendState> {
             amountFiat == null && !isDecimalPoint ? state.amount : amount;
       }
 
-      emit(state.copyWith(amount: validatedAmount));
+      emit(
+        state.copyWith(
+          amount: validatedAmount,
+          sendMax: false,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -182,7 +202,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void onMaxPressed() {
-    if (state.wallet == null) return;
+    if (state.selectedWallet == null) return;
 
     String maxAmount = '';
 
@@ -195,20 +215,25 @@ class SendCubit extends Cubit<SendState> {
       );
       maxAmount = totalSats.toString();
     } else {
-      maxAmount = state.wallet!.balanceSat.toString();
+      maxAmount = state.selectedWallet!.balanceSat.toString();
     }
 
-    emit(state.copyWith(amount: maxAmount));
+    emit(
+      state.copyWith(
+        amount: maxAmount,
+        sendMax: true,
+      ),
+    );
   }
 
   void noteChanged(String note) => emit(state.copyWith(label: note));
 
   Future<void> loadUtxos() async {
-    if (state.wallet == null) return;
+    if (state.selectedWallet == null) return;
 
     try {
       final utxos = await _getUtxosUsecase.execute(
-        walletId: state.wallet!.id,
+        walletId: state.selectedWallet!.id,
       );
       emit(state.copyWith(utxos: utxos));
     } catch (e) {
@@ -231,10 +256,10 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> loadFees() async {
-    if (state.wallet == null) return;
+    if (state.selectedWallet == null) return;
     try {
       final fees = await _getNetworkFeesUsecase.execute(
-        network: state.wallet!.network,
+        network: state.selectedWallet!.network,
       );
       emit(
         state.copyWith(
@@ -259,9 +284,9 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> createTransaction() async {
     try {
-      if (state.wallet!.network.isLiquid) {
+      if (state.selectedWallet!.network.isLiquid) {
         final psbt = await _prepareLiquidSendUsecase.execute(
-          walletId: state.wallet!.id,
+          walletId: state.selectedWallet!.id,
           address: state.addressOrInvoice,
           networkFee: state.selectedFee!,
           amountSat: state.confirmedAmountSat!.toInt(),
@@ -274,7 +299,7 @@ class SendCubit extends Cubit<SendState> {
         );
       } else {
         final psbt = await _prepareBitcoinSendUsecase.execute(
-          walletId: state.wallet!.id,
+          walletId: state.selectedWallet!.id,
           address: state.addressOrInvoice,
           networkFee: state.selectedFee!,
           amountSat: state.confirmedAmountSat!.toInt(),
@@ -293,11 +318,11 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> confirmTransaction() async {
     try {
-      if (state.wallet!.network.isLiquid) {
+      if (state.selectedWallet!.network.isLiquid) {
         final txId = await _confirmLiquidSendUsecase.execute(
           psbt: state.unsignedPsbt!,
-          walletId: state.wallet!.id,
-          isTestnet: state.wallet!.network.isTestnet,
+          walletId: state.selectedWallet!.id,
+          isTestnet: state.selectedWallet!.network.isTestnet,
         );
         emit(
           state.copyWith(
@@ -308,8 +333,8 @@ class SendCubit extends Cubit<SendState> {
       } else {
         final txId = await _confirmBitcoinSendUsecase.execute(
           psbt: state.unsignedPsbt!,
-          walletId: state.wallet!.id,
-          isTestnet: state.wallet!.network.isTestnet,
+          walletId: state.selectedWallet!.id,
+          isTestnet: state.selectedWallet!.network.isTestnet,
         );
         emit(
           state.copyWith(
