@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/backup_wallet/ui/screens/backup_options_screen.dart';
-import 'package:bb_mobile/features/test_wallet_backup/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/test_backup_options_screen.dart';
 import 'package:go_router/go_router.dart';
 

@@ -24,14 +24,16 @@ class WatchWalletTransactionByAddressUsecase {
       while (!isCancelled) {
         try {
           debugPrint(
-              'Fetching transactions to address $toAddress for wallet: $walletId');
+            'Fetching transactions to address $toAddress for wallet: $walletId',
+          );
           final txs = await _walletTransactionRepository.getWalletTransactions(
             walletId: walletId,
             toAddress: toAddress,
             sync: true,
           );
           debugPrint(
-              'Fetched ${txs.length} transactions to address $toAddress for wallet: $walletId');
+            'Fetched ${txs.length} transactions to address $toAddress for wallet: $walletId',
+          );
 
           final tx = txs.isNotEmpty
               ? txs.firstWhere(

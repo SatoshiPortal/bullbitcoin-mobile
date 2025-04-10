@@ -104,45 +104,49 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
           environment == null || environment.isTestnet == metadata.isTestnet,
     );
     final walletModels = filteredWalletsMetadata
-        .map((metadata) => metadata.isBitcoin
-            ? PublicBdkWalletModel(
-                externalDescriptor: metadata.externalPublicDescriptor,
-                internalDescriptor: metadata.internalPublicDescriptor,
-                isTestnet: metadata.isTestnet,
-                id: metadata.id,
-              )
-            : PublicLwkWalletModel(
-                combinedCtDescriptor: metadata.externalPublicDescriptor,
-                isTestnet: metadata.isTestnet,
-                id: metadata.id,
-              ))
+        .map(
+          (metadata) => metadata.isBitcoin
+              ? PublicBdkWalletModel(
+                  externalDescriptor: metadata.externalPublicDescriptor,
+                  internalDescriptor: metadata.internalPublicDescriptor,
+                  isTestnet: metadata.isTestnet,
+                  id: metadata.id,
+                )
+              : PublicLwkWalletModel(
+                  combinedCtDescriptor: metadata.externalPublicDescriptor,
+                  isTestnet: metadata.isTestnet,
+                  id: metadata.id,
+                ),
+        )
         .toList();
 
     if (sync) {
-      await Future.wait(walletModels.map((walletModel) async {
-        final isLiquid = walletModel is PublicLwkWalletModel;
+      await Future.wait(
+        walletModels.map((walletModel) async {
+          final isLiquid = walletModel is PublicLwkWalletModel;
 
-        final electrumServer = await _electrumServerStorage.getByProvider(
-              ElectrumServerProvider.blockstream,
-              network: Network.fromEnvironment(
+          final electrumServer = await _electrumServerStorage.getByProvider(
+                ElectrumServerProvider.blockstream,
+                network: Network.fromEnvironment(
+                  isTestnet: walletModel.isTestnet,
+                  isLiquid: isLiquid,
+                ),
+              ) ??
+              ElectrumServerModel.blockstream(
                 isTestnet: walletModel.isTestnet,
                 isLiquid: isLiquid,
-              ),
-            ) ??
-            ElectrumServerModel.blockstream(
-              isTestnet: walletModel.isTestnet,
-              isLiquid: isLiquid,
-            );
+              );
 
-        final walletTransactionDatasource = isLiquid
-            ? _lwkWalletTransactionDatasource
-            : _bdkWalletTransactionDatasource;
+          final walletTransactionDatasource = isLiquid
+              ? _lwkWalletTransactionDatasource
+              : _bdkWalletTransactionDatasource;
 
-        return walletTransactionDatasource.sync(
-          wallet: walletModel,
-          electrumServer: electrumServer,
-        );
-      }));
+          return walletTransactionDatasource.sync(
+            wallet: walletModel,
+            electrumServer: electrumServer,
+          );
+        }),
+      );
     }
 
     return walletModels;

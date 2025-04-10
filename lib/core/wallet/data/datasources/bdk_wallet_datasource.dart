@@ -230,43 +230,48 @@ class BdkWalletDatasource
     if (toAddress != null && toAddress.isNotEmpty) {
       // Filter transactions by address by returning null for non-matching transactions
       // and then removing null values from the list
-      final filtered = await Future.wait(transactions.map((tx) async {
-        final txOutputs = await tx.transaction?.output();
-        if (txOutputs == null) return null;
+      final filtered = await Future.wait(
+        transactions.map((tx) async {
+          final txOutputs = await tx.transaction?.output();
+          if (txOutputs == null) return null;
 
-        final addresses = await Future.wait(txOutputs.map(
-          (output) => bdk.Address.fromScript(
-            script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
-            network: bdkWallet.network(),
-          ),
-        ));
+          final addresses = await Future.wait(
+            txOutputs.map(
+              (output) => bdk.Address.fromScript(
+                script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
+                network: bdkWallet.network(),
+              ),
+            ),
+          );
 
-        final matches = addresses.any((address) {
-          return address.toString() == toAddress;
-        });
-        return matches ? tx : null;
-      }));
+          final matches = addresses.any((address) {
+            return address.toString() == toAddress;
+          });
+          return matches ? tx : null;
+        }),
+      );
       // Remove null values from the filtered list
       transactions = filtered.whereType<bdk.TransactionDetails>().toList();
     }
 
     // Map the transactions to WalletTransactionModel
-    final List<WalletTransactionModel> walletTxs =
-        await Future.wait(transactions.map(
-      (tx) async {
-        final isIncoming = tx.received > tx.sent;
-        final netAmountSat =
-            isIncoming ? tx.received - tx.sent : tx.sent - tx.received;
+    final List<WalletTransactionModel> walletTxs = await Future.wait(
+      transactions.map(
+        (tx) async {
+          final isIncoming = tx.received > tx.sent;
+          final netAmountSat =
+              isIncoming ? tx.received - tx.sent : tx.sent - tx.received;
 
-        return WalletTransactionModel.bitcoin(
-          txId: tx.txid,
-          isIncoming: tx.received > tx.sent,
-          amountSat: netAmountSat.toInt(),
-          feeSat: tx.fee?.toInt() ?? 0,
-          confirmationTimestamp: tx.confirmationTime?.timestamp.toInt(),
-        );
-      },
-    ));
+          return WalletTransactionModel.bitcoin(
+            txId: tx.txid,
+            isIncoming: tx.received > tx.sent,
+            amountSat: netAmountSat.toInt(),
+            feeSat: tx.fee?.toInt() ?? 0,
+            confirmationTimestamp: tx.confirmationTime?.timestamp.toInt(),
+          );
+        },
+      ),
+    );
 
     return walletTxs;
   }

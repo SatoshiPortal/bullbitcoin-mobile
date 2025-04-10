@@ -19,11 +19,13 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       final transactionsBeforeSyncing =
           await _getWalletTransactionsUsecase.execute();
 
-      emit(state.copyWith(
-        transactions: transactionsBeforeSyncing,
-        loadingTxs: true,
-        err: null,
-      ));
+      emit(
+        state.copyWith(
+          transactions: transactionsBeforeSyncing,
+          loadingTxs: true,
+          err: null,
+        ),
+      );
 
       // Now sync and get the transactions again
       final syncedTransactions = await _getWalletTransactionsUsecase.execute(
