@@ -66,7 +66,7 @@ class SendState with _$SendState {
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
     @Default('') String amount,
-    BigInt? confirmedAmountSat,
+    int? confirmedAmountSat,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('CAD') String fiatCurrencyCode,
@@ -94,7 +94,7 @@ class SendState with _$SendState {
   const SendState._();
   bool get isInputAmountFiat => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
       .contains(inputAmountCurrencyCode);
-  BigInt get inputAmountSat {
+  int get inputAmountSat {
     BigInt amountSat = BigInt.zero;
 
     if (amount.isNotEmpty) {
@@ -111,7 +111,7 @@ class SendState with _$SendState {
       }
     }
 
-    return amountSat;
+    return amountSat.toInt();
   }
 
   double get inputAmountBtc => inputAmountSat.toDouble() / 100000000;
@@ -136,7 +136,7 @@ class SendState with _$SendState {
         decimalDigits: 0, // Use 0 decimals for sats
         customPattern: '#,##0 ¤',
       );
-      return currencyFormatter.format(confirmedAmountSat?.toInt() ?? 0);
+      return currencyFormatter.format(confirmedAmountSat ?? 0);
     } else {
       // For BTC, use the standard decimal formatting
       final currencyFormatter = NumberFormat.currency(
@@ -170,7 +170,7 @@ class SendState with _$SendState {
           decimalDigits: 0, // Use 0 decimals for sats
           customPattern: '#,##0 ¤',
         );
-        return currencyFormatter.format(inputAmountSat.toInt());
+        return currencyFormatter.format(inputAmountSat);
       } else {
         // For BTC, use the standard decimal formatting
         final currencyFormatter = NumberFormat.currency(
@@ -271,6 +271,6 @@ class SendState with _$SendState {
 
   bool walletHasBalance() {
     if (selectedWallet == null) return false;
-    return inputAmountSat <= selectedWallet!.balanceSat;
+    return inputAmountSat <= selectedWallet!.balanceSat.toInt();
   }
 }

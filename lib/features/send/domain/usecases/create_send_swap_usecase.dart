@@ -23,22 +23,22 @@ class CreateSendSwapUsecase {
         _swapRepositoryTestnet = swapRepositoryTestnet,
         _seedRepository = seedRepository;
 
-  Future<Swap> execute({
+  Future<LnSendSwap> execute({
     required String walletId,
     required SwapType type,
-    required int amountSat,
     required String invoice,
   }) async {
     try {
       final wallet = await _walletRepository.getWallet(walletId);
-
       final swapRepository =
           wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
+      final decoded = await swapRepository.decodeInvoice(invoice: invoice);
+
       final limits = await _swapRepository.getSwapLimits(type: type);
-      if (amountSat < limits.min) {
+      if (decoded.sats < limits.min) {
         throw Exception('Minimum Swap Amount: $limits.min sats');
       }
-      if (amountSat > limits.max) {
+      if (decoded.sats > limits.max) {
         throw Exception('Maximum Swap Amount: $limits.max sats');
       }
 

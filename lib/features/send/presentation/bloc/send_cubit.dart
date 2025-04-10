@@ -5,11 +5,14 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/features/send/domain/entities/payment_request.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
@@ -33,6 +36,7 @@ class SendCubit extends Cubit<SendState> {
     required ConfirmBitcoinSendUsecase confirmBitcoinSendUsecase,
     required ConfirmLiquidSendUsecase confirmLiquidSendUsecase,
     required GetWalletsUsecase getWalletsUsecase,
+    required CreateSendSwapUsecase createSendSwapUsecase,
   })  : _getCurrencyUsecase = getCurrencyUsecase,
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
         _convertSatsToCurrencyAmountUsecase =
@@ -47,6 +51,7 @@ class SendCubit extends Cubit<SendState> {
         _confirmBitcoinSendUsecase = confirmBitcoinSendUsecase,
         _confirmLiquidSendUsecase = confirmLiquidSendUsecase,
         _getWalletsUsecase = getWalletsUsecase,
+        _createSendSwapUsecase = createSendSwapUsecase,
         super(const SendState());
 
   // ignore: unused_field
@@ -62,7 +67,7 @@ class SendCubit extends Cubit<SendState> {
   // ignore: unused_field
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
-
+  final CreateSendSwapUsecase _createSendSwapUsecase;
   // ignore: unused_field
   final ConfirmBitcoinSendUsecase _confirmBitcoinSendUsecase;
   final ConfirmLiquidSendUsecase _confirmLiquidSendUsecase;
@@ -99,7 +104,7 @@ class SendCubit extends Cubit<SendState> {
     emit(
       state.copyWith(loadingBestWallet: true),
     );
-
+    await loadFees();
     final paymentRequest =
         await _detectBitcoinStringUsecase.execute(data: state.addressOrInvoice);
 
@@ -108,19 +113,42 @@ class SendCubit extends Cubit<SendState> {
       request: paymentRequest,
       amountSat: state.inputAmountSat,
     );
+    final sendType = SendType.from(paymentRequest);
     emit(
       state.copyWith(
         selectedWallet: wallet,
-        sendType: SendType.from(paymentRequest),
+        sendType: sendType,
       ),
     );
-
-    loadUtxos();
-    emit(
-      state.copyWith(
-        step: SendStep.amount,
-      ),
-    );
+    if (paymentRequest.isBolt11) {
+      // TODO: add support for boltz12 or lnaddress
+      // for bolt12 or lnaddress we need to redirect to the amount page and only create a swap after amount is set
+      final swapType = wallet.isInstant()
+          ? SwapType.liquidToLightning
+          : SwapType.bitcoinToLightning;
+      final swap = await _createSendSwapUsecase.execute(
+        walletId: wallet.id,
+        type: swapType,
+        invoice: state.addressOrInvoice,
+      );
+      await loadFees();
+      await loadUtxos();
+      emit(
+        state.copyWith(
+          step: SendStep.confirm,
+          lightningSwap: swap,
+          confirmedAmountSat: (paymentRequest as Bolt11Request).amountSat,
+        ),
+      );
+    } else {
+      await loadFees();
+      await loadUtxos();
+      emit(
+        state.copyWith(
+          step: SendStep.amount,
+        ),
+      );
+    }
   }
 
   Future<void> getCurrencies() async {
@@ -289,7 +317,7 @@ class SendCubit extends Cubit<SendState> {
           walletId: state.selectedWallet!.id,
           address: state.addressOrInvoice,
           networkFee: state.selectedFee!,
-          amountSat: state.confirmedAmountSat!.toInt(),
+          amountSat: state.confirmedAmountSat,
           drain: state.sendMax,
         );
         emit(
@@ -302,7 +330,7 @@ class SendCubit extends Cubit<SendState> {
           walletId: state.selectedWallet!.id,
           address: state.addressOrInvoice,
           networkFee: state.selectedFee!,
-          amountSat: state.confirmedAmountSat!.toInt(),
+          amountSat: state.confirmedAmountSat,
           drain: state.sendMax,
         );
         emit(
