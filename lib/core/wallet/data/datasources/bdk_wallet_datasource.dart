@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart';
@@ -44,7 +45,18 @@ extension BdkNetworkX on bdk.Network {
 
 class BdkWalletDatasource
     implements AddressDatasource, WalletTransactionDatasource, UtxoDatasource {
-  const BdkWalletDatasource();
+  BdkWalletDatasource();
+  final Map<String, Completer<void>> _activeSyncs = {};
+
+  void completeActiveSyncForWallet(String walletDb) {
+    if (_activeSyncs.containsKey(walletDb)) {
+      _activeSyncs[walletDb]?.complete();
+      _activeSyncs.remove(walletDb);
+    }
+  }
+
+  Future<void>? getActiveSyncForWallet(String walletDb) =>
+      _activeSyncs[walletDb]?.future;
 
   Future<BalanceModel> getBalance({
     required PublicBdkWalletModel wallet,
@@ -69,20 +81,35 @@ class BdkWalletDatasource
     required PublicWalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) async {
-    final bdkWallet = await _createPublicWallet(wallet);
-    final blockchain = await bdk.Blockchain.create(
-      config: bdk.BlockchainConfig.electrum(
-        config: bdk.ElectrumConfig(
-          url: electrumServer.url,
-          socks5: electrumServer.socks5,
-          retry: electrumServer.retry,
-          timeout: electrumServer.timeout,
-          stopGap: BigInt.from(electrumServer.stopGap),
-          validateDomain: electrumServer.validateDomain,
+    if (_activeSyncs[wallet.dbName]?.future != null ||
+        _activeSyncs.containsKey(wallet.dbName)) {
+      return _activeSyncs[wallet.dbName]!.future;
+    }
+
+    _activeSyncs[wallet.dbName] = Completer<void>();
+
+    try {
+      final bdkWallet = await _createPublicWallet(wallet);
+      final blockchain = await bdk.Blockchain.create(
+        config: bdk.BlockchainConfig.electrum(
+          config: bdk.ElectrumConfig(
+            url: electrumServer.url,
+            socks5: electrumServer.socks5,
+            retry: electrumServer.retry,
+            timeout: electrumServer.timeout,
+            stopGap: BigInt.from(electrumServer.stopGap),
+            validateDomain: electrumServer.validateDomain,
+          ),
         ),
-      ),
-    );
-    await bdkWallet.sync(blockchain: blockchain);
+      );
+      await bdkWallet.sync(blockchain: blockchain);
+      _activeSyncs[wallet.dbName]?.complete();
+    } catch (e) {
+      _activeSyncs[wallet.dbName]?.completeError(e);
+      rethrow;
+    } finally {
+      _activeSyncs.remove(wallet.dbName);
+    }
   }
 
   Future<bool> isMine(

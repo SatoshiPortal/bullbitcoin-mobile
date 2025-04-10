@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart';
@@ -18,7 +19,18 @@ import 'package:path_provider/path_provider.dart';
 
 class LwkWalletDatasource
     implements AddressDatasource, WalletTransactionDatasource, UtxoDatasource {
-  const LwkWalletDatasource();
+  LwkWalletDatasource();
+  final Map<String, Completer<void>> _activeSyncs = {};
+
+  void completeActiveSyncForWallet(String walletDb) {
+    if (_activeSyncs.containsKey(walletDb)) {
+      _activeSyncs[walletDb]?.complete();
+      _activeSyncs.remove(walletDb);
+    }
+  }
+
+  Future<void>? getActiveSyncForWallet(String walletDb) =>
+      _activeSyncs[walletDb]?.future;
 
   Future<String> _getDbPath(String dbName) async {
     final dir = await getApplicationDocumentsDirectory();
@@ -101,14 +113,26 @@ class LwkWalletDatasource
     required PublicWalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) async {
+    if (_activeSyncs[wallet.dbName]?.future != null ||
+        _activeSyncs.containsKey(wallet.dbName)) {
+      return _activeSyncs[wallet.dbName]!.future;
+    }
+
+    _activeSyncs[wallet.dbName] = Completer<void>();
+
     try {
       final lwkWallet = await _createPublicWallet(wallet);
       await lwkWallet.sync(
         electrumUrl: electrumServer.url,
         validateDomain: electrumServer.validateDomain,
       );
+      _activeSyncs[wallet.dbName]?.complete();
     } catch (e) {
+      _activeSyncs[wallet.dbName]?.completeError(e);
       debugPrint(e.toString());
+      rethrow;
+    } finally {
+      _activeSyncs.remove(wallet.dbName);
     }
   }
 
