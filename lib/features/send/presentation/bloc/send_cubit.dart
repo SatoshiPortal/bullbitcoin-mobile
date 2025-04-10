@@ -192,6 +192,11 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> onAmountConfirmed() async {
+    emit(
+      state.copyWith(
+        amountConfirmedClicked: true,
+      ),
+    );
     final paymentRequest =
         await _detectBitcoinStringUsecase.execute(data: state.addressOrInvoice);
     final wallet = await _bestWalletUsecase.execute(

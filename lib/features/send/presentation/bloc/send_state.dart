@@ -88,6 +88,7 @@ class SendState with _$SendState {
     String? txId,
     Object? error,
     @Default(false) bool sendMax,
+    @Default(false) bool amountConfirmedClicked,
   }) = _SendState;
   const SendState._();
   bool get isInputAmountFiat => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
