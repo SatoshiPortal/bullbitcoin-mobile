@@ -93,7 +93,7 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> addressChanged(String address) async {
     try {
-      emit(state.copyWith(addressOrInvoice: address));
+      emit(state.copyWith(addressOrInvoice: address.trim()));
       loadFees();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
@@ -101,51 +101,60 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> continueOnAddressConfirmed() async {
-    emit(
-      state.copyWith(loadingBestWallet: true),
-    );
-    await loadFees();
-    final paymentRequest =
-        await _detectBitcoinStringUsecase.execute(data: state.addressOrInvoice);
-
-    final wallet = await _bestWalletUsecase.execute(
-      wallets: state.wallets,
-      request: paymentRequest,
-      amountSat: state.inputAmountSat,
-    );
-    final sendType = SendType.from(paymentRequest);
-    emit(
-      state.copyWith(
-        selectedWallet: wallet,
-        sendType: sendType,
-      ),
-    );
-    if (paymentRequest.isBolt11) {
-      // TODO: add support for boltz12 or lnaddress
-      // for bolt12 or lnaddress we need to redirect to the amount page and only create a swap after amount is set
-      final swapType = wallet.isInstant()
-          ? SwapType.liquidToLightning
-          : SwapType.bitcoinToLightning;
-      final swap = await _createSendSwapUsecase.execute(
-        walletId: wallet.id,
-        type: swapType,
-        invoice: state.addressOrInvoice,
+    try {
+      emit(
+        state.copyWith(loadingBestWallet: true),
       );
       await loadFees();
-      await loadUtxos();
+      final paymentRequest = await _detectBitcoinStringUsecase.execute(
+        data: state.addressOrInvoice,
+      );
+
+      final wallet = await _bestWalletUsecase.execute(
+        wallets: state.wallets,
+        request: paymentRequest,
+        amountSat: state.inputAmountSat,
+      );
+      final sendType = SendType.from(paymentRequest);
       emit(
         state.copyWith(
-          step: SendStep.confirm,
-          lightningSwap: swap,
-          confirmedAmountSat: (paymentRequest as Bolt11Request).amountSat,
+          selectedWallet: wallet,
+          sendType: sendType,
         ),
       );
-    } else {
-      await loadFees();
-      await loadUtxos();
+      if (paymentRequest.isBolt11) {
+        // TODO: add support for boltz12 or lnaddress
+        // for bolt12 or lnaddress we need to redirect to the amount page and only create a swap after amount is set
+        final swapType = wallet.isInstant()
+            ? SwapType.liquidToLightning
+            : SwapType.bitcoinToLightning;
+        final swap = await _createSendSwapUsecase.execute(
+          walletId: wallet.id,
+          type: swapType,
+          invoice: state.addressOrInvoice,
+        );
+        await loadFees();
+        await loadUtxos();
+        emit(
+          state.copyWith(
+            step: SendStep.confirm,
+            lightningSwap: swap,
+            confirmedAmountSat: (paymentRequest as Bolt11Request).amountSat,
+          ),
+        );
+      } else {
+        await loadFees();
+        await loadUtxos();
+        emit(
+          state.copyWith(
+            step: SendStep.amount,
+          ),
+        );
+      }
+    } catch (e) {
       emit(
         state.copyWith(
-          step: SendStep.amount,
+          error: e,
         ),
       );
     }

@@ -17,7 +17,7 @@ class SelectBestWalletUsecase {
 
       // Bitcoin
       if (request is BitcoinRequest) {
-        _selectBestWallet(amountSat!, request.network, wallets);
+        return _selectBestWallet(amountSat!, request.network, wallets);
       }
 
       // Liquid
