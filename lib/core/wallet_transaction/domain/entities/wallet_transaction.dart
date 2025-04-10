@@ -2,15 +2,15 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'transaction.freezed.dart';
+part 'wallet_transaction.freezed.dart';
 
-enum TransactionDirection {
+enum WalletTransactionDirection {
   incoming,
   outgoing,
   internal,
 }
 
-enum TransactionStatus {
+enum WalletTransactionStatus {
   pending,
   confirmed,
 }
@@ -19,8 +19,8 @@ enum TransactionStatus {
 sealed class WalletTransaction with _$WalletTransaction {
   const factory WalletTransaction.bitcoin({
     required String walletId,
-    required TransactionDirection direction,
-    required TransactionStatus status,
+    required WalletTransactionDirection direction,
+    required WalletTransactionStatus status,
     @Default('') String txId,
     @Default(0) int amountSat,
     @Default(0) int feeSat,
@@ -28,8 +28,8 @@ sealed class WalletTransaction with _$WalletTransaction {
   }) = BitcoinWalletTransaction;
   const factory WalletTransaction.liquid({
     required String walletId,
-    required TransactionDirection direction,
-    required TransactionStatus status,
+    required WalletTransactionDirection direction,
+    required WalletTransactionStatus status,
     @Default('') String txId,
     @Default(0) int amountSat,
     @Default(0) int feeSat,
@@ -45,7 +45,7 @@ sealed class Transaction with _$Transaction {
   const Transaction._();
   factory Transaction.onchain({
     required String walletId,
-    required TransactionDirection direction,
+    required WalletTransactionDirection direction,
     required String txId,
     required int amountSat,
     required int fees,
@@ -55,7 +55,7 @@ sealed class Transaction with _$Transaction {
   }) = OnchainTransaction;
   factory Transaction.lnSwap({
     required String walletId,
-    required TransactionDirection direction,
+    required WalletTransactionDirection direction,
     required int amountSat,
     DateTime? confirmationTime,
     required Network network,
@@ -64,7 +64,7 @@ sealed class Transaction with _$Transaction {
   }) = LnSwapTransaction;
   factory Transaction.chainSwap({
     required String walletId,
-    required TransactionDirection direction,
+    required WalletTransactionDirection direction,
     required int amountSat,
     DateTime? confirmationTime,
     required Network network,
@@ -73,7 +73,7 @@ sealed class Transaction with _$Transaction {
   }) = ChainSwapTransaction;
   factory Transaction.self({
     required String walletId,
-    required TransactionDirection direction,
+    required WalletTransactionDirection direction,
     required String txId,
     required int amountSat,
     required int fees,

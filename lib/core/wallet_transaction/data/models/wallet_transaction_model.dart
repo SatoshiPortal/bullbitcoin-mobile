@@ -1,25 +1,25 @@
-import 'package:bb_mobile/core/transaction/domain/entities/transaction.dart';
+import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'transaction_model.freezed.dart';
+part 'wallet_transaction_model.freezed.dart';
 
 @freezed
-sealed class TransactionModel with _$TransactionModel {
-  const factory TransactionModel.bitcoin({
+sealed class WalletTransactionModel with _$WalletTransactionModel {
+  const factory WalletTransactionModel.bitcoin({
     required String txId,
     required bool isIncoming,
     required int amountSat,
     required int feeSat,
     int? confirmationTimestamp,
-  }) = BitcoinTransactionModel;
-  const factory TransactionModel.liquid({
+  }) = BitcoinWalletTransactionModel;
+  const factory WalletTransactionModel.liquid({
     required String txId,
     required bool isIncoming,
     required int amountSat,
     required int feeSat,
     int? confirmationTimestamp,
-  }) = LiquidTransactionModel;
-  const TransactionModel._();
+  }) = LiquidWalletTransactionModel;
+  const WalletTransactionModel._();
 
   WalletTransaction toEntity({required String walletId}) {
     return when(
@@ -33,11 +33,11 @@ sealed class TransactionModel with _$TransactionModel {
           WalletTransaction.bitcoin(
         walletId: walletId,
         direction: isIncoming
-            ? TransactionDirection.incoming
-            : TransactionDirection.outgoing,
+            ? WalletTransactionDirection.incoming
+            : WalletTransactionDirection.outgoing,
         status: confirmationTimestamp == null
-            ? TransactionStatus.pending
-            : TransactionStatus.confirmed,
+            ? WalletTransactionStatus.pending
+            : WalletTransactionStatus.confirmed,
         txId: txId,
         amountSat: amountSat,
         feeSat: feeSat,
@@ -55,11 +55,11 @@ sealed class TransactionModel with _$TransactionModel {
           WalletTransaction.liquid(
         walletId: walletId,
         direction: isIncoming
-            ? TransactionDirection.incoming
-            : TransactionDirection.outgoing,
+            ? WalletTransactionDirection.incoming
+            : WalletTransactionDirection.outgoing,
         status: confirmationTimestamp == null
-            ? TransactionStatus.pending
-            : TransactionStatus.confirmed,
+            ? WalletTransactionStatus.pending
+            : WalletTransactionStatus.confirmed,
         txId: txId,
         amountSat: amountSat,
         feeSat: feeSat,

@@ -11,9 +11,9 @@ import 'package:bb_mobile/core/settings/settings_locator.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
 import 'package:bb_mobile/core/tor/tor_locator.dart';
-import 'package:bb_mobile/core/transaction/transaction_locator.dart';
 import 'package:bb_mobile/core/utxo/utxo_locator.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
+import 'package:bb_mobile/core/wallet_transaction/transaction_locator.dart';
 
 class CoreLocator {
   static Future<void> registerDatasources() async {

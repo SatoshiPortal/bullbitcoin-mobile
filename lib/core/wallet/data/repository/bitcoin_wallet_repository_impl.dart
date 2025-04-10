@@ -50,7 +50,7 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
       externalDescriptor: metadata.externalPublicDescriptor,
       internalDescriptor: metadata.internalPublicDescriptor,
       isTestnet: metadata.isTestnet,
-      dbName: metadata.id,
+      id: metadata.id,
     );
     final psbt = await _bdkWallet.buildPsbt(
       wallet: wallet,
@@ -121,7 +121,7 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
       externalDescriptor: metadata.externalPublicDescriptor,
       internalDescriptor: metadata.internalPublicDescriptor,
       isTestnet: metadata.isTestnet,
-      dbName: metadata.id,
+      id: metadata.id,
     );
 
     final isFromWallet = await _bdkWallet.isMine(script, wallet: wallet);

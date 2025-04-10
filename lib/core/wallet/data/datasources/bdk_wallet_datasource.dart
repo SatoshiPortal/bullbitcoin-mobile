@@ -4,14 +4,14 @@ import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart'
 import 'package:bb_mobile/core/address/data/models/address_model.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/transaction/data/datasources/transaction_datasource.dart';
-import 'package:bb_mobile/core/transaction/data/models/transaction_model.dart';
 import 'package:bb_mobile/core/utxo/data/datasources/utxo_datasource.dart';
 import 'package:bb_mobile/core/utxo/data/models/utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet_transaction/data/datasources/wallet_transaction_datasource.dart';
+import 'package:bb_mobile/core/wallet_transaction/data/models/wallet_transaction_model.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,7 +43,7 @@ extension BdkNetworkX on bdk.Network {
 }
 
 class BdkWalletDatasource
-    implements AddressDatasource, TransactionDatasource, UtxoDatasource {
+    implements AddressDatasource, WalletTransactionDatasource, UtxoDatasource {
   const BdkWalletDatasource();
 
   Future<BalanceModel> getBalance({
@@ -64,8 +64,9 @@ class BdkWalletDatasource
     return balance;
   }
 
+  @override
   Future<void> sync({
-    required PublicBdkWalletModel wallet,
+    required PublicWalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
@@ -219,19 +220,44 @@ class BdkWalletDatasource
 
   /* Start TransactionDatasource methods */
   @override
-  Future<List<TransactionModel>> getTransactions({
+  Future<List<WalletTransactionModel>> getTransactions({
     required PublicWalletModel wallet,
+    String? toAddress,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
 
-    final transactions = bdkWallet.listTransactions(includeRaw: false);
-    final List<TransactionModel> walletTxs = transactions.map(
-      (tx) {
+    var transactions = bdkWallet.listTransactions(includeRaw: false);
+    if (toAddress != null && toAddress.isNotEmpty) {
+      // Filter transactions by address by returning null for non-matching transactions
+      // and then removing null values from the list
+      final filtered = await Future.wait(transactions.map((tx) async {
+        final txOutputs = await tx.transaction?.output();
+        if (txOutputs == null) return null;
+
+        final addresses = await Future.wait(txOutputs.map(
+          (output) => bdk.Address.fromScript(
+            script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
+            network: bdkWallet.network(),
+          ),
+        ));
+
+        final matches =
+            addresses.any((address) => address.asString() == toAddress);
+        return matches ? tx : null;
+      }));
+      // Remove null values from the filtered list
+      transactions = filtered.whereType<bdk.TransactionDetails>().toList();
+    }
+
+    // Map the transactions to WalletTransactionModel
+    final List<WalletTransactionModel> walletTxs =
+        await Future.wait(transactions.map(
+      (tx) async {
         final isIncoming = tx.received > tx.sent;
         final netAmountSat =
             isIncoming ? tx.received - tx.sent : tx.sent - tx.received;
 
-        return TransactionModel.bitcoin(
+        return WalletTransactionModel.bitcoin(
           txId: tx.txid,
           isIncoming: tx.received > tx.sent,
           amountSat: netAmountSat.toInt(),
@@ -239,7 +265,7 @@ class BdkWalletDatasource
           confirmationTimestamp: tx.confirmationTime?.timestamp.toInt(),
         );
       },
-    ).toList();
+    ));
 
     return walletTxs;
   }

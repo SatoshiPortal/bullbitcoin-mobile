@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/transaction/domain/entities/transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
 
 abstract class SwapRepository {
   // LIMITS

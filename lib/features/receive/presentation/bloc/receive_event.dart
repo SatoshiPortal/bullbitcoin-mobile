@@ -22,6 +22,8 @@ class ReceiveEvent with _$ReceiveEvent {
       ReceivePayjoinUpdated;
   const factory ReceiveEvent.receivePayjoinOriginalTxBroadcasted() =
       ReceivePayjoinOriginalTxBroadcasted;
+  const factory ReceiveEvent.receiveTransactionReceived(WalletTransaction tx) =
+      ReceiveTransactionReceived;
   const factory ReceiveEvent.receiveLightningSwapUpdated(LnReceiveSwap swap) =
       ReceiveLightningSwapUpdated;
 }
