@@ -13,9 +13,8 @@ class ScanWidget extends StatefulWidget {
 }
 
 class _ScanWidgetState extends State<ScanWidget> {
-  late CameraController _controller;
+  CameraController? _controller;
   List<CameraDescription> _cameras = [];
-  bool _isInitialized = false;
   String _error = '';
 
   @override
@@ -32,14 +31,14 @@ class _ScanWidgetState extends State<ScanWidget> {
       setState(() {});
     } else {
       _controller = CameraController(_cameras.first, ResolutionPreset.max);
-      await _controller.initialize();
-      setState(() => _isInitialized = true);
+      await _controller?.initialize();
+      setState(() {});
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -47,75 +46,76 @@ class _ScanWidgetState extends State<ScanWidget> {
   Widget build(BuildContext context) {
     if (_error.isNotEmpty) return Center(child: Text(_error));
 
-    if (!_isInitialized) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    if (_controller != null) {
+      return BlocProvider(
+        create: (_) => ScanCubit(controller: _controller!),
+        child: BlocBuilder<ScanCubit, ScanState>(
+          builder: (context, state) {
+            return Stack(
+              children: [
+                Positioned.fill(child: CameraPreview(_controller!)),
 
-    return BlocProvider(
-      create: (_) => ScanCubit(controller: _controller),
-      child: BlocBuilder<ScanCubit, ScanState>(
-        builder: (context, state) {
-          return Stack(
-            children: [
-              Positioned.fill(child: CameraPreview(_controller)),
-
-              if (state.data.isNotEmpty)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 100,
-                  child: GestureDetector(
-                    onLongPress: () {
-                      Clipboard.setData(ClipboardData(text: state.data));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Copied to clipboard")),
-                      );
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      color: Colors.black54,
-                      child: Column(
-                        children: [
-                          if (state.paymentRequest != null)
+                if (state.data.isNotEmpty)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 100,
+                    child: GestureDetector(
+                      onLongPress: () {
+                        Clipboard.setData(ClipboardData(text: state.data));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Copied to clipboard")),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        color: Colors.black54,
+                        child: Column(
+                          children: [
+                            if (state.paymentRequest != null)
+                              Text(
+                                '${state.paymentRequest!.type.name} on ${state.paymentRequest!.network.name}',
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(color: Colors.red),
+                              ),
                             Text(
-                              '${state.paymentRequest!.type.name} on ${state.paymentRequest!.network.name}',
+                              state.data.length > 50
+                                  ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
+                                  : state.data,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.red),
+                              style: const TextStyle(color: Colors.white),
                             ),
-                          Text(
-                            state.data.length > 50
-                                ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
-                                : state.data,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
 
-              // Toggle Stream Button
-              Positioned(
-                bottom: 20,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final cubit = context.read<ScanCubit>();
-                      state.isStreaming
-                          ? cubit.stopScanning()
-                          : cubit.startScanning();
-                    },
-                    child: Text(state.isStreaming ? "Stop Scan" : "Start Scan"),
+                // Toggle Stream Button
+                Positioned(
+                  bottom: 20,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        final cubit = context.read<ScanCubit>();
+                        state.isStreaming
+                            ? cubit.stopScanning()
+                            : cubit.startScanning();
+                      },
+                      child:
+                          Text(state.isStreaming ? "Stop Scan" : "Start Scan"),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
+              ],
+            );
+          },
+        ),
+      );
+    }
+
+    return const Center(child: CircularProgressIndicator());
   }
 }
