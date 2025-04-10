@@ -394,6 +394,7 @@ class _BottomButtons extends StatelessWidget {
             outlined: true,
             bgColor: Colors.transparent,
             textColor: context.colour.secondary,
+            disabled: true,
           ),
           const Gap(12),
           const ConfirmSendButton(),

@@ -315,13 +315,16 @@ class SendCubit extends Cubit<SendState> {
       final address = state.lightningSwap != null
           ? state.lightningSwap!.paymentAddress
           : state.addressOrInvoice;
+      final amount = state.lightningSwap != null
+          ? state.lightningSwap!.paymentAmount
+          : state.confirmedAmountSat;
       // Fees can be selectedFee as it defaults to Fastest
       if (state.selectedWallet!.network.isLiquid) {
         final psbt = await _prepareLiquidSendUsecase.execute(
           walletId: state.selectedWallet!.id,
           address: address,
           networkFee: state.selectedFee!,
-          amountSat: state.confirmedAmountSat,
+          amountSat: amount,
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
@@ -335,7 +338,7 @@ class SendCubit extends Cubit<SendState> {
           walletId: state.selectedWallet!.id,
           address: address,
           networkFee: state.selectedFee!,
-          amountSat: state.confirmedAmountSat,
+          amountSat: amount,
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );

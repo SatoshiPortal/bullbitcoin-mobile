@@ -129,6 +129,10 @@ class SendState with _$SendState {
     return confirmedAmountBtc * exchangeRate;
   }
 
+  double get confirmedSwapAmountBtc => lightningSwap != null
+      ? lightningSwap!.paymentAmount.toDouble() / 100000000
+      : 0;
+
   String get formattedConfirmedAmountBitcoin {
     if (bitcoinUnit == BitcoinUnit.sats) {
       // For sats, use integer formatting without decimals
@@ -138,6 +142,30 @@ class SendState with _$SendState {
         customPattern: '#,##0 ¤',
       );
       return currencyFormatter.format(confirmedAmountSat ?? 0);
+    } else {
+      // For BTC, use the standard decimal formatting
+      final currencyFormatter = NumberFormat.currency(
+        name: bitcoinUnit.code,
+        decimalDigits: bitcoinUnit.decimals,
+        customPattern: '#,##0.00 ¤',
+      );
+      final formatted = currencyFormatter
+          .format(confirmedAmountBtc)
+          .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
+      return formatted;
+    }
+  }
+
+  String get formattedSwapAmountBitcoin {
+    if (lightningSwap == null) return '0';
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      // For sats, use integer formatting without decimals
+      final currencyFormatter = NumberFormat.currency(
+        name: bitcoinUnit.code,
+        decimalDigits: 0, // Use 0 decimals for sats
+        customPattern: '#,##0 ¤',
+      );
+      return currencyFormatter.format(lightningSwap!.paymentAmount);
     } else {
       // For BTC, use the standard decimal formatting
       final currencyFormatter = NumberFormat.currency(
