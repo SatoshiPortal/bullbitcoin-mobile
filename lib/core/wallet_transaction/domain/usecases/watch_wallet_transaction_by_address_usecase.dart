@@ -14,50 +14,49 @@ class WatchWalletTransactionByAddressUsecase {
   Stream<WalletTransaction> execute({
     required String walletId,
     String? toAddress,
-    Duration pollInterval = const Duration(seconds: 15),
+    Duration pollInterval = const Duration(seconds: 5),
   }) {
     final controller = StreamController<WalletTransaction>();
-    Timer? timer;
+    bool isCancelled = false;
+    WalletTransaction? lastEmitted;
 
-    Future<void> fetchAndEmit() async {
-      try {
-        debugPrint(
-            'Fetching transactions to address $toAddress for wallet: $walletId');
-        final txs = await _walletTransactionRepository.getWalletTransactions(
-          walletId: walletId,
-          toAddress: toAddress,
-          sync: true,
-        );
-        debugPrint(
-            'Fetched ${txs.length} transactions to address $toAddress for wallet: $walletId');
+    Future<void> pollingLoop() async {
+      while (!isCancelled) {
+        try {
+          debugPrint(
+              'Fetching transactions to address $toAddress for wallet: $walletId');
+          final txs = await _walletTransactionRepository.getWalletTransactions(
+            walletId: walletId,
+            toAddress: toAddress,
+            sync: true,
+          );
+          debugPrint(
+              'Fetched ${txs.length} transactions to address $toAddress for wallet: $walletId');
 
-        // If more than one, get the pending one if exists, else get the last one
-        final tx = txs.isNotEmpty
-            ? txs.firstWhere(
-                (tx) => tx.status == WalletTransactionStatus.pending,
-                orElse: () => txs.last,
-              )
-            : null;
+          final tx = txs.isNotEmpty
+              ? txs.firstWhere(
+                  (tx) => tx.status == WalletTransactionStatus.pending,
+                  orElse: () => txs.last,
+                )
+              : null;
 
-        if (tx == null) {
-          return;
+          if (tx != null && tx.txId != lastEmitted?.txId) {
+            lastEmitted = tx;
+            controller.add(tx);
+          }
+        } catch (e, stack) {
+          controller.addError(e, stack);
         }
 
-        controller.add(tx);
-      } catch (e, stack) {
-        controller.addError(e, stack);
+        await Future.delayed(pollInterval);
       }
     }
 
-    // Start immediately
-    fetchAndEmit();
+    // Start loop
+    pollingLoop();
 
-    // Schedule repeated polling
-    timer = Timer.periodic(pollInterval, (_) => fetchAndEmit());
-
-    // Clean up when no one is listening anymore
     controller.onCancel = () {
-      timer?.cancel();
+      isCancelled = true;
       controller.close();
     };
 
