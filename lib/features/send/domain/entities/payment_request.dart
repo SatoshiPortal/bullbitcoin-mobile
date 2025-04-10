@@ -146,7 +146,7 @@ class PaymentRequest with _$PaymentRequest {
 
       try {
         final invoice = await boltz.DecodedInvoice.fromString(s: data);
-        final sats = invoice.msats.toInt() ~/ (1000);
+        final sats = invoice.msats.toInt() ~/ 1000;
 
         return PaymentRequest.bolt11(
           type: PaymentType.bolt11,

@@ -9,7 +9,7 @@ class SelectBestWalletUsecase {
     required List<Wallet> wallets,
     required PaymentRequest request,
     int? amountSat,
-  }) async {
+  }) {
     try {
       if (request is BitcoinRequest || request is LiquidRequest) {
         if (amountSat == null) throw 'amountSat should be specified';
