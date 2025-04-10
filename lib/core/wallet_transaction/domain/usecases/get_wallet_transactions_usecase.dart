@@ -1,60 +1,72 @@
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet_transaction/domain/repositories/wallet_transaction_repository.dart';
 
 class GetWalletTransactionsUsecase {
+  final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
   final SwapRepository _testnetSwapRepository;
   final SwapRepository _mainnetSwapRepository;
-  final WalletRepository _walletRepository;
 
   GetWalletTransactionsUsecase({
+    required SettingsRepository settingsRepository,
     required WalletTransactionRepository walletTransactionRepository,
     required SwapRepository testnetSwapRepository,
     required SwapRepository mainnetSwapRepository,
-    required WalletRepository walletRepository,
-  })  : _walletTransactionRepository = walletTransactionRepository,
+  })  : _settingsRepository = settingsRepository,
+        _walletTransactionRepository = walletTransactionRepository,
         _testnetSwapRepository = testnetSwapRepository,
-        _mainnetSwapRepository = mainnetSwapRepository,
-        _walletRepository = walletRepository;
+        _mainnetSwapRepository = mainnetSwapRepository;
 
   Future<List<Transaction>> execute({
-    required String walletId,
+    String? walletId,
     bool sync = false,
   }) async {
     try {
-      final transactions =
+      final environment = await _settingsRepository.getEnvironment();
+      final walletTransactions =
           await _walletTransactionRepository.getWalletTransactions(
         walletId: walletId,
         sync: sync,
+        environment: environment,
       );
-      final allTransactions = <Transaction>[];
-      final wallet = await _walletRepository.getWallet(walletId);
 
-      final network = wallet.network;
-      final swapRepository =
-          network.isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
+      // TODO: We should not fetch the detailed transactions in this use case,
+      // This use case should be scoped to the WalletTransaction repository.
+      // We should make another or other use cases to fetch more detailes from
+      // the transactions.
+      final detailedTransactions = <Transaction>[];
 
-      for (final baseWalletTx in transactions) {
+      final swapRepository = environment.isTestnet
+          ? _testnetSwapRepository
+          : _mainnetSwapRepository;
+
+      for (final walletTransaction in walletTransactions) {
+        final isLiquid = walletTransaction is LiquidWalletTransaction;
+        final network = Network.fromEnvironment(
+          isTestnet: environment.isTestnet,
+          isLiquid: isLiquid,
+        );
         final swapTx = await swapRepository.getSwapWalletTx(
-          baseWalletTx: baseWalletTx,
+          baseWalletTx: walletTransaction,
           network: network,
         );
         // TODO: check if transaction is a payjoin
         if (swapTx != null) {
-          allTransactions.add(swapTx);
+          detailedTransactions.add(swapTx);
         } else {
-          allTransactions.add(
+          detailedTransactions.add(
             OnchainTransactionFactory.fromWalletTx(
-              baseWalletTx,
+              walletTransaction,
               network,
             ),
           );
         }
       }
 
-      return allTransactions;
+      return detailedTransactions;
     } catch (e) {
       throw GetTransactionsException(e.toString());
     }
