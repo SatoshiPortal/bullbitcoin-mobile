@@ -40,7 +40,7 @@ class AddressRepositoryImpl implements AddressRepository {
 
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
 
-    final addressModel = await walletDatasource.getLastUnusedAddress(
+    final addressModel = await walletDatasource.getNewAddress(
       wallet: walletModel,
     );
 

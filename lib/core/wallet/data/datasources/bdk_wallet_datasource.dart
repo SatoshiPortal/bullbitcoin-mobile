@@ -226,7 +226,7 @@ class BdkWalletDatasource
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
 
-    var transactions = bdkWallet.listTransactions(includeRaw: false);
+    var transactions = bdkWallet.listTransactions(includeRaw: true);
     if (toAddress != null && toAddress.isNotEmpty) {
       // Filter transactions by address by returning null for non-matching transactions
       // and then removing null values from the list
@@ -241,8 +241,9 @@ class BdkWalletDatasource
           ),
         ));
 
-        final matches =
-            addresses.any((address) => address.asString() == toAddress);
+        final matches = addresses.any((address) {
+          return address.toString() == toAddress;
+        });
         return matches ? tx : null;
       }));
       // Remove null values from the filtered list

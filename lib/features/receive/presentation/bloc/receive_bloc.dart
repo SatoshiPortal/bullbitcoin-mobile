@@ -593,9 +593,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       if (state.wallet == null) {
         throw Exception('No wallet found');
       }
+      final walletId = state.wallet!.id;
 
       final address = await _getReceiveAddressUsecase.execute(
-        walletId: state.wallet!.id,
+        walletId: walletId,
         newAddress: true,
       );
 
@@ -606,7 +607,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           Object? error;
           try {
             payjoin = await _receiveWithPayjoinUsecase.execute(
-              walletId: state.wallet!.id,
+              walletId: walletId,
               address: address.address,
             );
             // The payjoin receiver is created, now we can watch it for updates
@@ -629,6 +630,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         default:
           break;
       }
+
+      // We have to start listening for transactions to this new address now
+      _watchWalletTransactionToAddress(
+        walletId: walletId,
+        address: address.address,
+      );
     } catch (e) {
       emit(
         state.copyWith(error: e),
