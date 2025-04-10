@@ -1,4 +1,3 @@
-import 'package:bb_mobile/ui/components/loading/loading_line_content.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +29,11 @@ class PasteInput extends StatelessWidget {
           const Gap(15),
           Expanded(
             child: text.isEmpty
-                ? const LoadingLineContent(width: double.infinity)
+                ? BBText(
+                    'Paste a payment address or invoice',
+                    style: context.font.labelSmall,
+                    color: context.colour.surfaceContainer,
+                  )
                 : BBText(
                     text,
                     style: context.font.bodyLarge,

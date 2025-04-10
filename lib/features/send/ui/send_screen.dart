@@ -197,43 +197,56 @@ class SendAmountScreen extends StatelessWidget {
 
           return IgnorePointer(
             ignoring: state.amountConfirmedClicked,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Gap(10),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: NetworkDisplay(),
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Gap(10),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: NetworkDisplay(),
+                      ),
+                      const Gap(48),
+                      PriceInput(
+                        amount: state.amount,
+                        currency: state.bitcoinUnit.name,
+                        amountEquivalent:
+                            '${state.amount.isEmpty ? '' : state.formattedConfirmedAmountFiat} ${state.fiatCurrencyCode}',
+                        availableCurrencies: state.fiatCurrencyCodes,
+                        onNoteChanged: cubit.noteChanged,
+                        onCurrencyChanged: cubit.currencyCodeChanged,
+                      ),
+                      const Gap(64),
+                      BalanceRow(
+                        balance: state.balanceApproximatedAmount,
+                        currencyCode: state.fiatCurrencyCode,
+                        onMaxPressed: cubit.onMaxPressed,
+                      ),
+                      DialPad(
+                        onNumberPressed: cubit.onNumberPressed,
+                        onBackspacePressed: cubit.onBackspacePressed,
+                      ),
+                      const Gap(64),
+                    ],
                   ),
-                  const Gap(16),
-                  const Gap(82),
-                  PriceInput(
-                    amount: state.amount,
-                    currency: state.bitcoinUnit.name,
-                    amountEquivalent:
-                        '${state.amount.isEmpty ? '' : state.formattedConfirmedAmountFiat} ${state.fiatCurrencyCode}',
-                    availableCurrencies: state.fiatCurrencyCodes,
-                    onNoteChanged: cubit.noteChanged,
-                    onCurrencyChanged: cubit.currencyCodeChanged,
+                ),
+                const Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: SendAmountConfirmButton(),
+                      ),
+                      Gap(16),
+                    ],
                   ),
-                  const Gap(82),
-                  BalanceRow(
-                    balance: state.balanceApproximatedAmount,
-                    currencyCode: state.fiatCurrencyCode,
-                    onMaxPressed: cubit.onMaxPressed,
-                  ),
-                  DialPad(
-                    onNumberPressed: cubit.onNumberPressed,
-                    onBackspacePressed: cubit.onBackspacePressed,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: SendAmountConfirmButton(),
-                  ),
-                  const Gap(24),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },
@@ -278,11 +291,15 @@ class NetworkDisplay extends StatelessWidget {
       (cubit) => cubit.state.sendType,
     );
 
-    return IgnorePointer(
-      child: BBSegmentFull(
-        items: SendType.values.map((e) => e.displayName).toSet(),
-        onSelected: (c) {},
-        initialValue: sendType.displayName,
+    return AnimatedOpacity(
+      opacity: 0.5,
+      duration: const Duration(milliseconds: 200),
+      child: IgnorePointer(
+        child: BBSegmentFull(
+          items: SendType.values.map((e) => e.displayName).toSet(),
+          onSelected: (c) {},
+          initialValue: sendType.displayName,
+        ),
       ),
     );
   }
