@@ -194,7 +194,9 @@ class SendAmountScreen extends StatelessWidget {
       body: BlocBuilder<SendCubit, SendState>(
         builder: (context, state) {
           final cubit = context.read<SendCubit>();
-
+          final hasBalance = context.select(
+            (SendCubit cubit) => cubit.state.walletHasBalance(),
+          );
           return IgnorePointer(
             ignoring: state.amountConfirmedClicked,
             child: Stack(
@@ -212,16 +214,16 @@ class SendAmountScreen extends StatelessWidget {
                       PriceInput(
                         amount: state.amount,
                         currency: state.bitcoinUnit.name,
-                        amountEquivalent:
-                            '${state.amount.isEmpty ? '' : state.formattedConfirmedAmountFiat} ${state.fiatCurrencyCode}',
+                        amountEquivalent: state.formattedApproximateBalance(),
                         availableCurrencies: state.fiatCurrencyCodes,
                         onNoteChanged: cubit.noteChanged,
                         onCurrencyChanged: cubit.currencyCodeChanged,
+                        error: hasBalance ? null : 'Insufficient balance',
                       ),
                       const Gap(64),
                       BalanceRow(
-                        balance: state.balanceApproximatedAmount,
-                        currencyCode: state.fiatCurrencyCode,
+                        balance: state.formattedWalletBalance(),
+                        currencyCode: '',
                         onMaxPressed: cubit.onMaxPressed,
                       ),
                       DialPad(
@@ -262,8 +264,8 @@ class SendAmountConfirmButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final error = context.select(
-      (SendCubit cubit) => cubit.state.error,
+    final hasBalance = context.select(
+      (SendCubit cubit) => cubit.state.walletHasBalance(),
     );
     final amountConfirmedClicked = context.select(
       (SendCubit cubit) => cubit.state.amountConfirmedClicked,
@@ -273,7 +275,7 @@ class SendAmountConfirmButton extends StatelessWidget {
       onPressed: () {
         context.read<SendCubit>().onAmountConfirmed();
       },
-      disabled: amountConfirmedClicked || error != null,
+      disabled: amountConfirmedClicked || !hasBalance,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );

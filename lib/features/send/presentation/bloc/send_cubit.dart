@@ -76,57 +76,37 @@ class SendCubit extends Cubit<SendState> {
   Future<void> addressChanged(String address) async {
     try {
       emit(state.copyWith(addressOrInvoice: address));
-      final paymentRequest =
-          await _detectBitcoinStringUsecase.execute(data: address);
-      emit(
-        state.copyWith(
-          sendType: SendType.from(paymentRequest),
-        ),
-      );
-
-      loadUtxos();
       loadFees();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
   }
 
-  void continueOnAddressConfirmed() {
+  Future<void> continueOnAddressConfirmed() async {
+    emit(
+      state.copyWith(loadingBestWallet: true),
+    );
+
+    final paymentRequest =
+        await _detectBitcoinStringUsecase.execute(data: state.addressOrInvoice);
+    final wallet = await _bestWalletUsecase.execute(
+      request: paymentRequest,
+      amountSat: state.inputAmountSat,
+    );
+    emit(
+      state.copyWith(
+        wallet: wallet,
+        sendType: SendType.from(paymentRequest),
+      ),
+    );
+
+    loadUtxos();
     emit(
       state.copyWith(
         step: SendStep.amount,
       ),
     );
   }
-  // TODO: remove if not used
-  // Future<void> amountCurrencyChanged(String currencyCode) async {
-  //   try {
-  //     double exchangeRate = state.exchangeRate;
-  //     String fiatCurrencyCode = state.fiatCurrencyCode;
-
-  //     if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
-  //         .contains(currencyCode)) {
-  //       fiatCurrencyCode = currencyCode;
-  //     } else {
-  //       final currencyValues = await Future.wait([
-  //         _getCurrencyUsecase.execute(),
-  //         _convertSatsToCurrencyAmountUsecase.execute(),
-  //       ]);
-
-  //       fiatCurrencyCode = currencyValues[0] as String;
-  //       exchangeRate = currencyValues[1] as double;
-  //     }
-
-  //     emit(
-  //       state.copyWith(
-  //         fiatCurrencyCode: fiatCurrencyCode,
-  //         exchangeRate: exchangeRate,
-  //       ),
-  //     );
-  //   } catch (e) {
-  //     emit(state.copyWith(error: e.toString()));
-  //   }
-  // }
 
   Future<void> getCurrencies() async {
     final currencyValues = await Future.wait([
@@ -195,22 +175,10 @@ class SendCubit extends Cubit<SendState> {
     emit(
       state.copyWith(
         amountConfirmedClicked: true,
-      ),
-    );
-    final paymentRequest =
-        await _detectBitcoinStringUsecase.execute(data: state.addressOrInvoice);
-    final wallet = await _bestWalletUsecase.execute(
-      request: paymentRequest,
-      amountSat: state.inputAmountSat,
-    );
-    emit(
-      state.copyWith(
-        wallet: wallet,
         step: SendStep.confirm,
         confirmedAmountSat: state.inputAmountSat,
       ),
     );
-    await loadFees();
   }
 
   void onMaxPressed() {
@@ -395,15 +363,6 @@ class SendCubit extends Cubit<SendState> {
   //   final approximatedValue = btcAmount * state.exchangeRate;
   //   emit(state.copyWith(fiatApproximatedAmount: approximatedValue.toString()));
   // }
-
-  void approximateBalance() {
-    if (state.wallet == null) return;
-
-    final satsBalance = state.wallet!.balanceSat;
-    final btcBalance = approximateBtcFromSats(satsBalance);
-    final approximatedBalance = (btcBalance * state.exchangeRate).toString();
-    emit(state.copyWith(balanceApproximatedAmount: approximatedBalance));
-  }
 
   void onNumberPressed(String n) {
     amountChanged(state.amount + n);
