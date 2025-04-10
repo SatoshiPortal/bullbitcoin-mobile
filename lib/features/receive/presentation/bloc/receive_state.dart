@@ -25,7 +25,7 @@ class ReceiveState with _$ReceiveState {
     @Default('') String note,
     PayjoinReceiver? payjoin,
     @Default(false) bool isAddressOnly,
-    @Default('') String txId,
+    WalletTransaction? tx,
     Object? error,
   }) = _ReceiveState;
   const ReceiveState._();
@@ -232,12 +232,12 @@ class ReceiveState with _$ReceiveState {
   bool get isPaymentReceived {
     switch (type) {
       case ReceiveType.bitcoin:
-        return txId.isNotEmpty;
+        return tx != null;
       case ReceiveType.lightning:
         return lightningSwap != null &&
             lightningSwap!.status == SwapStatus.completed;
       case ReceiveType.liquid:
-        return txId.isNotEmpty;
+        return tx != null;
     }
   }
 

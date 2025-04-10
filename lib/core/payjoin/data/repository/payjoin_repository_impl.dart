@@ -61,6 +61,23 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
 
   @override
+  Future<Payjoin?> getPayjoinByTxId(String txId) async {
+    final payjoinModels = await _source.getAll();
+
+    Payjoin? payjoin;
+    try {
+      final payjoinModel = payjoinModels.firstWhere(
+        (payjoin) => payjoin.txId == txId,
+      );
+      payjoin = payjoinModel.toEntity();
+    } catch (e) {
+      debugPrint('Payjoin not found for txId: $txId');
+    }
+
+    return payjoin;
+  }
+
+  @override
   Future<List<Utxo>> getInputsFromOngoingPayjoins() async {
     final inputs = <Utxo>[];
     final payjoins = await _source.getAll(onlyOngoing: true);

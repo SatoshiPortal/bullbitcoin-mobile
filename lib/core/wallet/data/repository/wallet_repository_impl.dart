@@ -269,13 +269,13 @@ class WalletRepositoryImpl implements WalletRepository {
       final wallet = PublicLwkWalletModel(
         combinedCtDescriptor: metadata.externalPublicDescriptor,
         isTestnet: metadata.isTestnet,
-        dbName: metadata.id,
+        id: metadata.id,
       );
       final electrumServer = await _electrumServerStorage.getByProvider(
             ElectrumServerProvider.blockstream,
             network: Network.fromEnvironment(
               isTestnet: metadata.isTestnet,
-              isLiquid: metadata.isTestnet,
+              isLiquid: metadata.isLiquid,
             ),
           ) ??
           ElectrumServerModel.blockstream(
@@ -293,7 +293,7 @@ class WalletRepositoryImpl implements WalletRepository {
         externalDescriptor: metadata.externalPublicDescriptor,
         internalDescriptor: metadata.internalPublicDescriptor,
         isTestnet: metadata.isTestnet,
-        dbName: metadata.id,
+        id: metadata.id,
       );
       final electrumServer = await _electrumServerStorage.getByProvider(
             ElectrumServerProvider.blockstream,

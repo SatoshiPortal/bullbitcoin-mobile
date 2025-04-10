@@ -9,6 +9,7 @@ abstract class PayjoinRepository {
   Stream<PayjoinReceiver> get requestsForReceivers;
   Stream<PayjoinSender> get proposalsForSenders;
   Stream<Payjoin> get expiredPayjoins;
+  Future<Payjoin?> getPayjoinByTxId(String txId);
   Future<List<Utxo>> getInputsFromOngoingPayjoins();
   Future<PayjoinReceiver> createPayjoinReceiver({
     required String walletId,

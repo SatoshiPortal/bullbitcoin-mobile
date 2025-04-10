@@ -1,39 +1,36 @@
-import 'package:bb_mobile/core/transaction/domain/entities/transaction.dart';
-import 'package:bb_mobile/core/transaction/domain/usecases/get_transactions_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet_transaction/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/bloc/transactions_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
-    required GetTransactionsUsecase getTransactionsUsecase,
-    required GetWalletsUsecase getWalletsUsecase,
-  })  : _getTransactionsUsecase = getTransactionsUsecase,
-        _getWalletsUsecase = getWalletsUsecase,
+    required GetWalletTransactionsUsecase getWalletTransactionsUsecase,
+  })  : _getWalletTransactionsUsecase = getWalletTransactionsUsecase,
         super(const TransactionsState()) {
     loadTxs();
   }
 
-  final GetTransactionsUsecase _getTransactionsUsecase;
-  final GetWalletsUsecase _getWalletsUsecase;
+  final GetWalletTransactionsUsecase _getWalletTransactionsUsecase;
 
   Future<void> loadTxs() async {
     try {
-      emit(state.copyWith(loadingTxs: true, err: null));
-      final wallets = await _getWalletsUsecase.execute(
-        onlyDefaults: true,
+      // First get the transactions before syncing to avoid showing a blank page
+      //  while syncing
+      final transactionsBeforeSyncing =
+          await _getWalletTransactionsUsecase.execute();
+
+      emit(state.copyWith(
+        transactions: transactionsBeforeSyncing,
+        loadingTxs: true,
+        err: null,
+      ));
+
+      // Now sync and get the transactions again
+      final syncedTransactions = await _getWalletTransactionsUsecase.execute(
         sync: true,
       );
 
-      final List<Transaction> allTransactions = [];
-
-      for (final wallet in wallets) {
-        final walletTransactions =
-            await _getTransactionsUsecase.execute(walletId: wallet.id);
-        allTransactions.addAll(walletTransactions);
-      }
-
-      emit(state.copyWith(loadingTxs: false, transactions: allTransactions));
+      emit(state.copyWith(loadingTxs: false, transactions: syncedTransactions));
     } catch (e) {
       emit(state.copyWith(loadingTxs: false, err: e));
     }

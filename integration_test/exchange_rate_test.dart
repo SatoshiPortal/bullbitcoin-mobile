@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/exchange/data/datasources/bitcoin_price_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/bull_bitcoin_price_datasource.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:test/test.dart';
 
 void main() {
-  late BitcoinPriceDatasource bitcoinPriceDatasource;
+  late BullBitcoinPriceDatasource bitcoinPriceDatasource;
   late GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase;
   late ConvertCurrencyToSatsAmountUsecase convertCurrencyToSatsAmountUsecase;
   late ConvertSatsToCurrencyAmountUsecase convertSatsToCurrencyAmountUsecase;
@@ -27,7 +27,7 @@ void main() {
 
     await AppLocator.setup();
 
-    bitcoinPriceDatasource = locator.get<BitcoinPriceDatasource>();
+    bitcoinPriceDatasource = locator.get<BullBitcoinPriceDatasource>();
     getAvailableCurrenciesUsecase =
         locator.get<GetAvailableCurrenciesUsecase>();
     convertCurrencyToSatsAmountUsecase =
@@ -36,7 +36,7 @@ void main() {
         locator.get<ConvertSatsToCurrencyAmountUsecase>();
   });
 
-  setUp(() async {});
+  setUp(() {});
 
   group(
     'Exchange Rate Integration Tests',

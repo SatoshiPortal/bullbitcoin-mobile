@@ -4,20 +4,20 @@ import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart'
 import 'package:bb_mobile/core/address/data/models/address_model.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/transaction/data/datasources/transaction_datasource.dart';
-import 'package:bb_mobile/core/transaction/data/models/transaction_model.dart';
 import 'package:bb_mobile/core/utxo/data/datasources/utxo_datasource.dart';
 import 'package:bb_mobile/core/utxo/data/models/utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet_transaction/data/datasources/wallet_transaction_datasource.dart';
+import 'package:bb_mobile/core/wallet_transaction/data/models/wallet_transaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
 class LwkWalletDatasource
-    implements AddressDatasource, TransactionDatasource, UtxoDatasource {
+    implements AddressDatasource, WalletTransactionDatasource, UtxoDatasource {
   const LwkWalletDatasource();
 
   Future<String> _getDbPath(String dbName) async {
@@ -96,8 +96,9 @@ class LwkWalletDatasource
     return balance;
   }
 
+  @override
   Future<void> sync({
-    required PublicLwkWalletModel wallet,
+    required PublicWalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) async {
     try {
@@ -282,14 +283,23 @@ class LwkWalletDatasource
 
   /* Start TransactionDatasource methods */
   @override
-  Future<List<TransactionModel>> getTransactions({
+  Future<List<WalletTransactionModel>> getTransactions({
     required PublicWalletModel wallet,
+    String? toAddress,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final transactions = await lwkWallet.txs();
-    final List<TransactionModel> walletTxs = [];
+    if (toAddress != null && toAddress.isNotEmpty) {
+      transactions.removeWhere(
+        (tx) => tx.outputs.every(
+          (output) =>
+              output.address.standard != toAddress &&
+              output.address.confidential != toAddress,
+        ),
+      );
+    }
+    final List<WalletTransactionModel> walletTxs = [];
     for (final tx in transactions) {
-      // check if the transaction is
       final balances = tx.balances;
       final finalBalance = balances
               .where(
@@ -306,7 +316,7 @@ class LwkWalletDatasource
           0;
       final isIncoming = tx.kind != 'outgoing';
       // final confirmationTime = tx.timestamp ?? 0;
-      final walletTx = TransactionModel.liquid(
+      final walletTx = WalletTransactionModel.liquid(
         txId: tx.txid,
         isIncoming: isIncoming,
         amountSat: finalBalance.abs(),

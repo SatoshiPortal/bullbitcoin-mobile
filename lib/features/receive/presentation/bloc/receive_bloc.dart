@@ -17,6 +17,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet_transaction/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,6 +43,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required BroadcastOriginalTransactionUsecase
         broadcastOriginalTransactionUsecase,
     required WatchPayjoinUsecase watchPayjoinUsecase,
+    required WatchWalletTransactionByAddressUsecase
+        watchWalletTransactionByAddressUsecase,
     required WatchSwapUsecase watchSwapUsecase,
     required CreateLabelUsecase createLabelUsecase,
     required GetSwapLimitsUsecase getSwapLimitsUsecase,
@@ -57,6 +61,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         _broadcastOriginalTransactionUsecase =
             broadcastOriginalTransactionUsecase,
         _watchPayjoinUsecase = watchPayjoinUsecase,
+        _watchWalletTransactionByAddressUsecase =
+            watchWalletTransactionByAddressUsecase,
         _watchSwapUsecase = watchSwapUsecase,
         _createLabelUsecase = createLabelUsecase,
         _getSwapLimitsUsecase = getSwapLimitsUsecase,
@@ -75,6 +81,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     on<ReceiveNewAddressGenerated>(_onNewAddressGenerated);
     on<ReceivePayjoinUpdated>(_onPayjoinUpdated);
     on<ReceivePayjoinOriginalTxBroadcasted>(_onPayjoinOriginalTxBroadcasted);
+    on<ReceiveTransactionReceived>(_onReceiveTransactionReceived);
     on<ReceiveLightningSwapUpdated>(_onLightningSwapUpdated);
   }
 
@@ -89,15 +96,20 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       _broadcastOriginalTransactionUsecase;
   final CreateReceiveSwapUsecase _createReceiveSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
+  final WatchWalletTransactionByAddressUsecase
+      _watchWalletTransactionByAddressUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final CreateLabelUsecase _createLabelUsecase;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final Wallet? _wallet;
   StreamSubscription<Payjoin>? _payjoinSubscription;
+  StreamSubscription<WalletTransaction>? _walletTransactionSubscription;
   StreamSubscription<Swap>? _swapSubscription;
 
   @override
   Future<void> close() {
+    _payjoinSubscription?.cancel();
+    _walletTransactionSubscription?.cancel();
     _swapSubscription?.cancel();
     return super.close();
   }
@@ -158,11 +170,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(state.copyWith(fiatCurrencyCodes: fiatCurrencies));
       }
 
-      if (state.bitcoinAddress.isEmpty) {
+      var bitcoinAddress = state.bitcoinAddress;
+      if (bitcoinAddress.isEmpty) {
         // If the bitcoin address is not set yet, we need to get it from the wallet
         final address =
             await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-        emit(state.copyWith(bitcoinAddress: address.address));
+        bitcoinAddress = address.address;
+        emit(state.copyWith(bitcoinAddress: bitcoinAddress));
       }
 
       if (state.payjoin == null) {
@@ -171,7 +185,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         try {
           payjoin = await _receiveWithPayjoinUsecase.execute(
             walletId: wallet.id,
-            address: state.bitcoinAddress,
+            address: bitcoinAddress,
           );
           // The payjoin receiver is created, now we can watch it for updates
           _watchPayjoin(payjoin.id);
@@ -194,6 +208,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             await _convertSatsToCurrencyAmountUsecase.execute();
         emit(state.copyWith(exchangeRate: exchangeRate));
       }
+
+      // Start watching for transactions on the wallet address
+      _watchWalletTransactionToAddress(
+        walletId: wallet.id,
+        address: bitcoinAddress,
+      );
     } catch (e) {
       emit(
         state.copyWith(error: e),
@@ -340,11 +360,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
       emit(state.copyWith(wallet: wallet));
 
-      if (state.liquidAddress.isEmpty) {
+      var liquidAddress = state.liquidAddress;
+      if (liquidAddress.isEmpty) {
         // If the liquid address is not set yet, we need to get it from the wallet
         final address =
             await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-        emit(state.copyWith(liquidAddress: address.address));
+        liquidAddress = address.address;
+        emit(state.copyWith(liquidAddress: liquidAddress));
       }
 
       if (state.exchangeRate == 0) {
@@ -353,6 +375,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             await _convertSatsToCurrencyAmountUsecase.execute();
         emit(state.copyWith(exchangeRate: exchangeRate));
       }
+
+      // Start watching for transactions on the wallet address
+      _watchWalletTransactionToAddress(
+        walletId: wallet.id,
+        address: liquidAddress,
+      );
     } catch (e) {
       emit(
         state.copyWith(error: e),
@@ -565,9 +593,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       if (state.wallet == null) {
         throw Exception('No wallet found');
       }
+      final walletId = state.wallet!.id;
 
       final address = await _getReceiveAddressUsecase.execute(
-        walletId: state.wallet!.id,
+        walletId: walletId,
         newAddress: true,
       );
 
@@ -578,7 +607,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           Object? error;
           try {
             payjoin = await _receiveWithPayjoinUsecase.execute(
-              walletId: state.wallet!.id,
+              walletId: walletId,
               address: address.address,
             );
             // The payjoin receiver is created, now we can watch it for updates
@@ -601,6 +630,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         default:
           break;
       }
+
+      // We have to start listening for transactions to this new address now
+      _watchWalletTransactionToAddress(
+        walletId: walletId,
+        address: address.address,
+      );
     } catch (e) {
       emit(
         state.copyWith(error: e),
@@ -620,7 +655,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       emit(
         state.copyWith(
           payjoin: updatedPayjoin,
-          txId: state.txId.isEmpty ? updatedPayjoin.txId ?? '' : state.txId,
         ),
       );
     }
@@ -641,6 +675,19 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(state.copyWith(error: e));
       }
     }
+  }
+
+  Future<void> _onReceiveTransactionReceived(
+    ReceiveTransactionReceived event,
+    Emitter<ReceiveState> emit,
+  ) async {
+    final tx = event.tx;
+
+    emit(
+      state.copyWith(
+        tx: tx,
+      ),
+    );
   }
 
   Future<void> _onLightningSwapUpdated(
@@ -670,6 +717,25 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         }
       },
     );
+  }
+
+  void _watchWalletTransactionToAddress({
+    required String walletId,
+    required String address,
+  }) {
+    // Cancel the previous subscription if it exists
+    _walletTransactionSubscription?.cancel();
+    _walletTransactionSubscription = _watchWalletTransactionByAddressUsecase
+        .execute(
+      walletId: walletId,
+      toAddress: address,
+    )
+        .listen((tx) {
+      debugPrint(
+        '[ReceiveBloc] Watched transaction ${tx.txId} updated: ${tx.status}',
+      );
+      add(ReceiveTransactionReceived(tx));
+    });
   }
 
   void _watchLnReceiveSwap(String swapId) {

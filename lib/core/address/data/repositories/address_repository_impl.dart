@@ -30,17 +30,17 @@ class AddressRepositoryImpl implements AddressRepository {
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            dbName: metadata.id,
+            id: metadata.id,
           )
         : PublicLwkWalletModel(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            dbName: metadata.id,
+            id: metadata.id,
           );
 
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
 
-    final addressModel = await walletDatasource.getLastUnusedAddress(
+    final addressModel = await walletDatasource.getNewAddress(
       wallet: walletModel,
     );
 
@@ -66,12 +66,12 @@ class AddressRepositoryImpl implements AddressRepository {
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            dbName: metadata.id,
+            id: metadata.id,
           )
         : PublicLwkWalletModel(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            dbName: metadata.id,
+            id: metadata.id,
           );
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
 
@@ -106,12 +106,12 @@ class AddressRepositoryImpl implements AddressRepository {
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            dbName: metadata.id,
+            id: metadata.id,
           )
         : PublicLwkWalletModel(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            dbName: metadata.id,
+            id: metadata.id,
           );
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
 

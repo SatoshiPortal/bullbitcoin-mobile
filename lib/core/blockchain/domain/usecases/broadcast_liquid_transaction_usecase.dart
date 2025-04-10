@@ -1,33 +1,35 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 
 class BroadcastLiquidTransactionUsecase {
   final LiquidBlockchainRepository _liquidBlockchain;
+  final SettingsRepository _settingsRepository;
 
   BroadcastLiquidTransactionUsecase({
     required LiquidBlockchainRepository liquidBlockchainRepository,
-  }) : _liquidBlockchain = liquidBlockchainRepository;
+    required SettingsRepository settingsRepository,
+  })  : _settingsRepository = settingsRepository,
+        _liquidBlockchain = liquidBlockchainRepository;
 
-  Future<String> execute(
-    Uint8List transaction, {
-    required bool isTestnet,
-  }) async {
+  Future<String> execute(Uint8List transaction) async {
     try {
+      final environment = await _settingsRepository.getEnvironment();
       final txId = await _liquidBlockchain.broadcastTransaction(
         transaction,
-        isTestnet: isTestnet,
+        isTestnet: environment.isTestnet,
       );
 
       return txId;
     } catch (e) {
-      throw FailedToBroadcastTransactionException(e.toString());
+      throw BroadcastTransactionException(e.toString());
     }
   }
 }
 
-class FailedToBroadcastTransactionException implements Exception {
+class BroadcastTransactionException implements Exception {
   final String message;
 
-  FailedToBroadcastTransactionException(this.message);
+  BroadcastTransactionException(this.message);
 }

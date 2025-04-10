@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
+import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/locator.dart';
 
 class BlockchainLocator {
@@ -42,12 +43,14 @@ class BlockchainLocator {
     locator.registerFactory<BroadcastBitcoinTransactionUsecase>(
       () => BroadcastBitcoinTransactionUsecase(
         bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
     locator.registerFactory<BroadcastLiquidTransactionUsecase>(
       () => BroadcastLiquidTransactionUsecase(
         liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }

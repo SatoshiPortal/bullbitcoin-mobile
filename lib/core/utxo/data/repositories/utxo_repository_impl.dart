@@ -34,12 +34,12 @@ class UtxoRepositoryImpl implements UtxoRepository {
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            dbName: metadata.id,
+            id: metadata.id,
           )
         : PublicLwkWalletModel(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            dbName: metadata.id,
+            id: metadata.id,
           );
 
     final walletDatasource =
