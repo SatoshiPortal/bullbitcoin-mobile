@@ -31,7 +31,7 @@ class CreateLabelUsecase {
         origin: origin,
         spendable: spendable,
       );
-      await _labelRepository.createLabel(labelEntity);
+      await _labelRepository.store(labelEntity);
       return labelEntity;
     } catch (e) {
       throw CreateLabelException(e.toString());

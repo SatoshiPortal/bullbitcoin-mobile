@@ -84,7 +84,7 @@ class CreateReceiveSwapUsecase {
       );
 
       if (description != null || description!.isNotEmpty) {
-        await _labelRepository.createLabel(
+        await _labelRepository.store(
           Label.create(
             type: LabelType.address,
             ref: claimAddress.address,
