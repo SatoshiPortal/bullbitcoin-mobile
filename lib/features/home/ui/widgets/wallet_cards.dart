@@ -10,16 +10,16 @@ class HomeWalletCards extends StatelessWidget {
   const HomeWalletCards({super.key});
 
   static Color cardDetails(BuildContext context, Wallet wallet) {
-    final isTestnet = wallet.isTestnet();
-    final isInstant = wallet.isInstant();
-    final isWatchOnly = wallet.watchOnly();
+    final isTestnet = wallet.isTestnet;
+    final isLiquid = wallet.isLiquid;
+    final isWatchOnly = wallet.isWatchOnly;
 
     final watchonlyColor = context.colour.onPrimaryContainer;
 
     if (isWatchOnly && !isTestnet) return watchonlyColor;
     if (isWatchOnly && isTestnet) return watchonlyColor;
 
-    if (isInstant) return context.colour.tertiary;
+    if (isLiquid) return context.colour.tertiary;
 
     if (isTestnet) return context.colour.onTertiary;
     return context.colour.onTertiary;

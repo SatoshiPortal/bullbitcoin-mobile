@@ -143,16 +143,16 @@ class Wallet with _$Wallet {
     }
   }
 
-  bool isTestnet() {
+  bool get isTestnet {
     return network == Network.bitcoinTestnet ||
         network == Network.liquidTestnet;
   }
 
-  bool isInstant() {
+  bool get isLiquid {
     return network == Network.liquidMainnet || network == Network.liquidTestnet;
   }
 
-  bool watchOnly() {
+  bool get isWatchOnly {
     switch (source) {
       case WalletSource.xpub:
       case WalletSource.coldcard:
@@ -162,7 +162,7 @@ class Wallet with _$Wallet {
     }
   }
 
-  String getOrigin() {
+  String get origin {
     final networkPath = network == Network.bitcoinMainnet
         ? '0h'
         : network == Network.liquidMainnet

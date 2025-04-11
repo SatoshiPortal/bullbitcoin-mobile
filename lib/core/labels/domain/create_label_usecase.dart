@@ -22,7 +22,7 @@ class CreateLabelUsecase {
     try {
       // Get the wallet to calculate origin
       final wallet = await _wallet.getWallet(walletId);
-      final origin = wallet.getOrigin();
+      final origin = wallet.origin;
 
       final labelEntity = Label.create(
         type: type,

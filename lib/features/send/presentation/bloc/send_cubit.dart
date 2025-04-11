@@ -125,7 +125,7 @@ class SendCubit extends Cubit<SendState> {
       if (paymentRequest.isBolt11) {
         // TODO: add support for boltz12 or lnaddress
         // for bolt12 or lnaddress we need to redirect to the amount page and only create a swap after amount is set
-        final swapType = wallet.isInstant()
+        final swapType = wallet.isLiquid
             ? SwapType.liquidToLightning
             : SwapType.bitcoinToLightning;
         final swap = await _createSendSwapUsecase.execute(
@@ -236,7 +236,7 @@ class SendCubit extends Cubit<SendState> {
       ),
     );
     if (state.sendType == SendType.lightning) {
-      final swapType = state.selectedWallet!.isInstant()
+      final swapType = state.selectedWallet!.isLiquid
           ? SwapType.liquidToLightning
           : SwapType.bitcoinToLightning;
       final swap = await _createSendSwapUsecase.execute(

@@ -19,69 +19,12 @@ import 'package:path_provider/path_provider.dart';
 
 class LwkWalletDatasource
     implements AddressDatasource, WalletTransactionDatasource, UtxoDatasource {
-  LwkWalletDatasource();
-  final Map<String, Completer<void>> _activeSyncs = {};
+  LwkWalletDatasource() : _activeSyncs = {};
 
-  void completeActiveSyncForWallet(String walletDb) {
-    if (_activeSyncs.containsKey(walletDb)) {
-      _activeSyncs[walletDb]?.complete();
-      _activeSyncs.remove(walletDb);
-    }
-  }
+  @visibleForTesting
+  final Map<String, int> syncExecutions = {};
 
-  Future<void>? getActiveSyncForWallet(String walletDb) =>
-      _activeSyncs[walletDb]?.future;
-
-  Future<String> _getDbPath(String dbName) async {
-    final dir = await getApplicationDocumentsDirectory();
-    return '${dir.path}/$dbName';
-  }
-
-  Future<lwk.Wallet> _createPublicWallet(PublicWalletModel walletModel) async {
-    if (walletModel is! PublicLwkWalletModel) {
-      throw Exception('Wallet is not an LWK wallet');
-    }
-
-    final network =
-        walletModel.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
-
-    final descriptor = lwk.Descriptor(
-      ctDescriptor: walletModel.combinedCtDescriptor,
-    );
-    final dbPath = await _getDbPath(walletModel.dbName);
-    final wallet = await lwk.Wallet.init(
-      network: network,
-      dbpath: dbPath,
-      descriptor: descriptor,
-    );
-
-    return wallet;
-  }
-
-  Future<lwk.Wallet> _createPrivateWallet(
-    PrivateWalletModel walletModel,
-  ) async {
-    if (walletModel is! PrivateLwkWalletModel) {
-      throw Exception('Wallet is not an LWK wallet');
-    }
-
-    final network =
-        walletModel.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
-
-    final descriptor = await lwk.Descriptor.newConfidential(
-      mnemonic: walletModel.mnemonic,
-      network: network,
-    );
-    final dbPath = await _getDbPath(walletModel.dbName);
-
-    final wallet = await lwk.Wallet.init(
-      network: network,
-      dbpath: dbPath,
-      descriptor: descriptor,
-    );
-
-    return wallet;
-  }
+  final Map<String, Future<void>> _activeSyncs;
 
   Future<BalanceModel> getBalance({
     required PublicLwkWalletModel wallet,
@@ -112,28 +55,29 @@ class LwkWalletDatasource
   Future<void> sync({
     required PublicWalletModel wallet,
     required ElectrumServerModel electrumServer,
-  }) async {
-    if (_activeSyncs[wallet.dbName]?.future != null ||
-        _activeSyncs.containsKey(wallet.dbName)) {
-      return _activeSyncs[wallet.dbName]!.future;
-    }
-
-    _activeSyncs[wallet.dbName] = Completer<void>();
-
-    try {
-      final lwkWallet = await _createPublicWallet(wallet);
-      await lwkWallet.sync(
-        electrumUrl: electrumServer.url,
-        validateDomain: electrumServer.validateDomain,
-      );
-      _activeSyncs[wallet.dbName]?.complete();
-    } catch (e) {
-      _activeSyncs[wallet.dbName]?.completeError(e);
-      debugPrint(e.toString());
-      rethrow;
-    } finally {
-      _activeSyncs.remove(wallet.dbName);
-    }
+  }) {
+    // putIfAbsent ensures only one sync starts for each wallet ID,
+    //  all others await the same Future.
+    debugPrint('Sync requested for wallet: ${wallet.id}');
+    return _activeSyncs.putIfAbsent(wallet.id, () async {
+      try {
+        debugPrint('New sync started for wallet: ${wallet.id}');
+        // Increment the sync execution count for this wallet for testing purposes
+        syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
+        final lwkWallet = await _createPublicWallet(wallet);
+        await lwkWallet.sync(
+          electrumUrl: electrumServer.url,
+          validateDomain: electrumServer.validateDomain,
+        );
+        debugPrint('Sync completed for wallet: ${wallet.id}');
+      } catch (e) {
+        debugPrint('Sync error for wallet ${wallet.id}: $e');
+        rethrow;
+      } finally {
+        // Remove the sync so future syncs can be triggered
+        _activeSyncs.remove(wallet.id);
+      }
+    });
   }
 
   /* Start UtxoDatasource methods */
@@ -393,6 +337,57 @@ class LwkWalletDatasource
     );
 
     return signedBytes;
+  }
+
+  Future<String> _getDbPath(String dbName) async {
+    final dir = await getApplicationDocumentsDirectory();
+    return '${dir.path}/$dbName';
+  }
+
+  Future<lwk.Wallet> _createPublicWallet(PublicWalletModel walletModel) async {
+    if (walletModel is! PublicLwkWalletModel) {
+      throw Exception('Wallet is not an LWK wallet');
+    }
+
+    final network =
+        walletModel.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
+
+    final descriptor = lwk.Descriptor(
+      ctDescriptor: walletModel.combinedCtDescriptor,
+    );
+    final dbPath = await _getDbPath(walletModel.dbName);
+    final wallet = await lwk.Wallet.init(
+      network: network,
+      dbpath: dbPath,
+      descriptor: descriptor,
+    );
+
+    return wallet;
+  }
+
+  Future<lwk.Wallet> _createPrivateWallet(
+    PrivateWalletModel walletModel,
+  ) async {
+    if (walletModel is! PrivateLwkWalletModel) {
+      throw Exception('Wallet is not an LWK wallet');
+    }
+
+    final network =
+        walletModel.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet;
+
+    final descriptor = await lwk.Descriptor.newConfidential(
+      mnemonic: walletModel.mnemonic,
+      network: network,
+    );
+    final dbPath = await _getDbPath(walletModel.dbName);
+
+    final wallet = await lwk.Wallet.init(
+      network: network,
+      dbpath: dbPath,
+      descriptor: descriptor,
+    );
+
+    return wallet;
   }
 }
 
