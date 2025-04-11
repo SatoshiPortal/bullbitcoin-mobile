@@ -286,6 +286,9 @@ class BoltzDatasource {
 
   Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
     final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+    debugPrint(lbtcLnSwap.keys.secretKey);
+    debugPrint(lbtcLnSwap.keys.secretKey);
+
     return lbtcLnSwap.coopCloseSubmarine();
   }
 

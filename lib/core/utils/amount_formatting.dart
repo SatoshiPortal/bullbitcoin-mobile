@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
-class AmountFormatting {
-  static String formatSats(int satsAmount) {
+class FormatAmount {
+  static String sats(int satsAmount) {
     final currencyFormatter = NumberFormat.currency(
       name: 'sats',
       decimalDigits: 0,
@@ -10,7 +10,7 @@ class AmountFormatting {
     return currencyFormatter.format(satsAmount);
   }
 
-  static String formatBtc(double btcAmount) {
+  static String btc(double btcAmount) {
     NumberFormat currencyFormatter;
     String formatted;
 
@@ -34,7 +34,7 @@ class AmountFormatting {
     return formatted;
   }
 
-  static String formatFiat(double fiat, String currencyCode) {
+  static String fiat(double fiat, String currencyCode) {
     final currencyFormatter = NumberFormat.currency(
       name: currencyCode,
       customPattern: '#,##0.00 ¤',

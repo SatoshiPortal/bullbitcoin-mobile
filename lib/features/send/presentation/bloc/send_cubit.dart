@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
@@ -85,10 +86,13 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  Future<void> loadWallets() async {
+  Future<void> loadWalletWithRatesAndFees() async {
     try {
       final wallets = await _getWalletsUsecase.execute();
       emit(state.copyWith(wallets: wallets));
+      await getCurrencies();
+      await getExchangeRate();
+      await loadFees();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -97,7 +101,6 @@ class SendCubit extends Cubit<SendState> {
   Future<void> addressChanged(String address) async {
     try {
       emit(state.copyWith(addressOrInvoice: address.trim()));
-      loadFees();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -108,7 +111,6 @@ class SendCubit extends Cubit<SendState> {
       emit(
         state.copyWith(loadingBestWallet: true),
       );
-      await loadFees();
       final paymentRequest = await _detectBitcoinStringUsecase.execute(
         data: state.addressOrInvoice,
       );
@@ -136,7 +138,7 @@ class SendCubit extends Cubit<SendState> {
           type: swapType,
           invoice: state.addressOrInvoice,
         );
-        await loadFees();
+
         await loadUtxos();
         emit(
           state.copyWith(
@@ -146,7 +148,6 @@ class SendCubit extends Cubit<SendState> {
           ),
         );
       } else {
-        await loadFees();
         await loadUtxos();
         emit(
           state.copyWith(
@@ -280,7 +281,11 @@ class SendCubit extends Cubit<SendState> {
     } else {
       maxAmount = state.selectedWallet!.balanceSat.toString();
     }
-
+    if (state.bitcoinUnit == BitcoinUnit.btc) {
+      final btcAmount =
+          ConvertAmount.satsToBtc(state.selectedWallet!.balanceSat.toInt());
+      maxAmount = btcAmount.toString();
+    }
     emit(
       state.copyWith(
         amount: maxAmount,

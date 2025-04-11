@@ -76,7 +76,7 @@ dependencies:
     # 0.1.10
     git:
       url: https://github.com/SatoshiPortal/boltz-dart.git
-      ref: main
+      ref: develop
   lwk:
     # 0.1.7
     git:

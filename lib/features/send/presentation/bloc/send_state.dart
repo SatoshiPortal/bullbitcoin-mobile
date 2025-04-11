@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
@@ -93,45 +95,43 @@ class SendState with _$SendState {
     @Default('') String balanceApproximatedAmount,
   }) = _SendState;
   const SendState._();
+
   bool get isInputAmountFiat => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
       .contains(inputAmountCurrencyCode);
 
   int get inputAmountSat {
-    BigInt amountSat = BigInt.zero;
-
+    int amountSat = 0;
     if (amount.isNotEmpty) {
       if (isInputAmountFiat) {
         final amountFiat = double.tryParse(amount) ?? 0;
-        amountSat = BigInt.from(
-          amountFiat * 100000000 / exchangeRate,
-        );
+        amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
       } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-        amountSat = BigInt.tryParse(amount) ?? BigInt.zero;
+        amountSat = int.tryParse(amount) ?? 0;
       } else {
         final amountBtc = double.tryParse(amount) ?? 0;
-        amountSat = BigInt.from((amountBtc * 100000000).truncate());
+        amountSat = ConvertAmount.btcToSats(amountBtc);
       }
     }
 
-    return amountSat.toInt();
+    return amountSat;
   }
 
-  double get inputAmountBtc => inputAmountSat.toDouble() / 100000000;
+  double get inputAmountBtc => ConvertAmount.satsToBtc(inputAmountSat);
 
   double get inputAmountFiat {
-    return inputAmountBtc * exchangeRate;
+    return ConvertAmount.btcToFiat(inputAmountBtc, exchangeRate);
   }
 
   double get confirmedAmountBtc => confirmedAmountSat != null
-      ? confirmedAmountSat!.toDouble() / 100000000
+      ? ConvertAmount.satsToBtc(confirmedAmountSat!)
       : 0;
 
   double get confirmedAmountFiat {
-    return confirmedAmountBtc * exchangeRate;
+    return ConvertAmount.btcToFiat(confirmedAmountBtc, exchangeRate);
   }
 
   double get confirmedSwapAmountBtc => lightningSwap != null
-      ? lightningSwap!.paymentAmount.toDouble() / 100000000
+      ? ConvertAmount.satsToBtc(lightningSwap!.paymentAmount)
       : 0;
 
   String get formattedConfirmedAmountBitcoin {
@@ -182,12 +182,7 @@ class SendState with _$SendState {
   }
 
   String get formattedConfirmedAmountFiat {
-    final currencyFormatter = NumberFormat.currency(
-      name: fiatCurrencyCode,
-      customPattern: '#,##0.00 ¤',
-    );
-    final formatted = currencyFormatter.format(confirmedAmountFiat);
-    return formatted;
+    return FormatAmount.fiat(confirmedAmountFiat, fiatCurrencyCode);
   }
 
   String get formattedAmountInputEquivalent {
@@ -195,32 +190,14 @@ class SendState with _$SendState {
       // If the input is in fiat, the equivalent should be in bitcoin
       if (bitcoinUnit == BitcoinUnit.sats) {
         // For sats, use integer formatting without decimals
-        final currencyFormatter = NumberFormat.currency(
-          name: bitcoinUnit.code,
-          decimalDigits: 0, // Use 0 decimals for sats
-          customPattern: '#,##0 ¤',
-        );
-        return currencyFormatter.format(inputAmountSat);
+        return FormatAmount.sats(inputAmountSat);
       } else {
         // For BTC, use the standard decimal formatting
-        final currencyFormatter = NumberFormat.currency(
-          name: bitcoinUnit.code,
-          decimalDigits: bitcoinUnit.decimals,
-          customPattern: '#,##0.00 ¤',
-        );
-        final formatted = currencyFormatter
-            .format(inputAmountBtc)
-            .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-        return formatted;
+        return FormatAmount.btc(inputAmountBtc);
       }
     } else {
       // If the input is in bitcoin, the equivalent should be in fiat
-      final currencyFormatter = NumberFormat.currency(
-        name: fiatCurrencyCode,
-        customPattern: '#,##0.00 ¤',
-      );
-      final formatted = currencyFormatter.format(inputAmountFiat);
-      return formatted;
+      return FormatAmount.fiat(inputAmountFiat, fiatCurrencyCode);
     }
   }
 
@@ -228,73 +205,42 @@ class SendState with _$SendState {
     if (selectedWallet == null) return '0';
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
-      // Format as BTC with appropriate decimal places
-      final btcAmount = selectedWallet!.balanceSat.toDouble() / 100000000;
-      final currencyFormatter = NumberFormat.currency(
-        name: BitcoinUnit.btc.code,
-        decimalDigits: BitcoinUnit.btc.decimals,
-        customPattern: '#,##0.00 ¤',
+      return FormatAmount.btc(
+        ConvertAmount.satsToBtc(
+          selectedWallet!.balanceSat.toInt(),
+        ),
       );
-      final formatted = currencyFormatter
-          .format(btcAmount)
-          .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-      return formatted;
     } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-      // Format as sats with no decimal places
-      final currencyFormatter = NumberFormat.currency(
-        name: BitcoinUnit.sats.code,
-        decimalDigits: 0,
-        customPattern: '#,##0 ¤',
-      );
-      return currencyFormatter.format(selectedWallet!.balanceSat.toInt());
+      return FormatAmount.sats(selectedWallet!.balanceSat.toInt());
     } else {
-      // Format as fiat currency with 2 decimal places
-      final btcAmount = selectedWallet!.balanceSat.toDouble() / 100000000;
-      final fiatAmount = btcAmount * exchangeRate;
-      final currencyFormatter = NumberFormat.currency(
-        name: inputAmountCurrencyCode,
-        customPattern: '#,##0.00 ¤',
+      return FormatAmount.fiat(
+        ConvertAmount.satsToFiat(
+          selectedWallet!.balanceSat.toInt(),
+          exchangeRate,
+        ),
+        inputAmountCurrencyCode,
       );
-      return currencyFormatter.format(fiatAmount);
     }
   }
 
   String formattedApproximateBalance() {
     if (selectedWallet == null) return '0';
 
-    final satsBalance = selectedWallet!.balanceSat;
-    final btcBalance = satsBalance.toDouble() / 100000000;
+    final satsBalance = selectedWallet!.balanceSat.toInt();
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code ||
         inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-      // If input is in Bitcoin units, convert to fiat
-      final fiatAmount = btcBalance * exchangeRate;
-      final currencyFormatter = NumberFormat.currency(
-        name: fiatCurrencyCode,
-        customPattern: '#,##0.00 ¤',
+      return FormatAmount.fiat(
+        ConvertAmount.satsToFiat(satsBalance, exchangeRate),
+        fiatCurrencyCode,
       );
-      return currencyFormatter.format(fiatAmount);
     } else {
-      // If input is in fiat, convert to Bitcoin in the current unit
       if (bitcoinUnit == BitcoinUnit.sats) {
-        // For sats, use integer formatting without decimals
-        final currencyFormatter = NumberFormat.currency(
-          name: bitcoinUnit.code,
-          decimalDigits: 0,
-          customPattern: '#,##0 ¤',
-        );
-        return currencyFormatter.format(satsBalance.toInt());
+        return FormatAmount.sats(satsBalance);
       } else {
-        // For BTC, use the standard decimal formatting
-        final currencyFormatter = NumberFormat.currency(
-          name: bitcoinUnit.code,
-          decimalDigits: bitcoinUnit.decimals,
-          customPattern: '#,##0.00 ¤',
+        return FormatAmount.btc(
+          ConvertAmount.satsToBtc(satsBalance),
         );
-        final formatted = currencyFormatter
-            .format(btcBalance)
-            .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-        return formatted;
       }
     }
   }

@@ -58,10 +58,7 @@ class SendFlow extends StatelessWidget {
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         createSendSwapUsecase: locator<CreateSendSwapUsecase>(),
         updatePaidSendSwapUsecase: locator<UpdatePaidSendSwapUsecase>(),
-      )
-        ..getCurrencies()
-        ..getExchangeRate()
-        ..loadWallets(),
+      )..loadWalletWithRatesAndFees(),
       child: const SendScreen(),
     );
   }
@@ -223,8 +220,8 @@ class SendAmountScreen extends StatelessWidget {
                       const Gap(48),
                       PriceInput(
                         amount: state.amount,
-                        currency: state.bitcoinUnit.name,
-                        amountEquivalent: state.formattedApproximateBalance(),
+                        currency: state.bitcoinUnit.code,
+                        amountEquivalent: state.formattedAmountInputEquivalent,
                         availableCurrencies: state.fiatCurrencyCodes,
                         onNoteChanged: cubit.noteChanged,
                         onCurrencyChanged: cubit.currencyCodeChanged,

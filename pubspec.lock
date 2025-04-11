@@ -154,7 +154,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: develop
       resolved-ref: "9d949242b3edd82d9d822942b5b1b96d40583d3f"
       url: "https://github.com/SatoshiPortal/boltz-dart.git"
     source: git
