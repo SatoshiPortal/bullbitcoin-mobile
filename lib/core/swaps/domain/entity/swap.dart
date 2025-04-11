@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap.freezed.dart';
@@ -106,6 +107,21 @@ sealed class Swap with _$Swap {
   bool get isLnReceiveSwap => this is LnReceiveSwap;
   bool get isLnSendSwap => this is LnSendSwap;
   bool get isChainSwap => this is ChainSwap;
+
+  String get abbreviatedReceiveTxid => switch (this) {
+        final LnReceiveSwap swap =>
+          StringFormatting.truncateMiddle(swap.receiveTxid ?? ''),
+        final ChainSwap swap =>
+          StringFormatting.truncateMiddle(swap.receiveTxid ?? ''),
+        _ => '',
+      };
+
+  String get abbreviatedInvoice => switch (this) {
+        final LnReceiveSwap swap =>
+          StringFormatting.truncateMiddle(swap.invoice),
+        final LnSendSwap swap => StringFormatting.truncateMiddle(swap.invoice),
+        _ => '',
+      };
 
   @override
   String get id => when(

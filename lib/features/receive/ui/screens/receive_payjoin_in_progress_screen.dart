@@ -48,10 +48,7 @@ class PayjoinInProgressPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Using read instead of select or watch is ok here,
     //  since the amounts can not be changed at this point anymore.
-    final amountBitcoin =
-        context.read<ReceiveBloc>().state.formattedConfirmedAmountBitcoin;
-    final amountFiat =
-        context.read<ReceiveBloc>().state.formattedConfirmedAmountFiat;
+    //final amountSat = context.read<ReceiveBloc>().state.payjoin.originalTxBytes
 
     return Center(
       child: Column(
@@ -65,9 +62,9 @@ class PayjoinInProgressPage extends StatelessWidget {
             'Wait for the sender to finish the payjoin transaction',
             style: context.font.bodyMedium,
           ),
-          const Gap(16),
+          /*const Gap(16),
           BBText(
-            amountBitcoin,
+            FormatAmount.sats(amountSat),
             style: context.font.headlineLarge,
           ),
           const Gap(4),
@@ -75,7 +72,7 @@ class PayjoinInProgressPage extends StatelessWidget {
             '~$amountFiat',
             style: context.font.bodyLarge,
             color: context.colour.surface,
-          ),
+          ),*/
           const Gap(84),
           const ReceiveBroadcastPayjoinButton(),
         ],

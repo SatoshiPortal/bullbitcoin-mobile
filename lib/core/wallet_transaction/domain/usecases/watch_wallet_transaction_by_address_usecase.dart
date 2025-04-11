@@ -18,7 +18,6 @@ class WatchWalletTransactionByAddressUsecase {
   }) {
     final controller = StreamController<WalletTransaction>();
     bool isCancelled = false;
-    WalletTransaction? lastEmitted;
 
     Future<void> pollingLoop() async {
       while (!isCancelled) {
@@ -42,12 +41,16 @@ class WatchWalletTransactionByAddressUsecase {
                 )
               : null;
 
-          if (tx != null && tx.txId != lastEmitted?.txId) {
-            lastEmitted = tx;
+          if (tx != null) {
             controller.add(tx);
           }
         } catch (e, stack) {
-          controller.addError(e, stack);
+          debugPrint('Error fetching transactions: $e');
+          if (controller.isClosed) {
+            debugPrint('Controller is closed, not adding error');
+          } else {
+            controller.addError(e, stack);
+          }
         }
 
         await Future.delayed(pollInterval);
@@ -57,9 +60,9 @@ class WatchWalletTransactionByAddressUsecase {
     // Start loop
     pollingLoop();
 
-    controller.onCancel = () {
+    controller.onCancel = () async {
       isCancelled = true;
-      controller.close();
+      await controller.close();
     };
 
     return controller.stream;

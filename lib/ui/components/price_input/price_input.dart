@@ -130,13 +130,12 @@ class PriceInput extends StatelessWidget {
           ],
         ),
         const Gap(14),
-        if (amount.isNotEmpty)
-          BBText(
-            '~$amountEquivalent',
-            key: equivalentKey,
-            style: context.font.bodyLarge,
-            color: context.colour.surfaceContainer,
-          ),
+        BBText(
+          '~$amountEquivalent',
+          key: equivalentKey,
+          style: context.font.bodyLarge,
+          color: context.colour.surfaceContainer,
+        ),
         const Gap(14),
         Center(
           child: Container(
