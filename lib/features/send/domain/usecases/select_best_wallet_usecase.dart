@@ -53,6 +53,24 @@ class SelectBestWalletUsecase {
           );
         }
       }
+      // Bolt11
+      if (request is LnAddressRequest) {
+        try {
+          // Use liquid
+          return _selectBestWallet(
+            0,
+            Network.liquidMainnet,
+            wallets,
+          );
+        } catch (_) {
+          // unless liquid doesn’t have balance, use bitcoin
+          return _selectBestWallet(
+            0,
+            Network.bitcoinMainnet,
+            wallets,
+          );
+        }
+      }
 
       throw 'no wallet or not enough balance for this $PaymentRequest';
     } catch (e) {

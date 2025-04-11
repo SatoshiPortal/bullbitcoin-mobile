@@ -13,6 +13,7 @@ enum PaymentType {
   liquidAddress,
   bolt11,
   bip21,
+  lnAddress,
 }
 
 @freezed
@@ -28,6 +29,12 @@ class PaymentRequest with _$PaymentRequest {
     required Network network,
     required String address,
   }) = LiquidRequest;
+
+  const factory PaymentRequest.lnAddress({
+    required PaymentType type,
+    required Network network,
+    required String address,
+  }) = LnAddressRequest;
 
   const factory PaymentRequest.bolt11({
     required PaymentType type,
@@ -161,6 +168,20 @@ class PaymentRequest with _$PaymentRequest {
           cltvExpDelta: invoice.cltvExpDelta.toInt(),
           preimageHash: invoice.preimageHash,
           bip21: invoice.bip21,
+        );
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+      try {
+        final valid = await boltz.validateLnurl(lnurl: data);
+        if (!valid) {
+          throw 'Invalid lnurl';
+        }
+
+        return PaymentRequest.lnAddress(
+          type: PaymentType.lnAddress,
+          network: Network.bitcoinMainnet,
+          address: data,
         );
       } catch (e) {
         debugPrint(e.toString());
