@@ -35,7 +35,7 @@ class WalletRepositoryImpl implements WalletRepository {
     required ScriptType scriptType,
     String label = '',
     bool isDefault = false,
-    bool sync = true,
+    bool sync = false,
   }) async {
     // Derive and store the wallet metadata
     final walletLabel = isDefault &&
@@ -82,7 +82,7 @@ class WalletRepositoryImpl implements WalletRepository {
     required Network network,
     required ScriptType scriptType,
     required String label,
-    bool sync = true,
+    bool sync = false,
   }) async {
     final metadata = await _walletMetadata.deriveFromXpub(
       xpub: xpub,
@@ -262,7 +262,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
   Future<BalanceModel> _getBalance(
     WalletMetadataModel metadata, {
-    bool sync = true,
+    bool sync = false,
   }) async {
     BalanceModel balance;
     if (metadata.isLiquid) {

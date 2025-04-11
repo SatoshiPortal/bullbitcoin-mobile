@@ -28,31 +28,41 @@ class RecoverOrCreateWalletUsecase {
     String label = '',
     Network? network,
   }) async {
-    final environment = await _settingsRepository.getEnvironment();
-    final bitcoinNetwork = network ??
-        (environment == Environment.mainnet
-            ? Network.bitcoinMainnet
-            : Network.bitcoinTestnet);
+    try {
+      final environment = await _settingsRepository.getEnvironment();
+      final bitcoinNetwork = network ??
+          (environment == Environment.mainnet
+              ? Network.bitcoinMainnet
+              : Network.bitcoinTestnet);
 
-    final mnemonicSeed = _mnemonicSeedFactory.fromWords(
-      mnemonicWords,
-      passphrase: passphrase,
-    );
+      final mnemonicSeed = _mnemonicSeedFactory.fromWords(
+        mnemonicWords,
+        passphrase: passphrase,
+      );
 
-    // Store the seed in the repository
-    await _seedRepository.store(
-      fingerprint: mnemonicSeed.masterFingerprint,
-      seed: mnemonicSeed,
-    );
+      // Store the seed in the repository
+      await _seedRepository.store(
+        fingerprint: mnemonicSeed.masterFingerprint,
+        seed: mnemonicSeed,
+      );
 
-    // Now that the seed is stored, we can create the wallet
-    final wallet = await _walletRepository.createWallet(
-      seed: mnemonicSeed,
-      network: bitcoinNetwork,
-      scriptType: scriptType,
-      label: label,
-    );
+      // Now that the seed is stored, we can create the wallet
+      final wallet = await _walletRepository.createWallet(
+        seed: mnemonicSeed,
+        network: bitcoinNetwork,
+        scriptType: scriptType,
+        label: label,
+      );
 
-    return wallet;
+      return wallet;
+    } catch (e) {
+      throw RecoverOrCreateWalletException('$e');
+    }
   }
+}
+
+class RecoverOrCreateWalletException implements Exception {
+  final String message;
+
+  RecoverOrCreateWalletException(this.message);
 }

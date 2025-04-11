@@ -89,7 +89,7 @@ class CreateReceiveSwapUsecase {
             type: LabelType.address,
             ref: claimAddress.address,
             label: description,
-            origin: wallet.getOrigin(),
+            origin: wallet.origin,
           ),
         );
       }

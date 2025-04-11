@@ -45,18 +45,12 @@ extension BdkNetworkX on bdk.Network {
 
 class BdkWalletDatasource
     implements AddressDatasource, WalletTransactionDatasource, UtxoDatasource {
-  BdkWalletDatasource();
-  final Map<String, Completer<void>> _activeSyncs = {};
+  BdkWalletDatasource() : _activeSyncs = {};
 
-  void completeActiveSyncForWallet(String walletDb) {
-    if (_activeSyncs.containsKey(walletDb)) {
-      _activeSyncs[walletDb]?.complete();
-      _activeSyncs.remove(walletDb);
-    }
-  }
+  @visibleForTesting
+  final Map<String, int> syncExecutions = {};
 
-  Future<void>? getActiveSyncForWallet(String walletDb) =>
-      _activeSyncs[walletDb]?.future;
+  final Map<String, Future<void>> _activeSyncs;
 
   Future<BalanceModel> getBalance({
     required PublicBdkWalletModel wallet,
@@ -80,36 +74,40 @@ class BdkWalletDatasource
   Future<void> sync({
     required PublicWalletModel wallet,
     required ElectrumServerModel electrumServer,
-  }) async {
-    if (_activeSyncs[wallet.dbName]?.future != null ||
-        _activeSyncs.containsKey(wallet.dbName)) {
-      return _activeSyncs[wallet.dbName]!.future;
-    }
+  }) {
+    // putIfAbsent ensures only one sync starts for each wallet ID,
+    //  all others await the same Future.
+    debugPrint('Sync requested for wallet: ${wallet.id}');
+    return _activeSyncs.putIfAbsent(wallet.id, () async {
+      try {
+        debugPrint('New sync started for wallet: ${wallet.id}');
+        // Increment the sync execution count for this wallet for testing purposes
+        syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
+        final bdkWallet = await _createPublicWallet(wallet);
 
-    _activeSyncs[wallet.dbName] = Completer<void>();
-
-    try {
-      final bdkWallet = await _createPublicWallet(wallet);
-      final blockchain = await bdk.Blockchain.create(
-        config: bdk.BlockchainConfig.electrum(
-          config: bdk.ElectrumConfig(
-            url: electrumServer.url,
-            socks5: electrumServer.socks5,
-            retry: electrumServer.retry,
-            timeout: electrumServer.timeout,
-            stopGap: BigInt.from(electrumServer.stopGap),
-            validateDomain: electrumServer.validateDomain,
+        final blockchain = await bdk.Blockchain.create(
+          config: bdk.BlockchainConfig.electrum(
+            config: bdk.ElectrumConfig(
+              url: electrumServer.url,
+              socks5: electrumServer.socks5,
+              retry: electrumServer.retry,
+              timeout: electrumServer.timeout,
+              stopGap: BigInt.from(electrumServer.stopGap),
+              validateDomain: electrumServer.validateDomain,
+            ),
           ),
-        ),
-      );
-      await bdkWallet.sync(blockchain: blockchain);
-      _activeSyncs[wallet.dbName]?.complete();
-    } catch (e) {
-      _activeSyncs[wallet.dbName]?.completeError(e);
-      rethrow;
-    } finally {
-      _activeSyncs.remove(wallet.dbName);
-    }
+        );
+
+        await bdkWallet.sync(blockchain: blockchain);
+        debugPrint('Sync completed for wallet: ${wallet.id}');
+      } catch (e) {
+        debugPrint('Sync error for wallet ${wallet.id}: $e');
+        rethrow;
+      } finally {
+        // Remove the sync so future syncs can be triggered
+        _activeSyncs.remove(wallet.id);
+      }
+    });
   }
 
   Future<bool> isMine(
