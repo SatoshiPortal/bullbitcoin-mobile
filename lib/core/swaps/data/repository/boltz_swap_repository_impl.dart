@@ -372,19 +372,19 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     }
 
     final swap = swapModel.toEntity();
-    if (swap.status != SwapStatus.pending) {
-      throw "Can only update status of a pending swap";
-    }
-
-    // Use the appropriate variant's copyWith method
+    // check the status before updating it
+    // it is possible that the stream updates the status before this method
+    // we don't want a status ahead of paid to be updated back to paid
     final updatedSwap = swap.maybeMap(
       lnSend: (lnSendSwap) => lnSendSwap.copyWith(
         sendTxid: txid,
-        status: SwapStatus.paid,
+        status:
+            swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
       ),
       chain: (chainSwap) => chainSwap.copyWith(
         sendTxid: txid,
-        status: SwapStatus.paid,
+        status:
+            swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
       ),
       orElse: () => throw "Only lnSend or chain swaps can be marked as paid",
     );
