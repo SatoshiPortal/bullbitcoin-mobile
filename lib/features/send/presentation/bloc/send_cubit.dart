@@ -17,6 +17,7 @@ import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_us
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -37,6 +38,7 @@ class SendCubit extends Cubit<SendState> {
     required ConfirmLiquidSendUsecase confirmLiquidSendUsecase,
     required GetWalletsUsecase getWalletsUsecase,
     required CreateSendSwapUsecase createSendSwapUsecase,
+    required UpdatePaidSendSwapUsecase updatePaidSendSwapUsecase,
   })  : _getCurrencyUsecase = getCurrencyUsecase,
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
         _convertSatsToCurrencyAmountUsecase =
@@ -52,6 +54,7 @@ class SendCubit extends Cubit<SendState> {
         _confirmLiquidSendUsecase = confirmLiquidSendUsecase,
         _getWalletsUsecase = getWalletsUsecase,
         _createSendSwapUsecase = createSendSwapUsecase,
+        _updatePaidSendSwapUsecase = updatePaidSendSwapUsecase,
         super(const SendState());
 
   // ignore: unused_field
@@ -71,7 +74,7 @@ class SendCubit extends Cubit<SendState> {
   // ignore: unused_field
   final ConfirmBitcoinSendUsecase _confirmBitcoinSendUsecase;
   final ConfirmLiquidSendUsecase _confirmLiquidSendUsecase;
-
+  final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   void backClicked() {
     if (state.step == SendStep.address) {
       emit(state.copyWith(step: SendStep.address));
@@ -387,31 +390,34 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> confirmTransaction() async {
     try {
+      String txId;
       if (state.selectedWallet!.network.isLiquid) {
-        final txId = await _confirmLiquidSendUsecase.execute(
+        txId = await _confirmLiquidSendUsecase.execute(
           psbt: state.unsignedPsbt!,
           walletId: state.selectedWallet!.id,
           isTestnet: state.selectedWallet!.network.isTestnet,
-        );
-        emit(
-          state.copyWith(
-            txId: txId,
-            step: SendStep.success,
-          ),
         );
       } else {
-        final txId = await _confirmBitcoinSendUsecase.execute(
+        txId = await _confirmBitcoinSendUsecase.execute(
           psbt: state.unsignedPsbt!,
           walletId: state.selectedWallet!.id,
           isTestnet: state.selectedWallet!.network.isTestnet,
         );
-        emit(
-          state.copyWith(
-            txId: txId,
-            step: SendStep.success,
-          ),
+      }
+
+      if (state.lightningSwap != null) {
+        await _updatePaidSendSwapUsecase.execute(
+          txid: txId,
+          swapId: state.lightningSwap!.id,
+          network: state.selectedWallet!.network,
         );
       }
+      emit(
+        state.copyWith(
+          txId: txId,
+          step: SendStep.success,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }

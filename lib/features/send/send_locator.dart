@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_us
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 
 class SendLocator {
@@ -58,6 +59,18 @@ class SendLocator {
         ),
         walletRepository: locator<WalletRepository>(),
         seedRepository: locator<SeedRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<UpdatePaidSendSwapUsecase>(
+      () => UpdatePaidSendSwapUsecase(
+        swapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        swapRepositoryTestnet: locator<SwapRepository>(
+          instanceName: LocatorInstanceNameConstants
+              .boltzTestnetSwapRepositoryInstanceName,
+        ),
       ),
     );
     locator.registerFactory<SelectBestWalletUsecase>(

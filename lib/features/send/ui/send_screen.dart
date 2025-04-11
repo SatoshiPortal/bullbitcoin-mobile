@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_us
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -56,6 +57,7 @@ class SendFlow extends StatelessWidget {
         confirmLiquidSendUsecase: locator<ConfirmLiquidSendUsecase>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         createSendSwapUsecase: locator<CreateSendSwapUsecase>(),
+        updatePaidSendSwapUsecase: locator<UpdatePaidSendSwapUsecase>(),
       )
         ..getCurrencies()
         ..getExchangeRate()
