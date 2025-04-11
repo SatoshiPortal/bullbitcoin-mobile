@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
 import 'package:bb_mobile/core/labels/domain/label_entity.dart';
 
@@ -8,34 +9,30 @@ class LabelRepository {
     required LabelStorageDatasource labelStorageDatasource,
   }) : _labelStorageDatasource = labelStorageDatasource;
 
-  Future<void> createLabel(Label label) async {
-    await _labelStorageDatasource.create(label);
+  Future<void> store(Label label) async {
+    final labelModel = LabelModel.fromEntity(label);
+    await _labelStorageDatasource.store(labelModel);
   }
 
-  Future<List<Label>?> findLabelsByName(String labelText) async {
-    final labelModels = await _labelStorageDatasource.readByLabel(labelText);
-    if (labelModels == null || labelModels.isEmpty) {
-      return null;
-    }
-
+  Future<List<Label>> fetchByName(String label) async {
+    final labelModels = await _labelStorageDatasource.fetchByLabel(label);
     return labelModels.map((model) => model.toEntity()).toList();
   }
 
-  Future<List<Label>?> findLabelsByRef(String ref) async {
-    final labelModels = await _labelStorageDatasource.readByRef(ref);
-    if (labelModels == null || labelModels.isEmpty) {
-      return null;
-    }
-
+  Future<List<Label>> findLabelByRef(String type, String ref) async {
+    final prefix = Prefix.from(type);
+    final labelModels =
+        await _labelStorageDatasource.fetchByEntity(prefix, ref);
     return labelModels.map((model) => model.toEntity()).toList();
   }
 
-  Future<void> deleteLabel(Label label) async {
-    await _labelStorageDatasource.deleteLabel(label);
+  Future<void> trash(Label label) async {
+    final labelModel = LabelModel.fromEntity(label);
+    await _labelStorageDatasource.trash(labelModel);
   }
 
-  Future<List<Label>> getAllLabels() async {
-    final labelModels = await _labelStorageDatasource.readAll();
+  Future<List<Label>> fetchAll() async {
+    final labelModels = await _labelStorageDatasource.fetchAll();
     return labelModels.map((model) => model.toEntity()).toList();
   }
 }
