@@ -279,4 +279,17 @@ class ReceiveState with _$ReceiveState {
 
     return null;
   }
+
+  String get address => switch (type) {
+        ReceiveType.bitcoin => bitcoinAddress,
+        ReceiveType.lightning => lightningSwap?.receiveAddress ?? '',
+        ReceiveType.liquid => liquidAddress,
+      };
+  String get abbreviatedAddress => StringFormatting.truncateMiddle(address);
+
+  String get txId => switch (type) {
+        ReceiveType.lightning => lightningSwap?.receiveTxid ?? '',
+        _ => tx?.txId ?? '',
+      };
+  String get abbreviatedTxId => StringFormatting.truncateMiddle(txId);
 }
