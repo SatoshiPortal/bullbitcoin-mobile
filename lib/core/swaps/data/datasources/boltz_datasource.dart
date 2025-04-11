@@ -874,20 +874,4 @@ class BoltzDatasource {
     final sats = (decoded.msats ~/ BigInt.from(1000)).toInt();
     return (sats, decoded.isExpired, decoded.bip21);
   }
-
-  Future<String> invoiceFromLnAddress({
-    required String lnAddress,
-    required int amountSat,
-  }) async {
-    try {
-      final invoice = await invoiceFromLnurl(
-        lnurl: lnAddress,
-        msats: BigInt.from(amountSat * 1000),
-      );
-      return invoice;
-    } catch (e) {
-      debugPrint(e.toString());
-      rethrow;
-    }
-  }
 }

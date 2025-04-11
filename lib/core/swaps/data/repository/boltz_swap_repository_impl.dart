@@ -650,15 +650,4 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     }
     return null;
   }
-
-  @override
-  Future<String> invoiceFromLnAddress({
-    required String lnAddress,
-    required int amountSat,
-  }) {
-    return _boltz.invoiceFromLnAddress(
-      lnAddress: lnAddress,
-      amountSat: amountSat,
-    );
-  }
 }

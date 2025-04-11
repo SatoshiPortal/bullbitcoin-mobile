@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/send/domain/entities/payment_request.dart';
+import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'scan_state.freezed.dart';

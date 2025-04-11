@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/lightning.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class CreateSendSwapUsecase {
@@ -36,7 +37,7 @@ class CreateSendSwapUsecase {
         throw Exception('Amount must be provided if lnAddress is used');
       }
       final finalInvoice = invoice ??
-          await _swapRepository.invoiceFromLnAddress(
+          await invoiceFromLnAddress(
             lnAddress: lnAddress!,
             amountSat: amountSat!,
           );
