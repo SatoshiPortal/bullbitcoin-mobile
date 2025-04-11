@@ -1,246 +1,131 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/core/labels/data/label_model.dart';
-import 'package:bb_mobile/core/labels/domain/label_entity.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/shared_preferences_datasource_impl.dart';
+
+enum Prefix {
+  label,
+  tx,
+  address,
+  pubkey,
+  input,
+  output,
+  xpub;
+
+  static Prefix from(String string) {
+    switch (string) {
+      case 'label':
+        return Prefix.label;
+      case 'tx':
+        return Prefix.tx;
+      case 'address':
+        return Prefix.address;
+      case 'pubkey':
+        return Prefix.pubkey;
+      case 'input':
+        return Prefix.input;
+      case 'output':
+        return Prefix.output;
+      case 'xpub':
+        return Prefix.xpub;
+      default:
+        throw ArgumentError('Invalid entity type: $string');
+    }
+  }
+
+  static String get separator => '_';
+}
 
 class LabelStorageDatasource {
-  final KeyValueStorageDatasource<String> _mainLabelStorage;
-  final KeyValueStorageDatasource<String> _refLabelStorage;
+  final SharedPreferencesDatasourceImpl _labelStorage;
 
   LabelStorageDatasource({
-    required KeyValueStorageDatasource<String> mainLabelStorage,
-    required KeyValueStorageDatasource<String> refLabelStorage,
-  })  : _mainLabelStorage = mainLabelStorage,
-        _refLabelStorage = refLabelStorage;
+    required SharedPreferencesDatasourceImpl labelStorage,
+  }) : _labelStorage = labelStorage;
 
-  String _generateRefKey(String ref) {
-    return 'ref_$ref';
+  String _encodePrefixEntity(Prefix prefix, String id) {
+    return '${prefix.name}${Prefix.separator}$id';
   }
 
-  String _generateMainKey(String label) {
-    return 'label_$label';
+  (Prefix, String) _decodePrefix(String entityWithPrefix) {
+    final parts = entityWithPrefix.split(Prefix.separator);
+    final prefix = Prefix.from(parts.first);
+    final entity = parts.last;
+    return (prefix, entity);
   }
 
-  Future<void> create(Label label) async {
-    final labelModel = LabelModel.fromEntity(label);
-    // update main storage
-    final mainKey = _generateMainKey(labelModel.label);
-    if (await _mainLabelStorage.hasValue(mainKey)) {
-      final existingLabelsJson = await _mainLabelStorage.getValue(mainKey);
-      List<LabelModel> existingLabels = [];
+  Future<void> store(LabelModel label) async {
+    final aLabel = _encodePrefixEntity(Prefix.label, label.label);
+    final anEntity = _encodePrefixEntity(Prefix.from(label.type), label.ref);
 
-      try {
-        final decoded = jsonDecode(existingLabelsJson!);
-        if (decoded is List) {
-          existingLabels = decoded
-              .whereType<Map<String, dynamic>>()
-              .map((item) => LabelModel.fromJson(item))
-              .toList();
-        }
-      } catch (e) {
-        // Handle JSON parsing error
-        existingLabels = [];
-      }
-
-      final existingIndex = existingLabels.indexWhere(
-        (l) => l.ref == labelModel.ref && l.type == labelModel.type,
-      );
-
-      if (existingIndex >= 0) {
-        existingLabels[existingIndex] = labelModel;
-      } else {
-        existingLabels.add(labelModel);
-      }
-      await _mainLabelStorage.saveValue(
-        key: mainKey,
-        value: jsonEncode(existingLabels.map((l) => l.toJson()).toList()),
-      );
-    } else {
-      await _mainLabelStorage.saveValue(
-        key: mainKey,
-        value: jsonEncode([labelModel.toJson()]),
-      );
-    }
-    // Update ref storage
-    final refKey = _generateRefKey(labelModel.ref);
-
-    if (await _refLabelStorage.hasValue(refKey)) {
-      final existingRefLabelsJson = await _refLabelStorage.getValue(refKey);
-      List<LabelModel> existingRefLabels = [];
-
-      try {
-        final decoded = jsonDecode(existingRefLabelsJson!);
-        if (decoded is Map<String, dynamic>) {
-          existingRefLabels = [LabelModel.fromJson(decoded)];
-        } else if (decoded is List) {
-          existingRefLabels = decoded
-              .whereType<Map<String, dynamic>>()
-              .map((item) => LabelModel.fromJson(item))
-              .toList();
-        }
-      } catch (e) {
-        existingRefLabels = [];
-      }
-
-      final existingIndex = existingRefLabels.indexWhere(
-        (l) => l.label == labelModel.label,
-      );
-
-      if (existingIndex >= 0) {
-        existingRefLabels[existingIndex] = labelModel;
-      } else {
-        existingRefLabels.add(labelModel);
-      }
-
-      await _refLabelStorage.saveValue(
-        key: refKey,
-        value: jsonEncode(existingRefLabels.map((l) => l.toJson()).toList()),
-      );
-    } else {
-      await _refLabelStorage.saveValue(
-        key: refKey,
-        value: jsonEncode([labelModel.toJson()]),
-      );
-    }
+    _storeOrUpdate(anEntity, aLabel);
+    _storeOrUpdate(aLabel, anEntity);
   }
 
-  Future<List<LabelModel>?> readByLabel(String label) async {
-    final mainKey = _generateMainKey(label);
-    if (await _mainLabelStorage.hasValue(mainKey)) {
-      final labelsJson = await _mainLabelStorage.getValue(mainKey);
-      try {
-        final decoded = jsonDecode(labelsJson!);
-        if (decoded is List) {
-          return decoded
-              .whereType<Map<String, dynamic>>()
-              .map((item) => LabelModel.fromJson(item))
-              .toList();
-        }
-      } catch (e) {
-        return null;
-      }
+  Future<List<LabelModel>> fetchByLabel(String label) async {
+    final anEntity = _encodePrefixEntity(Prefix.label, label);
+    final values = await _labelStorage.getValues(anEntity) ?? [];
+
+    final result = <LabelModel>[];
+    for (final value in values) {
+      final (prefix, entity) = _decodePrefix(value);
+      result.add(LabelModel(type: prefix.name, ref: entity, label: label));
     }
 
-    return null;
+    return result;
   }
 
-  Future<List<LabelModel>?> readByRef(String ref) async {
-    final refKey = _generateRefKey(ref);
+  Future<List<LabelModel>> fetchByEntity(Prefix prefix, String entity) async {
+    final anEntity = _encodePrefixEntity(prefix, entity);
+    final values = await _labelStorage.getValues(anEntity) ?? [];
 
-    if (await _refLabelStorage.hasValue(refKey)) {
-      final labelsJson = await _refLabelStorage.getValue(refKey);
-      try {
-        final decoded = jsonDecode(labelsJson!);
-        if (decoded is List) {
-          return decoded
-              .whereType<Map<String, dynamic>>()
-              .map((item) => LabelModel.fromJson(item))
-              .toList();
-        }
-      } catch (e) {
-        return null;
-      }
+    final result = <LabelModel>[];
+    for (final value in values) {
+      final (_, label) = _decodePrefix(value);
+      result.add(LabelModel(type: prefix.name, ref: entity, label: label));
     }
 
-    return null;
+    return result;
   }
 
   /// Reads all labels stored in the main storage
   /// Returns a list of all LabelModel objects across all keys
-  Future<List<LabelModel>> readAll() async {
-    final allLabels = <LabelModel>[];
-    final allEntries = await _mainLabelStorage.getAll();
+  /// O(k + e), where k = number of keys and e = total number of entities across all keys
+  Future<List<LabelModel>> fetchAll() async {
+    final all = await _labelStorage.getAll();
+    final labels = all.keys.where((k) => k.startsWith(Prefix.label.name));
 
-    for (final entry in allEntries.entries) {
-      try {
-        final decoded = jsonDecode(entry.value);
-        if (decoded is List) {
-          final labelsForKey = decoded
-              .whereType<Map<String, dynamic>>()
-              .map((item) => LabelModel.fromJson(item))
-              .toList();
+    final result = <LabelModel>[];
+    for (final label in labels) {
+      final entities = await _labelStorage.getValues(label) ?? [];
 
-          allLabels.addAll(labelsForKey);
-        }
-      } catch (e) {
-        continue;
+      for (final entityWithPrefix in entities.toSet()) {
+        final (prefix, entity) = _decodePrefix(entityWithPrefix);
+        result.add(LabelModel(type: prefix.name, ref: entity, label: label));
       }
     }
-    return allLabels;
+    return result;
   }
 
-  Future<void> deleteAll() async {
-    await _mainLabelStorage.deleteAll();
-    await _refLabelStorage.deleteAll();
-  }
+  Future<void> trash(LabelModel label) async {
+    final aLabel = _encodePrefixEntity(Prefix.label, label.label);
 
-  Future<void> deleteLabel(Label label) async {
-    final labelModel = LabelModel.fromEntity(label);
+    // Fetch all entities related to this label
+    final entities = await _labelStorage.getValues(aLabel) ?? [];
 
-    // Delete from main storage
-    final mainKey = _generateMainKey(labelModel.label);
-    if (await _mainLabelStorage.hasValue(mainKey)) {
-      final labelsJson = await _mainLabelStorage.getValue(mainKey);
-      try {
-        final decoded = jsonDecode(labelsJson!);
-        if (decoded is List) {
-          final List<LabelModel> labels = decoded
-              .whereType<Map<String, dynamic>>()
-              .map((item) => LabelModel.fromJson(item))
-              .toList();
-
-          final initialLength = labels.length;
-          labels.removeWhere(
-            (l) => l.ref == labelModel.ref && l.type == labelModel.type,
-          );
-
-          if (labels.length < initialLength) {
-            if (labels.isEmpty) {
-              // If no labels left, delete the entry
-              await _mainLabelStorage.deleteValue(mainKey);
-            } else {
-              await _mainLabelStorage.saveValue(
-                key: mainKey,
-                value: jsonEncode(labels.map((l) => l.toJson()).toList()),
-              );
-            }
-          }
-        }
-      } catch (e) {
-        rethrow;
-      }
+    // Delete each entity associated with this label
+    for (final e in entities) {
+      _labelStorage.deleteValue(e);
     }
+  }
 
-    // Delete from ref storage
-    final refKey = _generateRefKey(labelModel.ref);
-    if (await _refLabelStorage.hasValue(refKey)) {
-      final labelsJson = await _refLabelStorage.getValue(refKey);
-      try {
-        final decoded = jsonDecode(labelsJson!);
-        if (decoded is List) {
-          final List<LabelModel> labels = decoded
-              .whereType<Map<String, dynamic>>()
-              .map((item) => LabelModel.fromJson(item))
-              .toList();
+  Future<void> trashAll() async => await _labelStorage.deleteAll();
 
-          final initialLength = labels.length;
-          labels.removeWhere((l) => l.label == labelModel.label);
+  Future<void> _storeOrUpdate(String key, String value) async {
+    // Fetch all values related to this key
+    final existingValues = await _labelStorage.getValues(key) ?? [];
 
-          if (labels.length < initialLength) {
-            if (labels.isEmpty) {
-              await _refLabelStorage.deleteValue(refKey);
-            } else {
-              await _refLabelStorage.saveValue(
-                key: refKey,
-                value: jsonEncode(labels.map((l) => l.toJson()).toList()),
-              );
-            }
-          }
-        }
-      } catch (e) {
-        rethrow;
-      }
+    if (!existingValues.contains(value)) {
+      final updatedValues = [...existingValues, value];
+      await _labelStorage.saveValues(key, updatedValues);
     }
   }
 }
