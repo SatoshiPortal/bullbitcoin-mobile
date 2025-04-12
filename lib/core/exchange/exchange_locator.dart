@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/data/datasources/api_key_storage_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bull_bitcoin_price_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/bull_bitcoin_user_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
@@ -27,6 +28,14 @@ class ExchangeLocator {
       () => BullBitcoinPriceDatasource(
         bullBitcoinHttpClient: Dio(
           BaseOptions(baseUrl: 'https://api.bullbitcoin.com'),
+        ),
+      ),
+    );
+
+    locator.registerLazySingleton<BullBitcoinUserDatasource>(
+      () => BullBitcoinUserDatasource(
+        bullBitcoinHttpClient: Dio(
+          BaseOptions(baseUrl: 'https://api05.bullbitcoin.dev'),
         ),
       ),
     );

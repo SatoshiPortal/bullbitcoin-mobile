@@ -115,7 +115,7 @@ class ReceiveDetailsScreen extends StatelessWidget {
                           label: 'Payment preimage',
                           displayValue: swap.preimage ?? '',
                         ),*/
-                          ]
+                          ],
                       ] else ...[
                         ReceiveTransactionDetailsItem(
                           label: 'Status',
