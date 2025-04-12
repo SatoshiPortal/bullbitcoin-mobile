@@ -32,6 +32,10 @@ enum BitcoinUnit {
     return BitcoinUnit.values
         .firstWhere((bitcoinUnit) => bitcoinUnit.name == name);
   }
+  factory BitcoinUnit.fromCode(String code) {
+    return BitcoinUnit.values
+        .firstWhere((bitcoinUnit) => bitcoinUnit.code == code);
+  }
 }
 
 enum Language {

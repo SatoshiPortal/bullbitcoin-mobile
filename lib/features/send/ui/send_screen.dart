@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
@@ -220,9 +221,15 @@ class SendAmountScreen extends StatelessWidget {
                       const Gap(48),
                       PriceInput(
                         amount: state.amount,
-                        currency: state.bitcoinUnit.code,
+                        currency: state.inputAmountCurrencyCode,
                         amountEquivalent: state.formattedAmountInputEquivalent,
-                        availableCurrencies: state.fiatCurrencyCodes,
+                        availableCurrencies: [
+                          ...state.fiatCurrencyCodes,
+                          ...[
+                            BitcoinUnit.btc.code,
+                            BitcoinUnit.sats.code,
+                          ],
+                        ],
                         onNoteChanged: cubit.noteChanged,
                         onCurrencyChanged: cubit.currencyCodeChanged,
                         error: hasBalance ? null : 'Insufficient balance',

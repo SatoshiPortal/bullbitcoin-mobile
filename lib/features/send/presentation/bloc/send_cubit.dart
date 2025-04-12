@@ -247,7 +247,7 @@ class SendCubit extends Cubit<SendState> {
         walletId: state.selectedWallet!.id,
         type: swapType,
         lnAddress: state.addressOrInvoice,
-        amountSat: state.inputAmountSat,
+        amountSat: state.confirmedAmountSat,
       );
       emit(
         state.copyWith(
@@ -439,8 +439,26 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> currencyCodeChanged(String currencyCode) async {
+    if (currencyCode == BitcoinUnit.btc.code ||
+        currencyCode == BitcoinUnit.sats.code) {
+      emit(
+        state.copyWith(
+          bitcoinUnit: BitcoinUnit.fromCode(currencyCode),
+          inputAmountCurrencyCode: currencyCode,
+          fiatCurrencyCode: 'CAD',
+          amount: '0',
+        ),
+      );
+      return;
+    }
     await getExchangeRate(currencyCode: currencyCode);
-    emit(state.copyWith(fiatCurrencyCode: currencyCode));
+    emit(
+      state.copyWith(
+        fiatCurrencyCode: currencyCode,
+        inputAmountCurrencyCode: currencyCode,
+        amount: '0',
+      ),
+    );
     // await updateFiatApproximatedAmount();
   }
 
