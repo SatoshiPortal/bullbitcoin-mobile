@@ -93,6 +93,8 @@ class SendState with _$SendState {
     @Default(false) bool amountConfirmedClicked,
     @Default(false) bool loadingBestWallet,
     @Default('') String balanceApproximatedAmount,
+    // swapLimits
+    SwapLimits? swapLimits,
   }) = _SendState;
   const SendState._();
 
@@ -260,4 +262,26 @@ class SendState with _$SendState {
         return 'Send';
     }
   }
+
+  bool get isLightning => sendType == SendType.lightning;
+
+  bool get swapAmountBelowLimit {
+    if (isLightning && inputAmountSat != 0) {
+      return swapLimits != null && inputAmountSat < swapLimits!.min;
+    }
+    return false;
+  }
+
+  bool get swapAmountAboveLimit {
+    if (isLightning) {
+      return swapLimits != null && inputAmountSat > swapLimits!.max;
+    }
+    return false;
+  }
+
+  bool get isSwapAmountValid =>
+      swapLimits == null ||
+      inputAmountSat == 0 ||
+      swapAmountBelowLimit ||
+      swapAmountAboveLimit;
 }

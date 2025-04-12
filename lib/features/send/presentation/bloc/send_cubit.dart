@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
@@ -40,6 +41,7 @@ class SendCubit extends Cubit<SendState> {
     required GetWalletsUsecase getWalletsUsecase,
     required CreateSendSwapUsecase createSendSwapUsecase,
     required UpdatePaidSendSwapUsecase updatePaidSendSwapUsecase,
+    required GetSwapLimitsUsecase getSwapLimitsUsecase,
   })  : _getCurrencyUsecase = getCurrencyUsecase,
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
         _convertSatsToCurrencyAmountUsecase =
@@ -56,6 +58,7 @@ class SendCubit extends Cubit<SendState> {
         _getWalletsUsecase = getWalletsUsecase,
         _createSendSwapUsecase = createSendSwapUsecase,
         _updatePaidSendSwapUsecase = updatePaidSendSwapUsecase,
+        _getSwapLimitsUsecase = getSwapLimitsUsecase,
         super(const SendState());
 
   // ignore: unused_field
@@ -68,14 +71,14 @@ class SendCubit extends Cubit<SendState> {
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetUtxosUsecase _getUtxosUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
-  // ignore: unused_field
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
   final CreateSendSwapUsecase _createSendSwapUsecase;
-  // ignore: unused_field
   final ConfirmBitcoinSendUsecase _confirmBitcoinSendUsecase;
   final ConfirmLiquidSendUsecase _confirmLiquidSendUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
+  final GetSwapLimitsUsecase _getSwapLimitsUsecase;
+
   void backClicked() {
     if (state.step == SendStep.address) {
       emit(state.copyWith(step: SendStep.address));
@@ -127,12 +130,22 @@ class SendCubit extends Cubit<SendState> {
           sendType: sendType,
         ),
       );
+      final loadSwapLimits =
+          paymentRequest.isBolt11 || paymentRequest.isLnAddress;
+
+      final swapType = wallet.isLiquid
+          ? SwapType.liquidToLightning
+          : SwapType.bitcoinToLightning;
+
+      if (loadSwapLimits) {
+        final swapLimits = await _getSwapLimitsUsecase.execute(
+          isTestnet: wallet.network.isTestnet,
+          type: swapType,
+        );
+        emit(state.copyWith(swapLimits: swapLimits));
+      }
       if (paymentRequest.isBolt11) {
-        // TODO: add support for boltz12 or lnaddress
         // for bolt12 or lnaddress we need to redirect to the amount page and only create a swap after amount is set
-        final swapType = wallet.isLiquid
-            ? SwapType.liquidToLightning
-            : SwapType.bitcoinToLightning;
         final swap = await _createSendSwapUsecase.execute(
           walletId: wallet.id,
           type: swapType,

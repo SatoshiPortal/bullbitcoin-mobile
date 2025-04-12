@@ -57,14 +57,14 @@ class CreateSendSwapUsecase {
       final mnemonic =
           await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
 
-      if (wallet.network.isLiquid && type == SwapType.lightningToBitcoin) {
+      if (wallet.network.isLiquid && type != SwapType.liquidToLightning) {
         throw Exception(
-          'Cannot create a lightning to bitcoin with a liquid wallet',
+          'Liquid wallet must be used for a liquid to lightning swap',
         );
       }
-      if (wallet.network.isBitcoin && type == SwapType.lightningToLiquid) {
+      if (wallet.network.isBitcoin && type != SwapType.bitcoinToLightning) {
         throw Exception(
-          'Cannot create a lightning to liquid swap with a bitcoin wallet',
+          'Bitcoin wallet must be used for a liquid to lightning swap',
         );
       }
 

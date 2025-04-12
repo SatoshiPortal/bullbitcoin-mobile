@@ -197,4 +197,8 @@ class PaymentRequest with _$PaymentRequest {
 
 extension PaymentRequestMethods on PaymentRequest {
   bool get isBolt11 => this is Bolt11Request;
+  bool get isLnAddress => this is LnAddressRequest;
+  bool get isBip21 => this is Bip21Request;
+  bool get isBitcoinAddress => this is BitcoinRequest;
+  bool get isLiquidAddress => this is LiquidRequest;
 }

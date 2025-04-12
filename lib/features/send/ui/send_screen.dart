@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/scan/scan_widget.dart';
@@ -59,6 +60,7 @@ class SendFlow extends StatelessWidget {
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         createSendSwapUsecase: locator<CreateSendSwapUsecase>(),
         updatePaidSendSwapUsecase: locator<UpdatePaidSendSwapUsecase>(),
+        getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
       )..loadWalletWithRatesAndFees(),
       child: const SendScreen(),
     );
@@ -205,6 +207,12 @@ class SendAmountScreen extends StatelessWidget {
           final hasBalance = context.select(
             (SendCubit cubit) => cubit.state.walletHasBalance(),
           );
+          final isBelowSwapLimit = context.select<SendCubit, bool>(
+            (bloc) => bloc.state.swapAmountBelowLimit,
+          );
+          final isAboveSwapLimit = context.select<SendCubit, bool>(
+            (bloc) => bloc.state.swapAmountAboveLimit,
+          );
           return IgnorePointer(
             ignoring: state.amountConfirmedClicked,
             child: Stack(
@@ -232,7 +240,13 @@ class SendAmountScreen extends StatelessWidget {
                         ],
                         onNoteChanged: cubit.noteChanged,
                         onCurrencyChanged: cubit.currencyCodeChanged,
-                        error: hasBalance ? null : 'Insufficient balance',
+                        error: !hasBalance
+                            ? 'Insufficient balance'
+                            : isBelowSwapLimit
+                                ? 'Amount below swap limit'
+                                : isAboveSwapLimit
+                                    ? 'Amount above swap limit'
+                                    : null,
                       ),
                       const Gap(64),
                       BalanceRow(
