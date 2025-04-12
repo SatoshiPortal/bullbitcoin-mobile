@@ -17,7 +17,7 @@ class ReceiveState with _$ReceiveState {
     @Default(0) double exchangeRate,
     @Default('') String inputAmountCurrencyCode,
     @Default('') String inputAmount,
-    BigInt? confirmedAmountSat,
+    int? confirmedAmountSat,
     @Default('') String bitcoinAddress,
     LnReceiveSwap? lightningSwap,
     SwapLimits? swapLimits,
@@ -42,30 +42,31 @@ class ReceiveState with _$ReceiveState {
   bool get isInputAmountFiat => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
       .contains(inputAmountCurrencyCode);
 
-  BigInt get inputAmountSat {
-    BigInt amountSat = BigInt.zero;
+  int get inputAmountSat {
+    int amountSat = 0;
 
     if (inputAmount.isNotEmpty) {
       if (isInputAmountFiat) {
         final amountFiat = double.tryParse(inputAmount) ?? 0;
-        amountSat = BigInt.from(
-          amountFiat * 100000000 / exchangeRate,
+        amountSat = ConvertAmount.fiatToSats(
+          amountFiat,
+          exchangeRate,
         );
       } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-        amountSat = BigInt.tryParse(inputAmount) ?? BigInt.zero;
+        amountSat = int.tryParse(inputAmount) ?? 0;
       } else {
         final amountBtc = double.tryParse(inputAmount) ?? 0;
-        amountSat = BigInt.from((amountBtc * 100000000).truncate());
+        amountSat = ConvertAmount.btcToSats(amountBtc);
       }
     }
 
     return amountSat;
   }
 
-  double get inputAmountBtc => inputAmountSat.toDouble() / 100000000;
+  double get inputAmountBtc => ConvertAmount.satsToBtc(inputAmountSat);
 
   double get inputAmountFiat {
-    return inputAmountBtc * exchangeRate;
+    return ConvertAmount.btcToFiat(inputAmountBtc, exchangeRate);
   }
 
   String get qrData {
@@ -136,46 +137,25 @@ class ReceiveState with _$ReceiveState {
     }
   }
 
-  double get confirmedAmountBtc => confirmedAmountSat != null
-      ? confirmedAmountSat!.toDouble() / 100000000
-      : 0;
+  double get confirmedAmountBtc =>
+      ConvertAmount.satsToBtc(confirmedAmountSat ?? 0);
 
   double get confirmedAmountFiat {
-    return confirmedAmountBtc * exchangeRate;
+    return ConvertAmount.btcToFiat(confirmedAmountBtc, exchangeRate);
   }
 
   String get formattedConfirmedAmountBitcoin {
     if (bitcoinUnit == null) {
       return '';
     } else if (bitcoinUnit == BitcoinUnit.sats) {
-      // For sats, use integer formatting without decimals
-      final currencyFormatter = NumberFormat.currency(
-        name: bitcoinUnit!.code,
-        decimalDigits: 0, // Use 0 decimals for sats
-        customPattern: '#,##0 ¤',
-      );
-      return currencyFormatter.format(confirmedAmountSat?.toInt() ?? 0);
+      return FormatAmount.sats(confirmedAmountSat ?? 0);
     } else {
-      // For BTC, use the standard decimal formatting
-      final currencyFormatter = NumberFormat.currency(
-        name: bitcoinUnit!.code,
-        decimalDigits: bitcoinUnit!.decimals,
-        customPattern: '#,##0.00 ¤',
-      );
-      final formatted = currencyFormatter
-          .format(confirmedAmountBtc)
-          .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-      return formatted;
+      return FormatAmount.btc(confirmedAmountBtc);
     }
   }
 
   String get formattedConfirmedAmountFiat {
-    final currencyFormatter = NumberFormat.currency(
-      name: fiatCurrencyCode,
-      customPattern: '#,##0.00 ¤',
-    );
-    final formatted = currencyFormatter.format(confirmedAmountFiat);
-    return formatted;
+    return FormatAmount.fiat(confirmedAmountFiat, fiatCurrencyCode);
   }
 
   String get formattedAmountInputEquivalent {
@@ -184,33 +164,12 @@ class ReceiveState with _$ReceiveState {
       if (bitcoinUnit == null) {
         return '';
       } else if (bitcoinUnit == BitcoinUnit.sats) {
-        // For sats, use integer formatting without decimals
-        final currencyFormatter = NumberFormat.currency(
-          name: bitcoinUnit!.code,
-          decimalDigits: 0, // Use 0 decimals for sats
-          customPattern: '#,##0 ¤',
-        );
-        return currencyFormatter.format(inputAmountSat.toInt());
+        return FormatAmount.sats(inputAmountSat);
       } else {
-        // For BTC, use the standard decimal formatting
-        final currencyFormatter = NumberFormat.currency(
-          name: bitcoinUnit!.code,
-          decimalDigits: bitcoinUnit!.decimals,
-          customPattern: '#,##0.00 ¤',
-        );
-        final formatted = currencyFormatter
-            .format(inputAmountBtc)
-            .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-        return formatted;
+        return FormatAmount.btc(inputAmountBtc);
       }
     } else {
-      // If the input is in bitcoin, the equivalent should be in fiat
-      final currencyFormatter = NumberFormat.currency(
-        name: fiatCurrencyCode,
-        customPattern: '#,##0.00 ¤',
-      );
-      final formatted = currencyFormatter.format(inputAmountFiat);
-      return formatted;
+      return FormatAmount.fiat(inputAmountFiat, fiatCurrencyCode);
     }
   }
 
@@ -254,14 +213,14 @@ class ReceiveState with _$ReceiveState {
 
   bool get swapAmountBelowLimit {
     if (isLightning && inputAmount.isNotEmpty) {
-      return swapLimits != null && inputAmountSat.toInt() < swapLimits!.min;
+      return swapLimits != null && inputAmountSat < swapLimits!.min;
     }
     return false;
   }
 
   bool get swapAmountAboveLimit {
     if (isLightning) {
-      return swapLimits != null && inputAmountSat.toInt() > swapLimits!.max;
+      return swapLimits != null && inputAmountSat > swapLimits!.max;
     }
     return false;
   }

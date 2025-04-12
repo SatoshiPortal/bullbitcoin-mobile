@@ -23,7 +23,7 @@ class ReceiveDetailsScreen extends StatelessWidget {
     final state = context.watch<ReceiveBloc>().state;
     final tx = state.tx;
     final receiveType = state.type;
-    final amountSat = tx?.amountSat ?? state.confirmedAmountSat?.toInt() ?? 0;
+    final amountSat = tx?.amountSat ?? state.confirmedAmountSat ?? 0;
     final wallet = state.wallet!;
     final swap = state.lightningSwap;
     final note = state.note;

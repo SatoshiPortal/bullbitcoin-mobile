@@ -15,6 +15,8 @@ import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -24,7 +26,6 @@ import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_u
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:intl/intl.dart';
 
 part 'receive_bloc.freezed.dart';
 part 'receive_event.dart';
@@ -493,7 +494,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       try {
         // TODO: These errors should be in sats/btc based on the users
         //  bitcoin unit settings
-        if (confirmedAmountSat.toInt() < state.swapLimits!.min) {
+        if (confirmedAmountSat < state.swapLimits!.min) {
           emit(
             state.copyWith(
               error: Exception(
@@ -502,7 +503,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             ),
           );
         }
-        if (confirmedAmountSat.toInt() < state.swapLimits!.max) {
+        if (confirmedAmountSat < state.swapLimits!.max) {
           emit(
             state.copyWith(
               error: Exception(
@@ -514,7 +515,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         swap = await _createReceiveSwapUsecase.execute(
           walletId: state.wallet!.id,
           type: SwapType.lightningToLiquid,
-          amountSat: confirmedAmountSat.toInt(),
+          amountSat: confirmedAmountSat,
           description: state.note,
         );
         // The swap is created, now we can watch it for updates
