@@ -153,11 +153,10 @@ packages:
   boltz:
     dependency: "direct main"
     description:
-      path: "."
-      ref: develop
-      resolved-ref: "9d949242b3edd82d9d822942b5b1b96d40583d3f"
-      url: "https://github.com/SatoshiPortal/boltz-dart.git"
-    source: git
+      name: boltz
+      sha256: "20d74940df95cbfa04769d53868cea4f4b7071bb339edb6ad8ebd5b409042333"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.10"
   boolean_selector:
     dependency: transitive

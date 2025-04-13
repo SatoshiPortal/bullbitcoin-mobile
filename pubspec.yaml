@@ -73,10 +73,10 @@ dependencies:
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   boltz:
-    # 0.1.10
-    git:
-      url: https://github.com/SatoshiPortal/boltz-dart.git
-      ref: develop
+    0.1.10
+    # git:
+    #   url: https://github.com/SatoshiPortal/boltz-dart.git
+    #   ref: develop
   lwk:
     # 0.1.7
     git:
