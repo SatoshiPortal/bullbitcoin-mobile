@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/labels/data/labelable.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'address.freezed.dart';
@@ -13,7 +14,7 @@ enum AddressStatus {
 }
 
 @freezed
-sealed class Address with _$Address {
+sealed class Address with _$Address implements Labelable {
   const Address._();
 
   factory Address.bitcoin({
@@ -101,4 +102,7 @@ sealed class Address with _$Address {
         liquid: (_) => true,
         orElse: () => false,
       );
+
+  @override
+  String toRef() => address;
 }
