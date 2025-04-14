@@ -151,7 +151,7 @@ class SendCubit extends Cubit<SendState> {
           type: swapType,
           invoice: state.addressOrInvoice,
         );
-
+        await loadFees();
         await loadUtxos();
         emit(
           state.copyWith(
@@ -161,6 +161,7 @@ class SendCubit extends Cubit<SendState> {
           ),
         );
       } else {
+        await loadFees();
         await loadUtxos();
         emit(
           state.copyWith(
@@ -442,12 +443,12 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> onConfirmTransactionClicked() async {
+    await createTransaction();
     emit(
       state.copyWith(
         step: SendStep.sending,
       ),
     );
-    await createTransaction();
     await confirmTransaction();
   }
 

@@ -286,10 +286,8 @@ class BoltzDatasource {
 
   Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
     final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
-    debugPrint(lbtcLnSwap.keys.secretKey);
-    debugPrint(lbtcLnSwap.keys.secretKey);
-
-    return lbtcLnSwap.coopCloseSubmarine();
+    await lbtcLnSwap.coopCloseSubmarine();
+    return;
   }
 
   Future<String> refundBtcSubmarineSwap({
@@ -313,6 +311,8 @@ class BoltzDatasource {
     required bool tryCooperate,
   }) async {
     final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+    debugPrint(lbtcLnSwap.id);
+    debugPrint(lbtcLnSwap.network.toString());
     return lbtcLnSwap.refund(
       outAddress: refundAddress,
       minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
@@ -623,7 +623,11 @@ class BoltzDatasource {
 
               case SwapStatus.invoiceFailedToPay:
                 // Failed submarine swap
-                if (swapModel is LnSendSwapModel) {
+                final submarineLockupPaid =
+                    swapModel is LnSendSwapModel && swapModel.sendTxid != null;
+                final hasRefunded =
+                    (swapModel as LnSendSwapModel).refundTxid != null;
+                if (submarineLockupPaid && !hasRefunded) {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.refundable.name,
                   );
