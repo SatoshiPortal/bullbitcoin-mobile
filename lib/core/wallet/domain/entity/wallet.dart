@@ -90,7 +90,7 @@ enum WalletSource {
 @freezed
 class Wallet with _$Wallet {
   const factory Wallet({
-    required String id,
+    required String origin,
     @Default('') String label,
     required Network network,
     @Default(false) bool isDefault,
@@ -112,6 +112,8 @@ class Wallet with _$Wallet {
     // otherwise we have to store all swap metadata as part of the backup as well, which is not ideal
   }) = _Wallet;
   const Wallet._();
+
+  String get id => origin;
 
   String getWalletTypeString() {
     String str = '';
@@ -160,27 +162,5 @@ class Wallet with _$Wallet {
       default:
         return false;
     }
-  }
-
-  String get origin {
-    final networkPath = network == Network.bitcoinMainnet
-        ? '0h'
-        : network == Network.liquidMainnet
-            ? '1667h'
-            : '1h';
-
-    String scriptPath = '';
-    switch (scriptType) {
-      case ScriptType.bip84:
-        scriptPath = '84h';
-      case ScriptType.bip49:
-        scriptPath = '49h';
-      case ScriptType.bip44:
-        scriptPath = '44h';
-    }
-
-    const String accountPath = '0h';
-
-    return '[$masterFingerprint/$scriptPath/$networkPath/$accountPath]';
   }
 }

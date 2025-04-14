@@ -82,7 +82,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
     // Return the created wallet entity
     return Wallet(
-      id: metadata.id,
+      origin: metadata.origin,
       label: metadata.label,
       network: network,
       isDefault: metadata.isDefault,
@@ -118,7 +118,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
     // Return the created wallet entity
     return Wallet(
-      id: metadata.id,
+      origin: metadata.origin,
       label: metadata.label,
       network: Network.fromEnvironment(
         isTestnet: metadata.isTestnet,
@@ -148,7 +148,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
     // Return the wallet entity
     return Wallet(
-      id: metadata.id,
+      origin: metadata.origin,
       label: metadata.label,
       network: Network.fromEnvironment(
         isTestnet: metadata.isTestnet,
@@ -211,7 +211,7 @@ class WalletRepositoryImpl implements WalletRepository {
         .entries
         .map(
           (entry) => Wallet(
-            id: entry.value.id,
+            origin: entry.value.origin,
             label: entry.value.label,
             network: Network.fromEnvironment(
               isTestnet: entry.value.isTestnet,
