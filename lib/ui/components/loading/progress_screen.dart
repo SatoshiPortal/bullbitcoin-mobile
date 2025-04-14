@@ -1,7 +1,9 @@
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart' show Assets;
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:gif/gif.dart' show Autostart, Gif;
 
 class ProgressScreen extends StatelessWidget {
   final String? title;
@@ -25,11 +27,11 @@ class ProgressScreen extends StatelessWidget {
         children: [
           if (isLoading)
             Center(
-              child: Image.network(
-                "https://s3-alpha-sig.figma.com/img/8bc4/c05f/a9d95a1e4eb48bca4e89c563d5a731a1?Expires=1744588800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=mzHul7JycaOyzgh1Xx3FGcoUj9Hbg4vjRQIYTfvyzFwLzPZkX4aAKXvrUiTkeYX-fV8kPJDWkBi3z3YDuzK-Q80widmpuIPGgVYuKDGVD~6p-sN8D7yy-QNEjCh3G3BDvSSaWigX2KBJTQqbjKkBNORlkdgUA~iw7TL8GLz0s~0VyYO5aEnBBWlfBwRZjfeZZhKSe8tOAzQr5FEIHewYBI91tFQfaxSe6ps155kIXbDTDH-IwwhSQDx1y0iuFTo6BuzXMnCIeMayrHpWhKkqjTKa~6PiRD9KTDbseQPMpbWTBZnHlseL3yXDjN~8YGx32hLz7athKI5Zpq6d10fKaw__",
+              child: Gif(
+                autostart: Autostart.loop,
                 width: 200,
                 height: 200,
-                fit: BoxFit.cover,
+                image: AssetImage(Assets.images2.cubesLoading.path),
               ),
             )
           else
