@@ -12,24 +12,31 @@ class SelectBestWalletUsecase {
     int? amountSat,
   }) {
     try {
-      if (request is BitcoinRequest || request is LiquidRequest) {
+      if (request is BitcoinPaymentRequest || request is LiquidPaymentRequest) {
         if (amountSat == null) throw 'amountSat should be specified';
       }
 
       // Bitcoin
-      if (request is BitcoinRequest) {
-        _selectBestWallet(amountSat!, request.network, wallets);
+      if (request is BitcoinPaymentRequest) {
+        _selectBestWallet(
+          amountSat!,
+          request.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
+          wallets,
+        );
       }
 
       // Liquid
-      if (request is LiquidRequest) {
-        return _selectBestWallet(amountSat!, request.network, wallets);
+      if (request is LiquidPaymentRequest) {
+        return _selectBestWallet(
+          amountSat!,
+          request.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+          wallets,
+        );
       }
 
       //Bip21
-      if (request is Bip21Request) {
-        final uriAmount = BigInt.tryParse(request.options['amount'] as String);
-        final amount = uriAmount != null ? uriAmount.toInt() : amountSat;
+      if (request is Bip21PaymentRequest) {
+        final amount = amountSat ?? request.amountSat;
 
         if (amount == null) throw 'The amount of satoshis should be specified';
 
@@ -37,7 +44,7 @@ class SelectBestWalletUsecase {
       }
 
       // Bolt11
-      if (request is Bolt11Request) {
+      if (request is Bolt11PaymentRequest) {
         try {
           // Use liquid
           return _selectBestWallet(
@@ -55,7 +62,7 @@ class SelectBestWalletUsecase {
         }
       }
       // Bolt11
-      if (request is LnAddressRequest) {
+      if (request is LnAddressPaymentRequest) {
         try {
           // Use liquid
           return _selectBestWallet(

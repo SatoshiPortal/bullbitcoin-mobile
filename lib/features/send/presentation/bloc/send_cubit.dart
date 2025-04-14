@@ -157,7 +157,8 @@ class SendCubit extends Cubit<SendState> {
           state.copyWith(
             step: SendStep.confirm,
             lightningSwap: swap,
-            confirmedAmountSat: (paymentRequest as Bolt11Request).amountSat,
+            confirmedAmountSat:
+                (paymentRequest as Bolt11PaymentRequest).amountSat,
           ),
         );
       } else {

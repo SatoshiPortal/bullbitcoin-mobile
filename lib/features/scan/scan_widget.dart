@@ -74,7 +74,7 @@ class _ScanWidgetState extends State<ScanWidget> {
                           children: [
                             if (state.paymentRequest != null)
                               Text(
-                                '${state.paymentRequest!.type.name} on ${state.paymentRequest!.network.name}',
+                                '${state.paymentRequest!.runtimeType} on ${state.paymentRequest!.isTestnet ? 'testnet' : 'mainnet'}',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(color: Colors.red),
                               ),

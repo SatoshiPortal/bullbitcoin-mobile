@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:boltz/boltz.dart' as boltz;
@@ -8,55 +9,44 @@ import 'package:lwk/lwk.dart' as lwk;
 
 part 'payment_request.freezed.dart';
 
-enum PaymentType {
-  bitcoinAddress,
-  liquidAddress,
-  bolt11,
-  bip21,
-  lnAddress,
-}
-
 @freezed
-class PaymentRequest with _$PaymentRequest {
+sealed class PaymentRequest with _$PaymentRequest {
   const factory PaymentRequest.bitcoin({
-    required PaymentType type,
-    required Network network,
     required String address,
-  }) = BitcoinRequest;
+    required bool isTestnet,
+  }) = BitcoinPaymentRequest;
 
   const factory PaymentRequest.liquid({
-    required PaymentType type,
-    required Network network,
     required String address,
-  }) = LiquidRequest;
+    required bool isTestnet,
+  }) = LiquidPaymentRequest;
 
   const factory PaymentRequest.lnAddress({
-    required PaymentType type,
-    required Network network,
     required String address,
-  }) = LnAddressRequest;
+  }) = LnAddressPaymentRequest;
 
   const factory PaymentRequest.bolt11({
-    required PaymentType type,
+    required String invoice,
     required int amountSat,
-    required Network network,
-    required int expiry,
-    required int expiresIn,
+    required String paymentHash,
+    @Default('') String description,
     required int expiresAt,
-    required bool isExpired,
-    required int cltvExpDelta,
-    required String preimageHash,
-    String? bip21,
-  }) = Bolt11Request;
+    required bool isTestnet,
+  }) = Bolt11PaymentRequest;
 
   const factory PaymentRequest.bip21({
-    required PaymentType type,
     required Network network,
-    required String address,
     required String uri,
-    required String scheme,
-    required Map<String, dynamic> options,
-  }) = Bip21Request;
+    required String address,
+    @Default('') String label,
+    @Default('') String message,
+    int? amountSat,
+    @Default('') String lightning,
+    @Default('') String pj,
+    @Default('') String pjos,
+  }) = Bip21PaymentRequest;
+
+  const PaymentRequest._();
 
   static Future<PaymentRequest> parse(String data) async {
     try {
@@ -65,9 +55,8 @@ class PaymentRequest with _$PaymentRequest {
             await bdk.Address.fromString(s: data, network: bdk.Network.bitcoin);
 
         return PaymentRequest.bitcoin(
-          type: PaymentType.bitcoinAddress,
           address: address.asString(),
-          network: Network.bitcoinMainnet,
+          isTestnet: false,
         );
       } catch (_) {}
 
@@ -76,24 +65,26 @@ class PaymentRequest with _$PaymentRequest {
             await bdk.Address.fromString(s: data, network: bdk.Network.testnet);
 
         return PaymentRequest.bitcoin(
-          type: PaymentType.bitcoinAddress,
           address: address.asString(),
-          network: Network.bitcoinTestnet,
+          isTestnet: true,
         );
       } catch (_) {}
 
       try {
         final uri = bip21.decode(data);
-        const type = PaymentType.bip21;
+        final address = uri.address;
         Network network;
         if (uri.urnScheme == 'bitcoin') {
           try {
-            await bdk.Address.fromString(s: data, network: bdk.Network.bitcoin);
+            await bdk.Address.fromString(
+              s: address,
+              network: bdk.Network.bitcoin,
+            );
             network = Network.bitcoinMainnet;
           } catch (_) {
             try {
               await bdk.Address.fromString(
-                s: data,
+                s: address,
                 network: bdk.Network.testnet,
               );
               network = Network.bitcoinTestnet;
@@ -120,33 +111,26 @@ class PaymentRequest with _$PaymentRequest {
           throw 'unhandled network';
         }
 
+        final amount = uri.options['amount'] as double?;
         return PaymentRequest.bip21(
-          type: type,
           network: network,
-          address: uri.address,
+          address: address,
           uri: uri.toString(),
-          scheme: uri.urnScheme,
-          options: uri.options,
+          label: uri.options['label'] as String? ?? '',
+          message: uri.options['message'] as String? ?? '',
+          amountSat: amount != null ? ConvertAmount.btcToSats(amount) : null,
+          lightning: uri.options['lightning'] as String? ?? '',
+          pj: uri.options['pj'] as String? ?? '',
+          pjos: uri.options['pjos'] as String? ?? '',
         );
       } catch (_) {}
 
       try {
         final network = await lwk.Address.validate(addressString: data);
-        const type = PaymentType.liquidAddress;
-        debugPrint(network.name);
-        if (network.name == 'mainnet') {
-          return PaymentRequest.liquid(
-            type: type,
-            address: data,
-            network: Network.liquidMainnet,
-          );
-        } else {
-          return PaymentRequest.liquid(
-            type: type,
-            address: data,
-            network: Network.liquidTestnet,
-          );
-        }
+        return PaymentRequest.liquid(
+          address: data,
+          isTestnet: network == lwk.Network.testnet,
+        );
       } catch (e) {
         debugPrint(e.toString());
       }
@@ -156,18 +140,12 @@ class PaymentRequest with _$PaymentRequest {
         final sats = invoice.msats.toInt() ~/ 1000;
 
         return PaymentRequest.bolt11(
-          type: PaymentType.bolt11,
+          invoice: data,
           amountSat: sats,
-          network: invoice.network == 'bitcoin'
-              ? Network.bitcoinMainnet
-              : Network.liquidMainnet,
-          expiry: invoice.expiry.toInt(),
-          expiresIn: invoice.expiresIn.toInt(),
+          paymentHash: invoice.preimageHash,
+          description: invoice.description,
           expiresAt: invoice.expiresAt.toInt(),
-          isExpired: invoice.isExpired,
-          cltvExpDelta: invoice.cltvExpDelta.toInt(),
-          preimageHash: invoice.preimageHash,
-          bip21: invoice.bip21,
+          isTestnet: invoice.network != 'bitcoin',
         );
       } catch (e) {
         debugPrint(e.toString());
@@ -179,8 +157,6 @@ class PaymentRequest with _$PaymentRequest {
         }
 
         return PaymentRequest.lnAddress(
-          type: PaymentType.lnAddress,
-          network: Network.bitcoinMainnet,
           address: data,
         );
       } catch (e) {
@@ -193,12 +169,18 @@ class PaymentRequest with _$PaymentRequest {
       rethrow;
     }
   }
-}
 
-extension PaymentRequestMethods on PaymentRequest {
-  bool get isBolt11 => this is Bolt11Request;
-  bool get isLnAddress => this is LnAddressRequest;
-  bool get isBip21 => this is Bip21Request;
-  bool get isBitcoinAddress => this is BitcoinRequest;
-  bool get isLiquidAddress => this is LiquidRequest;
+  bool get isBolt11 => this is Bolt11PaymentRequest;
+  bool get isLnAddress => this is LnAddressPaymentRequest;
+  bool get isBip21 => this is Bip21PaymentRequest;
+  bool get isBitcoinAddress => this is BitcoinPaymentRequest;
+  bool get isLiquidAddress => this is LiquidPaymentRequest;
+
+  bool get isTestnet => switch (this) {
+        BitcoinPaymentRequest(isTestnet: final isTestnet) => isTestnet,
+        LiquidPaymentRequest(isTestnet: final isTestnet) => isTestnet,
+        Bolt11PaymentRequest(isTestnet: final isTestnet) => isTestnet,
+        Bip21PaymentRequest(network: final network) => network.isTestnet,
+        _ => false,
+      };
 }
