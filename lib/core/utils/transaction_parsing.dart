@@ -31,4 +31,29 @@ class TransactionParsing {
     );
     return tx.txid();
   }
+
+  static Future<BigInt> getAmountReceivedFromTransactionBytes(
+    Uint8List transactionBytes, {
+    required String address,
+    required bool isTestnet,
+  }) async {
+    final tx = await bdk.Transaction.fromBytes(
+      transactionBytes: transactionBytes,
+    );
+
+    final outputs = await tx.output();
+    BigInt totalAmount = BigInt.zero;
+    for (final output in outputs) {
+      final scriptPubkey = output.scriptPubkey;
+      final outputAddress = await bdk.Address.fromScript(
+        script: bdk.ScriptBuf(bytes: scriptPubkey.bytes),
+        network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+      );
+      if (outputAddress.asString() == address) {
+        totalAmount += output.value;
+      }
+    }
+
+    return totalAmount;
+  }
 }

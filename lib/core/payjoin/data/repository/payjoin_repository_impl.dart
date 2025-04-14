@@ -262,14 +262,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           isLiquid: network.isLiquid,
         );
 
-    final txId = await _blockchain.broadcastPsbt(
+    await _blockchain.broadcastPsbt(
       finalizedPsbt,
       electrumServer: electrumServer,
     );
 
     final model = await _source.completeSender(
       payjoinId,
-      txId: txId,
     );
 
     return model.toEntity() as PayjoinSender;
@@ -292,14 +291,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           isLiquid: network.isLiquid,
         );
 
-    final txId = await _blockchain.broadcastTransaction(
+    await _blockchain.broadcastTransaction(
       originalTxBytes,
       electrumServer: electrumServer,
     );
 
     final model = await _source.completeReceiver(
       payjoinId,
-      txId: txId,
     );
 
     return model.toEntity() as PayjoinReceiver;

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -46,9 +47,10 @@ class PayjoinInProgressPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Using read instead of select or watch is ok here,
-    //  since the amounts can not be changed at this point anymore.
-    //final amountSat = context.read<ReceiveBloc>().state.payjoin.originalTxBytes
+    final amountSat = context.watch<ReceiveBloc>().state.payjoin?.amountSat;
+    final amountFiat = context.watch<ReceiveBloc>().state.payjoinAmountFiat;
+    final fiatCurrencyCode =
+        context.watch<ReceiveBloc>().state.fiatCurrencyCode;
 
     return Center(
       child: Column(
@@ -62,17 +64,19 @@ class PayjoinInProgressPage extends StatelessWidget {
             'Wait for the sender to finish the payjoin transaction',
             style: context.font.bodyMedium,
           ),
-          /*const Gap(16),
-          BBText(
-            FormatAmount.sats(amountSat),
-            style: context.font.headlineLarge,
-          ),
-          const Gap(4),
-          BBText(
-            '~$amountFiat',
-            style: context.font.bodyLarge,
-            color: context.colour.surface,
-          ),*/
+          if (amountSat != null) ...[
+            const Gap(16),
+            BBText(
+              FormatAmount.sats(amountSat.toInt()),
+              style: context.font.headlineLarge,
+            ),
+            const Gap(4),
+            BBText(
+              '~${FormatAmount.fiat(amountFiat, fiatCurrencyCode)}',
+              style: context.font.bodyLarge,
+              color: context.colour.surface,
+            ),
+          ],
           const Gap(84),
           const ReceiveBroadcastPayjoinButton(),
         ],

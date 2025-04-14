@@ -18,7 +18,7 @@ class TransactionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => locator<TransactionsCubit>(),
+      create: (context) => locator<TransactionsCubit>()..loadTxs(),
       child: Scaffold(
         appBar: AppBar(
           forceMaterialTransparency: true,

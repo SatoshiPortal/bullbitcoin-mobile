@@ -6,9 +6,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
     required GetWalletTransactionsUsecase getWalletTransactionsUsecase,
   })  : _getWalletTransactionsUsecase = getWalletTransactionsUsecase,
-        super(const TransactionsState()) {
-    loadTxs();
-  }
+        super(const TransactionsState());
 
   final GetWalletTransactionsUsecase _getWalletTransactionsUsecase;
 
@@ -34,7 +32,9 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
       emit(state.copyWith(loadingTxs: false, transactions: syncedTransactions));
     } catch (e) {
-      emit(state.copyWith(loadingTxs: false, err: e));
+      if (!isClosed) {
+        emit(state.copyWith(loadingTxs: false, err: e));
+      }
     }
   }
 }

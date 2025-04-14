@@ -209,6 +209,12 @@ class ReceiveState with _$ReceiveState {
     return false;
   }
 
+  double get payjoinAmountFiat {
+    final payjoinAmountSat = payjoin?.amountSat ?? BigInt.zero;
+    final payjoinAmountBtc = ConvertAmount.satsToBtc(payjoinAmountSat.toInt());
+    return ConvertAmount.btcToFiat(payjoinAmountBtc, exchangeRate);
+  }
+
   bool get isLightning => type == ReceiveType.lightning;
 
   bool get swapAmountBelowLimit {

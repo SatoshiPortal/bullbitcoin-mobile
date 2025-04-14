@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:payjoin_flutter/bitcoin_ffi.dart';
@@ -99,6 +100,8 @@ class PayjoinDatasource {
       // Create and store the model to keep track of the payjoin session
       final model = PayjoinModel.receiver(
         id: receiver.id(),
+        address: address,
+        isTestnet: isTestnet,
         receiver: receiver.toJson(),
         walletId: walletId,
         pjUri: receiver.pjUriBuilder().build().asString(),
@@ -159,6 +162,7 @@ class PayjoinDatasource {
       sender: senderJson,
       walletId: walletId,
       originalPsbt: originalPsbt,
+      originalTxId: await TransactionParsing.getTxIdFromPsbt(originalPsbt),
       expireAt: (DateTime.now().millisecondsSinceEpoch ~/ 1000) +
           expirySec, // Expire after the given seconds
     ) as PayjoinSenderModel;
@@ -308,6 +312,7 @@ class PayjoinDatasource {
     final updatedModel = model.copyWith(
       receiver: receiver.toJson(),
       proposalPsbt: proposalPsbt,
+      txId: await TransactionParsing.getTxIdFromPsbt(proposalPsbt),
     );
     await _store(updatedModel);
 
@@ -318,10 +323,7 @@ class PayjoinDatasource {
     return updatedModel;
   }
 
-  Future<PayjoinSenderModel> completeSender(
-    String uri, {
-    required String txId,
-  }) async {
+  Future<PayjoinSenderModel> completeSender(String uri) async {
     final model = await get(uri) as PayjoinSenderModel?;
 
     if (model == null) {
@@ -329,7 +331,6 @@ class PayjoinDatasource {
     }
 
     final updatedModel = model.copyWith(
-      txId: txId,
       isCompleted: true, // Nothing more to do from the sender side
     );
     await _store(updatedModel);
@@ -337,10 +338,7 @@ class PayjoinDatasource {
     return updatedModel;
   }
 
-  Future<PayjoinReceiverModel> completeReceiver(
-    String id, {
-    required String txId,
-  }) async {
+  Future<PayjoinReceiverModel> completeReceiver(String id) async {
     final model = await get(id) as PayjoinReceiverModel?;
 
     if (model == null) {
@@ -348,7 +346,6 @@ class PayjoinDatasource {
     }
 
     final updatedModel = model.copyWith(
-      txId: txId,
       isCompleted: true, // Nothing more to do from the sender side
     );
     await _store(updatedModel);
@@ -462,9 +459,22 @@ class PayjoinDatasource {
                 //  the model
                 final originalTxBytes =
                     await request.extractTxToScheduleBroadcast();
+                final originalTxId =
+                    await TransactionParsing.getTxIdFromTransactionBytes(
+                  originalTxBytes,
+                );
+                final amountSat = await TransactionParsing
+                    .getAmountReceivedFromTransactionBytes(
+                  originalTxBytes,
+                  address: receiverModel.address,
+                  isTestnet: receiverModel.isTestnet,
+                );
+                log('[Receivers Isolate] Request original Tx ID: $originalTxId and amount: $amountSat');
                 final updatedModel = receiverModel.copyWith(
                   receiver: receiver.toJson(),
                   originalTxBytes: originalTxBytes,
+                  originalTxId: originalTxId,
+                  amountSat: amountSat,
                 );
 
                 // Notify the main isolate so it can be processed further
@@ -522,12 +532,17 @@ class PayjoinDatasource {
                 context: context,
                 dio: dio,
               );
+
               if (proposalPsbt != null) {
                 log('[Senders Isolate] Proposal found in senders isolate');
+                final txId =
+                    await TransactionParsing.getTxIdFromPsbt(proposalPsbt);
                 // The proposal psbt is needed in the main isolate for
-                //  further processing so send it through the model
+                //  further processing so send it through the model as well as
+                //  its txId.
                 final updatedModel = senderModel.copyWith(
                   proposalPsbt: proposalPsbt,
+                  txId: txId,
                 );
 
                 // Notify the main isolate so the payjoin can be processed further
