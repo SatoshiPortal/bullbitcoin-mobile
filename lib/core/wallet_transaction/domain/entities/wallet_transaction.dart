@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/labels/data/labelable.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -41,7 +42,7 @@ sealed class WalletTransaction with _$WalletTransaction {
 // This is the final type that is translated from a WalletTransaction
 // It knows the specific details of the transaction like if its a swap, payjoin etc.
 @freezed
-sealed class Transaction with _$Transaction {
+sealed class Transaction with _$Transaction implements Labelable {
   const Transaction._();
   factory Transaction.onchain({
     required String walletId,
@@ -88,6 +89,15 @@ sealed class Transaction with _$Transaction {
       self: (_) => TxType.self,
       lnSwap: (_) => TxType.lnSwap,
       chainSwap: (_) => TxType.chainSwap,
+    );
+  }
+
+  @override
+  String toRef() {
+    return maybeWhen(
+      onchain: (_, __, txId, ___, ____, _____, ______, _______) => txId,
+      self: (_, __, txId, ___, ____, _____, ______, _______) => txId,
+      orElse: () => throw Exception('Transaction type has no txId'),
     );
   }
 }
