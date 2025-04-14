@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -28,6 +29,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     required FetchLatestGoogleDriveBackupUsecase
         fetchLatestGoogleDriveBackupUsecase,
     required FetchBackupFromFileSystemUsecase fetchBackupFromFileSystemUsecase,
+    required CompletePhysicalBackupVerificationUsecase
+        completePhysicalBackupVerificationUsecase,
   })  : _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
         _findMnemonicWordsUsecase = findMnemonicWordsUsecase,
         _selectFileFromPathUsecase = selectFileFromPathUsecase,
@@ -37,6 +40,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         _fetchLatestGoogleDriveBackupUsecase =
             fetchLatestGoogleDriveBackupUsecase,
         _fetchBackupFromFileSystemUsecase = fetchBackupFromFileSystemUsecase,
+        _completePhysicalBackupVerificationUsecase =
+            completePhysicalBackupVerificationUsecase,
         super(const OnboardingState()) {
     on<OnboardingCreateNewWallet>(_onCreateNewWallet);
     on<OnboardingRecoveryWordChanged>(_onRecoveryWordChanged);
@@ -68,7 +73,8 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   final FetchLatestGoogleDriveBackupUsecase
       _fetchLatestGoogleDriveBackupUsecase;
   final FetchBackupFromFileSystemUsecase _fetchBackupFromFileSystemUsecase;
-
+  final CompletePhysicalBackupVerificationUsecase
+      _completePhysicalBackupVerificationUsecase;
   Future<void> _handleError(
     String error,
     Emitter<OnboardingState> emit,
@@ -148,10 +154,11 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           hintWords: {},
         ),
       );
+
       await _createDefaultWalletsUsecase.execute(
         mnemonicWords: state.validWords.values.toList(),
       );
-
+      await _completePhysicalBackupVerificationUsecase.execute();
       emit(
         state.copyWith(
           onboardingStepStatus: OnboardingStepStatus.success,
