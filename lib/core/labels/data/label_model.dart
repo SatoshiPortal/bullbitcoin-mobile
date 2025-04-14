@@ -1,14 +1,10 @@
-import 'package:bb_mobile/core/labels/domain/label_entity.dart';
+import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
 
 class LabelModel {
-  final String type;
-
+  final Entity type;
   final String ref;
-
   final String label;
-
   final String? origin;
-
   final bool? spendable;
 
   LabelModel({
@@ -19,50 +15,11 @@ class LabelModel {
     this.spendable,
   });
 
-  factory LabelModel.fromEntity(Label entity) {
-    return LabelModel(
-      type: entity.type.value,
-      ref: entity.ref,
-      label: entity.label,
-      origin: entity.origin,
-      spendable: entity.spendable,
-    );
-  }
-
-  Label toEntity() {
-    return Label(
-      type: _typeFromString(type),
-      ref: ref,
-      label: label,
-      origin: origin,
-      spendable: spendable,
-    );
-  }
-
-  LabelType _typeFromString(String typeStr) {
-    switch (typeStr) {
-      case 'tx':
-        return LabelType.tx;
-      case 'address':
-        return LabelType.address;
-      case 'pubkey':
-        return LabelType.pubkey;
-      case 'input':
-        return LabelType.input;
-      case 'output':
-        return LabelType.output;
-      case 'xpub':
-        return LabelType.xpub;
-      default:
-        throw ArgumentError('Invalid label type: $typeStr');
-    }
-  }
-
   factory LabelModel.fromJson(Map<String, dynamic> json) {
     return LabelModel(
-      type: json['type'] as String? ?? '',
-      ref: json['ref'] as String? ?? '',
-      label: json['label'] as String? ?? '',
+      type: Entity.from(json['type'] as String),
+      ref: json['ref'] as String,
+      label: json['label'] as String,
       origin: json['origin'] as String?,
       spendable: json['spendable'] as bool?,
     );
@@ -70,7 +27,7 @@ class LabelModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'type': type,
+      'type': type.name,
       'ref': ref,
       'label': label,
       if (origin != null) 'origin': origin,
