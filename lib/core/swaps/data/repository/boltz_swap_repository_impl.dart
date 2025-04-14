@@ -520,21 +520,23 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<void> reinitializeStreamWithSwaps({required List<String> swapIds}) {
+  Future<void> reinitializeStreamWithSwaps({
+    required List<String> swapIds,
+  }) async {
     _boltz.resetStream();
     _boltz.subscribeToSwaps(swapIds);
-    final allSwapsToWatch = swapIds.map((swapId) async {
-      final swap = await _boltz.storage.get(swapId);
-      return swap?.toEntity();
-    });
+    // final allSwapsToWatch = swapIds.map((swapId) async {
+    //   final swap = await _boltz.storage.get(swapId);
+    //   return swap?.toEntity();
+    // });
     // add to the swapUpdateStream
-    return Future.wait(allSwapsToWatch).then((swaps) {
-      for (final swap in swaps) {
-        if (swap != null) {
-          _boltz.swapUpdatesController.add(SwapModel.fromEntity(swap));
-        }
-      }
-    });
+    // return Future.wait(allSwapsToWatch).then((swaps) {
+    //   for (final swap in swaps) {
+    //     if (swap != null) {
+    //       _boltz.swapUpdatesController.add(SwapModel.fromEntity(swap));
+    //     }
+    //   }
+    // });
   }
 
   @override
