@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/address/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/label_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
