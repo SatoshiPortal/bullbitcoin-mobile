@@ -23,6 +23,7 @@ class SendLocator {
   static void registerUsecases() {
     locator.registerLazySingleton<ConfirmBitcoinSendUsecase>(
       () => ConfirmBitcoinSendUsecase(
+        walletRepository: locator<WalletRepository>(),
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
         bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
       ),

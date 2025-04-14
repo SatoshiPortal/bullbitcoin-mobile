@@ -77,6 +77,7 @@ class PayjoinLocator {
     locator.registerFactory<SendWithPayjoinUsecase>(
       () => SendWithPayjoinUsecase(
         payjoinRepository: locator<PayjoinRepository>(),
+        bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
       ),
     );
 

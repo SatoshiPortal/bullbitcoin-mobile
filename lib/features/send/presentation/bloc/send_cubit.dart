@@ -421,7 +421,6 @@ class SendCubit extends Cubit<SendState> {
         txId = await _confirmBitcoinSendUsecase.execute(
           psbt: state.unsignedPsbt!,
           walletId: state.selectedWallet!.id,
-          isTestnet: state.selectedWallet!.network.isTestnet,
         );
       }
 
