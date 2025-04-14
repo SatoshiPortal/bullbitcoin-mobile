@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/address/domain/entities/address.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
-import 'package:bb_mobile/core/transaction/domain/entities/transaction.dart';
+import 'package:bb_mobile/core/labels/data/labelable.dart';
+import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
+import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum Entity {
@@ -31,18 +33,20 @@ enum Entity {
       case 'xpub':
         return Entity.xpub;
       default:
-        throw ArgumentError('Invalid entity type: $string');
+        throw ArgumentError('Invalid type: $string');
     }
   }
 
-  static Entity fromType(dynamic type) {
-    if (type == Transaction) {
+  static Entity fromLabelable(Labelable entity) {
+    if (entity is Transaction) {
       return Entity.tx;
-    } else if (type == Address) {
+    } else if (entity is Address) {
       return Entity.address;
-    } else {
-      throw ArgumentError('Invalid entity type: $type');
+    } else if (entity is Utxo) {
+      return Entity.output;
     }
+
+    throw ArgumentError('Invalid type: $entity');
   }
 
   /// Since a label may contains any kind of char
