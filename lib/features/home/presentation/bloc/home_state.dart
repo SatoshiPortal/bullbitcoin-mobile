@@ -10,7 +10,6 @@ sealed class HomeState with _$HomeState {
     //required List<Transaction> transactions,
     @Default(false) bool isSyncingTransactions,
     @Default(null) Object? error,
-    @Default(false) bool keyServerOffline,
   }) = _HomeState;
   const HomeState._();
 
