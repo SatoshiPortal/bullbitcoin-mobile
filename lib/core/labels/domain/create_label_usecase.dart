@@ -14,16 +14,9 @@ class CreateLabelUsecase {
     bool? spendable,
   }) async {
     try {
-      // Get the wallet to calculate origin
-      final wallet = await _wallet.getWallet(walletId);
-      final origin = wallet.origin;
-
-      final labelEntity = Label.create(
-        type: type,
-        ref: ref,
+      _labelRepository.store(
         label: label,
         origin: origin,
-        label: label,
         entity: entity,
         spendable: spendable,
       );

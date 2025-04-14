@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/address/domain/entities/address.dart';
 import 'package:bb_mobile/core/address/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
@@ -83,13 +84,10 @@ class CreateReceiveSwapUsecase {
       );
 
       if (description != null || description!.isNotEmpty) {
-        await _labelRepository.store(
-          Label.create(
-            type: LabelType.address,
-            ref: claimAddress.address,
-            label: description,
-            origin: wallet.origin,
-          ),
+        await _labelRepository.store<Address>(
+          entity: claimAddress,
+          label: description,
+          origin: wallet.origin,
         );
       }
 
