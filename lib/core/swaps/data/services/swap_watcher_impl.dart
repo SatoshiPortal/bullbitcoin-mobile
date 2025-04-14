@@ -129,7 +129,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     required LnSendSwap swap,
   }) async {
     final address = await _addressRepository.getNewAddress(
-      walletId: swap.sendWalletId,
+      origin: swap.sendWalletId,
     );
     if (!address.isBitcoin) {
       throw Exception('Refund Address is not a Bitcoin address');
@@ -173,7 +173,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     required LnSendSwap swap,
   }) async {
     final address = await _addressRepository.getNewAddress(
-      walletId: swap.sendWalletId,
+      origin: swap.sendWalletId,
     );
     if (!address.isLiquid) {
       throw Exception('Refund Address is not a Liquid address');
@@ -207,13 +207,13 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     required ChainSwap swap,
   }) async {
     final claimAddress = await _addressRepository.getNewAddress(
-      walletId: swap.receiveWalletId!,
+      origin: swap.receiveWalletId!,
     );
     if (!claimAddress.isBitcoin) {
       throw Exception('Claim address is not a Bitcoin address');
     }
     final refundAddress = await _addressRepository.getNewAddress(
-      walletId: swap.sendWalletId,
+      origin: swap.sendWalletId,
     );
     if (!refundAddress.isLiquid) {
       throw Exception('Refund address is not a Liquid address');
@@ -232,7 +232,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     required ChainSwap swap,
   }) async {
     final refundAddress = await _addressRepository.getNewAddress(
-      walletId: swap.sendWalletId,
+      origin: swap.sendWalletId,
     );
     if (!refundAddress.isBitcoin) {
       throw Exception('Refund address is not a Bitcoin address');
@@ -250,13 +250,13 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     required ChainSwap swap,
   }) async {
     final claimAddress = await _addressRepository.getNewAddress(
-      walletId: swap.receiveWalletId!,
+      origin: swap.receiveWalletId!,
     );
     if (!claimAddress.isLiquid) {
       throw Exception('Claim address is not a Liquid address');
     }
     final refundAddress = await _addressRepository.getNewAddress(
-      walletId: swap.sendWalletId,
+      origin: swap.sendWalletId,
     );
     if (!refundAddress.isBitcoin) {
       throw Exception('Refund address is not a Bitcoin address');
@@ -275,7 +275,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     required ChainSwap swap,
   }) async {
     final refundAddress = await _addressRepository.getNewAddress(
-      walletId: swap.sendWalletId,
+      origin: swap.sendWalletId,
     );
     if (!refundAddress.isLiquid) {
       throw Exception('Claim address is not a Liquid address');

@@ -17,7 +17,7 @@ abstract class WalletRepository {
     required String label,
   });
   Future<Wallet> getWallet(
-    String walletId, {
+    String origin, {
     bool sync = false,
   });
   // These should also sync the wallets before returning them
@@ -37,10 +37,10 @@ abstract class WalletRepository {
     required bool isPhysicalBackupTested,
     required DateTime? latestEncryptedBackup,
     required DateTime? latestPhysicalBackup,
-    required String walletId,
+    required String origin,
   });
   Future<void> updateEncryptedBackupTime(
     DateTime time, {
-    required String walletId,
+    required String origin,
   });
 }

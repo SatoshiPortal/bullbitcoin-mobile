@@ -4,14 +4,14 @@ import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transac
 abstract class WalletTransactionRepository {
   //Stream<WalletTransaction> get walletTransactions;
   Future<List<WalletTransaction>> getWalletTransactions({
-    String? walletId,
+    String? origin,
     String? toAddress,
     Environment? environment,
     bool sync = false,
   });
   Future<WalletTransaction> getWalletTransaction(
     String txId, {
-    required String walletId,
+    required String origin,
     bool sync = false,
   });
 }

@@ -9,11 +9,11 @@ class GetUtxosUsecase {
   }) : _utxoRepository = utxoRepository;
 
   Future<List<Utxo>> execute({
-    required String walletId,
+    required String origin,
   }) async {
     try {
       final utxos = await _utxoRepository.getUtxos(
-        walletId: walletId,
+        origin: origin,
       );
       return utxos;
     } catch (e) {

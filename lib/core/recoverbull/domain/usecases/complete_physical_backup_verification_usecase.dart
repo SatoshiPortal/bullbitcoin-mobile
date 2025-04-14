@@ -21,7 +21,7 @@ class CompletePhysicalBackupVerificationUsecase {
 
       for (final defaultWallet in defaultWallets) {
         await _walletRepository.updateBackupInfo(
-          walletId: defaultWallet.id,
+          origin: defaultWallet.id,
           isEncryptedVaultTested: defaultWallet.isEncryptedVaultTested,
           isPhysicalBackupTested: true,
           latestEncryptedBackup: defaultWallet.latestEncryptedBackup,

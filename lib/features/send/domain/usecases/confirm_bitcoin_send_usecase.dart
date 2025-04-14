@@ -24,7 +24,7 @@ class ConfirmBitcoinSendUsecase {
 
       final signedPsbt = await _bitcoinWalletRepository.signPsbt(
         psbt,
-        walletId: walletId,
+        origin: origin,
       );
 
       // Broadcast the signed PSBT to the Bitcoin network

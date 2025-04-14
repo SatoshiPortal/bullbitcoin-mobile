@@ -10,7 +10,7 @@ class PrepareLiquidSendUsecase {
   }) : _liquidWalletRepository = liquidWalletRepository;
 
   Future<String> execute({
-    required String walletId,
+    required String origin,
     required String address,
     required NetworkFee networkFee,
     int? amountSat,
@@ -23,7 +23,7 @@ class PrepareLiquidSendUsecase {
       }
 
       final psbt = await _liquidWalletRepository.buildPset(
-        walletId: walletId,
+        origin: origin,
         address: address,
         amountSat: amountSat,
         networkFee: networkFee,

@@ -61,7 +61,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
     // Return the created wallet entity
     return Wallet(
-      id: metadata.id,
+      id: metadata.origin,
       label: metadata.label,
       network: network,
       isDefault: metadata.isDefault,
@@ -97,7 +97,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
     // Return the created wallet entity
     return Wallet(
-      id: metadata.id,
+      id: metadata.origin,
       label: metadata.label,
       network: Network.fromEnvironment(
         isTestnet: metadata.isTestnet,
@@ -116,18 +116,18 @@ class WalletRepositoryImpl implements WalletRepository {
   }
 
   @override
-  Future<Wallet> getWallet(String walletId, {bool sync = false}) async {
-    final metadata = await _walletMetadata.get(walletId);
+  Future<Wallet> getWallet(String origin, {bool sync = false}) async {
+    final metadata = await _walletMetadata.get(origin);
 
     if (metadata == null) {
-      throw throw WalletNotFoundException(walletId);
+      throw throw WalletNotFoundException(origin);
     }
     // Get the balance
     final balance = await _getBalance(metadata, sync: sync);
 
     // Return the wallet entity
     return Wallet(
-      id: metadata.id,
+      id: metadata.origin,
       label: metadata.label,
       network: Network.fromEnvironment(
         isTestnet: metadata.isTestnet,
@@ -190,7 +190,7 @@ class WalletRepositoryImpl implements WalletRepository {
         .entries
         .map(
           (entry) => Wallet(
-            id: entry.value.id,
+            id: entry.value.origin,
             label: entry.value.label,
             network: Network.fromEnvironment(
               isTestnet: entry.value.isTestnet,
@@ -225,11 +225,11 @@ class WalletRepositoryImpl implements WalletRepository {
   @override
   Future<void> updateEncryptedBackupTime(
     DateTime time, {
-    required String walletId,
+    required String origin,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _walletMetadata.get(origin);
     if (metadata == null) {
-      throw WalletNotFoundException(walletId);
+      throw WalletNotFoundException(origin);
     }
     await _walletMetadata.store(
       metadata.copyWith(
@@ -244,11 +244,11 @@ class WalletRepositoryImpl implements WalletRepository {
     required bool isPhysicalBackupTested,
     required DateTime? latestEncryptedBackup,
     required DateTime? latestPhysicalBackup,
-    required String walletId,
+    required String origin,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _walletMetadata.get(origin);
     if (metadata == null) {
-      throw WalletNotFoundException(walletId);
+      throw WalletNotFoundException(origin);
     }
     await _walletMetadata.store(
       metadata.copyWith(
@@ -269,7 +269,7 @@ class WalletRepositoryImpl implements WalletRepository {
       final wallet = PublicLwkWalletModel(
         combinedCtDescriptor: metadata.externalPublicDescriptor,
         isTestnet: metadata.isTestnet,
-        id: metadata.id,
+        id: metadata.origin,
       );
       final electrumServer = await _electrumServerStorage.getByProvider(
             ElectrumServerProvider.blockstream,
@@ -293,7 +293,7 @@ class WalletRepositoryImpl implements WalletRepository {
         externalDescriptor: metadata.externalPublicDescriptor,
         internalDescriptor: metadata.internalPublicDescriptor,
         isTestnet: metadata.isTestnet,
-        id: metadata.id,
+        id: metadata.origin,
       );
       final electrumServer = await _electrumServerStorage.getByProvider(
             ElectrumServerProvider.blockstream,

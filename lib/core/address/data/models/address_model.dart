@@ -22,7 +22,7 @@ sealed class AddressModel with _$AddressModel {
       );
 
   Address toEntity({
-    required String walletId,
+    required String origin,
     required AddressKeyChain keyChain,
     required AddressStatus status,
     int? balanceSat,
@@ -30,7 +30,7 @@ sealed class AddressModel with _$AddressModel {
   }) {
     return when(
       bitcoin: (index, address) => Address.bitcoin(
-        walletId: walletId,
+        origin: origin,
         index: index,
         address: address,
         keyChain: keyChain,
@@ -39,7 +39,7 @@ sealed class AddressModel with _$AddressModel {
         highestPreviousBalanceSat: highestPreviousBalanceSat,
       ),
       liquid: (index, standard, confidential) => Address.liquid(
-        walletId: walletId,
+        origin: origin,
         index: index,
         standard: standard,
         confidential: confidential,

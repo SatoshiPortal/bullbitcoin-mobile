@@ -33,7 +33,7 @@ class WalletMetadataModel with _$WalletMetadataModel {
   factory WalletMetadataModel.fromJson(Map<String, Object?> json) =>
       _$WalletMetadataModelFromJson(json);
 
-  String getOrigin() {
+  String get origin {
     String networkPath;
     if (isBitcoin && isMainnet) {
       networkPath = "0h";
@@ -44,7 +44,7 @@ class WalletMetadataModel with _$WalletMetadataModel {
     } else if (isLiquid && isTestnet) {
       networkPath = "1668h";
     } else {
-      throw '';
+      throw 'Invalid network';
     }
 
     String prefixFormat = '';
@@ -107,11 +107,4 @@ class WalletMetadataModel with _$WalletMetadataModel {
       account: list.last
     );
   }
-
-  // The network name is important since the same coin type and script types
-  //  are used in for example bitcoin and liquid testnet, so we need to include
-  //  the network name in the id to differentiate wallets from different
-  //  networks with the same xpub/seed.
-  String get id =>
-      '$xpubFingerprint:${isLiquid ? 'liquid' : 'bitcoin'}:${isTestnet ? 'testnet' : 'mainnet'}';
 }

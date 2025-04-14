@@ -27,7 +27,7 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
 
   @override
   Future<String> buildPsbt({
-    required String walletId,
+    required String origin,
     required String address,
     int? amountSat,
     required NetworkFee networkFee,
@@ -36,21 +36,21 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     List<Utxo>? selected,
     bool? replaceByFee,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _walletMetadata.get(origin);
 
     if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
+      throw Exception('Wallet metadata not found for origin: $origin');
     }
 
     if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+      throw Exception('Wallet $origin is not a Bitcoin wallet');
     }
 
     final wallet = PublicBdkWalletModel(
       externalDescriptor: metadata.externalPublicDescriptor,
       internalDescriptor: metadata.internalPublicDescriptor,
       isTestnet: metadata.isTestnet,
-      id: metadata.id,
+      id: metadata.origin,
     );
     final psbt = await _bdkWallet.buildPsbt(
       wallet: wallet,
@@ -70,16 +70,16 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
   @override
   Future<String> signPsbt(
     String psbt, {
-    required String walletId,
+    required String origin,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _walletMetadata.get(origin);
 
     if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
+      throw Exception('Wallet metadata not found for origin: $origin');
     }
 
     if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+      throw Exception('Wallet $origin is not a Bitcoin wallet');
     }
 
     final seed =
@@ -91,7 +91,7 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
       passphrase: seed.passphrase,
       scriptType: ScriptType.fromName(metadata.scriptType),
       isTestnet: metadata.isTestnet,
-      dbName: metadata.id,
+      dbName: metadata.origin,
     );
 
     final signedPsbt = await _bdkWallet.signPsbt(
@@ -104,24 +104,24 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
 
   @override
   Future<bool> isScriptOfWallet({
-    required String walletId,
+    required String origin,
     required Uint8List script,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _walletMetadata.get(origin);
 
     if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
+      throw Exception('Wallet metadata not found for origin: $origin');
     }
 
     if (!metadata.isBitcoin) {
-      throw Exception('Wallet $walletId is not a Bitcoin wallet');
+      throw Exception('Wallet $origin is not a Bitcoin wallet');
     }
 
     final wallet = PublicBdkWalletModel(
       externalDescriptor: metadata.externalPublicDescriptor,
       internalDescriptor: metadata.internalPublicDescriptor,
       isTestnet: metadata.isTestnet,
-      id: metadata.id,
+      id: metadata.origin,
     );
 
     final isFromWallet = await _bdkWallet.isMine(script, wallet: wallet);

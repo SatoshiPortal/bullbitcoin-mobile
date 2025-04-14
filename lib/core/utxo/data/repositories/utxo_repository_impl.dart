@@ -22,11 +22,11 @@ class UtxoRepositoryImpl implements UtxoRepository {
         _frozenUtxoDatasource = frozenUtxoDatasource;
 
   @override
-  Future<List<Utxo>> getUtxos({required String walletId}) async {
-    final metadata = await _walletMetadataDatasource.get(walletId);
+  Future<List<Utxo>> getUtxos({required String origin}) async {
+    final metadata = await _walletMetadataDatasource.get(origin);
 
     if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
+      throw Exception('Wallet metadata not found for origin: $origin');
     }
 
     final walletModel = metadata.isBitcoin
@@ -34,19 +34,19 @@ class UtxoRepositoryImpl implements UtxoRepository {
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.id,
+            id: metadata.origin,
           )
         : PublicLwkWalletModel(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.id,
+            id: metadata.origin,
           );
 
     final walletDatasource =
         metadata.isBitcoin ? _bdkWalletDatasource : _lwkWalletDatasource;
     final utxoModels = await walletDatasource.getUtxos(wallet: walletModel);
     final frozenUtxos =
-        await _frozenUtxoDatasource.getFrozenUtxos(walletId: walletId);
+        await _frozenUtxoDatasource.getFrozenUtxos(origin: origin);
 
     final utxos = utxoModels.map((model) {
       // Check if the UTXO is frozen

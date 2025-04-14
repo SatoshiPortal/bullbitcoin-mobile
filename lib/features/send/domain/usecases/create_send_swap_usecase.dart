@@ -23,7 +23,7 @@ class CreateSendSwapUsecase {
         _seedRepository = seedRepository;
 
   Future<LnSendSwap> execute({
-    required String walletId,
+    required String origin,
     required SwapType type,
     String? invoice,
     String? lnAddress,
@@ -41,7 +41,7 @@ class CreateSendSwapUsecase {
             lnAddress: lnAddress!,
             amountSat: amountSat!,
           );
-      final wallet = await _walletRepository.getWallet(walletId);
+      final wallet = await _walletRepository.getWallet(origin);
       final swapRepository =
           wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
       final decoded = await swapRepository.decodeInvoice(invoice: finalInvoice);
@@ -79,7 +79,7 @@ class CreateSendSwapUsecase {
       switch (type) {
         case SwapType.bitcoinToLightning:
           return await swapRepository.createBitcoinToLightningSwap(
-            walletId: walletId,
+            origin: origin,
             invoice: finalInvoice,
             isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic.mnemonicWords.join(' '),
@@ -88,7 +88,7 @@ class CreateSendSwapUsecase {
 
         case SwapType.liquidToLightning:
           return await swapRepository.createLiquidToLightningSwap(
-            walletId: walletId,
+            origin: origin,
             invoice: finalInvoice,
             isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic.mnemonicWords.join(' '),

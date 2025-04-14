@@ -24,26 +24,26 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
 
   @override
   Future<String> buildPset({
-    required String walletId,
+    required String origin,
     required String address,
     int? amountSat,
     required NetworkFee networkFee,
     bool? drain,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _walletMetadata.get(origin);
 
     if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
+      throw Exception('Wallet metadata not found for origin: $origin');
     }
 
     if (!metadata.isLiquid) {
-      throw Exception('Wallet $walletId is not a Liquid wallet');
+      throw Exception('Wallet $origin is not a Liquid wallet');
     }
 
     final wallet = PublicLwkWalletModel(
       combinedCtDescriptor: metadata.externalPublicDescriptor,
       isTestnet: metadata.isTestnet,
-      id: metadata.id,
+      id: metadata.origin,
     );
     final pset = await _lwkWallet.buildPset(
       wallet: wallet,
@@ -59,16 +59,16 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
   @override
   Future<Uint8List> signPset({
     required String pset,
-    required String walletId,
+    required String origin,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _walletMetadata.get(origin);
 
     if (metadata == null) {
-      throw Exception('Wallet metadata not found for walletId: $walletId');
+      throw Exception('Wallet metadata not found for origin: $origin');
     }
 
     if (!metadata.isLiquid) {
-      throw Exception('Wallet $walletId is not a Liquid wallet');
+      throw Exception('Wallet $origin is not a Liquid wallet');
     }
 
     final seed =
@@ -78,7 +78,7 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
     final wallet = PrivateLwkWalletModel(
       mnemonic: mnemonic,
       isTestnet: metadata.isTestnet,
-      dbName: metadata.id,
+      dbName: metadata.origin,
     );
     final signedPsbt = await _lwkWallet.signPset(
       wallet: wallet,

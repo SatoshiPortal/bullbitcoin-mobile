@@ -11,7 +11,7 @@ sealed class Payjoin with _$Payjoin {
   const factory Payjoin.receiver({
     @Default(PayjoinStatus.requested) PayjoinStatus status,
     required String id,
-    required String walletId,
+    required String origin,
     required String pjUri,
     Uint8List? originalTxBytes,
     String? originalTxId,
@@ -22,7 +22,7 @@ sealed class Payjoin with _$Payjoin {
   const factory Payjoin.sender({
     @Default(PayjoinStatus.requested) PayjoinStatus status,
     required String uri,
-    required String walletId,
+    required String origin,
     required String originalPsbt,
     required String originalTxId,
     String? proposalPsbt,

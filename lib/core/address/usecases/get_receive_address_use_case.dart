@@ -9,16 +9,15 @@ class GetReceiveAddressUsecase {
   }) : _addressRepository = addressRepository;
 
   Future<Address> execute({
-    required String walletId,
+    required String origin,
     bool newAddress = false,
   }) async {
     try {
       Address address;
       if (!newAddress) {
-        address =
-            await _addressRepository.getLastUnusedAddress(walletId: walletId);
+        address = await _addressRepository.getLastUnusedAddress(origin: origin);
       } else {
-        address = await _addressRepository.getNewAddress(walletId: walletId);
+        address = await _addressRepository.getNewAddress(origin: origin);
       }
 
       return address;

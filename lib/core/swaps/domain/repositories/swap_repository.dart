@@ -11,7 +11,7 @@ abstract class SwapRepository {
   // RECEIVE SWAPS
   Future<LnReceiveSwap> createLightningToLiquidSwap({
     required String mnemonic,
-    required String walletId,
+    required String origin,
     required int amountSat,
     required bool isTestnet,
     required String electrumUrl,
@@ -27,7 +27,7 @@ abstract class SwapRepository {
 
   Future<LnReceiveSwap> createLightningToBitcoinSwap({
     required String mnemonic,
-    required String walletId,
+    required String origin,
     required int amountSat,
     required bool isTestnet,
     required String electrumUrl,
@@ -43,7 +43,7 @@ abstract class SwapRepository {
   // SEND SWAPS
   Future<LnSendSwap> createBitcoinToLightningSwap({
     required String mnemonic,
-    required String walletId,
+    required String origin,
     required String invoice,
     required bool isTestnet,
     required String electrumUrl,
@@ -58,7 +58,7 @@ abstract class SwapRepository {
   });
   Future<LnSendSwap> createLiquidToLightningSwap({
     required String mnemonic,
-    required String walletId,
+    required String origin,
     required String invoice,
     required bool isTestnet,
     required String electrumUrl,

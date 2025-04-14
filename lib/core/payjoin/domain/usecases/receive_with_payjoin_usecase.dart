@@ -1,4 +1,3 @@
-
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
@@ -14,7 +13,7 @@ class ReceiveWithPayjoinUsecase {
         _settingsRepository = settingsRepository;
 
   Future<PayjoinReceiver> execute({
-    required String walletId,
+    required String origin,
     required String address,
     int? expireAfterSec,
   }) async {
@@ -22,7 +21,7 @@ class ReceiveWithPayjoinUsecase {
       final environment = await _settingsRepository.getEnvironment();
 
       final payjoinReceiver = await _payjoinRepository.createPayjoinReceiver(
-        walletId: walletId,
+        origin: origin,
         address: address,
         isTestnet: environment.isTestnet,
         maxFeeRateSatPerVb: BigInt.from(10000),

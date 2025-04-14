@@ -12,14 +12,14 @@ abstract class PayjoinRepository {
   Future<Payjoin?> getPayjoinByTxId(String txId);
   Future<List<Utxo>> getInputsFromOngoingPayjoins();
   Future<PayjoinReceiver> createPayjoinReceiver({
-    required String walletId,
+    required String origin,
     required bool isTestnet,
     required String address,
     required BigInt maxFeeRateSatPerVb,
     int? expireAfterSec,
   });
   Future<PayjoinSender> createPayjoinSender({
-    required String walletId,
+    required String origin,
     required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
@@ -38,7 +38,7 @@ abstract class PayjoinRepository {
     required FutureOr<String> Function(String) processPsbt,
   });
   Future<String> signPsbt({
-    required String walletId,
+    required String origin,
     required String psbt,
   });
   Future<PayjoinSender> broadcastPsbt({

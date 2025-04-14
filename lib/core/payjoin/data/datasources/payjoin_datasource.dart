@@ -57,7 +57,7 @@ class PayjoinDatasource {
       _expiredController.stream.asBroadcastStream();
 
   Future<PayjoinReceiverModel> createReceiver({
-    required String walletId,
+    required String origin,
     required String address,
     required bool isTestnet,
     required BigInt maxFeeRateSatPerVb,
@@ -103,7 +103,7 @@ class PayjoinDatasource {
         address: address,
         isTestnet: isTestnet,
         receiver: receiver.toJson(),
-        walletId: walletId,
+        origin: origin,
         pjUri: receiver.pjUriBuilder().build().asString(),
         maxFeeRateSatPerVb: maxFeeRateSatPerVb,
         expireAt: (DateTime.now().millisecondsSinceEpoch ~/ 1000) +
@@ -128,7 +128,7 @@ class PayjoinDatasource {
   }
 
   Future<PayjoinSenderModel> createSender({
-    required String walletId,
+    required String origin,
     required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
@@ -160,7 +160,7 @@ class PayjoinDatasource {
     final model = PayjoinModel.sender(
       uri: uri.asString(),
       sender: senderJson,
-      walletId: walletId,
+      origin: origin,
       originalPsbt: originalPsbt,
       originalTxId: await TransactionParsing.getTxIdFromPsbt(originalPsbt),
       expireAt: (DateTime.now().millisecondsSinceEpoch ~/ 1000) +

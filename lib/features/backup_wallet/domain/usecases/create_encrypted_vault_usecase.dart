@@ -38,7 +38,7 @@ class CreateEncryptedVaultUsecase {
       final defaultWallet = defaultBitcoinWallets.first;
       await _walletRepository.updateEncryptedBackupTime(
         DateTime.now(),
-        walletId: defaultWallet.id,
+        origin: defaultWallet.id,
       );
       final defaultFingerprint = defaultWallet.masterFingerprint;
       final defaultSeed = await _seedRepository.get(defaultFingerprint);

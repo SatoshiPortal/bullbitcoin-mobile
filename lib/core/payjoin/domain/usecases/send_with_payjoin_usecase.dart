@@ -26,7 +26,7 @@ class SendWithPayjoinUsecase {
       );
 
       return _payjoinRepository.createPayjoinSender(
-        walletId: walletId,
+        origin: origin,
         bip21: bip21,
         originalPsbt: signedOriginalPsbt,
         networkFeesSatPerVb: networkFeesSatPerVb,

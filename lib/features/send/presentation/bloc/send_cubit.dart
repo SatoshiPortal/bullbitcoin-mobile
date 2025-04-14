@@ -163,7 +163,7 @@ class SendCubit extends Cubit<SendState> {
       if (paymentRequest.isBolt11) {
         // for bolt12 or lnaddress we need to redirect to the amount page and only create a swap after amount is set
         final swap = await _createSendSwapUsecase.execute(
-          walletId: wallet.id,
+          origin: wallet.id,
           type: swapType,
           invoice: state.addressOrInvoice,
         );
@@ -275,7 +275,7 @@ class SendCubit extends Cubit<SendState> {
           ? SwapType.liquidToLightning
           : SwapType.bitcoinToLightning;
       final swap = await _createSendSwapUsecase.execute(
-        walletId: state.selectedWallet!.id,
+        origin: state.selectedWallet!.id,
         type: swapType,
         lnAddress: state.addressOrInvoice,
         amountSat: state.confirmedAmountSat,
@@ -333,7 +333,7 @@ class SendCubit extends Cubit<SendState> {
 
     try {
       final utxos = await _getUtxosUsecase.execute(
-        walletId: state.selectedWallet!.id,
+        origin: state.selectedWallet!.id,
       );
       emit(state.copyWith(utxos: utxos));
     } catch (e) {
@@ -396,7 +396,7 @@ class SendCubit extends Cubit<SendState> {
       // Fees can be selectedFee as it defaults to Fastest
       if (state.selectedWallet!.network.isLiquid) {
         final psbt = await _prepareLiquidSendUsecase.execute(
-          walletId: state.selectedWallet!.id,
+          origin: state.selectedWallet!.id,
           address: address,
           networkFee: state.selectedFee!,
           amountSat: amount,
@@ -410,7 +410,7 @@ class SendCubit extends Cubit<SendState> {
         );
       } else {
         final psbt = await _prepareBitcoinSendUsecase.execute(
-          walletId: state.selectedWallet!.id,
+          origin: state.selectedWallet!.id,
           address: address,
           networkFee: state.selectedFee!,
           amountSat: amount,
@@ -435,7 +435,7 @@ class SendCubit extends Cubit<SendState> {
       if (state.selectedWallet!.network.isLiquid) {
         txId = await _confirmLiquidSendUsecase.execute(
           psbt: state.unsignedPsbt!,
-          walletId: state.selectedWallet!.id,
+          origin: state.selectedWallet!.id,
           isTestnet: state.selectedWallet!.network.isTestnet,
         );
       } else {

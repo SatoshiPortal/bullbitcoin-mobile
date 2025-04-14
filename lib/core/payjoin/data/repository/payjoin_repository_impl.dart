@@ -107,14 +107,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Future<PayjoinReceiver> createPayjoinReceiver({
-    required String walletId,
+    required String origin,
     required String address,
     required bool isTestnet,
     required BigInt maxFeeRateSatPerVb,
     int? expireAfterSec,
   }) async {
     final model = await _source.createReceiver(
-      walletId: walletId,
+      origin: origin,
       address: address,
       isTestnet: isTestnet,
       maxFeeRateSatPerVb: maxFeeRateSatPerVb,
@@ -128,7 +128,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Future<PayjoinSender> createPayjoinSender({
-    required String walletId,
+    required String origin,
     required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
@@ -136,7 +136,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     // Create the payjoin sender session
     final model = await _source.createSender(
-      walletId: walletId,
+      origin: origin,
       bip21: bip21,
       originalPsbt: originalPsbt,
       networkFeesSatPerVb: networkFeesSatPerVb,
@@ -218,10 +218,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Future<String> signPsbt({
-    required String walletId,
+    required String origin,
     required String psbt,
   }) async {
-    final walletMetadata = await _walletMetadata.get(walletId);
+    final walletMetadata = await _walletMetadata.get(origin);
 
     if (walletMetadata == null) {
       throw Exception('Wallet metadata not found');
@@ -237,7 +237,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       mnemonic: mnemonic,
       passphrase: seed.passphrase,
       isTestnet: walletMetadata.isTestnet,
-      dbName: walletId,
+      dbName: origin,
     );
 
     final signedPsbt = await _bdkWallet.signPsbt(psbt, wallet: wallet);

@@ -12,7 +12,7 @@ class WatchWalletTransactionByAddressUsecase {
   }) : _walletTransactionRepository = walletTransactionRepository;
 
   Stream<WalletTransaction> execute({
-    required String walletId,
+    required String origin,
     String? toAddress,
     Duration pollInterval = const Duration(seconds: 5),
   }) {
@@ -23,15 +23,15 @@ class WatchWalletTransactionByAddressUsecase {
       while (!isCancelled) {
         try {
           debugPrint(
-            'Fetching transactions to address $toAddress for wallet: $walletId',
+            'Fetching transactions to address $toAddress for wallet: $origin',
           );
           final txs = await _walletTransactionRepository.getWalletTransactions(
-            walletId: walletId,
+            origin: origin,
             toAddress: toAddress,
             sync: true,
           );
           debugPrint(
-            'Fetched ${txs.length} transactions to address $toAddress for wallet: $walletId',
+            'Fetched ${txs.length} transactions to address $toAddress for wallet: $origin',
           );
 
           final tx = txs.isNotEmpty

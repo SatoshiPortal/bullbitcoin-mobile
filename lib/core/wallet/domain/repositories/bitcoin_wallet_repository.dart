@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 
 abstract class BitcoinWalletRepository {
   Future<String> buildPsbt({
-    required String walletId,
+    required String origin,
     required String address,
     int? amountSat,
     required NetworkFee networkFee,
@@ -16,10 +16,10 @@ abstract class BitcoinWalletRepository {
   });
   Future<String> signPsbt(
     String psbt, {
-    required String walletId,
+    required String origin,
   });
   Future<bool> isScriptOfWallet({
-    required String walletId,
+    required String origin,
     required Uint8List script,
   });
 }

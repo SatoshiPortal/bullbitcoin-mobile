@@ -24,16 +24,16 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<LnReceiveSwap> createLightningToBitcoinSwap({
     required String mnemonic,
-    required String walletId,
+    required String origin,
     required int amountSat,
     required bool isTestnet,
     required String electrumUrl,
     required String claimAddress,
     String? description,
   }) async {
-    final index = await _nextRevKeyIndex(walletId);
+    final index = await _nextRevKeyIndex(origin);
     final btcLnSwap = await _boltz.createBtcReverseSwap(
-      walletId: walletId,
+      origin: origin,
       mnemonic: mnemonic,
       index: index,
       outAmount: amountSat,
@@ -69,16 +69,16 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<LnReceiveSwap> createLightningToLiquidSwap({
     required String mnemonic,
-    required String walletId,
+    required String origin,
     required int amountSat,
     required bool isTestnet,
     required String electrumUrl,
     required String claimAddress,
     String? description,
   }) async {
-    final index = await _nextRevKeyIndex(walletId);
+    final index = await _nextRevKeyIndex(origin);
     final lbtcLnSwap = await _boltz.createLBtcReverseSwap(
-      walletId: walletId,
+      origin: origin,
       mnemonic: mnemonic,
       index: index,
       outAmount: amountSat,
@@ -115,14 +115,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<LnSendSwap> createBitcoinToLightningSwap({
     required String mnemonic,
-    required String walletId,
+    required String origin,
     required String invoice,
     required bool isTestnet,
     required String electrumUrl,
   }) async {
-    final index = await _nextSubKeyIndex(walletId);
+    final index = await _nextSubKeyIndex(origin);
     final btcLnSwap = await _boltz.createBtcSubmarineSwap(
-      walletId: walletId,
+      origin: origin,
       mnemonic: mnemonic,
       index: index,
       invoice: invoice,
@@ -166,14 +166,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<LnSendSwap> createLiquidToLightningSwap({
     required String mnemonic,
-    required String walletId,
+    required String origin,
     required String invoice,
     required bool isTestnet,
     required String electrumUrl,
   }) async {
-    final index = await _nextSubKeyIndex(walletId);
+    final index = await _nextSubKeyIndex(origin);
     final lbtcLnSwap = await _boltz.createLbtcSubmarineSwap(
-      walletId: walletId,
+      origin: origin,
       mnemonic: mnemonic,
       index: index,
       invoice: invoice,
@@ -460,14 +460,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  Future<int> _nextRevKeyIndex(String walletId) async {
-    final swaps = await _getRevSwapsForWallet(walletId);
+  Future<int> _nextRevKeyIndex(String origin) async {
+    final swaps = await _getRevSwapsForWallet(origin);
     final nextWalletIndex =
         swaps.isEmpty ? 0 : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
     return nextWalletIndex;
   }
 
-  Future<List<Swap>> _getRevSwapsForWallet(String walletId) async {
+  Future<List<Swap>> _getRevSwapsForWallet(String origin) async {
     return (await _boltz.storage.getAll())
         .map((swapModel) => swapModel.toEntity())
         .where(
@@ -478,14 +478,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         .toList();
   }
 
-  Future<int> _nextSubKeyIndex(String walletId) async {
-    final swaps = await _getSubSwapsForWallet(walletId);
+  Future<int> _nextSubKeyIndex(String origin) async {
+    final swaps = await _getSubSwapsForWallet(origin);
     final nextWalletIndex =
         swaps.isEmpty ? 0 : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
     return nextWalletIndex;
   }
 
-  Future<List<Swap>> _getSubSwapsForWallet(String walletId) async {
+  Future<List<Swap>> _getSubSwapsForWallet(String origin) async {
     return (await _boltz.storage.getAll())
         .map((swapModel) => swapModel.toEntity())
         .where(
@@ -496,14 +496,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         .toList();
   }
 
-  Future<int> _nextChainKeyIndex(String walletId) async {
-    final swaps = await _getChainSwapsForWallet(walletId);
+  Future<int> _nextChainKeyIndex(String origin) async {
+    final swaps = await _getChainSwapsForWallet(origin);
     final nextWalletIndex =
         swaps.isEmpty ? 0 : swaps.map((swap) => swap.keyIndex).reduce(max) + 1;
     return nextWalletIndex;
   }
 
-  Future<List<Swap>> _getChainSwapsForWallet(String walletId) async {
+  Future<List<Swap>> _getChainSwapsForWallet(String origin) async {
     return (await _boltz.storage.getAll())
         .map((swapModel) => swapModel.toEntity())
         .where(

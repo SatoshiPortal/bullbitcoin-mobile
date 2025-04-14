@@ -13,14 +13,14 @@ class ConfirmLiquidSendUsecase {
 
   Future<String> execute({
     required String psbt,
-    required String walletId,
+    required String origin,
     required bool isTestnet,
   }) async {
     try {
       // Get the wallet by ID
       final signedPsbt = await _liquidWalletRepository.signPset(
         pset: psbt,
-        walletId: walletId,
+        origin: origin,
       );
 
       final txId = await _liquidBlockchainRepository.broadcastTransaction(

@@ -21,14 +21,14 @@ class GetWalletTransactionsUsecase {
         _mainnetSwapRepository = mainnetSwapRepository;
 
   Future<List<Transaction>> execute({
-    String? walletId,
+    String? origin,
     bool sync = false,
   }) async {
     try {
       final environment = await _settingsRepository.getEnvironment();
       final walletTransactions =
           await _walletTransactionRepository.getWalletTransactions(
-        walletId: walletId,
+        origin: origin,
         sync: sync,
         environment: environment,
       );

@@ -31,13 +31,13 @@ class CreateReceiveSwapUsecase {
         _labelRepository = labelRepository;
 
   Future<LnReceiveSwap> execute({
-    required String walletId,
+    required String origin,
     required SwapType type,
     required int amountSat,
     String? description,
   }) async {
     try {
-      final wallet = await _walletRepository.getWallet(walletId);
+      final wallet = await _walletRepository.getWallet(origin);
 
       final swapRepository =
           wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
@@ -79,7 +79,7 @@ class CreateReceiveSwapUsecase {
           : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       final claimAddress = await _getNewAddressUsecase.execute(
-        walletId: walletId,
+        origin: origin,
         newAddress: true,
       );
 
@@ -94,7 +94,7 @@ class CreateReceiveSwapUsecase {
       switch (type) {
         case SwapType.lightningToBitcoin:
           return await swapRepository.createLightningToBitcoinSwap(
-            walletId: walletId,
+            origin: origin,
             amountSat: amountSat,
             isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic,
@@ -105,7 +105,7 @@ class CreateReceiveSwapUsecase {
 
         case SwapType.lightningToLiquid:
           return await swapRepository.createLightningToLiquidSwap(
-            walletId: walletId,
+            origin: origin,
             amountSat: amountSat,
             isTestnet: wallet.network.isTestnet,
             mnemonic: mnemonic,

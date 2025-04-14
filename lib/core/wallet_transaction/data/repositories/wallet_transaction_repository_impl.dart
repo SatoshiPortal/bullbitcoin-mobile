@@ -33,7 +33,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
 
   @override
   Future<List<WalletTransaction>> getWalletTransactions({
-    String? walletId,
+    String? origin,
     String? toAddress,
     Environment? environment,
     bool sync = false,
@@ -41,7 +41,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     final List<WalletTransaction> transactions = [];
 
     final walletModels = await _getPublicWalletModels(
-      walletId: walletId,
+      origin: origin,
       environment: environment,
       sync: sync,
     );
@@ -57,7 +57,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
       );
 
       for (final transactionModel in transactionModels) {
-        transactions.add(transactionModel.toEntity(walletId: walletModel.id));
+        transactions.add(transactionModel.toEntity(origin: walletModel.id));
       }
     }
 
@@ -67,11 +67,11 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   @override
   Future<WalletTransaction> getWalletTransaction(
     String txId, {
-    required String walletId,
+    required String origin,
     bool sync = false,
   }) async {
     final transactions = await getWalletTransactions(
-      walletId: walletId,
+      origin: origin,
       sync: sync,
     );
 
@@ -84,15 +84,15 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   }
 
   Future<List<PublicWalletModel>> _getPublicWalletModels({
-    String? walletId,
+    String? origin,
     Environment? environment,
     bool sync = false,
   }) async {
     List<WalletMetadataModel> walletsMetadata;
-    if (walletId == null) {
+    if (origin == null) {
       walletsMetadata = await _walletMetadataDatasource.getAll();
     } else {
-      final metadata = await _walletMetadataDatasource.get(walletId);
+      final metadata = await _walletMetadataDatasource.get(origin);
       if (metadata == null) {
         throw Exception('Wallet metadata not found');
       }
@@ -110,12 +110,12 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                   externalDescriptor: metadata.externalPublicDescriptor,
                   internalDescriptor: metadata.internalPublicDescriptor,
                   isTestnet: metadata.isTestnet,
-                  id: metadata.id,
+                  id: metadata.origin,
                 )
               : PublicLwkWalletModel(
                   combinedCtDescriptor: metadata.externalPublicDescriptor,
                   isTestnet: metadata.isTestnet,
-                  id: metadata.id,
+                  id: metadata.origin,
                 ),
         )
         .toList();

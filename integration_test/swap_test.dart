@@ -147,7 +147,7 @@ void main() {
 
       test('Create Liquid Receive Swap. REQUIRED: Pay Invoice', () async {
         final swap = await receiveSwapUsecase.execute(
-          walletId: instantWallet.id,
+          origin: instantWallet.id,
           type: SwapType.lightningToLiquid,
           amountSat: 1001,
         );
@@ -167,7 +167,7 @@ void main() {
         'Create Bitcoin Receive Swap. REQUIRED: Pay Invoice',
         () async {
           final swap = await receiveSwapUsecase.execute(
-            walletId: secureWallet.id,
+            origin: secureWallet.id,
             type: SwapType.lightningToBitcoin,
             amountSat: 25001,
           );

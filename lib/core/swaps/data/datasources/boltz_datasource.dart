@@ -35,7 +35,7 @@ class BoltzDatasource {
 
   // REVERSE SWAPS
   Future<SwapModel> createBtcReverseSwap({
-    required String walletId,
+    required String origin,
     required String mnemonic,
     required int index,
     required int outAmount,
@@ -64,7 +64,7 @@ class BoltzDatasource {
       isTestnet: isTestnet,
       keyIndex: index,
       creationTime: DateTime.now().millisecondsSinceEpoch,
-      receiveWalletId: walletId,
+      receiveWalletId: origin,
       invoice: btcLnSwap.invoice,
       boltzFees: (reverseFees.btcFees.percentage * outAmount / 100).ceil(),
       lockupFees: reverseFees.btcFees.minerFees.lockup.toInt(),
@@ -92,7 +92,7 @@ class BoltzDatasource {
   }
 
   Future<SwapModel> createLBtcReverseSwap({
-    required String walletId,
+    required String origin,
     required String mnemonic,
     required int index,
     required int outAmount,
@@ -124,7 +124,7 @@ class BoltzDatasource {
         isTestnet: isTestnet,
         keyIndex: index,
         creationTime: DateTime.now().millisecondsSinceEpoch,
-        receiveWalletId: walletId,
+        receiveWalletId: origin,
         invoice: lbtcLnSwap.invoice,
         boltzFees: (reverseFees.lbtcFees.percentage * outAmount / 100).ceil(),
         lockupFees: reverseFees.lbtcFees.minerFees.lockup.toInt(),
@@ -190,7 +190,7 @@ class BoltzDatasource {
   }
 
   Future<SwapModel> createBtcSubmarineSwap({
-    required String walletId,
+    required String origin,
     required String mnemonic,
     required int index,
     required String invoice,
@@ -217,7 +217,7 @@ class BoltzDatasource {
       isTestnet: isTestnet,
       keyIndex: index,
       creationTime: DateTime.now().millisecondsSinceEpoch,
-      sendWalletId: walletId,
+      sendWalletId: origin,
       invoice: invoice,
       paymentAddress: btcLnSwap.scriptAddress,
       paymentAmount: btcLnSwap.outAmount.toInt(),
@@ -235,7 +235,7 @@ class BoltzDatasource {
   }
 
   Future<SwapModel> createLbtcSubmarineSwap({
-    required String walletId,
+    required String origin,
     required String mnemonic,
     required int index,
     required String invoice,
@@ -262,7 +262,7 @@ class BoltzDatasource {
       isTestnet: isTestnet,
       keyIndex: index,
       creationTime: DateTime.now().millisecondsSinceEpoch,
-      sendWalletId: walletId,
+      sendWalletId: origin,
       invoice: invoice,
       paymentAddress: lbtcLnSwap.scriptAddress,
       paymentAmount: lbtcLnSwap.outAmount.toInt(),

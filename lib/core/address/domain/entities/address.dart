@@ -26,7 +26,7 @@ sealed class Address with _$Address implements Labelable {
     // String? txId, TODO: analyze if it is not better to add a GetTransactionFromAddress function in the TransactionRepository and get the txId from there in a use case
     int? highestPreviousBalanceSat,
     int? balanceSat,
-    required String walletId,
+    required String origin,
   }) = BitcoinAddress;
 
   factory Address.liquid({
@@ -39,7 +39,7 @@ sealed class Address with _$Address implements Labelable {
     //String? txId,
     int? highestPreviousBalanceSat,
     int? balanceSat,
-    required String walletId,
+    required String origin,
   }) = LiquidAddress;
 
   // TODO: Validate if the standard or confidential address should be used

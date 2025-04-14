@@ -23,7 +23,7 @@ class CompleteEncryptedVaultVerificationUsecase {
           isPhysicalBackupTested: defaultWallet.isPhysicalBackupTested,
           latestEncryptedBackup: DateTime.now(),
           latestPhysicalBackup: defaultWallet.latestPhysicalBackup,
-          walletId: defaultWallet.id,
+          origin: defaultWallet.id,
         );
       }
     } catch (e) {

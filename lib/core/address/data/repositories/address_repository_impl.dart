@@ -18,8 +18,8 @@ class AddressRepositoryImpl implements AddressRepository {
         _lwkWallet = lwkWalletDatasource;
 
   @override
-  Future<Address> getNewAddress({required String walletId}) async {
-    final metadata = await _walletMetadata.get(walletId);
+  Future<Address> getNewAddress({required String origin}) async {
+    final metadata = await _walletMetadata.get(origin);
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found');
@@ -30,12 +30,12 @@ class AddressRepositoryImpl implements AddressRepository {
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.id,
+            id: metadata.origin,
           )
         : PublicLwkWalletModel(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.id,
+            id: metadata.origin,
           );
 
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
@@ -45,7 +45,7 @@ class AddressRepositoryImpl implements AddressRepository {
     );
 
     final address = addressModel.toEntity(
-      walletId: walletId,
+      origin: origin,
       keyChain: AddressKeyChain.external,
       status: AddressStatus.unused,
     );
@@ -54,8 +54,8 @@ class AddressRepositoryImpl implements AddressRepository {
   }
 
   @override
-  Future<Address> getLastUnusedAddress({required String walletId}) async {
-    final metadata = await _walletMetadata.get(walletId);
+  Future<Address> getLastUnusedAddress({required String origin}) async {
+    final metadata = await _walletMetadata.get(origin);
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found');
@@ -66,12 +66,12 @@ class AddressRepositoryImpl implements AddressRepository {
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.id,
+            id: metadata.origin,
           )
         : PublicLwkWalletModel(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.id,
+            id: metadata.origin,
           );
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
 
@@ -80,7 +80,7 @@ class AddressRepositoryImpl implements AddressRepository {
     );
 
     final address = addressModel.toEntity(
-      walletId: walletId,
+      origin: origin,
       keyChain: AddressKeyChain.external,
       status: AddressStatus.unused,
     );
@@ -90,12 +90,12 @@ class AddressRepositoryImpl implements AddressRepository {
 
   @override
   Future<List<Address>> getAddresses({
-    required String walletId,
+    required String origin,
     required int limit,
     required int offset,
     required AddressKeyChain keyChain,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _walletMetadata.get(origin);
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found');
@@ -106,12 +106,12 @@ class AddressRepositoryImpl implements AddressRepository {
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.id,
+            id: metadata.origin,
           )
         : PublicLwkWalletModel(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.id,
+            id: metadata.origin,
           );
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
 
@@ -140,7 +140,7 @@ class AddressRepositoryImpl implements AddressRepository {
           );
 
           return model.toEntity(
-            walletId: walletId,
+            origin: origin,
             keyChain: keyChain,
             status: isUsed ? AddressStatus.used : AddressStatus.unused,
             balanceSat: balance.toInt(),

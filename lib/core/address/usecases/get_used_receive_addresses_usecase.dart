@@ -9,17 +9,17 @@ class GetUsedReceiveAddressesUsecase {
   }) : _addressRepository = addressRepository;
 
   Future<List<Address>> execute({
-    required String walletId,
+    required String origin,
     int? limit,
     int? offset,
   }) async {
     try {
       final address =
-          await _addressRepository.getLastUnusedAddress(walletId: walletId);
+          await _addressRepository.getLastUnusedAddress(origin: origin);
       final index = address.index;
 
       final usedAddresses = await _addressRepository.getAddresses(
-        walletId: walletId,
+        origin: origin,
         limit: index,
         offset: 0,
         keyChain: AddressKeyChain.external,

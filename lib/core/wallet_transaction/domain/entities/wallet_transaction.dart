@@ -19,7 +19,7 @@ enum WalletTransactionStatus {
 @freezed
 sealed class WalletTransaction with _$WalletTransaction {
   const factory WalletTransaction.bitcoin({
-    required String walletId,
+    required String origin,
     required WalletTransactionDirection direction,
     required WalletTransactionStatus status,
     @Default('') String txId,
@@ -28,7 +28,7 @@ sealed class WalletTransaction with _$WalletTransaction {
     DateTime? confirmationTime,
   }) = BitcoinWalletTransaction;
   const factory WalletTransaction.liquid({
-    required String walletId,
+    required String origin,
     required WalletTransactionDirection direction,
     required WalletTransactionStatus status,
     @Default('') String txId,
@@ -45,7 +45,7 @@ sealed class WalletTransaction with _$WalletTransaction {
 sealed class Transaction with _$Transaction implements Labelable {
   const Transaction._();
   factory Transaction.onchain({
-    required String walletId,
+    required String origin,
     required WalletTransactionDirection direction,
     required String txId,
     required int amountSat,
@@ -55,7 +55,7 @@ sealed class Transaction with _$Transaction implements Labelable {
     List<String>? labels,
   }) = OnchainTransaction;
   factory Transaction.lnSwap({
-    required String walletId,
+    required String origin,
     required WalletTransactionDirection direction,
     required int amountSat,
     DateTime? confirmationTime,
@@ -64,7 +64,7 @@ sealed class Transaction with _$Transaction implements Labelable {
     List<String>? labels,
   }) = LnSwapTransaction;
   factory Transaction.chainSwap({
-    required String walletId,
+    required String origin,
     required WalletTransactionDirection direction,
     required int amountSat,
     DateTime? confirmationTime,
@@ -73,7 +73,7 @@ sealed class Transaction with _$Transaction implements Labelable {
     List<String>? labels,
   }) = ChainSwapTransaction;
   factory Transaction.self({
-    required String walletId,
+    required String origin,
     required WalletTransactionDirection direction,
     required String txId,
     required int amountSat,
@@ -108,7 +108,7 @@ extension OnchainTransactionFactory on OnchainTransaction {
     Network network,
   ) {
     return OnchainTransaction(
-      walletId: tx.walletId,
+      origin: tx.origin,
       direction: tx.direction,
       txId: tx.txId,
       amountSat: tx.amountSat,
@@ -126,7 +126,7 @@ extension LnSwapTransactionFactory on LnSwapTransaction {
     Swap swap,
   ) {
     return LnSwapTransaction(
-      walletId: tx.walletId,
+      origin: tx.origin,
       direction: tx.direction,
       amountSat: tx.amountSat,
       confirmationTime: tx.confirmationTime,
@@ -143,7 +143,7 @@ extension ChainSwapTransactionFactory on ChainSwapTransaction {
     Swap swap,
   ) {
     return ChainSwapTransaction(
-      walletId: tx.walletId,
+      origin: tx.origin,
       direction: tx.direction,
       amountSat: tx.amountSat,
       confirmationTime: tx.confirmationTime,

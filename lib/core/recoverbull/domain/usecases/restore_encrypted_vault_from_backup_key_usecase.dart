@@ -49,7 +49,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
             decodedRecoverbullWallets.masterFingerprint) {
           await _walletRepository.updateEncryptedBackupTime(
             DateTime.now(),
-            walletId: defaultWallet.id,
+            origin: defaultWallet.id,
           );
           throw const DefaultWalletAlreadyExistsError();
         } else {
@@ -68,7 +68,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
               decodedRecoverbullWallets.isPhysicalBackupTested,
           latestEncryptedBackup: DateTime.now(),
           latestPhysicalBackup: decodedRecoverbullWallets.latestPhysicalBackup,
-          walletId: wallet.id,
+          origin: wallet.id,
         );
       }
 

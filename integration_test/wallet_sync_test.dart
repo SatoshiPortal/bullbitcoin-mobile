@@ -237,7 +237,7 @@ class SyncSpyBdkWalletDatasource implements WalletTransactionDatasource {
     await _real.sync(wallet: wallet, electrumServer: electrumServer);
   }
 
-  int getActualSyncRuns(String walletId) => _real.syncExecutions[walletId] ?? 0;
+  int getActualSyncRuns(String origin) => _real.syncExecutions[origin] ?? 0;
 
   @override
   Future<List<WalletTransactionModel>> getTransactions({
@@ -262,7 +262,7 @@ class SyncSpyLwkWalletDatasource implements WalletTransactionDatasource {
     await _real.sync(wallet: wallet, electrumServer: electrumServer);
   }
 
-  int getActualSyncRuns(String walletId) => _real.syncExecutions[walletId] ?? 0;
+  int getActualSyncRuns(String origin) => _real.syncExecutions[origin] ?? 0;
 
   @override
   Future<List<WalletTransactionModel>> getTransactions({

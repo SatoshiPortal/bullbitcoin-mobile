@@ -8,10 +8,10 @@ class GetWalletUsecase {
     required WalletRepository walletRepository,
   }) : _wallet = walletRepository;
 
-  Future<Wallet> execute(String walletId, {bool sync = false}) async {
+  Future<Wallet> execute(String origin, {bool sync = false}) async {
     try {
       final wallet = await _wallet.getWallet(
-        walletId,
+        origin,
         sync: sync,
       );
 

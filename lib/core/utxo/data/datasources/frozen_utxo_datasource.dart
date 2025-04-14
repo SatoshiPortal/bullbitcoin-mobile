@@ -4,7 +4,7 @@ import 'package:synchronized/synchronized.dart';
 abstract class FrozenUtxoDatasource {
   /// Freezes a UTXO for a given wallet ID.
   Future<void> freezeUtxo({
-    required String walletId,
+    required String origin,
     required UtxoModel utxo,
   });
 
@@ -12,12 +12,12 @@ abstract class FrozenUtxoDatasource {
   ///
   /// Returns a list of UTXOs associated with the wallet ID.
   Future<List<UtxoModel>> getFrozenUtxos({
-    required String walletId,
+    required String origin,
   });
 
   /// Unfreezes a UTXO for a given wallet ID.
   Future<void> unfreezeUtxo({
-    required String walletId,
+    required String origin,
     required UtxoModel utxo,
   });
 }
@@ -31,14 +31,14 @@ class LocalStorageFrozenUtxoDatasource implements FrozenUtxoDatasource {
 
   @override
   Future<void> freezeUtxo({
-    required String walletId,
+    required String origin,
     required UtxoModel utxo,
   }) async {
     await _lock.synchronized(() {});
   }
 
   @override
-  Future<List<UtxoModel>> getFrozenUtxos({required String walletId}) async {
+  Future<List<UtxoModel>> getFrozenUtxos({required String origin}) async {
     final frozenUtxos = await _lock.synchronized(() {
       return <UtxoModel>[];
     });
@@ -48,7 +48,7 @@ class LocalStorageFrozenUtxoDatasource implements FrozenUtxoDatasource {
 
   @override
   Future<void> unfreezeUtxo({
-    required String walletId,
+    required String origin,
     required UtxoModel utxo,
   }) async {
     await _lock.synchronized(() {});

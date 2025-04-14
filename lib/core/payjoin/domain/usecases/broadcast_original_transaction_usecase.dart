@@ -26,7 +26,7 @@ class BroadcastOriginalTransactionUsecase {
       // No need to sync the wallet data, since we just need the network info
       // which is static.
       final wallet = await _wallet.getWallet(
-        payjoin.walletId,
+        payjoin.origin,
       );
 
       final network = wallet.network;

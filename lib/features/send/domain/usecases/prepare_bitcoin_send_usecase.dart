@@ -16,7 +16,7 @@ class PrepareBitcoinSendUsecase {
         _bitcoinWalletRepository = bitcoinWalletRepository;
 
   Future<String> execute({
-    required String walletId,
+    required String origin,
     required String address,
     required NetworkFee networkFee,
     int? amountSat,
@@ -36,11 +36,11 @@ class PrepareBitcoinSendUsecase {
         final payjoinInputs = await _payjoin.getInputsFromOngoingPayjoins();
         unspendableInputs = payjoinInputs;
         debugPrint(
-          'Bitcoin wallet id $walletId building psbt. PayjoinInputs: $payjoinInputs',
+          'Bitcoin wallet id $origin building psbt. PayjoinInputs: $payjoinInputs',
         );
       }
       final psbt = await _bitcoinWalletRepository.buildPsbt(
-        walletId: walletId,
+        origin: origin,
         address: address,
         amountSat: amountSat,
         networkFee: networkFee,
