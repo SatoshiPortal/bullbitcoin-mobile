@@ -2,7 +2,9 @@ import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.
 import 'package:bb_mobile/features/onboarding/ui/widgets/create_wallet_button.dart';
 import 'package:bb_mobile/features/onboarding/ui/widgets/recover_backup_button.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
+import 'package:bb_mobile/ui/themes/fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -25,10 +27,42 @@ class OnboardingSplash extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const Spacer(),
+                const Spacer(
+                  flex: 2,
+                ),
                 Image.asset(
-                  Assets.images2.whitebullwithtext.path,
+                  Assets.bbLogoWhite.path,
                   height: 127,
+                ),
+                const Gap(36),
+                BBText(
+                  'Bull Bitcoin',
+                  style: AppFonts.textTitleTheme.textStyle.copyWith(
+                    fontSize: 54,
+                    fontWeight: FontWeight.w500,
+                    color: context.colour.onPrimary,
+                    height: 1,
+                  ),
+                ),
+                BBText(
+                  'Own your Money',
+                  style: AppFonts.textTitleTheme.textStyle.copyWith(
+                    fontSize: 40,
+                    fontWeight: FontWeight.w500,
+                    color: context.colour.secondary,
+                    height: 1,
+                  ),
+                ),
+                const Gap(10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 48),
+                  child: BBText(
+                    'Sovereign non-custodial Bitcoin wallet and Bitcoin-only exchange service.',
+                    style: context.font.labelSmall,
+                    color: context.colour.onPrimary,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                  ),
                 ),
                 const Spacer(flex: 2),
                 Padding(
