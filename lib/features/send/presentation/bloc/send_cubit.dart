@@ -171,6 +171,12 @@ class SendCubit extends Cubit<SendState> {
         emit(state.copyWith(swapLimits: swapLimits));
       }
       if (paymentRequest.isBolt11) {
+        emit(
+          state.copyWith(
+            creatingSwap: true,
+          ),
+        );
+
         // for bolt12 or lnaddress we need to redirect to the amount page and only create a swap after amount is set
         final swap = await _createSendSwapUsecase.execute(
           walletId: wallet.id,
@@ -284,6 +290,11 @@ class SendCubit extends Cubit<SendState> {
       final swapType = state.selectedWallet!.isLiquid
           ? SwapType.liquidToLightning
           : SwapType.bitcoinToLightning;
+      emit(
+        state.copyWith(
+          creatingSwap: true,
+        ),
+      );
       final swap = await _createSendSwapUsecase.execute(
         walletId: state.selectedWallet!.id,
         type: swapType,
@@ -296,6 +307,7 @@ class SendCubit extends Cubit<SendState> {
           amountConfirmedClicked: true,
           step: SendStep.confirm,
           lightningSwap: swap,
+          creatingSwap: false,
         ),
       );
     }

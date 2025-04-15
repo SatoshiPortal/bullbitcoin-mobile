@@ -26,7 +26,7 @@ class HomeErrors extends StatelessWidget {
         buildWhen: (previous, current) =>
             previous.torStatus != current.torStatus,
         builder: (context, keyServerState) {
-          final isServerOffline = keyServerState.torStatus != TorStatus.online;
+          final isServerOffline = keyServerState.torStatus == TorStatus.offline;
 
           if (!showBackupWarning && !isServerOffline) {
             return const SizedBox.shrink();

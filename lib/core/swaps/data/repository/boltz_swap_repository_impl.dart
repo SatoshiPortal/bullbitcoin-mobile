@@ -652,4 +652,22 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     }
     return null;
   }
+
+  @override
+  Future<LnSendSwap?> getSendSwapByInvoice({required String invoice}) async {
+    final allSwaps = await _boltz.storage.getAll();
+    for (final swapModel in allSwaps) {
+      final swap = swapModel.toEntity();
+      if (swap.type == SwapType.lightningToBitcoin ||
+          swap.type == SwapType.lightningToLiquid) {
+        continue;
+      }
+      if (swap is LnSendSwap &&
+          swap.invoice == invoice &&
+          (swap.status == SwapStatus.pending)) {
+        return swap;
+      }
+    }
+    return null;
+  }
 }

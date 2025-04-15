@@ -1,4 +1,3 @@
-
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
 import 'package:flutter/material.dart';

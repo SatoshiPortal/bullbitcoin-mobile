@@ -44,6 +44,12 @@ class CreateSendSwapUsecase {
       final wallet = await _walletRepository.getWallet(walletId);
       final swapRepository =
           wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
+
+      final existingSwap = await swapRepository.getSendSwapByInvoice(
+        invoice: finalInvoice,
+      );
+      if (existingSwap != null) return existingSwap;
+
       final decoded = await swapRepository.decodeInvoice(invoice: finalInvoice);
 
       final limits = await _swapRepository.getSwapLimits(type: type);
@@ -102,3 +108,4 @@ class CreateSendSwapUsecase {
     }
   }
 }
+// _$BoltzErrorImpl (BoltzError(kind: HTTP, message: "a swap with this invoice exists already"))

@@ -106,7 +106,6 @@ class BoltzStorageDatasource {
     try {
       final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
       final jsonSwap = await _secureSwapStorage.getValue(key) as String;
-      debugPrint('jsonSwap: $jsonSwap');
       final lbtcLnSwap = await LbtcLnSwap.fromJson(jsonStr: jsonSwap);
       return lbtcLnSwap;
     } catch (e) {

@@ -12,7 +12,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
 
   final StreamController<Swap> _swapStreamController =
       StreamController<Swap>.broadcast();
-
+  StreamSubscription<Swap>? _swapStreamSubscription;
   SwapWatcherServiceImpl({
     required BoltzSwapRepositoryImpl boltzRepo,
     required AddressRepository addressRepository,
@@ -24,7 +24,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Stream<Swap> get swapStream => _swapStreamController.stream;
 
   void startWatching() {
-    _boltzRepo.swapUpdatesStream.listen(
+    _swapStreamSubscription = _boltzRepo.swapUpdatesStream.listen(
       (swap) async {
         debugPrint(
           'SwapWatcher received swap update: ${swap.id}:${swap.status}',
@@ -48,6 +48,8 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
 
   @override
   Future<void> restartWatcherWithOngoingSwaps() async {
+    await _swapStreamSubscription?.cancel();
+
     final swaps = await _boltzRepo.getOngoingSwaps();
     final swapIdsToWatch = swaps.map((swap) => swap.id).toList();
     await _boltzRepo.reinitializeStreamWithSwaps(swapIds: swapIdsToWatch);

@@ -56,6 +56,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
             await _checkForTorInitializationOnStartupUsecase.execute();
 
         if (isTorIniatizationEnabled) {
+          emit(const AppStartupState.loadingInProgress(isTorEnabled: true));
           await _initializeTorUsecase.execute();
         }
         isPinCodeSet = await _checkPinCodeExistsUsecase.execute();
