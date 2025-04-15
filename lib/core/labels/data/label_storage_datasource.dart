@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/labels/data/labelable.dart';
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum Entity {
@@ -60,21 +61,32 @@ class LabelStorageDatasource {
   LabelStorageDatasource() : _labelStorage = SharedPreferencesAsync();
 
   Future<void> store(LabelModel label) async {
-    final labelKey = _encode(Entity.label, label.label);
-    final entityKey = _encode(label.type, label.ref);
-    final jsonLabelModel = json.encode(label.toJson());
+    try {
+      final labelKey = _encode(Entity.label, label.label);
+      final entityKey = _encode(label.type, label.ref);
+      final jsonLabelModel = json.encode(label.toJson());
 
-    _storeOrUpdate(entityKey, jsonLabelModel);
-    _storeOrUpdate(labelKey, jsonLabelModel);
+      await _rawStore(entityKey, jsonLabelModel);
+      await _rawStore(labelKey, jsonLabelModel);
+    } catch (e) {
+      debugPrint('$LabelStorageDatasource store: $e');
+      rethrow;
+    }
   }
 
   Future<List<LabelModel>> _fetch(Entity prefix, String entity) async {
-    final anEntity = _encode(prefix, entity);
-    final values = await _labelStorage.getStringList(anEntity) ?? [];
+    try {
+      final anEntity = _encode(prefix, entity);
+      final values = await _labelStorage.getStringList(anEntity) ?? [];
 
-    return values
-        .map((v) => LabelModel.fromJson(json.decode(v) as Map<String, dynamic>))
-        .toList();
+      return values
+          .map((v) =>
+              LabelModel.fromJson(json.decode(v) as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      debugPrint('$LabelStorageDatasource fetch: $e');
+      rethrow;
+    }
   }
 
   Future<List<LabelModel>> fetchByRef(Entity prefix, String ref) {
@@ -100,27 +112,63 @@ class LabelStorageDatasource {
     return result;
   }
 
+  /// Remove a label to all related entities
   Future<void> trash(String label) async {
-    final aLabel = _encode(Entity.label, label);
-
     // Fetch all entities related to this label
-    final entities = await _labelStorage.getStringList(aLabel) ?? [];
+    final entitiesLabeled = await fetchByLabel(label);
 
-    // Delete each entity associated with this label
-    for (final e in entities) {
-      _labelStorage.remove(e);
+    // For each entity we remove that specific label
+    for (final entity in entitiesLabeled) {
+      final entityKey = _encode(entity.type, entity.ref);
+      final jsonLabelModel = json.encode(entity.toJson());
+
+      await _rawTrash(entityKey, jsonLabelModel);
     }
+
+    // Then we delete the label entry
+    final labelKey = _encode(Entity.label, label);
+    await _labelStorage.remove(labelKey);
+  }
+
+  /// Remove a label from a single entity
+  Future<void> trashByRef(LabelModel entity) async {
+    final labelKey = _encode(Entity.label, entity.label);
+    final entityKey = _encode(entity.type, entity.ref);
+    final jsonLabelModel = json.encode(entity.toJson());
+
+    _rawTrash(entityKey, jsonLabelModel);
+    _rawTrash(labelKey, jsonLabelModel);
   }
 
   Future<void> trashAll() async => await _labelStorage.clear();
 
-  Future<void> _storeOrUpdate(String key, String value) async {
-    // Fetch all values related to this key
-    final existingValues = await _labelStorage.getStringList(key) ?? [];
+  Future<void> _rawStore(String key, String value) async {
+    try {
+      // Fetch all values related to this key
+      final existingValues = await _labelStorage.getStringList(key) ?? [];
 
-    if (!existingValues.contains(value)) {
-      final updatedValues = [...existingValues, value];
-      await _labelStorage.setStringList(key, updatedValues);
+      if (!existingValues.contains(value)) {
+        final updatedValues = [...existingValues, value];
+        await _labelStorage.setStringList(key, updatedValues);
+      }
+    } catch (e) {
+      debugPrint('$LabelStorageDatasource _rawStore: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> _rawTrash(String key, String value) async {
+    try {
+      // Fetch all values related to this key
+      final values = await _labelStorage.getStringList(key) ?? [];
+
+      if (values.contains(value)) {
+        values.remove(value);
+        await _labelStorage.setStringList(key, values);
+      }
+    } catch (e) {
+      debugPrint('$LabelStorageDatasource _rawTrash: $e');
+      rethrow;
     }
   }
 
