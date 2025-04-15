@@ -512,6 +512,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
             ),
           );
         }
+        emit(
+          state.copyWith(
+            lightningSwap: null,
+          ),
+        );
         swap = await _createReceiveSwapUsecase.execute(
           walletId: state.wallet!.id,
           type: SwapType.lightningToLiquid,
