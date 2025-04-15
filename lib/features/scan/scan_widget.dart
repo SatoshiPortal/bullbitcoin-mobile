@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/scan/presentation/scan_cubit.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_state.dart';
+import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,7 +69,14 @@ class _ScanWidgetState extends State<ScanWidget> {
                       onLongPress: () {
                         Clipboard.setData(ClipboardData(text: state.data));
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Copied to clipboard")),
+                          SnackBar(
+                            content: Text(
+                              "Copied to clipboard",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: context.colour.onSurface),
+                            ),
+                            backgroundColor: context.colour.surface,
+                          ),
                         );
                       },
                       child: Container(
@@ -78,16 +86,16 @@ class _ScanWidgetState extends State<ScanWidget> {
                           children: [
                             if (state.paymentRequest != null)
                               Text(
-                                '${state.paymentRequest!.runtimeType} on ${state.paymentRequest!.isTestnet ? 'testnet' : 'mainnet'}',
+                                '${state.paymentRequest!.name} on ${state.paymentRequest!.isTestnet ? 'testnet' : 'mainnet'}',
                                 textAlign: TextAlign.center,
-                                style: const TextStyle(color: Colors.red),
+                                style: TextStyle(color: context.colour.primary),
                               ),
                             Text(
                               state.data.length > 50
                                   ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
                                   : state.data,
                               textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: context.colour.onPrimary),
                             ),
                           ],
                         ),

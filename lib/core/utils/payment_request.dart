@@ -183,4 +183,12 @@ sealed class PaymentRequest with _$PaymentRequest {
         Bip21PaymentRequest(network: final network) => network.isTestnet,
         _ => false,
       };
+
+  String get name => switch (this) {
+        BitcoinPaymentRequest() => 'Bitcoin Onchain',
+        LiquidPaymentRequest() => 'Liquid Onchain',
+        LnAddressPaymentRequest() => 'Lightning Address',
+        Bolt11PaymentRequest() => 'Bolt11',
+        Bip21PaymentRequest() => 'BIP21',
+      };
 }

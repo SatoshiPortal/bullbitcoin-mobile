@@ -122,6 +122,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       receiveTxid: claimTxId,
       receiveAddress: swap.receiveAddress,
       status: SwapStatus.completed,
+      completionTime: DateTime.now(),
     );
     // TODO: add label to txid
     await _boltzRepo.updateSwap(swap: updatedSwap);
@@ -163,6 +164,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         receiveTxid: claimTxId,
         receiveAddress: receiveAddress,
         status: SwapStatus.completed,
+        completionTime: DateTime.now(),
       );
       // TODO: add label to txid based on swap.invoice.description
       await _boltzRepo.updateSwap(swap: updatedSwap);
