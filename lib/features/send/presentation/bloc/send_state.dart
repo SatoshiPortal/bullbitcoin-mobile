@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -18,24 +19,19 @@ enum SendType {
 
   static SendType from(PaymentRequest paymentRequest) {
     switch (paymentRequest) {
-      case BitcoinRequest():
+      case BitcoinPaymentRequest():
         return SendType.bitcoin;
-      case LiquidRequest():
+      case LiquidPaymentRequest():
         return SendType.liquid;
-      case Bolt11Request():
-      case LnAddressRequest():
+      case Bolt11PaymentRequest():
+      case LnAddressPaymentRequest():
         return SendType.lightning;
-      case Bip21Request():
-        switch (paymentRequest.scheme) {
-          case 'bitcoin':
-            return SendType.bitcoin;
-          case 'liquid':
-            return SendType.liquid;
-          default:
-            throw Exception('Unknown scheme: ${paymentRequest.scheme}');
+      case Bip21PaymentRequest():
+        if (paymentRequest.network.isBitcoin) {
+          return SendType.bitcoin;
+        } else {
+          return SendType.liquid;
         }
-      default:
-        throw Exception('Unknown payment type: ${paymentRequest.type}');
     }
   }
 
@@ -65,6 +61,7 @@ class SendState with _$SendState {
     @Default(SendStep.address) SendStep step,
     @Default(SendType.lightning) SendType sendType,
     // input
+    PaymentRequest? paymentRequest,
     @Default('') String addressOrInvoice,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
@@ -88,6 +85,7 @@ class SendState with _$SendState {
     LnSendSwap? lightningSwap,
     // confirm
     String? txId,
+    PayjoinSender? payjoinSender,
     Object? error,
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,

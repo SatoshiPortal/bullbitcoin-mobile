@@ -284,8 +284,9 @@ class BdkWalletDatasource
       transactions.map(
         (tx) async {
           final isIncoming = tx.received > tx.sent;
-          final netAmountSat =
-              isIncoming ? tx.received - tx.sent : tx.sent - tx.received;
+          final netAmountSat = isIncoming
+              ? tx.received - tx.sent
+              : tx.sent - tx.received - (tx.fee ?? BigInt.zero);
 
           return WalletTransactionModel.bitcoin(
             txId: tx.txid,
