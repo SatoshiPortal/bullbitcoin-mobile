@@ -163,12 +163,16 @@ class SendContinueWithAddressButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.loadingBestWallet,
     );
 
+    final creatingSwap = context.select(
+      (SendCubit cubit) => cubit.state.creatingSwap,
+    );
+
     return BBButton.big(
-      label: 'Continue',
+      label: creatingSwap ? 'Creating Swap' : 'Continue',
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
-      disabled: loadingBestWallet || error != null,
+      disabled: loadingBestWallet || error != null || creatingSwap,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );
@@ -308,15 +312,19 @@ class SendAmountConfirmButton extends StatelessWidget {
     final isAboveSwapLimit = context.select<SendCubit, bool>(
       (bloc) => bloc.state.swapAmountAboveLimit,
     );
+    final creatingSwap = context.select(
+      (SendCubit cubit) => cubit.state.creatingSwap,
+    );
     return BBButton.big(
-      label: 'Continue',
+      label: creatingSwap ? 'Creating Swap' : 'Continue',
       onPressed: () {
         context.read<SendCubit>().onAmountConfirmed();
       },
       disabled: amountConfirmedClicked ||
           !hasBalance ||
           isBelowSwapLimit ||
-          isAboveSwapLimit,
+          isAboveSwapLimit ||
+          creatingSwap,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );

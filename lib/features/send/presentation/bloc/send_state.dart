@@ -90,6 +90,7 @@ class SendState with _$SendState {
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,
     @Default(false) bool loadingBestWallet,
+    @Default(false) bool creatingSwap,
     @Default('') String balanceApproximatedAmount,
     // swapLimits
     SwapLimits? swapLimits,
