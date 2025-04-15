@@ -17,10 +17,10 @@ class ConfirmBitcoinSendUsecase {
 
   Future<String> execute({
     required String psbt,
-    required String walletId,
+    required String origin,
   }) async {
     try {
-      final wallet = await _walletRepository.getWallet(walletId);
+      final wallet = await _walletRepository.getWallet(origin);
 
       final signedPsbt = await _bitcoinWalletRepository.signPsbt(
         psbt,

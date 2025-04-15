@@ -13,7 +13,7 @@ class SendWithPayjoinUsecase {
         _bitcoinWalletRepository = bitcoinWalletRepository;
 
   Future<PayjoinSender> execute({
-    required String walletId,
+    required String origin,
     required String bip21,
     required String unsignedOriginalPsbt,
     required double networkFeesSatPerVb,
@@ -22,7 +22,7 @@ class SendWithPayjoinUsecase {
     try {
       final signedOriginalPsbt = await _bitcoinWalletRepository.signPsbt(
         unsignedOriginalPsbt,
-        walletId: walletId,
+        origin: origin,
       );
 
       return _payjoinRepository.createPayjoinSender(

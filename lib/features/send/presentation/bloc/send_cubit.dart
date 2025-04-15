@@ -444,7 +444,7 @@ class SendCubit extends Cubit<SendState> {
             paymentRequest is Bip21PaymentRequest &&
             paymentRequest.pj.isNotEmpty) {
           payjoinSender = await _sendWithPayjoinUsecase.execute(
-            walletId: state.selectedWallet!.id,
+            origin: state.selectedWallet!.id,
             bip21: paymentRequest.uri,
             unsignedOriginalPsbt: state.unsignedPsbt!,
             networkFeesSatPerVb: state.selectedFee!.isRelative
@@ -458,7 +458,7 @@ class SendCubit extends Cubit<SendState> {
         } else {
           txId = await _confirmBitcoinSendUsecase.execute(
             psbt: state.unsignedPsbt!,
-            walletId: state.selectedWallet!.id,
+            origin: state.selectedWallet!.id,
           );
         }
       }
