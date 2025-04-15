@@ -20,7 +20,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         _addressRepository = addressRepository {
     startWatching();
   }
-
   @override
   Stream<Swap> get swapStream =>
       _swapStreamController.stream.asBroadcastStream();
@@ -71,7 +70,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
           default:
             return;
         }
-
       case SwapStatus.refundable:
         switch (swap.type) {
           case SwapType.bitcoinToLightning:

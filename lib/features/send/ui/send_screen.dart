@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/scan/scan_widget.dart';
@@ -62,6 +63,7 @@ class SendFlow extends StatelessWidget {
         createSendSwapUsecase: locator<CreateSendSwapUsecase>(),
         updatePaidSendSwapUsecase: locator<UpdatePaidSendSwapUsecase>(),
         getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
+        watchSwapUsecase: locator<WatchSwapUsecase>(),
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
       )..loadWalletWithRatesAndFees(),
       child: const SendScreen(),
@@ -766,6 +768,16 @@ class SendSendingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLnPaid = context.select(
+      (SendCubit cubit) => cubit.state.isLnInvoicePaid,
+    );
+    final isLnSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningSwap != null,
+    );
+    final isLiquid = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet!.isLiquid,
+    );
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -791,15 +803,47 @@ class SendSendingScreen extends StatelessWidget {
                     height: 123,
                     image: AssetImage(Assets.images2.cubesLoading.path),
                   ),
-                  const Gap(8),
-                  BBText('Sending...', style: context.font.headlineLarge),
-                  const Gap(8),
-                  BBText(
-                    'The send is in progress. It might take a while for the Bitcoin transaction to confirm. You can close this screen and go home.',
-                    style: context.font.bodyMedium,
-                    maxLines: 4,
-                    textAlign: TextAlign.center,
-                  ),
+                  if (!isLnSwap) ...[
+                    const Gap(8),
+                    BBText('Sending...', style: context.font.headlineLarge),
+                    const Gap(8),
+                    BBText(
+                      'Signing & Broadcasting the transaction...',
+                      style: context.font.bodyMedium,
+                      maxLines: 4,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                  if (isLnSwap && !isLnPaid) ...[
+                    const Gap(8),
+                    BBText('Sending...', style: context.font.headlineLarge),
+                    const Gap(8),
+                    if (isLiquid)
+                      BBText(
+                        'The swap is in progress. The invoice will be paid in a few seconds.',
+                        style: context.font.bodyMedium,
+                        maxLines: 4,
+                        textAlign: TextAlign.center,
+                      )
+                    else
+                      BBText(
+                        'The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.',
+                        style: context.font.bodyMedium,
+                        maxLines: 4,
+                        textAlign: TextAlign.center,
+                      ),
+                  ],
+                  if (isLnSwap && isLnPaid) ...[
+                    const Gap(8),
+                    BBText('Invoice Paid.', style: context.font.headlineLarge),
+                    const Gap(8),
+                    BBText(
+                      'The lightning payment is completed. You can return home or wait for the swap to fully close.',
+                      style: context.font.bodyMedium,
+                      maxLines: 4,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ],
               ),
             ),

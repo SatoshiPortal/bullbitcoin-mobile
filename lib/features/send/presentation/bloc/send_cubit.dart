@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -9,6 +11,7 @@ import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
@@ -24,6 +27,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendCubit extends Cubit<SendState> {
@@ -46,6 +50,7 @@ class SendCubit extends Cubit<SendState> {
     required CreateSendSwapUsecase createSendSwapUsecase,
     required UpdatePaidSendSwapUsecase updatePaidSendSwapUsecase,
     required GetSwapLimitsUsecase getSwapLimitsUsecase,
+    required WatchSwapUsecase watchSwapUsecase,
   })  : _getCurrencyUsecase = getCurrencyUsecase,
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
         _convertSatsToCurrencyAmountUsecase =
@@ -64,6 +69,7 @@ class SendCubit extends Cubit<SendState> {
         _createSendSwapUsecase = createSendSwapUsecase,
         _updatePaidSendSwapUsecase = updatePaidSendSwapUsecase,
         _getSwapLimitsUsecase = getSwapLimitsUsecase,
+        _watchSwapUsecase = watchSwapUsecase,
         super(const SendState());
 
   // ignore: unused_field
@@ -84,6 +90,9 @@ class SendCubit extends Cubit<SendState> {
   final ConfirmLiquidSendUsecase _confirmLiquidSendUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
+  final WatchSwapUsecase _watchSwapUsecase;
+
+  StreamSubscription<Swap>? _swapSubscription;
 
   void backClicked() {
     if (state.step == SendStep.address) {
@@ -271,6 +280,7 @@ class SendCubit extends Cubit<SendState> {
         lnAddress: state.addressOrInvoice,
         amountSat: state.confirmedAmountSat,
       );
+      _watchLnSendSwap(swap.id);
       emit(
         state.copyWith(
           amountConfirmedClicked: true,
@@ -460,13 +470,21 @@ class SendCubit extends Cubit<SendState> {
           network: state.selectedWallet!.network,
         );
       }
-      emit(
-        state.copyWith(
-          txId: txId,
-          step: SendStep.success,
-          payjoinSender: payjoinSender,
-        ),
-      );
+      if (state.isLightning) {
+        emit(
+          state.copyWith(
+            txId: txId,
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            txId: txId,
+            step: SendStep.success,
+            payjoinSender: payjoinSender,
+          ),
+        );
+      }
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -543,5 +561,25 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(amount: newAmount));
 
     // updateFiatApproximatedAmount();
+  }
+
+  void _watchLnSendSwap(String swapId) {
+    // Cancel the previous subscription if it exists
+    _swapSubscription?.cancel();
+    _swapSubscription = _watchSwapUsecase.execute(swapId).listen((updatedSwap) {
+      debugPrint(
+        '[SendCubit] Watched swap ${updatedSwap.id} updated: ${updatedSwap.status}',
+      );
+      if (updatedSwap is LnSendSwap) {
+        emit(state.copyWith(lightningSwap: updatedSwap));
+        if (updatedSwap.status == SwapStatus.completed) {
+          emit(
+            state.copyWith(
+              step: SendStep.success,
+            ),
+          );
+        }
+      }
+    });
   }
 }

@@ -14,7 +14,8 @@ class BoltzDatasource {
   late BoltzWebSocket _boltzWebSocket;
   final BoltzStorageDatasource _boltzStore;
 
-  final _swapUpdatesController = StreamController<SwapModel>.broadcast();
+  StreamController<SwapModel> _swapUpdatesController =
+      StreamController<SwapModel>.broadcast();
 
   BoltzDatasource({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
@@ -571,7 +572,9 @@ class BoltzDatasource {
   void _initializeBoltzWebSocket() {
     try {
       _boltzWebSocket = BoltzWebSocket.create(_baseUrl);
-
+      if (_swapUpdatesController.isClosed) {
+        _swapUpdatesController = StreamController<SwapModel>.broadcast();
+      }
       _boltzWebSocket.stream.listen(
         (event) async {
           final swapId = event.id;
@@ -810,8 +813,7 @@ class BoltzDatasource {
             }
 
             // Update storage and emit event if status changed
-            if (updatedSwapModel != null &&
-                updatedSwapModel.status != swapModel.status) {
+            if (updatedSwapModel != null) {
               await _boltzStore.store(updatedSwapModel);
               debugPrint(
                 'Updated swap $swapId from ${swapModel.status} to ${updatedSwapModel.status}',
@@ -852,6 +854,7 @@ class BoltzDatasource {
     } catch (e) {
       debugPrint('Error disposing WebSocket: $e');
     }
+    _swapUpdatesController.close();
     _initializeBoltzWebSocket();
   }
 

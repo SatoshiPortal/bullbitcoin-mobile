@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_va
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:boltz/boltz.dart';
+import 'package:flutter/material.dart';
 
 class BoltzStorageDatasource {
   final KeyValueStorageDatasource<String> _localSwapStorage;
@@ -102,9 +103,16 @@ class BoltzStorageDatasource {
   }
 
   Future<LbtcLnSwap> getLbtcLnSwap(String swapId) async {
-    final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
-    final jsonSwap = await _secureSwapStorage.getValue(key) as String;
-    return LbtcLnSwap.fromJson(jsonStr: jsonSwap);
+    try {
+      final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
+      final jsonSwap = await _secureSwapStorage.getValue(key) as String;
+      debugPrint('jsonSwap: $jsonSwap');
+      final lbtcLnSwap = await LbtcLnSwap.fromJson(jsonStr: jsonSwap);
+      return lbtcLnSwap;
+    } catch (e) {
+      debugPrint('Error getting LbtcLnSwap: $e');
+      throw 'Error parsing LbtcLnSwap: $e';
+    }
   }
 
   Future<ChainSwap> getChainSwap(String swapId) async {
