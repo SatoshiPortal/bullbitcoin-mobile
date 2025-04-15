@@ -12,9 +12,10 @@ class GetAllElectrumServers {
   })  : _settingsRepository = settingsRepository,
         _electrumServerRepository = electrumServerRepository;
 
-  Future<List<ElectrumServer>> execute() async {
+  Future<List<ElectrumServer>> execute({required bool checkStatus}) async {
     final environment = await _settingsRepository.getEnvironment();
     final servers = await _electrumServerRepository.getElectrumServers(
+      checkStatus: checkStatus,
       network: Network.fromEnvironment(
         isTestnet: environment.isTestnet,
         isLiquid: false,

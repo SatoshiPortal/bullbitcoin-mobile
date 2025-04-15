@@ -26,12 +26,11 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
   ) async {
     try {
       final uri = Uri.parse(url);
-      final socket = await Socket.connect(
+      final _ = await Socket.connect(
         uri.host,
         uri.port,
         timeout: Duration(seconds: timeout),
       );
-      await socket.close();
       return ElectrumServerStatus.online;
     } catch (e) {
       return ElectrumServerStatus.offline;

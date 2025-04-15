@@ -44,6 +44,7 @@ class CoreLocator {
     await RecoverbullLocator.registerRepositories();
     SeedLocator.registerRepositories();
     await SettingsLocator.registerRepositories();
+    ElectrumLocator.registerUsecases();
     SwapsLocator.registerRepositories();
     WalletLocator.registerRepositories();
     UtxoLocator.registerRepositories();
