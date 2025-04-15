@@ -9,6 +9,8 @@ enum ElectrumServerProvider {
   blockstream,
 }
 
+enum ElectrumServerStatus { online, offline, unknown }
+
 @freezed
 sealed class ElectrumServer with _$ElectrumServer {
   factory ElectrumServer({
@@ -20,6 +22,7 @@ sealed class ElectrumServer with _$ElectrumServer {
     @Default(5) int timeout,
     @Default(5) int retry,
     @Default(true) bool validateDomain,
+    @Default(ElectrumServerStatus.unknown) ElectrumServerStatus status,
   }) = _ElectrumServer;
   const ElectrumServer._();
 }
