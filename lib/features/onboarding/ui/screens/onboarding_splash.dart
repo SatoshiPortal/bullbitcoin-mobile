@@ -13,10 +13,11 @@ class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({
     super.key,
     this.loading = false,
+    this.isTorEnabled = false,
   });
 
   final bool loading;
-
+  final bool isTorEnabled;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,7 +72,10 @@ class OnboardingSplash extends StatelessWidget {
                     right: 16,
                     bottom: 40,
                   ),
-                  child: _Actions(loading: loading),
+                  child: _Actions(
+                    loading: loading,
+                    isTorEnabled: isTorEnabled,
+                  ),
                 ),
               ],
             ),
@@ -85,14 +89,14 @@ class OnboardingSplash extends StatelessWidget {
 class _Actions extends StatelessWidget {
   const _Actions({
     required this.loading,
+    required this.isTorEnabled,
   });
 
   final bool loading;
-
+  final bool isTorEnabled;
   @override
   Widget build(BuildContext context) {
     bool creating = false;
-
     if (!loading) {
       creating = context.select(
         (OnboardingBloc bloc) => bloc.state.loadingCreate(),
@@ -102,13 +106,25 @@ class _Actions extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (creating || loading)
+        if (creating || loading) ...[
           Center(
-            child: CircularProgressIndicator(
-              color: context.colour.onPrimary,
+            child: Column(
+              children: [
+                if (isTorEnabled) ...[
+                  BBText(
+                    'Starting Tor...',
+                    style: context.font.labelSmall,
+                    color: Colors.white,
+                  ),
+                  const Gap(15),
+                ],
+                CircularProgressIndicator(
+                  color: context.colour.onPrimary,
+                ),
+              ],
             ),
-          )
-        else ...[
+          ),
+        ] else ...[
           const CreateWalletButton(),
           const Gap(10),
           const RecoverWalletButton(),
