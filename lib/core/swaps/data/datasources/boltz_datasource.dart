@@ -14,7 +14,7 @@ class BoltzDatasource {
   late BoltzWebSocket _boltzWebSocket;
   final BoltzStorageDatasource _boltzStore;
 
-  StreamController<SwapModel> _swapUpdatesController =
+  final StreamController<SwapModel> _swapUpdatesController =
       StreamController<SwapModel>.broadcast();
 
   BoltzDatasource({
@@ -572,14 +572,15 @@ class BoltzDatasource {
   void _initializeBoltzWebSocket() {
     try {
       _boltzWebSocket = BoltzWebSocket.create(_baseUrl);
-      if (_swapUpdatesController.isClosed) {
-        _swapUpdatesController = StreamController<SwapModel>.broadcast();
-      }
+
       _boltzWebSocket.stream.listen(
         (event) async {
           final swapId = event.id;
           final boltzStatus = event.status;
           try {
+            Future.delayed(
+              const Duration(milliseconds: 1000),
+            );
             final swapModel = await _boltzStore.get(swapId);
             if (swapModel == null) {
               debugPrint('No swap found for id: $swapId');
@@ -595,6 +596,7 @@ class BoltzDatasource {
 
             if (swapCompleted || swapFailed || swapExpired) {
               // Unsubscribe from the swap if it's in a terminal state
+              _swapUpdatesController.add(swapModel);
               return unsubscribeToSwaps([swapId]);
             }
             // Process the event
@@ -604,10 +606,10 @@ class BoltzDatasource {
               case SwapStatus.invoiceSet:
               case SwapStatus.invoicePending:
               case SwapStatus.minerfeePaid:
+              case SwapStatus.invoicePaid:
                 // No action needed for these status updates
                 return;
 
-              case SwapStatus.invoicePaid:
               case SwapStatus.txnClaimPending:
                 // Handle cooperative closing for submarine swaps
                 if (swapModel is LnSendSwapModel) {
@@ -854,7 +856,7 @@ class BoltzDatasource {
     } catch (e) {
       debugPrint('Error disposing WebSocket: $e');
     }
-    _swapUpdatesController.close();
+    // _swapUpdatesController.close();
     _initializeBoltzWebSocket();
   }
 
