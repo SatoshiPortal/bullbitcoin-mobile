@@ -389,11 +389,11 @@ class SendConfirmScreen extends StatelessWidget {
               const _SwapSendInfoSection()
             else
               const _OnchainSendInfoSection(),
-            const Gap(65),
-            const _Warning(),
-            const Gap(52),
+            const Gap(64),
+            // const _Warning(),
+            const Gap(64),
             const _BottomButtons(),
-            const Gap(40),
+            // const Gap(40),
           ],
         ),
       ),
@@ -401,6 +401,7 @@ class SendConfirmScreen extends StatelessWidget {
   }
 }
 
+// ignore: unused_element
 class _Warning extends StatelessWidget {
   const _Warning();
 
