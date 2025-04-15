@@ -302,12 +302,21 @@ class SendAmountConfirmButton extends StatelessWidget {
     final amountConfirmedClicked = context.select(
       (SendCubit cubit) => cubit.state.amountConfirmedClicked,
     );
+    final isBelowSwapLimit = context.select<SendCubit, bool>(
+      (bloc) => bloc.state.swapAmountBelowLimit,
+    );
+    final isAboveSwapLimit = context.select<SendCubit, bool>(
+      (bloc) => bloc.state.swapAmountAboveLimit,
+    );
     return BBButton.big(
       label: 'Continue',
       onPressed: () {
         context.read<SendCubit>().onAmountConfirmed();
       },
-      disabled: amountConfirmedClicked || !hasBalance,
+      disabled: amountConfirmedClicked ||
+          !hasBalance ||
+          isBelowSwapLimit ||
+          isAboveSwapLimit,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );

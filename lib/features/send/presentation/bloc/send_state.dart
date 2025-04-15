@@ -278,10 +278,11 @@ class SendState with _$SendState {
   }
 
   bool get isSwapAmountValid =>
-      swapLimits == null ||
-      inputAmountSat == 0 ||
-      swapAmountBelowLimit ||
-      swapAmountAboveLimit;
+      isLightning &&
+      (swapLimits == null ||
+          inputAmountSat == 0 ||
+          swapAmountBelowLimit ||
+          swapAmountAboveLimit);
 
   bool get isLnInvoicePaid {
     return lightningSwap != null && lightningSwap!.status == SwapStatus.canCoop;
