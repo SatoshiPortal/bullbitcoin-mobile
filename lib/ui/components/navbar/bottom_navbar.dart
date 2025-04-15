@@ -18,9 +18,12 @@ class BottomNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(bottom: 27, top: 11),
+      padding: const EdgeInsets.only(
+        bottom: 20,
+        top: 20,
+      ),
       color: context.colour.onPrimary,
-      height: 100,
+      height: 92,
       child: Row(
         // mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
