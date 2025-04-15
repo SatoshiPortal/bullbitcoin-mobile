@@ -30,7 +30,11 @@ class _ScanWidgetState extends State<ScanWidget> {
       _error = 'no cameras available';
       setState(() {});
     } else {
-      _controller = CameraController(_cameras.first, ResolutionPreset.max);
+      _controller = CameraController(
+        _cameras.first,
+        ResolutionPreset.max,
+        enableAudio: false,
+      );
       await _controller?.initialize();
       setState(() {});
     }
