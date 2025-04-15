@@ -662,7 +662,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
           swap.type == SwapType.lightningToLiquid) {
         continue;
       }
-      if (swap is LnSendSwap && swap.invoice == invoice) {
+      if (swap is LnSendSwap &&
+          swap.invoice == invoice &&
+          (swap.status == SwapStatus.pending)) {
         return swap;
       }
     }
