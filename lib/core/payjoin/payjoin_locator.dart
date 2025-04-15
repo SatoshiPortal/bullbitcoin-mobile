@@ -49,8 +49,8 @@ class PayjoinLocator {
   }
 
   static void registerServices() {
-    locator.registerLazySingleton<PayjoinWatcherService>(
-      () => PayjoinWatcherServiceImpl(
+    locator.registerSingleton<PayjoinWatcherService>(
+      PayjoinWatcherServiceImpl(
         payjoinRepository: locator<PayjoinRepository>(),
         walletRepository: locator<WalletRepository>(),
         bitcoinWalletRepository: locator<BitcoinWalletRepository>(),

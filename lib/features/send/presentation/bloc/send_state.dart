@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -60,6 +61,7 @@ class SendState with _$SendState {
     @Default(SendStep.address) SendStep step,
     @Default(SendType.lightning) SendType sendType,
     // input
+    PaymentRequest? paymentRequest,
     @Default('') String addressOrInvoice,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
@@ -83,6 +85,7 @@ class SendState with _$SendState {
     LnSendSwap? lightningSwap,
     // confirm
     String? txId,
+    PayjoinSender? payjoinSender,
     Object? error,
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,

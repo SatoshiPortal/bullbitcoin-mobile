@@ -18,7 +18,7 @@ class SelectBestWalletUsecase {
 
       // Bitcoin
       if (request is BitcoinPaymentRequest) {
-        _selectBestWallet(
+        return _selectBestWallet(
           amountSat!,
           request.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
           wallets,
