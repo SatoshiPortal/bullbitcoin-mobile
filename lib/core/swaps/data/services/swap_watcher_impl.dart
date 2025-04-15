@@ -21,8 +21,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     startWatching();
   }
   @override
-  Stream<Swap> get swapStream =>
-      _swapStreamController.stream.asBroadcastStream();
+  Stream<Swap> get swapStream => _swapStreamController.stream;
 
   void startWatching() {
     _boltzRepo.swapUpdatesStream.listen(

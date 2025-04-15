@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
@@ -47,6 +48,7 @@ class SendCubit extends Cubit<SendState> {
     required SendWithPayjoinUsecase sendWithPayjoinUsecase,
     required ConfirmLiquidSendUsecase confirmLiquidSendUsecase,
     required GetWalletsUsecase getWalletsUsecase,
+    required GetWalletUsecase getWalletUsecase,
     required CreateSendSwapUsecase createSendSwapUsecase,
     required UpdatePaidSendSwapUsecase updatePaidSendSwapUsecase,
     required GetSwapLimitsUsecase getSwapLimitsUsecase,
@@ -66,6 +68,7 @@ class SendCubit extends Cubit<SendState> {
         _sendWithPayjoinUsecase = sendWithPayjoinUsecase,
         _confirmLiquidSendUsecase = confirmLiquidSendUsecase,
         _getWalletsUsecase = getWalletsUsecase,
+        _getWalletUsecase = getWalletUsecase,
         _createSendSwapUsecase = createSendSwapUsecase,
         _updatePaidSendSwapUsecase = updatePaidSendSwapUsecase,
         _getSwapLimitsUsecase = getSwapLimitsUsecase,
@@ -82,6 +85,7 @@ class SendCubit extends Cubit<SendState> {
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetUtxosUsecase _getUtxosUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
+  final GetWalletUsecase _getWalletUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
   final CreateSendSwapUsecase _createSendSwapUsecase;
@@ -93,6 +97,12 @@ class SendCubit extends Cubit<SendState> {
   final WatchSwapUsecase _watchSwapUsecase;
 
   StreamSubscription<Swap>? _swapSubscription;
+
+  @override
+  Future<void> close() {
+    _swapSubscription?.cancel();
+    return super.close();
+  }
 
   void backClicked() {
     if (state.step == SendStep.address) {
@@ -477,6 +487,8 @@ class SendCubit extends Cubit<SendState> {
           ),
         );
       } else {
+        // Start syncing the wallet now that the transaction is confirmed
+        _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
         emit(
           state.copyWith(
             txId: txId,
@@ -573,6 +585,8 @@ class SendCubit extends Cubit<SendState> {
       if (updatedSwap is LnSendSwap) {
         emit(state.copyWith(lightningSwap: updatedSwap));
         if (updatedSwap.status == SwapStatus.completed) {
+          // Start syncing the wallet now that the swap is completed
+          _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
           emit(
             state.copyWith(
               step: SendStep.success,

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:async/async.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
@@ -27,6 +30,16 @@ class WalletRepositoryImpl implements WalletRepository {
         _bdkWallet = bdkWalletDatasource,
         _lwkWallet = lwkWalletDatasource,
         _electrumServerStorage = electrumServerStorageDatasource;
+
+  @override
+  Stream<String> get walletSyncedStream => StreamGroup.merge([
+        _bdkWallet.walletSyncedStream,
+        _lwkWallet.walletSyncedStream,
+      ]);
+
+  @override
+  bool get isAnyWalletSyncing =>
+      _bdkWallet.isAnyWalletSyncing || _lwkWallet.isAnyWalletSyncing;
 
   @override
   Future<Wallet> createWallet({

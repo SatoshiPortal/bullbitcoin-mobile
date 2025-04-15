@@ -19,12 +19,18 @@ import 'package:path_provider/path_provider.dart';
 
 class LwkWalletDatasource
     implements AddressDatasource, WalletTransactionDatasource, UtxoDatasource {
-  LwkWalletDatasource() : _activeSyncs = {};
-
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
-
   final Map<String, Future<void>> _activeSyncs;
+  final StreamController<String> _walletSyncedController;
+
+  LwkWalletDatasource()
+      : _activeSyncs = {},
+        _walletSyncedController = StreamController<String>.broadcast();
+
+  Stream<String> get walletSyncedStream => _walletSyncedController.stream;
+
+  bool get isAnyWalletSyncing => _activeSyncs.isNotEmpty;
 
   Future<BalanceModel> getBalance({
     required PublicLwkWalletModel wallet,
@@ -70,6 +76,9 @@ class LwkWalletDatasource
           validateDomain: electrumServer.validateDomain,
         );
         debugPrint('Sync completed for wallet: ${wallet.id}');
+        // Notify that the wallet has been synced to other parts of the app
+        // by pushing the wallet ID to the stream
+        _walletSyncedController.add(wallet.id);
       } catch (e) {
         debugPrint('Sync error for wallet ${wallet.id}: $e');
         rethrow;

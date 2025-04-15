@@ -520,6 +520,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         );
         // The swap is created, now we can watch it for updates
         _watchLnReceiveSwap(swap.id);
+        _watchWalletTransactionToAddress(
+          walletId: state.wallet!.id,
+          address: swap.receiveAddress!,
+        );
       } catch (e) {
         debugPrint('Swap creation failed: $e');
         error = e;
@@ -702,6 +706,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         state.lightningSwap?.id != null &&
         updatedSwap.id == state.lightningSwap!.id) {
       emit(state.copyWith(lightningSwap: updatedSwap));
+
+      if (updatedSwap.status == SwapStatus.completed) {
+        // Sync the wallets now that the swap is completed
+        await _getWalletsUsecase.execute(sync: true);
+      }
     }
   }
 

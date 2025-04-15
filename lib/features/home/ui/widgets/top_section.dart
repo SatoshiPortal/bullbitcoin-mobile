@@ -210,7 +210,7 @@ class _TopNav extends StatelessWidget {
         const Gap(8),
         IconButton(
           onPressed: () {
-            context.read<HomeBloc>().add(const HomeTransactionsSynced());
+            context.read<HomeBloc>().add(const HomeRefreshed());
           },
           visualDensity: VisualDensity.compact,
           iconSize: 24,
@@ -260,13 +260,12 @@ class _BullLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final syncing =
-        context.select((HomeBloc _) => _.state.isSyncingTransactions);
+    final syncing = context.select((HomeBloc _) => _.state.isSyncing);
 
     if (!syncing) {
       return InkWell(
         onTap: () {
-          context.read<HomeBloc>().add(const HomeTransactionsSynced());
+          context.read<HomeBloc>().add(const HomeRefreshed());
         },
         child: Image.asset(
           Assets.images2.bbLogoSmall.path,

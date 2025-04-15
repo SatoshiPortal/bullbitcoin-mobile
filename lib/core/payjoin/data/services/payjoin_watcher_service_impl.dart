@@ -60,8 +60,7 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
   }
 
   @override
-  Stream<Payjoin> get payjoins =>
-      _payjoinStreamController.stream.asBroadcastStream();
+  Stream<Payjoin> get payjoins => _payjoinStreamController.stream;
 
   Future<void> _processPayjoinRequest(PayjoinReceiver payjoin) async {
     debugPrint('Processing payjoin request: ${payjoin.id}');

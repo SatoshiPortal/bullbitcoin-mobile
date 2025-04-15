@@ -48,13 +48,12 @@ class PayjoinDatasource {
   }
 
   Stream<PayjoinReceiverModel> get requestsForReceivers =>
-      _payjoinRequestedController.stream.asBroadcastStream();
+      _payjoinRequestedController.stream;
 
   Stream<PayjoinSenderModel> get proposalsForSenders =>
-      _proposalSentController.stream.asBroadcastStream();
+      _proposalSentController.stream;
 
-  Stream<PayjoinModel> get expiredPayjoins =>
-      _expiredController.stream.asBroadcastStream();
+  Stream<PayjoinModel> get expiredPayjoins => _expiredController.stream;
 
   Future<PayjoinReceiverModel> createReceiver({
     required String walletId,

@@ -45,12 +45,18 @@ extension BdkNetworkX on bdk.Network {
 
 class BdkWalletDatasource
     implements AddressDatasource, WalletTransactionDatasource, UtxoDatasource {
-  BdkWalletDatasource() : _activeSyncs = {};
-
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
-
   final Map<String, Future<void>> _activeSyncs;
+  final StreamController<String> _walletSyncedController;
+
+  BdkWalletDatasource()
+      : _activeSyncs = {},
+        _walletSyncedController = StreamController<String>.broadcast();
+
+  Stream<String> get walletSyncedStream => _walletSyncedController.stream;
+
+  bool get isAnyWalletSyncing => _activeSyncs.isNotEmpty;
 
   Future<BalanceModel> getBalance({
     required PublicBdkWalletModel wallet,
@@ -100,6 +106,9 @@ class BdkWalletDatasource
 
         await bdkWallet.sync(blockchain: blockchain);
         debugPrint('Sync completed for wallet: ${wallet.id}');
+        // Notify that the wallet has been synced through a stream for other
+        // parts of the app to listen to
+        _walletSyncedController.add(wallet.id);
       } catch (e) {
         debugPrint('Sync error for wallet ${wallet.id}: $e');
         rethrow;

@@ -7,8 +7,7 @@ sealed class HomeState with _$HomeState {
   const factory HomeState({
     @Default(HomeStatus.initial) HomeStatus status,
     @Default([]) List<Wallet> wallets,
-    //required List<Transaction> transactions,
-    @Default(false) bool isSyncingTransactions,
+    @Default(false) bool isSyncing,
     @Default(null) Object? error,
   }) = _HomeState;
   const HomeState._();
