@@ -23,3 +23,7 @@ class HomeWalletSyncFinished extends HomeEvent {
 
   const HomeWalletSyncFinished(this.wallet);
 }
+
+class StartTorInitialization extends HomeEvent {
+  const StartTorInitialization();
+}
