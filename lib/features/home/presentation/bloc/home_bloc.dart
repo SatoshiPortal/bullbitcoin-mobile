@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
+import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
+import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,17 +16,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({
     required GetWalletsUsecase getWalletsUsecase,
     required RestartSwapWatcherUsecase restartSwapWatcherUsecase,
+    required InitializeTorUsecase initializeTorUsecase,
+    required CheckForTorInitializationOnStartupUsecase
+        checkForTorInitializationOnStartupUsecase,
   })  : _getWalletsUsecase = getWalletsUsecase,
         _restartSwapWatcherUsecase = restartSwapWatcherUsecase,
+        _initializeTorUsecase = initializeTorUsecase,
+        _checkForTorInitializationOnStartupUsecase =
+            checkForTorInitializationOnStartupUsecase,
         super(const HomeState()) {
     on<HomeStarted>(_onStarted);
     on<HomeRefreshed>(_onRefreshed);
+    on<StartTorInitialization>(_onStartTorInitialization);
     on<HomeTransactionsSynced>(_onTransactionsSynced);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
   final RestartSwapWatcherUsecase _restartSwapWatcherUsecase;
-
+  final InitializeTorUsecase _initializeTorUsecase;
+  final CheckForTorInitializationOnStartupUsecase
+      _checkForTorInitializationOnStartupUsecase;
   Future<void> _onStarted(
     HomeStarted event,
     Emitter<HomeState> emit,
@@ -35,7 +48,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(
         HomeState(status: HomeStatus.success, wallets: wallets),
       );
-
+      add(const StartTorInitialization());
       add(const HomeTransactionsSynced());
     } catch (e) {
       emit(HomeState(status: HomeStatus.failure, error: e));
@@ -73,7 +86,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       emit(
         state.copyWith(
-          isSyncingTransactions: true,
+          status: HomeStatus.loading,
         ),
       );
       await _restartSwapWatcherUsecase.execute();
@@ -88,10 +101,27 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } catch (e) {
       emit(
         state.copyWith(
-          isSyncingTransactions: false,
+          status: HomeStatus.failure,
           error: e,
         ),
       );
+    }
+  }
+
+  Future<void> _onStartTorInitialization(
+    StartTorInitialization event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: HomeStatus.loading,
+      ),
+    );
+    final isTorIniatizationEnabled =
+        await _checkForTorInitializationOnStartupUsecase.execute();
+
+    if (isTorIniatizationEnabled) {
+      await _initializeTorUsecase.execute();
     }
   }
 }

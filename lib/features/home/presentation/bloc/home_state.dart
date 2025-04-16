@@ -1,13 +1,12 @@
 part of 'home_bloc.dart';
 
-enum HomeStatus { initial, success, failure }
+enum HomeStatus { initial, loading, success, failure }
 
 @freezed
 sealed class HomeState with _$HomeState {
   const factory HomeState({
     @Default(HomeStatus.initial) HomeStatus status,
     @Default([]) List<Wallet> wallets,
-    //required List<Transaction> transactions,
     @Default(false) bool isSyncingTransactions,
     @Default(null) Object? error,
   }) = _HomeState;

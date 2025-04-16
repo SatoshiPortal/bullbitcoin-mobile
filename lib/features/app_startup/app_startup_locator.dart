@@ -28,12 +28,9 @@ class AppStartupLocator {
     locator.registerFactory<AppStartupBloc>(
       () => AppStartupBloc(
         resetAppDataUsecase: locator<ResetAppDataUsecase>(),
-        checkForTorInitializationOnStartupUsecase:
-            locator<CheckForTorInitializationOnStartupUsecase>(),
         checkPinCodeExistsUsecase: locator<CheckPinCodeExistsUsecase>(),
         checkForExistingDefaultWalletsUsecase:
             locator<CheckForExistingDefaultWalletsUsecase>(),
-        initializeTorUsecase: locator<InitializeTorUsecase>(),
       ),
     );
   }

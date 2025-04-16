@@ -15,3 +15,7 @@ class HomeRefreshed extends HomeEvent {
 class HomeTransactionsSynced extends HomeEvent {
   const HomeTransactionsSynced();
 }
+
+class StartTorInitialization extends HomeEvent {
+  const StartTorInitialization();
+}
