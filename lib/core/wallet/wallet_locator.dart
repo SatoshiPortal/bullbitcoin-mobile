@@ -18,7 +18,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_any_wallet_syncing_u
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:hive/hive.dart';
 
@@ -88,8 +89,13 @@ class WalletLocator {
         walletRepository: locator<WalletRepository>(),
       ),
     );
-    locator.registerFactory<WatchWalletSyncsUsecase>(
-      () => WatchWalletSyncsUsecase(
+    locator.registerFactory<WatchStartedWalletSyncsUsecase>(
+      () => WatchStartedWalletSyncsUsecase(
+        walletRepository: locator<WalletRepository>(),
+      ),
+    );
+    locator.registerFactory<WatchFinishedWalletSyncsUsecase>(
+      () => WatchFinishedWalletSyncsUsecase(
         walletRepository: locator<WalletRepository>(),
       ),
     );

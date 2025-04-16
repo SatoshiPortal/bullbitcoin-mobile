@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet_transaction/data/repositories/wallet_transaction_repository_impl.dart';
 import 'package:bb_mobile/core/wallet_transaction/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet_transaction/domain/usecases/get_wallet_transactions_usecase.dart';
@@ -42,6 +43,7 @@ class TransactionLocator {
     locator.registerFactory<WatchWalletTransactionByAddressUsecase>(
       () => WatchWalletTransactionByAddressUsecase(
         walletTransactionRepository: locator<WalletTransactionRepository>(),
+        walletRepository: locator<WalletRepository>(),
       ),
     );
   }

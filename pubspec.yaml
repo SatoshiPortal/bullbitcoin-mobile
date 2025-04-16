@@ -132,6 +132,11 @@ dev_dependencies:
   # fluttergen: ^5.9.0
   flutter_gen_runner: any
 
+dependency_overrides:
+  analyzer: ^6.4.1
+  build_resolvers: ^2.3.5
+  dart_style: ^2.3.6
+
 flutter:
   generate: true # Needed for code generation, for example for internationalization
   uses-material-design: true

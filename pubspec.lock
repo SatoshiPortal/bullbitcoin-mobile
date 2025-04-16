@@ -13,18 +13,23 @@ packages:
     dependency: transitive
     description:
       name: _fe_analyzer_shared
-      sha256: dc27559385e905ad30838356c5f5d574014ba39872d732111cd07ac0beff4c57
+      sha256: "16e298750b6d0af7ce8a3ba7c18c69c3785d11b15ec83f6dcd0ad2a0009b3cab"
       url: "https://pub.dev"
     source: hosted
-    version: "80.0.0"
-  analyzer:
+    version: "76.0.0"
+  _macros:
     dependency: transitive
+    description: dart
+    source: sdk
+    version: "0.3.3"
+  analyzer:
+    dependency: "direct overridden"
     description:
       name: analyzer
-      sha256: "192d1c5b944e7e53b24b5586db760db934b177d4147c42fbca8c8c5f1eb8d11e"
+      sha256: "1f14db053a8c23e260789e9b0980fa27f2680dd640932cae5e1137cce0e46e1e"
       url: "https://pub.dev"
     source: hosted
-    version: "7.3.0"
+    version: "6.11.0"
   animated_svg:
     dependency: "direct main"
     description:
@@ -203,7 +208,7 @@ packages:
     source: hosted
     version: "4.0.4"
   build_resolvers:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: build_resolvers
       sha256: b9e4fda21d846e192628e7a4f6deda6888c36b5b69ba02ff291a01fd529140f0
@@ -254,18 +259,18 @@ packages:
     dependency: transitive
     description:
       name: camera_android_camerax
-      sha256: "13784f539c7f104766bff84e4479a70f03b29d78b208278be45c939250d9d7f5"
+      sha256: "26673643ed8f4a468a81ebd7ca760bc1d8c4c741df6d731cc958585ac1983126"
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.14+1"
+    version: "0.6.15"
   camera_avfoundation:
     dependency: transitive
     description:
       name: camera_avfoundation
-      sha256: "6bff67a6821aa094fec2d317735c572264960a0afe034525ee355c4345524243"
+      sha256: a33cd9a250296271cdf556891b7c0986a93772426f286595eccd5f45b185933c
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.18+13"
+    version: "0.9.18+14"
   camera_platform_interface:
     dependency: transitive
     description:
@@ -435,13 +440,13 @@ packages:
     source: hosted
     version: "1.0.0"
   dart_style:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: dart_style
-      sha256: "27eb0ae77836989a3bc541ce55595e8ceee0992807f14511552a898ddd0d88ac"
+      sha256: "7306ab8a2359a48d22310ad823521d723acfed60ee1f7e37388e8986853b6820"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.1"
+    version: "2.3.8"
   dartx:
     dependency: transitive
     description:
@@ -900,10 +905,10 @@ packages:
     dependency: transitive
     description:
       name: google_sign_in_ios
-      sha256: "29cd125f58f50ceb40e8253d3c0209e321eee3e5df16cd6d262495f7cad6a2bd"
+      sha256: "102005f498ce18442e7158f6791033bbc15ad2dcc0afa4cf4752e2722a516c96"
       url: "https://pub.dev"
     source: hosted
-    version: "5.8.1"
+    version: "5.9.0"
   google_sign_in_platform_interface:
     dependency: transitive
     description:
@@ -1142,6 +1147,14 @@ packages:
       url: "https://github.com/SatoshiPortal/lwk-dart.git"
     source: git
     version: "0.1.7"
+  macros:
+    dependency: transitive
+    description:
+      name: macros
+      sha256: "1d9e801cd66f7ea3663c45fc708450db1fa57f988142c64289142c9b7ee80656"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3-main.0"
   matcher:
     dependency: transitive
     description:
@@ -1307,7 +1320,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "9d5e311a3d283272132cc5e0682161f5596eab6d"
+      resolved-ref: "1f4af7bcf9f0b0348f130410639e0dc610c1fd0c"
       url: "https://github.com/LtbLightning/payjoin-flutter"
     source: git
     version: "0.22.0"

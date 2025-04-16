@@ -24,6 +24,7 @@ class WalletMetadataModel with _$WalletMetadataModel {
     required String source,
     @Default(false) bool isDefault,
     @Default('') String label,
+    DateTime? syncedAt,
   }) = _WalletMetadataModel;
   const WalletMetadataModel._();
 
