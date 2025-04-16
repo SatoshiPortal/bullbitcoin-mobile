@@ -27,16 +27,8 @@ class BullBitcoinPriceDatasource {
           'params': {
             'element': {
               'fromCurrency': 'BTC',
-              'toCurrency': currencyCode.toUpperCase() == 'INR' ||
-                      currencyCode.toUpperCase() == 'CRC'
-                  ? 'USD'
-                  : currencyCode.toUpperCase(),
+              'toCurrency': currencyCode.toUpperCase(),
             },
-            // 'from': 'BTC',
-            // 'to': currencyCode.toUpperCase() == 'INR' ||
-            //         currencyCode.toUpperCase() == 'CRC'
-            //     ? 'USD'
-            //     : currencyCode.toUpperCase(),
           },
         },
       );
