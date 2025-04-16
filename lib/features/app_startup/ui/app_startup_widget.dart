@@ -24,9 +24,8 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
             if (state is AppStartupInitial) {
               return const OnboardingSplash(loading: true);
             } else if (state is AppStartupLoadingInProgress) {
-              return OnboardingSplash(
+              return const OnboardingSplash(
                 loading: true,
-                isTorEnabled: state.isTorEnabled,
               );
             } else if (state is AppStartupSuccess) {
               // if (!state.hasDefaultWallets) return const OnboardingScreen();

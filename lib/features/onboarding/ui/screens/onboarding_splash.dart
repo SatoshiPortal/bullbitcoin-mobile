@@ -13,11 +13,9 @@ class OnboardingSplash extends StatelessWidget {
   const OnboardingSplash({
     super.key,
     this.loading = false,
-    this.isTorEnabled = false,
   });
 
   final bool loading;
-  final bool isTorEnabled;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +72,6 @@ class OnboardingSplash extends StatelessWidget {
                   ),
                   child: _Actions(
                     loading: loading,
-                    isTorEnabled: isTorEnabled,
                   ),
                 ),
               ],
@@ -89,11 +86,9 @@ class OnboardingSplash extends StatelessWidget {
 class _Actions extends StatelessWidget {
   const _Actions({
     required this.loading,
-    required this.isTorEnabled,
   });
 
   final bool loading;
-  final bool isTorEnabled;
   @override
   Widget build(BuildContext context) {
     bool creating = false;
@@ -108,20 +103,8 @@ class _Actions extends StatelessWidget {
       children: [
         if (creating || loading) ...[
           Center(
-            child: Column(
-              children: [
-                if (isTorEnabled) ...[
-                  BBText(
-                    'Starting Tor...',
-                    style: context.font.labelSmall,
-                    color: Colors.white,
-                  ),
-                  const Gap(15),
-                ],
-                CircularProgressIndicator(
-                  color: context.colour.onPrimary,
-                ),
-              ],
+            child: CircularProgressIndicator(
+              color: context.colour.onPrimary,
             ),
           ),
         ] else ...[
