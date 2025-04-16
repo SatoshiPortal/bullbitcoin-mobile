@@ -1,6 +1,6 @@
 part of 'home_bloc.dart';
 
-enum HomeStatus { initial, success, failure }
+enum HomeStatus { initial, loading, success, failure }
 
 @freezed
 sealed class HomeState with _$HomeState {

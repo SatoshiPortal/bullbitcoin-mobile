@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
+import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
+import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_any_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
@@ -18,6 +20,9 @@ class HomeLocator {
         watchFinishedWalletSyncsUsecase:
             locator<WatchFinishedWalletSyncsUsecase>(),
         restartSwapWatcherUsecase: locator<RestartSwapWatcherUsecase>(),
+        initializeTorUsecase: locator<InitializeTorUsecase>(),
+        checkForTorInitializationOnStartupUsecase:
+            locator<CheckForTorInitializationOnStartupUsecase>(),
       ),
     );
   }

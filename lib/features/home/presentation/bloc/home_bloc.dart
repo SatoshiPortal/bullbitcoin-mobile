@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
+import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
+import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_any_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -20,16 +22,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
     required RestartSwapWatcherUsecase restartSwapWatcherUsecase,
+    required InitializeTorUsecase initializeTorUsecase,
+    required CheckForTorInitializationOnStartupUsecase
+        checkForTorInitializationOnStartupUsecase,
   })  : _getWalletsUsecase = getWalletsUsecase,
         _checkAnyWalletSyncingUsecase = checkAnyWalletSyncingUsecase,
         _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
         _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
         _restartSwapWatcherUsecase = restartSwapWatcherUsecase,
+        _initializeTorUsecase = initializeTorUsecase,
+        _checkForTorInitializationOnStartupUsecase =
+            checkForTorInitializationOnStartupUsecase,
         super(const HomeState()) {
     on<HomeStarted>(_onStarted);
     on<HomeRefreshed>(_onRefreshed);
     on<HomeWalletSyncStarted>(_onWalletSyncStarted);
     on<HomeWalletSyncFinished>(_onWalletSyncFinished);
+    on<StartTorInitialization>(_onStartTorInitialization);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -37,6 +46,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final WatchStartedWalletSyncsUsecase _watchStartedWalletSyncsUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
   final RestartSwapWatcherUsecase _restartSwapWatcherUsecase;
+  final InitializeTorUsecase _initializeTorUsecase;
+  final CheckForTorInitializationOnStartupUsecase
+      _checkForTorInitializationOnStartupUsecase;
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
 
@@ -151,6 +163,23 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           error: e,
         ),
       );
+    }
+  }
+
+  Future<void> _onStartTorInitialization(
+    StartTorInitialization event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: HomeStatus.loading,
+      ),
+    );
+    final isTorIniatizationEnabled =
+        await _checkForTorInitializationOnStartupUsecase.execute();
+
+    if (isTorIniatizationEnabled) {
+      await _initializeTorUsecase.execute();
     }
   }
 }
