@@ -1,8 +1,12 @@
+import 'dart:async';
+
+import 'package:async/async.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -26,7 +30,24 @@ class WalletRepositoryImpl implements WalletRepository {
   })  : _walletMetadata = walletMetadataDatasource,
         _bdkWallet = bdkWalletDatasource,
         _lwkWallet = lwkWalletDatasource,
-        _electrumServerStorage = electrumServerStorageDatasource;
+        _electrumServerStorage = electrumServerStorageDatasource {
+    // Keep track of the last sync time in the wallet metadata
+    _walletSyncFinishedStream.listen(_updateWalletSyncTime);
+    // Start auto syncing wallets
+    _startAutoSyncing();
+  }
+
+  @override
+  Stream<Wallet> get walletSyncStartedStream => _walletSyncStartedStream
+      .asyncMap((walletId) async => await getWallet(walletId));
+
+  @override
+  Stream<Wallet> get walletSyncFinishedStream => _walletSyncFinishedStream
+      .asyncMap((walletId) async => await getWallet(walletId));
+
+  @override
+  bool get isAnyWalletSyncing =>
+      _bdkWallet.isAnyWalletSyncing || _lwkWallet.isAnyWalletSyncing;
 
   @override
   Future<Wallet> createWallet({
@@ -260,6 +281,63 @@ class WalletRepositoryImpl implements WalletRepository {
     );
   }
 
+  Stream<String> get _walletSyncStartedStream => StreamGroup.merge([
+        _bdkWallet.walletSyncStartedStream,
+        _lwkWallet.walletSyncStartedStream,
+      ]);
+
+  Stream<String> get _walletSyncFinishedStream => StreamGroup.merge([
+        _bdkWallet.walletSyncFinishedStream,
+        _lwkWallet.walletSyncFinishedStream,
+      ]);
+
+  Future<void> _updateWalletSyncTime(String walletId) async {
+    final walletMetadata = await _walletMetadata.get(walletId);
+    if (walletMetadata == null) {
+      return;
+    }
+    final updatedWalletMetadata = walletMetadata.copyWith(
+      syncedAt: DateTime.now(),
+    );
+
+    await _walletMetadata.store(updatedWalletMetadata);
+  }
+
+  Future<void> _startAutoSyncing() async {
+    // TODO: get from constants
+    const autoSyncInterval =
+        Duration(seconds: SettingsConstants.autoSyncIntervalSeconds);
+
+    Timer.periodic(
+      autoSyncInterval,
+      (timer) async {
+        final walletsMetadata = await _walletMetadata.getAll();
+        for (final walletMetadata in walletsMetadata) {
+          // Only sync if the time since the last sync is greater than the interval
+          if (walletMetadata.syncedAt == null ||
+              walletMetadata.syncedAt!
+                      .compareTo(DateTime.now().subtract(autoSyncInterval)) <=
+                  0) {
+            final wallet = walletMetadata.isLiquid
+                ? PublicLwkWalletModel(
+                    combinedCtDescriptor:
+                        walletMetadata.externalPublicDescriptor,
+                    isTestnet: walletMetadata.isTestnet,
+                    id: walletMetadata.id,
+                  )
+                : PublicBdkWalletModel(
+                    externalDescriptor: walletMetadata.externalPublicDescriptor,
+                    internalDescriptor: walletMetadata.internalPublicDescriptor,
+                    isTestnet: walletMetadata.isTestnet,
+                    id: walletMetadata.id,
+                  );
+            await _syncWallet(wallet);
+          }
+        }
+      },
+    );
+  }
+
   Future<BalanceModel> _getBalance(
     WalletMetadataModel metadata, {
     bool sync = false,
@@ -271,20 +349,9 @@ class WalletRepositoryImpl implements WalletRepository {
         isTestnet: metadata.isTestnet,
         id: metadata.id,
       );
-      final electrumServer = await _electrumServerStorage.getByProvider(
-            ElectrumServerProvider.blockstream,
-            network: Network.fromEnvironment(
-              isTestnet: metadata.isTestnet,
-              isLiquid: metadata.isLiquid,
-            ),
-          ) ??
-          ElectrumServerModel.blockstream(
-            isTestnet: metadata.isTestnet,
-            isLiquid: metadata.isLiquid,
-          );
 
       if (sync) {
-        await _lwkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+        await _syncWallet(wallet);
       }
 
       balance = await _lwkWallet.getBalance(wallet: wallet);
@@ -295,26 +362,35 @@ class WalletRepositoryImpl implements WalletRepository {
         isTestnet: metadata.isTestnet,
         id: metadata.id,
       );
-      final electrumServer = await _electrumServerStorage.getByProvider(
-            ElectrumServerProvider.blockstream,
-            network: Network.fromEnvironment(
-              isTestnet: metadata.isTestnet,
-              isLiquid: metadata.isTestnet,
-            ),
-          ) ??
-          ElectrumServerModel.blockstream(
-            isTestnet: metadata.isTestnet,
-            isLiquid: metadata.isLiquid,
-          );
 
       if (sync) {
-        await _bdkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+        await _syncWallet(wallet);
       }
 
       balance = await _bdkWallet.getBalance(wallet: wallet);
     }
 
     return balance;
+  }
+
+  Future<void> _syncWallet(PublicWalletModel wallet) async {
+    final isLiquid = wallet is PublicLwkWalletModel;
+    final electrumServer = await _electrumServerStorage.getByProvider(
+          ElectrumServerProvider.blockstream,
+          network: Network.fromEnvironment(
+            isTestnet: wallet.isTestnet,
+            isLiquid: isLiquid,
+          ),
+        ) ??
+        ElectrumServerModel.blockstream(
+          isTestnet: wallet.isTestnet,
+          isLiquid: isLiquid,
+        );
+    if (isLiquid) {
+      await _lwkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+    } else {
+      await _bdkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+    }
   }
 }
 

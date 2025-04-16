@@ -19,12 +19,23 @@ import 'package:path_provider/path_provider.dart';
 
 class LwkWalletDatasource
     implements AddressDatasource, WalletTransactionDatasource, UtxoDatasource {
-  LwkWalletDatasource() : _activeSyncs = {};
-
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
-
   final Map<String, Future<void>> _activeSyncs;
+  final StreamController<String> _walletSyncStartedController;
+  final StreamController<String> _walletSyncFinishedController;
+
+  LwkWalletDatasource()
+      : _activeSyncs = {},
+        _walletSyncStartedController = StreamController<String>.broadcast(),
+        _walletSyncFinishedController = StreamController<String>.broadcast();
+
+  Stream<String> get walletSyncStartedStream =>
+      _walletSyncStartedController.stream;
+  Stream<String> get walletSyncFinishedStream =>
+      _walletSyncFinishedController.stream;
+
+  bool get isAnyWalletSyncing => _activeSyncs.isNotEmpty;
 
   Future<BalanceModel> getBalance({
     required PublicLwkWalletModel wallet,
@@ -34,7 +45,7 @@ class LwkWalletDatasource
 
     final lBtcAssetBalance = balances.firstWhere((balance) {
       final assetId = _lBtcAssetId(
-        Network.fromEnvironment(isTestnet: wallet.isTestnet, isLiquid: true),
+        wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
       );
       return balance.assetId == assetId;
     }).value;
@@ -62,6 +73,9 @@ class LwkWalletDatasource
     return _activeSyncs.putIfAbsent(wallet.id, () async {
       try {
         debugPrint('New sync started for wallet: ${wallet.id}');
+        // Notify that the wallet is syncing through a stream for other
+        // parts of the app to listen to so they can show a syncing indicator
+        _walletSyncStartedController.add(wallet.id);
         // Increment the sync execution count for this wallet for testing purposes
         syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
         final lwkWallet = await _createPublicWallet(wallet);
@@ -74,6 +88,9 @@ class LwkWalletDatasource
         debugPrint('Sync error for wallet ${wallet.id}: $e');
         rethrow;
       } finally {
+        // Notify that the wallet has been synced to other parts of the app
+        // by pushing the wallet ID to the stream
+        _walletSyncFinishedController.add(wallet.id);
         // Remove the sync so future syncs can be triggered
         _activeSyncs.remove(wallet.id);
       }

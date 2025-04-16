@@ -12,6 +12,14 @@ class HomeRefreshed extends HomeEvent {
   const HomeRefreshed();
 }
 
-class HomeTransactionsSynced extends HomeEvent {
-  const HomeTransactionsSynced();
+class HomeWalletSyncStarted extends HomeEvent {
+  final Wallet wallet;
+
+  const HomeWalletSyncStarted(this.wallet);
+}
+
+class HomeWalletSyncFinished extends HomeEvent {
+  final Wallet wallet;
+
+  const HomeWalletSyncFinished(this.wallet);
 }

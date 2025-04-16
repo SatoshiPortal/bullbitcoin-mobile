@@ -1,70 +1,61 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet_transaction/domain/repositories/wallet_transaction_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
 
 class WatchWalletTransactionByAddressUsecase {
   final WalletTransactionRepository _walletTransactionRepository;
+  final WalletRepository _walletRepository;
 
   const WatchWalletTransactionByAddressUsecase({
     required WalletTransactionRepository walletTransactionRepository,
-  }) : _walletTransactionRepository = walletTransactionRepository;
+    required WalletRepository walletRepository,
+  })  : _walletTransactionRepository = walletTransactionRepository,
+        _walletRepository = walletRepository;
 
   Stream<WalletTransaction> execute({
     required String walletId,
     String? toAddress,
-    Duration pollInterval = const Duration(seconds: 5),
   }) {
-    final controller = StreamController<WalletTransaction>();
-    bool isCancelled = false;
-
-    Future<void> pollingLoop() async {
-      while (!isCancelled) {
+    return _walletRepository.walletSyncFinishedStream
+        .where((wallet) => wallet.id == walletId)
+        .asyncMap(
+      (wallet) async {
         try {
           debugPrint(
-            'Fetching transactions to address $toAddress for wallet: $walletId',
+            'Fetching transactions'
+            ' ${toAddress != null ? 'to address $toAddress' : ''}'
+            ' for wallet: $walletId',
           );
+
           final txs = await _walletTransactionRepository.getWalletTransactions(
             walletId: walletId,
             toAddress: toAddress,
-            sync: true,
           );
+
           debugPrint(
-            'Fetched ${txs.length} transactions to address $toAddress for wallet: $walletId',
+            'Fetched ${txs.length} transactions'
+            ' ${toAddress != null ? 'to address $toAddress' : ''}'
+            ' for wallet: $walletId',
           );
 
-          final tx = txs.isNotEmpty
-              ? txs.firstWhere(
-                  (tx) => tx.status == WalletTransactionStatus.pending,
-                  orElse: () => txs.last,
-                )
-              : null;
+          if (txs.isEmpty) {
+            debugPrint(
+              'No transactions found for wallet: $walletId'
+              ' ${toAddress != null ? 'and address $toAddress' : ''}',
+            );
+            return null;
+          }
 
-          if (tx != null) {
-            controller.add(tx);
-          }
-        } catch (e, stack) {
-          debugPrint('Error fetching transactions: $e');
-          if (controller.isClosed) {
-            debugPrint('Controller is closed, not adding error');
-          } else {
-            controller.addError(e, stack);
-          }
+          return txs.last;
+        } catch (e) {
+          debugPrint('WatchWalletTransactionByAddressUsecase exception: $e');
+          return null;
         }
-
-        await Future.delayed(pollInterval);
-      }
-    }
-
-    // Start loop
-    pollingLoop();
-
-    controller.onCancel = () async {
-      isCancelled = true;
-      await controller.close();
-    };
-
-    return controller.stream;
+      },
+    ).whereType<WalletTransaction>();
   }
 }

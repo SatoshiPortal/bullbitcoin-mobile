@@ -10,6 +10,9 @@ class SettingsConstants {
   static const bullBitcoinElectrumServerKeyPrefix = 'bullBitcoinElectrumServer';
   static const customElectrumServerKeyPrefix = 'customElectrumServer';
   static const defaultCurrencyCode = 'CAD';
+  // Added `autoSyncIntervalSeconds` to `SettingsConstants` since we could make
+  //  this configurable in the future if desired.
+  static const autoSyncIntervalSeconds = 5;
 }
 
 class ConversionConstants {

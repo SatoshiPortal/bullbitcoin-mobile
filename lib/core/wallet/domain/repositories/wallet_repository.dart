@@ -3,6 +3,9 @@ import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 
 abstract class WalletRepository {
+  Stream<Wallet> get walletSyncStartedStream;
+  Stream<Wallet> get walletSyncFinishedStream;
+  bool get isAnyWalletSyncing;
   Future<Wallet> createWallet({
     required Seed seed,
     required Network network,

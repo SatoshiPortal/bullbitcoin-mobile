@@ -45,12 +45,24 @@ extension BdkNetworkX on bdk.Network {
 
 class BdkWalletDatasource
     implements AddressDatasource, WalletTransactionDatasource, UtxoDatasource {
-  BdkWalletDatasource() : _activeSyncs = {};
-
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
-
   final Map<String, Future<void>> _activeSyncs;
+  final StreamController<String> _walletSyncStartedController;
+  final StreamController<String> _walletSyncFinishedController;
+
+  BdkWalletDatasource()
+      : _activeSyncs = {},
+        _walletSyncStartedController = StreamController<String>.broadcast(),
+        _walletSyncFinishedController = StreamController<String>.broadcast();
+
+  Stream<String> get walletSyncStartedStream =>
+      _walletSyncStartedController.stream;
+
+  Stream<String> get walletSyncFinishedStream =>
+      _walletSyncFinishedController.stream;
+
+  bool get isAnyWalletSyncing => _activeSyncs.isNotEmpty;
 
   Future<BalanceModel> getBalance({
     required PublicBdkWalletModel wallet,
@@ -81,6 +93,10 @@ class BdkWalletDatasource
     return _activeSyncs.putIfAbsent(wallet.id, () async {
       try {
         debugPrint('New sync started for wallet: ${wallet.id}');
+        // Notify that the wallet is syncing through a stream for other
+        // parts of the app to listen to so they can show a syncing indicator
+        _walletSyncStartedController.add(wallet.id);
+
         // Increment the sync execution count for this wallet for testing purposes
         syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
         final bdkWallet = await _createPublicWallet(wallet);
@@ -104,6 +120,9 @@ class BdkWalletDatasource
         debugPrint('Sync error for wallet ${wallet.id}: $e');
         rethrow;
       } finally {
+        // Notify that the wallet has been synced through a stream for other
+        // parts of the app to listen to
+        _walletSyncFinishedController.add(wallet.id);
         // Remove the sync so future syncs can be triggered
         _activeSyncs.remove(wallet.id);
       }
