@@ -1,63 +1,52 @@
+import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
-import 'package:bb_mobile/core/labels/domain/label_entity.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import 'fixtures/labels.dart';
 
 void main() {
-  late LabelStorageDatasource labelStorageDatasource;
+  WidgetsFlutterBinding.ensureInitialized();
+  final labelStorage = LabelStorageDatasource();
 
-  setUpAll(() async {
-    await Future.wait([
-      dotenv.load(isOptional: true),
-      Hive.initFlutter(),
-    ]);
+  setUpAll(() async => await labelStorage.trashAll());
 
-    final labelsBox = await Hive.openBox<String>(HiveBoxNameConstants.labels);
-    final labelsByRefBox =
-        await Hive.openBox<String>(HiveBoxNameConstants.labelsByRef);
-
-    // Register the Hive storage datasource for labels
-    locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
-      () => HiveStorageDatasourceImpl<String>(labelsBox),
-      instanceName:
-          LocatorInstanceNameConstants.labelsHiveStorageDatasourceInstanceName,
-    );
-    locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
-      () => HiveStorageDatasourceImpl<String>(labelsByRefBox),
-      instanceName: LocatorInstanceNameConstants
-          .labelByRefHiveStorageDatasourceInstanceName,
-    );
-
-    labelStorageDatasource = LabelStorageDatasource(
-      mainLabelStorage: locator<KeyValueStorageDatasource<String>>(
-        instanceName: LocatorInstanceNameConstants
-            .labelsHiveStorageDatasourceInstanceName,
-      ),
-      refLabelStorage: locator<KeyValueStorageDatasource<String>>(
-        instanceName: LocatorInstanceNameConstants
-            .labelByRefHiveStorageDatasourceInstanceName,
-      ),
-    );
-
-    await labelStorageDatasource.deleteAll();
-  });
+  tearDownAll(() async => await labelStorage.trashAll());
 
   group('Label Storage Integration Tests', () {
+    test('Create and store a label', () async {
+      final aLabel = labels.first;
+
+      await labelStorage.store(aLabel);
+
+      final fetchByLabel = await labelStorage.fetchByLabel(aLabel.label);
+      final fetchByRef = await labelStorage.fetchByRef(aLabel.type, aLabel.ref);
+
+      expect(fetchByLabel.length, 1);
+      expect(fetchByRef.length, 1);
+
+      expect(fetchByLabel.first.type, aLabel.type);
+      expect(fetchByLabel.first.label, aLabel.label);
+      expect(fetchByLabel.first.ref, aLabel.ref);
+      expect(fetchByLabel.first.origin, aLabel.origin);
+      expect(fetchByLabel.first.spendable, aLabel.spendable);
+
+      expect(fetchByRef.first.type, aLabel.type);
+      expect(fetchByRef.first.label, fetchByLabel.first.label);
+      expect(fetchByRef.first.ref, fetchByLabel.first.ref);
+      expect(fetchByRef.first.origin, fetchByLabel.first.origin);
+      expect(fetchByRef.first.origin, aLabel.origin);
+      expect(fetchByRef.first.spendable, aLabel.spendable);
+    });
+
     test('Create and store multiple labels', () async {
       for (final label in labels) {
-        await labelStorageDatasource.create(label);
+        await labelStorage.store(label);
       }
       debugPrint('Attempted creation of ${labels.length} labels');
-      // readAll and assert that there are 10 items in the list; one is a duplicate
-      final allLabels = await labelStorageDatasource.readAll();
+
+      // fetchAll and assert that there are 10 items in the list; one is a duplicate
+      final allLabels = await labelStorage.fetchAll();
       expect(allLabels, isNotNull);
       expect(allLabels.length, 10);
       debugPrint(
@@ -67,9 +56,9 @@ void main() {
 
     test('Read labels by reference', () async {
       final addressLabels =
-          await labelStorageDatasource.readByRef(addresses[0]);
+          await labelStorage.fetchByRef(Entity.address, addresses[0]);
       expect(addressLabels, isNotNull);
-      expect(addressLabels!.length, 3);
+      expect(addressLabels.length, 3);
 
       // Verify labels contain expected values
       final labelTexts = addressLabels.map((l) => l.label).toList();
@@ -81,9 +70,9 @@ void main() {
       );
 
       // Read labels for the first transaction (should have 3 labels)
-      final txLabels = await labelStorageDatasource.readByRef(txids[0]);
+      final txLabels = await labelStorage.fetchByRef(Entity.tx, txids[0]);
       expect(txLabels, isNotNull);
-      expect(txLabels!.length, 3);
+      expect(txLabels.length, 3);
 
       // Log results for debugging
       debugPrint(
@@ -97,9 +86,9 @@ void main() {
     test('Read labels by label value', () async {
       // Read labels with the shared label "Important Transaction" (should be 3)
       final importantLabels =
-          await labelStorageDatasource.readByLabel('Important Transaction');
+          await labelStorage.fetchByLabel('Important Transaction');
       expect(importantLabels, isNotNull);
-      expect(importantLabels!.length, 3);
+      expect(importantLabels.length, 3);
 
       // Verify that the refs match the expected txids
       final refs = importantLabels.map((l) => l.ref).toList();
@@ -114,16 +103,16 @@ void main() {
     test('Read labels by label value and verify different reference types',
         () async {
       final bitcoinPurchaseLabels =
-          await labelStorageDatasource.readByLabel('Bitcoin Purchase');
+          await labelStorage.fetchByLabel('Bitcoin Purchase');
       expect(bitcoinPurchaseLabels, isNotNull);
-      expect(bitcoinPurchaseLabels!.length, 2);
+      expect(bitcoinPurchaseLabels.length, 2);
 
       final addressLabel = bitcoinPurchaseLabels.firstWhere(
-        (label) => label.type == 'address',
+        (label) => label.type == Entity.address,
         orElse: () => throw Exception('No address label found'),
       );
       final txLabel = bitcoinPurchaseLabels.firstWhere(
-        (label) => label.type == 'tx',
+        (label) => label.type == Entity.tx,
         orElse: () => throw Exception('No transaction label found'),
       );
 
@@ -136,35 +125,63 @@ void main() {
     });
 
     test('Delete a specific label', () async {
-      final labelToDelete = Label(
-        type: LabelType.address,
+      const label = 'Temporary Label';
+      final labelToDelete = LabelModel(
+        type: Entity.address,
         ref: addresses[0],
-        label: 'Temporary Label',
+        label: label,
       );
 
-      await labelStorageDatasource.create(labelToDelete);
+      await labelStorage.store(labelToDelete);
 
-      final addressLabels =
-          await labelStorageDatasource.readByRef(addresses[0]);
-      expect(addressLabels!.length, 4); // Now should have 4 labels
+      final addressLabels = await labelStorage.fetchByRef(
+        Entity.address,
+        addresses[0],
+      );
+      expect(addressLabels.length, 4, reason: 'we should have 4 labels');
 
-      await labelStorageDatasource.deleteLabel(labelToDelete);
+      await labelStorage.trash(labelToDelete.label);
 
-      final updatedAddressLabels =
-          await labelStorageDatasource.readByRef(addresses[0]);
-      expect(updatedAddressLabels!.length, 3); // Back to 3 labels
+      final updatedAddressLabels = await labelStorage.fetchByRef(
+        Entity.address,
+        addresses[0],
+      );
+      expect(updatedAddressLabels.length, 3,
+          reason: 'the label should have been removed');
 
       final remainingLabels = updatedAddressLabels.map((l) => l.label).toList();
-      expect(remainingLabels, isNot(contains('Temporary Label')));
+      expect(remainingLabels, isNot(contains(label)));
 
       debugPrint(
         'Successfully deleted label "Temporary Label" from address ${addresses[0]}',
       );
     });
-  });
 
-  tearDownAll(() async {
-    await labelStorageDatasource.deleteAll();
-    debugPrint('All labels deleted as part of test cleanup');
+    test('Delete a label for all entities', () async {
+      const label = 'Shared Label';
+
+      final labelOnAddress = LabelModel(
+        type: Entity.address,
+        ref: addresses[0],
+        label: label,
+      );
+
+      final labelOnTx = LabelModel(
+        type: Entity.tx,
+        ref: txids[0],
+        label: label,
+      );
+
+      await labelStorage.store(labelOnAddress);
+      await labelStorage.store(labelOnTx);
+
+      var labelled = await labelStorage.fetchByLabel(label);
+      expect(labelled.length, 2);
+
+      await labelStorage.trash(label);
+
+      labelled = await labelStorage.fetchByLabel(label);
+      expect(labelled, isEmpty);
+    });
   });
 }

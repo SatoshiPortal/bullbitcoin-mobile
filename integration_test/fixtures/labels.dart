@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/labels/domain/label_entity.dart';
+import 'package:bb_mobile/core/labels/data/label_model.dart';
+import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
 
 final addresses = [
   'bc1q7cyfzrq4xm3nscpkevj8ug3u8dgxs2j4h8c9at',
@@ -13,61 +14,65 @@ final txids = [
 ];
 
 final labels = [
-  Label(
-    type: LabelType.address,
+  LabelModel(
+    type: Entity.address,
     ref: addresses[0],
     label: 'Bitcoin Purchase',
+    origin: 'wpkh([d34db33f/84h/0h/0h])',
+    spendable: true,
   ),
   // this duplicate should be ignored by the storage
-  Label(
-    type: LabelType.address,
+  LabelModel(
+    type: Entity.address,
     ref: addresses[0],
     label: 'Bitcoin Purchase',
+    origin: 'wpkh([d34db33f/84h/0h/0h])',
+    spendable: true,
   ),
-  Label(
-    type: LabelType.address,
+  LabelModel(
+    type: Entity.address,
     ref: addresses[0],
     label: 'Cold Storage',
   ),
-  Label(
-    type: LabelType.address,
+  LabelModel(
+    type: Entity.address,
     ref: addresses[0],
     label: 'Hardware Wallet',
     origin: 'integration_test',
   ),
-  Label(
-    type: LabelType.address,
+  LabelModel(
+    type: Entity.address,
     ref: addresses[1],
     label: 'Exchange Withdrawal',
     origin: 'integration_test',
   ),
-  Label(
-    type: LabelType.address,
+  LabelModel(
+    type: Entity.address,
     ref: addresses[2],
     label: 'Donation Address',
   ),
-  Label(
-    type: LabelType.tx,
+  LabelModel(
+    type: Entity.tx,
     ref: txids[0],
     label: 'Bitcoin Purchase',
   ),
-  Label(
-    type: LabelType.tx,
+  LabelModel(
+    type: Entity.tx,
     ref: txids[0],
     label: 'Investment',
   ),
-  Label(
-    type: LabelType.tx,
+  LabelModel(
+    type: Entity.tx,
     ref: txids[0],
     label: 'Important Transaction',
   ),
-  Label(
-    type: LabelType.tx,
+  LabelModel(
+    type: Entity.tx,
     ref: txids[1],
     label: 'Important Transaction',
   ),
-  Label(
-    type: LabelType.tx,
+  LabelModel(
+    type: Entity.tx,
     ref: txids[2],
     label: 'Important Transaction',
   ),

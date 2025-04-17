@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/address/domain/entities/address.dart';
 import 'package:bb_mobile/core/address/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
@@ -561,12 +562,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       switch (state.type) {
         case ReceiveType.bitcoin:
         case ReceiveType.liquid:
-          await _createLabelUsecase.execute(
-            walletId: state.wallet!.id,
-            type: LabelType.address,
-            ref: state.addressOrInvoiceOnly,
-            label: note,
-          );
+        // TODO(azad): Usecase expects a Labelable untity and Address has no external constructor
+        // await _createLabelUsecase.execute<Address>(
+        //   origin: state.wallet!.id,
+        //   entity: state.addressOrInvoiceOnly, // Type Address expected
+        //   label: note,
+        // );
         case _:
           break;
       }

@@ -1,38 +1,25 @@
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/domain/label_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/labels/data/labelable.dart';
 
 class CreateLabelUsecase {
   final LabelRepository _labelRepository;
-  final WalletRepository _wallet;
 
-  CreateLabelUsecase({
-    required LabelRepository labelRepository,
-    required WalletRepository walletRepository,
-  })  : _labelRepository = labelRepository,
-        _wallet = walletRepository;
+  CreateLabelUsecase({required LabelRepository labelRepository})
+      : _labelRepository = labelRepository;
 
-  Future<Label> execute({
-    required String walletId,
-    required LabelType type,
-    required String ref,
+  Future<void> execute<T extends Labelable>({
+    required String origin,
+    required T entity,
     required String label,
     bool? spendable,
   }) async {
     try {
-      // Get the wallet to calculate origin
-      final wallet = await _wallet.getWallet(walletId);
-      final origin = wallet.origin;
-
-      final labelEntity = Label.create(
-        type: type,
-        ref: ref,
+      _labelRepository.store(
         label: label,
         origin: origin,
+        entity: entity,
         spendable: spendable,
       );
-      await _labelRepository.createLabel(labelEntity);
-      return labelEntity;
     } catch (e) {
       throw CreateLabelException(e.toString());
     }
