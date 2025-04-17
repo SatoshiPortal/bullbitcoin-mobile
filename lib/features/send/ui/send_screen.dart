@@ -170,7 +170,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
     );
 
     return BBButton.big(
-      label: creatingSwap ? 'Creating Swap' : 'Continue',
+      label: 'Continue',
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
@@ -318,7 +318,7 @@ class SendAmountConfirmButton extends StatelessWidget {
       (SendCubit cubit) => cubit.state.creatingSwap,
     );
     return BBButton.big(
-      label: creatingSwap ? 'Creating Swap' : 'Continue',
+      label: 'Continue',
       onPressed: () {
         context.read<SendCubit>().onAmountConfirmed();
       },
@@ -382,10 +382,7 @@ class SendConfirmScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Gap(24),
-            if (isLnSwap)
-              const SwapSendConfirmTopArea()
-            else
-              const OnchainSendConfirmTopArea(),
+            const SendConfirmTopArea(),
             const Gap(40),
             if (isLnSwap)
               const _SwapSendInfoSection()
@@ -703,8 +700,8 @@ class InfoRow extends StatelessWidget {
   }
 }
 
-class OnchainSendConfirmTopArea extends StatelessWidget {
-  const OnchainSendConfirmTopArea({super.key});
+class SendConfirmTopArea extends StatelessWidget {
+  const SendConfirmTopArea({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -731,47 +728,6 @@ class OnchainSendConfirmTopArea extends StatelessWidget {
         ),
         const Gap(16),
         BBText('Confirm Send', style: context.font.bodyMedium),
-        const Gap(4),
-        BBText(
-          amountBitcoin,
-          style: context.font.displaySmall,
-          color: context.colour.outlineVariant,
-        ),
-      ],
-    );
-  }
-}
-
-class SwapSendConfirmTopArea extends StatelessWidget {
-  const SwapSendConfirmTopArea({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final amountBitcoin = context.select(
-      (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
-    );
-    // final totalFees = context.select(
-    //   (SendCubit cubit) => cubit.state.lightningSwap?.fees?.totalFees,
-    // );
-    return Column(
-      // crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Container(
-          alignment: Alignment.center,
-          height: 72,
-          width: 72,
-          decoration: BoxDecoration(
-            color: context.colour.secondaryFixedDim,
-            shape: BoxShape.circle,
-          ),
-          child: Image.asset(
-            Assets.icons.swap.path,
-            height: 24,
-            width: 24,
-          ),
-        ),
-        const Gap(16),
-        BBText('Confirm Swap', style: context.font.bodyMedium),
         const Gap(4),
         BBText(
           amountBitcoin,

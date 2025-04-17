@@ -151,11 +151,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final wallets = await _getWalletsUsecase.execute();
       final isAnyOtherWalletSyncing = _checkAnyWalletSyncingUsecase.execute();
 
-      emit(state.copyWith(
-        status: HomeStatus.success,
-        wallets: wallets,
-        isSyncing: isAnyOtherWalletSyncing,
-      ));
+      emit(
+        state.copyWith(
+          status: HomeStatus.success,
+          wallets: wallets,
+          isSyncing: isAnyOtherWalletSyncing,
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
