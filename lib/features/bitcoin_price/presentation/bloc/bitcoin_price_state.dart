@@ -22,7 +22,7 @@ sealed class BitcoinPriceState with _$BitcoinPriceState {
   String? displayBTCAmount(int satsAmount, BitcoinUnit unit) {
     if (unit == BitcoinUnit.btc) {
       final btcAmount = (satsAmount / 100000000).toStringAsFixed(8);
-      return '${_removeTrailingZeros(btcAmount)} BTC';
+      return '${_removeTrailingBTCZeros(btcAmount)} BTC';
     } else {
       return '${_displaySatsAmount(satsAmount)} sats';
     }
@@ -35,14 +35,20 @@ sealed class BitcoinPriceState with _$BitcoinPriceState {
 
   String _fiatFormatting(String fiatAmount) {
     final currency = NumberFormat('#,##0.00', 'en_US');
-    return _removeTrailingZeros(
-      currency.format(
-        double.parse(fiatAmount),
-      ),
-    );
+    return _removeTrailingFiatZeros(currency.format(double.parse(fiatAmount)));
   }
 
-  String _removeTrailingZeros(String value) {
+  String _removeTrailingFiatZeros(String value) {
+    if (value.endsWith('.00')) {
+      return value.replaceAll('.00', '');
+    }
+    return value;
+  }
+
+  String _removeTrailingBTCZeros(String value) {
+    if (value.endsWith('.00')) {
+      return value.replaceAll('.00', '');
+    }
     if (value.contains('.')) {
       return value
           .replaceAll(RegExp(r'0*$'), '')
