@@ -5,11 +5,11 @@ import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart'
 import 'package:bb_mobile/core/address/data/models/address_model.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utxo/data/datasources/utxo_datasource.dart';
-import 'package:bb_mobile/core/utxo/data/models/utxo_model.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet_transaction/data/datasources/wallet_transaction_datasource.dart';
 import 'package:bb_mobile/core/wallet_transaction/data/models/wallet_transaction_model.dart';
@@ -44,7 +44,10 @@ extension BdkNetworkX on bdk.Network {
 }
 
 class BdkWalletDatasource
-    implements AddressDatasource, WalletTransactionDatasource, UtxoDatasource {
+    implements
+        WalletDatasource,
+        AddressDatasource,
+        WalletTransactionDatasource {
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
   final Map<String, Future<void>> _activeSyncs;

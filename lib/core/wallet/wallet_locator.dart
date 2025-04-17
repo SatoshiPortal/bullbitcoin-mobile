@@ -5,17 +5,21 @@ import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/frozen_utxo_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repository/bitcoin_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repository/liquid_wallet_repository_impl.dart';
+import 'package:bb_mobile/core/wallet/data/repository/utxo_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repository/wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_any_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
@@ -38,6 +42,9 @@ class WalletLocator {
         walletMetadataStorage:
             HiveStorageDatasourceImpl<String>(walletMetadataBox),
       ),
+    );
+    locator.registerLazySingleton<FrozenUtxoDatasource>(
+      () => FrozenUtxoDatasource(),
     );
   }
 
@@ -65,6 +72,15 @@ class WalletLocator {
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         electrumServerStorageDatasource:
             locator<ElectrumServerStorageDatasource>(),
+      ),
+    );
+
+    locator.registerLazySingleton<UtxoRepository>(
+      () => UtxoRepositoryImpl(
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        bdkWalletDatasource: locator<BdkWalletDatasource>(),
+        lwkWalletDatasource: locator<LwkWalletDatasource>(),
+        frozenUtxoDatasource: locator<FrozenUtxoDatasource>(),
       ),
     );
   }
@@ -102,6 +118,11 @@ class WalletLocator {
     locator.registerFactory<CheckAnyWalletSyncingUsecase>(
       () => CheckAnyWalletSyncingUsecase(
         walletRepository: locator<WalletRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<GetUtxosUsecase>(
+      () => GetUtxosUsecase(
+        utxoRepository: locator<UtxoRepository>(),
       ),
     );
   }

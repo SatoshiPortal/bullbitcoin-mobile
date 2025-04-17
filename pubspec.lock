@@ -1320,7 +1320,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "1f4af7bcf9f0b0348f130410639e0dc610c1fd0c"
+      resolved-ref: a2f6e4de9bb06dae98d1a927a5961ddfe18b59b4
       url: "https://github.com/LtbLightning/payjoin-flutter"
     source: git
     version: "0.22.0"
@@ -1992,10 +1992,10 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter_platform_interface
-      sha256: d937581d6e558908d7ae3dc1989c4f87b786891ab47bb9df7de548a151779d8d
+      sha256: "18b1640839cf6546784a524c72aded5b6e86b23e7167dc2311cc96f7658b64bd"
       url: "https://pub.dev"
     source: hosted
-    version: "2.10.0"
+    version: "2.11.0"
   webview_flutter_wkwebview:
     dependency: "direct main"
     description:

@@ -1,20 +1,20 @@
-import 'package:bb_mobile/core/utxo/data/datasources/frozen_utxo_datasource.dart';
-import 'package:bb_mobile/core/utxo/data/datasources/utxo_datasource.dart';
-import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
-import 'package:bb_mobile/core/utxo/domain/repositories/utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/frozen_utxo_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/utxo_repository.dart';
 
 class UtxoRepositoryImpl implements UtxoRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
-  final UtxoDatasource _bdkWalletDatasource;
-  final UtxoDatasource _lwkWalletDatasource;
+  final WalletDatasource _bdkWalletDatasource;
+  final WalletDatasource _lwkWalletDatasource;
   final FrozenUtxoDatasource _frozenUtxoDatasource;
 
   UtxoRepositoryImpl({
     required WalletMetadataDatasource walletMetadataDatasource,
-    required UtxoDatasource bdkWalletDatasource,
-    required UtxoDatasource lwkWalletDatasource,
+    required WalletDatasource bdkWalletDatasource,
+    required WalletDatasource lwkWalletDatasource,
     required FrozenUtxoDatasource frozenUtxoDatasource,
   })  : _walletMetadataDatasource = walletMetadataDatasource,
         _bdkWalletDatasource = bdkWalletDatasource,

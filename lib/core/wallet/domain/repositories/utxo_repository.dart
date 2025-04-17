@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 
 abstract class UtxoRepository {
   Future<List<Utxo>> getUtxos({

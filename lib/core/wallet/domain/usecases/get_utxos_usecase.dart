@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
-import 'package:bb_mobile/core/utxo/domain/repositories/utxo_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/utxo_repository.dart';
 
 class GetUtxosUsecase {
   final UtxoRepository _utxoRepository;
