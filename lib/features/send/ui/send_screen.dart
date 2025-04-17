@@ -799,16 +799,6 @@ class SendSendingScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Send',
-          actionIcon: Icons.help_outline,
-          onBack: () => context.pop(),
-          onAction: () {},
-        ),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -896,17 +886,6 @@ class SendSucessScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Send',
-          actionIcon: Icons.close,
-          onAction: () {
-            context.pop();
-          },
-        ),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
