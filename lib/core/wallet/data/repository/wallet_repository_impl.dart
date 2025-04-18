@@ -322,13 +322,13 @@ class WalletRepositoryImpl implements WalletRepository {
                 ? PublicLwkWalletModel(
                     combinedCtDescriptor: metadata.externalPublicDescriptor,
                     isTestnet: metadata.isTestnet,
-                    id: metadata.walletId,
+                    id: metadata.id,
                   )
                 : PublicBdkWalletModel(
                     externalDescriptor: metadata.externalPublicDescriptor,
                     internalDescriptor: metadata.internalPublicDescriptor,
                     isTestnet: metadata.isTestnet,
-                    id: metadata.walletId,
+                    id: metadata.id,
                   );
             await _syncWallet(wallet);
           }
@@ -346,7 +346,7 @@ class WalletRepositoryImpl implements WalletRepository {
       final wallet = PublicLwkWalletModel(
         combinedCtDescriptor: metadata.externalPublicDescriptor,
         isTestnet: metadata.isTestnet,
-        id: metadata.walletId,
+        id: metadata.id,
       );
 
       if (sync) {
@@ -359,7 +359,7 @@ class WalletRepositoryImpl implements WalletRepository {
         externalDescriptor: metadata.externalPublicDescriptor,
         internalDescriptor: metadata.internalPublicDescriptor,
         isTestnet: metadata.isTestnet,
-        id: metadata.walletId,
+        id: metadata.id,
       );
 
       if (sync) {

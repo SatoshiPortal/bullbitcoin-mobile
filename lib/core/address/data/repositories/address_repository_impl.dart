@@ -30,12 +30,12 @@ class AddressRepositoryImpl implements AddressRepository {
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.walletId,
+            id: metadata.id,
           )
         : PublicLwkWalletModel(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.walletId,
+            id: metadata.id,
           );
 
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
@@ -66,12 +66,12 @@ class AddressRepositoryImpl implements AddressRepository {
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.walletId,
+            id: metadata.id,
           )
         : PublicLwkWalletModel(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.walletId,
+            id: metadata.id,
           );
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
 
@@ -106,12 +106,12 @@ class AddressRepositoryImpl implements AddressRepository {
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.walletId,
+            id: metadata.id,
           )
         : PublicLwkWalletModel(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
-            id: metadata.walletId,
+            id: metadata.id,
           );
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
 

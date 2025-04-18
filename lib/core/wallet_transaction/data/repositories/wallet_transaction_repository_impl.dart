@@ -110,12 +110,12 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                   externalDescriptor: metadata.externalPublicDescriptor,
                   internalDescriptor: metadata.internalPublicDescriptor,
                   isTestnet: metadata.isTestnet,
-                  id: metadata.walletId,
+                  id: metadata.id,
                 )
               : PublicLwkWalletModel(
                   combinedCtDescriptor: metadata.externalPublicDescriptor,
                   isTestnet: metadata.isTestnet,
-                  id: metadata.walletId,
+                  id: metadata.id,
                 ),
         )
         .toList();

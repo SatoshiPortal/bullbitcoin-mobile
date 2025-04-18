@@ -128,11 +128,11 @@ class WalletMetadataDatasource {
     WalletMetadataModel metadata,
   ) async {
     final value = jsonEncode(metadata.toJson());
-    await _walletMetadataStorage.saveValue(key: metadata.origin, value: value);
+    await _walletMetadataStorage.saveValue(key: metadata.id, value: value);
   }
 
-  Future<WalletMetadataModel?> get(String origin) async {
-    final value = await _walletMetadataStorage.getValue(origin);
+  Future<WalletMetadataModel?> get(String id) async {
+    final value = await _walletMetadataStorage.getValue(id);
 
     if (value == null) {
       return null;
@@ -153,8 +153,8 @@ class WalletMetadataDatasource {
         .toList();
   }
 
-  Future<void> delete(String origin) {
-    return _walletMetadataStorage.deleteValue(origin);
+  Future<void> delete(String id) {
+    return _walletMetadataStorage.deleteValue(id);
   }
 }
 

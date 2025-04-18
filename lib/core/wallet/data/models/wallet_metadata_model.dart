@@ -34,7 +34,7 @@ class WalletMetadataModel with _$WalletMetadataModel {
   factory WalletMetadataModel.fromJson(Map<String, Object?> json) =>
       _$WalletMetadataModelFromJson(json);
 
-  String get walletId => origin;
+  String get id => origin;
 
   String get origin {
     String networkPath;
