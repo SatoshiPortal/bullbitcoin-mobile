@@ -43,7 +43,7 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
     final wallet = PublicLwkWalletModel(
       combinedCtDescriptor: metadata.externalPublicDescriptor,
       isTestnet: metadata.isTestnet,
-      id: metadata.origin,
+      id: metadata.walletId,
     );
     final pset = await _lwkWallet.buildPset(
       wallet: wallet,

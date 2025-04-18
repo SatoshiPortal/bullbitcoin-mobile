@@ -312,24 +312,23 @@ class WalletRepositoryImpl implements WalletRepository {
       autoSyncInterval,
       (timer) async {
         final walletsMetadata = await _walletMetadata.getAll();
-        for (final walletMetadata in walletsMetadata) {
+        for (final metadata in walletsMetadata) {
           // Only sync if the time since the last sync is greater than the interval
-          if (walletMetadata.syncedAt == null ||
-              walletMetadata.syncedAt!
+          if (metadata.syncedAt == null ||
+              metadata.syncedAt!
                       .compareTo(DateTime.now().subtract(autoSyncInterval)) <=
                   0) {
-            final wallet = walletMetadata.isLiquid
+            final wallet = metadata.isLiquid
                 ? PublicLwkWalletModel(
-                    combinedCtDescriptor:
-                        walletMetadata.externalPublicDescriptor,
-                    isTestnet: walletMetadata.isTestnet,
-                    id: walletMetadata.origin,
+                    combinedCtDescriptor: metadata.externalPublicDescriptor,
+                    isTestnet: metadata.isTestnet,
+                    id: metadata.walletId,
                   )
                 : PublicBdkWalletModel(
-                    externalDescriptor: walletMetadata.externalPublicDescriptor,
-                    internalDescriptor: walletMetadata.internalPublicDescriptor,
-                    isTestnet: walletMetadata.isTestnet,
-                    id: walletMetadata.origin,
+                    externalDescriptor: metadata.externalPublicDescriptor,
+                    internalDescriptor: metadata.internalPublicDescriptor,
+                    isTestnet: metadata.isTestnet,
+                    id: metadata.walletId,
                   );
             await _syncWallet(wallet);
           }
@@ -347,7 +346,7 @@ class WalletRepositoryImpl implements WalletRepository {
       final wallet = PublicLwkWalletModel(
         combinedCtDescriptor: metadata.externalPublicDescriptor,
         isTestnet: metadata.isTestnet,
-        id: metadata.origin,
+        id: metadata.walletId,
       );
 
       if (sync) {
@@ -360,7 +359,7 @@ class WalletRepositoryImpl implements WalletRepository {
         externalDescriptor: metadata.externalPublicDescriptor,
         internalDescriptor: metadata.internalPublicDescriptor,
         isTestnet: metadata.isTestnet,
-        id: metadata.origin,
+        id: metadata.walletId,
       );
 
       if (sync) {

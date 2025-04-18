@@ -34,6 +34,8 @@ class WalletMetadataModel with _$WalletMetadataModel {
   factory WalletMetadataModel.fromJson(Map<String, Object?> json) =>
       _$WalletMetadataModelFromJson(json);
 
+  String get walletId => origin;
+
   String get origin {
     String networkPath;
     if (isBitcoin && isMainnet) {
@@ -72,7 +74,7 @@ class WalletMetadataModel with _$WalletMetadataModel {
     Network network,
     ScriptType script,
     String account,
-  }) decodeOrigin(String origin) {
+  }) decodeOrigin() {
     final list = json.decode(origin) as List<String>;
 
     ScriptType script;

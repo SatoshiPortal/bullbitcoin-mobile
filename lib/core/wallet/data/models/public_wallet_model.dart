@@ -17,5 +17,14 @@ sealed class PublicWalletModel with _$PublicWalletModel {
   }) = PublicLwkWalletModel;
   const PublicWalletModel._();
 
-  String get dbName => id;
+  String get hexId {
+    final codeUnits = id.codeUnits;
+    final buffer = StringBuffer();
+    for (final unit in codeUnits) {
+      buffer.write(unit.toRadixString(16).padLeft(2, '0'));
+    }
+    return buffer.toString();
+  }
+
+  String get dbName => hexId;
 }
