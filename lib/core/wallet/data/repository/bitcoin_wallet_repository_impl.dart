@@ -7,8 +7,7 @@ import 'package:bb_mobile/core/utxo/data/models/utxo_model.dart';
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 
@@ -87,11 +86,11 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     final mnemonic = seed.mnemonicWords.join(' ');
 
     final wallet = PrivateBdkWalletModel(
+      id: metadata.id,
       mnemonic: mnemonic,
       passphrase: seed.passphrase,
       scriptType: ScriptType.fromName(metadata.scriptType),
       isTestnet: metadata.isTestnet,
-      dbName: metadata.origin,
     );
 
     final signedPsbt = await _bdkWallet.signPsbt(

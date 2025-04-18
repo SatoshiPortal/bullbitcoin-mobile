@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart'
 import 'package:bb_mobile/core/address/domain/entities/address.dart';
 import 'package:bb_mobile/core/address/domain/repositories/address_repository.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 
 class AddressRepositoryImpl implements AddressRepository {
   final WalletMetadataDatasource _walletMetadata;

@@ -8,8 +8,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utxo/data/datasources/utxo_datasource.dart';
 import 'package:bb_mobile/core/utxo/data/models/utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet_transaction/data/datasources/wallet_transaction_datasource.dart';
 import 'package:bb_mobile/core/wallet_transaction/data/models/wallet_transaction_model.dart';
@@ -84,7 +83,7 @@ class BdkWalletDatasource
 
   @override
   Future<void> sync({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) {
     // putIfAbsent ensures only one sync starts for each wallet ID,
@@ -131,7 +130,7 @@ class BdkWalletDatasource
 
   Future<bool> isMine(
     Uint8List scriptBytes, {
-    required PublicWalletModel wallet,
+    required PublicBdkWalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final script = bdk.ScriptBuf(bytes: scriptBytes);
@@ -244,7 +243,7 @@ class BdkWalletDatasource
   /* Start UtxoDatasource methods */
   @override
   Future<List<UtxoModel>> getUtxos({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final unspent = bdkWallet.listUnspent();
@@ -265,7 +264,7 @@ class BdkWalletDatasource
   /* Start TransactionDatasource methods */
   @override
   Future<List<WalletTransactionModel>> getTransactions({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     String? toAddress,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
@@ -325,7 +324,7 @@ class BdkWalletDatasource
   /* Start AddressDatasource methods */
   @override
   Future<AddressModel> getNewAddress({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final addressInfo = bdkWallet.getAddress(
@@ -340,7 +339,7 @@ class BdkWalletDatasource
 
   @override
   Future<AddressModel> getLastUnusedAddress({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final addressInfo = bdkWallet.getAddress(
@@ -356,7 +355,7 @@ class BdkWalletDatasource
   @override
   Future<AddressModel> getAddressByIndex(
     int index, {
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final addressInfo = bdkWallet.getAddress(
@@ -371,7 +370,7 @@ class BdkWalletDatasource
 
   @override
   Future<List<AddressModel>> getReceiveAddresses({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     required int limit,
     required int offset,
   }) async {
@@ -395,7 +394,7 @@ class BdkWalletDatasource
 
   @override
   Future<List<AddressModel>> getChangeAddresses({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     required int limit,
     required int offset,
   }) async {
@@ -421,7 +420,7 @@ class BdkWalletDatasource
   @override
   Future<bool> isAddressUsed(
     String address, {
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final transactions = bdkWallet.listTransactions(includeRaw: false);
@@ -449,7 +448,7 @@ class BdkWalletDatasource
   @override
   Future<BigInt> getAddressBalanceSat(
     String address, {
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final utxos = bdkWallet.listUnspent();
@@ -470,7 +469,9 @@ class BdkWalletDatasource
   }
   /* End AddressDatasource methods */
 
-  Future<bdk.Wallet> _createPublicWallet(PublicWalletModel walletModel) async {
+  Future<bdk.Wallet> _createPublicWallet(
+    WalletModel walletModel,
+  ) async {
     if (walletModel is! PublicBdkWalletModel) {
       throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
     }
@@ -504,7 +505,7 @@ class BdkWalletDatasource
   }
 
   Future<bdk.Wallet> _createPrivateWallet(
-    PrivateWalletModel walletModel,
+    WalletModel walletModel,
   ) async {
     if (walletModel is! PrivateBdkWalletModel) {
       throw ArgumentError('Wallet must be of type PrivateBdkWalletModel');

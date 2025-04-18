@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utxo/data/datasources/utxo_datasource.dart';
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/utxo/domain/repositories/utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 
 class UtxoRepositoryImpl implements UtxoRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;

@@ -3,8 +3,8 @@ import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet_transaction/data/datasources/wallet_transaction_datasource.dart';
 import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
@@ -83,7 +83,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     return transaction;
   }
 
-  Future<List<PublicWalletModel>> _getPublicWalletModels({
+  Future<List<WalletModel>> _getPublicWalletModels({
     String? walletId,
     Environment? environment,
     bool sync = false,

@@ -5,8 +5,7 @@ import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 
 class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
@@ -76,9 +75,9 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
     final mnemonic = seed.mnemonicWords.join(' ');
 
     final wallet = PrivateLwkWalletModel(
+      id: metadata.id,
       mnemonic: mnemonic,
       isTestnet: metadata.isTestnet,
-      dbName: metadata.origin,
     );
     final signedPsbt = await _lwkWallet.signPset(
       wallet: wallet,
