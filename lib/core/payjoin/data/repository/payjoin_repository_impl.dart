@@ -15,7 +15,7 @@ import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:synchronized/synchronized.dart';
@@ -232,13 +232,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     ) as MnemonicSeed;
     final mnemonic = seed.mnemonicWords.join(' ');
 
-    final wallet = PrivateBdkWalletModel(
+    final wallet = WalletModel.privateBdk(
+      id: walletId,
       scriptType: ScriptType.fromName(walletMetadata.scriptType),
       mnemonic: mnemonic,
       passphrase: seed.passphrase,
       isTestnet: walletMetadata.isTestnet,
-      dbName: walletId,
-    );
+    ) as PrivateBdkWalletModel;
 
     final signedPsbt = await _bdkWallet.signPsbt(psbt, wallet: wallet);
 
