@@ -319,12 +319,12 @@ class WalletRepositoryImpl implements WalletRepository {
                       .compareTo(DateTime.now().subtract(autoSyncInterval)) <=
                   0) {
             final wallet = metadata.isLiquid
-                ? PublicLwkWalletModel(
+                ? WalletModel.publicLwk(
                     combinedCtDescriptor: metadata.externalPublicDescriptor,
                     isTestnet: metadata.isTestnet,
                     id: metadata.id,
                   )
-                : PublicBdkWalletModel(
+                : WalletModel.publicBdk(
                     externalDescriptor: metadata.externalPublicDescriptor,
                     internalDescriptor: metadata.internalPublicDescriptor,
                     isTestnet: metadata.isTestnet,
@@ -343,7 +343,7 @@ class WalletRepositoryImpl implements WalletRepository {
   }) async {
     BalanceModel balance;
     if (metadata.isLiquid) {
-      final wallet = PublicLwkWalletModel(
+      final wallet = WalletModel.publicLwk(
         combinedCtDescriptor: metadata.externalPublicDescriptor,
         isTestnet: metadata.isTestnet,
         id: metadata.id,
@@ -355,7 +355,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
       balance = await _lwkWallet.getBalance(wallet: wallet);
     } else {
-      final wallet = PublicBdkWalletModel(
+      final wallet = WalletModel.publicBdk(
         externalDescriptor: metadata.externalPublicDescriptor,
         internalDescriptor: metadata.internalPublicDescriptor,
         isTestnet: metadata.isTestnet,

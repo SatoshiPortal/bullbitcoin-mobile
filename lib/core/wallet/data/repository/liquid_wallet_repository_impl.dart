@@ -39,7 +39,7 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
       throw Exception('Wallet $walletId is not a Liquid wallet');
     }
 
-    final wallet = PublicLwkWalletModel(
+    final wallet = WalletModel.publicLwk(
       combinedCtDescriptor: metadata.externalPublicDescriptor,
       isTestnet: metadata.isTestnet,
       id: metadata.id,
@@ -74,11 +74,11 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
         await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
     final mnemonic = seed.mnemonicWords.join(' ');
 
-    final wallet = PrivateLwkWalletModel(
+    final wallet = WalletModel.privateLwk(
       id: metadata.id,
       mnemonic: mnemonic,
       isTestnet: metadata.isTestnet,
-    );
+    ) as PrivateLwkWalletModel;
     final signedPsbt = await _lwkWallet.signPset(
       wallet: wallet,
       pset,

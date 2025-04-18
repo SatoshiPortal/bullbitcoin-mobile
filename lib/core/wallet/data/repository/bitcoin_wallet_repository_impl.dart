@@ -45,12 +45,12 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
-    final wallet = PublicBdkWalletModel(
+    final wallet = WalletModel.publicBdk(
       externalDescriptor: metadata.externalPublicDescriptor,
       internalDescriptor: metadata.internalPublicDescriptor,
       isTestnet: metadata.isTestnet,
       id: metadata.id,
-    );
+    ) as PublicBdkWalletModel;
     final psbt = await _bdkWallet.buildPsbt(
       wallet: wallet,
       address: address,
@@ -85,13 +85,13 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
         await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
     final mnemonic = seed.mnemonicWords.join(' ');
 
-    final wallet = PrivateBdkWalletModel(
+    final wallet = WalletModel.privateBdk(
       id: metadata.id,
       mnemonic: mnemonic,
       passphrase: seed.passphrase,
       scriptType: ScriptType.fromName(metadata.scriptType),
       isTestnet: metadata.isTestnet,
-    );
+    ) as PrivateBdkWalletModel;
 
     final signedPsbt = await _bdkWallet.signPsbt(
       wallet: wallet,
@@ -116,12 +116,12 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
-    final wallet = PublicBdkWalletModel(
+    final wallet = WalletModel.publicBdk(
       externalDescriptor: metadata.externalPublicDescriptor,
       internalDescriptor: metadata.internalPublicDescriptor,
       isTestnet: metadata.isTestnet,
       id: metadata.id,
-    );
+    ) as PublicBdkWalletModel;
 
     final isFromWallet = await _bdkWallet.isMine(script, wallet: wallet);
 

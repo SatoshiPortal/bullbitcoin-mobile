@@ -232,13 +232,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     ) as MnemonicSeed;
     final mnemonic = seed.mnemonicWords.join(' ');
 
-    final wallet = PrivateBdkWalletModel(
+    final wallet = WalletModel.privateBdk(
       id: walletId,
       scriptType: ScriptType.fromName(walletMetadata.scriptType),
       mnemonic: mnemonic,
       passphrase: seed.passphrase,
       isTestnet: walletMetadata.isTestnet,
-    );
+    ) as PrivateBdkWalletModel;
 
     final signedPsbt = await _bdkWallet.signPsbt(psbt, wallet: wallet);
 

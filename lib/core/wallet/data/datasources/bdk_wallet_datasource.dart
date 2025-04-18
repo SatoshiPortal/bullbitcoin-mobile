@@ -64,7 +64,7 @@ class BdkWalletDatasource
   bool get isAnyWalletSyncing => _activeSyncs.isNotEmpty;
 
   Future<BalanceModel> getBalance({
-    required PublicBdkWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final balanceInfo = bdkWallet.getBalance();
