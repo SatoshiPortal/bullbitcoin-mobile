@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -19,6 +20,7 @@ class ExchangeState with _$ExchangeState {
     @Default(0) int cookieCheckAttempts,
     @Default(30) int maxCookieCheckAttempts,
     @Default(false) bool showLoginSuccessDialog,
+    UserSummaryModel? userSummary,
   }) = _ExchangeState;
 
   const ExchangeState._();

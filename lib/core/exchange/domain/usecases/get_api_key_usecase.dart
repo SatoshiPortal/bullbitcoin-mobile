@@ -8,7 +8,7 @@ class GetApiKeyUsecase {
     required ApiKeyStorageDatasource apiKeyStorage,
   }) : _apiKeyStorage = apiKeyStorage;
 
-  Future<ExchangeApiKeyModel?> call() async {
+  Future<ExchangeApiKeyModel?> execute() async {
     return await _apiKeyStorage.get();
   }
 }
