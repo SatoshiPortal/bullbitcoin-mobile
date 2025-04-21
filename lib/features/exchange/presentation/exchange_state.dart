@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'exchange_state.freezed.dart';
@@ -10,6 +11,7 @@ class ExchangeState with _$ExchangeState {
     @Default(false) bool hasError,
     @Default('') String errorMessage,
     @Default(false) bool authenticated,
+    String? previousUrl,
     @Default('') String currentUrl,
     @Default({}) Map<String, String> allCookies,
     @Default(false) bool apiKeyGenerating,
@@ -20,4 +22,22 @@ class ExchangeState with _$ExchangeState {
   }) = _ExchangeState;
 
   const ExchangeState._();
+
+  static List<String> ignoredCookies = [
+    'i18n',
+    'i18n-lng',
+    'i18next',
+    'django_language',
+    'language',
+    'locale',
+    'hl',
+  ];
+
+  String get baseAccountsUrl => 'https://accounts05.bullbitcoin.dev';
+  String get loginUrlPattern => 'login';
+  String get verificationUrlPattern => 'verification';
+  String get registrationUrlPattern => 'registration';
+
+  String get targetAuthCookie => 'bb_session';
+  String get baseUrl => ApiServiceConstants.bbAuthUrl;
 }

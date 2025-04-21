@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 
+import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_api_key_usecase.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,35 +16,41 @@ import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 class ExchangeCubit extends Cubit<ExchangeState> {
   ExchangeCubit({
     required SaveApiKeyUsecase saveApiKeyUsecase,
+    required GetApiKeyUsecase getApiKeyUsecase,
   })  : _saveApiKeyUsecase = saveApiKeyUsecase,
+        _getApiKeyUsecase = getApiKeyUsecase,
         super(const ExchangeState()) {
     initController();
     loadUrlWithBasicAuth();
   }
 
+  final SaveApiKeyUsecase _saveApiKeyUsecase;
+  final GetApiKeyUsecase _getApiKeyUsecase;
+
   late final WebViewController webViewController;
   Timer? _cookieCheckTimer;
-  final bool _webViewInitialized = false;
-  String? _previousUrl;
 
-  final SaveApiKeyUsecase _saveApiKeyUsecase;
-  final String targetAuthCookie = 'bb_session';
-  final String baseUrl = ApiServiceConstants.bbAuthUrl;
+  @override
+  Future<void> close() {
+    _cookieCheckTimer?.cancel();
+    return super.close();
+  }
 
-  final List<String> _ignoredCookies = [
-    'i18n',
-    'i18n-lng',
-    'i18next',
-    'django_language',
-    'language',
-    'locale',
-    'hl',
-  ];
-
-  final String _baseAccountsUrl = 'https://accounts05.bullbitcoin.dev';
-  final String _loginUrlPattern = 'login';
-  final String _registrationUrlPattern = 'registration';
-  final String _verificationUrlPattern = 'verification';
+  void _setLoading(bool _) => emit(state.copyWith(isLoading: _));
+  void _setError({bool hasError = true, String message = ''}) => emit(state
+      .copyWith(hasError: hasError, errorMessage: message, isLoading: false));
+  void _setCurrentUrl(String _) => emit(state.copyWith(currentUrl: _));
+  void _setPreviousUrl(String _) => emit(state.copyWith(previousUrl: _));
+  void _incrementCookieCheckAttempts() =>
+      emit(state.copyWith(cookieCheckAttempts: state.cookieCheckAttempts + 1));
+  void _resetCookieCheckAttempts() =>
+      emit(state.copyWith(cookieCheckAttempts: 0));
+  void _setAuthenticated(bool _) => emit(state.copyWith(authenticated: _));
+  void _updateCookies(Map<String, String> _) =>
+      emit(state.copyWith(allCookies: _));
+  void _setApiKeyGenerating(bool _) =>
+      emit(state.copyWith(apiKeyGenerating: _));
+  void _setApiKeyResponse(String _) => emit(state.copyWith(apiKeyResponse: _));
 
   void initController() {
     webViewController = WebViewController()
@@ -52,14 +58,15 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageStarted: (url) {
-            setLoading(true);
-            _previousUrl = state.currentUrl;
-            setCurrentUrl(url);
+            _setLoading(true);
+
+            _setPreviousUrl(state.currentUrl);
+            _setCurrentUrl(url);
             _checkForSuccessfulLogin(url);
           },
           onPageFinished: (url) {
-            setLoading(false);
-            resetCookieCheckAttempts();
+            _setLoading(false);
+            _resetCookieCheckAttempts();
             Future.delayed(const Duration(milliseconds: 500), () {
               _checkAllCookies();
               _startCookiePolling();
@@ -68,14 +75,14 @@ class ExchangeCubit extends Cubit<ExchangeState> {
           onUrlChange: (UrlChange change) {
             final currentUrl = change.url;
             if (currentUrl != null) {
-              _previousUrl = state.currentUrl;
-              setCurrentUrl(currentUrl);
+              _setPreviousUrl(state.currentUrl);
+              _setCurrentUrl(currentUrl);
               _checkAllCookies();
               _checkForSuccessfulLogin(currentUrl);
             }
           },
           onWebResourceError: (WebResourceError error) {
-            setError(message: '${error.errorType}: ${error.description}');
+            _setError(message: '${error.errorType}: ${error.description}');
             _stopCookiePolling();
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
@@ -104,43 +111,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
     }
   }
 
-  void setLoading(bool isLoading) {
-    emit(state.copyWith(isLoading: isLoading));
-  }
-
-  void setError({bool hasError = true, String message = ''}) {
-    emit(state.copyWith(
-        hasError: hasError, errorMessage: message, isLoading: false));
-  }
-
-  void setCurrentUrl(String url) {
-    emit(state.copyWith(currentUrl: url));
-  }
-
-  void incrementCookieCheckAttempts() {
-    emit(state.copyWith(cookieCheckAttempts: state.cookieCheckAttempts + 1));
-  }
-
-  void resetCookieCheckAttempts() {
-    emit(state.copyWith(cookieCheckAttempts: 0));
-  }
-
-  void setAuthenticated(bool authenticated) {
-    emit(state.copyWith(authenticated: authenticated));
-  }
-
-  void updateCookies(Map<String, String> cookies) {
-    emit(state.copyWith(allCookies: cookies));
-  }
-
-  void setApiKeyGenerating(bool generating) {
-    emit(state.copyWith(apiKeyGenerating: generating));
-  }
-
-  void setApiKeyResponse(String response) {
-    emit(state.copyWith(apiKeyResponse: response));
-  }
-
   Future<void> storeApiKey(Map<String, dynamic> apiKeyData) async {
     try {
       debugPrint('Storing API key: $apiKeyData');
@@ -163,14 +133,15 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   Future<void> _cookieManager() async {
     try {
       final cookieManager = WebviewCookieManager();
-      final gotCookies = await cookieManager.getCookies('https://$baseUrl');
+      final gotCookies =
+          await cookieManager.getCookies('https://${state.baseUrl}');
       if (gotCookies.isNotEmpty) {
         for (final cookie in gotCookies) {
-          if (cookie.name == targetAuthCookie) {
+          if (cookie.name == state.targetAuthCookie) {
             final updatedCookies = Map<String, String>.from(state.allCookies);
-            updatedCookies[targetAuthCookie] = cookie.value;
-            updateCookies(updatedCookies);
-            setAuthenticated(true);
+            updatedCookies[state.targetAuthCookie] = cookie.value;
+            _updateCookies(updatedCookies);
+            _setAuthenticated(true);
             _stopCookiePolling();
             return;
           }
@@ -197,7 +168,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   void _startCookiePolling() {
     if (_cookieCheckTimer != null) return;
     _cookieCheckTimer = Timer.periodic(const Duration(seconds: 2), (_) {
-      incrementCookieCheckAttempts();
+      _incrementCookieCheckAttempts();
       if (state.cookieCheckAttempts > state.maxCookieCheckAttempts) {
         _stopCookiePolling();
         return;
@@ -219,15 +190,16 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   Future<bool> _checkNativeCookies() async {
     try {
       final cookieManager = WebviewCookieManager();
-      final nativeCookies = await cookieManager.getCookies('https://$baseUrl');
+      final nativeCookies =
+          await cookieManager.getCookies('https://${state.baseUrl}');
       final Map<String, String> cookieMap = {};
       for (final cookie in nativeCookies) {
         cookieMap[cookie.name] = cookie.value;
       }
-      updateCookies(cookieMap);
+      _updateCookies(cookieMap);
       for (final cookie in nativeCookies) {
-        if (cookie.name == targetAuthCookie) {
-          setAuthenticated(true);
+        if (cookie.name == state.targetAuthCookie) {
+          _setAuthenticated(true);
           _stopCookiePolling();
           await _generateApiKey();
           return true;
@@ -241,7 +213,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   Future<void> _generateApiKey() async {
     if (state.apiKeyGenerating) return;
-    setApiKeyGenerating(true);
+    _setApiKeyGenerating(true);
     try {
       await webViewController
           .runJavaScript('console.log("Preparing to generate API key...");');
@@ -273,20 +245,20 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       }
       try {
         final responseData = json.decode(jsonString);
-        setApiKeyResponse(jsonString);
-        setApiKeyGenerating(false);
+        _setApiKeyResponse(jsonString);
+        _setApiKeyGenerating(false);
         await storeApiKey(responseData as Map<String, dynamic>);
       } catch (parseError) {
         if (jsonString.contains('apiKey')) {
-          setApiKeyResponse('{"apiKeyRawResponse": $jsonString}');
-          setApiKeyGenerating(false);
+          _setApiKeyResponse('{"apiKeyRawResponse": $jsonString}');
+          _setApiKeyGenerating(false);
         } else {
           throw Exception('Invalid JSON response: $jsonString');
         }
       }
     } catch (e) {
       await _tryAlternativeApiKeyGeneration();
-      setApiKeyGenerating(false);
+      _setApiKeyGenerating(false);
     }
   }
 
@@ -317,7 +289,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         })();
       ''');
       await Future.delayed(const Duration(seconds: 2));
-      setApiKeyResponse(
+      _setApiKeyResponse(
           '{"info": "Alternative API request submitted. Check console logs for details."}');
     } catch (e) {
       debugPrint('Alternative API generation also failed: $e');
@@ -326,21 +298,22 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   Future<void> loadUrlWithBasicAuth() async {
     try {
-      final Uri url = Uri.parse('https://$baseUrl');
+      final Uri url = Uri.parse('https://${state.baseUrl}');
       webViewController.loadRequest(url);
     } catch (e) {
-      setError(message: 'Failed to load the page: $e');
+      _setError(message: 'Failed to load the page: $e');
     }
   }
 
   void _checkForSuccessfulLogin(String currentUrl) {
-    if (_previousUrl == null) return;
-    final wasOnAuthFlow = _previousUrl!.contains(_loginUrlPattern) ||
-        _previousUrl!.contains(_registrationUrlPattern) ||
-        _previousUrl!.contains(_verificationUrlPattern);
-    final isOnMainPage = !currentUrl.contains(_loginUrlPattern) &&
-        !currentUrl.contains(_registrationUrlPattern) &&
-        !currentUrl.contains(_verificationUrlPattern);
+    final previousUrl = state.previousUrl;
+    if (previousUrl == null) return;
+    final wasOnAuthFlow = previousUrl.contains(state.loginUrlPattern) ||
+        previousUrl.contains(state.registrationUrlPattern) ||
+        previousUrl.contains(state.verificationUrlPattern);
+    final isOnMainPage = !currentUrl.contains(state.loginUrlPattern) &&
+        !currentUrl.contains(state.registrationUrlPattern) &&
+        !currentUrl.contains(state.verificationUrlPattern);
     if (wasOnAuthFlow && isOnMainPage) {
       Future.delayed(const Duration(milliseconds: 500), () async {
         if (!state.authenticated) {
