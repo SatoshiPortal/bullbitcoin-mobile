@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:bb_mobile/core/recoverbull/data/constants/backup_providers.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
@@ -8,6 +6,7 @@ import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart' show AppRoute;
+import 'package:bb_mobile/ui/components/bottom_sheet/x.dart';
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -183,25 +182,8 @@ class _HowToDecideButton extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => Stack(
-        children: [
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.25,
-                  color: context.colour.secondary.withAlpha(25),
-                ),
-              ),
-            ),
-          ),
-          const Align(
-            alignment: Alignment.bottomCenter,
-            child: HowToDecideSheetBackupOption(),
-          ),
-        ],
+      builder: (context) => const BlurredBottomSheet(
+        child: HowToDecideSheetBackupOption(),
       ),
     );
   }
