@@ -1,7 +1,9 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/sats_bitcoin_unit_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
+import 'package:bb_mobile/ui/components/bottom_sheet/x.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -30,6 +32,20 @@ class SettingsScreen extends StatelessWidget {
                 title: Text(context.loc.backupSettingsLabel),
                 onTap: () {
                   context.pushNamed(SettingsSubroute.backupSettings.name);
+                },
+                trailing: const Icon(Icons.chevron_right),
+              ),
+              ListTile(
+                title: Text(context.loc.electrumServerSettingsLabel),
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    builder: (context) => const BlurredBottomSheet(
+                      child: HowToDecideSheetBackupOption(),
+                    ),
+                  );
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),
