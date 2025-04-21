@@ -16,6 +16,7 @@ class ExchangeState with _$ExchangeState {
     String? apiKeyResponse,
     @Default(0) int cookieCheckAttempts,
     @Default(30) int maxCookieCheckAttempts,
+    @Default(false) bool showLoginSuccessDialog,
   }) = _ExchangeState;
 
   const ExchangeState._();

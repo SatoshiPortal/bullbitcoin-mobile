@@ -74,7 +74,7 @@ class _ScreenState extends State<_Screen> {
                 Gap(16),
               ],
             )
-          : const BullBitcoinWebViewProvider(),
+          : const BullBitcoinWebViewPage(),
     );
   }
 }
