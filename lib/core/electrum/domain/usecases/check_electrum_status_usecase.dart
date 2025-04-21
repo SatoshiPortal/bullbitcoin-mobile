@@ -14,6 +14,7 @@ class CheckElectrumStatusUsecase {
     final server = await _electrumServerRepository.getElectrumServer(
       provider: provider,
       network: network,
+      checkStatus: true,
     );
     return server.status;
   }

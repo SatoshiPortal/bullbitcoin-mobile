@@ -26,13 +26,18 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
   ) async {
     try {
       final uri = Uri.parse(url);
-      final _ = await Socket.connect(
+      final socket = await Socket.connect(
         uri.host,
         uri.port,
         timeout: Duration(seconds: timeout),
-      );
-      return ElectrumServerStatus.online;
-    } catch (e) {
+      ).then((socket) {
+        socket.destroy();
+        return ElectrumServerStatus.online;
+      }).catchError((_) {
+        return ElectrumServerStatus.offline;
+      });
+      return socket;
+    } catch (_) {
       return ElectrumServerStatus.offline;
     }
   }
@@ -76,10 +81,8 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
   }
 
   @override
-  Future<List<ElectrumServer>> getElectrumServers({
-    required Network network,
-    bool checkStatus = false,
-  }) async {
+  Future<List<ElectrumServer>> getElectrumServers(
+      {required Network network, required bool checkStatus}) async {
     // Get custom server if available
     final custom = await _electrumServerStorage.getByProvider(
       ElectrumServerProvider.custom,
@@ -118,11 +121,13 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
 
     // Check status for all servers if needed
     if (checkStatus) {
+      print('Checking server status...');
       final List<ElectrumServer> serversWithStatus = [];
 
       for (final server in servers) {
         final status =
             await _checkServerConnectivity(server.url, server.timeout);
+        print('Server: ${server.url}, Status: $status');
         serversWithStatus.add(server.copyWith(status: status));
       }
 

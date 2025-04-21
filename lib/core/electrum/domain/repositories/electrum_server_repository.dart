@@ -7,10 +7,11 @@ abstract class ElectrumServerRepository {
   Future<ElectrumServer> getElectrumServer({
     required ElectrumServerProvider provider,
     required Network network,
+    bool checkStatus = false,
   });
 
   Future<List<ElectrumServer>> getElectrumServers({
     required Network network,
-    bool checkStatus = false,
+    required bool checkStatus,
   });
 }
