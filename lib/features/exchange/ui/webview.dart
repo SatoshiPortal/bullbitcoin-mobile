@@ -10,13 +10,35 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class BullBitcoinWebViewPage extends StatelessWidget {
+class BullBitcoinWebViewPage extends StatefulWidget {
   const BullBitcoinWebViewPage({super.key});
+
+  @override
+  State<BullBitcoinWebViewPage> createState() => _BullBitcoinWebViewPageState();
+}
+
+class _BullBitcoinWebViewPageState extends State<BullBitcoinWebViewPage> {
+  late final ExchangeCubit _exchangeCubit;
+
+  @override
+  void initState() {
+    _exchangeCubit = ExchangeCubit(
+      saveApiKeyUsecase: locator<SaveApiKeyUsecase>(),
+    );
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _exchangeCubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: ExchangeCubit(saveApiKeyUsecase: locator<SaveApiKeyUsecase>()),
+      value: _exchangeCubit,
       child: BlocListener<ExchangeCubit, ExchangeState>(
         listenWhen: (prev, curr) =>
             prev.showLoginSuccessDialog != curr.showLoginSuccessDialog,
@@ -93,8 +115,7 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
             else
               WebViewWidget(
                   controller: context.read<ExchangeCubit>().webViewController),
-            if (isLoading && !hasError)
-              const Center(child: CircularProgressIndicator()),
+            if (isLoading && !hasError) const SizedBox.shrink(),
             if (apiKeyGenerating)
               ColoredBox(
                 color: Colors.black.withOpacity(0.5),
