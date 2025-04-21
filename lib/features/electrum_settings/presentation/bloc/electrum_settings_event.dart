@@ -11,43 +11,48 @@ class ElectrumServerProviderChanged extends ElectrumSettingsEvent {
   ElectrumServerProviderChanged(this.type);
 }
 
-class UpdateTempStopGap extends ElectrumSettingsEvent {
-  final int gap;
-  UpdateTempStopGap(this.gap);
+class ConfigureLiquidSettings extends ElectrumSettingsEvent {
+  ConfigureLiquidSettings();
 }
 
-class UpdateTempTimeout extends ElectrumSettingsEvent {
-  final int timeout;
-  UpdateTempTimeout(this.timeout);
+class ConfigureBitcoinSettings extends ElectrumSettingsEvent {
+  ConfigureBitcoinSettings();
 }
 
-class UpdateTempRetry extends ElectrumSettingsEvent {
-  final int retry;
-  UpdateTempRetry(this.retry);
+class OnElectrumServerSettingsClicked extends ElectrumSettingsEvent {}
+
+class UpdateCustomServerMainnet extends ElectrumSettingsEvent {
+  final String customServer;
+  UpdateCustomServerMainnet(this.customServer);
 }
 
-class UpdateTempMainnet extends ElectrumSettingsEvent {
-  String mainnet;
-
-  UpdateTempMainnet(this.mainnet);
+class UpdateCustomServerTestnet extends ElectrumSettingsEvent {
+  final String customServer;
+  UpdateCustomServerTestnet(this.customServer);
 }
 
-class UpdateTempTestnet extends ElectrumSettingsEvent {
-  String testnet;
-
-  UpdateTempTestnet(this.testnet);
+class UpdateElectrumAdvancedOptions extends ElectrumSettingsEvent {
+  final ElectrumAdvancedOptions advancedOptions;
+  UpdateElectrumAdvancedOptions(this.advancedOptions);
 }
 
-class UpdateTempValidateDomain extends ElectrumSettingsEvent {
-  final bool validateDomain;
-  UpdateTempValidateDomain(this.validateDomain);
+class ToggleSelectedProvider extends ElectrumSettingsEvent {
+  final ElectrumServerProvider provider;
+  ToggleSelectedProvider(this.provider);
 }
 
-class ResetTempNetwork extends ElectrumSettingsEvent {}
+class ToggleValidateDomain extends ElectrumSettingsEvent {}
+
+class CheckServerStatus extends ElectrumSettingsEvent {
+  final ElectrumServerProvider electrumServerProvider;
+  final Network network;
+  CheckServerStatus(this.electrumServerProvider, this.network);
+}
 
 class SetupBlockchain extends ElectrumSettingsEvent {
-  final bool? isLiquid;
-  final bool? isTestnetLocal;
-
-  SetupBlockchain({this.isLiquid, this.isTestnetLocal});
+  final ElectrumServerProvider electrumServerProvider;
+  final Network network;
+  SetupBlockchain(this.electrumServerProvider, this.network);
 }
+
+class SaveElectrumServerChanges extends ElectrumSettingsEvent {}

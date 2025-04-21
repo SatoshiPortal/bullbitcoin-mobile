@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:flutter/cupertino.dart';
 
 class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
   final ElectrumServerStorageDatasource _electrumServerStorage;
@@ -121,13 +122,13 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
 
     // Check status for all servers if needed
     if (checkStatus) {
-      print('Checking server status...');
+      debugPrint('Checking server status...');
       final List<ElectrumServer> serversWithStatus = [];
 
       for (final server in servers) {
         final status =
             await _checkServerConnectivity(server.url, server.timeout);
-        print('Server: ${server.url}, Status: $status');
+        debugPrint('Server: ${server.url}, Status: $status');
         serversWithStatus.add(server.copyWith(status: status));
       }
 
