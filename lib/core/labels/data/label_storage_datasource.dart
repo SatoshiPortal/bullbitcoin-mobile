@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/address/domain/entities/address.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/labels/data/labelable.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -1,18 +1,18 @@
-import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart';
-import 'package:bb_mobile/core/address/domain/entities/address.dart';
-import 'package:bb_mobile/core/address/domain/repositories/address_repository.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/address_repository.dart';
 
 class AddressRepositoryImpl implements AddressRepository {
   final WalletMetadataDatasource _walletMetadata;
-  final AddressDatasource _bdkWallet;
-  final AddressDatasource _lwkWallet;
+  final WalletDatasource _bdkWallet;
+  final WalletDatasource _lwkWallet;
 
   AddressRepositoryImpl({
     required WalletMetadataDatasource walletMetadataDatasource,
-    required AddressDatasource bdkWalletDatasource,
-    required AddressDatasource lwkWalletDatasource,
+    required WalletDatasource bdkWalletDatasource,
+    required WalletDatasource lwkWalletDatasource,
   })  : _walletMetadata = walletMetadataDatasource,
         _bdkWallet = bdkWalletDatasource,
         _lwkWallet = lwkWalletDatasource;
@@ -26,13 +26,13 @@ class AddressRepositoryImpl implements AddressRepository {
     }
 
     final walletModel = metadata.isBitcoin
-        ? PublicBdkWalletModel(
+        ? WalletModel.publicBdk(
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
             id: metadata.id,
           )
-        : PublicLwkWalletModel(
+        : WalletModel.publicLwk(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
             id: metadata.id,
@@ -62,13 +62,13 @@ class AddressRepositoryImpl implements AddressRepository {
     }
 
     final walletModel = metadata.isBitcoin
-        ? PublicBdkWalletModel(
+        ? WalletModel.publicBdk(
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
             id: metadata.id,
           )
-        : PublicLwkWalletModel(
+        : WalletModel.publicLwk(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
             id: metadata.id,
@@ -102,13 +102,13 @@ class AddressRepositoryImpl implements AddressRepository {
     }
 
     final walletModel = metadata.isBitcoin
-        ? PublicBdkWalletModel(
+        ? WalletModel.publicBdk(
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
             id: metadata.id,
           )
-        : PublicLwkWalletModel(
+        : WalletModel.publicLwk(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
             id: metadata.id,

@@ -1,18 +1,15 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart';
-import 'package:bb_mobile/core/address/data/models/address_model.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet_transaction/data/datasources/wallet_transaction_datasource.dart';
-import 'package:bb_mobile/core/wallet_transaction/data/models/wallet_transaction_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -43,11 +40,7 @@ extension BdkNetworkX on bdk.Network {
   }
 }
 
-class BdkWalletDatasource
-    implements
-        WalletDatasource,
-        AddressDatasource,
-        WalletTransactionDatasource {
+class BdkWalletDatasource implements WalletDatasource {
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
   final Map<String, Future<void>> _activeSyncs;
@@ -68,7 +61,7 @@ class BdkWalletDatasource
   bool get isAnyWalletSyncing => _activeSyncs.isNotEmpty;
 
   Future<BalanceModel> getBalance({
-    required PublicBdkWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final balanceInfo = bdkWallet.getBalance();
@@ -87,7 +80,7 @@ class BdkWalletDatasource
 
   @override
   Future<void> sync({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) {
     // putIfAbsent ensures only one sync starts for each wallet ID,
@@ -134,7 +127,7 @@ class BdkWalletDatasource
 
   Future<bool> isMine(
     Uint8List scriptBytes, {
-    required PublicWalletModel wallet,
+    required PublicBdkWalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final script = bdk.ScriptBuf(bytes: scriptBytes);
@@ -247,7 +240,7 @@ class BdkWalletDatasource
   /* Start UtxoDatasource methods */
   @override
   Future<List<UtxoModel>> getUtxos({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final unspent = bdkWallet.listUnspent();
@@ -268,7 +261,7 @@ class BdkWalletDatasource
   /* Start TransactionDatasource methods */
   @override
   Future<List<WalletTransactionModel>> getTransactions({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     String? toAddress,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
@@ -328,7 +321,7 @@ class BdkWalletDatasource
   /* Start AddressDatasource methods */
   @override
   Future<AddressModel> getNewAddress({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final addressInfo = bdkWallet.getAddress(
@@ -343,7 +336,7 @@ class BdkWalletDatasource
 
   @override
   Future<AddressModel> getLastUnusedAddress({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final addressInfo = bdkWallet.getAddress(
@@ -359,7 +352,7 @@ class BdkWalletDatasource
   @override
   Future<AddressModel> getAddressByIndex(
     int index, {
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final addressInfo = bdkWallet.getAddress(
@@ -374,7 +367,7 @@ class BdkWalletDatasource
 
   @override
   Future<List<AddressModel>> getReceiveAddresses({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     required int limit,
     required int offset,
   }) async {
@@ -398,7 +391,7 @@ class BdkWalletDatasource
 
   @override
   Future<List<AddressModel>> getChangeAddresses({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     required int limit,
     required int offset,
   }) async {
@@ -424,7 +417,7 @@ class BdkWalletDatasource
   @override
   Future<bool> isAddressUsed(
     String address, {
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final transactions = bdkWallet.listTransactions(includeRaw: false);
@@ -452,7 +445,7 @@ class BdkWalletDatasource
   @override
   Future<BigInt> getAddressBalanceSat(
     String address, {
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final utxos = bdkWallet.listUnspent();
@@ -473,7 +466,9 @@ class BdkWalletDatasource
   }
   /* End AddressDatasource methods */
 
-  Future<bdk.Wallet> _createPublicWallet(PublicWalletModel walletModel) async {
+  Future<bdk.Wallet> _createPublicWallet(
+    WalletModel walletModel,
+  ) async {
     if (walletModel is! PublicBdkWalletModel) {
       throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
     }
@@ -507,7 +502,7 @@ class BdkWalletDatasource
   }
 
   Future<bdk.Wallet> _createPrivateWallet(
-    PrivateWalletModel walletModel,
+    WalletModel walletModel,
   ) async {
     if (walletModel is! PrivateBdkWalletModel) {
       throw ArgumentError('Wallet must be of type PrivateBdkWalletModel');

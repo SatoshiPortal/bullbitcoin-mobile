@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/address/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
@@ -17,10 +16,12 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet_transaction/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -172,11 +173,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       }
 
       var bitcoinAddress = state.bitcoinAddress;
-      if (bitcoinAddress.isEmpty) {
+      if (bitcoinAddress == null) {
         // If the bitcoin address is not set yet, we need to get it from the wallet
         final address =
             await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-        bitcoinAddress = address.address;
+        bitcoinAddress = address;
         emit(state.copyWith(bitcoinAddress: bitcoinAddress));
       }
 
@@ -186,7 +187,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         try {
           payjoin = await _receiveWithPayjoinUsecase.execute(
             walletId: wallet.id,
-            address: bitcoinAddress,
+            address: bitcoinAddress.address,
           );
           // The payjoin receiver is created, now we can watch it for updates
           _watchPayjoin(payjoin.id);
@@ -213,7 +214,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // Start watching for transactions on the wallet address
       _watchWalletTransactionToAddress(
         walletId: wallet.id,
-        address: bitcoinAddress,
+        address: bitcoinAddress.address,
       );
     } catch (e) {
       emit(
@@ -362,11 +363,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       emit(state.copyWith(wallet: wallet));
 
       var liquidAddress = state.liquidAddress;
-      if (liquidAddress.isEmpty) {
+      if (liquidAddress == null) {
         // If the liquid address is not set yet, we need to get it from the wallet
         final address =
             await _getReceiveAddressUsecase.execute(walletId: wallet.id);
-        liquidAddress = address.address;
+        liquidAddress = address;
         emit(state.copyWith(liquidAddress: liquidAddress));
       }
 
@@ -380,7 +381,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // Start watching for transactions on the wallet address
       _watchWalletTransactionToAddress(
         walletId: wallet.id,
-        address: liquidAddress,
+        address: liquidAddress.address,
       );
     } catch (e) {
       emit(
@@ -559,13 +560,19 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       final note = state.note;
       switch (state.type) {
         case ReceiveType.bitcoin:
+          if (state.bitcoinAddress == null) return;
+          await _createLabelUsecase.execute<Address>(
+            origin: state.wallet!.id,
+            entity: state.bitcoinAddress!,
+            label: note,
+          );
         case ReceiveType.liquid:
-        // TODO(azad): Usecase expects a Labelable untity and Address has no external constructor
-        // await _createLabelUsecase.execute<Address>(
-        //   origin: state.wallet!.id,
-        //   entity: state.addressOrInvoiceOnly, // Type Address expected
-        //   label: note,
-        // );
+          if (state.liquidAddress == null) return;
+          await _createLabelUsecase.execute<Address>(
+            origin: state.wallet!.id,
+            entity: state.liquidAddress!,
+            label: note,
+          );
         case _:
           break;
       }
@@ -593,8 +600,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async {
     emit(
       state.copyWith(
-        bitcoinAddress: '',
-        liquidAddress: '',
+        bitcoinAddress: null,
+        liquidAddress: null,
         payjoin: null,
       ),
     );
@@ -629,14 +636,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
           emit(
             state.copyWith(
-              bitcoinAddress: address.address,
+              bitcoinAddress: address,
               payjoin: payjoin,
               error: error,
             ),
           );
 
         case ReceiveType.liquid:
-          emit(state.copyWith(liquidAddress: address.address));
+          emit(state.copyWith(liquidAddress: address));
         default:
           break;
       }

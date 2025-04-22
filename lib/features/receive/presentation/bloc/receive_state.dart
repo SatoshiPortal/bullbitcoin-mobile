@@ -18,10 +18,10 @@ class ReceiveState with _$ReceiveState {
     @Default('') String inputAmountCurrencyCode,
     @Default('') String inputAmount,
     int? confirmedAmountSat,
-    @Default('') String bitcoinAddress,
+    Address? bitcoinAddress,
     LnReceiveSwap? lightningSwap,
     SwapLimits? swapLimits,
-    @Default('') String liquidAddress,
+    Address? liquidAddress,
     @Default('') String note,
     PayjoinReceiver? payjoin,
     @Default(false) bool isAddressOnly,
@@ -72,19 +72,19 @@ class ReceiveState with _$ReceiveState {
   String get qrData {
     switch (type) {
       case ReceiveType.bitcoin:
-        if (bitcoinAddress.isEmpty || isPayjoinLoading) {
+        if (bitcoinAddress == null || isPayjoinLoading) {
           // Wait for the address and also for the payjoin in case not only the
           // address should be shown.
           return '';
         }
         if (isAddressOnly ||
             (confirmedAmountSat == null && note.isEmpty && payjoin == null)) {
-          return bitcoinAddress;
+          return bitcoinAddress!.address;
         }
 
         Uri bip21Uri = Uri(
           scheme: 'bitcoin',
-          path: bitcoinAddress,
+          path: bitcoinAddress!.address,
           queryParameters: {
             if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
             if (note.isNotEmpty) 'message': note,
@@ -108,15 +108,14 @@ class ReceiveState with _$ReceiveState {
       case ReceiveType.lightning:
         return lightningSwap?.invoice ?? '';
       case ReceiveType.liquid:
-        if (liquidAddress.isEmpty) {
-          return '';
-        }
+        if (liquidAddress == null) return '';
+
         if (confirmedAmountSat == null && note.isEmpty) {
-          return liquidAddress;
+          return liquidAddress!.address;
         }
         final bip21Uri = Uri(
           scheme: 'liquidnetwork',
-          path: liquidAddress,
+          path: liquidAddress!.address,
           queryParameters: {
             if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
             if (note.isNotEmpty) 'message': note,
@@ -129,11 +128,11 @@ class ReceiveState with _$ReceiveState {
   String get addressOrInvoiceOnly {
     switch (type) {
       case ReceiveType.bitcoin:
-        return bitcoinAddress;
+        return bitcoinAddress?.address ?? '';
       case ReceiveType.lightning:
         return lightningSwap?.invoice ?? '';
       case ReceiveType.liquid:
-        return liquidAddress;
+        return liquidAddress?.address ?? '';
     }
   }
 
@@ -246,10 +245,11 @@ class ReceiveState with _$ReceiveState {
   }
 
   String get address => switch (type) {
-        ReceiveType.bitcoin => bitcoinAddress,
+        ReceiveType.bitcoin => bitcoinAddress?.address ?? '',
         ReceiveType.lightning => lightningSwap?.receiveAddress ?? '',
-        ReceiveType.liquid => liquidAddress,
+        ReceiveType.liquid => liquidAddress?.address ?? '',
       };
+
   String get abbreviatedAddress => StringFormatting.truncateMiddle(address);
 
   String get txId => switch (type) {

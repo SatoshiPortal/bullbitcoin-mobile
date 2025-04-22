@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/address/domain/repositories/address_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
@@ -11,6 +10,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/address_repository.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:hive/hive.dart';
 

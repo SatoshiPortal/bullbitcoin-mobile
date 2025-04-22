@@ -16,6 +16,10 @@ sealed class Utxo with _$Utxo implements Labelable {
   }) = _Utxo;
   const Utxo._();
 
+  // TODO: add Address entity to Utxo entity to have more info about the address
+  // TODO: add Label entity to Utxo entity to have label info
+
+  // TODO: move to UtxoModel
   @override
   String toRef() => '$txId:$vout';
 }

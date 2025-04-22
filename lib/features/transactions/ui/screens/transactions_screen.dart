@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/bloc/transactions_bloc.dart';
 import 'package:bb_mobile/locator.dart';

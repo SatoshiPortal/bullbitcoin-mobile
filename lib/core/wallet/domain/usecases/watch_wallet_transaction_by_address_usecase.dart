@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
-import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet_transaction/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 

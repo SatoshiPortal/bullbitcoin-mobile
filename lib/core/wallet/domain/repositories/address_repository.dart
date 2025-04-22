@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/address/domain/entities/address.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 
 abstract class AddressRepository {
   Future<Address> getNewAddress({

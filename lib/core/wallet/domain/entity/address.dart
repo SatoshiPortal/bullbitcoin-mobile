@@ -44,52 +44,14 @@ sealed class Address with _$Address implements Labelable {
 
   // TODO: Validate if the standard or confidential address should be used
   String get address => when(
-        bitcoin: (
-          index,
-          address,
-          _,
-          __,
-          ___,
-          ____,
-          _____,
-        ) =>
-            address,
-        liquid: (
-          index,
-          standard,
-          confidential,
-          __,
-          ___,
-          ____,
-          _____,
-          ______,
-        ) =>
-            confidential,
-      );
+      bitcoin: (index, address, _, __, ___, ____, _____) => address,
+      liquid: (index, standard, confidential, __, ___, ____, _____, ______) =>
+          confidential);
 
   String get standardAddress => when(
-        bitcoin: (
-          index,
-          address,
-          __,
-          ___,
-          ____,
-          _____,
-          ______,
-        ) =>
-            address,
-        liquid: (
-          index,
-          standard,
-          confidential,
-          __,
-          ___,
-          ____,
-          _____,
-          ______,
-        ) =>
-            standard,
-      );
+      bitcoin: (index, address, __, ___, ____, _____, ______) => address,
+      liquid: (index, standard, confidential, __, ___, ____, _____, ______) =>
+          standard);
 
   /// Returns true if this is a Bitcoin address
   bool get isBitcoin => maybeMap(

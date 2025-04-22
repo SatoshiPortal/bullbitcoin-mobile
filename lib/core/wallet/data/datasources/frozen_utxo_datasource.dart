@@ -8,6 +8,11 @@ class FrozenUtxoDatasource {
     _lock = Lock();
   }
 
+  // Run a custom sequence with a lock to ensure atomicity
+  Future<T> withLock<T>(Future<T> Function() action) async {
+    return _lock.synchronized(() async => await action());
+  }
+
   Future<void> freezeUtxo({
     required String walletId,
     required UtxoModel utxo,

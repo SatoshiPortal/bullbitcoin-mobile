@@ -1,27 +1,9 @@
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/scan/scan_widget.dart';
-import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -46,28 +28,7 @@ class SendFlow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SendCubit(
-        bestWalletUsecase: locator<SelectBestWalletUsecase>(),
-        detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
-        getCurrencyUsecase: locator<GetCurrencyUsecase>(),
-        getBitcoinUnitUseCase: locator<GetBitcoinUnitUsecase>(),
-        convertSatsToCurrencyAmountUsecase:
-            locator<ConvertSatsToCurrencyAmountUsecase>(),
-        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
-        getAvailableCurrenciesUsecase: locator<GetAvailableCurrenciesUsecase>(),
-        getUtxosUsecase: locator<GetUtxosUsecase>(),
-        prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
-        prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
-        confirmBitcoinSendUsecase: locator<ConfirmBitcoinSendUsecase>(),
-        confirmLiquidSendUsecase: locator<ConfirmLiquidSendUsecase>(),
-        getWalletsUsecase: locator<GetWalletsUsecase>(),
-        getWalletUsecase: locator<GetWalletUsecase>(),
-        createSendSwapUsecase: locator<CreateSendSwapUsecase>(),
-        updatePaidSendSwapUsecase: locator<UpdatePaidSendSwapUsecase>(),
-        getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
-        watchSwapUsecase: locator<WatchSwapUsecase>(),
-        sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
-      )..loadWalletWithRatesAndFees(),
+      create: (_) => locator<SendCubit>()..loadWalletWithRatesAndFees(),
       child: const SendScreen(),
     );
   }
@@ -430,12 +391,21 @@ class _BottomButtons extends StatelessWidget {
         children: [
           BBButton.big(
             label: 'Advanced Settings',
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: context.colour.secondaryFixed,
+                builder: (BuildContext buildContext) => BlocProvider.value(
+                  value: context.read<SendCubit>(),
+                  child: const AdvancedOptionsBottomSheet(),
+                ),
+              );
+            },
             borderColor: context.colour.secondary,
             outlined: true,
             bgColor: Colors.transparent,
             textColor: context.colour.secondary,
-            disabled: true,
           ),
           const Gap(12),
           const ConfirmSendButton(),
@@ -755,6 +725,16 @@ class SendSendingScreen extends StatelessWidget {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          title: 'Send',
+          actionIcon: Icons.help_outline,
+          onAction: () {},
+          onBack: () => context.pop(),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -842,6 +822,15 @@ class SendSucessScreen extends StatelessWidget {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          title: 'Send',
+          actionIcon: Icons.close,
+          onAction: context.pop,
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

@@ -11,8 +11,8 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_da
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
@@ -312,24 +312,23 @@ class WalletRepositoryImpl implements WalletRepository {
       autoSyncInterval,
       (timer) async {
         final walletsMetadata = await _walletMetadata.getAll();
-        for (final walletMetadata in walletsMetadata) {
+        for (final metadata in walletsMetadata) {
           // Only sync if the time since the last sync is greater than the interval
-          if (walletMetadata.syncedAt == null ||
-              walletMetadata.syncedAt!
+          if (metadata.syncedAt == null ||
+              metadata.syncedAt!
                       .compareTo(DateTime.now().subtract(autoSyncInterval)) <=
                   0) {
-            final wallet = walletMetadata.isLiquid
-                ? PublicLwkWalletModel(
-                    combinedCtDescriptor:
-                        walletMetadata.externalPublicDescriptor,
-                    isTestnet: walletMetadata.isTestnet,
-                    id: walletMetadata.id,
+            final wallet = metadata.isLiquid
+                ? WalletModel.publicLwk(
+                    combinedCtDescriptor: metadata.externalPublicDescriptor,
+                    isTestnet: metadata.isTestnet,
+                    id: metadata.id,
                   )
-                : PublicBdkWalletModel(
-                    externalDescriptor: walletMetadata.externalPublicDescriptor,
-                    internalDescriptor: walletMetadata.internalPublicDescriptor,
-                    isTestnet: walletMetadata.isTestnet,
-                    id: walletMetadata.id,
+                : WalletModel.publicBdk(
+                    externalDescriptor: metadata.externalPublicDescriptor,
+                    internalDescriptor: metadata.internalPublicDescriptor,
+                    isTestnet: metadata.isTestnet,
+                    id: metadata.id,
                   );
             await _syncWallet(wallet);
           }
@@ -344,7 +343,7 @@ class WalletRepositoryImpl implements WalletRepository {
   }) async {
     BalanceModel balance;
     if (metadata.isLiquid) {
-      final wallet = PublicLwkWalletModel(
+      final wallet = WalletModel.publicLwk(
         combinedCtDescriptor: metadata.externalPublicDescriptor,
         isTestnet: metadata.isTestnet,
         id: metadata.id,
@@ -356,7 +355,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
       balance = await _lwkWallet.getBalance(wallet: wallet);
     } else {
-      final wallet = PublicBdkWalletModel(
+      final wallet = WalletModel.publicBdk(
         externalDescriptor: metadata.externalPublicDescriptor,
         internalDescriptor: metadata.internalPublicDescriptor,
         isTestnet: metadata.isTestnet,
@@ -373,7 +372,7 @@ class WalletRepositoryImpl implements WalletRepository {
     return balance;
   }
 
-  Future<void> _syncWallet(PublicWalletModel wallet) async {
+  Future<void> _syncWallet(WalletModel wallet) async {
     final isLiquid = wallet is PublicLwkWalletModel;
     final electrumServer = await _electrumServerStorage.getByProvider(
           ElectrumServerProvider.blockstream,

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/utxo_repository.dart';
 
@@ -30,13 +30,13 @@ class UtxoRepositoryImpl implements UtxoRepository {
     }
 
     final walletModel = metadata.isBitcoin
-        ? PublicBdkWalletModel(
+        ? WalletModel.publicBdk(
             externalDescriptor: metadata.externalPublicDescriptor,
             internalDescriptor: metadata.internalPublicDescriptor,
             isTestnet: metadata.isTestnet,
             id: metadata.id,
           )
-        : PublicLwkWalletModel(
+        : WalletModel.publicLwk(
             combinedCtDescriptor: metadata.externalPublicDescriptor,
             isTestnet: metadata.isTestnet,
             id: metadata.id,

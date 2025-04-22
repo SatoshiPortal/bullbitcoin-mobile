@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/address/domain/entities/address.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'address_model.freezed.dart';

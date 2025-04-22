@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/address/domain/entities/address.dart';
-import 'package:bb_mobile/core/address/domain/repositories/address_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/address_repository.dart';
 
 class GetUsedReceiveAddressesUsecase {
   final AddressRepository _addressRepository;

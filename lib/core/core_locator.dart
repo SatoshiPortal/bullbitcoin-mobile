@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/address/address_locator.dart';
 import 'package:bb_mobile/core/blockchain/blockchain_locator.dart';
 import 'package:bb_mobile/core/electrum/electrum_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';
@@ -12,7 +11,6 @@ import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
 import 'package:bb_mobile/core/tor/tor_locator.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
-import 'package:bb_mobile/core/wallet_transaction/transaction_locator.dart';
 
 class CoreLocator {
   static Future<void> registerDatasources() async {
@@ -32,7 +30,6 @@ class CoreLocator {
 
   static Future<void> registerRepositories() async {
     await TorLocator.registerRepositories();
-    AddressLocator.registerRepositories();
     BlockchainLocator.registerRepositories();
     ElectrumLocator.registerRepositories();
     ExchangeLocator.registerRepositories();
@@ -44,7 +41,6 @@ class CoreLocator {
     await SettingsLocator.registerRepositories();
     SwapsLocator.registerRepositories();
     WalletLocator.registerRepositories();
-    TransactionLocator.registerRepositories();
   }
 
   static void registerServices() {
@@ -54,7 +50,6 @@ class CoreLocator {
   }
 
   static void registerUsecases() {
-    AddressLocator.registerUsecases();
     BlockchainLocator.registerUsecases();
     ExchangeLocator.registerUseCases();
     FeesLocator.registerUseCases();
@@ -65,7 +60,6 @@ class CoreLocator {
     SettingsLocator.registerUsecases();
     SwapsLocator.registerUsecases();
     TorLocator.registerUsecases();
-    TransactionLocator.registerUsecases();
     WalletLocator.registerUsecases();
   }
 }

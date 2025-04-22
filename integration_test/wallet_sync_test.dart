@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet_transaction/data/datasources/wallet_transaction_datasource.dart';
 import 'package:bb_mobile/core/wallet_transaction/data/models/wallet_transaction_model.dart';
@@ -31,8 +31,8 @@ const mnemonics = [
 ];
 
 void main() {
-  late final List<PublicBdkWalletModel> bdkWallets = [];
-  late final List<PublicLwkWalletModel> lwkWallets = [];
+  late final List<WalletModel> bdkWallets = [];
+  late final List<WalletModel> lwkWallets = [];
   late ElectrumServerModel bdkElectrum;
   late ElectrumServerModel lwkElectrum;
 
@@ -49,7 +49,7 @@ void main() {
         network: Network.bitcoinMainnet,
       );
 
-      bdkWallets.add(PublicBdkWalletModel(
+      bdkWallets.add(WalletModel.publicBdk(
         id: w.id,
         externalDescriptor: w.externalPublicDescriptor,
         internalDescriptor: w.internalPublicDescriptor,
@@ -64,7 +64,7 @@ void main() {
         network: Network.liquidMainnet,
       );
 
-      lwkWallets.add(PublicLwkWalletModel(
+      lwkWallets.add(WalletModel.publicLwk(
         id: w.id,
         combinedCtDescriptor: w.externalPublicDescriptor,
         isTestnet: w.isTestnet,
@@ -230,7 +230,7 @@ class SyncSpyBdkWalletDatasource implements WalletTransactionDatasource {
 
   @override
   Future<void> sync({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) async {
     callCount.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
@@ -241,7 +241,7 @@ class SyncSpyBdkWalletDatasource implements WalletTransactionDatasource {
 
   @override
   Future<List<WalletTransactionModel>> getTransactions({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     String? toAddress,
   }) =>
       throw UnimplementedError();
@@ -255,7 +255,7 @@ class SyncSpyLwkWalletDatasource implements WalletTransactionDatasource {
 
   @override
   Future<void> sync({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) async {
     callCount.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
@@ -266,7 +266,7 @@ class SyncSpyLwkWalletDatasource implements WalletTransactionDatasource {
 
   @override
   Future<List<WalletTransactionModel>> getTransactions({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     String? toAddress,
   }) =>
       throw UnimplementedError();

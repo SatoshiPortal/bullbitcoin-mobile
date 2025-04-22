@@ -1,27 +1,20 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/address/data/datasources/address_datasource.dart';
-import 'package:bb_mobile/core/address/data/models/address_model.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/private_wallet_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/public_wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet_transaction/data/datasources/wallet_transaction_datasource.dart';
-import 'package:bb_mobile/core/wallet_transaction/data/models/wallet_transaction_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:flutter/material.dart';
 import 'package:lwk/lwk.dart' as lwk;
 import 'package:path_provider/path_provider.dart';
 
-class LwkWalletDatasource
-    implements
-        WalletDatasource,
-        AddressDatasource,
-        WalletTransactionDatasource {
+class LwkWalletDatasource implements WalletDatasource {
   @visibleForTesting
   final Map<String, int> syncExecutions = {};
   final Map<String, Future<void>> _activeSyncs;
@@ -41,7 +34,7 @@ class LwkWalletDatasource
   bool get isAnyWalletSyncing => _activeSyncs.isNotEmpty;
 
   Future<BalanceModel> getBalance({
-    required PublicLwkWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final balances = await lwkWallet.balances();
@@ -67,7 +60,7 @@ class LwkWalletDatasource
 
   @override
   Future<void> sync({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) {
     // putIfAbsent ensures only one sync starts for each wallet ID,
@@ -103,7 +96,7 @@ class LwkWalletDatasource
   /* Start UtxoDatasource methods */
   @override
   Future<List<UtxoModel>> getUtxos({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final utxos = await lwkWallet.utxos();
@@ -126,7 +119,7 @@ class LwkWalletDatasource
   /* Start AddressDatasource methods */
   @override
   Future<AddressModel> getNewAddress({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final lastUnusedAddressInfo = await lwkWallet.addressLastUnused();
@@ -147,7 +140,7 @@ class LwkWalletDatasource
 
   @override
   Future<AddressModel> getLastUnusedAddress({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final addressInfo = await lwkWallet.addressLastUnused();
@@ -164,7 +157,7 @@ class LwkWalletDatasource
   @override
   Future<AddressModel> getAddressByIndex(
     int index, {
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final addressInfo = await lwkWallet.address(index: index);
@@ -180,7 +173,7 @@ class LwkWalletDatasource
 
   @override
   Future<List<AddressModel>> getReceiveAddresses({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     required int limit,
     required int offset,
   }) async {
@@ -201,7 +194,7 @@ class LwkWalletDatasource
 
   @override
   Future<List<AddressModel>> getChangeAddresses({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     required int limit,
     required int offset,
   }) async {
@@ -213,7 +206,7 @@ class LwkWalletDatasource
   @override
   Future<bool> isAddressUsed(
     String address, {
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final txs = await lwkWallet.txs();
@@ -237,7 +230,7 @@ class LwkWalletDatasource
   @override
   Future<BigInt> getAddressBalanceSat(
     String address, {
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final utxos = await lwkWallet.utxos();
@@ -272,7 +265,7 @@ class LwkWalletDatasource
   /* Start TransactionDatasource methods */
   @override
   Future<List<WalletTransactionModel>> getTransactions({
-    required PublicWalletModel wallet,
+    required WalletModel wallet,
     String? toAddress,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
@@ -322,7 +315,7 @@ class LwkWalletDatasource
     required NetworkFee networkFee,
     int? amountSat,
     bool drain = false,
-    required PublicLwkWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
     if (networkFee.isAbsolute) {
@@ -364,7 +357,7 @@ class LwkWalletDatasource
     return '${dir.path}/$dbName';
   }
 
-  Future<lwk.Wallet> _createPublicWallet(PublicWalletModel walletModel) async {
+  Future<lwk.Wallet> _createPublicWallet(WalletModel walletModel) async {
     if (walletModel is! PublicLwkWalletModel) {
       throw Exception('Wallet is not an LWK wallet');
     }
@@ -386,7 +379,7 @@ class LwkWalletDatasource
   }
 
   Future<lwk.Wallet> _createPrivateWallet(
-    PrivateWalletModel walletModel,
+    WalletModel walletModel,
   ) async {
     if (walletModel is! PrivateLwkWalletModel) {
       throw Exception('Wallet is not an LWK wallet');
