@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDatasource _boltz;

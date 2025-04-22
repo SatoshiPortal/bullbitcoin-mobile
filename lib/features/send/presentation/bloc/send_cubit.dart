@@ -15,10 +15,12 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
-import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
@@ -53,6 +55,7 @@ class SendCubit extends Cubit<SendState> {
     required UpdatePaidSendSwapUsecase updatePaidSendSwapUsecase,
     required GetSwapLimitsUsecase getSwapLimitsUsecase,
     required WatchSwapUsecase watchSwapUsecase,
+    required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
   })  : _getCurrencyUsecase = getCurrencyUsecase,
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
         _convertSatsToCurrencyAmountUsecase =
@@ -73,6 +76,7 @@ class SendCubit extends Cubit<SendState> {
         _updatePaidSendSwapUsecase = updatePaidSendSwapUsecase,
         _getSwapLimitsUsecase = getSwapLimitsUsecase,
         _watchSwapUsecase = watchSwapUsecase,
+        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
         super(const SendState());
 
   // ignore: unused_field
@@ -95,8 +99,10 @@ class SendCubit extends Cubit<SendState> {
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
+  final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
 
   StreamSubscription<Swap>? _swapSubscription;
+  StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
 
   @override
   Future<void> close() {
@@ -148,6 +154,18 @@ class SendCubit extends Cubit<SendState> {
         request: paymentRequest,
         amountSat: state.inputAmountSat,
       );
+      // Listen to the wallet syncing status to update the wallet balance and its utxos
+      _selectedWalletSyncingSubscription?.cancel();
+      _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
+          .execute(walletId: wallet.id)
+          .listen((wallet) async {
+        emit(
+          state.copyWith(
+            selectedWallet: wallet,
+          ),
+        );
+        await loadUtxos();
+      });
       final sendType = SendType.from(paymentRequest);
       emit(
         state.copyWith(
@@ -422,6 +440,7 @@ class SendCubit extends Cubit<SendState> {
           address: address,
           networkFee: state.selectedFee!,
           amountSat: amount,
+          replaceByFee: state.replaceByFee,
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
@@ -436,6 +455,8 @@ class SendCubit extends Cubit<SendState> {
           address: address,
           networkFee: state.selectedFee!,
           amountSat: amount,
+          replaceByFee: state.replaceByFee,
+          selectedInputs: state.selectedUtxos,
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );

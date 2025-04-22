@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/address/domain/repositories/address_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/address_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class SwapWatcherServiceImpl implements SwapWatcherService {

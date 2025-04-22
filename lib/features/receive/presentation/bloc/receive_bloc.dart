@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/address/domain/entities/address.dart';
-import 'package:bb_mobile/core/address/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
@@ -18,10 +16,12 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet_transaction/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
