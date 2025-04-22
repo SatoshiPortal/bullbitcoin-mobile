@@ -1481,7 +1481,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "054a4df1bfe4fcae396d70c4e0b80deca0911a62"
+      resolved-ref: "334b5402d8b7b80b4736663861f7952020312831"
       url: "https://github.com/SatoshiPortal/recoverbull-client-dart.git"
     source: git
     version: "1.0.0"
