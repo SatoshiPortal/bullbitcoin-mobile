@@ -351,9 +351,7 @@ class SendConfirmScreen extends StatelessWidget {
               const _OnchainSendInfoSection(),
             const Gap(64),
             // const _Warning(),
-            const Gap(64),
             const _BottomButtons(),
-            // const Gap(40),
           ],
         ),
       ),
@@ -384,30 +382,36 @@ class _BottomButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBitcoinWallet = context.select(
+      (SendCubit cubit) => !cubit.state.selectedWallet!.isLiquid,
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBButton.big(
-            label: 'Advanced Settings',
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                isScrollControlled: true,
-                backgroundColor: context.colour.secondaryFixed,
-                builder: (BuildContext buildContext) => BlocProvider.value(
-                  value: context.read<SendCubit>(),
-                  child: const AdvancedOptionsBottomSheet(),
-                ),
-              );
-            },
-            borderColor: context.colour.secondary,
-            outlined: true,
-            bgColor: Colors.transparent,
-            textColor: context.colour.secondary,
-          ),
-          const Gap(12),
+          if (isBitcoinWallet) ...[
+            BBButton.big(
+              label: 'Advanced Settings',
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: context.colour.secondaryFixed,
+                  builder: (BuildContext buildContext) => BlocProvider.value(
+                    value: context.read<SendCubit>(),
+                    child: const AdvancedOptionsBottomSheet(),
+                  ),
+                );
+              },
+              borderColor: context.colour.secondary,
+              outlined: true,
+              bgColor: Colors.transparent,
+              textColor: context.colour.secondary,
+            ),
+            const Gap(12),
+          ],
           const ConfirmSendButton(),
         ],
       ),

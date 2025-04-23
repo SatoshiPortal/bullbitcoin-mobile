@@ -8,8 +8,8 @@ import 'package:bb_mobile/core/wallet/data/models/address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -298,6 +298,20 @@ class BdkWalletDatasource implements WalletDatasource {
     final List<WalletTransactionModel> walletTxs = await Future.wait(
       transactions.map(
         (tx) async {
+          /*bool isToSelf = false;
+          final outputs = await tx.transaction?.output();
+          if (outputs != null) {
+            final areMine = await Future.wait(
+              outputs.map(
+                (output) async => await isMine(
+                  output.scriptPubkey.bytes,
+                  wallet: wallet as PublicBdkWalletModel,
+                ),
+              ),
+            );
+            isToSelf = !areMine.any((isMine) => !isMine);
+          }*/
+
           final isIncoming = tx.received > tx.sent;
           final netAmountSat = isIncoming
               ? tx.received - tx.sent
@@ -337,11 +351,13 @@ class BdkWalletDatasource implements WalletDatasource {
   @override
   Future<AddressModel> getLastUnusedAddress({
     required WalletModel wallet,
+    bool isChange = false,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
-    final addressInfo = bdkWallet.getAddress(
-      addressIndex: const bdk.AddressIndex.lastUnused(),
-    );
+    const lastUnusedAddressIndex = bdk.AddressIndex.lastUnused();
+    final addressInfo = isChange
+        ? bdkWallet.getInternalAddress(addressIndex: lastUnusedAddressIndex)
+        : bdkWallet.getAddress(addressIndex: lastUnusedAddressIndex);
 
     final index = addressInfo.index;
     final address = addressInfo.address.asString();

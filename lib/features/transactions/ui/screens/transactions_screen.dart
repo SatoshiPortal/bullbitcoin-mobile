@@ -45,13 +45,13 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loading =
-        context.select((TransactionsCubit cubit) => cubit.state.loadingTxs);
+        context.select((TransactionsCubit cubit) => cubit.state.isSyncing);
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const FilterRow(),
-        if (loading) const LinearProgressIndicator(),
+        if (loading) const LinearProgressIndicator() else const Gap(4),
         if (err != null)
           Padding(
             padding: const EdgeInsets.all(16.0),

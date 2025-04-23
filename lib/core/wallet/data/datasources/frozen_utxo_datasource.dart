@@ -9,7 +9,7 @@ class FrozenUtxoDatasource {
   }
 
   // Run a custom sequence with a lock to ensure atomicity
-  Future<T> withLock<T>(Future<T> Function() action) async {
+  Future<T> withLock<T>(Future<T> Function() action) {
     return _lock.synchronized(() async => await action());
   }
 

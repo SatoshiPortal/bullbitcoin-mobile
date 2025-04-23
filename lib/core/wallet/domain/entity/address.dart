@@ -42,7 +42,6 @@ sealed class Address with _$Address implements Labelable {
     required String walletId,
   }) = LiquidAddress;
 
-  // TODO: Validate if the standard or confidential address should be used
   String get address => when(
       bitcoin: (index, address, _, __, ___, ____, _____) => address,
       liquid: (index, standard, confidential, __, ___, ____, _____, ______) =>
@@ -65,6 +64,7 @@ sealed class Address with _$Address implements Labelable {
         orElse: () => false,
       );
 
+  // TODO: move to model
   @override
   String toRef() => address;
 }

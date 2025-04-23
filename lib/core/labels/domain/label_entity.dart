@@ -6,7 +6,7 @@ part 'label_entity.freezed.dart';
 
 // BIP329 Standard Label
 @freezed
-class Label with _$Label {
+sealed class Label with _$Label {
   const factory Label({
     required String label,
     String? origin,

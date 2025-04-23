@@ -4,12 +4,24 @@ import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:lwk/lwk.dart' as lwk;
 
 class AddressScriptConversions {
+  static Future<Uint8List> scriptPubkeyFromBitcoinAddress(
+    String address, {
+    required bool isTestnet,
+  }) async {
+    final addr = await bdk.Address.fromString(
+      s: address,
+      network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
+    );
+    return addr.scriptPubkey().bytes;
+  }
+
   static Future<String> bitcoinAddressFromScriptPubkey(
-    Uint8List scriptPubkey,
-  ) async {
+    Uint8List scriptPubkey, {
+    required bool isTestnet,
+  }) async {
     final address = await bdk.Address.fromScript(
       script: bdk.ScriptBuf(bytes: scriptPubkey),
-      network: bdk.Network.bitcoin,
+      network: isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin,
     );
 
     return address.asString();

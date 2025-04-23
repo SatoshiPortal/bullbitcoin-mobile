@@ -105,8 +105,11 @@ class SendCubit extends Cubit<SendState> {
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
 
   @override
-  Future<void> close() {
-    _swapSubscription?.cancel();
+  Future<void> close() async {
+    await Future.wait([
+      _swapSubscription?.cancel() ?? Future.value(),
+      _selectedWalletSyncingSubscription?.cancel() ?? Future.value(),
+    ]);
     return super.close();
   }
 
@@ -440,7 +443,6 @@ class SendCubit extends Cubit<SendState> {
           address: address,
           networkFee: state.selectedFee!,
           amountSat: amount,
-          replaceByFee: state.replaceByFee,
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );

@@ -10,6 +10,7 @@ abstract class WalletDatasource {
   });
   Future<AddressModel> getLastUnusedAddress({
     required WalletModel wallet,
+    bool isChange = false,
   });
   Future<AddressModel> getAddressByIndex(
     int index, {
