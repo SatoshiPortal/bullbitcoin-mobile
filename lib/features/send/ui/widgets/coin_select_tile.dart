@@ -1,6 +1,8 @@
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -39,9 +41,11 @@ class CoinSelectTile extends StatelessWidget {
     ); // You can format this better
 
     // TODO: Replace with actual values
-    const address = 'Address';
-    const label = 'Label';
-    const addressType = 'Receive';
+    final address = utxo.address?.address;
+    final addressType = utxo.address?.keyChain == AddressKeyChain.external
+        ? 'Receive'
+        : 'Change'; // Replace with actual address type
+    final label = utxo.labels.join(', ');
 
     return GestureDetector(
       onTap: onTap,
@@ -82,8 +86,9 @@ class CoinSelectTile extends StatelessWidget {
                     ),
                     subtitle: BBText(
                       label,
-                      style: context.font.labelMedium
-                          ?.copyWith(color: context.colour.outline),
+                      style: context.font.labelMedium?.copyWith(
+                        color: context.colour.outline,
+                      ),
                     ),
                     trailing: Radio<bool>(
                       value: true,
@@ -92,35 +97,37 @@ class CoinSelectTile extends StatelessWidget {
                       activeColor: context.colour.secondary,
                     ),
                   ),
-                  const SizedBox(height: 24),
-                  Divider(color: context.colour.secondaryFixedDim),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      BBText(
-                        'Address: ',
-                        style: context.font.labelMedium
-                            ?.copyWith(color: context.colour.surfaceContainer),
-                      ),
-                      Expanded(
-                        child: BBText(
-                          address,
+                  if (address != null) ...[
+                    const SizedBox(height: 24),
+                    Divider(color: context.colour.secondaryFixedDim),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        BBText(
+                          'Address: ',
+                          style: context.font.labelMedium?.copyWith(
+                              color: context.colour.surfaceContainer),
+                        ),
+                        Expanded(
+                          child: BBText(
+                            StringFormatting.truncateMiddle(address),
+                            style: context.font.labelLarge
+                                ?.copyWith(color: context.colour.secondary),
+                          ),
+                        ),
+                        BBText(
+                          'Type: ',
+                          style: context.font.labelMedium?.copyWith(
+                              color: context.colour.surfaceContainer),
+                        ),
+                        BBText(
+                          addressType,
                           style: context.font.labelLarge
                               ?.copyWith(color: context.colour.secondary),
                         ),
-                      ),
-                      BBText(
-                        'Type: ',
-                        style: context.font.labelMedium
-                            ?.copyWith(color: context.colour.surfaceContainer),
-                      ),
-                      BBText(
-                        addressType,
-                        style: context.font.labelLarge
-                            ?.copyWith(color: context.colour.secondary),
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

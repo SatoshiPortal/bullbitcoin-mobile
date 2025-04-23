@@ -15,7 +15,6 @@ class PrepareLiquidSendUsecase {
     required NetworkFee networkFee,
     int? amountSat,
     bool drain = false,
-    bool replaceByFee = true,
   }) async {
     try {
       if (amountSat == null && drain == false) {

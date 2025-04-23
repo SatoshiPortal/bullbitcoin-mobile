@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/utils/uint_8_list_x.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
@@ -106,9 +107,7 @@ class LwkWalletDatasource implements WalletDatasource {
         txId: utxo.outpoint.txid,
         vout: utxo.outpoint.vout,
         value: utxo.unblinded.value,
-        // TODO: The following conversion to Uint8List is probably not correct
-        //  but we don't need it for now.
-        scriptPubkey: Uint8List.fromList(utxo.scriptPubkey.codeUnits),
+        scriptPubkey: Uint8ListX.fromHexString(utxo.scriptPubkey),
       );
     }).toList();
 
@@ -141,6 +140,7 @@ class LwkWalletDatasource implements WalletDatasource {
   @override
   Future<AddressModel> getLastUnusedAddress({
     required WalletModel wallet,
+    bool isChange = false,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final addressInfo = await lwkWallet.addressLastUnused();

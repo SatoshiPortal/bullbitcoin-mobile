@@ -7,7 +7,7 @@ part 'transactions_state.freezed.dart';
 class TransactionsState with _$TransactionsState {
   const factory TransactionsState({
     List<Transaction>? transactions,
-    @Default(false) bool loadingTxs,
+    @Default(false) bool isSyncing,
     Object? err,
   }) = _TransactionsState;
   const TransactionsState._();
