@@ -1,20 +1,39 @@
-import 'package:bb_mobile/core/transaction/data/drift_datasource.dart';
+import 'dart:convert';
+
 import 'package:bb_mobile/core/transaction/data/electrum_service.dart';
+import 'package:bb_mobile/core/transaction/data/models/transaction_mapper.dart';
+import 'package:bb_mobile/core/transaction/data/sqlite_datasource.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
 
 class TransactionRepository {
-  final _drift = DriftDatasource();
+  final _sqlite = SqliteDatasource();
   final _electrum = ElectrumService(host: 'blockstream.info', port: 700);
 
   TransactionRepository();
 
   Future<Tx> fetchTransaction({required String txid}) async {
-    var tx = await _drift.fetchTransaction(txid);
+    final cachedTransaction = await _sqlite.fetchTransaction(txid);
 
-    if (tx == null) {
-      tx = await _electrum.getTransaction(txid);
-      await _drift.storeTransaction(tx);
+    if (cachedTransaction != null) {
+      return TransactionMapper.fromSqlite(cachedTransaction);
     }
+
+    // If not found in cache, fetch from Electrum
+    final txBytes = await _electrum.getTransaction(txid);
+    final tx = await TransactionMapper.fromBytes(txBytes);
+
+    // Store the fetched transaction
+    await _sqlite.store<Transaction>(
+      Transaction(
+        txid: tx.txid,
+        version: tx.version,
+        size: tx.size.toString(),
+        vsize: tx.vsize.toString(),
+        locktime: tx.locktime,
+        vin: json.encode(tx.vin.map((e) => e.toJson())),
+        vout: json.encode(tx.vout.map((e) => e.toJson())),
+      ),
+    );
 
     return tx;
   }
