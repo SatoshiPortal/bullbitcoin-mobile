@@ -64,7 +64,6 @@ class ElectrumSettingsBloc
         ));
         return;
       }
-
       final currentProvider = _determineCurrentProvider(allServers);
 
       emit(state.copyWith(
@@ -72,7 +71,6 @@ class ElectrumSettingsBloc
         selectedProvider: currentProvider,
       ));
       add(ToggleSelectedProvider(currentProvider));
-      await Future.delayed(const Duration(milliseconds: 200));
       emit(state.copyWith(status: ElectrumSettingsStatus.success));
     } catch (e) {
       debugPrint('Error loading servers: $e');
@@ -430,8 +428,6 @@ class ElectrumSettingsBloc
           originalServers.add(stagedServer);
         }
       }
-
-      await Future.delayed(const Duration(milliseconds: 500));
 
       emit(state.copyWith(
         status: ElectrumSettingsStatus.success,
