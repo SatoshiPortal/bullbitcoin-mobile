@@ -220,10 +220,6 @@ class ElectrumSettingsBloc
       }
     }
 
-    // Add a short delay to allow UI to update with the loading indicator
-    // Use await to ensure this completes before the handler returns
-    await Future.delayed(const Duration(milliseconds: 200));
-
     // Check if emit is still valid before calling it
     if (!emit.isDone) {
       // Complete the process by setting status to success
@@ -342,8 +338,11 @@ class ElectrumSettingsBloc
         state.getValidateDomainForProvider(state.selectedProvider);
     final newValidation = !currentValidation;
 
+    // Only target servers matching both provider AND network type (bitcoin/liquid)
     final relevantServers = state.effectiveServers
-        .where((server) => server.provider == state.selectedProvider)
+        .where((server) =>
+            server.provider == state.selectedProvider &&
+            _isSameNetworkType(server.network, state.selectedNetwork))
         .toList();
 
     final List<ElectrumServer> updatedStagedServers =
@@ -364,14 +363,29 @@ class ElectrumSettingsBloc
       }
     }
 
+    // If no existing servers were found, create entries for both mainnet and testnet
+    // of the current selected network type
     if (updatedStagedServers.isEmpty || relevantServers.isEmpty) {
-      final network = state.isSelectedNetworkLiquid
+      // Add for mainnet of current network type
+      final mainnetNetwork = state.isSelectedNetworkLiquid
           ? Network.liquidMainnet
           : Network.bitcoinMainnet;
 
       updatedStagedServers.add(ElectrumServer(
         provider: state.selectedProvider,
-        network: network,
+        network: mainnetNetwork,
+        url: '',
+        validateDomain: newValidation,
+      ));
+
+      // Add for testnet of current network type
+      final testnetNetwork = state.isSelectedNetworkLiquid
+          ? Network.liquidTestnet
+          : Network.bitcoinTestnet;
+
+      updatedStagedServers.add(ElectrumServer(
+        provider: state.selectedProvider,
+        network: testnetNetwork,
         url: '',
         validateDomain: newValidation,
       ));
