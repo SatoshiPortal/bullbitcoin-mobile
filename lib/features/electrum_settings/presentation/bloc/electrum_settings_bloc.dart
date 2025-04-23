@@ -308,7 +308,88 @@ class ElectrumSettingsBloc
   }
 
   void _onUpdateElectrumAdvancedOptions(UpdateElectrumAdvancedOptions event,
-      Emitter<ElectrumSettingsState> emit) {}
+      Emitter<ElectrumSettingsState> emit) {
+    // Get the mainnet and testnet networks
+    final mainnetNetwork = state.isSelectedNetworkLiquid
+        ? Network.liquidMainnet
+        : Network.bitcoinMainnet;
+
+    final testnetNetwork = state.isSelectedNetworkLiquid
+        ? Network.liquidTestnet
+        : Network.bitcoinTestnet;
+
+    // Create updated staged servers list
+    final List<ElectrumServer> updatedStagedServers =
+        List<ElectrumServer>.from(state.stagedServers);
+
+    // Update or create mainnet server
+    _updateServerAdvancedOptions(
+      updatedStagedServers,
+      mainnetNetwork,
+      event.stopGap,
+      event.retry,
+      event.timeout,
+    );
+
+    // Update or create testnet server
+    _updateServerAdvancedOptions(
+      updatedStagedServers,
+      testnetNetwork,
+      event.stopGap,
+      event.retry,
+      event.timeout,
+    );
+
+    emit(state.copyWith(stagedServers: updatedStagedServers));
+  }
+
+  // Helper method to update server advanced options
+  void _updateServerAdvancedOptions(
+    List<ElectrumServer> stagedServers,
+    Network network,
+    int? stopGap,
+    int? retry,
+    int? timeout,
+  ) {
+    // Check if server exists in staged servers
+    final stagedIndex = stagedServers.indexWhere((server) =>
+        server.network == network && server.provider == state.selectedProvider);
+
+    if (stagedIndex >= 0) {
+      stagedServers[stagedIndex] = stagedServers[stagedIndex].copyWith(
+        stopGap: stopGap ?? 20,
+        retry: retry ?? 5,
+        timeout: timeout ?? 5,
+      );
+    } else {
+      // Check if server exists in original servers
+      final existingServerIndex = state.electrumServers.indexWhere(
+        (server) =>
+            server.network == network &&
+            server.provider == state.selectedProvider,
+      );
+
+      if (existingServerIndex >= 0) {
+        // Use existing server as base and update only non-null values
+        stagedServers.add(state.electrumServers[existingServerIndex].copyWith(
+          stopGap: stopGap ?? 20,
+          retry: retry ?? 5,
+          timeout: timeout ?? 5,
+        ));
+      } else {
+        stagedServers.add(ElectrumServer(
+          provider: state.selectedProvider,
+          network: network,
+          url: '',
+          validateDomain:
+              state.getValidateDomainForProvider(state.selectedProvider),
+          stopGap: stopGap ?? 20,
+          retry: retry ?? 5,
+          timeout: timeout ?? 5,
+        ));
+      }
+    }
+  }
 
   Future<void> _onSetupBlockchain(
       SetupBlockchain event, Emitter<ElectrumSettingsState> emit) async {
@@ -390,6 +471,13 @@ class ElectrumSettingsBloc
     }
 
     emit(state.copyWith(stagedServers: updatedStagedServers));
+  }
+
+  // Helper method to check if two networks are of the same type (Bitcoin/Liquid)
+  // regardless of whether they're mainnet or testnet
+  bool _isSameNetworkType(Network network1, Network network2) {
+    return network1.isBitcoin == network2.isBitcoin &&
+        network1.isLiquid == network2.isLiquid;
   }
 
   Future<void> _onSaveElectrumServerChanges(SaveElectrumServerChanges event,
