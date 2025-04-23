@@ -62,7 +62,6 @@ dependencies:
   flutter_svg: ^2.0.10+1
   oktoast: ^3.4.0
   lottie: ^3.1.0
-  share_plus: ^9.0.0
   freezed_annotation: ^2.4.4
   convert: ^3.1.2
   crypto: ^3.0.6
