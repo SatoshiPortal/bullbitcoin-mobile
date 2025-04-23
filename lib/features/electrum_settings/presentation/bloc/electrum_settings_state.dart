@@ -8,15 +8,6 @@ enum ElectrumSettingsStatus {
 }
 
 @freezed
-class ElectrumAdvancedOptions with _$ElectrumAdvancedOptions {
-  const factory ElectrumAdvancedOptions({
-    @Default(20) int stopGap,
-    @Default(5) int retry,
-    @Default(5) int timeout,
-  }) = _ElectrumAdvancedOptions;
-}
-
-@freezed
 class ElectrumSettingsState with _$ElectrumSettingsState {
   const factory ElectrumSettingsState({
     @Default([]) List<ElectrumServer> electrumServers,
@@ -77,17 +68,23 @@ class ElectrumSettingsState with _$ElectrumSettingsState {
 
   // Get the validate domain value for the current provider
   bool getValidateDomainForProvider(ElectrumServerProvider provider) {
-    // Check in staged servers first
-    final stagedServersForProvider =
-        stagedServers.where((server) => server.provider == provider).toList();
+    // Check in staged servers first for the current selected network type
+    final stagedServersForProvider = stagedServers
+        .where((server) =>
+            server.provider == provider &&
+            _isSameNetworkType(server.network, selectedNetwork))
+        .toList();
 
     if (stagedServersForProvider.isNotEmpty) {
       return stagedServersForProvider.first.validateDomain;
     }
 
-    // Then check in original servers
-    final originalServersForProvider =
-        electrumServers.where((server) => server.provider == provider).toList();
+    // Then check in original servers for the current selected network type
+    final originalServersForProvider = electrumServers
+        .where((server) =>
+            server.provider == provider &&
+            _isSameNetworkType(server.network, selectedNetwork))
+        .toList();
 
     if (originalServersForProvider.isNotEmpty) {
       return originalServersForProvider.first.validateDomain;
@@ -95,6 +92,13 @@ class ElectrumSettingsState with _$ElectrumSettingsState {
 
     // Default
     return false;
+  }
+
+  // Helper method to check if two networks are of the same type (Bitcoin/Liquid)
+  // regardless of whether they're mainnet or testnet
+  bool _isSameNetworkType(Network network1, Network network2) {
+    return network1.isBitcoin == network2.isBitcoin &&
+        network1.isLiquid == network2.isLiquid;
   }
 
   // Check if there are any pending changes
@@ -119,5 +123,14 @@ class ElectrumSettingsState with _$ElectrumSettingsState {
     }
 
     return result;
+  }
+
+  // Get advanced options for the current provider and network
+  ElectrumServer? get currentServer {
+    final mainnetNetwork = isSelectedNetworkLiquid
+        ? Network.liquidMainnet
+        : Network.bitcoinMainnet;
+
+    return getServerForNetworkAndProvider(mainnetNetwork, selectedProvider);
   }
 }
