@@ -32,8 +32,15 @@ class UpdateCustomServerTestnet extends ElectrumSettingsEvent {
 }
 
 class UpdateElectrumAdvancedOptions extends ElectrumSettingsEvent {
-  final ElectrumAdvancedOptions advancedOptions;
-  UpdateElectrumAdvancedOptions(this.advancedOptions);
+  final int? stopGap;
+  final int? retry;
+  final int? timeout;
+
+  const UpdateElectrumAdvancedOptions({
+    this.stopGap,
+    this.retry,
+    this.timeout,
+  });
 }
 
 class ToggleSelectedProvider extends ElectrumSettingsEvent {
