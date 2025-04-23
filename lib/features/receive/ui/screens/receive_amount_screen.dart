@@ -6,7 +6,6 @@ import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class ReceiveAmountScreen extends StatelessWidget {
   const ReceiveAmountScreen({super.key, this.onContinueNavigation});
@@ -71,24 +70,32 @@ class ReceiveAmountContinueButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final creatingSwap = context.watch<ReceiveBloc>().state.creatingSwap;
+    final swapAmountBelowLimit =
+        context.watch<ReceiveBloc>().state.swapAmountBelowLimit;
+    final swapAmountAboveLimit =
+        context.watch<ReceiveBloc>().state.swapAmountAboveLimit;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: BBButton.big(
         label: 'Continue',
         onPressed: () {
           // Confirm the amount and continue
-          context.read<ReceiveBloc>().add(const ReceiveAmountConfirmed());
 
+          context.read<ReceiveBloc>().add(const ReceiveAmountConfirmed());
+          Future.delayed(const Duration(milliseconds: 100));
           // Continue navigation can be different depending on the context.
           // For example when the amount screen is the first screen in the flow
           // as with Lightning or not.
-          if (onContinueNavigation != null) {
+          if (onContinueNavigation != null &&
+              (!swapAmountAboveLimit && !swapAmountBelowLimit)) {
             onContinueNavigation!();
           } else {
-            context.pop();
+            // context.pop();
           }
         },
-        disabled: context.watch<ReceiveBloc>().state.isSwapAmountValid,
+        disabled: creatingSwap,
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
       ),

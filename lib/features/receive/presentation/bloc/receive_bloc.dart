@@ -487,60 +487,85 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         confirmedAmountSat: confirmedAmountSat,
       ),
     );
-
-    if (state.type == ReceiveType.lightning && state.wallet != null) {
-      LnReceiveSwap? swap;
-      Object? error;
-      try {
-        // TODO: These errors should be in sats/btc based on the users
-        //  bitcoin unit settings
-        if (confirmedAmountSat < state.swapLimits!.min) {
-          emit(
-            state.copyWith(
-              error: Exception(
-                'Minimum Swap Amount: ${state.swapLimits!.min} sats',
-              ),
-            ),
-          );
-        }
-        if (confirmedAmountSat < state.swapLimits!.max) {
-          emit(
-            state.copyWith(
-              error: Exception(
-                'Maximum Swap Amount: ${state.swapLimits!.max} sats',
-              ),
-            ),
-          );
-        }
-        emit(
-          state.copyWith(
-            lightningSwap: null,
-          ),
-        );
-        swap = await _createReceiveSwapUsecase.execute(
-          walletId: state.wallet!.id,
-          type: SwapType.lightningToLiquid,
-          amountSat: confirmedAmountSat,
-          description: state.note,
-        );
-        // The swap is created, now we can watch it for updates
-        _watchLnReceiveSwap(swap.id);
-        _watchWalletTransactionToAddress(
-          walletId: state.wallet!.id,
-          address: swap.receiveAddress!,
-        );
-      } catch (e) {
-        debugPrint('Swap creation failed: $e');
-        error = e;
-      }
-
+    if (state.wallet == null) {
       emit(
         state.copyWith(
-          lightningSwap: swap,
+          error: Exception('No wallet found'),
+        ),
+      );
+      return;
+    }
+    if (state.type != ReceiveType.lightning) {
+      return;
+    }
+    emit(
+      state.copyWith(
+        creatingSwap: true,
+      ),
+    );
+    LnReceiveSwap? swap;
+    Object? error;
+    try {
+      // TODO: These errors should be in sats/btc based on the users
+      //  bitcoin unit settings
+      if (state.swapAmountBelowLimit) {
+        emit(
+          state.copyWith(
+            amountException: AmountException(
+              'Minimum Swap Amount: ${state.swapLimits!.min} sats',
+            ),
+            creatingSwap: false,
+          ),
+        );
+        return;
+      }
+      if (state.swapAmountAboveLimit) {
+        emit(
+          state.copyWith(
+            amountException: AmountException(
+              'Maximum Swap Amount: ${state.swapLimits!.max} sats',
+            ),
+            creatingSwap: false,
+          ),
+        );
+        return;
+      }
+      emit(
+        state.copyWith(
+          lightningSwap: null,
+          amountException: null,
+        ),
+      );
+      swap = await _createReceiveSwapUsecase.execute(
+        walletId: state.wallet!.id,
+        type: SwapType.lightningToLiquid,
+        amountSat: confirmedAmountSat,
+        description: state.note,
+      );
+      // The swap is created, now we can watch it for updates
+      _watchLnReceiveSwap(swap.id);
+      _watchWalletTransactionToAddress(
+        walletId: state.wallet!.id,
+        address: swap.receiveAddress!,
+      );
+    } catch (e) {
+      debugPrint('Swap creation failed: $e');
+      error = e;
+      emit(
+        state.copyWith(
           error: error,
+          creatingSwap: false,
         ),
       );
     }
+
+    emit(
+      state.copyWith(
+        lightningSwap: swap,
+        creatingSwap: false,
+        error: error,
+      ),
+    );
   }
 
   Future<void> _onNoteChanged(
