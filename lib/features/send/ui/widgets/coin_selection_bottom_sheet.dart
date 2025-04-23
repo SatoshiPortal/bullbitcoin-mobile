@@ -54,10 +54,11 @@ class CoinSelectionBottomSheet extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Center(
-                  child: BBText(
-                "Select amount",
-                style: context.font.headlineMedium,
-              )),
+                child: BBText(
+                  "Select amount",
+                  style: context.font.headlineMedium,
+                ),
+              ),
               Positioned(
                 right: 0,
                 child: IconButton(

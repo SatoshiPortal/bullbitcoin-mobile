@@ -10,7 +10,7 @@ class BullBitcoinUserDatasource {
   Future<UserSummaryModel?> getUserSummary(String apiKey) async {
     try {
       final resp = await _http.post(
-        "/api-users",
+        "/ak/api-users",
         data: {
           'id': 1,
           'jsonrpc': '2.0',
@@ -30,7 +30,8 @@ class BullBitcoinUserDatasource {
       }
 
       final userSummary = UserSummaryModel.fromJson(
-          resp.data['result'] as Map<String, dynamic>);
+        resp.data['result'] as Map<String, dynamic>,
+      );
 
       return userSummary;
     } catch (e) {

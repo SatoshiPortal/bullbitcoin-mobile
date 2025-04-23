@@ -34,8 +34,9 @@ class LabelRepository {
         .toList();
   }
 
-  Future<List<Label>> fetchByEntity<T extends Labelable>(
-      {required T entity}) async {
+  Future<List<Label>> fetchByEntity<T extends Labelable>({
+    required T entity,
+  }) async {
     final prefix = Entity.fromLabelable(entity);
     final labelModels =
         await _labelStorageDatasource.fetchByRef(prefix, entity.toRef());
@@ -52,11 +53,13 @@ class LabelRepository {
   Future<List<Label>> fetchAll() async {
     final labelModels = await _labelStorageDatasource.fetchAll();
     return labelModels
-        .map((model) => Label(
-              label: model.label,
-              origin: model.origin,
-              spendable: model.spendable,
-            ))
+        .map(
+          (model) => Label(
+            label: model.label,
+            origin: model.origin,
+            spendable: model.spendable,
+          ),
+        )
         .toList();
   }
 }

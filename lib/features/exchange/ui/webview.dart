@@ -55,8 +55,11 @@ class _BullBitcoinWebViewPageState extends State<BullBitcoinWebViewPage> {
                 content: const Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_circle_outline,
-                        color: Colors.green, size: 64),
+                    Icon(
+                      Icons.check_circle_outline,
+                      color: Colors.green,
+                      size: 64,
+                    ),
                     SizedBox(height: 16),
                     Text('You are now logged in to Bull Bitcoin!'),
                     SizedBox(height: 8),
@@ -118,7 +121,8 @@ class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
               )
             else
               WebViewWidget(
-                  controller: context.read<ExchangeCubit>().webViewController),
+                controller: context.read<ExchangeCubit>().webViewController,
+              ),
             if (isLoading && !hasError) const SizedBox.shrink(),
             if (apiKeyGenerating)
               ColoredBox(

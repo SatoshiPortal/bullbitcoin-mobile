@@ -80,8 +80,9 @@ class LabelStorageDatasource {
       final values = await _labelStorage.getStringList(anEntity) ?? [];
 
       return values
-          .map((v) =>
-              LabelModel.fromJson(json.decode(v) as Map<String, dynamic>))
+          .map(
+            (v) => LabelModel.fromJson(json.decode(v) as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
       debugPrint('$LabelStorageDatasource fetch: $e');

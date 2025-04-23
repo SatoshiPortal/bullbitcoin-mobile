@@ -99,7 +99,8 @@ class UserAutoBuyModel {
     return UserAutoBuyModel(
       isActive: json['isActive'] as bool,
       addresses: UserAutoBuyAddressesModel.fromJson(
-          json['addresses'] as Map<String, dynamic>),
+        json['addresses'] as Map<String, dynamic>,
+      ),
     );
   }
 

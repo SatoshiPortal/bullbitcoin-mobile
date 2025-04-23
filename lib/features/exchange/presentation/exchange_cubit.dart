@@ -41,8 +41,13 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   }
 
   void _setLoading(bool _) => emit(state.copyWith(isLoading: _));
-  void _setError({bool hasError = true, String message = ''}) => emit(state
-      .copyWith(hasError: hasError, errorMessage: message, isLoading: false));
+  void _setError({bool hasError = true, String message = ''}) => emit(
+        state.copyWith(
+          hasError: hasError,
+          errorMessage: message,
+          isLoading: false,
+        ),
+      );
   void _setCurrentUrl(String _) => emit(state.copyWith(currentUrl: _));
   void _setPreviousUrl(String _) => emit(state.copyWith(previousUrl: _));
   void _incrementCookieCheckAttempts() =>
@@ -281,7 +286,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       ''');
       await Future.delayed(const Duration(seconds: 2));
       _setApiKeyResponse(
-          '{"info": "Alternative API request submitted. Check console logs for details."}');
+        '{"info": "Alternative API request submitted. Check console logs for details."}',
+      );
     } catch (e) {
       debugPrint('Alternative API generation also failed: $e');
     }

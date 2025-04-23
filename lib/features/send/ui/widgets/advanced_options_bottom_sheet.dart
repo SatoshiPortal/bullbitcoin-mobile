@@ -30,10 +30,11 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               Center(
-                  child: BBText(
-                "Advanced options",
-                style: context.font.headlineMedium,
-              )),
+                child: BBText(
+                  "Advanced options",
+                  style: context.font.headlineMedium,
+                ),
+              ),
               Positioned(
                 right: 0,
                 child: IconButton(
@@ -53,9 +54,10 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
                 style: context.font.headlineMedium,
               ),
               BBSwitch(
-                  value: isRBFEnabled,
-                  onChanged: (val) =>
-                      context.read<SendCubit>().replaceByFeeChanged(val)),
+                value: isRBFEnabled,
+                onChanged: (val) =>
+                    context.read<SendCubit>().replaceByFeeChanged(val),
+              ),
             ],
           ),
           const Gap(24),
