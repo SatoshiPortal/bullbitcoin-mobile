@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_api_key_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +17,8 @@ class ExchangeCubit extends Cubit<ExchangeState> {
   ExchangeCubit({
     required SaveApiKeyUsecase saveApiKeyUsecase,
     required GetApiKeyUsecase getApiKeyUsecase,
-    required GetUserSummaryUseCase getUserSummaryUseCase,
   })  : _saveApiKeyUsecase = saveApiKeyUsecase,
         _getApiKeyUsecase = getApiKeyUsecase,
-        _getUserSummaryUseCase = getUserSummaryUseCase,
         super(const ExchangeState()) {
     _initController();
     _checkForAPIKeyAndLoadDetails();
@@ -29,7 +26,6 @@ class ExchangeCubit extends Cubit<ExchangeState> {
 
   final SaveApiKeyUsecase _saveApiKeyUsecase;
   final GetApiKeyUsecase _getApiKeyUsecase;
-  final GetUserSummaryUseCase _getUserSummaryUseCase;
 
   late final WebViewController webViewController;
   Timer? _cookieCheckTimer;
@@ -126,15 +122,16 @@ class ExchangeCubit extends Cubit<ExchangeState> {
         final Uri url = Uri.parse('https://${state.baseUrl}');
         webViewController.loadRequest(url);
       } else {
-        final bbxUrl = dotenv.env['BBX_URL'];
-        final Uri url = Uri.parse('https://$bbxUrl');
-        webViewController.loadRequest(url);
-        final user = await _getUserSummaryUseCase.execute(apiKey.key);
-        if (user != null) {
-          emit(state.copyWith(userSummary: user));
-        } else {
-          _setError(message: 'Failed to load user summary');
-        }
+        emit(state.copyWith(showLoginSuccessDialog: true));
+        // final bbxUrl = dotenv.env['BBX_URL'];
+        // final Uri url = Uri.parse('https://$bbxUrl');
+        // webViewController.loadRequest(url);
+        // final user = await _getUserSummaryUseCase.execute(apiKey.key);
+        // if (user != null) {
+        //   emit(state.copyWith(userSummary: user));
+        // } else {
+        //   _setError(message: 'Failed to load user summary');
+        // }
       }
     } catch (e) {
       _setError(message: 'Failed to load the page: $e');
@@ -312,108 +309,4 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       });
     }
   }
-
-  Future<void> checkAPIKey() async {}
-  Future<void> checkUser() async {}
 }
-
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-// 
-
-
-  // Future<void> _cookieManager() async {
-  //   try {
-  //     final cookieManager = WebviewCookieManager();
-  //     final gotCookies =
-  //         await cookieManager.getCookies('https://${state.baseUrl}');
-  //     if (gotCookies.isNotEmpty) {
-  //       for (final cookie in gotCookies) {
-  //         if (cookie.name == state.targetAuthCookie) {
-  //           final updatedCookies = Map<String, String>.from(state.allCookies);
-  //           updatedCookies[state.targetAuthCookie] = cookie.value;
-  //           _updateCookies(updatedCookies);
-  //           _setAuthenticated(true);
-  //           _stopCookiePolling();
-  //           return;
-  //         }
-  //       }
-  //     }
-  //     bool containsSessionToken = false;
-  //     bool containsCsrfToken = false;
-  //     for (final item in gotCookies) {
-  //       if (item.name.contains('csrf')) containsCsrfToken = true;
-  //       if (item.name == 'bb_session') containsSessionToken = true;
-  //     }
-  //     if (containsCsrfToken && containsSessionToken) {
-  //       final bbxUrl = dotenv.env['BBX_URL'];
-  //       if (bbxUrl != null && bbxUrl.isNotEmpty) {
-  //         final Uri url = Uri.parse('https://$bbxUrl');
-  //         webViewController.loadRequest(url);
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint('Error in cookie manager: $e');
-  //   }
-  // }

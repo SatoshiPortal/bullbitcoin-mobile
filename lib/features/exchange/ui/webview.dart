@@ -1,10 +1,10 @@
 // ignore_for_file: unused_field, use_late_for_private_fields_and_variables, use_build_context_synchronously, unused_element, deprecated_member_use
 
 import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_api_key_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
+import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -27,7 +27,6 @@ class _BullBitcoinWebViewPageState extends State<BullBitcoinWebViewPage> {
     _exchangeCubit = ExchangeCubit(
       saveApiKeyUsecase: locator<SaveApiKeyUsecase>(),
       getApiKeyUsecase: locator<GetApiKeyUsecase>(),
-      getUserSummaryUseCase: locator<GetUserSummaryUseCase>(),
     );
 
     super.initState();
@@ -45,38 +44,40 @@ class _BullBitcoinWebViewPageState extends State<BullBitcoinWebViewPage> {
       value: _exchangeCubit,
       child: BlocListener<ExchangeCubit, ExchangeState>(
         listenWhen: (prev, curr) =>
-            prev.showLoginSuccessDialog != curr.showLoginSuccessDialog,
+            prev.showLoginSuccessDialog != curr.showLoginSuccessDialog &&
+            curr.showLoginSuccessDialog,
         listener: (context, state) {
-          if (state.showLoginSuccessDialog) {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Login Successful'),
-                content: const Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.check_circle_outline,
-                      color: Colors.green,
-                      size: 64,
-                    ),
-                    SizedBox(height: 16),
-                    Text('You are now logged in to Bull Bitcoin!'),
-                    SizedBox(height: 8),
-                    Text('You can return to the wallet now.'),
-                  ],
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('OK'),
-                  ),
-                ],
-              ),
-            );
-          }
+          context.read<HomeBloc>().add(const GetUserDetails());
+          // if (state.showLoginSuccessDialog) {
+          //   showDialog(
+          //     context: context,
+          //     builder: (context) => AlertDialog(
+          //       title: const Text('Login Successful'),
+          //       content: const Column(
+          //         mainAxisSize: MainAxisSize.min,
+          //         children: [
+          //           Icon(
+          //             Icons.check_circle_outline,
+          //             color: Colors.green,
+          //             size: 64,
+          //           ),
+          //           SizedBox(height: 16),
+          //           Text('You are now logged in to Bull Bitcoin!'),
+          //           SizedBox(height: 8),
+          //           Text('You can return to the wallet now.'),
+          //         ],
+          //       ),
+          //       actions: [
+          //         TextButton(
+          //           onPressed: () {
+          //             Navigator.of(context).pop();
+          //           },
+          //           child: const Text('OK'),
+          //         ),
+          //       ],
+          //     ),
+          //   );
+          // }
         },
         child: const BullBitcoinWebView(),
       ),

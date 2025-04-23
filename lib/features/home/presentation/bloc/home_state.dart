@@ -2,13 +2,18 @@ part of 'home_bloc.dart';
 
 enum HomeStatus { initial, loading, success, failure }
 
+enum HomeTabs { wallets, exchange }
+
 @freezed
 sealed class HomeState with _$HomeState {
   const factory HomeState({
+    @Default(HomeTabs.wallets) HomeTabs selectedTab,
     @Default(HomeStatus.initial) HomeStatus status,
     @Default([]) List<Wallet> wallets,
     @Default(false) bool isSyncing,
     @Default(null) Object? error,
+    UserSummaryModel? userSummary,
+    @Default(false) bool checkingUser,
   }) = _HomeState;
   const HomeState._();
 
@@ -45,4 +50,6 @@ sealed class HomeState with _$HomeState {
               wallet.balanceSat > BigInt.from(0),
         );
   }
+
+  bool get showExchangeHome => userSummary != null || checkingUser;
 }

@@ -27,3 +27,13 @@ class HomeWalletSyncFinished extends HomeEvent {
 class StartTorInitialization extends HomeEvent {
   const StartTorInitialization();
 }
+
+class GetUserDetails extends HomeEvent {
+  const GetUserDetails();
+}
+
+class ChangeHomeTab extends HomeEvent {
+  final HomeTabs selectedTab;
+
+  const ChangeHomeTab(this.selectedTab);
+}
