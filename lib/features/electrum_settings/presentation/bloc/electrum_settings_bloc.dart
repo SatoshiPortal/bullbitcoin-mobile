@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_status_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart' show Network;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,12 +18,15 @@ class ElectrumSettingsBloc
     extends Bloc<ElectrumSettingsEvent, ElectrumSettingsState> {
   final GetAllElectrumServersUsecase _getAllElectrumServers;
   final CheckElectrumStatusUsecase _checkElectrumStatus;
+  final UpdateElectrumServerSettingsUsecase _updateElectrumServerSettings;
 
   ElectrumSettingsBloc({
     required GetAllElectrumServersUsecase getAllElectrumServers,
     required CheckElectrumStatusUsecase checkElectrumStatusUsecase,
+    required UpdateElectrumServerSettingsUsecase updateElectrumServerSettings,
   })  : _getAllElectrumServers = getAllElectrumServers,
         _checkElectrumStatus = checkElectrumStatusUsecase,
+        _updateElectrumServerSettings = updateElectrumServerSettings,
         super(const ElectrumSettingsState()) {
     on<LoadServers>(_onLoadServers);
     on<CheckServerStatus>(_onCheckServerStatus);
@@ -488,6 +492,9 @@ class ElectrumSettingsBloc
       final originalServers = List<ElectrumServer>.from(state.electrumServers);
       final stagedServers = state.stagedServers;
 
+      // Track success/failure of save operations
+      bool allSaved = true;
+
       // Validate URLs for custom servers before saving
       if (state.selectedProvider == ElectrumServerProvider.custom) {
         for (final server in stagedServers) {
@@ -504,8 +511,19 @@ class ElectrumSettingsBloc
         }
       }
 
-      // Apply staged changes to original servers
+      // Save each staged server to storage using the usecase
       for (final stagedServer in stagedServers) {
+        final success = await _updateElectrumServerSettings.execute(
+          electrumServer: stagedServer,
+        );
+
+        // If any server fails to save, mark overall operation as failed
+        if (!success) {
+          allSaved = false;
+          debugPrint('Failed to save server: ${stagedServer.url}');
+        }
+
+        // Update our in-memory model too
         final index = originalServers.indexWhere((server) =>
             server.network == stagedServer.network &&
             server.provider == stagedServer.provider);
@@ -518,16 +536,19 @@ class ElectrumSettingsBloc
       }
 
       emit(state.copyWith(
-        status: ElectrumSettingsStatus.success,
+        status: allSaved
+            ? ElectrumSettingsStatus.success
+            : ElectrumSettingsStatus.error,
+        statusError: allSaved ? '' : 'Some changes could not be saved',
         electrumServers: originalServers,
         stagedServers: [], // Clear staged changes
-        saveSuccessful: true,
+        saveSuccessful: allSaved,
       ));
     } catch (e) {
       debugPrint('Error saving server changes: $e');
       emit(state.copyWith(
         status: ElectrumSettingsStatus.error,
-        statusError: 'Failed to save server changes',
+        statusError: 'Failed to save server changes: $e',
       ));
     }
   }
