@@ -1,7 +1,41 @@
+import 'dart:convert';
+
+import 'package:bb_mobile/core/transaction/data/sqlite_datasource.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
+import 'package:bb_mobile/core/transaction/domain/entities/tx_script_sig.dart';
+import 'package:bb_mobile/core/transaction/domain/entities/tx_vin.dart';
+import 'package:bb_mobile/core/transaction/domain/entities/tx_vout.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
-class BdkMapper {
+class TransactionMapper {
+  static Transaction toModel(Tx tx) {
+    return Transaction(
+      txid: tx.txid,
+      version: tx.version,
+      size: tx.size.toString(),
+      vsize: tx.vsize.toString(),
+      locktime: tx.locktime,
+      vin: json.encode(tx.vin),
+      vout: json.encode(tx.vout),
+    );
+  }
+
+  static Tx fromSqlite(Transaction row) {
+    return Tx(
+      txid: row.txid,
+      version: row.version,
+      size: BigInt.parse(row.size),
+      vsize: BigInt.parse(row.vsize),
+      locktime: row.locktime,
+      vin: (json.decode(row.vin) as List)
+          .map((e) => TxVin.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      vout: (json.decode(row.vout) as List)
+          .map((e) => TxVout.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
   static Future<Tx> fromBytes(List<int> bytes) async {
     final bdkTx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
 
