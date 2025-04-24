@@ -5,7 +5,6 @@ import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 
 class ReceiveAmountScreen extends StatelessWidget {
   const ReceiveAmountScreen({super.key, this.onContinueNavigation});
@@ -28,34 +27,22 @@ class AmountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Gap(64),
-              ReceiveAmountEntry(),
-              Gap(64),
-              ReceiveNumberPad(),
-              Gap(64),
-            ],
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      behavior: HitTestBehavior.translucent,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const ReceiveAmountEntry(),
+          const ReceiveNumberPad(),
+          ReceiveAmountContinueButton(
+            onContinueNavigation: onContinueNavigation,
           ),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ReceiveAmountContinueButton(
-                onContinueNavigation: onContinueNavigation,
-              ),
-              const Gap(16),
-            ],
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
