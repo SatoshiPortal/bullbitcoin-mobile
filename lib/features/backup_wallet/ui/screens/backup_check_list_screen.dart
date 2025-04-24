@@ -56,18 +56,13 @@ class BackCheckListScreen extends StatelessWidget {
                 const Gap(16),
               ],
               const Gap(54),
-              Center(
-                child: SizedBox(
-                  width: 250,
-                  child: BBButton.big(
-                    textColor: context.colour.onSecondary,
-                    bgColor: context.colour.secondary,
-                    onPressed: () => context.pushNamed(
-                      TestWalletBackupSubroute.testPhysicalBackup.name,
-                    ),
-                    label: 'Backup',
-                  ),
+              BBButton.big(
+                textColor: context.colour.onSecondary,
+                bgColor: context.colour.secondary,
+                onPressed: () => context.pushNamed(
+                  TestWalletBackupSubroute.testPhysicalBackup.name,
                 ),
+                label: 'Backup',
               ),
               const Gap(60),
             ],
