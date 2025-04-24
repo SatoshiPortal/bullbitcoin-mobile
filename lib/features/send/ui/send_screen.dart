@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/scan/scan_widget.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -17,6 +18,7 @@ import 'package:bb_mobile/ui/components/segment/segmented_full.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
@@ -590,11 +592,27 @@ class _OnchainSendInfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: 'To',
-            details: BBText(
-              addressOrInvoice,
-              style: context.font.bodyLarge,
-              maxLines: 5,
-              textAlign: TextAlign.end,
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BBText(
+                  StringFormatting.truncateMiddle(addressOrInvoice),
+                  style: context.font.bodyLarge,
+                  textAlign: TextAlign.end,
+                ),
+                const Gap(4),
+                InkWell(
+                  child: Icon(
+                    Icons.copy,
+                    color: context.colour.primary,
+                    size: 16,
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: addressOrInvoice));
+                  },
+                ),
+              ],
             ),
             // const Gap(4),
             // InkWell(
@@ -708,11 +726,27 @@ class _SwapSendInfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: 'To',
-            details: BBText(
-              addressOrInvoice,
-              style: context.font.bodyLarge,
-              maxLines: 5,
-              textAlign: TextAlign.end,
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BBText(
+                  StringFormatting.truncateMiddle(addressOrInvoice),
+                  style: context.font.bodyLarge,
+                  textAlign: TextAlign.end,
+                ),
+                const Gap(4),
+                InkWell(
+                  child: Icon(
+                    Icons.copy,
+                    color: context.colour.primary,
+                    size: 16,
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: addressOrInvoice));
+                  },
+                ),
+              ],
             ),
             // const Gap(4),
             // InkWell(
