@@ -1,22 +1,17 @@
-import 'dart:ui';
-
 import 'package:bb_mobile/core/recoverbull/data/constants/backup_providers.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
     show CurrentKeyServerFlow;
 import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
-import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart' show AppRoute;
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/components/vault/vault_locations.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
     show BlocBuilder, BlocListener, BlocProvider, ReadContext;
-import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ChooseVaultProviderScreen extends StatefulWidget {
@@ -155,53 +150,8 @@ class _Screen extends StatelessWidget {
               onProviderSelected: (provider) =>
                   _handleProviderTap(context, provider),
             ),
-            const Gap(16),
-            _HowToDecideButton(),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _HowToDecideButton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => _showHowToDecideSheet(context),
-      child: BBText(
-        "How to decide?",
-        style: context.font.headlineLarge?.copyWith(
-          color: context.colour.primary,
-        ),
-      ),
-    );
-  }
-
-  void _showHowToDecideSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Stack(
-        children: [
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.25,
-                  color: context.colour.secondary.withAlpha(25),
-                ),
-              ),
-            ),
-          ),
-          const Align(
-            alignment: Alignment.bottomCenter,
-            child: HowToDecideSheetBackupOption(),
-          ),
-        ],
       ),
     );
   }
