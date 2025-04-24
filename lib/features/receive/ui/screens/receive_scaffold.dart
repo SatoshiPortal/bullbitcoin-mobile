@@ -15,28 +15,31 @@ class ReceiveScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Receive',
-          onBack: () {
-            if (context.canPop()) {
-              context.pop();
-            } else {
-              context.goNamed(AppRoute.home.name);
-            }
-          },
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: TopBar(
+            title: 'Receive',
+            onBack: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.goNamed(AppRoute.home.name);
+              }
+            },
+          ),
         ),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Gap(10),
-          const ReceiveNetworkSelection(),
-          Expanded(child: child),
-        ],
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Gap(10),
+            const ReceiveNetworkSelection(),
+            Expanded(child: child),
+          ],
+        ),
       ),
     );
   }
