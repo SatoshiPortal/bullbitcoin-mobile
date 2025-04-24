@@ -4,14 +4,6 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 part 'sqlite_datasource.g.dart';
 
-TableInfo<Table, dynamic> typeToTable<T extends Insertable>(Type type) {
-  final db = SqliteDatasource();
-
-  if (type == Transactions) return db.transactions;
-
-  throw UnsupportedError('Unknown table type $T');
-}
-
 @DriftDatabase(tables: [Transactions])
 class SqliteDatasource extends _$SqliteDatasource {
   SqliteDatasource([QueryExecutor? executor])
@@ -27,22 +19,27 @@ class SqliteDatasource extends _$SqliteDatasource {
     );
   }
 
-  Future<Transaction?> fetchTransaction(String txid) async {
-    return await (select(transactions)
-          ..where((table) => table.txid.equals(txid)))
-        .getSingleOrNull();
-  }
-
   Future<void> store<T extends Insertable>(T entity) async {
-    final table = typeToTable(entity.runtimeType);
+    final table = _typeToTable(entity.runtimeType);
     await into(table).insertOnConflictUpdate(entity);
   }
 
-  void clearCacheTables() {
+  Future<void> clearCacheTables() async {
     final cacheTables = [transactions];
 
     for (final table in cacheTables) {
-      delete(table).go();
+      await delete(table).go();
     }
+  }
+
+  TableInfo<Table, dynamic> _typeToTable<T extends Insertable>(Type type) {
+    final lowerPluralType = '${type.toString().toLowerCase()}s';
+    for (final table in allTables) {
+      if (table.actualTableName == lowerPluralType) {
+        return table;
+      }
+    }
+
+    throw Exception('$lowerPluralType does not match tables $allTables');
   }
 }

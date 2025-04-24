@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/transaction/data/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx_script_sig.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx_vin.dart';
