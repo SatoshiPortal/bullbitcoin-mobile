@@ -125,6 +125,8 @@ class SendCubit extends Cubit<SendState> {
         swapCreationException: null,
         swapLimitsException: null,
         invalidBitcoinStringException: null,
+        buildTransactionException: null,
+        confirmTransactionException: null,
       ),
     );
   }
@@ -574,6 +576,8 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> createTransaction() async {
     try {
+      clearAllExceptions();
+      emit(state.copyWith(finalizingTransaction: true));
       final address = state.lightningSwap != null
           ? state.lightningSwap!.paymentAddress
           : state.paymentRequest != null &&
@@ -616,7 +620,14 @@ class SendCubit extends Cubit<SendState> {
         );
       }
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(
+        state.copyWith(
+          buildTransactionException: BuildTransactionException(
+            e.toString(),
+          ),
+          finalizingTransaction: false,
+        ),
+      );
     }
   }
 
@@ -666,6 +677,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             txId: txId,
+            finalizingTransaction: false,
           ),
         );
       } else {
@@ -676,11 +688,19 @@ class SendCubit extends Cubit<SendState> {
             txId: txId,
             step: SendStep.success,
             payjoinSender: payjoinSender,
+            finalizingTransaction: false,
           ),
         );
       }
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(
+        state.copyWith(
+          confirmTransactionException: ConfirmTransactionException(
+            e.toString(),
+          ),
+          finalizingTransaction: false,
+        ),
+      );
     }
   }
 

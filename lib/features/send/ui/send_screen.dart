@@ -393,11 +393,76 @@ class SendConfirmScreen extends StatelessWidget {
               const _OnchainSendInfoSection(),
             const Gap(64),
             // const _Warning(),
+            const _ConfirmSendErrorSection(),
             const _BottomButtons(),
           ],
         ),
       ),
     );
+  }
+}
+
+class _ConfirmSendErrorSection extends StatelessWidget {
+  const _ConfirmSendErrorSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final buildError = context
+        .select((SendCubit cubit) => cubit.state.buildTransactionException);
+
+    final confirmError = context
+        .select((SendCubit cubit) => cubit.state.confirmTransactionException);
+
+    if (buildError != null) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            BBText(
+              buildError.title,
+              style: context.font.bodyLarge,
+              color: context.colour.error,
+              maxLines: 5,
+              textAlign: TextAlign.center,
+            ),
+            const Gap(8),
+            BBText(
+              buildError.message,
+              style: context.font.bodyMedium,
+              color: context.colour.error,
+              maxLines: 5,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+    if (confirmError != null) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            BBText(
+              confirmError.title,
+              style: context.font.bodyLarge,
+              color: context.colour.error,
+              maxLines: 5,
+              textAlign: TextAlign.center,
+            ),
+            const Gap(8),
+            BBText(
+              confirmError.message,
+              style: context.font.bodyMedium,
+              color: context.colour.error,
+              maxLines: 5,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 }
 
@@ -468,6 +533,9 @@ class ConfirmSendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final finalizingTransaction = context.select(
+      (SendCubit cubit) => cubit.state.finalizingTransaction,
+    );
     return BBButton.big(
       label: 'Confirm',
       onPressed: () {
@@ -475,6 +543,7 @@ class ConfirmSendButton extends StatelessWidget {
       },
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
+      disabled: finalizingTransaction,
     );
   }
 }
@@ -673,7 +742,7 @@ class _SwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'Total fees',
             details: BBText(
-              "${swap.fees?.totalFees} sats",
+              "${swap.fees?.totalFees(null)} sats",
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),

@@ -91,11 +91,15 @@ class SendState with _$SendState {
     @Default(false) bool amountConfirmedClicked,
     @Default(false) bool loadingBestWallet,
     @Default(false) bool creatingSwap,
+    @Default(false) bool finalizingTransaction,
     @Default('') String balanceApproximatedAmount,
     SwapCreationException? swapCreationException,
     InsufficientBalanceException? insufficientBalanceException,
     InvalidBitcoinStringException? invalidBitcoinStringException,
     SwapLimitsException? swapLimitsException,
+    BuildTransactionException? buildTransactionException,
+    ConfirmTransactionException? confirmTransactionException,
+
     // swapLimits
     SwapLimits? swapLimits,
     SwapFees? swapFees,
@@ -339,4 +343,26 @@ class SwapLimitsException implements Exception {
 
   @override
   String toString() => message;
+}
+
+class BuildTransactionException implements Exception {
+  final String message;
+
+  BuildTransactionException(this.message);
+
+  @override
+  String toString() => message;
+
+  String get title => 'Build Failed';
+}
+
+class ConfirmTransactionException implements Exception {
+  final String message;
+
+  ConfirmTransactionException(this.message);
+
+  @override
+  String toString() => message;
+
+  String get title => 'Confirmation Failed';
 }
