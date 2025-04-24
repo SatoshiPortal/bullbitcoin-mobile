@@ -260,11 +260,23 @@ class SendCubit extends Cubit<SendState> {
         );
       }
     } catch (e) {
-      emit(
-        state.copyWith(
-          error: e,
-        ),
-      );
+      if (e is NotEnoughFundsException) {
+        emit(
+          state.copyWith(
+            loadingBestWallet: false,
+            insufficientBalanceException: InsufficientBalanceException(
+              e.message,
+            ),
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            error: e,
+            loadingBestWallet: false,
+          ),
+        );
+      }
     }
   }
 
