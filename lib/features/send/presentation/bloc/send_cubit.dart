@@ -118,6 +118,17 @@ class SendCubit extends Cubit<SendState> {
     return super.close();
   }
 
+  void clearAllExceptions() {
+    emit(
+      state.copyWith(
+        insufficientBalanceException: null,
+        swapCreationException: null,
+        swapLimitsException: null,
+        invalidBitcoinStringException: null,
+      ),
+    );
+  }
+
   void backClicked() {
     if (state.step == SendStep.address) {
       emit(state.copyWith(step: SendStep.address));
@@ -142,6 +153,7 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> addressChanged(String address) async {
     try {
+      clearAllExceptions();
       emit(state.copyWith(addressOrInvoice: address.trim()));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
@@ -150,13 +162,10 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> continueOnAddressConfirmed() async {
     try {
+      clearAllExceptions();
       emit(
         state.copyWith(
           loadingBestWallet: true,
-          insufficientBalanceException: null,
-          swapCreationException: null,
-          error: null,
-          invalidBitcoinStringException: null,
         ),
       );
       PaymentRequest? paymentRequest;
@@ -309,12 +318,13 @@ class SendCubit extends Cubit<SendState> {
         final invoiceAmount = invoice.sats;
         final feeEstimate = state.swapFees?.totalFees(invoiceAmount) ?? 0;
         final totalPayable = invoiceAmount + feeEstimate;
-        return totalPayable < wallet.balanceSat.toInt();
+        return wallet.balanceSat.toInt() > totalPayable;
+
       case LnAddressPaymentRequest _:
         final invoiceAmount = state.inputAmountSat;
         final feeEstimate = state.swapFees?.totalFees(invoiceAmount) ?? 0;
         final totalPayable = invoiceAmount + feeEstimate;
-        return totalPayable < wallet.balanceSat.toInt();
+        return wallet.balanceSat.toInt() > totalPayable;
 
       default:
         // does not consider fees yet
@@ -349,6 +359,7 @@ class SendCubit extends Cubit<SendState> {
 
   void amountChanged(String amount) {
     try {
+      clearAllExceptions();
       String validatedAmount;
 
       if (amount.isEmpty) {
@@ -392,6 +403,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> onAmountConfirmed() async {
+    clearAllExceptions();
     emit(
       state.copyWith(
         amountConfirmedClicked: true,
@@ -401,7 +413,9 @@ class SendCubit extends Cubit<SendState> {
     if (!await hasBalance()) {
       emit(
         state.copyWith(
-          insufficientBalanceException: InsufficientBalanceException(),
+          insufficientBalanceException: InsufficientBalanceException(
+            message: 'Not enough funds to cover amount and fees',
+          ),
           amountConfirmedClicked: false,
         ),
       );
@@ -411,26 +425,59 @@ class SendCubit extends Cubit<SendState> {
       final swapType = state.selectedWallet!.isLiquid
           ? SwapType.liquidToLightning
           : SwapType.bitcoinToLightning;
+
+      if (state.swapAmountBelowLimit) {
+        emit(
+          state.copyWith(
+            swapLimitsException: SwapLimitsException(
+              'Amount below minimum swap limit: ${state.swapLimits!.min} sats',
+            ),
+            amountConfirmedClicked: false,
+          ),
+        );
+        return;
+      }
+      if (state.swapAmountAboveLimit) {
+        emit(
+          state.copyWith(
+            swapLimitsException: SwapLimitsException(
+              'Amount above maximum swap limit: ${state.swapLimits!.max} sats',
+            ),
+            amountConfirmedClicked: false,
+          ),
+        );
+        return;
+      }
       emit(
         state.copyWith(
           creatingSwap: true,
         ),
       );
-      final swap = await _createSendSwapUsecase.execute(
-        walletId: state.selectedWallet!.id,
-        type: swapType,
-        lnAddress: state.addressOrInvoice,
-        amountSat: state.confirmedAmountSat,
-      );
-      _watchLnSendSwap(swap.id);
-      emit(
-        state.copyWith(
-          amountConfirmedClicked: true,
-          step: SendStep.confirm,
-          lightningSwap: swap,
-          creatingSwap: false,
-        ),
-      );
+      try {
+        final swap = await _createSendSwapUsecase.execute(
+          walletId: state.selectedWallet!.id,
+          type: swapType,
+          lnAddress: state.addressOrInvoice,
+          amountSat: state.confirmedAmountSat,
+        );
+        _watchLnSendSwap(swap.id);
+        emit(
+          state.copyWith(
+            amountConfirmedClicked: true,
+            step: SendStep.confirm,
+            lightningSwap: swap,
+            creatingSwap: false,
+          ),
+        );
+      } catch (e) {
+        emit(
+          state.copyWith(
+            creatingSwap: false,
+            swapCreationException: SwapCreationException(e.toString()),
+            amountConfirmedClicked: false,
+          ),
+        );
+      }
     }
     emit(
       state.copyWith(

@@ -38,10 +38,6 @@ class SwapFees {
   });
 
   int? totalFees(int? amount) {
-    if (boltzFee == null) {
-      return null;
-    }
-
     int total = 0;
     if (boltzFee != null) total += boltzFee!;
     if (boltzFee == null) {

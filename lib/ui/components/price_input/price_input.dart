@@ -107,6 +107,7 @@ class PriceInput extends StatelessWidget {
           error ?? '',
           style: context.font.bodyLarge,
           color: error != null ? context.colour.error : Colors.transparent,
+          maxLines: 2,
         ),
         // ),
         // ],

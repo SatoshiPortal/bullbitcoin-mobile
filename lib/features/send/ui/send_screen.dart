@@ -224,14 +224,17 @@ class SendAmountScreen extends StatelessWidget {
       body: BlocBuilder<SendCubit, SendState>(
         builder: (context, state) {
           final cubit = context.read<SendCubit>();
-          final hasBalance = context.select(
+          final balanceError = context.select(
+            (SendCubit cubit) => cubit.state.insufficientBalanceException,
+          );
+          final swapLimitsError = context.select(
+            (SendCubit cubit) => cubit.state.swapLimitsException,
+          );
+          final swapCreationError = context.select(
+            (SendCubit cubit) => cubit.state.swapCreationException,
+          );
+          final walletHasBalance = context.select(
             (SendCubit cubit) => cubit.state.walletHasBalance(),
-          );
-          final isBelowSwapLimit = context.select<SendCubit, bool>(
-            (bloc) => bloc.state.swapAmountBelowLimit,
-          );
-          final isAboveSwapLimit = context.select<SendCubit, bool>(
-            (bloc) => bloc.state.swapAmountAboveLimit,
           );
           return IgnorePointer(
             ignoring: state.amountConfirmedClicked,
@@ -260,13 +263,13 @@ class SendAmountScreen extends StatelessWidget {
                         ],
                         onNoteChanged: cubit.noteChanged,
                         onCurrencyChanged: cubit.currencyCodeChanged,
-                        error: !hasBalance
-                            ? 'Insufficient balance'
-                            : isBelowSwapLimit
-                                ? 'Amount below swap limit'
-                                : isAboveSwapLimit
-                                    ? 'Amount above swap limit'
-                                    : null,
+                        error: balanceError != null
+                            ? balanceError.toString()
+                            : !walletHasBalance
+                                ? 'Insufficient balance'
+                                : swapLimitsError != null
+                                    ? swapLimitsError.toString()
+                                    : swapCreationError?.toString(),
                       ),
                       const Gap(64),
                       BalanceRow(
@@ -318,12 +321,6 @@ class SendAmountConfirmButton extends StatelessWidget {
     final amountConfirmedClicked = context.select(
       (SendCubit cubit) => cubit.state.amountConfirmedClicked,
     );
-    final isBelowSwapLimit = context.select<SendCubit, bool>(
-      (bloc) => bloc.state.swapAmountBelowLimit,
-    );
-    final isAboveSwapLimit = context.select<SendCubit, bool>(
-      (bloc) => bloc.state.swapAmountAboveLimit,
-    );
     final creatingSwap = context.select(
       (SendCubit cubit) => cubit.state.creatingSwap,
     );
@@ -332,11 +329,7 @@ class SendAmountConfirmButton extends StatelessWidget {
       onPressed: () {
         context.read<SendCubit>().onAmountConfirmed();
       },
-      disabled: amountConfirmedClicked ||
-          !hasBalance ||
-          isBelowSwapLimit ||
-          isAboveSwapLimit ||
-          creatingSwap,
+      disabled: amountConfirmedClicked || !hasBalance || creatingSwap,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );

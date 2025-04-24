@@ -65,9 +65,9 @@ class BoltzDatasource {
       case swap_entity.SwapType.liquidToLightning:
         final fees = await allFees.submarine();
         final swapFees = swap_entity.SwapFees(
-          boltzPercent: fees.btcFees.percentage,
-          lockupFee: fees.btcFees.minerFees.toInt(),
-          claimFee: fees.btcFees.minerFees.toInt(),
+          boltzPercent: fees.lbtcFees.percentage,
+          lockupFee: fees.lbtcFees.minerFees.toInt(),
+          claimFee: fees.lbtcFees.minerFees.toInt(),
         );
         return swapFees;
       case swap_entity.SwapType.bitcoinToLiquid:
