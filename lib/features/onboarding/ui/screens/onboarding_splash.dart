@@ -21,6 +21,7 @@ class OnboardingSplash extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          const _BG(),
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -116,28 +117,28 @@ class _Actions extends StatelessWidget {
   }
 }
 
-// class _BG extends StatelessWidget {
-//   const _BG();
+class _BG extends StatelessWidget {
+  const _BG();
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Stack(
-//       children: [
-//         Container(
-//           color: context.colour.primary,
-//           height: double.infinity,
-//           width: double.infinity,
-//         ),
-//         Opacity(
-//           opacity: 0.1,
-//           child: Image.asset(
-//             Assets.images2.bgLong.path,
-//             fit: BoxFit.cover,
-//             height: double.infinity,
-//             width: double.infinity,
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          color: context.colour.primary,
+          height: double.infinity,
+          width: double.infinity,
+        ),
+        Opacity(
+          opacity: 0.1,
+          child: Image.asset(
+            Assets.images2.bgLong.path,
+            fit: BoxFit.cover,
+            height: double.infinity,
+            width: double.infinity,
+          ),
+        ),
+      ],
+    );
+  }
+}
