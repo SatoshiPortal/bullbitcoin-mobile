@@ -576,6 +576,10 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
     );
+    final paymentRequest = context.select(
+      (SendCubit cubit) => cubit.state.paymentRequest,
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -597,7 +601,9 @@ class _OnchainSendInfoSection extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 BBText(
-                  StringFormatting.truncateMiddle(addressOrInvoice),
+                  (paymentRequest != null && paymentRequest.isBolt11)
+                      ? StringFormatting.truncateMiddle(addressOrInvoice)
+                      : addressOrInvoice,
                   style: context.font.bodyLarge,
                   textAlign: TextAlign.end,
                 ),
