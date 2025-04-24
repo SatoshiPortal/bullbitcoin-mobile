@@ -331,7 +331,7 @@ class SendCubit extends Cubit<SendState> {
       default:
         // does not consider fees yet
         // we will only consider fee estimate at this stage
-        return wallet.balanceSat.toInt() > state.inputAmountSat;
+        return wallet.balanceSat.toInt() >= state.inputAmountSat;
     }
   }
 
