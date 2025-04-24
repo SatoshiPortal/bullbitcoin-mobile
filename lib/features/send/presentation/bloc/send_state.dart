@@ -94,6 +94,7 @@ class SendState with _$SendState {
     @Default('') String balanceApproximatedAmount,
     SwapCreationException? swapCreationException,
     InsufficientBalanceException? insufficientBalanceException,
+    InvalidBitcoinStringException? invalidBitcoinStringException,
     // swapLimits
     SwapLimits? swapLimits,
     SwapFees? swapFees,
@@ -311,7 +312,20 @@ class SwapCreationException implements Exception {
 class InsufficientBalanceException implements Exception {
   final String message;
 
-  InsufficientBalanceException(this.message);
+  InsufficientBalanceException({
+    this.message = 'Not enough balance to cover this payment',
+  });
+
+  @override
+  String toString() => message;
+}
+
+class InvalidBitcoinStringException implements Exception {
+  final String message;
+
+  InvalidBitcoinStringException({
+    this.message = 'Invalid Bitcoin Payment Address or Invoice',
+  });
 
   @override
   String toString() => message;

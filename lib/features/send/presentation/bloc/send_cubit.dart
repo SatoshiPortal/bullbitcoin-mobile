@@ -151,11 +151,28 @@ class SendCubit extends Cubit<SendState> {
   Future<void> continueOnAddressConfirmed() async {
     try {
       emit(
-        state.copyWith(loadingBestWallet: true),
+        state.copyWith(
+          loadingBestWallet: true,
+          insufficientBalanceException: null,
+          swapCreationException: null,
+          error: null,
+          invalidBitcoinStringException: null,
+        ),
       );
-      final paymentRequest = await _detectBitcoinStringUsecase.execute(
-        data: state.addressOrInvoice,
-      );
+      PaymentRequest? paymentRequest;
+      try {
+        paymentRequest = await _detectBitcoinStringUsecase.execute(
+          data: state.addressOrInvoice,
+        );
+      } catch (e) {
+        emit(
+          state.copyWith(
+            loadingBestWallet: false,
+            invalidBitcoinStringException: InvalidBitcoinStringException(),
+          ),
+        );
+        return;
+      }
 
       final wallet = await _bestWalletUsecase.execute(
         wallets: state.wallets,
@@ -213,9 +230,7 @@ class SendCubit extends Cubit<SendState> {
         if (!await hasBalance()) {
           emit(
             state.copyWith(
-              insufficientBalanceException: InsufficientBalanceException(
-                'Not enough balance to cover this payment.',
-              ),
+              insufficientBalanceException: InsufficientBalanceException(),
               creatingSwap: false,
               loadingBestWallet: false,
             ),
@@ -264,9 +279,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             loadingBestWallet: false,
-            insufficientBalanceException: InsufficientBalanceException(
-              e.message,
-            ),
+            insufficientBalanceException: InsufficientBalanceException(),
           ),
         );
       } else {
@@ -388,9 +401,7 @@ class SendCubit extends Cubit<SendState> {
     if (!await hasBalance()) {
       emit(
         state.copyWith(
-          insufficientBalanceException: InsufficientBalanceException(
-            'Not enough balance to cover the payment and fees.',
-          ),
+          insufficientBalanceException: InsufficientBalanceException(),
           amountConfirmedClicked: false,
         ),
       );

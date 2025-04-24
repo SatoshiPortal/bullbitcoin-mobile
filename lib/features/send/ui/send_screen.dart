@@ -79,7 +79,7 @@ class SendAddressScreen extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: Container(
                 alignment: Alignment.bottomCenter,
-                height: 250,
+                // height: 250,
                 decoration: BoxDecoration(
                   color: context.colour.onPrimary,
                   borderRadius: const BorderRadius.only(
@@ -98,9 +98,11 @@ class SendAddressScreen extends StatelessWidget {
                     ),
                     const Gap(16),
                     const AddressField(),
-                    const Gap(13 + 16),
+                    const Gap(16),
+                    const AddressErrorSection(),
+                    const Gap(16),
                     const SendContinueWithAddressButton(),
-                    const Gap(24),
+                    const Gap(42),
                   ],
                 ),
               ),
@@ -119,9 +121,6 @@ class SendContinueWithAddressButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final error = context.select(
-      (SendCubit cubit) => cubit.state.error,
-    );
     final loadingBestWallet = context.select(
       (SendCubit cubit) => cubit.state.loadingBestWallet,
     );
@@ -135,7 +134,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
-      disabled: loadingBestWallet || error != null || creatingSwap,
+      disabled: loadingBestWallet || creatingSwap,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );
@@ -154,6 +153,56 @@ class AddressField extends StatelessWidget {
       text: address,
       onChanged: (text) => context.read<SendCubit>().addressChanged(text),
     );
+  }
+}
+
+class AddressErrorSection extends StatelessWidget {
+  const AddressErrorSection({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final balanceError = context.select(
+      (SendCubit cubit) => cubit.state.insufficientBalanceException,
+    );
+    final swapError = context.select(
+      (SendCubit cubit) => cubit.state.swapCreationException,
+    );
+    final invalidAddress = context.select(
+      (SendCubit cubit) => cubit.state.invalidBitcoinStringException,
+    );
+    if (balanceError != null) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: BBText(
+          balanceError.message,
+          style: context.font.bodyMedium,
+          color: context.colour.error,
+          maxLines: 2,
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    if (swapError != null) {
+      return BBText(
+        swapError.message,
+        style: context.font.bodyMedium,
+        color: context.colour.error,
+        maxLines: 2,
+        textAlign: TextAlign.center,
+      );
+    }
+    if (invalidAddress != null) {
+      return BBText(
+        invalidAddress.toString(),
+        style: context.font.bodyMedium,
+        color: context.colour.error,
+        maxLines: 2,
+        textAlign: TextAlign.center,
+      );
+    }
+    return const SizedBox.shrink();
   }
 }
 
