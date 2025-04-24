@@ -596,12 +596,15 @@ class _OnchainSendInfoSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                BBText(
-                  StringFormatting.truncateMiddle(addressOrInvoice),
-                  style: context.font.bodyLarge,
-                  textAlign: TextAlign.end,
+                Expanded(
+                  child: BBText(
+                    addressOrInvoice,
+                    maxLines: 5,
+                    style: context.font.bodyLarge,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
-                const Gap(4),
+                const Gap(8),
                 InkWell(
                   child: Icon(
                     Icons.copy,
