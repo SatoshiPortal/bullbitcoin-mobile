@@ -41,7 +41,7 @@ class CreateReceiveSwapUsecase {
 
       final swapRepository =
           wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
-      final limits = await _swapRepository.getSwapLimits(
+      final (limits, fees) = await _swapRepository.getSwapLimitsAndFees(
         type: type,
       );
       if (amountSat < limits.min) {

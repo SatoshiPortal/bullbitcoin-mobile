@@ -565,28 +565,34 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<SwapLimits> getSwapLimits({
+  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees({
     required SwapType type,
   }) async {
     switch (type) {
       case SwapType.lightningToBitcoin:
         final (min, max) = await _boltz.getBtcReverseSwapLimits();
-        return SwapLimits(min: min, max: max);
+        final fees = await _boltz.getSwapFees(type);
+        return (SwapLimits(min: min, max: max), fees);
       case SwapType.lightningToLiquid:
         final (min, max) = await _boltz.getLbtcReverseSwapLimits();
-        return SwapLimits(min: min, max: max);
+        final fees = await _boltz.getSwapFees(type);
+        return (SwapLimits(min: min, max: max), fees);
       case SwapType.liquidToLightning:
         final (min, max) = await _boltz.getLbtcSubmarineSwapLimits();
-        return SwapLimits(min: min, max: max);
+        final fees = await _boltz.getSwapFees(type);
+        return (SwapLimits(min: min, max: max), fees);
       case SwapType.bitcoinToLightning:
         final (min, max) = await _boltz.getBtcSubmarineSwapLimits();
-        return SwapLimits(min: min, max: max);
+        final fees = await _boltz.getSwapFees(type);
+        return (SwapLimits(min: min, max: max), fees);
       case SwapType.liquidToBitcoin:
         final (min, max) = await _boltz.getLbtcToBtcChainSwapLimits();
-        return SwapLimits(min: min, max: max);
+        final fees = await _boltz.getSwapFees(type);
+        return (SwapLimits(min: min, max: max), fees);
       case SwapType.bitcoinToLiquid:
         final (min, max) = await _boltz.getBtcToLbtcChainSwapLimits();
-        return SwapLimits(min: min, max: max);
+        final fees = await _boltz.getSwapFees(type);
+        return (SwapLimits(min: min, max: max), fees);
     }
   }
 

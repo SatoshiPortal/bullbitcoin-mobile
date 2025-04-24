@@ -92,8 +92,11 @@ class SendState with _$SendState {
     @Default(false) bool loadingBestWallet,
     @Default(false) bool creatingSwap,
     @Default('') String balanceApproximatedAmount,
+    SwapCreationException? swapCreationException,
+    InsufficientBalanceException? insufficientBalanceException,
     // swapLimits
     SwapLimits? swapLimits,
+    SwapFees? swapFees,
   }) = _SendState;
   const SendState._();
 
@@ -293,4 +296,23 @@ class SendState with _$SendState {
     return lightningSwap != null &&
         lightningSwap!.status == SwapStatus.completed;
   }
+}
+
+class SwapCreationException implements Exception {
+  final String message;
+
+  SwapCreationException(this.message);
+
+  @override
+  String toString() => message;
+  String get displayMessage => 'Failed to create swap.';
+}
+
+class InsufficientBalanceException implements Exception {
+  final String message;
+
+  InsufficientBalanceException(this.message);
+
+  @override
+  String toString() => message;
 }

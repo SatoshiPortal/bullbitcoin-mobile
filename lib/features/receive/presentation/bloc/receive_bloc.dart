@@ -286,7 +286,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       if (state.swapLimits == null) {
         // If the swap limits are not set yet, fetch them.
-        final swapLimits = await _getSwapLimitsUsecase.execute(
+        final (swapLimits, fees) = await _getSwapLimitsUsecase.execute(
           type: SwapType.lightningToLiquid,
           isTestnet: wallet.network.isTestnet,
         );

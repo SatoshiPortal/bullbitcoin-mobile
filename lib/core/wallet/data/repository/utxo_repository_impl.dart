@@ -57,30 +57,32 @@ class UtxoRepositoryImpl implements UtxoRepository {
     final frozenUtxos =
         await _frozenUtxoDatasource.getFrozenUtxos(walletId: walletId);
 
-    final utxos = await Future.wait(utxoModels.map((model) async {
-      // Get the address for the UTXO
-      final address = await _getAddressOfUtxo(
-        model,
-        walletDatasource: walletDatasource,
-        walletModel: walletModel,
-        isLiquid: metadata.isLiquid,
-      );
-      // Get labels for the UTXO if any
-      final labelModels = await _labelStorageDatasource.fetchByRef(
-        Entity.output,
-        model.labelRef,
-      );
-      // Check if the UTXO is frozen
-      final isFrozen = frozenUtxos.any(
-        (frozenUtxo) =>
-            frozenUtxo.txId == model.txId && frozenUtxo.vout == model.vout,
-      );
-      return model.toEntity(
-        isFrozen: isFrozen,
-        address: address,
-        labels: labelModels.map((model) => model.label).toList(),
-      );
-    }).toList());
+    final utxos = await Future.wait(
+      utxoModels.map((model) async {
+        // Get the address for the UTXO
+        final address = await _getAddressOfUtxo(
+          model,
+          walletDatasource: walletDatasource,
+          walletModel: walletModel,
+          isLiquid: metadata.isLiquid,
+        );
+        // Get labels for the UTXO if any
+        final labelModels = await _labelStorageDatasource.fetchByRef(
+          Entity.output,
+          model.labelRef,
+        );
+        // Check if the UTXO is frozen
+        final isFrozen = frozenUtxos.any(
+          (frozenUtxo) =>
+              frozenUtxo.txId == model.txId && frozenUtxo.vout == model.vout,
+        );
+        return model.toEntity(
+          isFrozen: isFrozen,
+          address: address,
+          labels: labelModels.map((model) => model.label).toList(),
+        );
+      }).toList(),
+    );
 
     return utxos;
   }

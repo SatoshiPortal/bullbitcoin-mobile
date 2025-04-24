@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -120,6 +121,7 @@ class SendLocator {
         sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
         watchFinishedWalletSyncsUsecase:
             locator<WatchFinishedWalletSyncsUsecase>(),
+        decodeInvoiceUsecase: locator<DecodeInvoiceUsecase>(),
       ),
     );
   }

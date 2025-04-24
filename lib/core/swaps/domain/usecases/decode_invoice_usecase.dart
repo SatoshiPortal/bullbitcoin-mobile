@@ -1,38 +1,27 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
-import 'package:flutter/foundation.dart';
 
-class GetSwapLimitsUsecase {
+class DecodeInvoiceUsecase {
   final SwapRepository _mainnetSwapRepository;
   final SwapRepository _testnetSwapRepository;
 
-  GetSwapLimitsUsecase({
+  DecodeInvoiceUsecase({
     required SwapRepository mainnetSwapRepository,
     required SwapRepository testnetSwapRepository,
   })  : _mainnetSwapRepository = mainnetSwapRepository,
         _testnetSwapRepository = testnetSwapRepository;
 
-  Future<(SwapLimits, SwapFees)> execute({
-    required SwapType type,
+  Future<Invoice> execute({
+    required String invoice,
     bool isTestnet = false,
   }) async {
     try {
       final swapRepository =
           isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
 
-      return await swapRepository.getSwapLimitsAndFees(type: type);
+      return await swapRepository.decodeInvoice(invoice: invoice);
     } catch (e) {
-      debugPrint('[GetSwapLimitsUsecase] Error getting swap limits: $e');
-      throw GetSwapLimitsException(e.toString());
+      throw e.toString();
     }
   }
-}
-
-class GetSwapLimitsException implements Exception {
-  final String message;
-
-  GetSwapLimitsException(this.message);
-
-  @override
-  String toString() => 'GetSwapLimitsException: $message';
 }

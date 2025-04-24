@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 
 abstract class SwapRepository {
   // LIMITS
-  Future<SwapLimits> getSwapLimits({
+  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees({
     required SwapType type,
   });
 

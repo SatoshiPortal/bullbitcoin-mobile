@@ -106,7 +106,8 @@ class CoinSelectTile extends StatelessWidget {
                         BBText(
                           'Address: ',
                           style: context.font.labelMedium?.copyWith(
-                              color: context.colour.surfaceContainer),
+                            color: context.colour.surfaceContainer,
+                          ),
                         ),
                         Expanded(
                           child: BBText(
@@ -118,7 +119,8 @@ class CoinSelectTile extends StatelessWidget {
                         BBText(
                           'Type: ',
                           style: context.font.labelMedium?.copyWith(
-                              color: context.colour.surfaceContainer),
+                            color: context.colour.surfaceContainer,
+                          ),
                         ),
                         BBText(
                           addressType,
