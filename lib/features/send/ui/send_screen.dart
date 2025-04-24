@@ -576,9 +576,6 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
     );
-    final paymentRequest = context.select(
-      (SendCubit cubit) => cubit.state.paymentRequest,
-    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -600,14 +597,15 @@ class _OnchainSendInfoSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                BBText(
-                  (paymentRequest != null && paymentRequest.isBolt11)
-                      ? StringFormatting.truncateMiddle(addressOrInvoice)
-                      : addressOrInvoice,
-                  style: context.font.bodyLarge,
-                  textAlign: TextAlign.end,
+                Expanded(
+                  child: BBText(
+                    addressOrInvoice,
+                    maxLines: 5,
+                    style: context.font.bodyLarge,
+                    textAlign: TextAlign.end,
+                  ),
                 ),
-                const Gap(4),
+                const Gap(8),
                 InkWell(
                   child: Icon(
                     Icons.copy,

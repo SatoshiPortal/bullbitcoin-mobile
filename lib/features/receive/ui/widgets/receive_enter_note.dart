@@ -15,6 +15,7 @@ class ReceiveEnterNote extends StatelessWidget {
 
     await showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       backgroundColor: context.colour.onPrimary,
       constraints: const BoxConstraints(
         minHeight: 200,
