@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_da
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_extension.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
