@@ -1,18 +1,18 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/locator.dart';
 
 class WalletMetadataDatasource {
-  final KeyValueStorageDatasource<String> _walletMetadataStorage;
+  final SqliteDatasource _sqlite;
 
   const WalletMetadataDatasource({
-    required KeyValueStorageDatasource<String> walletMetadataStorage,
-  }) : _walletMetadataStorage = walletMetadataStorage;
+    required SqliteDatasource sqliteDatasource,
+  }) : _sqlite = sqliteDatasource;
 
   Future<WalletMetadataModel> deriveFromSeed({
     required Seed seed,
@@ -124,37 +124,34 @@ class WalletMetadataDatasource {
     );
   }
 
-  Future<void> store(
-    WalletMetadataModel metadata,
-  ) async {
-    final value = jsonEncode(metadata.toJson());
-    await _walletMetadataStorage.saveValue(key: metadata.id, value: value);
+  Future<void> store(WalletMetadataModel metadata) async {
+    final sqliteMetadata = WalletMetadataMapper.fromModelToSqlite(metadata);
+    await locator<SqliteDatasource>().store<WalletMetadata>(sqliteMetadata);
   }
 
   Future<WalletMetadataModel?> get(String id) async {
-    final value = await _walletMetadataStorage.getValue(id);
+    final table = _sqlite.walletMetadatas;
+    final metadata = await (_sqlite.select(table)
+          ..where((table) => table.id.equals(id)))
+        .getSingleOrNull();
 
-    if (value == null) {
-      return null;
-    }
-
-    final json = jsonDecode(value) as Map<String, dynamic>;
-    final metadata = WalletMetadataModel.fromJson(json);
-
-    return metadata;
+    if (metadata == null) return null;
+    return WalletMetadataMapper.fromSqliteToModel(metadata);
   }
 
   Future<List<WalletMetadataModel>> getAll() async {
-    final map = await _walletMetadataStorage.getAll();
+    final table = _sqlite.walletMetadatas;
 
-    return map.values
-        .map((value) => jsonDecode(value) as Map<String, dynamic>)
-        .map((json) => WalletMetadataModel.fromJson(json))
+    final metadatas = await _sqlite.select(table).get();
+    return metadatas
+        .map((e) => WalletMetadataMapper.fromSqliteToModel(e))
         .toList();
   }
 
-  Future<void> delete(String id) {
-    return _walletMetadataStorage.deleteValue(id);
+  Future<void> delete(String id) async {
+    await (_sqlite.delete(_sqlite.walletMetadatas)
+          ..where((t) => t.id.equals(id)))
+        .go();
   }
 }
 
