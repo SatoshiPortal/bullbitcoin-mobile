@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
@@ -489,7 +488,8 @@ class SendCubit extends Cubit<SendState> {
         );
       }
     }
-    // TODO: build transaction
+    await createTransaction();
+
     emit(
       state.copyWith(
         step: SendStep.confirm,
@@ -663,8 +663,22 @@ class SendCubit extends Cubit<SendState> {
         if (paymentRequest != null &&
             paymentRequest is Bip21PaymentRequest &&
             paymentRequest.pj.isNotEmpty) {
+          final payjoinSender = await _sendWithPayjoinUsecase.execute(
+            walletId: state.selectedWallet!.id,
+            bip21: paymentRequest.uri,
+            unsignedOriginalPsbt: state.unsignedPsbt!,
+            networkFeesSatPerVb: state.selectedFee!.isRelative
+                ? state.selectedFee!.value as double
+                : 1,
+            expireAfterSec: PayjoinConstants.defaultExpireAfterSec,
+          );
+          // TODO: Watch the payjoin and transaction to update the txId with the
+          //  payjoin txId if it is completed.
+          final txId = payjoinSender.originalTxId;
           emit(
             state.copyWith(
+              txId: txId,
+              payjoinSender: payjoinSender,
               signingTransaction: false,
             ),
           );
@@ -698,62 +712,45 @@ class SendCubit extends Cubit<SendState> {
     try {
       emit(state.copyWith(broadcastingTransaction: true));
 
-      String txId;
-      PayjoinSender? payjoinSender;
       if (state.selectedWallet!.network.isLiquid) {
-        txId = await _broadcastLiquidTxUsecase.execute(
+        final txId = await _broadcastLiquidTxUsecase.execute(
           state.signedLiquidTx!,
         );
+        emit(state.copyWith(txId: txId));
       } else {
         final paymentRequest = state.paymentRequest;
         if (paymentRequest != null &&
             paymentRequest is Bip21PaymentRequest &&
             paymentRequest.pj.isNotEmpty) {
-          payjoinSender = await _sendWithPayjoinUsecase.execute(
-            walletId: state.selectedWallet!.id,
-            bip21: paymentRequest.uri,
-            unsignedOriginalPsbt: state.unsignedPsbt!,
-            networkFeesSatPerVb: state.selectedFee!.isRelative
-                ? state.selectedFee!.value as double
-                : 1,
-            expireAfterSec: PayjoinConstants.defaultExpireAfterSec,
+          emit(
+            state.copyWith(
+              broadcastingTransaction: false,
+            ),
           );
-          // TODO: Watch the payjoin and transaction to update the txId with the
-          //  payjoin txId if it is completed.
-          txId = payjoinSender.originalTxId;
         } else {
-          txId = await _broadcastBitcoinTxUsecase.execute(
+          final txId = await _broadcastBitcoinTxUsecase.execute(
             state.signedBitcoinPsbt!,
           );
+          emit(state.copyWith(txId: txId));
         }
       }
 
       if (state.lightningSwap != null) {
         await _updatePaidSendSwapUsecase.execute(
-          txid: txId,
+          txid: state.txId!,
           swapId: state.lightningSwap!.id,
           network: state.selectedWallet!.network,
         );
       }
-      if (state.isLightning) {
-        emit(
-          state.copyWith(
-            txId: txId,
-            broadcastingTransaction: false,
-          ),
-        );
-      } else {
-        // Start syncing the wallet now that the transaction is confirmed
-        _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
-        emit(
-          state.copyWith(
-            txId: txId,
-            step: SendStep.success,
-            payjoinSender: payjoinSender,
-            broadcastingTransaction: false,
-          ),
-        );
-      }
+      Future.delayed(const Duration(seconds: 3));
+      // Start syncing the wallet now that the transaction is confirmed
+      _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
+      emit(
+        state.copyWith(
+          step: SendStep.success,
+          broadcastingTransaction: false,
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
