@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
-import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
@@ -20,13 +20,13 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/locator.dart';
@@ -38,13 +38,6 @@ class SendLocator {
   }
 
   static void registerUsecases() {
-    locator.registerFactory<ConfirmBitcoinSendUsecase>(
-      () => ConfirmBitcoinSendUsecase(
-        walletRepository: locator<WalletRepository>(),
-        bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
-        bitcoinBlockchainRepository: locator<BitcoinBlockchainRepository>(),
-      ),
-    );
     locator.registerFactory<DetectBitcoinStringUsecase>(
       () => DetectBitcoinStringUsecase(),
     );
@@ -59,10 +52,14 @@ class SendLocator {
         liquidWalletRepository: locator<LiquidWalletRepository>(),
       ),
     );
-    locator.registerFactory<ConfirmLiquidSendUsecase>(
-      () => ConfirmLiquidSendUsecase(
+    locator.registerFactory<SignLiquidTxUsecase>(
+      () => SignLiquidTxUsecase(
         liquidWalletRepository: locator<LiquidWalletRepository>(),
-        liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
+      ),
+    );
+    locator.registerFactory<SignBitcoinTxUsecase>(
+      () => SignBitcoinTxUsecase(
+        bitcoinWalletRepository: locator<BitcoinWalletRepository>(),
       ),
     );
     locator.registerFactory<CreateSendSwapUsecase>(
@@ -110,8 +107,11 @@ class SendLocator {
         getUtxosUsecase: locator<GetUtxosUsecase>(),
         prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
         prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
-        confirmBitcoinSendUsecase: locator<ConfirmBitcoinSendUsecase>(),
-        confirmLiquidSendUsecase: locator<ConfirmLiquidSendUsecase>(),
+        signBitcoinTxUsecase: locator<SignBitcoinTxUsecase>(),
+        signLiquidTxUsecase: locator<SignLiquidTxUsecase>(),
+        broadcastBitcoinTxUsecase:
+            locator<BroadcastBitcoinTransactionUsecase>(),
+        broadcastLiquidTxUsecase: locator<BroadcastLiquidTransactionUsecase>(),
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         getWalletUsecase: locator<GetWalletUsecase>(),
         createSendSwapUsecase: locator<CreateSendSwapUsecase>(),

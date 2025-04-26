@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -22,13 +24,13 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:flutter/material.dart';
@@ -47,9 +49,7 @@ class SendCubit extends Cubit<SendState> {
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
     required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
     required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
-    required ConfirmBitcoinSendUsecase confirmBitcoinSendUsecase,
     required SendWithPayjoinUsecase sendWithPayjoinUsecase,
-    required ConfirmLiquidSendUsecase confirmLiquidSendUsecase,
     required GetWalletsUsecase getWalletsUsecase,
     required GetWalletUsecase getWalletUsecase,
     required CreateSendSwapUsecase createSendSwapUsecase,
@@ -58,6 +58,10 @@ class SendCubit extends Cubit<SendState> {
     required WatchSwapUsecase watchSwapUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
     required DecodeInvoiceUsecase decodeInvoiceUsecase,
+    required SignBitcoinTxUsecase signBitcoinTxUsecase,
+    required SignLiquidTxUsecase signLiquidTxUsecase,
+    required BroadcastBitcoinTransactionUsecase broadcastBitcoinTxUsecase,
+    required BroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase,
   })  : _getCurrencyUsecase = getCurrencyUsecase,
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
         _convertSatsToCurrencyAmountUsecase =
@@ -69,9 +73,11 @@ class SendCubit extends Cubit<SendState> {
         _getUtxosUsecase = getUtxosUsecase,
         _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
         _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
-        _confirmBitcoinSendUsecase = confirmBitcoinSendUsecase,
         _sendWithPayjoinUsecase = sendWithPayjoinUsecase,
-        _confirmLiquidSendUsecase = confirmLiquidSendUsecase,
+        _signLiquidTxUsecase = signLiquidTxUsecase,
+        _signBitcoinTxUsecase = signBitcoinTxUsecase,
+        _broadcastLiquidTxUsecase = broadcastLiquidTxUsecase,
+        _broadcastBitcoinTxUsecase = broadcastBitcoinTxUsecase,
         _getWalletsUsecase = getWalletsUsecase,
         _getWalletUsecase = getWalletUsecase,
         _createSendSwapUsecase = createSendSwapUsecase,
@@ -96,9 +102,11 @@ class SendCubit extends Cubit<SendState> {
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
   final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
   final CreateSendSwapUsecase _createSendSwapUsecase;
-  final ConfirmBitcoinSendUsecase _confirmBitcoinSendUsecase;
+  final SignBitcoinTxUsecase _signBitcoinTxUsecase;
+  final SignLiquidTxUsecase _signLiquidTxUsecase;
+  final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
+  final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTxUsecase;
   final SendWithPayjoinUsecase _sendWithPayjoinUsecase;
-  final ConfirmLiquidSendUsecase _confirmLiquidSendUsecase;
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final DecodeInvoiceUsecase _decodeInvoiceUsecase;
@@ -481,6 +489,7 @@ class SendCubit extends Cubit<SendState> {
         );
       }
     }
+    // TODO: build transaction
     emit(
       state.copyWith(
         step: SendStep.confirm,
@@ -577,7 +586,7 @@ class SendCubit extends Cubit<SendState> {
   Future<void> createTransaction() async {
     try {
       clearAllExceptions();
-      emit(state.copyWith(finalizingTransaction: true));
+      emit(state.copyWith(buildingTransaction: true));
       final address = state.lightningSwap != null
           ? state.lightningSwap!.paymentAddress
           : state.paymentRequest != null &&
@@ -600,6 +609,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             unsignedPsbt: psbt,
+            buildingTransaction: false,
           ),
         );
       } else {
@@ -616,6 +626,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             unsignedPsbt: psbt,
+            buildingTransaction: false,
           ),
         );
       }
@@ -625,21 +636,73 @@ class SendCubit extends Cubit<SendState> {
           buildTransactionException: BuildTransactionException(
             e.toString(),
           ),
-          finalizingTransaction: false,
+          buildingTransaction: false,
         ),
       );
     }
   }
 
-  Future<void> confirmTransaction() async {
+  Future<void> signTransaction() async {
     try {
+      emit(state.copyWith(signingTransaction: true));
+
+      if (state.selectedWallet!.network.isLiquid) {
+        final signedTx = await _signLiquidTxUsecase.execute(
+          psbt: state.unsignedPsbt!,
+          walletId: state.selectedWallet!.id,
+        );
+
+        emit(
+          state.copyWith(
+            signedLiquidTx: signedTx,
+            signingTransaction: false,
+          ),
+        );
+      } else {
+        final paymentRequest = state.paymentRequest;
+        if (paymentRequest != null &&
+            paymentRequest is Bip21PaymentRequest &&
+            paymentRequest.pj.isNotEmpty) {
+          emit(
+            state.copyWith(
+              signingTransaction: false,
+            ),
+          );
+        } else {
+          final signedPsbt = await _signBitcoinTxUsecase.execute(
+            psbt: state.unsignedPsbt!,
+            walletId: state.selectedWallet!.id,
+          );
+
+          emit(
+            state.copyWith(
+              signedBitcoinPsbt: signedPsbt,
+              signingTransaction: false,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      emit(
+        state.copyWith(
+          confirmTransactionException: ConfirmTransactionException(
+            e.toString(),
+          ),
+          signingTransaction: false,
+        ),
+      );
+    }
+  }
+
+  Future<void> broadcastTransaction() async {
+    try {
+      emit(state.copyWith(broadcastingTransaction: true));
+
       String txId;
       PayjoinSender? payjoinSender;
       if (state.selectedWallet!.network.isLiquid) {
-        txId = await _confirmLiquidSendUsecase.execute(
-          psbt: state.unsignedPsbt!,
-          walletId: state.selectedWallet!.id,
-          isTestnet: state.selectedWallet!.network.isTestnet,
+        txId = await _broadcastLiquidTxUsecase.execute(
+          state.signedLiquidTx!,
         );
       } else {
         final paymentRequest = state.paymentRequest;
@@ -659,9 +722,8 @@ class SendCubit extends Cubit<SendState> {
           //  payjoin txId if it is completed.
           txId = payjoinSender.originalTxId;
         } else {
-          txId = await _confirmBitcoinSendUsecase.execute(
-            psbt: state.unsignedPsbt!,
-            walletId: state.selectedWallet!.id,
+          txId = await _broadcastBitcoinTxUsecase.execute(
+            state.signedBitcoinPsbt!,
           );
         }
       }
@@ -677,7 +739,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             txId: txId,
-            finalizingTransaction: false,
+            broadcastingTransaction: false,
           ),
         );
       } else {
@@ -688,7 +750,7 @@ class SendCubit extends Cubit<SendState> {
             txId: txId,
             step: SendStep.success,
             payjoinSender: payjoinSender,
-            finalizingTransaction: false,
+            broadcastingTransaction: false,
           ),
         );
       }
@@ -698,7 +760,7 @@ class SendCubit extends Cubit<SendState> {
           confirmTransactionException: ConfirmTransactionException(
             e.toString(),
           ),
-          finalizingTransaction: false,
+          broadcastingTransaction: false,
         ),
       );
     }
@@ -711,7 +773,8 @@ class SendCubit extends Cubit<SendState> {
         step: SendStep.sending,
       ),
     );
-    await confirmTransaction();
+    await signTransaction();
+    await broadcastTransaction();
   }
 
   Future<void> currencyCodeChanged(String currencyCode) async {

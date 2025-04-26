@@ -535,8 +535,8 @@ class ConfirmSendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final finalizingTransaction = context.select(
-      (SendCubit cubit) => cubit.state.finalizingTransaction,
+    final disableSendButton = context.select(
+      (SendCubit cubit) => cubit.state.disableConfirmSend,
     );
     return BBButton.big(
       label: 'Confirm',
@@ -545,7 +545,7 @@ class ConfirmSendButton extends StatelessWidget {
       },
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
-      disabled: finalizingTransaction,
+      disabled: disableSendButton,
     );
   }
 }
