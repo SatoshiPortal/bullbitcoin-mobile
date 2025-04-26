@@ -19,27 +19,11 @@ class SqliteDatasource extends _$SqliteDatasource {
     );
   }
 
-  Future<void> store<T extends Insertable>(T entity) async {
-    final table = _typeToTable(entity.runtimeType);
-    await into(table).insertOnConflictUpdate(entity);
-  }
-
   Future<void> clearCacheTables() async {
     final cacheTables = [transactions];
 
     for (final table in cacheTables) {
       await delete(table).go();
     }
-  }
-
-  TableInfo<Table, dynamic> _typeToTable<T extends Insertable>(Type type) {
-    final lowerPluralType = '${type.toString().toLowerCase()}s';
-    for (final table in allTables) {
-      if (table.actualTableName == lowerPluralType) {
-        return table;
-      }
-    }
-
-    throw Exception('$lowerPluralType does not match tables $allTables');
   }
 }
