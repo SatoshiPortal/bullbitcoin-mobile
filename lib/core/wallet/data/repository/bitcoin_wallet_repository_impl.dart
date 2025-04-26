@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
@@ -12,15 +12,15 @@ import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 
 class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
-  final WalletMetadataDatasource _walletMetadata;
+  final SqliteDatasource _sqlite;
   final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
 
   BitcoinWalletRepositoryImpl({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required SqliteDatasource sqliteDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
-  })  : _walletMetadata = walletMetadataDatasource,
+  })  : _sqlite = sqliteDatasource,
         _seed = seedDatasource,
         _bdkWallet = bdkWalletDatasource;
 
@@ -35,7 +35,9 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     List<Utxo>? selected,
     bool? replaceByFee,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
@@ -71,7 +73,9 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     String psbt, {
     required String walletId,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
@@ -106,7 +110,9 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     required String walletId,
     required Uint8List script,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');

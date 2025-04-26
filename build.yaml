@@ -18,3 +18,6 @@ targets:
       flutter_gen_runner: # or flutter_gen
         options: 
           output: lib/generated/flutter_gen
+      drift_dev:
+        options:
+          store_date_time_values_as_text: true

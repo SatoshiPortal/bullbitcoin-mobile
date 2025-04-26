@@ -1,25 +1,27 @@
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/address_repository.dart';
 
 class AddressRepositoryImpl implements AddressRepository {
-  final WalletMetadataDatasource _walletMetadata;
+  final SqliteDatasource _sqlite;
   final WalletDatasource _bdkWallet;
   final WalletDatasource _lwkWallet;
 
   AddressRepositoryImpl({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required SqliteDatasource sqliteDatasource,
     required WalletDatasource bdkWalletDatasource,
     required WalletDatasource lwkWalletDatasource,
-  })  : _walletMetadata = walletMetadataDatasource,
+  })  : _sqlite = sqliteDatasource,
         _bdkWallet = bdkWalletDatasource,
         _lwkWallet = lwkWalletDatasource;
 
   @override
   Future<Address> getNewAddress({required String walletId}) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found');
@@ -55,7 +57,9 @@ class AddressRepositoryImpl implements AddressRepository {
 
   @override
   Future<Address> getLastUnusedAddress({required String walletId}) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found');
@@ -95,7 +99,9 @@ class AddressRepositoryImpl implements AddressRepository {
     required int offset,
     required AddressKeyChain keyChain,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found');
