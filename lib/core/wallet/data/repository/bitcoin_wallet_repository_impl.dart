@@ -133,4 +133,10 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
 
     return isFromWallet;
   }
+
+  @override
+  Future<int> getTxSize({required String psbt}) async {
+    final txSize = await _bdkWallet.decodeTxSize(psbt);
+    return txSize;
+  }
 }

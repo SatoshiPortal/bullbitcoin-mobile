@@ -23,6 +23,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
@@ -61,6 +63,10 @@ class SendCubit extends Cubit<SendState> {
     required SignLiquidTxUsecase signLiquidTxUsecase,
     required BroadcastBitcoinTransactionUsecase broadcastBitcoinTxUsecase,
     required BroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase,
+    required CalculateBitcoinAbsoluteFeesUsecase
+        calculateBitcoinAbsoluteFeesUsecase,
+    required CalculateLiquidAbsoluteFeesUsecase
+        calculateLiquidAbsoluteFeesUsecase,
   })  : _getCurrencyUsecase = getCurrencyUsecase,
         _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
         _convertSatsToCurrencyAmountUsecase =
@@ -85,6 +91,10 @@ class SendCubit extends Cubit<SendState> {
         _watchSwapUsecase = watchSwapUsecase,
         _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
         _decodeInvoiceUsecase = decodeInvoiceUsecase,
+        _calculateBitcoinAbsoluteFeesUsecase =
+            calculateBitcoinAbsoluteFeesUsecase,
+        _calculateLiquidAbsoluteFeesUsecase =
+            calculateLiquidAbsoluteFeesUsecase,
         super(const SendState());
 
   // ignore: unused_field
@@ -109,6 +119,9 @@ class SendCubit extends Cubit<SendState> {
   final UpdatePaidSendSwapUsecase _updatePaidSendSwapUsecase;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final DecodeInvoiceUsecase _decodeInvoiceUsecase;
+  final CalculateBitcoinAbsoluteFeesUsecase
+      _calculateBitcoinAbsoluteFeesUsecase;
+  final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
 
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
@@ -598,7 +611,7 @@ class SendCubit extends Cubit<SendState> {
           : state.confirmedAmountSat;
       // Fees can be selectedFee as it defaults to Fastest
       if (state.selectedWallet!.network.isLiquid) {
-        final psbt = await _prepareLiquidSendUsecase.execute(
+        final pset = await _prepareLiquidSendUsecase.execute(
           walletId: state.selectedWallet!.id,
           address: address,
           networkFee: state.selectedFee!,
@@ -606,9 +619,14 @@ class SendCubit extends Cubit<SendState> {
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
+        final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
+          pset: pset,
+          walletId: state.selectedWallet!.id,
+        );
         emit(
           state.copyWith(
-            unsignedPsbt: psbt,
+            unsignedPsbt: pset,
+            absoluteFees: absoluteFees,
             buildingTransaction: false,
           ),
         );
@@ -623,9 +641,14 @@ class SendCubit extends Cubit<SendState> {
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
+        final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
+          psbt: psbt,
+          feeRate: state.selectedFee!.value as double,
+        );
         emit(
           state.copyWith(
             unsignedPsbt: psbt,
+            absoluteFees: absoluteFees,
             buildingTransaction: false,
           ),
         );

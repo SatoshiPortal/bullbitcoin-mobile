@@ -80,6 +80,9 @@ class SendState with _$SendState {
     @Default(false) bool replaceByFee,
     FeeOptions? feesList,
     NetworkFee? selectedFee,
+    // TODO: remove absFee and make usecases return size so abs fee can
+    // be calculated from NetworkFee
+    int? absoluteFees,
     FeeSelection? selectedFeeOption,
     int? customFee,
     // prepare

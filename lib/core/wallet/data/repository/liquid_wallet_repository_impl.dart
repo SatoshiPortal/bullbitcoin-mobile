@@ -58,6 +58,33 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
   }
 
   @override
+  Future<(int, int)> getPsetAmountAndFees({
+    required String walletId,
+    required String pset,
+  }) async {
+    final metadata = await _walletMetadata.get(walletId);
+
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+
+    if (!metadata.isLiquid) {
+      throw Exception('Wallet $walletId is not a Liquid wallet');
+    }
+
+    final wallet = WalletModel.publicLwk(
+      combinedCtDescriptor: metadata.externalPublicDescriptor,
+      isTestnet: metadata.isTestnet,
+      id: metadata.id,
+    );
+    final (amount, fees) = await _lwkWallet.decodePsbtAmounts(
+      wallet: wallet,
+      pset: pset,
+    );
+    return (amount, fees);
+  }
+
+  @override
   Future<Uint8List> signPset({
     required String pset,
     required String walletId,

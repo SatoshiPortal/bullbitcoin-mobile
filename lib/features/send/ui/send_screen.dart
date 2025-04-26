@@ -570,8 +570,11 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final formattedFiatEquivalent = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
-    final selectedFees = context.select(
-      (SendCubit cubit) => cubit.state.selectedFee,
+    // final selectedFees = context.select(
+    //   (SendCubit cubit) => cubit.state.selectedFee,
+    // );
+    final absoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.absoluteFees,
     );
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
@@ -646,7 +649,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'Network fees',
             details: BBText(
-              "${selectedFees?.value} sats/byte",
+              "${absoluteFees ?? 0} sats",
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
