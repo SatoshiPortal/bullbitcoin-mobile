@@ -114,9 +114,12 @@ dependencies:
   webview_flutter_wkwebview: ^3.18.5
   async: ^2.11.0
   shared_preferences: ^2.5.3
+  drift: '^2.19.1+1' 
+  drift_flutter: ^0.2.0
+
 
 dev_dependencies:
-  build_runner: ^2.4.9
+  build_runner: ^2.4.14
   # flutter_lints: ^2.0.1
   lint: ^2.0.1
   flutter_test:
@@ -130,6 +133,12 @@ dev_dependencies:
   test: ^1.25.8
   # fluttergen: ^5.9.0
   flutter_gen_runner: any
+  drift_dev: ^2.19.0
+
+#dependency_overrides:
+#  analyzer: ^6.4.1
+#  build_resolvers: ^2.3.5
+#  dart_style: ^2.3.6
 
 #dependency_overrides:
 #  analyzer: ^6.4.1
