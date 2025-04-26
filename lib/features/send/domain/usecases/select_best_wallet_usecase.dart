@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 import 'package:flutter/foundation.dart';
 

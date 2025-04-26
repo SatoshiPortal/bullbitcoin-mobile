@@ -16,8 +16,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -533,7 +533,7 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  void utxoSelected(Utxo utxo) {
+  void utxoSelected(TransactionOutput utxo) {
     final selectedUtxos = List.of(state.selectedUtxos);
     if (selectedUtxos.contains(utxo)) {
       selectedUtxos.remove(utxo);

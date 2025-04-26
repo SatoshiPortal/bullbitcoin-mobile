@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 
 abstract class BitcoinWalletRepository {
   Future<String> buildPsbt({
@@ -10,8 +10,8 @@ abstract class BitcoinWalletRepository {
     int? amountSat,
     required NetworkFee networkFee,
     bool? drain,
-    List<Utxo>? unspendable,
-    List<Utxo>? selected,
+    List<TransactionOutput>? unspendable,
+    List<TransactionOutput>? selected,
     bool? replaceByFee,
   });
   Future<String> signPsbt(

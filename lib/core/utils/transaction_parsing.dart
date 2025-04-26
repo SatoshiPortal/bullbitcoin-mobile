@@ -1,19 +1,30 @@
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/utils/address_script_conversions.dart';
+import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/foundation.dart';
 
 class TransactionParsing {
-  static Future<List<Utxo>> extractInputsFromPsbt(String psbt) async {
+  static Future<List<TransactionOutputModel>> extractSpentUtxosFromPsbt(
+    String psbt, {
+    required bool isTestnet,
+  }) async {
     debugPrint('Extracting inputs from psbt: $psbt');
     final tx = await bdk.PartiallySignedTransaction.fromString(psbt);
     final inputs = await tx.extractTx().input();
-    final txInputs = inputs.map((input) {
-      return Utxo(
-        txId: input.previousOutput.txid,
-        vout: input.previousOutput.vout,
-        scriptPubkey: input.scriptSig.bytes,
-      );
-    }).toList();
+    final txInputs = await Future.wait(
+      inputs.map((input) async {
+        return TransactionOutputModel.bitcoin(
+          txId: input.previousOutput.txid,
+          vout: input.previousOutput.vout,
+          scriptPubkey: input.scriptSig.bytes,
+          address:
+              await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+            input.scriptSig.bytes,
+            isTestnet: isTestnet,
+          ),
+        );
+      }),
+    );
     debugPrint('Extracted inputs: $inputs');
     return txInputs;
   }

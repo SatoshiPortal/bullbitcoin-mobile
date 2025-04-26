@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:lwk/lwk.dart' as lwk;
 

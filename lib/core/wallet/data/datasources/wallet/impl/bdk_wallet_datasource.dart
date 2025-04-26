@@ -3,13 +3,15 @@ import 'dart:typed_data';
 
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -140,9 +142,9 @@ class BdkWalletDatasource implements WalletDatasource {
     required String address,
     required NetworkFee networkFee,
     int? amountSat,
-    List<UtxoModel>? unspendable,
+    List<TransactionOutputModel>? unspendable,
     bool? drain,
-    List<UtxoModel>? selected,
+    List<TransactionOutputModel>? selected,
     bool replaceByFee = true,
     required PublicBdkWalletModel wallet,
   }) async {
@@ -237,85 +239,122 @@ class BdkWalletDatasource implements WalletDatasource {
     return psbt.asString();
   }
 
-  /* Start UtxoDatasource methods */
   @override
-  Future<List<UtxoModel>> getUtxos({
+  Future<List<TransactionOutputModel>> getUtxos({
     required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final unspent = bdkWallet.listUnspent();
-    final utxos = unspent
-        .map(
-          (unspent) => UtxoModel(
-            scriptPubkey: unspent.txout.scriptPubkey.bytes,
-            txId: unspent.outpoint.txid,
-            vout: unspent.outpoint.vout,
-            value: unspent.txout.value,
+    final utxos = await Future.wait(
+      unspent.map(
+        (unspent) async => TransactionOutputModel.bitcoin(
+          scriptPubkey: unspent.txout.scriptPubkey.bytes,
+          txId: unspent.outpoint.txid,
+          vout: unspent.outpoint.vout,
+          value: unspent.txout.value,
+          address:
+              await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+            unspent.txout.scriptPubkey.bytes,
+            isTestnet: wallet.isTestnet,
           ),
-        )
-        .toList();
+        ),
+      ),
+    );
     return utxos;
   }
-  /* End UtxoDatasource methods */
 
-  /* Start TransactionDatasource methods */
   @override
   Future<List<WalletTransactionModel>> getTransactions({
     required WalletModel wallet,
     String? toAddress,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
-
-    var transactions = bdkWallet.listTransactions(includeRaw: true);
-    if (toAddress != null && toAddress.isNotEmpty) {
-      // Filter transactions by address by returning null for non-matching transactions
-      // and then removing null values from the list
-      final filtered = await Future.wait(
-        transactions.map((tx) async {
-          final txOutputs = await tx.transaction?.output();
-          if (txOutputs == null) return null;
-
-          final addresses = await Future.wait(
-            txOutputs.map(
-              (output) => bdk.Address.fromScript(
-                script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
-                network: bdkWallet.network(),
-              ),
-            ),
-          );
-
-          final matches = addresses.any((address) {
-            return address.toString() == toAddress;
-          });
-          return matches ? tx : null;
-        }),
-      );
-      // Remove null values from the filtered list
-      transactions = filtered.whereType<bdk.TransactionDetails>().toList();
-    }
+    final network = bdkWallet.network();
+    final transactions = bdkWallet.listTransactions(includeRaw: true);
 
     // Map the transactions to WalletTransactionModel
-    final List<WalletTransactionModel> walletTxs = await Future.wait(
+    final List<WalletTransactionModel?> walletTxs = await Future.wait(
       transactions.map(
         (tx) async {
-          /*bool isToSelf = false;
-          final outputs = await tx.transaction?.output();
-          if (outputs != null) {
-            final areMine = await Future.wait(
+          final (inputs, outputs) =
+              await (tx.transaction!.input(), tx.transaction!.output()).wait;
+
+          if (toAddress != null && toAddress.isNotEmpty) {
+            // Filter transactions by address by returning null for non-matching transactions
+            // and then removing null values from the list with whereType at the end of the method
+            final matches = await Future.any(
               outputs.map(
-                (output) async => await isMine(
-                  output.scriptPubkey.bytes,
-                  wallet: wallet as PublicBdkWalletModel,
-                ),
+                (output) async {
+                  final address = await bdk.Address.fromScript(
+                    script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
+                    network: network,
+                  );
+                  return address.toString() == toAddress;
+                },
               ),
-            );
-            isToSelf = !areMine.any((isMine) => !isMine);
-          }*/
+            ).catchError((_) => false);
+
+            if (!matches) return null;
+          }
 
           final isIncoming = tx.received > tx.sent;
           final netAmountSat = isIncoming
               ? tx.received - tx.sent
               : tx.sent - tx.received - (tx.fee ?? BigInt.zero);
+          bool isToSelf =
+              true; // Changed to false when an input/output is not from self
+
+          final (inputModels, outputModels) = await (
+            Future.wait(
+              inputs.asMap().entries.map((entry) async {
+                final input = entry.value;
+                final vin = entry.key;
+                final isOwnInput = await isMine(
+                  input.scriptSig.bytes,
+                  wallet: wallet as PublicBdkWalletModel,
+                );
+
+                if (!isOwnInput) {
+                  isToSelf = false;
+                }
+
+                return TransactionInputModel(
+                  txId: tx.txid,
+                  vin: vin,
+                  scriptSig: input.scriptSig.bytes,
+                  previousTxId: input.previousOutput.txid,
+                  previousTxVout: input.previousOutput.vout,
+                );
+              }).toList(),
+            ),
+            Future.wait(
+              outputs.asMap().entries.map((entry) async {
+                final vout = entry.key;
+                final output = entry.value;
+                final scriptPubkeyBytes = output.scriptPubkey.bytes;
+                final isOwnOutput = await isMine(
+                  scriptPubkeyBytes,
+                  wallet: wallet as PublicBdkWalletModel,
+                );
+
+                if (!isOwnOutput) {
+                  isToSelf = false;
+                }
+
+                return TransactionOutputModel.bitcoin(
+                  txId: tx.txid,
+                  vout: vout,
+                  value: output.value,
+                  scriptPubkey: scriptPubkeyBytes,
+                  address: await AddressScriptConversions
+                      .bitcoinAddressFromScriptPubkey(
+                    scriptPubkeyBytes,
+                    isTestnet: wallet.isTestnet,
+                  ),
+                );
+              }).toList(),
+            )
+          ).wait;
 
           return WalletTransactionModel.bitcoin(
             txId: tx.txid,
@@ -323,18 +362,19 @@ class BdkWalletDatasource implements WalletDatasource {
             amountSat: netAmountSat.toInt(),
             feeSat: tx.fee?.toInt() ?? 0,
             confirmationTimestamp: tx.confirmationTime?.timestamp.toInt(),
+            isToSelf: isToSelf,
+            inputs: inputModels,
+            outputs: outputModels,
           );
         },
       ),
     );
 
-    return walletTxs;
+    return walletTxs.whereType<WalletTransactionModel>().toList();
   }
-  /* End TransactionDatasource methods */
 
-  /* Start AddressDatasource methods */
   @override
-  Future<AddressModel> getNewAddress({
+  Future<WalletAddressModel> getNewAddress({
     required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
@@ -345,11 +385,11 @@ class BdkWalletDatasource implements WalletDatasource {
     final index = addressInfo.index;
     final address = addressInfo.address.asString();
 
-    return BitcoinAddressModel(index: index, address: address);
+    return BitcoinWalletAddressModel(index: index, address: address);
   }
 
   @override
-  Future<AddressModel> getLastUnusedAddress({
+  Future<WalletAddressModel> getLastUnusedAddress({
     required WalletModel wallet,
     bool isChange = false,
   }) async {
@@ -362,11 +402,11 @@ class BdkWalletDatasource implements WalletDatasource {
     final index = addressInfo.index;
     final address = addressInfo.address.asString();
 
-    return BitcoinAddressModel(index: index, address: address);
+    return BitcoinWalletAddressModel(index: index, address: address);
   }
 
   @override
-  Future<AddressModel> getAddressByIndex(
+  Future<WalletAddressModel> getAddressByIndex(
     int index, {
     required WalletModel wallet,
   }) async {
@@ -375,27 +415,27 @@ class BdkWalletDatasource implements WalletDatasource {
       addressIndex: bdk.AddressIndex.peek(index: index),
     );
 
-    return BitcoinAddressModel(
+    return BitcoinWalletAddressModel(
       index: addressInfo.index,
       address: addressInfo.address.asString(),
     );
   }
 
   @override
-  Future<List<AddressModel>> getReceiveAddresses({
+  Future<List<WalletAddressModel>> getReceiveAddresses({
     required WalletModel wallet,
     required int limit,
     required int offset,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
 
-    final addresses = <BitcoinAddressModel>[];
+    final addresses = <BitcoinWalletAddressModel>[];
     for (int i = offset; i < offset + limit; i++) {
       final address = bdkWallet.getAddress(
         addressIndex: bdk.AddressIndex.peek(index: i),
       );
 
-      final model = BitcoinAddressModel(
+      final model = BitcoinWalletAddressModel(
         index: address.index,
         address: address.address.asString(),
       );
@@ -406,20 +446,20 @@ class BdkWalletDatasource implements WalletDatasource {
   }
 
   @override
-  Future<List<AddressModel>> getChangeAddresses({
+  Future<List<WalletAddressModel>> getChangeAddresses({
     required WalletModel wallet,
     required int limit,
     required int offset,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
 
-    final addresses = <BitcoinAddressModel>[];
+    final addresses = <BitcoinWalletAddressModel>[];
     for (int i = offset; i < offset + limit; i++) {
       final address = bdkWallet.getInternalAddress(
         addressIndex: bdk.AddressIndex.peek(index: i),
       );
 
-      final model = BitcoinAddressModel(
+      final model = BitcoinWalletAddressModel(
         index: address.index,
         address: address.address.asString(),
       );
@@ -480,7 +520,6 @@ class BdkWalletDatasource implements WalletDatasource {
 
     return balance;
   }
-  /* End AddressDatasource methods */
 
   Future<bdk.Wallet> _createPublicWallet(
     WalletModel walletModel,

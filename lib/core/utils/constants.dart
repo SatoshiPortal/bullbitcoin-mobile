@@ -102,3 +102,8 @@ class LocatorInstanceNameConstants {
   static const String bullBitcoinAPIKeyDatasourceInstanceName =
       'bullBitcoinAPIKeyDatasourceInstanceName';
 }
+
+class LabelConstants {
+  static const separator = '␟';
+  static const labelKeyPrefix = 'label';
+}

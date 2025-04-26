@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_va
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class WalletMetadataDatasource {
   final KeyValueStorageDatasource<String> _walletMetadataStorage;

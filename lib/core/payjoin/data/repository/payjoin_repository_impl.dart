@@ -14,9 +14,10 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter/foundation.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -77,32 +78,43 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     return payjoin;
   }
 
+  // TODO: Remove this and use the general frozen utxo datasource
   @override
-  Future<List<Utxo>> getInputsFromOngoingPayjoins() async {
-    final inputs = <Utxo>[];
+  Future<List<TransactionOutput>> getUtxosFrozenByOngoingPayjoins() async {
     final payjoins = await _source.getAll(onlyOngoing: true);
-    for (final payjoin in payjoins) {
-      String? psbt;
-      switch (payjoin) {
-        case final PayjoinReceiverModel receiver:
-          psbt = receiver.proposalPsbt;
-          debugPrint('ongoing receiver with psbt: $psbt');
-        case final PayjoinSenderModel sender:
-          psbt = sender.originalPsbt;
-          debugPrint('ongoing sender with psbt: $psbt');
-      }
-      if (psbt != null) {
-        // Extract the inputs from the proposal psbt
-        final psbtInputs = await TransactionParsing.extractInputsFromPsbt(psbt);
-        debugPrint('extracted inputs $psbtInputs, for psbt: $psbt');
-        inputs.addAll(psbtInputs);
-      }
-    }
 
-    debugPrint('ongoingPayjoins: $payjoins');
-    debugPrint('inputsFromOngoingPayjoins: $inputs');
+    final inputs = await Future.wait(
+      payjoins.map((payjoin) async {
+        final psbt = payjoin is PayjoinReceiverModel
+            ? payjoin.proposalPsbt
+            : (payjoin as PayjoinSenderModel).originalPsbt;
 
-    return inputs;
+        if (psbt == null) {
+          return null;
+        }
+
+        final walletMetadata = await _walletMetadata.get(payjoin.walletId);
+        if (walletMetadata == null) {
+          return null;
+        }
+
+        // Extract the spent utxos from the proposal psbt
+        final spentUtxos = await TransactionParsing.extractSpentUtxosFromPsbt(
+          psbt,
+          isTestnet: walletMetadata.isTestnet,
+        );
+        return spentUtxos
+            .map(
+              (utxo) => TransactionOutputMapper.toEntity(utxo, isFrozen: true),
+            )
+            .toList();
+      }),
+    );
+
+    return inputs
+        .whereType<List<TransactionOutput>>()
+        .expand((i) => i)
+        .toList();
   }
 
   @override
@@ -171,7 +183,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required String id,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
     required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
-    required List<Utxo> unspentUtxos,
+    required List<BitcoinTransactionOutput> unspentUtxos,
     required FutureOr<String> Function(String) processPsbt,
   }) async {
     // A lock is needed here to make sure the proposal of a payjoin is stored
@@ -180,13 +192,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       debugPrint('unspentUtxos: $unspentUtxos');
       // Make sure the inputs to select from for the proposal are not used by
       //  ongoing payjoins already
-      final lockedInputs = await getInputsFromOngoingPayjoins();
-      debugPrint('lockedInputs: $lockedInputs');
+      final lockedUtxos = await getUtxosFrozenByOngoingPayjoins();
+      debugPrint('lockedUtxos: $lockedUtxos');
 
       final pdkInputPairs = unspentUtxos
-          .where((utxo) {
-            final isUtxoLocked = lockedInputs.any((input) {
-              return input.txId == utxo.txId && input.vout == utxo.vout;
+          .where((unspent) {
+            final isUtxoLocked = lockedUtxos.any((locked) {
+              return unspent.txId == locked.txId && unspent.vout == locked.vout;
             });
 
             return !isUtxoLocked;

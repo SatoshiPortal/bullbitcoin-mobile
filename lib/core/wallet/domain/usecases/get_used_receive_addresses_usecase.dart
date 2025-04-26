@@ -1,28 +1,28 @@
-import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/address_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 
 class GetUsedReceiveAddressesUsecase {
-  final AddressRepository _addressRepository;
+  final WalletAddressRepository _walletAddressRepository;
 
   GetUsedReceiveAddressesUsecase({
-    required AddressRepository addressRepository,
-  }) : _addressRepository = addressRepository;
+    required WalletAddressRepository walletAddressRepository,
+  }) : _walletAddressRepository = walletAddressRepository;
 
-  Future<List<Address>> execute({
+  Future<List<WalletAddress>> execute({
     required String walletId,
     int? limit,
     int? offset,
   }) async {
     try {
-      final address =
-          await _addressRepository.getLastUnusedAddress(walletId: walletId);
+      final address = await _walletAddressRepository.getLastUnusedAddress(
+          walletId: walletId);
       final index = address.index;
 
-      final usedAddresses = await _addressRepository.getAddresses(
+      final usedAddresses = await _walletAddressRepository.getAddresses(
         walletId: walletId,
         limit: index,
         offset: 0,
-        keyChain: AddressKeyChain.external,
+        keyChain: WalletAddressKeyChain.external,
       );
 
       return usedAddresses;

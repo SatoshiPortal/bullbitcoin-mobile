@@ -2,14 +2,14 @@ import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class CoinSelectTile extends StatelessWidget {
-  final Utxo utxo;
+  final TransactionOutput utxo;
   final bool selected;
   final VoidCallback onTap;
   final BitcoinUnit bitcoinUnit;
@@ -40,11 +40,11 @@ class CoinSelectTile extends StatelessWidget {
       fiatCurrency,
     ); // You can format this better
 
-    // TODO: Replace with actual values
-    final address = utxo.address?.address;
-    final addressType = utxo.address?.keyChain == AddressKeyChain.external
-        ? 'Receive'
-        : 'Change'; // Replace with actual address type
+    final address = utxo.walletAddress?.address;
+    final addressType =
+        utxo.walletAddress?.keyChain == WalletAddressKeyChain.external
+            ? 'Receive'
+            : 'Change';
     final label = utxo.labels.join(', ');
 
     return GestureDetector(

@@ -46,6 +46,40 @@ sealed class PayjoinModel with _$PayjoinModel {
   bool get isExpireAtPassed =>
       DateTime.now().millisecondsSinceEpoch ~/ 1000 > expireAt;
 
+  String get id => when(
+        receiver: (
+          id,
+          address,
+          isTestnet,
+          receiver,
+          walletId,
+          pjUri,
+          maxFeeRateSatPerVb,
+          expireAt,
+          originalTxBytes,
+          originalTxId,
+          amountSat,
+          proposalPsbt,
+          txId,
+          isExpired,
+          isCompleted,
+        ) =>
+            id,
+        sender: (
+          uri,
+          sender,
+          walletId,
+          originalPsbt,
+          originalTxId,
+          expireAt,
+          proposalPsbt,
+          txId,
+          isExpired,
+          isCompleted,
+        ) =>
+            uri,
+      );
+
   Payjoin toEntity() {
     return map(
       receiver: (model) => Payjoin.receiver(

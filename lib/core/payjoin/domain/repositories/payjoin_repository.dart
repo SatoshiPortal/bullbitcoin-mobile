@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 abstract class PayjoinRepository {
   Stream<PayjoinReceiver> get requestsForReceivers;
   Stream<PayjoinSender> get proposalsForSenders;
   Stream<Payjoin> get expiredPayjoins;
   Future<Payjoin?> getPayjoinByTxId(String txId);
-  Future<List<Utxo>> getInputsFromOngoingPayjoins();
+  Future<List<TransactionOutput>> getUtxosFrozenByOngoingPayjoins();
   Future<PayjoinReceiver> createPayjoinReceiver({
     required String walletId,
     required bool isTestnet,
@@ -34,7 +34,7 @@ abstract class PayjoinRepository {
     required String id,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
     required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
-    required List<Utxo> unspentUtxos,
+    required List<BitcoinTransactionOutput> unspentUtxos,
     required FutureOr<String> Function(String) processPsbt,
   });
   Future<String> signPsbt({

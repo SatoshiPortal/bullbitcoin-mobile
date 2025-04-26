@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'payjoin_input_pair_model.freezed.dart';
@@ -21,7 +21,7 @@ class PayjoinInputPairModel with _$PayjoinInputPairModel {
   }) = _PayjoinInputPairModel;
   const PayjoinInputPairModel._();
 
-  factory PayjoinInputPairModel.fromUtxo(Utxo utxo) {
+  factory PayjoinInputPairModel.fromUtxo(BitcoinTransactionOutput utxo) {
     return PayjoinInputPairModel(
       txId: utxo.txId,
       vout: utxo.vout,

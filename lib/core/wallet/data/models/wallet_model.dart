@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_model.freezed.dart';

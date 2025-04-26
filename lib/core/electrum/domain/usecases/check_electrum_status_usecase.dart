@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart' show Network;
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
 
 class CheckElectrumStatusUsecase {
   final ElectrumServerRepository _electrumServerRepository;

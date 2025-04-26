@@ -1,24 +1,25 @@
-import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/address_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 
 class GetReceiveAddressUsecase {
-  final AddressRepository _addressRepository;
+  final WalletAddressRepository _walletAddressRepository;
 
   GetReceiveAddressUsecase({
-    required AddressRepository addressRepository,
-  }) : _addressRepository = addressRepository;
+    required WalletAddressRepository walletAddressRepository,
+  }) : _walletAddressRepository = walletAddressRepository;
 
-  Future<Address> execute({
+  Future<WalletAddress> execute({
     required String walletId,
     bool newAddress = false,
   }) async {
     try {
-      Address address;
+      WalletAddress address;
       if (!newAddress) {
-        address =
-            await _addressRepository.getLastUnusedAddress(walletId: walletId);
+        address = await _walletAddressRepository.getLastUnusedAddress(
+            walletId: walletId);
       } else {
-        address = await _addressRepository.getNewAddress(walletId: walletId);
+        address =
+            await _walletAddressRepository.getNewAddress(walletId: walletId);
       }
 
       return address;

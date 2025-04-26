@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/utxo_repository.dart';
 
 class GetUtxosUsecase {
@@ -8,7 +8,7 @@ class GetUtxosUsecase {
     required UtxoRepository utxoRepository,
   }) : _utxoRepository = utxoRepository;
 
-  Future<List<Utxo>> execute({
+  Future<List<TransactionOutput>> execute({
     required String walletId,
   }) async {
     try {

@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/labels/data/labelable.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_transaction.freezed.dart';
@@ -8,7 +9,6 @@ part 'wallet_transaction.freezed.dart';
 enum WalletTransactionDirection {
   incoming,
   outgoing,
-  internal,
 }
 
 enum WalletTransactionStatus {
@@ -22,27 +22,50 @@ sealed class WalletTransaction with _$WalletTransaction {
     required String walletId,
     required WalletTransactionDirection direction,
     required WalletTransactionStatus status,
-    @Default('') String txId,
-    @Default(0) int amountSat,
-    @Default(0) int feeSat,
+    required String txId,
+    required int amountSat,
+    required int feeSat,
+    required List<TransactionInput> inputs,
+    required List<TransactionOutput> outputs,
     DateTime? confirmationTime,
+    @Default(false) bool isToSelf,
+    @Default([]) List<String> labels,
+    @Default('') String payjoinId,
+    @Default('') String swapId,
+    @Default('') String exchangeId,
   }) = BitcoinWalletTransaction;
   const factory WalletTransaction.liquid({
     required String walletId,
     required WalletTransactionDirection direction,
     required WalletTransactionStatus status,
-    @Default('') String txId,
-    @Default(0) int amountSat,
-    @Default(0) int feeSat,
+    required String txId,
+    required int amountSat,
+    required int feeSat,
+    required List<TransactionInput> inputs,
+    required List<TransactionOutput> outputs,
     DateTime? confirmationTime,
+    @Default(false) bool isToSelf,
+    @Default([]) List<String> labels,
+    @Default('') String swapId,
+    @Default('') String exchangeId,
   }) = LiquidWalletTransaction;
   const WalletTransaction._();
+
+  bool get isIncoming => direction == WalletTransactionDirection.incoming;
+  bool get isOutgoing => direction == WalletTransactionDirection.outgoing;
+  bool get isPending => status == WalletTransactionStatus.pending;
+  bool get isConfirmed => status == WalletTransactionStatus.confirmed;
+  bool get isPayjoin =>
+      this is BitcoinWalletTransaction &&
+      (this as BitcoinWalletTransaction).payjoinId.isNotEmpty;
+  bool get isSwap => swapId.isNotEmpty;
+  bool get isExchange => exchangeId.isNotEmpty;
 }
 
 // This is the final type that is translated from a WalletTransaction
 // It knows the specific details of the transaction like if its a swap, payjoin etc.
 @freezed
-sealed class Transaction with _$Transaction implements Labelable {
+sealed class Transaction with _$Transaction {
   const Transaction._();
   factory Transaction.onchain({
     required String walletId,
@@ -89,15 +112,6 @@ sealed class Transaction with _$Transaction implements Labelable {
       self: (_) => TxType.self,
       lnSwap: (_) => TxType.lnSwap,
       chainSwap: (_) => TxType.chainSwap,
-    );
-  }
-
-  @override
-  String toRef() {
-    return maybeWhen(
-      onchain: (_, __, txId, ___, ____, _____, ______, _______) => txId,
-      self: (_, __, txId, ___, ____, _____, ______, _______) => txId,
-      orElse: () => throw Exception('Transaction type has no txId'),
     );
   }
 }

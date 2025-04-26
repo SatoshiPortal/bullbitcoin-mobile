@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
-import 'package:bb_mobile/core/labels/data/labelable.dart';
 import 'package:bb_mobile/core/labels/domain/label_entity.dart';
+import 'package:bb_mobile/core/labels/domain/labelable.dart';
 
 class LabelRepository {
   final LabelStorageDatasource _labelStorageDatasource;
@@ -12,15 +12,15 @@ class LabelRepository {
 
   Future<void> store<T extends Labelable>({
     required String label,
-    required T entity,
+    required T labelable,
     String? origin,
     bool? spendable,
   }) async {
     await _labelStorageDatasource.store(
       LabelModel(
         label: label,
-        type: Entity.fromLabelable(entity),
-        ref: entity.toRef(),
+        type: LabelType.fromLabelable(labelable).name,
+        ref: labelable.labelRef,
         origin: origin,
         spendable: spendable,
       ),
@@ -30,18 +30,29 @@ class LabelRepository {
   Future<List<Label>> fetchByLabel({required String label}) async {
     final labelModels = await _labelStorageDatasource.fetchByLabel(label);
     return labelModels
-        .map((model) => Label(label: model.label, origin: model.origin))
+        .map(
+          (model) => Label(
+            type: LabelType.fromName(model.type),
+            label: model.label,
+            origin: model.origin,
+          ),
+        )
         .toList();
   }
 
   Future<List<Label>> fetchByEntity<T extends Labelable>({
-    required T entity,
+    required T labelable,
   }) async {
-    final prefix = Entity.fromLabelable(entity);
+    final type = LabelType.fromLabelable(labelable);
     final labelModels =
-        await _labelStorageDatasource.fetchByRef(prefix, entity.toRef());
+        await _labelStorageDatasource.fetchByRef(type.name, labelable.labelRef);
     return labelModels
-        .map((model) => Label(label: model.label, origin: model.origin))
+        .map(
+          (model) => Label(
+              type: LabelType.fromName(model.type),
+              label: model.label,
+              origin: model.origin),
+        )
         .toList();
   }
 
@@ -55,6 +66,7 @@ class LabelRepository {
     return labelModels
         .map(
           (model) => Label(
+            type: LabelType.fromName(model.type),
             label: model.label,
             origin: model.origin,
             spendable: model.spendable,

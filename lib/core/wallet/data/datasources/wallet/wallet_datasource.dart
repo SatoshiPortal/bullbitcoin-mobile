@@ -1,27 +1,27 @@
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/address_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 
 abstract class WalletDatasource {
-  Future<AddressModel> getNewAddress({
+  Future<WalletAddressModel> getNewAddress({
     required WalletModel wallet,
   });
-  Future<AddressModel> getLastUnusedAddress({
+  Future<WalletAddressModel> getLastUnusedAddress({
     required WalletModel wallet,
     bool isChange = false,
   });
-  Future<AddressModel> getAddressByIndex(
+  Future<WalletAddressModel> getAddressByIndex(
     int index, {
     required WalletModel wallet,
   });
-  Future<List<AddressModel>> getReceiveAddresses({
+  Future<List<WalletAddressModel>> getReceiveAddresses({
     required WalletModel wallet,
     required int limit,
     required int offset,
   });
-  Future<List<AddressModel>> getChangeAddresses({
+  Future<List<WalletAddressModel>> getChangeAddresses({
     required WalletModel wallet,
     required int limit,
     required int offset,
@@ -42,7 +42,7 @@ abstract class WalletDatasource {
     required WalletModel wallet,
     required ElectrumServerModel electrumServer,
   });
-  Future<List<UtxoModel>> getUtxos({
+  Future<List<TransactionOutputModel>> getUtxos({
     required WalletModel wallet,
   });
 }

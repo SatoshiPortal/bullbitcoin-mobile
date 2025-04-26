@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
   final ElectrumServerStorageDatasource _electrumServerStorage;
