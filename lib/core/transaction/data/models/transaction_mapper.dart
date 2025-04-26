@@ -8,8 +8,8 @@ import 'package:bb_mobile/core/transaction/domain/entities/tx_vout.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class TransactionMapper {
-  static Transaction toModel(Tx tx) {
-    return Transaction(
+  static TransactionModel toModel(Tx tx) {
+    return TransactionModel(
       txid: tx.txid,
       version: tx.version,
       size: tx.size.toString(),
@@ -20,7 +20,7 @@ class TransactionMapper {
     );
   }
 
-  static Tx fromSqlite(Transaction row) {
+  static Tx fromSqlite(TransactionModel row) {
     return Tx(
       txid: row.txid,
       version: row.version,

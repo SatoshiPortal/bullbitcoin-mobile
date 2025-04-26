@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+@DataClassName('TransactionModel')
 class Transactions extends Table {
   TextColumn get txid => text()();
 
