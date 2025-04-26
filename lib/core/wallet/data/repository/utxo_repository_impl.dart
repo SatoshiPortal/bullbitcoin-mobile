@@ -1,31 +1,30 @@
 import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/utils/uint_8_list_x.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_extension.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/utxo_repository.dart';
 
 class UtxoRepositoryImpl implements UtxoRepository {
-  final WalletMetadataDatasource _walletMetadataDatasource;
+  final SqliteDatasource _sqlite;
   final WalletDatasource _bdkWalletDatasource;
   final WalletDatasource _lwkWalletDatasource;
   final FrozenUtxoDatasource _frozenUtxoDatasource;
   final LabelStorageDatasource _labelStorageDatasource;
 
   UtxoRepositoryImpl({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required SqliteDatasource sqliteDatasource,
     required WalletDatasource bdkWalletDatasource,
     required WalletDatasource lwkWalletDatasource,
     required FrozenUtxoDatasource frozenUtxoDatasource,
     required LabelStorageDatasource labelStorageDatasource,
-  })  : _walletMetadataDatasource = walletMetadataDatasource,
+  })  : _sqlite = sqliteDatasource,
         _bdkWalletDatasource = bdkWalletDatasource,
         _lwkWalletDatasource = lwkWalletDatasource,
         _frozenUtxoDatasource = frozenUtxoDatasource,
@@ -33,7 +32,9 @@ class UtxoRepositoryImpl implements UtxoRepository {
 
   @override
   Future<List<Utxo>> getUtxos({required String walletId}) async {
-    final metadata = await _walletMetadataDatasource.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');

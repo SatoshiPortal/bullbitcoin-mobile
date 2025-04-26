@@ -2,27 +2,25 @@ import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_extension.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
-  final WalletMetadataDatasource _walletMetadataDatasource;
+  final SqliteDatasource _sqlite;
   final WalletDatasource _bdkWalletTransactionDatasource;
   final WalletDatasource _lwkWalletTransactionDatasource;
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
   WalletTransactionRepositoryImpl({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required SqliteDatasource sqliteDatasource,
     required WalletDatasource bdkWalletTransactionDatasource,
     required WalletDatasource lwkWalletTransactionDatasource,
     required ElectrumServerStorageDatasource electrumServerStorage,
-  })  : _walletMetadataDatasource = walletMetadataDatasource,
+  })  : _sqlite = sqliteDatasource,
         _bdkWalletTransactionDatasource = bdkWalletTransactionDatasource,
         _lwkWalletTransactionDatasource = lwkWalletTransactionDatasource,
         _electrumServerStorage = electrumServerStorage;
@@ -91,12 +89,16 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   }) async {
     List<WalletMetadataModel> walletsMetadata;
     if (walletId == null) {
-      walletsMetadata = await _walletMetadataDatasource.getAll();
+      walletsMetadata = await _sqlite.managers.walletMetadatas.get();
     } else {
-      final metadata = await _walletMetadataDatasource.get(walletId);
+      final metadata = await _sqlite.managers.walletMetadatas
+          .filter((e) => e.id(walletId))
+          .getSingleOrNull();
+
       if (metadata == null) {
         throw Exception('Wallet metadata not found');
       }
+
       walletsMetadata = [metadata];
     }
 
