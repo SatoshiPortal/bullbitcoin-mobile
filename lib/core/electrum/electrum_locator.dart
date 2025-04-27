@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_status_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
@@ -31,11 +30,6 @@ class ElectrumLocator {
   }
 
   static void registerUsecases() {
-    locator.registerLazySingleton<CheckElectrumStatusUsecase>(
-      () => CheckElectrumStatusUsecase(
-        electrumServerRepository: locator<ElectrumServerRepository>(),
-      ),
-    );
     locator.registerLazySingleton<UpdateElectrumServerSettingsUsecase>(
       () => UpdateElectrumServerSettingsUsecase(
         electrumServerRepository: locator<ElectrumServerRepository>(),
