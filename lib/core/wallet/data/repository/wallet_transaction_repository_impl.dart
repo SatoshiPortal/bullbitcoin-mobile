@@ -128,17 +128,18 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
         walletModels.map((walletModel) async {
           final isLiquid = walletModel is PublicLwkWalletModel;
 
-          final electrumServer = await _electrumServerStorage.getByProvider(
-                ElectrumServerProvider.blockstream,
-                network: Network.fromEnvironment(
-                  isTestnet: walletModel.isTestnet,
-                  isLiquid: isLiquid,
-                ),
-              ) ??
-              ElectrumServerModel.blockstream(
-                isTestnet: walletModel.isTestnet,
-                isLiquid: isLiquid,
-              );
+          final electrumServer =
+              await _electrumServerStorage.getDefaultServerByProvider(
+                    DefaultElectrumServerProvider.blockstream,
+                    network: Network.fromEnvironment(
+                      isTestnet: walletModel.isTestnet,
+                      isLiquid: isLiquid,
+                    ),
+                  ) ??
+                  ElectrumServerModel.blockstream(
+                    isTestnet: walletModel.isTestnet,
+                    isLiquid: isLiquid,
+                  );
 
           final walletTransactionDatasource = isLiquid
               ? _lwkWalletTransactionDatasource
