@@ -18,6 +18,10 @@ build-runner:
 	@echo "🏗️ Build runner for json_serializable and flutter_gen"
 	@dart run build_runner build --delete-conflicting-outputs
 
+build-runner-watch:
+	@echo "🏗️ Build runner for json_serializable and flutter_gen (watch mode)"
+	@dart run build_runner watch --delete-conflicting-outputs
+	
 l10n:
 	@echo "🌐 Generating translations files"
 	@flutter gen-l10n

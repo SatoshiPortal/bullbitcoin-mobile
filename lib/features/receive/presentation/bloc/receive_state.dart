@@ -27,6 +27,8 @@ class ReceiveState with _$ReceiveState {
     @Default(false) bool isAddressOnly,
     WalletTransaction? tx,
     Object? error,
+    AmountException? amountException,
+    @Default(false) bool creatingSwap,
   }) = _ReceiveState;
   const ReceiveState._();
 
@@ -217,24 +219,18 @@ class ReceiveState with _$ReceiveState {
   bool get isLightning => type == ReceiveType.lightning;
 
   bool get swapAmountBelowLimit {
-    if (isLightning && inputAmount.isNotEmpty) {
-      return swapLimits != null && inputAmountSat < swapLimits!.min;
+    if (isLightning && swapLimits != null) {
+      return inputAmountSat < swapLimits!.min;
     }
     return false;
   }
 
   bool get swapAmountAboveLimit {
-    if (isLightning) {
-      return swapLimits != null && inputAmountSat > swapLimits!.max;
+    if (isLightning && swapLimits != null) {
+      return inputAmountSat > swapLimits!.max;
     }
     return false;
   }
-
-  bool get isSwapAmountValid =>
-      swapLimits == null ||
-      inputAmount.isEmpty ||
-      swapAmountBelowLimit ||
-      swapAmountAboveLimit;
 
   LnReceiveSwap? get getSwap {
     if (type == ReceiveType.lightning) {
@@ -257,4 +253,13 @@ class ReceiveState with _$ReceiveState {
         _ => tx?.txId ?? '',
       };
   String get abbreviatedTxId => StringFormatting.truncateMiddle(txId);
+}
+
+class AmountException implements Exception {
+  final String message;
+
+  AmountException(this.message);
+
+  @override
+  String toString() => message;
 }

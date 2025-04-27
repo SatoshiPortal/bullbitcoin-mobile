@@ -12,14 +12,10 @@ class SelectBestWalletUsecase {
     int? amountSat,
   }) {
     try {
-      if (request is BitcoinPaymentRequest || request is LiquidPaymentRequest) {
-        if (amountSat == null) throw 'amountSat should be specified';
-      }
-
       // Bitcoin
       if (request is BitcoinPaymentRequest) {
         return _selectBestWallet(
-          amountSat!,
+          amountSat ?? 0,
           request.isTestnet ? Network.bitcoinTestnet : Network.bitcoinMainnet,
           wallets,
         );
@@ -28,7 +24,7 @@ class SelectBestWalletUsecase {
       // Liquid
       if (request is LiquidPaymentRequest) {
         return _selectBestWallet(
-          amountSat!,
+          amountSat ?? 0,
           request.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
           wallets,
         );
@@ -36,9 +32,7 @@ class SelectBestWalletUsecase {
 
       //Bip21
       if (request is Bip21PaymentRequest) {
-        final amount = amountSat ?? request.amountSat;
-
-        if (amount == null) throw 'The amount of satoshis should be specified';
+        final amount = amountSat ?? request.amountSat ?? 0;
 
         return _selectBestWallet(amount, request.network, wallets);
       }
@@ -66,21 +60,21 @@ class SelectBestWalletUsecase {
         try {
           // Use liquid
           return _selectBestWallet(
-            0,
+            amountSat ?? 0,
             Network.liquidMainnet,
             wallets,
           );
         } catch (_) {
           // unless liquid doesn’t have balance, use bitcoin
           return _selectBestWallet(
-            0,
+            amountSat ?? 0,
             Network.bitcoinMainnet,
             wallets,
           );
         }
       }
 
-      throw 'no wallet or not enough balance for this $PaymentRequest';
+      throw NotEnoughFundsException();
     } catch (e) {
       debugPrint(e.toString());
       rethrow;
@@ -108,6 +102,19 @@ class SelectBestWalletUsecase {
       }
     }
 
-    throw 'not enough funds to process this $PaymentRequest';
+    throw NotEnoughFundsException();
+  }
+}
+
+class NotEnoughFundsException implements Exception {
+  final String message;
+
+  NotEnoughFundsException({
+    this.message = 'Not enough funds available to make this payment.',
+  });
+
+  @override
+  String toString() {
+    return message;
   }
 }

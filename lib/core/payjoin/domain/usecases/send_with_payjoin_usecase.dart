@@ -25,13 +25,15 @@ class SendWithPayjoinUsecase {
         walletId: walletId,
       );
 
-      return _payjoinRepository.createPayjoinSender(
+      final pjSender = await _payjoinRepository.createPayjoinSender(
         walletId: walletId,
         bip21: bip21,
         originalPsbt: signedOriginalPsbt,
         networkFeesSatPerVb: networkFeesSatPerVb,
         expireAfterSec: expireAfterSec,
       );
+
+      return pjSender;
     } catch (e) {
       throw SendPayjoinException(e.toString());
     }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/backup_wallet/ui/screens/backup_check_list_screen.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/screens/backup_success_screen.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/screens/choose_encrypted_vault_provider_screen.dart';
 
@@ -7,6 +8,7 @@ enum BackupWalletSubroute {
   chooseBackupProvider('choose-backup-provider'),
   //TODO: add physical backup subroutes
   physical('backup-physical'),
+  physicalCheckList('backup-physical-checklist'),
   backupSuccess('backup-success'),
   ;
 
@@ -27,6 +29,13 @@ class BackupWalletRouter {
       name: BackupWalletSubroute.backupSuccess.name,
       builder: (context, state) {
         return const BackupSuccessScreen();
+      },
+    ),
+    GoRoute(
+      path: BackupWalletSubroute.physicalCheckList.path,
+      name: BackupWalletSubroute.physicalCheckList.name,
+      builder: (context, state) {
+        return const BackCheckListScreen();
       },
     ),
   ];

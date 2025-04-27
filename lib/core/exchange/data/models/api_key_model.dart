@@ -30,14 +30,22 @@ class ExchangeApiKeyModel {
       isActive: json['isActive'] as bool,
       // Convert ISO8601 string dates to millisecond timestamps
       lastUsedAt: json['lastUsedAt'] != null
-          ? DateTime.parse(json['lastUsedAt'] as String).millisecondsSinceEpoch
+          ? (json['lastUsedAt'] is String
+              ? DateTime.parse(json['lastUsedAt'] as String)
+                  .millisecondsSinceEpoch
+              : json['lastUsedAt'] as int)
           : null,
-      createdAt:
-          DateTime.parse(json['createdAt'] as String).millisecondsSinceEpoch,
-      updatedAt:
-          DateTime.parse(json['updatedAt'] as String).millisecondsSinceEpoch,
+      createdAt: json['createdAt'] is String
+          ? DateTime.parse(json['createdAt'] as String).millisecondsSinceEpoch
+          : json['createdAt'] as int,
+      updatedAt: json['updatedAt'] is String
+          ? DateTime.parse(json['updatedAt'] as String).millisecondsSinceEpoch
+          : json['updatedAt'] as int,
       expiresAt: json['expiresAt'] != null
-          ? DateTime.parse(json['expiresAt'] as String).millisecondsSinceEpoch
+          ? (json['expiresAt'] is String
+              ? DateTime.parse(json['expiresAt'] as String)
+                  .millisecondsSinceEpoch
+              : json['expiresAt'] as int)
           : null,
     );
   }

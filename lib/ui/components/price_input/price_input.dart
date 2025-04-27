@@ -28,6 +28,7 @@ class PriceInput extends StatelessWidget {
     String selected,
   ) async {
     final c = await showModalBottomSheet<String?>(
+      useRootNavigator: true,
       context: context,
       isScrollControlled: true,
       backgroundColor: context.colour.secondaryFixedDim,
@@ -107,6 +108,7 @@ class PriceInput extends StatelessWidget {
           error ?? '',
           style: context.font.bodyLarge,
           color: error != null ? context.colour.error : Colors.transparent,
+          maxLines: 2,
         ),
         // ),
         // ],

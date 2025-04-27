@@ -25,26 +25,43 @@ enum SwapStatus {
 }
 
 class SwapFees {
+  final double? boltzPercent;
   final int? boltzFee;
   final int? lockupFee;
   final int? claimFee;
 
   const SwapFees({
+    this.boltzPercent,
     this.boltzFee,
     this.lockupFee,
     this.claimFee,
   });
 
-  int? get totalFees {
-    if (boltzFee == null && lockupFee == null && claimFee == null) {
-      return null;
-    }
-
+  int? totalFees(int? amount) {
     int total = 0;
     if (boltzFee != null) total += boltzFee!;
+    if (boltzFee == null) {
+      final boltzFee = boltzFeeFromPercent(amount ?? 0);
+      total += boltzFee;
+    }
     if (lockupFee != null) total += lockupFee!;
     if (claimFee != null) total += claimFee!;
     return total;
+  }
+
+  int boltzFeeFromPercent(int amount) {
+    if (boltzPercent == null) {
+      return 0;
+    }
+    return ((amount * boltzPercent!) / 100).ceil();
+  }
+
+  double boltzPercentFromFees(int amount) {
+    if (boltzFee == null) {
+      return 0;
+    }
+
+    return double.parse(((boltzFee! / amount) * 100).toStringAsFixed(2));
   }
 }
 

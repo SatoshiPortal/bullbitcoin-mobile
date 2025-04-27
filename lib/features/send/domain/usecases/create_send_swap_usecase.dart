@@ -50,16 +50,6 @@ class CreateSendSwapUsecase {
       );
       if (existingSwap != null) return existingSwap;
 
-      final decoded = await swapRepository.decodeInvoice(invoice: finalInvoice);
-
-      final limits = await _swapRepository.getSwapLimits(type: type);
-      if (decoded.sats < limits.min) {
-        throw Exception('Minimum Swap Amount: $limits.min sats');
-      }
-      if (decoded.sats > limits.max) {
-        throw Exception('Maximum Swap Amount: $limits.max sats');
-      }
-
       final mnemonic =
           await _seedRepository.get(wallet.masterFingerprint) as MnemonicSeed;
 
@@ -101,7 +91,7 @@ class CreateSendSwapUsecase {
             electrumUrl: lbtcElectrumUrl,
           );
         default:
-          throw Exception('This is not a swap for the receive feature!');
+          throw Exception('This is not a swap for the send feature!');
       }
     } catch (e) {
       rethrow;

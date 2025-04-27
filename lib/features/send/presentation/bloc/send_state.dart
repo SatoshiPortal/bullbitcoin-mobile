@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
@@ -5,7 +7,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/utxo/domain/entities/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
@@ -78,10 +80,15 @@ class SendState with _$SendState {
     @Default(false) bool replaceByFee,
     FeeOptions? feesList,
     NetworkFee? selectedFee,
+    // TODO: remove absFee and make usecases return size so abs fee can
+    // be calculated from NetworkFee
+    int? absoluteFees,
     FeeSelection? selectedFeeOption,
     int? customFee,
     // prepare
     String? unsignedPsbt,
+    String? signedBitcoinPsbt,
+    Uint8List? signedLiquidTx,
     LnSendSwap? lightningSwap,
     // confirm
     String? txId,
@@ -91,9 +98,20 @@ class SendState with _$SendState {
     @Default(false) bool amountConfirmedClicked,
     @Default(false) bool loadingBestWallet,
     @Default(false) bool creatingSwap,
+    @Default(false) bool buildingTransaction,
+    @Default(false) bool signingTransaction,
+    @Default(false) bool broadcastingTransaction,
     @Default('') String balanceApproximatedAmount,
+    SwapCreationException? swapCreationException,
+    InsufficientBalanceException? insufficientBalanceException,
+    InvalidBitcoinStringException? invalidBitcoinStringException,
+    SwapLimitsException? swapLimitsException,
+    BuildTransactionException? buildTransactionException,
+    ConfirmTransactionException? confirmTransactionException,
+
     // swapLimits
     SwapLimits? swapLimits,
+    SwapFees? swapFees,
   }) = _SendState;
   const SendState._();
 
@@ -293,4 +311,70 @@ class SendState with _$SendState {
     return lightningSwap != null &&
         lightningSwap!.status == SwapStatus.completed;
   }
+
+  bool get disableConfirmSend =>
+      buildingTransaction || signingTransaction || broadcastingTransaction;
+}
+
+class SwapCreationException implements Exception {
+  final String message;
+
+  SwapCreationException(this.message);
+
+  @override
+  String toString() => message;
+  String get displayMessage => 'Failed to create swap.';
+}
+
+class InsufficientBalanceException implements Exception {
+  final String message;
+
+  InsufficientBalanceException({
+    this.message = 'Not enough balance to cover this payment',
+  });
+
+  @override
+  String toString() => message;
+}
+
+class InvalidBitcoinStringException implements Exception {
+  final String message;
+
+  InvalidBitcoinStringException({
+    this.message = 'Invalid Bitcoin Payment Address or Invoice',
+  });
+
+  @override
+  String toString() => message;
+}
+
+class SwapLimitsException implements Exception {
+  final String message;
+
+  SwapLimitsException(this.message);
+
+  @override
+  String toString() => message;
+}
+
+class BuildTransactionException implements Exception {
+  final String message;
+
+  BuildTransactionException(this.message);
+
+  @override
+  String toString() => message;
+
+  String get title => 'Build Failed';
+}
+
+class ConfirmTransactionException implements Exception {
+  final String message;
+
+  ConfirmTransactionException(this.message);
+
+  @override
+  String toString() => message;
+
+  String get title => 'Confirmation Failed';
 }

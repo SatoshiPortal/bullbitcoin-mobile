@@ -12,11 +12,11 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dar
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utxo/domain/repositories/utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:dio/dio.dart';
@@ -38,7 +38,7 @@ class PayjoinLocator {
     locator.registerLazySingleton<PayjoinRepository>(
       () => PayjoinRepositoryImpl(
         payjoinDatasource: locator<PayjoinDatasource>(),
-        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
+        sqliteDatasource: locator<SqliteDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         seedDatasource: locator<SeedDatasource>(),
         blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),

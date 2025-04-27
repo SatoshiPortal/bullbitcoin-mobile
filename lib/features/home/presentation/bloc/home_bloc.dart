@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
@@ -25,6 +28,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required InitializeTorUsecase initializeTorUsecase,
     required CheckForTorInitializationOnStartupUsecase
         checkForTorInitializationOnStartupUsecase,
+    required GetApiKeyUsecase getApiKeyUsecase,
+    required GetUserSummaryUseCase getUserSummaryUseCase,
   })  : _getWalletsUsecase = getWalletsUsecase,
         _checkAnyWalletSyncingUsecase = checkAnyWalletSyncingUsecase,
         _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -33,12 +38,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         _initializeTorUsecase = initializeTorUsecase,
         _checkForTorInitializationOnStartupUsecase =
             checkForTorInitializationOnStartupUsecase,
+        _getApiKeyUsecase = getApiKeyUsecase,
+        _getUserSummaryUsecase = getUserSummaryUseCase,
         super(const HomeState()) {
     on<HomeStarted>(_onStarted);
     on<HomeRefreshed>(_onRefreshed);
     on<HomeWalletSyncStarted>(_onWalletSyncStarted);
     on<HomeWalletSyncFinished>(_onWalletSyncFinished);
     on<StartTorInitialization>(_onStartTorInitialization);
+    on<GetUserDetails>(_onGetUserDetails);
+    on<ChangeHomeTab>(_onChangeHomeTab);
+    add(const GetUserDetails());
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -49,6 +59,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final InitializeTorUsecase _initializeTorUsecase;
   final CheckForTorInitializationOnStartupUsecase
       _checkForTorInitializationOnStartupUsecase;
+  final GetApiKeyUsecase _getApiKeyUsecase;
+  final GetUserSummaryUseCase _getUserSummaryUsecase;
+
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
 
@@ -57,6 +70,13 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();
     return super.close();
+  }
+
+  void _onChangeHomeTab(ChangeHomeTab event, Emitter<HomeState> emit) {
+    emit(state.copyWith(selectedTab: event.selectedTab));
+    if (event.selectedTab == HomeTabs.exchange) {
+      add(const GetUserDetails());
+    }
   }
 
   Future<void> _onStarted(
@@ -182,6 +202,22 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     if (isTorIniatizationEnabled) {
       await _initializeTorUsecase.execute();
+    }
+  }
+
+  Future<void> _onGetUserDetails(
+    GetUserDetails event,
+    Emitter<HomeState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(checkingUser: true));
+      final apiKey = await _getApiKeyUsecase.execute();
+      if (apiKey == null) throw 'NoApiKeyException';
+
+      final userSummary = await _getUserSummaryUsecase.execute(apiKey.key);
+      emit(state.copyWith(userSummary: userSummary, checkingUser: false));
+    } catch (e) {
+      emit(state.copyWith(error: e, checkingUser: false, userSummary: null));
     }
   }
 }

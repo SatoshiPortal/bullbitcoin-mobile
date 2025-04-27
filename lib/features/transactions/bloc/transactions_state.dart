@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transactions_state.freezed.dart';
@@ -7,7 +7,7 @@ part 'transactions_state.freezed.dart';
 class TransactionsState with _$TransactionsState {
   const factory TransactionsState({
     List<Transaction>? transactions,
-    @Default(false) bool loadingTxs,
+    @Default(false) bool isSyncing,
     Object? err,
   }) = _TransactionsState;
   const TransactionsState._();

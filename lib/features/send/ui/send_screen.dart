@@ -1,27 +1,10 @@
-import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
-import 'package:bb_mobile/core/utxo/domain/usecases/get_utxos_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
+import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/scan/scan_widget.dart';
-import 'package:bb_mobile/features/send/domain/usecases/confirm_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/confirm_liquid_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/select_best_wallet_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -35,6 +18,7 @@ import 'package:bb_mobile/ui/components/segment/segmented_full.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
@@ -46,28 +30,7 @@ class SendFlow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SendCubit(
-        bestWalletUsecase: locator<SelectBestWalletUsecase>(),
-        detectBitcoinStringUsecase: locator<DetectBitcoinStringUsecase>(),
-        getCurrencyUsecase: locator<GetCurrencyUsecase>(),
-        getBitcoinUnitUseCase: locator<GetBitcoinUnitUsecase>(),
-        convertSatsToCurrencyAmountUsecase:
-            locator<ConvertSatsToCurrencyAmountUsecase>(),
-        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
-        getAvailableCurrenciesUsecase: locator<GetAvailableCurrenciesUsecase>(),
-        getUtxosUsecase: locator<GetUtxosUsecase>(),
-        prepareBitcoinSendUsecase: locator<PrepareBitcoinSendUsecase>(),
-        prepareLiquidSendUsecase: locator<PrepareLiquidSendUsecase>(),
-        confirmBitcoinSendUsecase: locator<ConfirmBitcoinSendUsecase>(),
-        confirmLiquidSendUsecase: locator<ConfirmLiquidSendUsecase>(),
-        getWalletsUsecase: locator<GetWalletsUsecase>(),
-        getWalletUsecase: locator<GetWalletUsecase>(),
-        createSendSwapUsecase: locator<CreateSendSwapUsecase>(),
-        updatePaidSendSwapUsecase: locator<UpdatePaidSendSwapUsecase>(),
-        getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
-        watchSwapUsecase: locator<WatchSwapUsecase>(),
-        sendWithPayjoinUsecase: locator<SendWithPayjoinUsecase>(),
-      )..loadWalletWithRatesAndFees(),
+      create: (_) => locator<SendCubit>()..loadWalletWithRatesAndFees(),
       child: const SendScreen(),
     );
   }
@@ -118,7 +81,7 @@ class SendAddressScreen extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               child: Container(
                 alignment: Alignment.bottomCenter,
-                height: 250,
+                // height: 250,
                 decoration: BoxDecoration(
                   color: context.colour.onPrimary,
                   borderRadius: const BorderRadius.only(
@@ -137,9 +100,11 @@ class SendAddressScreen extends StatelessWidget {
                     ),
                     const Gap(16),
                     const AddressField(),
-                    const Gap(13 + 16),
+                    const Gap(16),
+                    const AddressErrorSection(),
+                    const Gap(16),
                     const SendContinueWithAddressButton(),
-                    const Gap(24),
+                    const Gap(42),
                   ],
                 ),
               ),
@@ -158,9 +123,6 @@ class SendContinueWithAddressButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final error = context.select(
-      (SendCubit cubit) => cubit.state.error,
-    );
     final loadingBestWallet = context.select(
       (SendCubit cubit) => cubit.state.loadingBestWallet,
     );
@@ -174,7 +136,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
-      disabled: loadingBestWallet || error != null || creatingSwap,
+      disabled: loadingBestWallet || creatingSwap,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );
@@ -196,6 +158,56 @@ class AddressField extends StatelessWidget {
   }
 }
 
+class AddressErrorSection extends StatelessWidget {
+  const AddressErrorSection({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final balanceError = context.select(
+      (SendCubit cubit) => cubit.state.insufficientBalanceException,
+    );
+    final swapError = context.select(
+      (SendCubit cubit) => cubit.state.swapCreationException,
+    );
+    final invalidAddress = context.select(
+      (SendCubit cubit) => cubit.state.invalidBitcoinStringException,
+    );
+    if (balanceError != null) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: BBText(
+          balanceError.message,
+          style: context.font.bodyMedium,
+          color: context.colour.error,
+          maxLines: 2,
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    if (swapError != null) {
+      return BBText(
+        swapError.message,
+        style: context.font.bodyMedium,
+        color: context.colour.error,
+        maxLines: 2,
+        textAlign: TextAlign.center,
+      );
+    }
+    if (invalidAddress != null) {
+      return BBText(
+        invalidAddress.toString(),
+        style: context.font.bodyMedium,
+        color: context.colour.error,
+        maxLines: 2,
+        textAlign: TextAlign.center,
+      );
+    }
+    return const SizedBox.shrink();
+  }
+}
+
 class SendAmountScreen extends StatelessWidget {
   const SendAmountScreen({super.key});
 
@@ -214,14 +226,17 @@ class SendAmountScreen extends StatelessWidget {
       body: BlocBuilder<SendCubit, SendState>(
         builder: (context, state) {
           final cubit = context.read<SendCubit>();
-          final hasBalance = context.select(
+          final balanceError = context.select(
+            (SendCubit cubit) => cubit.state.insufficientBalanceException,
+          );
+          final swapLimitsError = context.select(
+            (SendCubit cubit) => cubit.state.swapLimitsException,
+          );
+          final swapCreationError = context.select(
+            (SendCubit cubit) => cubit.state.swapCreationException,
+          );
+          final walletHasBalance = context.select(
             (SendCubit cubit) => cubit.state.walletHasBalance(),
-          );
-          final isBelowSwapLimit = context.select<SendCubit, bool>(
-            (bloc) => bloc.state.swapAmountBelowLimit,
-          );
-          final isAboveSwapLimit = context.select<SendCubit, bool>(
-            (bloc) => bloc.state.swapAmountAboveLimit,
           );
           return IgnorePointer(
             ignoring: state.amountConfirmedClicked,
@@ -250,13 +265,13 @@ class SendAmountScreen extends StatelessWidget {
                         ],
                         onNoteChanged: cubit.noteChanged,
                         onCurrencyChanged: cubit.currencyCodeChanged,
-                        error: !hasBalance
-                            ? 'Insufficient balance'
-                            : isBelowSwapLimit
-                                ? 'Amount below swap limit'
-                                : isAboveSwapLimit
-                                    ? 'Amount above swap limit'
-                                    : null,
+                        error: balanceError != null
+                            ? balanceError.toString()
+                            : !walletHasBalance
+                                ? 'Insufficient balance'
+                                : swapLimitsError != null
+                                    ? swapLimitsError.toString()
+                                    : swapCreationError?.toString(),
                       ),
                       const Gap(64),
                       BalanceRow(
@@ -308,12 +323,6 @@ class SendAmountConfirmButton extends StatelessWidget {
     final amountConfirmedClicked = context.select(
       (SendCubit cubit) => cubit.state.amountConfirmedClicked,
     );
-    final isBelowSwapLimit = context.select<SendCubit, bool>(
-      (bloc) => bloc.state.swapAmountBelowLimit,
-    );
-    final isAboveSwapLimit = context.select<SendCubit, bool>(
-      (bloc) => bloc.state.swapAmountAboveLimit,
-    );
     final creatingSwap = context.select(
       (SendCubit cubit) => cubit.state.creatingSwap,
     );
@@ -322,11 +331,7 @@ class SendAmountConfirmButton extends StatelessWidget {
       onPressed: () {
         context.read<SendCubit>().onAmountConfirmed();
       },
-      disabled: amountConfirmedClicked ||
-          !hasBalance ||
-          isBelowSwapLimit ||
-          isAboveSwapLimit ||
-          creatingSwap,
+      disabled: amountConfirmedClicked || !hasBalance || creatingSwap,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );
@@ -390,13 +395,76 @@ class SendConfirmScreen extends StatelessWidget {
               const _OnchainSendInfoSection(),
             const Gap(64),
             // const _Warning(),
-            const Gap(64),
+            const _ConfirmSendErrorSection(),
             const _BottomButtons(),
-            // const Gap(40),
           ],
         ),
       ),
     );
+  }
+}
+
+class _ConfirmSendErrorSection extends StatelessWidget {
+  const _ConfirmSendErrorSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final buildError = context
+        .select((SendCubit cubit) => cubit.state.buildTransactionException);
+
+    final confirmError = context
+        .select((SendCubit cubit) => cubit.state.confirmTransactionException);
+
+    if (buildError != null) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            BBText(
+              buildError.title,
+              style: context.font.bodyLarge,
+              color: context.colour.error,
+              maxLines: 5,
+              textAlign: TextAlign.center,
+            ),
+            const Gap(8),
+            BBText(
+              buildError.message,
+              style: context.font.bodyMedium,
+              color: context.colour.error,
+              maxLines: 5,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+    if (confirmError != null) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            BBText(
+              confirmError.title,
+              style: context.font.bodyLarge,
+              color: context.colour.error,
+              maxLines: 5,
+              textAlign: TextAlign.center,
+            ),
+            const Gap(8),
+            BBText(
+              confirmError.message,
+              style: context.font.bodyMedium,
+              color: context.colour.error,
+              maxLines: 5,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 }
 
@@ -423,21 +491,36 @@ class _BottomButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isBitcoinWallet = context.select(
+      (SendCubit cubit) => !cubit.state.selectedWallet!.isLiquid,
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BBButton.big(
-            label: 'Advanced Settings',
-            onPressed: () {},
-            borderColor: context.colour.secondary,
-            outlined: true,
-            bgColor: Colors.transparent,
-            textColor: context.colour.secondary,
-            disabled: true,
-          ),
-          const Gap(12),
+          if (isBitcoinWallet) ...[
+            BBButton.big(
+              label: 'Advanced Settings',
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: context.colour.secondaryFixed,
+                  builder: (BuildContext buildContext) => BlocProvider.value(
+                    value: context.read<SendCubit>(),
+                    child: const AdvancedOptionsBottomSheet(),
+                  ),
+                );
+              },
+              borderColor: context.colour.secondary,
+              outlined: true,
+              bgColor: Colors.transparent,
+              textColor: context.colour.secondary,
+            ),
+            const Gap(12),
+          ],
           const ConfirmSendButton(),
         ],
       ),
@@ -452,6 +535,9 @@ class ConfirmSendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final disableSendButton = context.select(
+      (SendCubit cubit) => cubit.state.disableConfirmSend,
+    );
     return BBButton.big(
       label: 'Confirm',
       onPressed: () {
@@ -459,6 +545,7 @@ class ConfirmSendButton extends StatelessWidget {
       },
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
+      disabled: disableSendButton,
     );
   }
 }
@@ -483,12 +570,16 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final formattedFiatEquivalent = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
-    final selectedFees = context.select(
-      (SendCubit cubit) => cubit.state.selectedFee,
+    // final selectedFees = context.select(
+    //   (SendCubit cubit) => cubit.state.selectedFee,
+    // );
+    final absoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.absoluteFees,
     );
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
     );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -505,11 +596,30 @@ class _OnchainSendInfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: 'To',
-            details: BBText(
-              addressOrInvoice,
-              style: context.font.bodyLarge,
-              maxLines: 5,
-              textAlign: TextAlign.end,
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                  child: BBText(
+                    addressOrInvoice,
+                    maxLines: 5,
+                    style: context.font.bodyLarge,
+                    textAlign: TextAlign.end,
+                  ),
+                ),
+                const Gap(8),
+                InkWell(
+                  child: Icon(
+                    Icons.copy,
+                    color: context.colour.primary,
+                    size: 16,
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: addressOrInvoice));
+                  },
+                ),
+              ],
             ),
             // const Gap(4),
             // InkWell(
@@ -539,7 +649,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'Network fees',
             details: BBText(
-              "${selectedFees?.value} sats/byte",
+              "${absoluteFees ?? 0} sats",
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -623,11 +733,27 @@ class _SwapSendInfoSection extends StatelessWidget {
           _divider(context),
           InfoRow(
             title: 'To',
-            details: BBText(
-              addressOrInvoice,
-              style: context.font.bodyLarge,
-              maxLines: 5,
-              textAlign: TextAlign.end,
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BBText(
+                  StringFormatting.truncateMiddle(addressOrInvoice),
+                  style: context.font.bodyLarge,
+                  textAlign: TextAlign.end,
+                ),
+                const Gap(4),
+                InkWell(
+                  child: Icon(
+                    Icons.copy,
+                    color: context.colour.primary,
+                    size: 16,
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: addressOrInvoice));
+                  },
+                ),
+              ],
             ),
             // const Gap(4),
             // InkWell(
@@ -657,7 +783,7 @@ class _SwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'Total fees',
             details: BBText(
-              "${swap.fees?.totalFees} sats",
+              "${swap.fees?.totalFees(null)} sats",
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -755,6 +881,16 @@ class SendSendingScreen extends StatelessWidget {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          title: 'Send',
+          actionIcon: Icons.help_outline,
+          onAction: () {},
+          onBack: () => context.pop(),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -842,6 +978,15 @@ class SendSucessScreen extends StatelessWidget {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          title: 'Send',
+          actionIcon: Icons.close,
+          onAction: context.pop,
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

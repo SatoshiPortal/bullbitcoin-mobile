@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet_transaction/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/bloc/transactions_bloc.dart';
 import 'package:bb_mobile/locator.dart';
@@ -45,13 +45,13 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loading =
-        context.select((TransactionsCubit cubit) => cubit.state.loadingTxs);
+        context.select((TransactionsCubit cubit) => cubit.state.isSyncing);
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const FilterRow(),
-        if (loading) const LinearProgressIndicator(),
+        if (loading) const LinearProgressIndicator() else const Gap(4),
         if (err != null)
           Padding(
             padding: const EdgeInsets.all(16.0),

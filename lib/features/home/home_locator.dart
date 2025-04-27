@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
@@ -23,6 +25,8 @@ class HomeLocator {
         initializeTorUsecase: locator<InitializeTorUsecase>(),
         checkForTorInitializationOnStartupUsecase:
             locator<CheckForTorInitializationOnStartupUsecase>(),
+        getApiKeyUsecase: locator<GetApiKeyUsecase>(),
+        getUserSummaryUseCase: locator<GetUserSummaryUseCase>(),
       ),
     );
   }

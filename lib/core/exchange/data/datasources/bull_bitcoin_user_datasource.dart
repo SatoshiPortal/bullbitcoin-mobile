@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/rendering.dart';
 
 class BullBitcoinUserDatasource {
   final Dio _http;
@@ -7,10 +7,10 @@ class BullBitcoinUserDatasource {
   BullBitcoinUserDatasource({
     required Dio bullBitcoinHttpClient,
   }) : _http = bullBitcoinHttpClient;
-  Future<void> getUserSummary(String apiKey) async {
+  Future<UserSummaryModel?> getUserSummary(String apiKey) async {
     try {
       final resp = await _http.post(
-        "/api-users",
+        "/ak/api-users",
         data: {
           'id': 1,
           'jsonrpc': '2.0',
@@ -19,7 +19,8 @@ class BullBitcoinUserDatasource {
         },
         options: Options(
           headers: {
-            'Authorization': 'Bearer $apiKey',
+            // 'Authorization': 'Bearer $apiKey',
+            'X-API-Key': apiKey,
           },
         ),
       );
@@ -27,9 +28,12 @@ class BullBitcoinUserDatasource {
       if (resp.statusCode == null || resp.statusCode != 200) {
         throw 'Unable to fetch user summary from Bull Bitcoin API';
       }
-      // Parse the response data correctly
-      final data = resp.data as Map<String, dynamic>;
-      debugPrint(data.toString());
+
+      final userSummary = UserSummaryModel.fromJson(
+        resp.data['result'] as Map<String, dynamic>,
+      );
+
+      return userSummary;
     } catch (e) {
       rethrow;
     }
