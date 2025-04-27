@@ -94,7 +94,8 @@ class _ElectrumServerSettingsContentState
                         children: [
                           ServerTypeSelector(state: state),
                           const Gap(24),
-                          if (state.isCustomProvider) _ServerUrls(state: state),
+                          if (state.isCustomServerSelected)
+                            _ServerUrls(state: state),
                           const Gap(16),
                           _ValidateDomainSwitch(context: context, state: state),
                           const Gap(16),
@@ -107,7 +108,7 @@ class _ElectrumServerSettingsContentState
                     ),
                   ),
                 ),
-              ]
+              ],
             ],
           ),
         );
@@ -122,10 +123,11 @@ class _SaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Use the improved hasPendingChanges getter that includes provider type changes
     final bool hasChanges = state.hasPendingChanges;
 
     bool disableSave = false;
-    if (state.isCustomProvider && hasChanges) {
+    if (state.isCustomServerSelected && hasChanges) {
       final mainnetNetwork = state.isSelectedNetworkLiquid
           ? Network.liquidMainnet
           : Network.bitcoinMainnet;
@@ -154,7 +156,7 @@ class _SaveButton extends StatelessWidget {
           ? () {
               context
                   .read<ElectrumSettingsBloc>()
-                  .add(SaveElectrumServerChanges());
+                  .add(const SaveElectrumServerChanges());
               Navigator.of(context).pop();
             }
           : () {},
@@ -173,35 +175,18 @@ class ServerTypeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final providerLabels = Set<String>.from(state.serverProviderLabels);
-    final selectedLabel =
-        state.serverProviderLabels[state.selectedServerTypeIndex];
+    final selectedOption = state.isCustomServerSelected ? 'Custom' : 'Default';
 
     return BBSegmentFull(
-      items: providerLabels,
-      initialValue: selectedLabel,
+      items: const {'Default', 'Custom'},
+      initialValue: selectedOption,
       onSelected: (selected) {
-        final index = state.serverProviderLabels.indexOf(selected);
-        if (index != -1) {
-          final provider = _getProviderFromIndex(index);
-          context.read<ElectrumSettingsBloc>().add(
-                ToggleSelectedProvider(provider),
-              );
-        }
+        final isCustom = selected == 'Custom';
+        context.read<ElectrumSettingsBloc>().add(
+              ToggleCustomServer(isCustomSelected: isCustom),
+            );
       },
     );
-  }
-
-  ElectrumServerProvider _getProviderFromIndex(int index) {
-    switch (index) {
-      case 0:
-        return ElectrumServerProvider.blockstream;
-      case 2:
-        return ElectrumServerProvider.custom;
-      case 1:
-      default:
-        return ElectrumServerProvider.bullBitcoin;
-    }
   }
 }
 
@@ -211,6 +196,51 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final networkText =
+        state.isSelectedNetworkLiquid ? 'Liquid Network' : 'Bitcoin Network';
+    final mainnetNetwork = state.isSelectedNetworkLiquid
+        ? Network.liquidMainnet
+        : Network.bitcoinMainnet;
+    Widget? statusIndicator;
+    if (state.isCustomServerSelected) {
+      // For custom provider mode, display a dot based on connectivity
+      final customServer = state.getServerForNetworkAndProvider(
+        mainnetNetwork,
+        const ElectrumServerProvider.customProvider(),
+      );
+      if (customServer != null) {
+        final isConnected = customServer.status == ElectrumServerStatus.online;
+        final dotColor = isConnected ? Colors.green : Colors.red;
+        statusIndicator = Container(
+          margin: const EdgeInsets.only(left: 5),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: dotColor,
+          ),
+        );
+      }
+    } else {
+      // For default provider mode, display a dot based on connectivity
+      final defaultServer = state.getServerForNetworkAndProvider(
+        mainnetNetwork,
+        state.selectedProvider,
+      );
+      if (defaultServer != null) {
+        final isConnected = defaultServer.status == ElectrumServerStatus.online;
+        final dotColor = isConnected ? Colors.green : Colors.red;
+        statusIndicator = Container(
+          margin: const EdgeInsets.only(left: 5),
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: dotColor,
+          ),
+        );
+      }
+    }
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
       child: Column(
@@ -220,11 +250,14 @@ class _Header extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const SizedBox(width: 24),
-              BBText(
-                state.isSelectedNetworkLiquid
-                    ? 'Liquid Network'
-                    : 'Bitcoin Network',
-                style: context.font.headlineMedium,
+              Row(
+                children: [
+                  BBText(
+                    networkText,
+                    style: context.font.headlineMedium,
+                  ),
+                  if (statusIndicator != null) statusIndicator,
+                ],
               ),
               GestureDetector(
                 onTap: () => Navigator.of(context).pop(),
@@ -236,16 +269,17 @@ class _Header extends StatelessWidget {
             label:
                 'Configure ${state.isSelectedNetworkLiquid ? "Bitcoin" : "Liquid"} Network',
             onPressed: () => context.read<ElectrumSettingsBloc>().add(
-                state.isSelectedNetworkLiquid
-                    ? ConfigureBitcoinSettings()
-                    : ConfigureLiquidSettings()),
+                  state.isSelectedNetworkLiquid
+                      ? const ConfigureBitcoinSettings()
+                      : const ConfigureLiquidSettings(),
+                ),
             textStyle: context.font.labelMedium?.copyWith(
               fontWeight: FontWeight.w400,
               fontSize: 12,
             ),
             bgColor: Colors.transparent,
             textColor: context.colour.primary,
-          )
+          ),
         ],
       ),
     );
@@ -277,9 +311,12 @@ class _ValidateDomainSwitch extends StatelessWidget {
           inactiveThumbColor: context.colour.onSecondary,
           inactiveTrackColor: context.colour.surface,
           trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
-              (Set<WidgetState> states) => Colors.transparent),
+            (Set<WidgetState> states) => Colors.transparent,
+          ),
           onChanged: (_) {
-            context.read<ElectrumSettingsBloc>().add(ToggleValidateDomain());
+            context
+                .read<ElectrumSettingsBloc>()
+                .add(const ToggleValidateDomain());
           },
         ),
       ],
@@ -333,7 +370,6 @@ class _ServerUrls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get networks based on selected type
     final mainnetNetwork = state.isSelectedNetworkLiquid
         ? Network.liquidMainnet
         : Network.bitcoinMainnet;
@@ -341,27 +377,30 @@ class _ServerUrls extends StatelessWidget {
         ? Network.liquidTestnet
         : Network.bitcoinTestnet;
 
-    // Get server configurations
     final mainnetServer = state.getServerForNetworkAndProvider(
       mainnetNetwork,
-      state.selectedProvider,
+      const ElectrumServerProvider.customProvider(),
     );
+
     final testnetServer = state.getServerForNetworkAndProvider(
       testnetNetwork,
-      state.selectedProvider,
+      const ElectrumServerProvider.customProvider(),
     );
+
+    final String mainnetUrl = mainnetServer?.url ?? '';
+    final String testnetUrl = testnetServer?.url ?? '';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _ServerField(
           label: 'Mainnet',
-          initialValue: mainnetServer?.url,
-          enabled: state.isCustomProvider,
+          initialValue: mainnetUrl,
+          enabled: state.isCustomServerSelected,
           onChanged: (value) {
-            if (state.isCustomProvider) {
+            if (state.isCustomServerSelected) {
               context.read<ElectrumSettingsBloc>().add(
-                    UpdateCustomServerMainnet(value),
+                    UpdateCustomServerMainnet(customServer: value),
                   );
             }
           },
@@ -369,12 +408,12 @@ class _ServerUrls extends StatelessWidget {
         const Gap(16),
         _ServerField(
           label: 'Testnet',
-          initialValue: testnetServer?.url,
-          enabled: state.isCustomProvider,
+          initialValue: testnetUrl,
+          enabled: state.isCustomServerSelected,
           onChanged: (value) {
-            if (state.isCustomProvider) {
+            if (state.isCustomServerSelected) {
               context.read<ElectrumSettingsBloc>().add(
-                    UpdateCustomServerTestnet(value),
+                    UpdateCustomServerTestnet(customServer: value),
                   );
             }
           },
@@ -449,7 +488,6 @@ class _AdvancedOptions extends StatelessWidget {
     final server = state.currentServer;
 
     final stopGapController = TextEditingController(
-      // Only set text if the server exists AND its value differs from default
       text: (server != null) ? server.stopGap.toString() : '',
     );
 
@@ -519,7 +557,6 @@ class _AdvancedOptions extends StatelessWidget {
                 final retryStr = retryController.text.trim();
                 final timeoutStr = timeoutController.text.trim();
 
-                // Parse the values if present, otherwise use null
                 final stopGap =
                     stopGapStr.isNotEmpty ? int.tryParse(stopGapStr) : null;
                 final retry =
@@ -527,7 +564,6 @@ class _AdvancedOptions extends StatelessWidget {
                 final timeout =
                     timeoutStr.isNotEmpty ? int.tryParse(timeoutStr) : null;
 
-                // Only send the event if at least one field has a value
                 if (stopGap != null || retry != null || timeout != null) {
                   bloc.add(
                     UpdateElectrumAdvancedOptions(
