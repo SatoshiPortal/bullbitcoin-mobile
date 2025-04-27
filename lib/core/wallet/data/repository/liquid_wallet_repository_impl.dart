@@ -62,7 +62,9 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
     required String walletId,
     required String pset,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
