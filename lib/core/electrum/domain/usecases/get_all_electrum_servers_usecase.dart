@@ -9,8 +9,10 @@ class GetAllElectrumServersUsecase {
     required ElectrumServerRepository electrumServerRepository,
   }) : _electrumServerRepository = electrumServerRepository;
 
-  Future<List<ElectrumServer>> execute(
-      {required bool checkStatus, required Network network}) async {
+  Future<List<ElectrumServer>> execute({
+    required bool checkStatus,
+    required Network network,
+  }) async {
     return await _electrumServerRepository.getElectrumServers(
       checkStatus: checkStatus,
       network: network,

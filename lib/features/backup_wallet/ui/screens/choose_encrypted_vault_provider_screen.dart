@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
 import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart' show AppRoute;
-import 'package:bb_mobile/ui/components/bottom_sheet/x.dart';
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/vault/vault_locations.dart';
