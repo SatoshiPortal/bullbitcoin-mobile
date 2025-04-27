@@ -12,23 +12,21 @@ class ElectrumServerProviderChanged extends ElectrumSettingsEvent {
 }
 
 class ConfigureLiquidSettings extends ElectrumSettingsEvent {
-  ConfigureLiquidSettings();
+  const ConfigureLiquidSettings();
 }
 
 class ConfigureBitcoinSettings extends ElectrumSettingsEvent {
-  ConfigureBitcoinSettings();
+  const ConfigureBitcoinSettings();
 }
-
-class OnElectrumServerSettingsClicked extends ElectrumSettingsEvent {}
 
 class UpdateCustomServerMainnet extends ElectrumSettingsEvent {
   final String customServer;
-  UpdateCustomServerMainnet(this.customServer);
+  UpdateCustomServerMainnet({required this.customServer});
 }
 
 class UpdateCustomServerTestnet extends ElectrumSettingsEvent {
   final String customServer;
-  UpdateCustomServerTestnet(this.customServer);
+  UpdateCustomServerTestnet({required this.customServer});
 }
 
 class UpdateElectrumAdvancedOptions extends ElectrumSettingsEvent {
@@ -48,18 +46,37 @@ class ToggleSelectedProvider extends ElectrumSettingsEvent {
   ToggleSelectedProvider(this.provider);
 }
 
-class ToggleValidateDomain extends ElectrumSettingsEvent {}
+class ToggleValidateDomain extends ElectrumSettingsEvent {
+  const ToggleValidateDomain();
+}
 
 class CheckServerStatus extends ElectrumSettingsEvent {
-  final ElectrumServerProvider electrumServerProvider;
   final Network network;
-  CheckServerStatus(this.electrumServerProvider, this.network);
+  const CheckServerStatus({required this.network});
 }
 
 class SetupBlockchain extends ElectrumSettingsEvent {
-  final ElectrumServerProvider electrumServerProvider;
-  final Network network;
-  SetupBlockchain(this.electrumServerProvider, this.network);
+  const SetupBlockchain();
 }
 
-class SaveElectrumServerChanges extends ElectrumSettingsEvent {}
+class SaveElectrumServerChanges extends ElectrumSettingsEvent {
+  const SaveElectrumServerChanges();
+}
+
+class ToggleCustomServerActive extends ElectrumSettingsEvent {
+  final Network network;
+  final bool isActive;
+  ToggleCustomServerActive({required this.network, required this.isActive});
+}
+
+// Custom server toggle - as used in the bloc
+class ToggleCustomServer extends ElectrumSettingsEvent {
+  final bool isCustomSelected;
+  ToggleCustomServer({required this.isCustomSelected});
+}
+
+// Default server preset toggle - as used in the bloc
+class ToggleDefaultServerPreset extends ElectrumSettingsEvent {
+  final DefaultElectrumServerProvider preset;
+  ToggleDefaultServerPreset({required this.preset});
+}
