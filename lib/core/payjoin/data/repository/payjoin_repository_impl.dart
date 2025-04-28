@@ -190,7 +190,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       //  ongoing payjoins already
       final lockedUtxos = await getUtxosFrozenByOngoingPayjoins();
       debugPrint(
-          'lockedUtxos: --- ${lockedUtxos.map((input) => '${input.txId}:${input.vout}').join(', ')} ---');
+        'lockedUtxos: --- ${lockedUtxos.map((input) => '${input.txId}:${input.vout}').join(', ')} ---',
+      );
 
       final pdkInputPairs = unspentUtxos
           .where((unspent) {
