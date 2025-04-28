@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/labels/data/labelable.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -7,7 +8,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'utxo_model.freezed.dart';
 
 @freezed
-sealed class UtxoModel with _$UtxoModel {
+sealed class UtxoModel with _$UtxoModel implements Labelable {
   const factory UtxoModel({
     required String txId,
     required int vout,
@@ -44,4 +45,7 @@ sealed class UtxoModel with _$UtxoModel {
       isFrozen: isFrozen,
     );
   }
+
+  @override
+  String toRef() => '$txId:$vout';
 }
