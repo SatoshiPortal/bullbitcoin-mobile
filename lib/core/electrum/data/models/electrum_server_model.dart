@@ -128,7 +128,8 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
     }
 
     throw ArgumentError(
-        'Unsupported ElectrumServerProvider type: ${electrumServerProvider.runtimeType}');
+      'Unsupported ElectrumServerProvider type: ${electrumServerProvider.runtimeType}',
+    );
   }
 
   ElectrumServer toEntity() {

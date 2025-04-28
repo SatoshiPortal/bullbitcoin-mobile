@@ -1,3 +1,5 @@
+// ignore_for_file: dead_code
+
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -126,6 +128,7 @@ class SwapAvailableBalance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     const balance = '53.00 BTC';
     const maxSelected = false;
 

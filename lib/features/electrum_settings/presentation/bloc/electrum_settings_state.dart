@@ -66,10 +66,12 @@ class ElectrumSettingsState with _$ElectrumSettingsState {
 
     // Get all servers of the specified provider type
     serversToCheck = [
-      ...stagedServers.where((server) =>
-          _areProvidersEqual(server.electrumServerProvider, provider)),
-      ...electrumServers.where((server) =>
-          _areProvidersEqual(server.electrumServerProvider, provider)),
+      ...stagedServers.where(
+        (server) => _areProvidersEqual(server.electrumServerProvider, provider),
+      ),
+      ...electrumServers.where(
+        (server) => _areProvidersEqual(server.electrumServerProvider, provider),
+      ),
     ];
 
     // Filter for the current network type (Bitcoin/Liquid)
@@ -114,10 +116,14 @@ class ElectrumSettingsState with _$ElectrumSettingsState {
     final result = List<ElectrumServer>.from(electrumServers);
 
     for (final stagedServer in stagedServers) {
-      final index = result.indexWhere((server) =>
-          server.network == stagedServer.network &&
-          _areProvidersEqual(server.electrumServerProvider,
-              stagedServer.electrumServerProvider));
+      final index = result.indexWhere(
+        (server) =>
+            server.network == stagedServer.network &&
+            _areProvidersEqual(
+              server.electrumServerProvider,
+              stagedServer.electrumServerProvider,
+            ),
+      );
 
       if (index >= 0) {
         // Replace existing server
