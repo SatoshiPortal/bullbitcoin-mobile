@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/app_unlock/app_unlock_locator.dart';
 import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart';
 import 'package:bb_mobile/features/backup_wallet/backup_wallet_locator.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
+import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
 import 'package:bb_mobile/features/home/home_locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_wallet_locator.dart';
 import 'package:bb_mobile/features/key_server/key_server_locator.dart';
@@ -31,6 +32,7 @@ class AppLocator {
 
     // Register feature-specific dependencies
     KeyServerLocator.setup();
+    ElectrumSettingsLocator.setup();
     PinCodeLocator.setup();
     AppStartupLocator.setup();
     AppUnlockLocator.setup();

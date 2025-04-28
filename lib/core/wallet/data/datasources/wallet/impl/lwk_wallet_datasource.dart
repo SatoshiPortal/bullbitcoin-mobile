@@ -381,6 +381,15 @@ class LwkWalletDatasource implements WalletDatasource {
     return signedBytes;
   }
 
+  Future<(int, int)> decodePsbtAmounts({
+    required WalletModel wallet,
+    required String pset,
+  }) async {
+    final lwkWallet = await _createPublicWallet(wallet);
+    final decoded = await lwkWallet.decodeTx(pset: pset);
+    return (decoded.balances.first.value, decoded.absoluteFees.toInt());
+  }
+
   Future<String> _getDbPath(String dbName) async {
     final dir = await getApplicationDocumentsDirectory();
     return '${dir.path}/$dbName';

@@ -15,6 +15,9 @@ abstract class BitcoinWalletRepository {
     List<WalletUtxo>? selected,
     bool? replaceByFee,
   });
+  Future<int> getTxSize({
+    required String psbt,
+  });
   Future<String> signPsbt(
     String psbt, {
     required String walletId,

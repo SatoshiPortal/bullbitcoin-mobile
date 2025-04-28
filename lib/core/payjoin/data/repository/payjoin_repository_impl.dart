@@ -11,9 +11,9 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -22,7 +22,7 @@ import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final PayjoinDatasource _source;
-  final WalletMetadataDatasource _walletMetadata;
+  final SqliteDatasource _sqlite;
   final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
   final BdkBitcoinBlockchainDatasource _blockchain;
@@ -32,13 +32,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   PayjoinRepositoryImpl({
     required PayjoinDatasource payjoinDatasource,
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required SqliteDatasource sqliteDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   })  : _source = payjoinDatasource,
-        _walletMetadata = walletMetadataDatasource,
+        _sqlite = sqliteDatasource,
         _seed = seedDatasource,
         _bdkWallet = bdkWalletDatasource,
         _blockchain = blockchainDatasource,
@@ -93,7 +93,10 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           return null;
         }
 
-        final walletMetadata = await _walletMetadata.get(payjoin.walletId);
+        final walletMetadata = await _sqlite.managers.walletMetadatas
+            .filter((f) => f.id(payjoin.walletId))
+            .getSingleOrNull();
+
         if (walletMetadata == null) {
           return null;
         }
@@ -233,7 +236,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required String walletId,
     required String psbt,
   }) async {
-    final walletMetadata = await _walletMetadata.get(walletId);
+    final walletMetadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (walletMetadata == null) {
       throw Exception('Wallet metadata not found');
@@ -265,14 +270,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     // TODO: Should we get all the electrum servers and try another one if the
     //  first one fails?
-    final electrumServer = await _electrumServerStorage.getByProvider(
-          ElectrumServerProvider.blockstream,
-          network: network,
-        ) ??
-        ElectrumServerModel.blockstream(
-          isTestnet: network.isTestnet,
-          isLiquid: network.isLiquid,
-        );
+    final electrumServer =
+        await _electrumServerStorage.getDefaultServerByProvider(
+              DefaultElectrumServerProvider.blockstream,
+              network: network,
+            ) ??
+            ElectrumServerModel.blockstream(
+              isTestnet: network.isTestnet,
+              isLiquid: network.isLiquid,
+            );
 
     await _blockchain.broadcastPsbt(
       finalizedPsbt,
@@ -294,14 +300,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     // TODO: Should we get all the electrum servers and try another one if the
     //  first one fails?
-    final electrumServer = await _electrumServerStorage.getByProvider(
-          ElectrumServerProvider.blockstream,
-          network: network,
-        ) ??
-        ElectrumServerModel.blockstream(
-          isTestnet: network.isTestnet,
-          isLiquid: network.isLiquid,
-        );
+    final electrumServer =
+        await _electrumServerStorage.getDefaultServerByProvider(
+              DefaultElectrumServerProvider.blockstream,
+              network: network,
+            ) ??
+            ElectrumServerModel.blockstream(
+              isTestnet: network.isTestnet,
+              isLiquid: network.isLiquid,
+            );
 
     await _blockchain.broadcastTransaction(
       originalTxBytes,

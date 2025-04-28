@@ -1,20 +1,95 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
-class WalletMetadataDatasource {
-  final KeyValueStorageDatasource<String> _walletMetadataStorage;
+class WalletMetadataService {
+  static String encodeOrigin({
+    required String fingerprint,
+    required bool isBitcoin,
+    required bool isMainnet,
+    required bool isTestnet,
+    required bool isLiquid,
+    required ScriptType scriptType,
+  }) {
+    String networkPath;
+    if (isBitcoin && isMainnet) {
+      networkPath = "0h";
+    } else if (isBitcoin && isTestnet) {
+      networkPath = "1h";
+    } else if (isLiquid && isMainnet) {
+      networkPath = "1667h";
+    } else if (isLiquid && isTestnet) {
+      networkPath = "1668h";
+    } else {
+      throw '';
+    }
 
-  const WalletMetadataDatasource({
-    required KeyValueStorageDatasource<String> walletMetadataStorage,
-  }) : _walletMetadataStorage = walletMetadataStorage;
+    String prefixFormat = '';
+    String scriptPath = '';
+    switch (scriptType) {
+      case ScriptType.bip84:
+        prefixFormat = isBitcoin ? 'wpkh([*])' : 'elwpkh([*])';
+        scriptPath = '84h';
+      case ScriptType.bip49:
+        prefixFormat = isBitcoin ? 'sh(wpkh([*]))' : 'elsh(wpkh([*]))';
+        scriptPath = '49h';
+      case ScriptType.bip44:
+        prefixFormat = isBitcoin ? 'pkh([*])' : 'elpkh([*])';
+        scriptPath = '44h';
+    }
 
-  Future<WalletMetadataModel> deriveFromSeed({
+    const String accountPath = '0h';
+    final path = '[$fingerprint/$scriptPath/$networkPath/$accountPath]';
+    return prefixFormat.replaceAll('[*]', path);
+  }
+
+  static ({
+    String fingerprint,
+    Network network,
+    ScriptType script,
+    String account,
+  }) decodeOrigin({required String origin}) {
+    final list = json.decode(origin) as List<String>;
+
+    ScriptType script;
+    switch (list[1]) {
+      case '84h':
+        script = ScriptType.bip84;
+      case '49h':
+        script = ScriptType.bip49;
+      case '44h':
+        script = ScriptType.bip44;
+      default:
+        throw 'Unknown script: ${list[1]}';
+    }
+
+    Network network;
+    switch (list[2]) {
+      case '0h':
+        network = Network.bitcoinMainnet;
+      case '1h':
+        network = Network.bitcoinTestnet;
+      case '1667h':
+        network = Network.liquidMainnet;
+      case '1668h':
+        network = Network.liquidTestnet;
+      default:
+        throw 'Unknown script: ${list[2]}';
+    }
+
+    return (
+      fingerprint: list.first,
+      network: network,
+      script: script,
+      account: list.last
+    );
+  }
+
+  static Future<WalletMetadataModel> deriveFromSeed({
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
@@ -61,6 +136,14 @@ class WalletMetadataDatasource {
     }
 
     return WalletMetadataModel(
+      id: encodeOrigin(
+        fingerprint: seed.masterFingerprint,
+        isBitcoin: network.isBitcoin,
+        isMainnet: network.isMainnet,
+        isTestnet: network.isTestnet,
+        isLiquid: network.isLiquid,
+        scriptType: scriptType,
+      ),
       masterFingerprint: seed.masterFingerprint,
       xpubFingerprint: xpub.fingerprintHex,
       source: WalletSource.mnemonic.name,
@@ -74,10 +157,12 @@ class WalletMetadataDatasource {
       internalPublicDescriptor: changeDescriptor,
       isDefault: isDefault,
       label: label,
+      isPhysicalBackupTested: false,
+      isEncryptedVaultTested: false,
     );
   }
 
-  Future<WalletMetadataModel> deriveFromXpub({
+  static Future<WalletMetadataModel> deriveFromXpub({
     required String xpub,
     required Network network,
     required ScriptType scriptType,
@@ -110,6 +195,14 @@ class WalletMetadataDatasource {
     );
 
     return WalletMetadataModel(
+      id: WalletMetadataService.encodeOrigin(
+        fingerprint: fingerprint,
+        isBitcoin: network.isBitcoin,
+        isMainnet: network.isMainnet,
+        isTestnet: network.isTestnet,
+        isLiquid: network.isLiquid,
+        scriptType: scriptType,
+      ),
       xpubFingerprint: fingerprint,
       source: WalletSource.xpub.name,
       isBitcoin: network.isBitcoin,
@@ -121,40 +214,11 @@ class WalletMetadataDatasource {
       externalPublicDescriptor: descriptor,
       internalPublicDescriptor: changeDescriptor,
       label: label,
+      masterFingerprint: '',
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
+      isDefault: false,
     );
-  }
-
-  Future<void> store(
-    WalletMetadataModel metadata,
-  ) async {
-    final value = jsonEncode(metadata.toJson());
-    await _walletMetadataStorage.saveValue(key: metadata.id, value: value);
-  }
-
-  Future<WalletMetadataModel?> get(String id) async {
-    final value = await _walletMetadataStorage.getValue(id);
-
-    if (value == null) {
-      return null;
-    }
-
-    final json = jsonDecode(value) as Map<String, dynamic>;
-    final metadata = WalletMetadataModel.fromJson(json);
-
-    return metadata;
-  }
-
-  Future<List<WalletMetadataModel>> getAll() async {
-    final map = await _walletMetadataStorage.getAll();
-
-    return map.values
-        .map((value) => jsonDecode(value) as Map<String, dynamic>)
-        .map((json) => WalletMetadataModel.fromJson(json))
-        .toList();
-  }
-
-  Future<void> delete(String id) {
-    return _walletMetadataStorage.deleteValue(id);
   }
 }
 

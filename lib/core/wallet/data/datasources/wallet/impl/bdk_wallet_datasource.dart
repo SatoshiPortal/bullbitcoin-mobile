@@ -213,6 +213,12 @@ class BdkWalletDatasource implements WalletDatasource {
     return psbt.asString();
   }
 
+  Future<int> decodeTxSize(String psbtString) async {
+    final psbt = await bdk.PartiallySignedTransaction.fromString(psbtString);
+    final size = await psbt.extractTx().size();
+    return size.toInt();
+  }
+
   Future<String> signPsbt(
     String unsignedPsbt, {
     required PrivateBdkWalletModel wallet,

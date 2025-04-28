@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
@@ -78,10 +80,15 @@ class SendState with _$SendState {
     @Default(false) bool replaceByFee,
     FeeOptions? feesList,
     NetworkFee? selectedFee,
+    // TODO: remove absFee and make usecases return size so abs fee can
+    // be calculated from NetworkFee
+    int? absoluteFees,
     FeeSelection? selectedFeeOption,
     int? customFee,
     // prepare
     String? unsignedPsbt,
+    String? signedBitcoinPsbt,
+    Uint8List? signedLiquidTx,
     LnSendSwap? lightningSwap,
     // confirm
     String? txId,
@@ -91,7 +98,9 @@ class SendState with _$SendState {
     @Default(false) bool amountConfirmedClicked,
     @Default(false) bool loadingBestWallet,
     @Default(false) bool creatingSwap,
-    @Default(false) bool finalizingTransaction,
+    @Default(false) bool buildingTransaction,
+    @Default(false) bool signingTransaction,
+    @Default(false) bool broadcastingTransaction,
     @Default('') String balanceApproximatedAmount,
     SwapCreationException? swapCreationException,
     InsufficientBalanceException? insufficientBalanceException,
@@ -302,6 +311,9 @@ class SendState with _$SendState {
     return lightningSwap != null &&
         lightningSwap!.status == SwapStatus.completed;
   }
+
+  bool get disableConfirmSend =>
+      buildingTransaction || signingTransaction || broadcastingTransaction;
 }
 
 class SwapCreationException implements Exception {

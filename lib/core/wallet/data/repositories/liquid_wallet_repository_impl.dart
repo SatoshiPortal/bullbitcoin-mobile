@@ -3,21 +3,21 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 
 class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
-  final WalletMetadataDatasource _walletMetadata;
+  final SqliteDatasource _sqlite;
   final SeedDatasource _seed;
   final LwkWalletDatasource _lwkWallet;
 
   LiquidWalletRepositoryImpl({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required SqliteDatasource sqliteDatasource,
     required SeedDatasource seedDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-  })  : _walletMetadata = walletMetadataDatasource,
+  })  : _sqlite = sqliteDatasource,
         _seed = seedDatasource,
         _lwkWallet = lwkWalletDatasource;
 
@@ -29,7 +29,9 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
     required NetworkFee networkFee,
     bool? drain,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
@@ -56,11 +58,42 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
   }
 
   @override
+  Future<(int, int)> getPsetAmountAndFees({
+    required String walletId,
+    required String pset,
+  }) async {
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
+
+    if (metadata == null) {
+      throw Exception('Wallet metadata not found for walletId: $walletId');
+    }
+
+    if (!metadata.isLiquid) {
+      throw Exception('Wallet $walletId is not a Liquid wallet');
+    }
+
+    final wallet = WalletModel.publicLwk(
+      combinedCtDescriptor: metadata.externalPublicDescriptor,
+      isTestnet: metadata.isTestnet,
+      id: metadata.id,
+    );
+    final (amount, fees) = await _lwkWallet.decodePsbtAmounts(
+      wallet: wallet,
+      pset: pset,
+    );
+    return (amount, fees);
+  }
+
+  @override
   Future<Uint8List> signPset({
     required String pset,
     required String walletId,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');

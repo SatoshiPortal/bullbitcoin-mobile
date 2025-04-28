@@ -18,6 +18,7 @@ class BBInputText extends StatefulWidget {
   final int? maxLength;
   final bool onlyNumbers;
   final bool? obscure;
+  final TextStyle? style;
   const BBInputText({
     this.uiKey,
     this.controller,
@@ -33,6 +34,7 @@ class BBInputText extends StatefulWidget {
     this.maxLength,
     this.onlyNumbers = false,
     this.obscure = false,
+    this.style,
   });
 
   @override
@@ -91,9 +93,10 @@ class _BBInputTextState extends State<BBInputText> {
         obscureText: widget.obscure ?? false,
         obscuringCharacter: widget.onlyNumbers ? 'x' : '*',
         onTap: () => widget.onEnter?.call(),
-        style: context.font.headlineSmall?.copyWith(
-          color: context.colour.secondary,
-        ),
+        style: widget.style ??
+            context.font.headlineSmall?.copyWith(
+              color: context.colour.secondary,
+            ),
         decoration: InputDecoration(
           hintText: widget.hint,
           hintStyle: TextStyle(

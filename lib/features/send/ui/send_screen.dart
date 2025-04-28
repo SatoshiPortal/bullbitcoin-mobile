@@ -535,8 +535,8 @@ class ConfirmSendButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final finalizingTransaction = context.select(
-      (SendCubit cubit) => cubit.state.finalizingTransaction,
+    final disableSendButton = context.select(
+      (SendCubit cubit) => cubit.state.disableConfirmSend,
     );
     return BBButton.big(
       label: 'Confirm',
@@ -545,7 +545,7 @@ class ConfirmSendButton extends StatelessWidget {
       },
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
-      disabled: finalizingTransaction,
+      disabled: disableSendButton,
     );
   }
 }
@@ -570,8 +570,11 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final formattedFiatEquivalent = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
-    final selectedFees = context.select(
-      (SendCubit cubit) => cubit.state.selectedFee,
+    // final selectedFees = context.select(
+    //   (SendCubit cubit) => cubit.state.selectedFee,
+    // );
+    final absoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.absoluteFees,
     );
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
@@ -646,7 +649,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'Network fees',
             details: BBText(
-              "${selectedFees?.value} sats/byte",
+              "${absoluteFees ?? 0} sats",
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),

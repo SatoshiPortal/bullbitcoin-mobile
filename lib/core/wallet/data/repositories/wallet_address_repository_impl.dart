@@ -1,26 +1,28 @@
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 
 class WalletAddressRepositoryImpl implements WalletAddressRepository {
-  final WalletMetadataDatasource _walletMetadata;
+  final SqliteDatasource _sqlite;
   final WalletDatasource _bdkWallet;
   final WalletDatasource _lwkWallet;
 
   WalletAddressRepositoryImpl({
-    required WalletMetadataDatasource walletMetadataDatasource,
+    required SqliteDatasource sqliteDatasource,
     required WalletDatasource bdkWalletDatasource,
     required WalletDatasource lwkWalletDatasource,
-  })  : _walletMetadata = walletMetadataDatasource,
+  })  : _sqlite = sqliteDatasource,
         _bdkWallet = bdkWalletDatasource,
         _lwkWallet = lwkWalletDatasource;
 
   @override
   Future<WalletAddress> getNewAddress({required String walletId}) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found');
@@ -57,7 +59,9 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
 
   @override
   Future<WalletAddress> getLastUnusedAddress({required String walletId}) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found');
@@ -98,7 +102,9 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
     required int offset,
     required WalletAddressKeyChain keyChain,
   }) async {
-    final metadata = await _walletMetadata.get(walletId);
+    final metadata = await _sqlite.managers.walletMetadatas
+        .filter((e) => e.id(walletId))
+        .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found');
