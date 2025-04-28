@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/widgets.dart';
