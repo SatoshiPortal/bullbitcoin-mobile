@@ -36,6 +36,10 @@
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
   },
+  "electrumServerSettingsLabel": "Electrum server (Bitcoin node)",
+  "@electrumServerSettingsLabel": {
+    "description": "The label for the button to access the electrum server settings"
+  },
   "fiatCurrencySettingsLabel": "Fiat currency",
   "@fiatCurrencySettingsLabel": {
     "description": "The label for the button to access the fiat currency settings"

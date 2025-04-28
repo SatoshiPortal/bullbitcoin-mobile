@@ -30,23 +30,42 @@ class ElectrumServerStorageDatasource {
     await _electrumServerStorage.saveValue(key: key, value: value);
   }
 
-  Future<ElectrumServerModel?> getByProvider(
-    ElectrumServerProvider provider, {
+  /// Get a default server by preset type
+  Future<ElectrumServerModel?> getDefaultServerByProvider(
+    DefaultElectrumServerProvider preset, {
     required Network network,
   }) async {
-    final key = switch (provider) {
-      ElectrumServerProvider.bullBitcoin =>
-        '${SettingsConstants.bullBitcoinElectrumServerKeyPrefix}${network.name}',
-      ElectrumServerProvider.blockstream =>
-        '${SettingsConstants.blockstreamElectrumServerKeyPrefix}${network.name}',
-      ElectrumServerProvider.custom =>
-        '${SettingsConstants.customElectrumServerKeyPrefix}${network.name}',
-    };
+    // Determine the appropriate key prefix based on preset
+    final keyPrefix = preset == DefaultElectrumServerProvider.bullBitcoin
+        ? SettingsConstants.bullBitcoinElectrumServerKeyPrefix
+        : SettingsConstants.blockstreamElectrumServerKeyPrefix;
+
+    final key = '$keyPrefix${network.name}';
     final value = await _electrumServerStorage.getValue(key);
-    if (value == null) {
-      return null;
-    }
+
+    if (value == null) return null;
+
     final model = jsonDecode(value) as Map<String, dynamic>;
     return ElectrumServerModel.fromJson(model);
+  }
+
+  /// Get custom server for a specific network
+  Future<CustomElectrumServerModel?> getCustomServer({
+    required Network network,
+  }) async {
+    final key =
+        '${SettingsConstants.customElectrumServerKeyPrefix}${network.name}';
+    final value = await _electrumServerStorage.getValue(key);
+
+    if (value == null) return null;
+
+    final model = jsonDecode(value) as Map<String, dynamic>;
+    final serverModel = ElectrumServerModel.fromJson(model);
+
+    if (serverModel is CustomElectrumServerModel) {
+      return serverModel;
+    }
+
+    return null;
   }
 }

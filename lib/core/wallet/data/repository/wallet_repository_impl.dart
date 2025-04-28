@@ -396,17 +396,18 @@ class WalletRepositoryImpl implements WalletRepository {
 
   Future<void> _syncWallet(WalletModel wallet) async {
     final isLiquid = wallet is PublicLwkWalletModel;
-    final electrumServer = await _electrumServerStorage.getByProvider(
-          ElectrumServerProvider.blockstream,
-          network: Network.fromEnvironment(
-            isTestnet: wallet.isTestnet,
-            isLiquid: isLiquid,
-          ),
-        ) ??
-        ElectrumServerModel.blockstream(
-          isTestnet: wallet.isTestnet,
-          isLiquid: isLiquid,
-        );
+    final electrumServer =
+        await _electrumServerStorage.getDefaultServerByProvider(
+              DefaultElectrumServerProvider.blockstream,
+              network: Network.fromEnvironment(
+                isTestnet: wallet.isTestnet,
+                isLiquid: isLiquid,
+              ),
+            ) ??
+            ElectrumServerModel.blockstream(
+              isTestnet: wallet.isTestnet,
+              isLiquid: isLiquid,
+            );
     if (isLiquid) {
       await _lwkWallet.sync(wallet: wallet, electrumServer: electrumServer);
     } else {

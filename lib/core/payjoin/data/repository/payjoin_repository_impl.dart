@@ -255,14 +255,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     // TODO: Should we get all the electrum servers and try another one if the
     //  first one fails?
-    final electrumServer = await _electrumServerStorage.getByProvider(
-          ElectrumServerProvider.blockstream,
-          network: network,
-        ) ??
-        ElectrumServerModel.blockstream(
-          isTestnet: network.isTestnet,
-          isLiquid: network.isLiquid,
-        );
+    final electrumServer =
+        await _electrumServerStorage.getDefaultServerByProvider(
+              DefaultElectrumServerProvider.blockstream,
+              network: network,
+            ) ??
+            ElectrumServerModel.blockstream(
+              isTestnet: network.isTestnet,
+              isLiquid: network.isLiquid,
+            );
 
     await _blockchain.broadcastPsbt(
       finalizedPsbt,
@@ -284,14 +285,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     // TODO: Should we get all the electrum servers and try another one if the
     //  first one fails?
-    final electrumServer = await _electrumServerStorage.getByProvider(
-          ElectrumServerProvider.blockstream,
-          network: network,
-        ) ??
-        ElectrumServerModel.blockstream(
-          isTestnet: network.isTestnet,
-          isLiquid: network.isLiquid,
-        );
+    final electrumServer =
+        await _electrumServerStorage.getDefaultServerByProvider(
+              DefaultElectrumServerProvider.blockstream,
+              network: network,
+            ) ??
+            ElectrumServerModel.blockstream(
+              isTestnet: network.isTestnet,
+              isLiquid: network.isLiquid,
+            );
 
     await _blockchain.broadcastTransaction(
       originalTxBytes,

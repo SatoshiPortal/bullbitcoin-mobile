@@ -47,5 +47,9 @@
   "backupSettingsLabel": "Paramètres de sauvegarde",
   "@backupSettingsLabel": {
     "description": "The label for the button to access the backup settings"
-  }
+  },
+"electrumServerSettingsLabel": "Serveur Electrum (nœud Bitcoin)",
+"@electrumServerSettingsLabel": {
+  "description": "Le libellé du bouton pour accéder aux paramètres du serveur Electrum"
+}
 }
