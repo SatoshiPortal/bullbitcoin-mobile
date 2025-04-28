@@ -143,7 +143,7 @@ class BdkWalletDatasource implements WalletDatasource {
     required String address,
     required NetworkFee networkFee,
     int? amountSat,
-    List<TransactionOutputModel>? unspendable,
+    List<({String txId, int vout})>? unspendable,
     bool? drain,
     List<WalletUtxoModel>? selected,
     bool replaceByFee = true,

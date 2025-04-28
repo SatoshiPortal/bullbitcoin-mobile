@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
@@ -80,7 +80,7 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
           walletId: walletId,
           script: outputScript,
         ),
-        unspentUtxos: unspentUtxos as List<BitcoinTransactionOutput>,
+        unspentUtxos: unspentUtxos.whereType<BitcoinWalletUtxo>().toList(),
         processPsbt: (psbt) async {
           final signedPsbt =
               await _bitcoinWallet.signPsbt(psbt, walletId: walletId);

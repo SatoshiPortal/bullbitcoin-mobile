@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 
 abstract class BitcoinWalletRepository {
@@ -11,8 +10,8 @@ abstract class BitcoinWalletRepository {
     int? amountSat,
     required NetworkFee networkFee,
     bool? drain,
-    List<TransactionOutput>?
-        unspendable, // TODO: Change to List<Utxo> when FrozenUtxoRepository is implemented
+    List<({String txId, int vout})>?
+        unspendable, // TODO: Change to List<WalletUtxo> when FrozenUtxoRepository is implemented
     List<WalletUtxo>? selected,
     bool? replaceByFee,
   });

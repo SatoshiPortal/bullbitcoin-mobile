@@ -14,10 +14,9 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:flutter/foundation.dart';
 import 'package:synchronized/synchronized.dart';
 
@@ -80,7 +79,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   // TODO: Remove this and use the general frozen utxo datasource
   @override
-  Future<List<TransactionOutput>> getUtxosFrozenByOngoingPayjoins() async {
+  Future<List<({String txId, int vout})>>
+      getUtxosFrozenByOngoingPayjoins() async {
     final payjoins = await _source.getAll(onlyOngoing: true);
 
     final inputs = await Future.wait(
@@ -103,15 +103,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           psbt,
           isTestnet: walletMetadata.isTestnet,
         );
-        return spentUtxos
-            .map((utxo) => TransactionOutputMapper.toEntity(utxo))
-            .toList();
+        return spentUtxos;
       }),
     );
 
     return inputs
-        .whereType<List<TransactionOutput>>()
-        .expand((i) => i)
+        .whereType<List<({String txId, int vout})>>()
+        .expand((element) => element)
         .toList();
   }
 
@@ -181,7 +179,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required String id,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
     required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
-    required List<BitcoinTransactionOutput> unspentUtxos,
+    required List<BitcoinWalletUtxo> unspentUtxos,
     required FutureOr<String> Function(String) processPsbt,
   }) async {
     // A lock is needed here to make sure the proposal of a payjoin is stored
@@ -191,7 +189,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // Make sure the inputs to select from for the proposal are not used by
       //  ongoing payjoins already
       final lockedUtxos = await getUtxosFrozenByOngoingPayjoins();
-      debugPrint('lockedUtxos: $lockedUtxos');
+      debugPrint(
+          'lockedUtxos: --- ${lockedUtxos.map((input) => '${input.txId}:${input.vout}').join(', ')} ---');
 
       final pdkInputPairs = unspentUtxos
           .where((unspent) {
@@ -204,7 +203,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           .map((utxo) => PayjoinInputPairModel.fromUtxo(utxo))
           .toList();
 
-      debugPrint('pdkInputPairs: $pdkInputPairs');
+      debugPrint(
+        'pdkInputPairs: --- ${pdkInputPairs.map((input) => '${input.txId}:${input.vout}').join(', ')} ---',
+      );
 
       if (pdkInputPairs.isEmpty) {
         throw const NoInputsToPayjoinException(
