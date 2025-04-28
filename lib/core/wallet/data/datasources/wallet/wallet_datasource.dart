@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 
 abstract class WalletDatasource {
   Future<WalletAddressModel> getNewAddress({
@@ -42,7 +42,7 @@ abstract class WalletDatasource {
     required WalletModel wallet,
     required ElectrumServerModel electrumServer,
   });
-  Future<List<TransactionOutputModel>> getUtxos({
+  Future<List<WalletUtxoModel>> getUtxos({
     required WalletModel wallet,
   });
 }

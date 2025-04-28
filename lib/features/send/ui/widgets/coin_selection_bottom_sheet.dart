@@ -33,7 +33,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
     );
     final selectedUtxoTotalSat = selectedUtxos.fold(
       0,
-      (previousValue, element) => previousValue + element.value!.toInt(),
+      (previousValue, element) => previousValue + element.amountSat.toInt(),
     );
     final selectedUtxoTotal = bitcoinUnit == BitcoinUnit.btc
         ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))

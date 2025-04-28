@@ -9,29 +9,29 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/h
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/frozen_utxo_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository_impl.dart';
-import 'package:bb_mobile/core/wallet/data/repositories/utxo_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_transaction_repository_impl.dart';
+import 'package:bb_mobile/core/wallet/data/repositories/wallet_utxo_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_any_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_used_receive_addresses_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -55,8 +55,8 @@ class WalletLocator {
             HiveStorageDatasourceImpl<String>(walletMetadataBox),
       ),
     );
-    locator.registerLazySingleton<FrozenUtxoDatasource>(
-      () => FrozenUtxoDatasource(),
+    locator.registerLazySingleton<FrozenWalletUtxoDatasource>(
+      () => FrozenWalletUtxoDatasource(),
     );
   }
 
@@ -87,12 +87,12 @@ class WalletLocator {
       ),
     );
 
-    locator.registerLazySingleton<UtxoRepository>(
-      () => UtxoRepositoryImpl(
+    locator.registerLazySingleton<WalletUtxoRepository>(
+      () => WalletUtxoRepositoryImpl(
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
-        frozenUtxoDatasource: locator<FrozenUtxoDatasource>(),
+        frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
         labelStorageDatasource: locator<LabelStorageDatasource>(),
       ),
     );
@@ -153,9 +153,9 @@ class WalletLocator {
         walletRepository: locator<WalletRepository>(),
       ),
     );
-    locator.registerLazySingleton<GetUtxosUsecase>(
-      () => GetUtxosUsecase(
-        utxoRepository: locator<UtxoRepository>(),
+    locator.registerLazySingleton<GetWalletUtxosUsecase>(
+      () => GetWalletUtxosUsecase(
+        utxoRepository: locator<WalletUtxoRepository>(),
       ),
     );
     locator.registerFactory<GetReceiveAddressUsecase>(

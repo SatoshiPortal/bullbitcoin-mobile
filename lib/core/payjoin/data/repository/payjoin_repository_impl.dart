@@ -104,9 +104,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           isTestnet: walletMetadata.isTestnet,
         );
         return spentUtxos
-            .map(
-              (utxo) => TransactionOutputMapper.toEntity(utxo, isFrozen: true),
-            )
+            .map((utxo) => TransactionOutputMapper.toEntity(utxo))
             .toList();
       }),
     );

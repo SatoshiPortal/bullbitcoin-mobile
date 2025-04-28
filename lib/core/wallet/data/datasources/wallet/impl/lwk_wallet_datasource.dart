@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart'
 import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter/material.dart';
 import 'package:lwk/lwk.dart' as lwk;
@@ -96,7 +97,7 @@ class LwkWalletDatasource implements WalletDatasource {
   }
 
   @override
-  Future<List<TransactionOutputModel>> getUtxos({
+  Future<List<WalletUtxoModel>> getUtxos({
     required WalletModel wallet,
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
@@ -104,10 +105,10 @@ class LwkWalletDatasource implements WalletDatasource {
 
     final unspent = utxos.map(
       (utxo) {
-        return TransactionOutputModel.liquid(
+        return WalletUtxoModel.liquid(
           txId: utxo.outpoint.txid,
           vout: utxo.outpoint.vout,
-          value: utxo.unblinded.value,
+          amountSat: utxo.unblinded.value,
           scriptPubkey: utxo.scriptPubkey,
           standardAddress: utxo.address.standard,
           confidentialAddress: utxo.address.confidential,

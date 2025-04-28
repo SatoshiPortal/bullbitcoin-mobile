@@ -47,6 +47,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
 
     final address = WalletAddressMapper.toEntity(
       walletAddressModel,
+      walletId: walletId,
       keyChain: WalletAddressKeyChain.external,
       status: WalletAddressStatus.unused,
     );
@@ -82,6 +83,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
 
     final address = WalletAddressMapper.toEntity(
       walletAddressModel,
+      walletId: walletId,
       keyChain: WalletAddressKeyChain.external,
       status: WalletAddressStatus.unused,
     );
@@ -142,6 +144,7 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
 
           return WalletAddressMapper.toEntity(
             model,
+            walletId: walletId,
             keyChain: keyChain,
             status:
                 isUsed ? WalletAddressStatus.used : WalletAddressStatus.unused,

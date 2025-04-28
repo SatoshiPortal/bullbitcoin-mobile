@@ -146,8 +146,11 @@ void main() {
         Entity.address,
         addresses[0],
       );
-      expect(updatedAddressLabels.length, 3,
-          reason: 'the label should have been removed');
+      expect(
+        updatedAddressLabels.length,
+        3,
+        reason: 'the label should have been removed',
+      );
 
       final remainingLabels = updatedAddressLabels.map((l) => l.label).toList();
       expect(remainingLabels, isNot(contains(label)));

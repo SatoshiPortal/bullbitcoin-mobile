@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 class WalletAddressMapper {
   static WalletAddress toEntity(
     WalletAddressModel walletAddressModel, {
+    required String walletId,
     required WalletAddressKeyChain keyChain,
     required WalletAddressStatus status,
     int? balanceSat,
@@ -11,6 +12,7 @@ class WalletAddressMapper {
   }) {
     return walletAddressModel.when(
       bitcoin: (index, address) => WalletAddress.bitcoin(
+        walletId: walletId,
         index: index,
         address: address,
         keyChain: keyChain,
@@ -19,6 +21,7 @@ class WalletAddressMapper {
         highestPreviousBalanceSat: highestPreviousBalanceSat,
       ),
       liquid: (index, standard, confidential) => WalletAddress.liquid(
+        walletId: walletId,
         index: index,
         standard: standard,
         confidential: confidential,

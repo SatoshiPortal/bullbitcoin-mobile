@@ -30,7 +30,6 @@ class TransactionOutputMapper {
     TransactionOutputModel transactionOutputModel, {
     List<String> labels = const [],
     List<String> addressLabels = const [],
-    bool isFrozen = false,
   }) {
     switch (transactionOutputModel) {
       case BitcoinTransactionOutputModel _:
@@ -42,7 +41,6 @@ class TransactionOutputMapper {
           scriptPubkey: transactionOutputModel.scriptPubkey,
           address: transactionOutputModel.address,
           addressLabels: addressLabels,
-          isFrozen: isFrozen,
         );
       case LiquidTransactionOutputModel _:
         return TransactionOutput.liquid(
@@ -54,7 +52,6 @@ class TransactionOutputMapper {
           standardAddress: transactionOutputModel.standardAddress,
           confidentialAddress: transactionOutputModel.confidentialAddress,
           addressLabels: addressLabels,
-          isFrozen: isFrozen,
         );
     }
   }

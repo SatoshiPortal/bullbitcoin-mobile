@@ -12,15 +12,15 @@ class LabelRepository {
 
   Future<void> store<T extends Labelable>({
     required String label,
-    required T labelable,
+    required T entity,
     String? origin,
     bool? spendable,
   }) async {
     await _labelStorageDatasource.store(
       LabelModel(
         label: label,
-        type: LabelType.fromLabelable(labelable).name,
-        ref: labelable.labelRef,
+        type: Entity.fromLabelable(entity),
+        ref: entity.labelRef,
         origin: origin,
         spendable: spendable,
       ),
@@ -30,29 +30,18 @@ class LabelRepository {
   Future<List<Label>> fetchByLabel({required String label}) async {
     final labelModels = await _labelStorageDatasource.fetchByLabel(label);
     return labelModels
-        .map(
-          (model) => Label(
-            type: LabelType.fromName(model.type),
-            label: model.label,
-            origin: model.origin,
-          ),
-        )
+        .map((model) => Label(label: model.label, origin: model.origin))
         .toList();
   }
 
   Future<List<Label>> fetchByEntity<T extends Labelable>({
-    required T labelable,
+    required T entity,
   }) async {
-    final type = LabelType.fromLabelable(labelable);
+    final prefix = Entity.fromLabelable(entity);
     final labelModels =
-        await _labelStorageDatasource.fetchByRef(type.name, labelable.labelRef);
+        await _labelStorageDatasource.fetchByRef(prefix, entity.labelRef);
     return labelModels
-        .map(
-          (model) => Label(
-              type: LabelType.fromName(model.type),
-              label: model.label,
-              origin: model.origin),
-        )
+        .map((model) => Label(label: model.label, origin: model.origin))
         .toList();
   }
 
@@ -66,7 +55,6 @@ class LabelRepository {
     return labelModels
         .map(
           (model) => Label(
-            type: LabelType.fromName(model.type),
             label: model.label,
             origin: model.origin,
             spendable: model.spendable,

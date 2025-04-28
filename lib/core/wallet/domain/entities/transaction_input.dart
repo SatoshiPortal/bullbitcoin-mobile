@@ -1,11 +1,12 @@
 import 'dart:typed_data';
 
+import 'package:bb_mobile/core/labels/domain/labelable.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transaction_input.freezed.dart';
 
 @freezed
-sealed class TransactionInput with _$TransactionInput {
+sealed class TransactionInput with _$TransactionInput implements Labelable {
   const factory TransactionInput({
     required String txId,
     required int vin,
@@ -17,5 +18,6 @@ sealed class TransactionInput with _$TransactionInput {
   }) = _TransactionInput;
   const TransactionInput._();
 
+  @override
   String get labelRef => '$txId:$vin';
 }

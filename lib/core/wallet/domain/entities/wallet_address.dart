@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/labels/domain/labelable.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_address.freezed.dart';
@@ -13,8 +14,9 @@ enum WalletAddressStatus {
 }
 
 @freezed
-sealed class WalletAddress with _$WalletAddress {
+sealed class WalletAddress with _$WalletAddress implements Labelable {
   factory WalletAddress.bitcoin({
+    required String walletId,
     required int index,
     required String address,
     @Default(WalletAddressKeyChain.external) WalletAddressKeyChain keyChain,
@@ -25,6 +27,7 @@ sealed class WalletAddress with _$WalletAddress {
   }) = BitcoinWalletAddress;
 
   factory WalletAddress.liquid({
+    required String walletId,
     required int index,
     required String standard, // Standard address
     required String confidential, // Confidential address
@@ -39,6 +42,7 @@ sealed class WalletAddress with _$WalletAddress {
 
   String get address => when(
         bitcoin: (
+          String walletId,
           int? index,
           String address,
           WalletAddressKeyChain keyChain,
@@ -49,6 +53,7 @@ sealed class WalletAddress with _$WalletAddress {
         ) =>
             address,
         liquid: (
+          String walletId,
           int? index,
           String standard,
           String confidential,
@@ -63,6 +68,7 @@ sealed class WalletAddress with _$WalletAddress {
 
   String get standardAddress => when(
         bitcoin: (
+          String walletId,
           int? index,
           String address,
           WalletAddressKeyChain keyChain,
@@ -73,6 +79,7 @@ sealed class WalletAddress with _$WalletAddress {
         ) =>
             address,
         liquid: (
+          String walletId,
           int? index,
           String standard,
           String confidential,
@@ -97,5 +104,6 @@ sealed class WalletAddress with _$WalletAddress {
         orElse: () => false,
       );
 
+  @override
   String get labelRef => address;
 }

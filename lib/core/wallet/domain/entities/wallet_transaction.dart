@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/labels/domain/labelable.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
@@ -17,7 +18,7 @@ enum WalletTransactionStatus {
 }
 
 @freezed
-sealed class WalletTransaction with _$WalletTransaction {
+sealed class WalletTransaction with _$WalletTransaction implements Labelable {
   const factory WalletTransaction.bitcoin({
     required String walletId,
     required WalletTransactionDirection direction,
@@ -60,6 +61,9 @@ sealed class WalletTransaction with _$WalletTransaction {
       (this as BitcoinWalletTransaction).payjoinId.isNotEmpty;
   bool get isSwap => swapId.isNotEmpty;
   bool get isExchange => exchangeId.isNotEmpty;
+
+  @override
+  String get labelRef => txId;
 }
 
 // This is the final type that is translated from a WalletTransaction

@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:synchronized/synchronized.dart';
 
-class FrozenUtxoDatasource {
+class FrozenWalletUtxoDatasource {
   late Lock _lock;
 
-  FrozenUtxoDatasource() {
+  FrozenWalletUtxoDatasource() {
     _lock = Lock();
   }
 
@@ -13,15 +13,16 @@ class FrozenUtxoDatasource {
     return _lock.synchronized(() async => await action());
   }
 
-  Future<void> freezeUtxo({
+  Future<void> freezeWalletUtxo({
     required String walletId,
     required TransactionOutputModel utxo,
   }) async {
     await _lock.synchronized(() {});
   }
 
-  Future<List<TransactionOutputModel>> getFrozenUtxos(
-      {required String walletId}) async {
+  Future<List<TransactionOutputModel>> getFrozenWalletUtxos({
+    required String walletId,
+  }) async {
     final frozenUtxos = await _lock.synchronized(() {
       return <TransactionOutputModel>[];
     });
@@ -29,7 +30,7 @@ class FrozenUtxoDatasource {
     return frozenUtxos;
   }
 
-  Future<void> unfreezeUtxo({
+  Future<void> unfreezeWalletUtxo({
     required String walletId,
     required TransactionOutputModel utxo,
   }) async {

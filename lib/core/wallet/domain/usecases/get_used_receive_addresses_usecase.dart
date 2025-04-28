@@ -15,7 +15,8 @@ class GetUsedReceiveAddressesUsecase {
   }) async {
     try {
       final address = await _walletAddressRepository.getLastUnusedAddress(
-          walletId: walletId);
+        walletId: walletId,
+      );
       final index = address.index;
 
       final usedAddresses = await _walletAddressRepository.getAddresses(

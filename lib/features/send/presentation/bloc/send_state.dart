@@ -5,8 +5,8 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 
@@ -73,8 +73,8 @@ class SendState with _$SendState {
     @Default('') String inputAmountCurrencyCode,
     @Default(0) double exchangeRate,
     @Default('') String label,
-    @Default([]) List<TransactionOutput> utxos,
-    @Default([]) List<TransactionOutput> selectedUtxos,
+    @Default([]) List<WalletUtxo> utxos,
+    @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(false) bool replaceByFee,
     FeeOptions? feesList,
     NetworkFee? selectedFee,

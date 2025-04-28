@@ -6,9 +6,11 @@ import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 
 class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
@@ -32,7 +34,7 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     required NetworkFee networkFee,
     bool? drain,
     List<TransactionOutput>? unspendable,
-    List<TransactionOutput>? selected,
+    List<WalletUtxo>? selected,
     bool? replaceByFee,
   }) async {
     final metadata = await _walletMetadata.get(walletId);
@@ -60,9 +62,8 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
       unspendable: unspendable
           ?.map((utxo) => TransactionOutputMapper.fromEntity(utxo))
           .toList(),
-      selected: selected
-          ?.map((utxo) => TransactionOutputMapper.fromEntity(utxo))
-          .toList(),
+      selected:
+          selected?.map((utxo) => WalletUtxoMapper.fromEntity(utxo)).toList(),
       replaceByFee: replaceByFee ?? false,
     );
 

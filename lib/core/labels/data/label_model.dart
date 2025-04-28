@@ -1,19 +1,37 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
 
-part 'label_model.freezed.dart';
-part 'label_model.g.dart';
+class LabelModel {
+  final Entity type;
+  final String ref;
+  final String label;
+  final String? origin;
+  final bool? spendable;
 
-@freezed
-sealed class LabelModel with _$LabelModel {
-  factory LabelModel({
-    required String type,
-    required String ref,
-    required String label,
-    String? origin,
-    bool? spendable,
-  }) = _LabelModel;
-  const LabelModel._();
+  LabelModel({
+    required this.type,
+    required this.ref,
+    required this.label,
+    this.origin,
+    this.spendable,
+  });
 
-  factory LabelModel.fromJson(Map<String, dynamic> json) =>
-      _$LabelModelFromJson(json);
+  factory LabelModel.fromJson(Map<String, dynamic> json) {
+    return LabelModel(
+      type: Entity.from(json['type'] as String),
+      ref: json['ref'] as String,
+      label: json['label'] as String,
+      origin: json['origin'] as String?,
+      spendable: json['spendable'] as bool?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type.name,
+      'ref': ref,
+      'label': label,
+      if (origin != null) 'origin': origin,
+      if (spendable != null) 'spendable': spendable,
+    };
+  }
 }

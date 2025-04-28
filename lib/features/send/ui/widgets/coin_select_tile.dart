@@ -2,14 +2,14 @@ import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class CoinSelectTile extends StatelessWidget {
-  final TransactionOutput utxo;
+  final WalletUtxo utxo;
   final bool selected;
   final VoidCallback onTap;
   final BitcoinUnit bitcoinUnit;
@@ -29,22 +29,21 @@ class CoinSelectTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final utxoValue = bitcoinUnit == BitcoinUnit.btc
-        ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.value!.toInt()))
-        : FormatAmount.sats(utxo.value!.toInt());
+        ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
+        : FormatAmount.sats(utxo.amountSat.toInt());
 
     final fiatEquivalent = FormatAmount.fiat(
       ConvertAmount.satsToFiat(
-        utxo.value!.toInt(),
+        utxo.amountSat.toInt(),
         exchangeRate,
       ),
       fiatCurrency,
     ); // You can format this better
 
-    final address = utxo.walletAddress?.address;
-    final addressType =
-        utxo.walletAddress?.keyChain == WalletAddressKeyChain.external
-            ? 'Receive'
-            : 'Change';
+    final address = utxo.address;
+    final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
+        ? 'Receive'
+        : 'Change';
     final label = utxo.labels.join(', ');
 
     return GestureDetector(
@@ -97,39 +96,37 @@ class CoinSelectTile extends StatelessWidget {
                       activeColor: context.colour.secondary,
                     ),
                   ),
-                  if (address != null) ...[
-                    const SizedBox(height: 24),
-                    Divider(color: context.colour.secondaryFixedDim),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        BBText(
-                          'Address: ',
-                          style: context.font.labelMedium?.copyWith(
-                            color: context.colour.surfaceContainer,
-                          ),
+                  const SizedBox(height: 24),
+                  Divider(color: context.colour.secondaryFixedDim),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      BBText(
+                        'Address: ',
+                        style: context.font.labelMedium?.copyWith(
+                          color: context.colour.surfaceContainer,
                         ),
-                        Expanded(
-                          child: BBText(
-                            StringFormatting.truncateMiddle(address),
-                            style: context.font.labelLarge
-                                ?.copyWith(color: context.colour.secondary),
-                          ),
-                        ),
-                        BBText(
-                          'Type: ',
-                          style: context.font.labelMedium?.copyWith(
-                            color: context.colour.surfaceContainer,
-                          ),
-                        ),
-                        BBText(
-                          addressType,
+                      ),
+                      Expanded(
+                        child: BBText(
+                          StringFormatting.truncateMiddle(address),
                           style: context.font.labelLarge
                               ?.copyWith(color: context.colour.secondary),
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      BBText(
+                        'Type: ',
+                        style: context.font.labelMedium?.copyWith(
+                          color: context.colour.surfaceContainer,
+                        ),
+                      ),
+                      BBText(
+                        addressType,
+                        style: context.font.labelLarge
+                            ?.copyWith(color: context.colour.secondary),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

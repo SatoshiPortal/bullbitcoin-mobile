@@ -4,7 +4,6 @@ import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/payjoin_datasource.dart';
-import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';

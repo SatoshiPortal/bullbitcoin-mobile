@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart'
 import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/material.dart';
@@ -144,7 +145,7 @@ class BdkWalletDatasource implements WalletDatasource {
     int? amountSat,
     List<TransactionOutputModel>? unspendable,
     bool? drain,
-    List<TransactionOutputModel>? selected,
+    List<WalletUtxoModel>? selected,
     bool replaceByFee = true,
     required PublicBdkWalletModel wallet,
   }) async {
@@ -170,7 +171,7 @@ class BdkWalletDatasource implements WalletDatasource {
 
     if (selected != null && selected.isNotEmpty) {
       final selectableOutPoints = selected
-          .map((input) => bdk.OutPoint(txid: input.txId, vout: input.vout))
+          .map((utxo) => bdk.OutPoint(txid: utxo.txId, vout: utxo.vout))
           .toList();
       txBuilder.addUtxos(selectableOutPoints);
     }
@@ -240,23 +241,25 @@ class BdkWalletDatasource implements WalletDatasource {
   }
 
   @override
-  Future<List<TransactionOutputModel>> getUtxos({
+  Future<List<WalletUtxoModel>> getUtxos({
     required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final unspent = bdkWallet.listUnspent();
     final utxos = await Future.wait(
       unspent.map(
-        (unspent) async => TransactionOutputModel.bitcoin(
-          scriptPubkey: unspent.txout.scriptPubkey.bytes,
+        (unspent) async => WalletUtxoModel.bitcoin(
           txId: unspent.outpoint.txid,
           vout: unspent.outpoint.vout,
-          value: unspent.txout.value,
+          amountSat: unspent.txout.value,
+          scriptPubkey: unspent.txout.scriptPubkey.bytes,
           address:
               await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
             unspent.txout.scriptPubkey.bytes,
             isTestnet: wallet.isTestnet,
           ),
+          isExternalKeyChain:
+              unspent.keychain == bdk.KeychainKind.externalChain,
         ),
       ),
     );

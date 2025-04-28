@@ -16,7 +16,8 @@ class GetReceiveAddressUsecase {
       WalletAddress address;
       if (!newAddress) {
         address = await _walletAddressRepository.getLastUnusedAddress(
-            walletId: walletId);
+          walletId: walletId,
+        );
       } else {
         address =
             await _walletAddressRepository.getNewAddress(walletId: walletId);

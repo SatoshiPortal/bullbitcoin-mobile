@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
@@ -221,11 +221,13 @@ void main() {
         final receiveSwap = await swapRepositoryMainnet.getSwap(
           swapId: receiveLbtcSwapId,
         ) as LnReceiveSwap;
-        final totalSwapFees = receiveSwap.fees?.totalFees ?? 0;
-        debugPrint('Total Swap Fees: $totalSwapFees');
+
         final decodedInvoice = await swapRepositoryMainnet.decodeInvoice(
           invoice: receiveSwap.invoice,
         );
+        final totalSwapFees =
+            receiveSwap.fees?.totalFees(decodedInvoice.sats) ?? 0;
+        debugPrint('Total Swap Fees: $totalSwapFees');
         final receivableAmount = decodedInvoice.sats - totalSwapFees;
         debugPrint('Receivable Amount: $receivableAmount');
         final expectedLiquidBalanceAfterSwap =
