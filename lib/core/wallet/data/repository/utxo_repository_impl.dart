@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/labels/data/label_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/utils/uint_8_list_x.dart';
@@ -16,19 +15,16 @@ class UtxoRepositoryImpl implements UtxoRepository {
   final WalletDatasource _bdkWalletDatasource;
   final WalletDatasource _lwkWalletDatasource;
   final FrozenUtxoDatasource _frozenUtxoDatasource;
-  final LabelStorageDatasource _labelStorageDatasource;
 
   UtxoRepositoryImpl({
     required SqliteDatasource sqliteDatasource,
     required WalletDatasource bdkWalletDatasource,
     required WalletDatasource lwkWalletDatasource,
     required FrozenUtxoDatasource frozenUtxoDatasource,
-    required LabelStorageDatasource labelStorageDatasource,
   })  : _sqlite = sqliteDatasource,
         _bdkWalletDatasource = bdkWalletDatasource,
         _lwkWalletDatasource = lwkWalletDatasource,
-        _frozenUtxoDatasource = frozenUtxoDatasource,
-        _labelStorageDatasource = labelStorageDatasource;
+        _frozenUtxoDatasource = frozenUtxoDatasource;
 
   @override
   Future<List<Utxo>> getUtxos({required String walletId}) async {
@@ -69,10 +65,10 @@ class UtxoRepositoryImpl implements UtxoRepository {
           isLiquid: metadata.isLiquid,
         );
         // Get labels for the UTXO if any
-        final labelModels = await _labelStorageDatasource.fetchByRef(
-          Entity.output,
-          model.labelRef,
-        );
+        final labelModels = await _sqlite.managers.labels
+            .filter((l) => l.ref(model.toRef()))
+            .get();
+
         // Check if the UTXO is frozen
         final isFrozen = frozenUtxos.any(
           (frozenUtxo) =>
