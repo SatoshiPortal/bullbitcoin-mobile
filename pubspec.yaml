@@ -109,8 +109,8 @@ dependencies:
       ref: main
   bip85:
     git:
-      url: https://github.com/SatoshiPortal/rust-bip85.git
-      ref: frb-upgrade
+      url: https://github.com/ethicnology/rust-bip85.git
+      ref: master
       path: bindings/dart-bip85
   camera: ^0.11.1
   zxing2: ^0.2.3

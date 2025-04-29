@@ -110,9 +110,9 @@ packages:
     dependency: "direct main"
     description:
       path: "bindings/dart-bip85"
-      ref: frb-upgrade
-      resolved-ref: "64ff2f26a454be1c32a3032b3da2be2e7fbe1893"
-      url: "https://github.com/SatoshiPortal/rust-bip85.git"
+      ref: master
+      resolved-ref: "4e1eb36568526414df8b7400da62e1ffe60b22a7"
+      url: "https://github.com/ethicnology/rust-bip85.git"
     source: git
     version: "1.0.3"
   bitcoin_utils:
