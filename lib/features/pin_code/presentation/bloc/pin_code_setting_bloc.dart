@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/features/pin_code/domain/usecases/set_pin_code_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,15 +15,15 @@ class PinCodeSettingBloc
     required SetPinCodeUsecase setPinCodeUsecase,
     int minPinCodeLength = 4,
     int maxPinCodeLength = 8,
-  })  : _setPinCodeUsecase = setPinCodeUsecase,
-        super(
-          PinCodeSettingState(
-            choosePinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
-            confirmPinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
-            minPinCodeLength: minPinCodeLength,
-            maxPinCodeLength: maxPinCodeLength,
-          ),
-        ) {
+  }) : _setPinCodeUsecase = setPinCodeUsecase,
+       super(
+         PinCodeSettingState(
+           choosePinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
+           confirmPinKeyboardNumbers: List.generate(10, (i) => i)..shuffle(),
+           minPinCodeLength: minPinCodeLength,
+           maxPinCodeLength: maxPinCodeLength,
+         ),
+       ) {
     on<PinCodeSettingStarted>(_onStarted);
     on<PinCodeSettingPinCodeNumberAdded>(_onPinCodeNumberAdded);
     on<PinCodeSettingPinCodeNumberRemoved>(_onPinCodeNumberRemoved);
@@ -33,6 +35,9 @@ class PinCodeSettingBloc
     );
     on<PinCodeSettingPinCodeChosen>(_onPinCodeChosen);
     on<PinCodeSettingPinCodeConfirmed>(_onConfirmed);
+    on<PinCodeSettingPinCodeObscureToggled>(
+      _onPinCodeSettingPinCodeObscureToggled,
+    );
   }
 
   final SetPinCodeUsecase _setPinCodeUsecase;
@@ -52,11 +57,7 @@ class PinCodeSettingBloc
       return;
     }
 
-    emit(
-      state.copyWith(
-        pinCode: state.pinCode + event.number.toString(),
-      ),
-    );
+    emit(state.copyWith(pinCode: state.pinCode + event.number.toString()));
   }
 
   Future<void> _onPinCodeNumberRemoved(
@@ -78,11 +79,7 @@ class PinCodeSettingBloc
     PinCodeSettingPinCodeChosen event,
     Emitter<PinCodeSettingState> emit,
   ) async {
-    emit(
-      state.copyWith(
-        status: PinCodeSettingStatus.confirm,
-      ),
-    );
+    emit(state.copyWith(status: PinCodeSettingStatus.confirm));
   }
 
   Future<void> _onPinCodeConfirmationNumberAdded(
@@ -129,12 +126,14 @@ class PinCodeSettingBloc
 
       emit(state.copyWith(status: PinCodeSettingStatus.success));
     } catch (e) {
-      emit(
-        state.copyWith(
-          status: PinCodeSettingStatus.failure,
-          error: e,
-        ),
-      );
+      emit(state.copyWith(status: PinCodeSettingStatus.failure, error: e));
     }
+  }
+
+  void _onPinCodeSettingPinCodeObscureToggled(
+    PinCodeSettingPinCodeObscureToggled event,
+    Emitter<PinCodeSettingState> emit,
+  ) {
+    emit(state.copyWith(obscurePinCode: !state.obscurePinCode));
   }
 }

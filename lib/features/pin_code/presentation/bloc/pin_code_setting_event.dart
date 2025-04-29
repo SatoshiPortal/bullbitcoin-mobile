@@ -11,9 +11,7 @@ class PinCodeSettingStarted extends PinCodeSettingEvent {
 class PinCodeSettingPinCodeNumberAdded extends PinCodeSettingEvent {
   final int number;
 
-  const PinCodeSettingPinCodeNumberAdded(
-    this.number,
-  );
+  const PinCodeSettingPinCodeNumberAdded(this.number);
 }
 
 class PinCodeSettingPinCodeNumberRemoved extends PinCodeSettingEvent {
@@ -27,9 +25,7 @@ class PinCodeSettingPinCodeChosen extends PinCodeSettingEvent {
 class PinCodeSettingPinCodeConfirmationNumberAdded extends PinCodeSettingEvent {
   final int number;
 
-  const PinCodeSettingPinCodeConfirmationNumberAdded(
-    this.number,
-  );
+  const PinCodeSettingPinCodeConfirmationNumberAdded(this.number);
 }
 
 class PinCodeSettingPinCodeConfirmationNumberRemoved
@@ -39,4 +35,8 @@ class PinCodeSettingPinCodeConfirmationNumberRemoved
 
 class PinCodeSettingPinCodeConfirmed extends PinCodeSettingEvent {
   const PinCodeSettingPinCodeConfirmed();
+}
+
+class PinCodeSettingPinCodeObscureToggled extends PinCodeSettingEvent {
+  const PinCodeSettingPinCodeObscureToggled();
 }
