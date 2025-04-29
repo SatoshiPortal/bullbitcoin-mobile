@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 
 abstract class WalletTransactionRepository {
   //Stream<WalletTransaction> get walletTransactions;

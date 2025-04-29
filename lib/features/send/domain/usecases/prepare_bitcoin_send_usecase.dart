@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 import 'package:flutter/foundation.dart';
 
@@ -22,7 +22,7 @@ class PrepareBitcoinSendUsecase {
     int? amountSat,
     bool drain = false,
     bool? ignoreUnspendableInputs,
-    List<Utxo>? selectedInputs,
+    List<WalletUtxo>? selectedInputs,
     bool replaceByFee = true,
   }) async {
     try {
@@ -30,13 +30,13 @@ class PrepareBitcoinSendUsecase {
         throw Exception('Amount cannot be empty if drain is not true');
       }
 
-      List<Utxo>? unspendableInputs;
+      List<({String txId, int vout})>? unspendableUtxos;
       if (ignoreUnspendableInputs != null && !ignoreUnspendableInputs) {
         // For Bitcoin, check for ongoing Payjoin inputs
-        final payjoinInputs = await _payjoin.getInputsFromOngoingPayjoins();
-        unspendableInputs = payjoinInputs;
+        unspendableUtxos = await _payjoin.getUtxosFrozenByOngoingPayjoins();
+
         debugPrint(
-          'Bitcoin wallet id $walletId building psbt. PayjoinInputs: $payjoinInputs',
+          'Bitcoin wallet id $walletId building psbt. Unspendable utxos: $unspendableUtxos',
         );
       }
       final psbt = await _bitcoinWalletRepository.buildPsbt(
@@ -45,7 +45,7 @@ class PrepareBitcoinSendUsecase {
         amountSat: amountSat,
         networkFee: networkFee,
         drain: drain,
-        unspendable: unspendableInputs,
+        unspendable: unspendableUtxos,
         selected: selectedInputs,
         replaceByFee: replaceByFee,
       );

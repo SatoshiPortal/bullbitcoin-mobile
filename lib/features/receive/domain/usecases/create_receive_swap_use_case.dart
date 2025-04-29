@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_use_case.dart';
 
@@ -84,7 +84,7 @@ class CreateReceiveSwapUsecase {
       );
 
       if (description != null || description!.isNotEmpty) {
-        await _labelRepository.store<Address>(
+        await _labelRepository.store<WalletAddress>(
           entity: claimAddress,
           label: description,
           origin: wallet.origin,

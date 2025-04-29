@@ -31,9 +31,28 @@ sealed class Payjoin with _$Payjoin {
   const Payjoin._();
 
   String get id => when(
-        receiver: (_, id, __, ___, ____, _____, ______, _______, ________) =>
+        receiver: (
+          PayjoinStatus status,
+          String id,
+          String walletId,
+          String pjUri,
+          Uint8List? originalTxBytes,
+          String? originalTxId,
+          BigInt? amountSat,
+          String? proposalPsbt,
+          String? txId,
+        ) =>
             id,
-        sender: (_, uri, __, ___, ____, _____, ______) => uri,
+        sender: (
+          PayjoinStatus status,
+          String uri,
+          String walletId,
+          String originalPsbt,
+          String originalTxId,
+          String? proposalPsbt,
+          String? txId,
+        ) =>
+            uri,
       );
 
   bool get isCompleted => status == PayjoinStatus.completed;

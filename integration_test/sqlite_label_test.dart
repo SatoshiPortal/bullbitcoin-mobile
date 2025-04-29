@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,28 +22,29 @@ void main() {
 
   tearDownAll(() async => await labelRepository.trashAll());
 
-  final address = Address.bitcoin(
+  final address = WalletAddress.bitcoin(
     address: labels.first.ref,
     index: 0,
-    keyChain: AddressKeyChain.external,
-    status: AddressStatus.unused,
+    status: WalletAddressStatus.unused,
     walletId: '',
   );
 
-  final transaction = Transaction.onchain(
+  final transaction = WalletTransaction.bitcoin(
     walletId: 'x',
-    direction: WalletTransactionDirection.internal,
+    direction: WalletTransactionDirection.incoming,
     txId: txids.first,
     amountSat: 0,
-    fees: 0,
-    network: Network.bitcoinMainnet,
+    feeSat: 0,
+    status: WalletTransactionStatus.confirmed,
+    inputs: [],
+    outputs: [],
   );
 
   group('Label Storage Integration Tests', () {
     test('Create and store a label', () async {
       final aLabel = labels.first;
 
-      await labelRepository.store<Address>(
+      await labelRepository.store<WalletAddress>(
         label: aLabel.label,
         entity: address,
         origin: aLabel.origin,
@@ -54,7 +54,7 @@ void main() {
       final fetchByLabel =
           await labelRepository.fetchByLabel(label: aLabel.label);
       final fetchByRef =
-          await labelRepository.fetchByEntity<Address>(entity: address);
+          await labelRepository.fetchByEntity<WalletAddress>(entity: address);
 
       expect(fetchByLabel.length, 1);
       expect(fetchByRef.length, 1);
@@ -94,7 +94,7 @@ void main() {
 
     test('Read labels by reference', () async {
       final addressLabels =
-          await labelRepository.fetchByEntity<Address>(entity: address);
+          await labelRepository.fetchByEntity<WalletAddress>(entity: address);
       expect(addressLabels, isNotNull);
       expect(addressLabels.length, 3);
 
@@ -108,8 +108,9 @@ void main() {
       );
 
       // Read labels for the first transaction (should have 3 labels)
-      final txLabels =
-          await labelRepository.fetchByEntity<Transaction>(entity: transaction);
+      final txLabels = await labelRepository.fetchByEntity<WalletTransaction>(
+        entity: transaction,
+      );
       expect(txLabels, isNotNull);
       expect(txLabels.length, 3);
 
@@ -165,16 +166,19 @@ void main() {
 
     test('Delete a specific label', () async {
       const tmpLabel = 'Temporary Label';
-      await labelRepository.store<Address>(label: tmpLabel, entity: address);
+      await labelRepository.store<WalletAddress>(
+        label: tmpLabel,
+        entity: address,
+      );
 
       final addressLabels =
-          await labelRepository.fetchByEntity<Address>(entity: address);
+          await labelRepository.fetchByEntity<WalletAddress>(entity: address);
       expect(addressLabels.length, 4, reason: 'we should have 4 labels');
 
       await labelRepository.trashOneLabel(label: tmpLabel, entity: address);
 
       final updatedAddressLabels =
-          await labelRepository.fetchByEntity<Address>(entity: address);
+          await labelRepository.fetchByEntity<WalletAddress>(entity: address);
       expect(
         updatedAddressLabels.length,
         3,
@@ -192,8 +196,8 @@ void main() {
     test('Delete a label for all entities', () async {
       const label = 'Shared Label';
 
-      await labelRepository.store<Address>(label: label, entity: address);
-      await labelRepository.store<Transaction>(
+      await labelRepository.store<WalletAddress>(label: label, entity: address);
+      await labelRepository.store<WalletTransaction>(
         label: label,
         entity: transaction,
       );

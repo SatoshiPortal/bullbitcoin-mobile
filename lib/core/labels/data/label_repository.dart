@@ -1,10 +1,12 @@
 import 'package:bb_mobile/core/labels/data/label_model_mapper.dart';
-import 'package:bb_mobile/core/labels/data/labelable.dart';
 import 'package:bb_mobile/core/labels/domain/label_entity.dart';
+import 'package:bb_mobile/core/labels/domain/labelable.dart';
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:drift/drift.dart';
 
 enum Entity {
@@ -38,12 +40,14 @@ enum Entity {
   }
 
   static Entity fromLabelable(Labelable entity) {
-    if (entity is Transaction) {
+    if (entity is WalletTransaction) {
       return Entity.tx;
-    } else if (entity is Address) {
+    } else if (entity is WalletAddress) {
       return Entity.address;
-    } else if (entity is Utxo) {
+    } else if (entity is WalletUtxo || entity is TransactionOutput) {
       return Entity.output;
+    } else if (entity is TransactionInput) {
+      return Entity.input;
     }
 
     throw ArgumentError('Invalid type: $entity');
@@ -66,7 +70,7 @@ class LabelRepository {
       (l) => l(
         label: label,
         type: Entity.fromLabelable(entity).name,
-        ref: entity.toRef(),
+        ref: entity.labelRef,
         origin: Value(origin),
         spendable: Value(spendable),
       ),
@@ -83,7 +87,7 @@ class LabelRepository {
     required T entity,
   }) async {
     final labelModels = await _sqlite.managers.labels
-        .filter((l) => l.ref(entity.toRef()))
+        .filter((l) => l.ref(entity.labelRef))
         .get();
     return labelModels.map((model) => model.toEntity()).toList();
   }
@@ -93,7 +97,9 @@ class LabelRepository {
   }
 
   Future<void> trashByEntity<T extends Labelable>({required T entity}) async {
-    await _sqlite.managers.labels.filter((l) => l.ref(entity.toRef())).delete();
+    await _sqlite.managers.labels
+        .filter((l) => l.ref(entity.labelRef))
+        .delete();
   }
 
   Future<void> trashOneLabel<T extends Labelable>({
@@ -101,7 +107,7 @@ class LabelRepository {
     required String label,
   }) async {
     await _sqlite.managers.labels
-        .filter((l) => l.ref(entity.toRef()) & l.label(label))
+        .filter((l) => l.ref(entity.labelRef) & l.label(label))
         .delete();
   }
 

@@ -15,9 +15,9 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
@@ -588,14 +588,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       switch (state.type) {
         case ReceiveType.bitcoin:
           if (state.bitcoinAddress == null) return;
-          await _createLabelUsecase.execute<Address>(
+          await _createLabelUsecase.execute<WalletAddress>(
             origin: state.wallet!.id,
             entity: state.bitcoinAddress!,
             label: note,
           );
         case ReceiveType.liquid:
           if (state.liquidAddress == null) return;
-          await _createLabelUsecase.execute<Address>(
+          await _createLabelUsecase.execute<WalletAddress>(
             origin: state.wallet!.id,
             entity: state.liquidAddress!,
             label: note,

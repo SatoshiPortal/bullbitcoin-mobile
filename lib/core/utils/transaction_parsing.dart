@@ -1,21 +1,22 @@
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/foundation.dart';
 
 class TransactionParsing {
-  static Future<List<Utxo>> extractInputsFromPsbt(String psbt) async {
+  static Future<List<({String txId, int vout})>> extractSpentUtxosFromPsbt(
+    String psbt, {
+    required bool isTestnet,
+  }) async {
     debugPrint('Extracting inputs from psbt: $psbt');
     final tx = await bdk.PartiallySignedTransaction.fromString(psbt);
     final inputs = await tx.extractTx().input();
-    final txInputs = inputs.map((input) {
-      return Utxo(
-        txId: input.previousOutput.txid,
-        vout: input.previousOutput.vout,
-        scriptPubkey: input.scriptSig.bytes,
-      );
-    }).toList();
-    debugPrint('Extracted inputs: $inputs');
-    return txInputs;
+    final usedUtxos = inputs.map(
+      (input) =>
+          (txId: input.previousOutput.txid, vout: input.previousOutput.vout),
+    );
+
+    debugPrint("Extracted utxo's: $usedUtxos");
+
+    return usedUtxos.toList();
   }
 
   static Future<String> getTxIdFromPsbt(String psbt) async {

@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/address_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:hive/hive.dart';
 
@@ -75,7 +75,7 @@ class SwapsLocator {
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ) as BoltzSwapRepositoryImpl,
-        addressRepository: locator<AddressRepository>(),
+        walletAddressRepository: locator<WalletAddressRepository>(),
       ),
       instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
     );
@@ -87,7 +87,7 @@ class SwapsLocator {
           instanceName: LocatorInstanceNameConstants
               .boltzTestnetSwapRepositoryInstanceName,
         ) as BoltzSwapRepositoryImpl,
-        addressRepository: locator<AddressRepository>(),
+        walletAddressRepository: locator<WalletAddressRepository>(),
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,

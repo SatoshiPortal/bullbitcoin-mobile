@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class BitcoinBlockchainRepositoryImpl implements BitcoinBlockchainRepository {
   final BdkBitcoinBlockchainDatasource _blockchain;

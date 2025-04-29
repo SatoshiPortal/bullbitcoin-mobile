@@ -3,24 +3,25 @@ import 'dart:async';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:flutter/material.dart';
 
 class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
   final PayjoinRepository _payjoin;
   final WalletRepository _wallet;
   final BitcoinWalletRepository _bitcoinWallet;
-  final UtxoRepository _utxoRepository;
+  final WalletUtxoRepository _utxoRepository;
   final StreamController<Payjoin> _payjoinStreamController;
 
   PayjoinWatcherServiceImpl({
     required PayjoinRepository payjoinRepository,
     required WalletRepository walletRepository,
     required BitcoinWalletRepository bitcoinWalletRepository,
-    required UtxoRepository utxoRepository,
+    required WalletUtxoRepository utxoRepository,
   })  : _payjoin = payjoinRepository,
         _wallet = walletRepository,
         _bitcoinWallet = bitcoinWalletRepository,
@@ -65,7 +66,8 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
   Future<void> _processPayjoinRequest(PayjoinReceiver payjoin) async {
     debugPrint('Processing payjoin request: ${payjoin.id}');
     final walletId = payjoin.walletId;
-    final unspentUtxos = await _utxoRepository.getUtxos(walletId: walletId);
+    final unspentUtxos =
+        await _utxoRepository.getWalletUtxos(walletId: walletId);
 
     try {
       final processedPayjoin = await _payjoin.processRequest(
@@ -78,7 +80,7 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
           walletId: walletId,
           script: outputScript,
         ),
-        unspentUtxos: unspentUtxos,
+        unspentUtxos: unspentUtxos.whereType<BitcoinWalletUtxo>().toList(),
         processPsbt: (psbt) async {
           final signedPsbt =
               await _bitcoinWallet.signPsbt(psbt, walletId: walletId);

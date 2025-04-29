@@ -1,16 +1,16 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/address/domain/repositories/address_repository.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:bb_mobile/core/utxo/domain/repositories/utxo_repository.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_or_create_wallet_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
@@ -23,8 +23,8 @@ import 'package:test/test.dart';
 
 void main() {
   late WalletRepository walletRepository;
-  late AddressRepository addressRepository;
-  late UtxoRepository utxoRepository;
+  late WalletAddressRepository addressRepository;
+  late WalletUtxoRepository utxoRepository;
   late PayjoinWatcherService payjoinWatcherService;
   late ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase;
   late SendWithPayjoinUsecase sendWithPayjoinUsecase;
@@ -52,8 +52,8 @@ void main() {
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
 
     walletRepository = locator<WalletRepository>();
-    addressRepository = locator<AddressRepository>();
-    utxoRepository = locator<UtxoRepository>();
+    addressRepository = locator<WalletAddressRepository>();
+    utxoRepository = locator<WalletUtxoRepository>();
     payjoinWatcherService = locator<PayjoinWatcherService>();
     receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
     sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
@@ -294,10 +294,10 @@ void main() {
         () {
           test('should have wallets with enough utxos', () async {
             // Make sure the wallets have a different utxo for every payjoin
-            final receiverUtxos = await utxoRepository.getUtxos(
+            final receiverUtxos = await utxoRepository.getWalletUtxos(
               walletId: receiverWallet.id,
             );
-            final senderUtxos = await utxoRepository.getUtxos(
+            final senderUtxos = await utxoRepository.getWalletUtxos(
               walletId: senderWallet.id,
             );
             debugPrint('Receiver utxos: ${receiverUtxos.length}');

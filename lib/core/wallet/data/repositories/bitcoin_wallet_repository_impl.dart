@@ -5,10 +5,10 @@ import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/utxo_model.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 
 class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
@@ -31,8 +31,8 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     int? amountSat,
     required NetworkFee networkFee,
     bool? drain,
-    List<Utxo>? unspendable,
-    List<Utxo>? selected,
+    List<({String txId, int vout})>? unspendable,
+    List<WalletUtxo>? selected,
     bool? replaceByFee,
   }) async {
     final metadata = await _sqlite.managers.walletMetadatas
@@ -59,9 +59,9 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
       amountSat: amountSat,
       networkFee: networkFee,
       drain: drain,
-      unspendable:
-          unspendable?.map((utxo) => UtxoModel.fromEntity(utxo)).toList(),
-      selected: selected?.map((utxo) => UtxoModel.fromEntity(utxo)).toList(),
+      unspendable: unspendable,
+      selected:
+          selected?.map((utxo) => WalletUtxoMapper.fromEntity(utxo)).toList(),
       replaceByFee: replaceByFee ?? false,
     );
 

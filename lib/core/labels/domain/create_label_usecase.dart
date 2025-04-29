@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/labels/data/labelable.dart';
+import 'package:bb_mobile/core/labels/domain/labelable.dart';
 
 class CreateLabelUsecase {
   final LabelRepository _labelRepository;

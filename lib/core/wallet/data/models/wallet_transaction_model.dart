@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/wallet/domain/entity/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_transaction_model.freezed.dart';
@@ -10,63 +11,22 @@ sealed class WalletTransactionModel with _$WalletTransactionModel {
     required bool isIncoming,
     required int amountSat,
     required int feeSat,
+    required List<TransactionInputModel> inputs,
+    required List<TransactionOutputModel> outputs,
     int? confirmationTimestamp,
+    @Default(false) bool isToSelf,
   }) = BitcoinWalletTransactionModel;
   const factory WalletTransactionModel.liquid({
     required String txId,
     required bool isIncoming,
     required int amountSat,
     required int feeSat,
+    required List<TransactionInputModel> inputs,
+    required List<TransactionOutputModel> outputs,
     int? confirmationTimestamp,
+    @Default(false) bool isToSelf,
   }) = LiquidWalletTransactionModel;
   const WalletTransactionModel._();
 
-  WalletTransaction toEntity({required String walletId}) {
-    return when(
-      bitcoin: (
-        String txId,
-        bool isIncoming,
-        int amountSat,
-        int feeSat,
-        int? confirmationTimestamp,
-      ) =>
-          WalletTransaction.bitcoin(
-        walletId: walletId,
-        direction: isIncoming
-            ? WalletTransactionDirection.incoming
-            : WalletTransactionDirection.outgoing,
-        status: confirmationTimestamp == null
-            ? WalletTransactionStatus.pending
-            : WalletTransactionStatus.confirmed,
-        txId: txId,
-        amountSat: amountSat,
-        feeSat: feeSat,
-        confirmationTime: confirmationTimestamp != null
-            ? DateTime.fromMillisecondsSinceEpoch(confirmationTimestamp * 1000)
-            : null,
-      ),
-      liquid: (
-        String txId,
-        bool isIncoming,
-        int amountSat,
-        int feeSat,
-        int? confirmationTimestamp,
-      ) =>
-          WalletTransaction.liquid(
-        walletId: walletId,
-        direction: isIncoming
-            ? WalletTransactionDirection.incoming
-            : WalletTransactionDirection.outgoing,
-        status: confirmationTimestamp == null
-            ? WalletTransactionStatus.pending
-            : WalletTransactionStatus.confirmed,
-        txId: txId,
-        amountSat: amountSat,
-        feeSat: feeSat,
-        confirmationTime: confirmationTimestamp != null
-            ? DateTime.fromMillisecondsSinceEpoch(confirmationTimestamp * 1000)
-            : null,
-      ),
-    );
-  }
+  String get labelRef => txId;
 }

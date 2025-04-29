@@ -1,10 +1,12 @@
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/datasources/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_address_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet_transaction/data/datasources/wallet_transaction_datasource.dart';
-import 'package:bb_mobile/core/wallet_transaction/data/models/wallet_transaction_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_or_create_wallet_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -49,12 +51,14 @@ void main() {
         network: Network.bitcoinMainnet,
       );
 
-      bdkWallets.add(WalletModel.publicBdk(
-        id: w.id,
-        externalDescriptor: w.externalPublicDescriptor,
-        internalDescriptor: w.internalPublicDescriptor,
-        isTestnet: w.isTestnet,
-      ));
+      bdkWallets.add(
+        WalletModel.publicBdk(
+          id: w.id,
+          externalDescriptor: w.externalPublicDescriptor,
+          internalDescriptor: w.internalPublicDescriptor,
+          isTestnet: w.isTestnet,
+        ),
+      );
     }
 
     for (final mnemonic in mnemonics) {
@@ -64,11 +68,13 @@ void main() {
         network: Network.liquidMainnet,
       );
 
-      lwkWallets.add(WalletModel.publicLwk(
-        id: w.id,
-        combinedCtDescriptor: w.externalPublicDescriptor,
-        isTestnet: w.isTestnet,
-      ));
+      lwkWallets.add(
+        WalletModel.publicLwk(
+          id: w.id,
+          combinedCtDescriptor: w.externalPublicDescriptor,
+          isTestnet: w.isTestnet,
+        ),
+      );
     }
 
     bdkElectrum = ElectrumServerModel.blockstream(
@@ -100,7 +106,8 @@ void main() {
       final walletSyncs = spyDatasource.getActualSyncRuns(wallet.id);
 
       debugPrint(
-          'Wallet: ${wallet.id}, Calls: $walletCalls, Syncs: $walletSyncs');
+        'Wallet: ${wallet.id}, Calls: $walletCalls, Syncs: $walletSyncs',
+      );
 
       expect(walletCalls, equals(calls));
       expect(walletSyncs, equals(1));
@@ -113,7 +120,8 @@ void main() {
 
     await Future.wait(
       bdkWallets.map(
-          (w) => spyDatasource.sync(wallet: w, electrumServer: bdkElectrum)),
+        (w) => spyDatasource.sync(wallet: w, electrumServer: bdkElectrum),
+      ),
     );
 
     for (final wallet in bdkWallets) {
@@ -170,7 +178,8 @@ void main() {
       final walletSyncs = spyDatasource.getActualSyncRuns(wallet.id);
 
       debugPrint(
-          'Wallet: ${wallet.id}, Calls: $walletCalls, Syncs: $walletSyncs');
+        'Wallet: ${wallet.id}, Calls: $walletCalls, Syncs: $walletSyncs',
+      );
 
       expect(walletCalls, equals(calls));
       expect(walletSyncs, equals(1));
@@ -183,7 +192,8 @@ void main() {
 
     await Future.wait(
       lwkWallets.map(
-          (w) => spyDatasource.sync(wallet: w, electrumServer: lwkElectrum)),
+        (w) => spyDatasource.sync(wallet: w, electrumServer: lwkElectrum),
+      ),
     );
 
     for (final wallet in lwkWallets) {
@@ -222,7 +232,7 @@ void main() {
   });
 }
 
-class SyncSpyBdkWalletDatasource implements WalletTransactionDatasource {
+class SyncSpyBdkWalletDatasource implements WalletDatasource {
   final BdkWalletDatasource _real;
   final Map<String, int> callCount = {};
 
@@ -245,9 +255,74 @@ class SyncSpyBdkWalletDatasource implements WalletTransactionDatasource {
     String? toAddress,
   }) =>
       throw UnimplementedError();
+
+  @override
+  Future<BigInt> getAddressBalanceSat(
+    String address, {
+    required WalletModel wallet,
+  }) {
+    // TODO: implement getAddressBalanceSat
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<WalletAddressModel> getAddressByIndex(
+    int index, {
+    required WalletModel wallet,
+  }) {
+    // TODO: implement getAddressByIndex
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<WalletAddressModel>> getChangeAddresses({
+    required WalletModel wallet,
+    required int limit,
+    required int offset,
+  }) {
+    // TODO: implement getChangeAddresses
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<WalletAddressModel> getLastUnusedAddress({
+    required WalletModel wallet,
+    bool isChange = false,
+  }) {
+    // TODO: implement getLastUnusedAddress
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<WalletAddressModel> getNewAddress({required WalletModel wallet}) {
+    // TODO: implement getNewAddress
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<WalletAddressModel>> getReceiveAddresses({
+    required WalletModel wallet,
+    required int limit,
+    required int offset,
+  }) {
+    // TODO: implement getReceiveAddresses
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) {
+    // TODO: implement getUtxos
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> isAddressUsed(String address, {required WalletModel wallet}) {
+    // TODO: implement isAddressUsed
+    throw UnimplementedError();
+  }
 }
 
-class SyncSpyLwkWalletDatasource implements WalletTransactionDatasource {
+class SyncSpyLwkWalletDatasource implements WalletDatasource {
   final LwkWalletDatasource _real;
   final Map<String, int> callCount = {};
 
@@ -270,4 +345,69 @@ class SyncSpyLwkWalletDatasource implements WalletTransactionDatasource {
     String? toAddress,
   }) =>
       throw UnimplementedError();
+
+  @override
+  Future<BigInt> getAddressBalanceSat(
+    String address, {
+    required WalletModel wallet,
+  }) {
+    // TODO: implement getAddressBalanceSat
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<WalletAddressModel> getAddressByIndex(
+    int index, {
+    required WalletModel wallet,
+  }) {
+    // TODO: implement getAddressByIndex
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<WalletAddressModel>> getChangeAddresses({
+    required WalletModel wallet,
+    required int limit,
+    required int offset,
+  }) {
+    // TODO: implement getChangeAddresses
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<WalletAddressModel> getLastUnusedAddress({
+    required WalletModel wallet,
+    bool isChange = false,
+  }) {
+    // TODO: implement getLastUnusedAddress
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<WalletAddressModel> getNewAddress({required WalletModel wallet}) {
+    // TODO: implement getNewAddress
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<WalletAddressModel>> getReceiveAddresses({
+    required WalletModel wallet,
+    required int limit,
+    required int offset,
+  }) {
+    // TODO: implement getReceiveAddresses
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) {
+    // TODO: implement getUtxos
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> isAddressUsed(String address, {required WalletModel wallet}) {
+    // TODO: implement isAddressUsed
+    throw UnimplementedError();
+  }
 }

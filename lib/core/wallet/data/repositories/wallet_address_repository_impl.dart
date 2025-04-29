@@ -1,15 +1,16 @@
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/address.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/address_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 
-class AddressRepositoryImpl implements AddressRepository {
+class WalletAddressRepositoryImpl implements WalletAddressRepository {
   final SqliteDatasource _sqlite;
   final WalletDatasource _bdkWallet;
   final WalletDatasource _lwkWallet;
 
-  AddressRepositoryImpl({
+  WalletAddressRepositoryImpl({
     required SqliteDatasource sqliteDatasource,
     required WalletDatasource bdkWalletDatasource,
     required WalletDatasource lwkWalletDatasource,
@@ -18,7 +19,7 @@ class AddressRepositoryImpl implements AddressRepository {
         _lwkWallet = lwkWalletDatasource;
 
   @override
-  Future<Address> getNewAddress({required String walletId}) async {
+  Future<WalletAddress> getNewAddress({required String walletId}) async {
     final metadata = await _sqlite.managers.walletMetadatas
         .filter((e) => e.id(walletId))
         .getSingleOrNull();
@@ -42,21 +43,22 @@ class AddressRepositoryImpl implements AddressRepository {
 
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
 
-    final addressModel = await walletDatasource.getNewAddress(
+    final walletAddressModel = await walletDatasource.getNewAddress(
       wallet: walletModel,
     );
 
-    final address = addressModel.toEntity(
+    final address = WalletAddressMapper.toEntity(
+      walletAddressModel,
       walletId: walletId,
-      keyChain: AddressKeyChain.external,
-      status: AddressStatus.unused,
+      keyChain: WalletAddressKeyChain.external,
+      status: WalletAddressStatus.unused,
     );
 
     return address;
   }
 
   @override
-  Future<Address> getLastUnusedAddress({required String walletId}) async {
+  Future<WalletAddress> getLastUnusedAddress({required String walletId}) async {
     final metadata = await _sqlite.managers.walletMetadatas
         .filter((e) => e.id(walletId))
         .getSingleOrNull();
@@ -79,25 +81,26 @@ class AddressRepositoryImpl implements AddressRepository {
           );
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
 
-    final addressModel = await walletDatasource.getLastUnusedAddress(
+    final walletAddressModel = await walletDatasource.getLastUnusedAddress(
       wallet: walletModel,
     );
 
-    final address = addressModel.toEntity(
+    final address = WalletAddressMapper.toEntity(
+      walletAddressModel,
       walletId: walletId,
-      keyChain: AddressKeyChain.external,
-      status: AddressStatus.unused,
+      keyChain: WalletAddressKeyChain.external,
+      status: WalletAddressStatus.unused,
     );
 
     return address;
   }
 
   @override
-  Future<List<Address>> getAddresses({
+  Future<List<WalletAddress>> getAddresses({
     required String walletId,
     required int limit,
     required int offset,
-    required AddressKeyChain keyChain,
+    required WalletAddressKeyChain keyChain,
   }) async {
     final metadata = await _sqlite.managers.walletMetadatas
         .filter((e) => e.id(walletId))
@@ -121,7 +124,7 @@ class AddressRepositoryImpl implements AddressRepository {
           );
     final walletDatasource = metadata.isBitcoin ? _bdkWallet : _lwkWallet;
 
-    final addressModels = keyChain == AddressKeyChain.external
+    final walletAddressModels = keyChain == WalletAddressKeyChain.external
         ? await walletDatasource.getReceiveAddresses(
             wallet: walletModel,
             limit: limit,
@@ -134,7 +137,7 @@ class AddressRepositoryImpl implements AddressRepository {
           );
 
     final addresses = await Future.wait(
-      addressModels.map(
+      walletAddressModels.map(
         (model) async {
           final isUsed = await walletDatasource.isAddressUsed(
             model.address,
@@ -145,10 +148,12 @@ class AddressRepositoryImpl implements AddressRepository {
             wallet: walletModel,
           );
 
-          return model.toEntity(
+          return WalletAddressMapper.toEntity(
+            model,
             walletId: walletId,
             keyChain: keyChain,
-            status: isUsed ? AddressStatus.used : AddressStatus.unused,
+            status:
+                isUsed ? WalletAddressStatus.used : WalletAddressStatus.unused,
             balanceSat: balance.toInt(),
           );
         },

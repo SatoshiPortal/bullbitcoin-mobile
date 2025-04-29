@@ -16,10 +16,10 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/utxo.dart';
-import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_utxos_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
@@ -44,7 +44,7 @@ class SendCubit extends Cubit<SendState> {
     required ConvertSatsToCurrencyAmountUsecase
         convertSatsToCurrencyAmountUsecase,
     required GetNetworkFeesUsecase getNetworkFeesUsecase,
-    required GetUtxosUsecase getUtxosUsecase,
+    required GetWalletUtxosUsecase getWalletUtxosUsecase,
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
     required PrepareBitcoinSendUsecase prepareBitcoinSendUsecase,
     required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
@@ -72,7 +72,7 @@ class SendCubit extends Cubit<SendState> {
         _bestWalletUsecase = bestWalletUsecase,
         _detectBitcoinStringUsecase = detectBitcoinStringUsecase,
         _getNetworkFeesUsecase = getNetworkFeesUsecase,
-        _getUtxosUsecase = getUtxosUsecase,
+        _getWalletUtxosUsecase = getWalletUtxosUsecase,
         _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
         _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
         _sendWithPayjoinUsecase = sendWithPayjoinUsecase,
@@ -101,7 +101,7 @@ class SendCubit extends Cubit<SendState> {
   final GetSettingsUsecase _getSettingsUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
-  final GetUtxosUsecase _getUtxosUsecase;
+  final GetWalletUtxosUsecase _getWalletUtxosUsecase;
   final GetWalletsUsecase _getWalletsUsecase;
   final GetWalletUsecase _getWalletUsecase;
   final PrepareBitcoinSendUsecase _prepareBitcoinSendUsecase;
@@ -517,7 +517,7 @@ class SendCubit extends Cubit<SendState> {
       // then we can remove the fallback to BigInt.zero on utxo.value
       final totalSats = state.selectedUtxos.fold<BigInt>(
         BigInt.zero,
-        (sum, utxo) => sum + (utxo.value ?? BigInt.zero),
+        (sum, utxo) => sum + (utxo.amountSat),
       );
       maxAmount = totalSats.toString();
     } else {
@@ -542,7 +542,7 @@ class SendCubit extends Cubit<SendState> {
     if (state.selectedWallet == null) return;
 
     try {
-      final utxos = await _getUtxosUsecase.execute(
+      final utxos = await _getWalletUtxosUsecase.execute(
         walletId: state.selectedWallet!.id,
       );
       emit(state.copyWith(utxos: utxos));
@@ -551,7 +551,7 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  void utxoSelected(Utxo utxo) {
+  void utxoSelected(WalletUtxo utxo) {
     final selectedUtxos = List.of(state.selectedUtxos);
     if (selectedUtxos.contains(utxo)) {
       selectedUtxos.remove(utxo);
