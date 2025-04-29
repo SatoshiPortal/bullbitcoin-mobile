@@ -1,9 +1,8 @@
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/inputs/pin_input.dart';
+import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
+import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/numpad/num_pad.dart';
 import 'package:bb_mobile/ui/components/template/screen_template.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -13,9 +12,7 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ChoosePinCodeScreen extends StatelessWidget {
-  const ChoosePinCodeScreen({
-    super.key,
-  });
+  const ChoosePinCodeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +21,7 @@ class ChoosePinCodeScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          onBack: () => context.go(AppRoute.home.path),
+          onBack: () => context.pop(),
           title: "Authentication",
         ),
       ),
@@ -36,21 +33,37 @@ class ChoosePinCodeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Gap(75),
               BBText(
                 'Create new pin',
                 textAlign: TextAlign.center,
-                style: context.font.labelMedium?.copyWith(
+                style: context.font.headlineMedium?.copyWith(
                   color: context.colour.outline,
                 ),
                 maxLines: 3,
               ),
               const Gap(50),
-              BlocSelector<PinCodeSettingBloc, PinCodeSettingState, String>(
-                selector: (state) => state.pinCode,
-                builder: (context, pinCode) {
-                  return PinInput(
+              BlocSelector<
+                PinCodeSettingBloc,
+                PinCodeSettingState,
+                (String, bool)
+              >(
+                selector: (state) => (state.pinCode, state.obscurePinCode),
+                builder: (context, data) {
+                  final (pinCode, obscurePinCode) = data;
+                  return BBInputText(
                     value: pinCode,
-                    rightIcon: const Icon(Icons.visibility_off_outlined),
+                    obscure: obscurePinCode,
+                    onRightTap:
+                        () => context.read<PinCodeSettingBloc>().add(
+                          const PinCodeSettingPinCodeObscureToggled(),
+                        ),
+                    rightIcon:
+                        obscurePinCode
+                            ? const Icon(Icons.visibility_off_outlined)
+                            : const Icon(Icons.visibility_outlined),
+                    onlyNumbers: true,
+                    onChanged: (value) {},
                   );
                 },
               ),
@@ -65,25 +78,25 @@ class ChoosePinCodeScreen extends StatelessWidget {
                               .pinCode
                               .isNotEmpty
                       ? BBText(
-                          'PIN must be at least ${context.read<PinCodeSettingBloc>().state.minPinCodeLength} digits long',
-                          textAlign: TextAlign.start,
-                          style: context.font.labelSmall?.copyWith(
-                            color: context.colour.error,
-                          ),
-                        )
+                        'PIN must be at least ${context.read<PinCodeSettingBloc>().state.minPinCodeLength} digits long',
+                        textAlign: TextAlign.start,
+                        style: context.font.labelSmall?.copyWith(
+                          color: context.colour.error,
+                        ),
+                      )
                       : const SizedBox.shrink();
                 },
               ),
-              const Gap(50),
-              NumPad(
-                onNumberPressed: (value) =>
-                    context.read<PinCodeSettingBloc>().add(
-                          PinCodeSettingPinCodeNumberAdded(int.parse(value)),
-                        ),
-                onBackspacePressed: () =>
-                    context.read<PinCodeSettingBloc>().add(
-                          const PinCodeSettingPinCodeNumberRemoved(),
-                        ),
+              const Gap(130),
+              DialPad(
+                onNumberPressed:
+                    (value) => context.read<PinCodeSettingBloc>().add(
+                      PinCodeSettingPinCodeNumberAdded(int.parse(value)),
+                    ),
+                onBackspacePressed:
+                    () => context.read<PinCodeSettingBloc>().add(
+                      const PinCodeSettingPinCodeNumberRemoved(),
+                    ),
               ),
             ],
           ),
@@ -107,14 +120,15 @@ class _ConfirmButton extends StatelessWidget {
             label: 'Confirm',
             textStyle: context.font.headlineLarge,
             disabled: !isValidPinCode,
-            bgColor: isValidPinCode
-                ? context.colour.secondary
-                : context.colour.outline,
+            bgColor:
+                isValidPinCode
+                    ? context.colour.secondary
+                    : context.colour.outline,
             onPressed: () {
               if (isValidPinCode) {
                 context.read<PinCodeSettingBloc>().add(
-                      const PinCodeSettingPinCodeChosen(),
-                    );
+                  const PinCodeSettingPinCodeChosen(),
+                );
               }
             },
             textColor: context.colour.onSecondary,
