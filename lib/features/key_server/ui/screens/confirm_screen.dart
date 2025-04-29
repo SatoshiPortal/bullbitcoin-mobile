@@ -61,11 +61,12 @@ class ConfirmScreen extends StatelessWidget {
               BBInputText(
                 value: state.password,
                 obscure: state.isPasswordObscured,
-                onRightTap: () =>
-                    context.read<KeyServerCubit>().toggleObscure(),
-                rightIcon: state.isPasswordObscured
-                    ? const Icon(Icons.visibility_off_outlined)
-                    : const Icon(Icons.visibility_outlined),
+                onRightTap:
+                    () => context.read<KeyServerCubit>().toggleObscure(),
+                rightIcon:
+                    state.isPasswordObscured
+                        ? const Icon(Icons.visibility_off_outlined)
+                        : const Icon(Icons.visibility_outlined),
                 onlyNumbers: state.authInputType == AuthInputType.pin,
                 onChanged: (value) {
                   if (state.authInputType == AuthInputType.password) {
@@ -80,19 +81,19 @@ class ConfirmScreen extends StatelessWidget {
                 bgColor: Colors.transparent,
                 textColor: context.colour.inversePrimary,
                 textStyle: context.font.labelSmall,
-                onPressed: () =>
-                    context.read<KeyServerCubit>().toggleAuthInputType(
-                          state.authInputType == AuthInputType.pin
-                              ? AuthInputType.password
-                              : AuthInputType.pin,
-                        ),
+                onPressed:
+                    () => context.read<KeyServerCubit>().toggleAuthInputType(
+                      state.authInputType == AuthInputType.pin
+                          ? AuthInputType.password
+                          : AuthInputType.pin,
+                    ),
               ),
               if (state.authInputType == AuthInputType.pin)
                 DialPad(
-                  onNumberPressed: (e) =>
-                      context.read<KeyServerCubit>().enterKey(e),
-                  onBackspacePressed: () =>
-                      context.read<KeyServerCubit>().backspaceKey(),
+                  onNumberPressed:
+                      (e) => context.read<KeyServerCubit>().enterKey(e),
+                  onBackspacePressed:
+                      () => context.read<KeyServerCubit>().backspaceKey(),
                 )
               else
                 const SizedBox.shrink(),
@@ -117,9 +118,10 @@ class ConfirmButton extends StatelessWidget {
         label: 'Confirm',
         textStyle: context.font.headlineLarge,
         disabled: !state.canProceed,
-        bgColor: state.canProceed
-            ? context.colour.secondary
-            : context.colour.outline,
+        bgColor:
+            state.canProceed
+                ? context.colour.secondary
+                : context.colour.outline,
         onPressed: () {
           if (state.canProceed) {
             context.read<KeyServerCubit>().confirmKey();
