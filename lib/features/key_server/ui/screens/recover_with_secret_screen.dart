@@ -1,11 +1,11 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
-import 'package:bb_mobile/features/key_server/ui/widgets/page_layout.dart';
 import 'package:bb_mobile/router.dart' show AppRoute;
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
+import 'package:bb_mobile/ui/components/template/screen_template.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -31,68 +31,76 @@ class RecoverWithSecretScreen extends StatelessWidget {
               "Enter your ${fromOnboarding ? '' : 'backup'} ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'}",
         ),
       ),
-      body: PageLayout(
+      body: StackedPage(
+        bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
         bottomChild: const RecoverButton(),
-        // bottomHeight: 90,
-        children: [
-          if (fromOnboarding) const Gap(100) else const Gap(10),
-          BBText(
-            '${fromOnboarding ? 'Enter your' : 'Test to make sure you remember your backup '} ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'} ${fromOnboarding ? 'to continue' : ''}',
-            textAlign: TextAlign.center,
-            style: context.font.labelMedium?.copyWith(
-              color: context.colour.outline,
-            ),
-            maxLines: 3,
-          ),
-          const Gap(120),
-          if (state.authInputType == AuthInputType.password)
-            BBText(
-              'Password',
-              textAlign: TextAlign.start,
-              style: context.font.labelSmall?.copyWith(
-                color: context.colour.secondary,
-              ),
-            )
-          else
-            const SizedBox.shrink(),
-          const Gap(2),
-          BBInputText(
-            value: state.password,
-            obscure: state.isPasswordObscured,
-            onRightTap: () => context.read<KeyServerCubit>().toggleObscure(),
-            rightIcon: state.isPasswordObscured
-                ? const Icon(Icons.visibility_off_outlined)
-                : const Icon(Icons.visibility_outlined),
-            onlyNumbers: state.authInputType == AuthInputType.pin,
-            onChanged: (String value) {
-              if (state.authInputType == AuthInputType.password) {
-                context.read<KeyServerCubit>().enterKey(value);
-              }
-            },
-          ),
-          const Gap(50),
-          BBButton.small(
-            label:
-                'Pick ${state.authInputType == AuthInputType.pin ? 'password' : 'PIN'} instead >>',
-            bgColor: Colors.transparent,
-            textColor: context.colour.inversePrimary,
-            textStyle: context.font.labelSmall,
-            onPressed: () => context.read<KeyServerCubit>().toggleAuthInputType(
-                  state.authInputType == AuthInputType.pin
-                      ? AuthInputType.password
-                      : AuthInputType.pin,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (fromOnboarding) const Gap(100) else const Gap(10),
+              BBText(
+                '${fromOnboarding ? 'Enter your' : 'Test to make sure you remember your backup '} ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'} ${fromOnboarding ? 'to continue' : ''}',
+                textAlign: TextAlign.center,
+                style: context.font.labelMedium?.copyWith(
+                  color: context.colour.outline,
                 ),
+                maxLines: 3,
+              ),
+              const Gap(120),
+              if (state.authInputType == AuthInputType.password)
+                BBText(
+                  'Password',
+                  textAlign: TextAlign.start,
+                  style: context.font.labelSmall?.copyWith(
+                    color: context.colour.secondary,
+                  ),
+                )
+              else
+                const SizedBox.shrink(),
+              const Gap(2),
+              BBInputText(
+                value: state.password,
+                obscure: state.isPasswordObscured,
+                onRightTap: () =>
+                    context.read<KeyServerCubit>().toggleObscure(),
+                rightIcon: state.isPasswordObscured
+                    ? const Icon(Icons.visibility_off_outlined)
+                    : const Icon(Icons.visibility_outlined),
+                onlyNumbers: state.authInputType == AuthInputType.pin,
+                onChanged: (String value) {
+                  if (state.authInputType == AuthInputType.password) {
+                    context.read<KeyServerCubit>().enterKey(value);
+                  }
+                },
+              ),
+              const Gap(50),
+              BBButton.small(
+                label:
+                    'Pick ${state.authInputType == AuthInputType.pin ? 'password' : 'PIN'} instead >>',
+                bgColor: Colors.transparent,
+                textColor: context.colour.inversePrimary,
+                textStyle: context.font.labelSmall,
+                onPressed: () =>
+                    context.read<KeyServerCubit>().toggleAuthInputType(
+                          state.authInputType == AuthInputType.pin
+                              ? AuthInputType.password
+                              : AuthInputType.pin,
+                        ),
+              ),
+              if (state.authInputType == AuthInputType.pin)
+                DialPad(
+                  onNumberPressed: (e) =>
+                      context.read<KeyServerCubit>().enterKey(e),
+                  onBackspacePressed: () =>
+                      context.read<KeyServerCubit>().backspaceKey(),
+                )
+              else
+                const SizedBox.shrink(),
+            ],
           ),
-          if (state.authInputType == AuthInputType.pin)
-            DialPad(
-              onNumberPressed: (e) =>
-                  context.read<KeyServerCubit>().enterKey(e),
-              onBackspacePressed: () =>
-                  context.read<KeyServerCubit>().backspaceKey(),
-            )
-          else
-            const SizedBox.shrink(),
-        ],
+        ),
       ),
     );
   }
