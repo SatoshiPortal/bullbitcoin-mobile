@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 
 class ReceiveWithPayjoinUsecase {
@@ -9,8 +9,8 @@ class ReceiveWithPayjoinUsecase {
   const ReceiveWithPayjoinUsecase({
     required PayjoinRepository payjoinRepository,
     required SettingsRepository settingsRepository,
-  })  : _payjoinRepository = payjoinRepository,
-        _settingsRepository = settingsRepository;
+  }) : _payjoinRepository = payjoinRepository,
+       _settingsRepository = settingsRepository;
 
   Future<PayjoinReceiver> execute({
     required String walletId,

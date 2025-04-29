@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class BroadcastOriginalTransactionUsecase {
@@ -9,8 +9,8 @@ class BroadcastOriginalTransactionUsecase {
   BroadcastOriginalTransactionUsecase({
     required PayjoinRepository payjoinRepository,
     required WalletRepository walletRepository,
-  })  : _payjoin = payjoinRepository,
-        _wallet = walletRepository;
+  }) : _payjoin = payjoinRepository,
+       _wallet = walletRepository;
 
   Future<PayjoinReceiver> execute(PayjoinReceiver payjoin) async {
     try {
@@ -25,9 +25,7 @@ class BroadcastOriginalTransactionUsecase {
       // broadcasting the transaction to the correct network.
       // No need to sync the wallet data, since we just need the network info
       // which is static.
-      final wallet = await _wallet.getWallet(
-        payjoin.walletId,
-      );
+      final wallet = await _wallet.getWallet(payjoin.walletId);
 
       final network = wallet.network;
 
