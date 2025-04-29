@@ -13,9 +13,7 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.loc.settingsScreenTitle),
-      ),
+      appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -45,7 +43,7 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 title: Text(context.loc.pinCodeSettingsLabel),
                 onTap: () {
-                  // context.pushNamed(SettingsSubroute.pinCode.name);
+                  context.pushNamed(SettingsSubroute.pinCode.name);
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),

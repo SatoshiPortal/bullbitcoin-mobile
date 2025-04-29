@@ -13,6 +13,7 @@ sealed class AppUnlockState with _$AppUnlockState {
     @Default(false) bool isVerifying,
     @Default(0) int failedAttempts,
     @Default(0) int timeoutSeconds,
+    @Default(true) bool obscurePinCode,
     Object? error,
   }) = _AppUnlockState;
   const AppUnlockState._();

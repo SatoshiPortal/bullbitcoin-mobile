@@ -77,9 +77,7 @@ class _BBInputTextState extends State<BBInputText> {
       decoration: BoxDecoration(
         color: context.colour.onPrimary,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: context.colour.secondaryFixedDim,
-        ),
+        border: Border.all(color: context.colour.secondaryFixedDim),
       ),
       child: TextField(
         expands: !(widget.obscure ?? false),
@@ -93,7 +91,8 @@ class _BBInputTextState extends State<BBInputText> {
         obscureText: widget.obscure ?? false,
         obscuringCharacter: widget.onlyNumbers ? 'x' : '*',
         onTap: () => widget.onEnter?.call(),
-        style: widget.style ??
+        style:
+            widget.style ??
             context.font.headlineSmall?.copyWith(
               color: context.colour.secondary,
             ),
@@ -102,13 +101,14 @@ class _BBInputTextState extends State<BBInputText> {
           hintStyle: TextStyle(
             color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
           ),
-          suffixIcon: IconButton(
-            icon: Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: widget.rightIcon,
-            ),
-            onPressed: () => widget.onRightTap!(),
-          ),
+          suffixIcon:
+              widget.rightIcon != null
+                  ? IconButton(
+                    padding: const EdgeInsets.all(5),
+                    icon: widget.rightIcon!,
+                    onPressed: () => widget.onRightTap!(),
+                  )
+                  : null,
           border: InputBorder.none,
           labelStyle: context.font.labelSmall,
           contentPadding: const EdgeInsets.all(16),

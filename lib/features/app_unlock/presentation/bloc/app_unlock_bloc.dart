@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bb_mobile/features/app_unlock/domain/usecases/attempt_unlock_with_pin_code_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/get_latest_unlock_attempt_usecase.dart';
@@ -16,21 +18,22 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     required AttemptUnlockWithPinCodeUsecase attemptUnlockWithPinCodeUsecase,
     int minPinCodeLength = 4,
     int maxPinCodeLength = 8,
-  })  : _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
-        _getLatestUnlockAttemptUsecase = getLatestUnlockAttemptUsecase,
-        _attemptUnlockWithPinCodeUsecase = attemptUnlockWithPinCodeUsecase,
-        super(
-          AppUnlockState(
-            keyboardNumbers: List.generate(10, (i) => i)..shuffle(),
-            minPinCodeLength: minPinCodeLength,
-            maxPinCodeLength: maxPinCodeLength,
-          ),
-        ) {
+  }) : _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
+       _getLatestUnlockAttemptUsecase = getLatestUnlockAttemptUsecase,
+       _attemptUnlockWithPinCodeUsecase = attemptUnlockWithPinCodeUsecase,
+       super(
+         AppUnlockState(
+           keyboardNumbers: List.generate(10, (i) => i)..shuffle(),
+           minPinCodeLength: minPinCodeLength,
+           maxPinCodeLength: maxPinCodeLength,
+         ),
+       ) {
     on<AppUnlockStarted>(_onStarted);
     on<AppUnlockPinCodeNumberAdded>(_onPinCodeNumberAdded);
     on<AppUnlockPinCodeNumberRemoved>(_onPinCodeNumberRemoved);
     on<AppUnlockSubmitted>(_onSubmitted);
     on<AppUnlockCountdownTick>(_onCountdownTick);
+    on<AppUnlockPinCodeObscureToggled>(_onPinCodeObscureToggled);
   }
 
   final CheckPinCodeExistsUsecase _checkPinCodeExistsUsecase;
@@ -59,12 +62,7 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
         );
       }
     } catch (e) {
-      emit(
-        state.copyWith(
-          status: AppUnlockStatus.failure,
-          error: e,
-        ),
-      );
+      emit(state.copyWith(status: AppUnlockStatus.failure, error: e));
     }
   }
 
@@ -76,9 +74,7 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
       return;
     }
 
-    emit(
-      state.copyWith(pinCode: '${state.pinCode}${event.number}'),
-    );
+    emit(state.copyWith(pinCode: '${state.pinCode}${event.number}'));
   }
 
   Future<void> _onPinCodeNumberRemoved(
@@ -102,26 +98,23 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
   ) async {
     emit(state.copyWith(isVerifying: true));
     try {
-      final attemptResult =
-          await _attemptUnlockWithPinCodeUsecase.execute(state.pinCode);
+      final attemptResult = await _attemptUnlockWithPinCodeUsecase.execute(
+        state.pinCode,
+      );
 
       emit(
         state.copyWith(
-          status: attemptResult.success
-              ? AppUnlockStatus.success
-              : AppUnlockStatus.inProgress,
+          status:
+              attemptResult.success
+                  ? AppUnlockStatus.success
+                  : AppUnlockStatus.inProgress,
           isVerifying: false,
           failedAttempts: attemptResult.failedAttempts,
           timeoutSeconds: attemptResult.timeout,
         ),
       );
     } catch (e) {
-      emit(
-        state.copyWith(
-          status: AppUnlockStatus.failure,
-          error: e,
-        ),
-      );
+      emit(state.copyWith(status: AppUnlockStatus.failure, error: e));
     }
   }
 
@@ -130,5 +123,12 @@ class AppUnlockBloc extends Bloc<AppUnlockEvent, AppUnlockState> {
     Emitter<AppUnlockState> emit,
   ) {
     emit(state.copyWith(timeoutSeconds: state.timeoutSeconds - 1));
+  }
+
+  void _onPinCodeObscureToggled(
+    AppUnlockPinCodeObscureToggled event,
+    Emitter<AppUnlockState> emit,
+  ) {
+    emit(state.copyWith(obscurePinCode: !state.obscurePinCode));
   }
 }

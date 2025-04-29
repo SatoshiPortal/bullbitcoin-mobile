@@ -24,3 +24,5 @@ class AppUnlockSubmitted extends AppUnlockEvent {
 class AppUnlockCountdownTick extends AppUnlockEvent {
   const AppUnlockCountdownTick();
 }
+
+class AppUnlockPinCodeObscureToggled extends AppUnlockEvent {}

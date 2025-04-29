@@ -1,18 +1,20 @@
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
-import 'package:bb_mobile/features/pin_code/ui/widgets/numeric_keyboard.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
-import 'package:bb_mobile/ui/components/inputs/pin_input.dart' show PinInput;
+import 'package:bb_mobile/ui/components/buttons/button.dart';
+import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
+import 'package:bb_mobile/ui/components/inputs/text_input.dart';
+import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
+import 'package:bb_mobile/ui/components/template/screen_template.dart';
+import 'package:bb_mobile/ui/components/text/text.dart';
+import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class PinCodeUnlockScreen extends StatelessWidget {
-  const PinCodeUnlockScreen({
-    super.key,
-    this.onSuccess,
-    this.canPop = false,
-  });
+  const PinCodeUnlockScreen({super.key, this.onSuccess, this.canPop = false});
 
   final void Function()? onSuccess;
   final bool canPop;
@@ -20,10 +22,7 @@ class PinCodeUnlockScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => locator<AppUnlockBloc>()
-        ..add(
-          const AppUnlockStarted(),
-        ),
+      create: (_) => locator<AppUnlockBloc>()..add(const AppUnlockStarted()),
       child: BlocListener<AppUnlockBloc, AppUnlockState>(
         listener: (context, state) async {
           if (state.status == AppUnlockStatus.success) {
@@ -32,108 +31,108 @@ class PinCodeUnlockScreen extends StatelessWidget {
                 ? onSuccess!()
                 : context.goNamed(AppRoute.home.name);
           } else if (state.timeoutSeconds > 0) {
-            await Future.delayed(
-              const Duration(seconds: 1),
-              () {
-                if (context.mounted) {
-                  context
-                      .read<AppUnlockBloc>()
-                      .add(const AppUnlockCountdownTick());
-                }
-              },
-            );
+            await Future.delayed(const Duration(seconds: 1), () {
+              if (context.mounted) {
+                context.read<AppUnlockBloc>().add(
+                  const AppUnlockCountdownTick(),
+                );
+              }
+            });
           }
         },
-        child: PinCodeUnlockInputScreen(
-          canPop: canPop,
-        ),
+        child: PinCodeUnlockInputScreen(canPop: canPop),
       ),
     );
   }
 }
 
 class PinCodeUnlockInputScreen extends StatelessWidget {
-  const PinCodeUnlockInputScreen({
-    super.key,
-    this.canPop = false,
-  });
+  const PinCodeUnlockInputScreen({super.key, this.canPop = false});
 
   final bool canPop;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return PopScope(
       canPop: canPop,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Pin lock'),
-          automaticallyImplyLeading: canPop,
+          forceMaterialTransparency: true,
+          automaticallyImplyLeading: false,
+          flexibleSpace: TopBar(
+            onBack: canPop ? () => context.pop() : null,
+            title: "Authentication",
+          ),
         ),
-        body: SafeArea(
+        body: StackedPage(
+          bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
+          bottomChild: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            child: BlocSelector<AppUnlockBloc, AppUnlockState, bool>(
+              selector: (state) => state.canSubmit,
+              builder: (context, canSubmit) {
+                return BBButton.big(
+                  label: 'Unlock',
+                  textStyle: context.font.headlineLarge,
+                  disabled: !canSubmit,
+                  bgColor:
+                      canSubmit
+                          ? context.colour.secondary
+                          : context.colour.outline,
+                  onPressed: () {
+                    if (canSubmit) {
+                      context.read<AppUnlockBloc>().add(
+                        const AppUnlockSubmitted(),
+                      );
+                    }
+                  },
+                  textColor: context.colour.onSecondary,
+                );
+              },
+            ),
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Stack(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Text(
-                        'Enter your pin code to unlock',
-                        style: theme.textTheme.bodySmall,
-                      ),
-                      const SizedBox(height: 60),
-                      BlocSelector<AppUnlockBloc, AppUnlockState, String>(
-                        selector: (state) => state.pinCode,
-                        builder: (context, pinCode) {
-                          return PinInput(
-                            value: pinCode,
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 60),
-                      BlocSelector<AppUnlockBloc, AppUnlockState, List<int>>(
-                        selector: (state) => state.keyboardNumbers,
-                        builder: (context, keyboardNumbers) {
-                          return NumericKeyboard(
-                            numbers: keyboardNumbers,
-                            onNumberPressed: (number) {
-                              context.read<AppUnlockBloc>().add(
-                                    AppUnlockPinCodeNumberAdded(number),
-                                  );
-                            },
-                            onBackspacePressed: () {
-                              context.read<AppUnlockBloc>().add(
-                                    const AppUnlockPinCodeNumberRemoved(),
-                                  );
-                            },
-                          );
-                        },
-                      ),
-                      const SizedBox(height: 80),
-                    ],
+                const Gap(75),
+                BBText(
+                  'Enter your pin code to unlock',
+                  textAlign: TextAlign.center,
+                  style: context.font.headlineMedium?.copyWith(
+                    color: context.colour.outline,
                   ),
+                  maxLines: 3,
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    BlocSelector<AppUnlockBloc, AppUnlockState, bool>(
-                      selector: (state) => state.canSubmit,
-                      builder: (context, canSubmit) {
-                        return ElevatedButton(
-                          onPressed: canSubmit
-                              ? () => context.read<AppUnlockBloc>().add(
-                                    const AppUnlockSubmitted(),
-                                  )
-                              : null,
-                          child: const Text('Unlock'),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                  ],
+                const Gap(50),
+                BlocSelector<AppUnlockBloc, AppUnlockState, (String, bool)>(
+                  selector: (state) => (state.pinCode, state.obscurePinCode),
+                  builder: (context, data) {
+                    final (pinCode, obscurePinCode) = data;
+                    return BBInputText(
+                      value: pinCode,
+                      obscure: obscurePinCode,
+                      onRightTap:
+                          () => context.read<AppUnlockBloc>().add(
+                            AppUnlockPinCodeObscureToggled(),
+                          ),
+                      rightIcon: const Icon(Icons.visibility_off_outlined),
+                      onlyNumbers: true,
+                      onChanged: (value) {},
+                    );
+                  },
+                ),
+                const Gap(130),
+                DialPad(
+                  onNumberPressed:
+                      (value) => context.read<AppUnlockBloc>().add(
+                        AppUnlockPinCodeNumberAdded(int.parse(value)),
+                      ),
+                  onBackspacePressed:
+                      () => context.read<AppUnlockBloc>().add(
+                        const AppUnlockPinCodeNumberRemoved(),
+                      ),
                 ),
               ],
             ),
