@@ -26,6 +26,19 @@ class SwapsLocator {
           LocatorInstanceNameConstants
               .boltzSwapsHiveStorageDatasourceInstanceName,
     );
+
+    locator.registerLazySingleton<BoltzStorageDatasource>(
+      () => BoltzStorageDatasource(
+        secureSwapStorage: locator<KeyValueStorageDatasource<String>>(
+          instanceName: LocatorInstanceNameConstants.secureStorageDatasource,
+        ),
+        localSwapStorage: locator<KeyValueStorageDatasource<String>>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzSwapsHiveStorageDatasourceInstanceName,
+        ),
+      ),
+    );
   }
 
   static void registerRepositories() {
@@ -33,17 +46,7 @@ class SwapsLocator {
       () => BoltzSwapRepositoryImpl(
         boltz: BoltzDatasource(
           url: ApiServiceConstants.boltzTestnetUrlPath,
-          boltzStore: BoltzStorageDatasource(
-            secureSwapStorage: locator<KeyValueStorageDatasource<String>>(
-              instanceName:
-                  LocatorInstanceNameConstants.secureStorageDatasource,
-            ),
-            localSwapStorage: locator<KeyValueStorageDatasource<String>>(
-              instanceName:
-                  LocatorInstanceNameConstants
-                      .boltzSwapsHiveStorageDatasourceInstanceName,
-            ),
-          ),
+          boltzStore: locator<BoltzStorageDatasource>(),
         ),
       ),
       instanceName:
@@ -52,19 +55,7 @@ class SwapsLocator {
 
     locator.registerLazySingleton<SwapRepository>(
       () => BoltzSwapRepositoryImpl(
-        boltz: BoltzDatasource(
-          boltzStore: BoltzStorageDatasource(
-            secureSwapStorage: locator<KeyValueStorageDatasource<String>>(
-              instanceName:
-                  LocatorInstanceNameConstants.secureStorageDatasource,
-            ),
-            localSwapStorage: locator<KeyValueStorageDatasource<String>>(
-              instanceName:
-                  LocatorInstanceNameConstants
-                      .boltzSwapsHiveStorageDatasourceInstanceName,
-            ),
-          ),
-        ),
+        boltz: BoltzDatasource(boltzStore: locator<BoltzStorageDatasource>()),
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
