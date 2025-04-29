@@ -6,8 +6,7 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transa
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
@@ -45,8 +44,7 @@ class ReceiveLocator {
       (wallet, _) => ReceiveBloc(
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         getAvailableCurrenciesUsecase: locator<GetAvailableCurrenciesUsecase>(),
-        getCurrencyUsecase: locator<GetCurrencyUsecase>(),
-        getBitcoinUnitUseCase: locator<GetBitcoinUnitUsecase>(),
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
         convertSatsToCurrencyAmountUsecase:
             locator<ConvertSatsToCurrencyAmountUsecase>(),
         getReceiveAddressUsecase: locator<GetReceiveAddressUsecase>(),

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -14,11 +14,11 @@ part 'bitcoin_price_state.dart';
 class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   BitcoinPriceBloc({
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
-    required GetCurrencyUsecase getCurrencyUsecase,
+    required GetSettingsUsecase getSettingsUsecase,
     required ConvertSatsToCurrencyAmountUsecase
         convertSatsToCurrencyAmountUsecase,
   })  : _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
-        _getCurrencyUsecase = getCurrencyUsecase,
+        _getSettingsUsecase = getSettingsUsecase,
         _convertSatsToCurrencyAmountUsecase =
             convertSatsToCurrencyAmountUsecase,
         super(const BitcoinPriceState()) {
@@ -28,7 +28,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
   }
 
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
-  final GetCurrencyUsecase _getCurrencyUsecase;
+  final GetSettingsUsecase _getSettingsUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
 
   Future<void> _onStarted(
@@ -38,7 +38,8 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     debugPrint('FiatCurrenciesStarted');
 
     try {
-      final currency = event.currency ?? await _getCurrencyUsecase.execute();
+      final settings = await _getSettingsUsecase.execute();
+      final currency = event.currency ?? settings.currencyCode;
       final availableCurrencies =
           await _getAvailableCurrenciesUsecase.execute();
 

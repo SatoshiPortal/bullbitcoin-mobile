@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/language_option.dart';
@@ -11,7 +11,7 @@ class LanguageSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SettingsCubit, SettingsState?>(
+    return BlocListener<SettingsCubit, SettingsEntity?>(
       listenWhen: (previous, current) =>
           current?.language != previous?.language,
       listener: (context, state) => context.pop(),

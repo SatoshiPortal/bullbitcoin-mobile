@@ -7,9 +7,8 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
@@ -35,8 +34,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ReceiveBloc({
     required GetWalletsUsecase getWalletsUsecase,
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
-    required GetCurrencyUsecase getCurrencyUsecase,
-    required GetBitcoinUnitUsecase getBitcoinUnitUseCase,
+    required GetSettingsUsecase getSettingsUsecase,
     required ConvertSatsToCurrencyAmountUsecase
         convertSatsToCurrencyAmountUsecase,
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
@@ -53,8 +51,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Wallet? wallet,
   })  : _getWalletsUsecase = getWalletsUsecase,
         _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
-        _getCurrencyUsecase = getCurrencyUsecase,
-        _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
+        _getSettingsUsecase = getSettingsUsecase,
         _convertSatsToCurrencyAmountUsecase =
             convertSatsToCurrencyAmountUsecase,
         _getReceiveAddressUsecase = getReceiveAddressUsecase,
@@ -89,8 +86,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
   final GetWalletsUsecase _getWalletsUsecase;
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
-  final GetCurrencyUsecase _getCurrencyUsecase;
-  final GetBitcoinUnitUsecase _getBitcoinUnitUseCase;
+  final GetSettingsUsecase _getSettingsUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final ReceiveWithPayjoinUsecase _receiveWithPayjoinUsecase;
@@ -149,7 +145,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         // If the bitcoin unit is not set yet, we need to get it from the settings
         // And set the input amount currency code to the bitcoin unit code
         // if no other currency code was selected yet.
-        final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
+        final settings = await _getSettingsUsecase.execute();
+        final bitcoinUnit = settings.bitcoinUnit;
         emit(
           state.copyWith(
             bitcoinUnit: bitcoinUnit,
@@ -162,7 +159,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       if (state.fiatCurrencyCode.isEmpty) {
         // If the fiat currency code is not set yet, we need to get it from the settings
-        final fiatCurrency = await _getCurrencyUsecase.execute();
+        final settings = await _getSettingsUsecase.execute();
+        final fiatCurrency = settings.currencyCode;
         emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
       }
 
@@ -248,7 +246,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         // If the bitcoin unit is not set yet, we need to get it from the settings
         // And set the input amount currency code to the bitcoin unit code
         // if no other currency code was selected yet.
-        final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
+        final settings = await _getSettingsUsecase.execute();
+        final bitcoinUnit = settings.bitcoinUnit;
         emit(
           state.copyWith(
             bitcoinUnit: bitcoinUnit,
@@ -261,7 +260,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       if (state.fiatCurrencyCode.isEmpty) {
         // If the fiat currency code is not set yet, we need to get it from the settings
-        final fiatCurrency = await _getCurrencyUsecase.execute();
+        final settings = await _getSettingsUsecase.execute();
+        final fiatCurrency = settings.currencyCode;
         emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
       }
 
@@ -328,7 +328,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         // If the bitcoin unit is not set yet, we need to get it from the settings
         // And set the input amount currency code to the bitcoin unit code
         // if no other currency code was selected yet.
-        final bitcoinUnit = await _getBitcoinUnitUseCase.execute();
+        final settings = await _getSettingsUsecase.execute();
+        final bitcoinUnit = settings.bitcoinUnit;
         emit(
           state.copyWith(
             bitcoinUnit: bitcoinUnit,
@@ -341,7 +342,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       if (state.fiatCurrencyCode.isEmpty) {
         // If the fiat currency code is not set yet, we need to get it from the settings
-        final fiatCurrency = await _getCurrencyUsecase.execute();
+        final settings = await _getSettingsUsecase.execute();
+        final fiatCurrency = settings.currencyCode;
         emit(state.copyWith(fiatCurrencyCode: fiatCurrency));
       }
 
@@ -459,11 +461,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       // If the currency is a bitcoin unit, set the fiat currency and exchange
       //  rate back to the currency from the settings.
       final currencyValues = await Future.wait([
-        _getCurrencyUsecase.execute(),
+        _getSettingsUsecase.execute(),
         _convertSatsToCurrencyAmountUsecase.execute(),
       ]);
 
-      fiatCurrencyCode = currencyValues[0] as String;
+      fiatCurrencyCode = (currencyValues[0] as SettingsEntity).currencyCode;
       exchangeRate = currencyValues[1] as double;
     }
 

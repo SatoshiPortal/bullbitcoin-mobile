@@ -1,6 +1,5 @@
-
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 
 class ConvertCurrencyToSatsAmountUsecase {
   final ExchangeRateRepository _exchangeRate;
@@ -17,7 +16,8 @@ class ConvertCurrencyToSatsAmountUsecase {
     String? currencyCode,
   }) async {
     try {
-      final currency = currencyCode ?? await _settingsRepository.getCurrency();
+      final settings = await _settingsRepository.fetch();
+      final currency = settings.currencyCode;
       final availableCurrencies = await _exchangeRate.availableCurrencies;
 
       if (!availableCurrencies.contains(currency)) {

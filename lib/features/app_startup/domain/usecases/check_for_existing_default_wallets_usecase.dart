@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
 class CheckForExistingDefaultWalletsUsecase {
@@ -13,7 +13,8 @@ class CheckForExistingDefaultWalletsUsecase {
 
   Future<bool> execute() async {
     // Check if wallets exist for the selected environment
-    final environment = await _settingsRepository.getEnvironment();
+    final settings = await _settingsRepository.fetch();
+    final environment = settings.environment;
     final defaultWallets = await _walletRepository.getWallets(
       onlyDefaults: true,
       environment: environment,

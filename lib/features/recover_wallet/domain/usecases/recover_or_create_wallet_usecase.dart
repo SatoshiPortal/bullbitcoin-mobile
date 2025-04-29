@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entity/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
@@ -29,7 +29,8 @@ class RecoverOrCreateWalletUsecase {
     Network? network,
   }) async {
     try {
-      final environment = await _settingsRepository.getEnvironment();
+      final settings = await _settingsRepository.fetch();
+      final environment = settings.environment;
       final bitcoinNetwork = network ??
           (environment == Environment.mainnet
               ? Network.bitcoinMainnet
