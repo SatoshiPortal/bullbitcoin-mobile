@@ -1,13 +1,12 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 
-class SetCurrencyUsecase {
+class GetSettingsUsecase {
   final SettingsRepository _settingsRepository;
 
-  SetCurrencyUsecase({
+  GetSettingsUsecase({
     required SettingsRepository settingsRepository,
   }) : _settingsRepository = settingsRepository;
 
-  Future<void> execute(String currencyCode) async {
-    await _settingsRepository.setCurrency(currencyCode);
-  }
+  Future<SettingsEntity> execute() async => await _settingsRepository.fetch();
 }

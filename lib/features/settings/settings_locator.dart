@@ -1,10 +1,5 @@
-
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_environment_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_hide_amounts_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_language_usecase.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
@@ -46,15 +41,11 @@ class SettingsLocator {
     locator.registerFactory<SettingsCubit>(
       () => SettingsCubit(
         setEnvironmentUsecase: locator<SetEnvironmentUsecase>(),
-        getEnvironmentUsecase: locator<GetEnvironmentUsecase>(),
+        getSettingsUsecase: locator<GetSettingsUsecase>(),
         setBitcoinUnitUsecase: locator<SetBitcoinUnitUsecase>(),
-        getBitcoinUnitUsecase: locator<GetBitcoinUnitUsecase>(),
         setLanguageUsecase: locator<SetLanguageUsecase>(),
-        getLanguageUsecase: locator<GetLanguageUsecase>(),
-        getCurrencyUsecase: locator<GetCurrencyUsecase>(),
         setCurrencyUsecase: locator<SetCurrencyUsecase>(),
         setHideAmountsUsecase: locator<SetHideAmountsUsecase>(),
-        getHideAmountsUsecase: locator<GetHideAmountsUsecase>(),
       ),
     );
   }

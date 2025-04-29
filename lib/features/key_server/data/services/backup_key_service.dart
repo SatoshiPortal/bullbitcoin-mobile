@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart'
     show SeedRepository;
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/bip85_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';

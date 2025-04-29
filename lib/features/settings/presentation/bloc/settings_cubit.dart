@@ -1,10 +1,5 @@
-
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_environment_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_hide_amounts_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_language_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
@@ -12,55 +7,39 @@ import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_use
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SettingsCubit extends Cubit<SettingsState?> {
+class SettingsCubit extends Cubit<SettingsEntity?> {
   SettingsCubit({
+    required GetSettingsUsecase getSettingsUsecase,
     required SetEnvironmentUsecase setEnvironmentUsecase,
-    required GetEnvironmentUsecase getEnvironmentUsecase,
     required SetBitcoinUnitUsecase setBitcoinUnitUsecase,
-    required GetBitcoinUnitUsecase getBitcoinUnitUsecase,
     required SetLanguageUsecase setLanguageUsecase,
-    required GetLanguageUsecase getLanguageUsecase,
     required SetCurrencyUsecase setCurrencyUsecase,
-    required GetCurrencyUsecase getCurrencyUsecase,
     required SetHideAmountsUsecase setHideAmountsUsecase,
-    required GetHideAmountsUsecase getHideAmountsUsecase,
   })  : _setEnvironmentUsecase = setEnvironmentUsecase,
-        _getEnvironmentUsecase = getEnvironmentUsecase,
         _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
-        _getBitcoinUnitUsecase = getBitcoinUnitUsecase,
+        _getSettingsUsecase = getSettingsUsecase,
         _setLanguageUsecase = setLanguageUsecase,
-        _getLanguageUsecase = getLanguageUsecase,
         _setCurrencyUsecase = setCurrencyUsecase,
-        _getCurrencyUsecase = getCurrencyUsecase,
         _setHideAmountsUsecase = setHideAmountsUsecase,
-        _getHideAmountsUsecase = getHideAmountsUsecase,
         super(null);
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
-  final GetEnvironmentUsecase _getEnvironmentUsecase;
+  final GetSettingsUsecase _getSettingsUsecase;
   final SetBitcoinUnitUsecase _setBitcoinUnitUsecase;
-  final GetBitcoinUnitUsecase _getBitcoinUnitUsecase;
   final SetLanguageUsecase _setLanguageUsecase;
-  final GetLanguageUsecase _getLanguageUsecase;
   final SetCurrencyUsecase _setCurrencyUsecase;
-  final GetCurrencyUsecase _getCurrencyUsecase;
   final SetHideAmountsUsecase _setHideAmountsUsecase;
-  final GetHideAmountsUsecase _getHideAmountsUsecase;
 
   Future<void> init() async {
-    final environment = await _getEnvironmentUsecase.execute();
-    final bitcoinUnit = await _getBitcoinUnitUsecase.execute();
-    final language = await _getLanguageUsecase.execute();
-    final currency = await _getCurrencyUsecase.execute();
-    final hideAmounts = await _getHideAmountsUsecase.execute();
+    final settings = await _getSettingsUsecase.execute();
 
     emit(
-      SettingsState(
-        environment: environment,
-        bitcoinUnit: bitcoinUnit,
-        language: language,
-        currencyCode: currency,
-        hideAmounts: hideAmounts,
+      SettingsEntity(
+        environment: settings.environment,
+        bitcoinUnit: settings.bitcoinUnit,
+        language: settings.language,
+        currencyCode: settings.currencyCode,
+        hideAmounts: settings.hideAmounts,
       ),
     );
   }

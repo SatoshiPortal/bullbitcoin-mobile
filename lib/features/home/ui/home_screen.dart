@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bb_mobile/features/home/ui/screens/exchange_sceen.dart';
 import 'package:bb_mobile/features/home/ui/screens/wallets_screen.dart';
@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<HomeBloc>(
       create: (context) => locator<HomeBloc>()..add(const HomeStarted()),
-      child: BlocListener<SettingsCubit, SettingsState?>(
+      child: BlocListener<SettingsCubit, SettingsEntity?>(
         listenWhen: (previous, current) =>
             previous?.environment != current?.environment,
         listener: (context, settings) {

@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bb_mobile/bloc_observer.dart';
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
@@ -37,6 +38,24 @@ Future main() async {
     // The Locator setup might depend on the initialization of the libraries above
     //  so it's important to call it after the initialization
     await AppLocator.setup();
+
+    // TODO(azad): There is probably a better way to initialize the settings
+    // Initialize the settings
+    final settings = locator<SettingsRepository>();
+    try {
+      final s = await settings.fetch();
+      debugPrint('settings: $s');
+    } catch (e) {
+      debugPrint('settings: store default');
+      await settings.store(
+        id: 1,
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.btc,
+        currency: 'USD',
+        language: Language.unitedStatesEnglish,
+        hideAmounts: false,
+      );
+    }
 
     Bloc.observer = AppBlocObserver();
 
@@ -129,7 +148,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
             ),
         ),
       ],
-      child: BlocSelector<SettingsCubit, SettingsState?, Language?>(
+      child: BlocSelector<SettingsCubit, SettingsEntity?, Language?>(
         selector: (settings) => settings?.language,
         builder: (context, language) => MaterialApp.router(
           title: 'BullBitcoin Wallet',

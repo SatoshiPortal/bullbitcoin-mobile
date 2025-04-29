@@ -9,7 +9,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_api_key_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';

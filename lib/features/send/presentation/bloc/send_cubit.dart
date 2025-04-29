@@ -7,9 +7,8 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_bitcoin_unit_usecase.dart';
-import 'package:bb_mobile/core/settings/domain/usecases/get_currency_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
@@ -41,8 +40,7 @@ class SendCubit extends Cubit<SendState> {
   SendCubit({
     required SelectBestWalletUsecase bestWalletUsecase,
     required DetectBitcoinStringUsecase detectBitcoinStringUsecase,
-    required GetCurrencyUsecase getCurrencyUsecase,
-    required GetBitcoinUnitUsecase getBitcoinUnitUseCase,
+    required GetSettingsUsecase getSettingsUsecase,
     required ConvertSatsToCurrencyAmountUsecase
         convertSatsToCurrencyAmountUsecase,
     required GetNetworkFeesUsecase getNetworkFeesUsecase,
@@ -67,8 +65,7 @@ class SendCubit extends Cubit<SendState> {
         calculateBitcoinAbsoluteFeesUsecase,
     required CalculateLiquidAbsoluteFeesUsecase
         calculateLiquidAbsoluteFeesUsecase,
-  })  : _getCurrencyUsecase = getCurrencyUsecase,
-        _getBitcoinUnitUseCase = getBitcoinUnitUseCase,
+  })  : _getSettingsUsecase = getSettingsUsecase,
         _convertSatsToCurrencyAmountUsecase =
             convertSatsToCurrencyAmountUsecase,
         _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
@@ -101,8 +98,7 @@ class SendCubit extends Cubit<SendState> {
   final SelectBestWalletUsecase _bestWalletUsecase;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
-  final GetCurrencyUsecase _getCurrencyUsecase;
-  final GetBitcoinUnitUsecase _getBitcoinUnitUseCase;
+  final GetSettingsUsecase _getSettingsUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final GetNetworkFeesUsecase _getNetworkFeesUsecase;
   final GetUtxosUsecase _getUtxosUsecase;
@@ -356,15 +352,15 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> getCurrencies() async {
+    final settings = await _getSettingsUsecase.execute();
+
     final currencyValues = await Future.wait([
-      _getBitcoinUnitUseCase.execute(),
-      _getCurrencyUsecase.execute(),
       _convertSatsToCurrencyAmountUsecase.execute(),
       _getAvailableCurrenciesUsecase.execute(),
     ]);
 
-    final bitcoinUnit = currencyValues[0] as BitcoinUnit;
-    final fiatCurrency = currencyValues[1] as String;
+    final bitcoinUnit = settings.bitcoinUnit;
+    final fiatCurrency = settings.currencyCode;
     final exchangeRate = currencyValues[2] as double;
     final fiatCurrencies = currencyValues[3] as List<String>;
 
