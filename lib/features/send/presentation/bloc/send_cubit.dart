@@ -326,15 +326,14 @@ class SendCubit extends Cubit<SendState> {
   Future<void> getCurrencies() async {
     final settings = await _getSettingsUsecase.execute();
 
-    final currencyValues = await Future.wait([
-      _convertSatsToCurrencyAmountUsecase.execute(),
-      _getAvailableCurrenciesUsecase.execute(),
-    ]);
+    final (exchangeRate, fiatCurrencies) =
+        await (
+          _convertSatsToCurrencyAmountUsecase.execute(),
+          _getAvailableCurrenciesUsecase.execute(),
+        ).wait;
 
     final bitcoinUnit = settings.bitcoinUnit;
     final fiatCurrency = settings.currencyCode;
-    final exchangeRate = currencyValues[2] as double;
-    final fiatCurrencies = currencyValues[3] as List<String>;
 
     emit(
       state.copyWith(
