@@ -126,8 +126,8 @@ class SwapAvailableBalance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const balance = '53.00 BTC';
-    const maxSelected = false;
+    // const balance = '53.00 BTC';
+    // const maxSelected = false;
 
     return Row(
       children: [
@@ -145,16 +145,22 @@ class SwapAvailableBalance extends StatelessWidget {
         BBButton.small(
           label: 'MAX',
           onPressed: () {},
-          bgColor: maxSelected
-              ? context.colour.secondary
-              : context.colour.onSecondary,
-          textColor: maxSelected
-              ? context.colour.onSecondary
-              : context.colour.secondary,
+          bgColor:
+              // maxSelected
+              //     ? context.colour.secondary
+              //     :
+              context.colour.onSecondary,
+          textColor:
+              // maxSelected
+              //     ? context.colour.onSecondary
+              //     :
+              context.colour.secondary,
           outlined: true,
-          borderColor: maxSelected
-              ? context.colour.onSecondary
-              : context.colour.secondary,
+          borderColor:
+              // maxSelected
+              //     ? context.colour.onSecondary
+              //     :
+              context.colour.secondary,
         ),
       ],
     );
