@@ -40,33 +40,8 @@ sealed class WalletUtxo with _$WalletUtxo implements Labelable {
   @override
   String get labelRef => '$txId:$vout';
 
-  String get address => when(
-        bitcoin: (
-          String walletId,
-          String txId,
-          int vout,
-          Uint8List scriptPubkey,
-          BigInt amountSat,
-          String address,
-          WalletAddressKeyChain addressKeyChain,
-          List<String> labels,
-          List<String> addressLabels,
-          bool isFrozen,
-        ) =>
-            address,
-        liquid: (
-          String walletId,
-          String txId,
-          int vout,
-          String scriptPubkey,
-          BigInt amountSat,
-          String standardAddress,
-          String confidentialAddress,
-          WalletAddressKeyChain addressKeyChain,
-          List<String> labels,
-          List<String> addressLabels,
-          bool isFrozen,
-        ) =>
-            confidentialAddress,
-      );
+  String get address => switch (this) {
+    BitcoinWalletUtxo(:final address) => address,
+    LiquidWalletUtxo(:final confidentialAddress) => confidentialAddress,
+  };
 }

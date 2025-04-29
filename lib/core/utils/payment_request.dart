@@ -21,9 +21,8 @@ sealed class PaymentRequest with _$PaymentRequest {
     required bool isTestnet,
   }) = LiquidPaymentRequest;
 
-  const factory PaymentRequest.lnAddress({
-    required String address,
-  }) = LnAddressPaymentRequest;
+  const factory PaymentRequest.lnAddress({required String address}) =
+      LnAddressPaymentRequest;
 
   const factory PaymentRequest.bolt11({
     required String invoice,
@@ -51,8 +50,10 @@ sealed class PaymentRequest with _$PaymentRequest {
   static Future<PaymentRequest> parse(String data) async {
     try {
       try {
-        final address =
-            await bdk.Address.fromString(s: data, network: bdk.Network.bitcoin);
+        final address = await bdk.Address.fromString(
+          s: data,
+          network: bdk.Network.bitcoin,
+        );
 
         return PaymentRequest.bitcoin(
           address: address.asString(),
@@ -61,8 +62,10 @@ sealed class PaymentRequest with _$PaymentRequest {
       } catch (_) {}
 
       try {
-        final address =
-            await bdk.Address.fromString(s: data, network: bdk.Network.testnet);
+        final address = await bdk.Address.fromString(
+          s: data,
+          network: bdk.Network.testnet,
+        );
 
         return PaymentRequest.bitcoin(
           address: address.asString(),
@@ -151,14 +154,13 @@ sealed class PaymentRequest with _$PaymentRequest {
         debugPrint(e.toString());
       }
       try {
-        final valid = await boltz.validateLnurl(lnurl: data);
+        final lnurl = boltz.Lnurl(value: data);
+        final valid = await lnurl.validate();
         if (!valid) {
           throw 'Invalid lnurl';
         }
 
-        return PaymentRequest.lnAddress(
-          address: data,
-        );
+        return PaymentRequest.lnAddress(address: data);
       } catch (e) {
         debugPrint(e.toString());
       }
@@ -177,18 +179,18 @@ sealed class PaymentRequest with _$PaymentRequest {
   bool get isLiquidAddress => this is LiquidPaymentRequest;
 
   bool get isTestnet => switch (this) {
-        BitcoinPaymentRequest(isTestnet: final isTestnet) => isTestnet,
-        LiquidPaymentRequest(isTestnet: final isTestnet) => isTestnet,
-        Bolt11PaymentRequest(isTestnet: final isTestnet) => isTestnet,
-        Bip21PaymentRequest(network: final network) => network.isTestnet,
-        _ => false,
-      };
+    BitcoinPaymentRequest(isTestnet: final isTestnet) => isTestnet,
+    LiquidPaymentRequest(isTestnet: final isTestnet) => isTestnet,
+    Bolt11PaymentRequest(isTestnet: final isTestnet) => isTestnet,
+    Bip21PaymentRequest(network: final network) => network.isTestnet,
+    _ => false,
+  };
 
   String get name => switch (this) {
-        BitcoinPaymentRequest() => 'Bitcoin Onchain',
-        LiquidPaymentRequest() => 'Liquid Onchain',
-        LnAddressPaymentRequest() => 'Lightning Address',
-        Bolt11PaymentRequest() => 'Bolt11',
-        Bip21PaymentRequest() => 'BIP21',
-      };
+    BitcoinPaymentRequest() => 'Bitcoin Onchain',
+    LiquidPaymentRequest() => 'Liquid Onchain',
+    LnAddressPaymentRequest() => 'Lightning Address',
+    Bolt11PaymentRequest() => 'Bolt11',
+    Bip21PaymentRequest() => 'BIP21',
+  };
 }

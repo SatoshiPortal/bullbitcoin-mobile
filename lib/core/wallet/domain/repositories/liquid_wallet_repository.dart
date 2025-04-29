@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 
 abstract class LiquidWalletRepository {
@@ -14,8 +12,5 @@ abstract class LiquidWalletRepository {
     required String walletId,
     required String pset,
   });
-  Future<Uint8List> signPset({
-    required String pset,
-    required String walletId,
-  });
+  Future<String> signPset({required String pset, required String walletId});
 }

@@ -51,9 +51,9 @@ class BdkWalletDatasource implements WalletDatasource {
   final StreamController<String> _walletSyncFinishedController;
 
   BdkWalletDatasource()
-      : _activeSyncs = {},
-        _walletSyncStartedController = StreamController<String>.broadcast(),
-        _walletSyncFinishedController = StreamController<String>.broadcast();
+    : _activeSyncs = {},
+      _walletSyncStartedController = StreamController<String>.broadcast(),
+      _walletSyncFinishedController = StreamController<String>.broadcast();
 
   Stream<String> get walletSyncStartedStream =>
       _walletSyncStartedController.stream;
@@ -63,9 +63,7 @@ class BdkWalletDatasource implements WalletDatasource {
 
   bool get isAnyWalletSyncing => _activeSyncs.isNotEmpty;
 
-  Future<BalanceModel> getBalance({
-    required WalletModel wallet,
-  }) async {
+  Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final balanceInfo = bdkWallet.getBalance();
 
@@ -170,9 +168,10 @@ class BdkWalletDatasource implements WalletDatasource {
     }
 
     if (selected != null && selected.isNotEmpty) {
-      final selectableOutPoints = selected
-          .map((utxo) => bdk.OutPoint(txid: utxo.txId, vout: utxo.vout))
-          .toList();
+      final selectableOutPoints =
+          selected
+              .map((utxo) => bdk.OutPoint(txid: utxo.txId, vout: utxo.vout))
+              .toList();
       txBuilder.addUtxos(selectableOutPoints);
     }
     if (replaceByFee) txBuilder.enableRbf();
@@ -184,9 +183,10 @@ class BdkWalletDatasource implements WalletDatasource {
     }
 
     // Make sure utxos that are unspendable are not used
-    final unspendableOutPoints = unspendable
-        ?.map((input) => bdk.OutPoint(txid: input.txId, vout: input.vout))
-        .toList();
+    final unspendableOutPoints =
+        unspendable
+            ?.map((input) => bdk.OutPoint(txid: input.txId, vout: input.vout))
+            .toList();
 
     // TODO: MOVE THIS TO THE TRANSACTION REPOSITORY, the repository should check the unspendable and spendable inputs
     // and build the transaction accordingly or return an error
@@ -194,14 +194,13 @@ class BdkWalletDatasource implements WalletDatasource {
       // Check if there are unspents that are not in unspendableOutpoints so a transaction can be built
       final unspents = bdkWallet.listUnspent();
       final unspendableOutPointsSet = unspendableOutPoints.toSet();
-      final unspendableUtxos = unspents.where((utxo) {
-        return unspendableOutPointsSet.contains(utxo.outpoint);
-      }).toList();
+      final unspendableUtxos =
+          unspents.where((utxo) {
+            return unspendableOutPointsSet.contains(utxo.outpoint);
+          }).toList();
 
       if (unspendableUtxos.length == unspents.length) {
-        throw NoSpendableUtxoException(
-          'All unspents are unspendable',
-        );
+        throw NoSpendableUtxoException('All unspents are unspendable');
       }
 
       txBuilder = txBuilder.unSpendable(unspendableOutPoints);
@@ -215,7 +214,7 @@ class BdkWalletDatasource implements WalletDatasource {
 
   Future<int> decodeTxSize(String psbtString) async {
     final psbt = await bdk.PartiallySignedTransaction.fromString(psbtString);
-    final size = await psbt.extractTx().size();
+    final size = psbt.extractTx().size();
     return size.toInt();
   }
 
@@ -226,7 +225,7 @@ class BdkWalletDatasource implements WalletDatasource {
     final psbt = await bdk.PartiallySignedTransaction.fromString(unsignedPsbt);
     final bdkWallet = await _createPrivateWallet(wallet);
 
-    final isFinalized = await bdkWallet.sign(
+    final isFinalized = bdkWallet.sign(
       psbt: psbt,
       signOptions: const bdk.SignOptions(
         trustWitnessUtxo: true,
@@ -247,9 +246,7 @@ class BdkWalletDatasource implements WalletDatasource {
   }
 
   @override
-  Future<List<WalletUtxoModel>> getUtxos({
-    required WalletModel wallet,
-  }) async {
+  Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final unspent = bdkWallet.listUnspent();
     final utxos = await Future.wait(
@@ -261,9 +258,9 @@ class BdkWalletDatasource implements WalletDatasource {
           scriptPubkey: unspent.txout.scriptPubkey.bytes,
           address:
               await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
-            unspent.txout.scriptPubkey.bytes,
-            isTestnet: wallet.isTestnet,
-          ),
+                unspent.txout.scriptPubkey.bytes,
+                isTestnet: wallet.isTestnet,
+              ),
           isExternalKeyChain:
               unspent.keychain == bdk.KeychainKind.externalChain,
         ),
@@ -283,100 +280,100 @@ class BdkWalletDatasource implements WalletDatasource {
 
     // Map the transactions to WalletTransactionModel
     final List<WalletTransactionModel?> walletTxs = await Future.wait(
-      transactions.map(
-        (tx) async {
-          final (inputs, outputs) =
-              await (tx.transaction!.input(), tx.transaction!.output()).wait;
+      transactions.map((tx) async {
+        final (inputs, outputs) = (
+          tx.transaction!.input(),
+          tx.transaction!.output(),
+        );
 
-          if (toAddress != null && toAddress.isNotEmpty) {
-            // Filter transactions by address by returning null for non-matching transactions
-            // and then removing null values from the list with whereType at the end of the method
-            final matches = await Future.any(
-              outputs.map(
-                (output) async {
-                  final address = await bdk.Address.fromScript(
-                    script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
-                    network: network,
+        if (toAddress != null && toAddress.isNotEmpty) {
+          // Filter transactions by address by returning null for non-matching transactions
+          // and then removing null values from the list with whereType at the end of the method
+          final matches = await Future.any(
+            outputs.map((output) async {
+              final address = await bdk.Address.fromScript(
+                script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
+                network: network,
+              );
+              return address.toString() == toAddress;
+            }),
+          ).catchError((_) => false);
+
+          if (!matches) return null;
+        }
+
+        final isIncoming = tx.received > tx.sent;
+        final netAmountSat =
+            isIncoming
+                ? tx.received - tx.sent
+                : tx.sent - tx.received - (tx.fee ?? BigInt.zero);
+        bool isToSelf =
+            true; // Changed to false when an input/output is not from self
+
+        final (inputModels, outputModels) =
+            await (
+              Future.wait(
+                inputs.asMap().entries.map((entry) async {
+                  final input = entry.value;
+                  final vin = entry.key;
+                  final isOwnInput = await isMine(
+                    input.scriptSig!.bytes,
+                    wallet: wallet as PublicBdkWalletModel,
                   );
-                  return address.toString() == toAddress;
-                },
+
+                  if (!isOwnInput) {
+                    isToSelf = false;
+                  }
+
+                  return TransactionInputModel(
+                    txId: tx.txid,
+                    vin: vin,
+                    scriptSig: input.scriptSig!.bytes,
+                    previousTxId: input.previousOutput.txid,
+                    previousTxVout: input.previousOutput.vout,
+                  );
+                }).toList(),
               ),
-            ).catchError((_) => false);
-
-            if (!matches) return null;
-          }
-
-          final isIncoming = tx.received > tx.sent;
-          final netAmountSat = isIncoming
-              ? tx.received - tx.sent
-              : tx.sent - tx.received - (tx.fee ?? BigInt.zero);
-          bool isToSelf =
-              true; // Changed to false when an input/output is not from self
-
-          final (inputModels, outputModels) = await (
-            Future.wait(
-              inputs.asMap().entries.map((entry) async {
-                final input = entry.value;
-                final vin = entry.key;
-                final isOwnInput = await isMine(
-                  input.scriptSig.bytes,
-                  wallet: wallet as PublicBdkWalletModel,
-                );
-
-                if (!isOwnInput) {
-                  isToSelf = false;
-                }
-
-                return TransactionInputModel(
-                  txId: tx.txid,
-                  vin: vin,
-                  scriptSig: input.scriptSig.bytes,
-                  previousTxId: input.previousOutput.txid,
-                  previousTxVout: input.previousOutput.vout,
-                );
-              }).toList(),
-            ),
-            Future.wait(
-              outputs.asMap().entries.map((entry) async {
-                final vout = entry.key;
-                final output = entry.value;
-                final scriptPubkeyBytes = output.scriptPubkey.bytes;
-                final isOwnOutput = await isMine(
-                  scriptPubkeyBytes,
-                  wallet: wallet as PublicBdkWalletModel,
-                );
-
-                if (!isOwnOutput) {
-                  isToSelf = false;
-                }
-
-                return TransactionOutputModel.bitcoin(
-                  txId: tx.txid,
-                  vout: vout,
-                  value: output.value,
-                  scriptPubkey: scriptPubkeyBytes,
-                  address: await AddressScriptConversions
-                      .bitcoinAddressFromScriptPubkey(
+              Future.wait(
+                outputs.asMap().entries.map((entry) async {
+                  final vout = entry.key;
+                  final output = entry.value;
+                  final scriptPubkeyBytes = output.scriptPubkey.bytes;
+                  final isOwnOutput = await isMine(
                     scriptPubkeyBytes,
-                    isTestnet: wallet.isTestnet,
-                  ),
-                );
-              }).toList(),
-            )
-          ).wait;
+                    wallet: wallet as PublicBdkWalletModel,
+                  );
 
-          return WalletTransactionModel.bitcoin(
-            txId: tx.txid,
-            isIncoming: tx.received > tx.sent,
-            amountSat: netAmountSat.toInt(),
-            feeSat: tx.fee?.toInt() ?? 0,
-            confirmationTimestamp: tx.confirmationTime?.timestamp.toInt(),
-            isToSelf: isToSelf,
-            inputs: inputModels,
-            outputs: outputModels,
-          );
-        },
-      ),
+                  if (!isOwnOutput) {
+                    isToSelf = false;
+                  }
+
+                  return TransactionOutputModel.bitcoin(
+                    txId: tx.txid,
+                    vout: vout,
+                    value: output.value,
+                    scriptPubkey: scriptPubkeyBytes,
+                    address:
+                        await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+                          scriptPubkeyBytes,
+                          isTestnet: wallet.isTestnet,
+                        ),
+                  );
+                }).toList(),
+              ),
+            ).wait;
+
+        return WalletTransactionModel.bitcoin(
+          txId: tx.txid,
+          isIncoming: tx.received > tx.sent,
+          amountSat: netAmountSat.toInt(),
+          feeSat: tx.fee?.toInt() ?? 0,
+          confirmationTimestamp: tx.confirmationTime?.timestamp.toInt(),
+          isToSelf: isToSelf,
+          inputs: inputModels,
+          outputs: outputModels,
+        );
+      }),
     );
 
     return walletTxs.whereType<WalletTransactionModel>().toList();
@@ -404,9 +401,10 @@ class BdkWalletDatasource implements WalletDatasource {
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     const lastUnusedAddressIndex = bdk.AddressIndex.lastUnused();
-    final addressInfo = isChange
-        ? bdkWallet.getInternalAddress(addressIndex: lastUnusedAddressIndex)
-        : bdkWallet.getAddress(addressIndex: lastUnusedAddressIndex);
+    final addressInfo =
+        isChange
+            ? bdkWallet.getInternalAddress(addressIndex: lastUnusedAddressIndex)
+            : bdkWallet.getAddress(addressIndex: lastUnusedAddressIndex);
 
     final index = addressInfo.index;
     final address = addressInfo.address.asString();
@@ -489,7 +487,7 @@ class BdkWalletDatasource implements WalletDatasource {
 
     // TODO: Use future.wait to parallelize the loop and improve performance
     for (final tx in transactions) {
-      final txOutputs = await tx.transaction?.output();
+      final txOutputs = tx.transaction?.output();
       if (txOutputs != null) {
         for (final output in txOutputs) {
           final generatedAddress = await bdk.Address.fromScript(
@@ -530,9 +528,7 @@ class BdkWalletDatasource implements WalletDatasource {
     return balance;
   }
 
-  Future<bdk.Wallet> _createPublicWallet(
-    WalletModel walletModel,
-  ) async {
+  Future<bdk.Wallet> _createPublicWallet(WalletModel walletModel) async {
     if (walletModel is! PublicBdkWalletModel) {
       throw ArgumentError('Wallet must be of type PublicBdkWalletModel');
     }
@@ -565,9 +561,7 @@ class BdkWalletDatasource implements WalletDatasource {
     return wallet;
   }
 
-  Future<bdk.Wallet> _createPrivateWallet(
-    WalletModel walletModel,
-  ) async {
+  Future<bdk.Wallet> _createPrivateWallet(WalletModel walletModel) async {
     if (walletModel is! PrivateBdkWalletModel) {
       throw ArgumentError('Wallet must be of type PrivateBdkWalletModel');
     }

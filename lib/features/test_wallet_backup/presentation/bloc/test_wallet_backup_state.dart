@@ -1,24 +1,15 @@
 part of 'test_wallet_backup_bloc.dart';
 
-enum TestWalletBackupStatus {
-  none,
-  loading,
-  verifying,
-  success,
-  error,
-}
+enum TestWalletBackupStatus { none, loading, verifying, success, error }
 
-enum TestPhysicalBackupFlow {
-  none,
-  error,
-}
+enum TestPhysicalBackupFlow { none, error }
 
 // Make this a regular class instead of a mixin
 class TestWalletBackupStateMethods {
   final List<String> shuffledMnemonic;
   final List<String> mnemonic;
   final List<({String word, int shuffleIdx, int selectedActualIdx})>
-      testMnemonicOrder;
+  testMnemonicOrder;
 
   TestWalletBackupStateMethods({
     required this.shuffledMnemonic,
@@ -59,7 +50,7 @@ class TestWalletBackupStateMethods {
 }
 
 @freezed
-class TestWalletBackupState with _$TestWalletBackupState {
+abstract class TestWalletBackupState with _$TestWalletBackupState {
   // Add this line
 
   factory TestWalletBackupState({
@@ -67,7 +58,7 @@ class TestWalletBackupState with _$TestWalletBackupState {
     @Default([]) List<String> shuffledMnemonic,
     @Default([])
     List<({String word, int shuffleIdx, int selectedActualIdx})>
-        testMnemonicOrder,
+    testMnemonicOrder,
     @Default(TestWalletBackupStatus.none) TestWalletBackupStatus status,
     @Default(VaultProvider.googleDrive()) VaultProvider vaultProvider,
     @Default(BackupInfo.empty()) BackupInfo backupInfo,

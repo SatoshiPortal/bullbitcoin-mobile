@@ -126,243 +126,48 @@ sealed class Swap with _$Swap {
   bool get isChainSwap => this is ChainSwap;
 
   String get abbreviatedReceiveTxid => switch (this) {
-        final LnReceiveSwap swap =>
-          StringFormatting.truncateMiddle(swap.receiveTxid ?? ''),
-        final ChainSwap swap =>
-          StringFormatting.truncateMiddle(swap.receiveTxid ?? ''),
-        _ => '',
-      };
+    final LnReceiveSwap swap => StringFormatting.truncateMiddle(
+      swap.receiveTxid ?? '',
+    ),
+    final ChainSwap swap => StringFormatting.truncateMiddle(
+      swap.receiveTxid ?? '',
+    ),
+    _ => '',
+  };
 
   String get abbreviatedInvoice => switch (this) {
-        final LnReceiveSwap swap =>
-          StringFormatting.truncateMiddle(swap.invoice),
-        final LnSendSwap swap => StringFormatting.truncateMiddle(swap.invoice),
-        _ => '',
-      };
+    final LnReceiveSwap swap => StringFormatting.truncateMiddle(swap.invoice),
+    final LnSendSwap swap => StringFormatting.truncateMiddle(swap.invoice),
+    _ => '',
+  };
 
   @override
-  String get id => when(
-        lnReceive: (
-          id,
-          _,
-          __,
-          ___,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          ___________,
-        ) =>
-            id,
-        lnSend: (
-          id,
-          _,
-          __,
-          ___,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          ___________,
-          ____________,
-          _____________,
-          ______________,
-          _______________,
-        ) =>
-            id,
-        chain: (
-          id,
-          _,
-          __,
-          ___,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          ___________,
-          ____________,
-          _____________,
-          ______________,
-        ) =>
-            id,
-      );
+  String get id => switch (this) {
+    LnReceiveSwap(:final id) => id,
+    LnSendSwap(:final id) => id,
+    ChainSwap(:final id) => id,
+  };
 
   @override
-  SwapType get type => when(
-        lnReceive: (
-          _,
-          __,
-          type,
-          ___,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          ___________,
-        ) =>
-            type,
-        lnSend: (
-          _,
-          __,
-          type,
-          ___,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          ___________,
-          ____________,
-          _____________,
-          ______________,
-          _______________,
-        ) =>
-            type,
-        chain: (
-          _,
-          __,
-          type,
-          ___,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          ___________,
-          ____________,
-          _____________,
-          ______________,
-        ) =>
-            type,
-      );
+  SwapType get type => switch (this) {
+    LnReceiveSwap(:final type) => type,
+    LnSendSwap(:final type) => type,
+    ChainSwap(:final type) => type,
+  };
 
   @override
-  SwapStatus get status => when(
-        lnReceive: (
-          _,
-          __,
-          ___,
-          status,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          ___________,
-        ) =>
-            status,
-        lnSend: (
-          _,
-          __,
-          ___,
-          status,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          ___________,
-          ____________,
-          _____________,
-          ______________,
-          _______________,
-        ) =>
-            status,
-        chain: (
-          _,
-          __,
-          ___,
-          status,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          ___________,
-          ____________,
-          _____________,
-          ______________,
-        ) =>
-            status,
-      );
+  SwapStatus get status => switch (this) {
+    LnReceiveSwap(:final status) => status,
+    LnSendSwap(:final status) => status,
+    ChainSwap(:final status) => status,
+  };
 
   @override
-  SwapFees? get fees => when(
-        lnReceive: (
-          _,
-          __,
-          ___,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          fees,
-          ___________,
-        ) =>
-            fees,
-        lnSend: (
-          _,
-          __,
-          ___,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          ___________,
-          ____________,
-          _____________,
-          ______________,
-          fees,
-          _______________,
-        ) =>
-            fees,
-        chain: (
-          _,
-          __,
-          ___,
-          ____,
-          _____,
-          ______,
-          _______,
-          ________,
-          _________,
-          __________,
-          ___________,
-          ____________,
-          _____________,
-          fees,
-          ______________,
-        ) =>
-            fees,
-      );
+  SwapFees? get fees => switch (this) {
+    LnReceiveSwap(:final fees) => fees,
+    LnSendSwap(:final fees) => fees,
+    ChainSwap(:final fees) => fees,
+  };
 }
 
 class SwapLimits {

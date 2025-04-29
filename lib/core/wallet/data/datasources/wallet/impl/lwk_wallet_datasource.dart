@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
@@ -25,9 +24,9 @@ class LwkWalletDatasource implements WalletDatasource {
   final StreamController<String> _walletSyncFinishedController;
 
   LwkWalletDatasource()
-      : _activeSyncs = {},
-        _walletSyncStartedController = StreamController<String>.broadcast(),
-        _walletSyncFinishedController = StreamController<String>.broadcast();
+    : _activeSyncs = {},
+      _walletSyncStartedController = StreamController<String>.broadcast(),
+      _walletSyncFinishedController = StreamController<String>.broadcast();
 
   Stream<String> get walletSyncStartedStream =>
       _walletSyncStartedController.stream;
@@ -36,18 +35,17 @@ class LwkWalletDatasource implements WalletDatasource {
 
   bool get isAnyWalletSyncing => _activeSyncs.isNotEmpty;
 
-  Future<BalanceModel> getBalance({
-    required WalletModel wallet,
-  }) async {
+  Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final balances = await lwkWallet.balances();
 
-    final lBtcAssetBalance = balances.firstWhere((balance) {
-      final assetId = _lBtcAssetId(
-        wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
-      );
-      return balance.assetId == assetId;
-    }).value;
+    final lBtcAssetBalance =
+        balances.firstWhere((balance) {
+          final assetId = _lBtcAssetId(
+            wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet,
+          );
+          return balance.assetId == assetId;
+        }).value;
 
     final balance = BalanceModel(
       confirmedSat: BigInt.from(lBtcAssetBalance),
@@ -78,7 +76,7 @@ class LwkWalletDatasource implements WalletDatasource {
         // Increment the sync execution count for this wallet for testing purposes
         syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
         final lwkWallet = await _createPublicWallet(wallet);
-        await lwkWallet.sync(
+        await lwkWallet.sync_(
           electrumUrl: electrumServer.url,
           validateDomain: electrumServer.validateDomain,
         );
@@ -97,24 +95,20 @@ class LwkWalletDatasource implements WalletDatasource {
   }
 
   @override
-  Future<List<WalletUtxoModel>> getUtxos({
-    required WalletModel wallet,
-  }) async {
+  Future<List<WalletUtxoModel>> getUtxos({required WalletModel wallet}) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final utxos = await lwkWallet.utxos();
 
-    final unspent = utxos.map(
-      (utxo) {
-        return WalletUtxoModel.liquid(
-          txId: utxo.outpoint.txid,
-          vout: utxo.outpoint.vout,
-          amountSat: utxo.unblinded.value,
-          scriptPubkey: utxo.scriptPubkey,
-          standardAddress: utxo.address.standard,
-          confidentialAddress: utxo.address.confidential,
-        );
-      },
-    );
+    final unspent = utxos.map((utxo) {
+      return WalletUtxoModel.liquid(
+        txId: utxo.outpoint.txid,
+        vout: utxo.outpoint.vout,
+        amountSat: utxo.unblinded.value,
+        scriptPubkey: utxo.scriptPubkey,
+        standardAddress: utxo.address.standard,
+        confidentialAddress: utxo.address.confidential,
+      );
+    });
 
     return unspent.toList();
   }
@@ -276,65 +270,69 @@ class LwkWalletDatasource implements WalletDatasource {
         wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet;
     final lbtcAssetId = _lBtcAssetId(network);
 
-    final walletTxs = transactions
-        .map((tx) {
-          // Early address filtering
-          if (toAddress != null && toAddress.isNotEmpty) {
-            final matches = tx.outputs.any(
-              (output) =>
-                  output.address.standard == toAddress ||
-                  output.address.confidential == toAddress,
-            );
-            if (!matches) return null; // Skip this transaction
-          }
+    final walletTxs =
+        transactions
+            .map((tx) {
+              // Early address filtering
+              if (toAddress != null && toAddress.isNotEmpty) {
+                final matches = tx.outputs.any(
+                  (output) =>
+                      output.address.standard == toAddress ||
+                      output.address.confidential == toAddress,
+                );
+                if (!matches) return null; // Skip this transaction
+              }
 
-          final balances = tx.balances;
-          final finalBalance = balances
-                  .where((e) => e.assetId == lbtcAssetId)
-                  .map((e) => e.value)
-                  .firstOrNull ??
-              0;
+              final balances = tx.balances;
+              final finalBalance =
+                  balances
+                      .where((e) => e.assetId == lbtcAssetId)
+                      .map((e) => e.value)
+                      .firstOrNull ??
+                  0;
 
-          final isIncoming = tx.kind != 'outgoing';
+              final isIncoming = tx.kind != 'outgoing';
 
-          final inputs = tx.inputs.asMap().entries.map((entry) {
-            final vin = entry.key;
-            final input = entry.value;
-            return TransactionInputModel(
-              txId: tx.txid,
-              vin: vin,
-              scriptSig: Uint8ListX.fromHexString(input.scriptPubkey),
-              previousTxId: input.outpoint.txid,
-              previousTxVout: input.outpoint.vout,
-            );
-          }).toList();
+              final inputs =
+                  tx.inputs.asMap().entries.map((entry) {
+                    final vin = entry.key;
+                    final input = entry.value;
+                    return TransactionInputModel(
+                      txId: tx.txid,
+                      vin: vin,
+                      scriptSig: Uint8ListX.fromHexString(input.scriptPubkey),
+                      previousTxId: input.outpoint.txid,
+                      previousTxVout: input.outpoint.vout,
+                    );
+                  }).toList();
 
-          final outputs = tx.outputs.asMap().entries.map((entry) {
-            final vout = entry.key;
-            final output = entry.value;
-            return TransactionOutputModel.liquid(
-              txId: tx.txid,
-              vout: vout,
-              value: output.unblinded.value,
-              scriptPubkey: output.scriptPubkey,
-              standardAddress: output.address.standard,
-              confidentialAddress: output.address.confidential,
-            );
-          }).toList();
+              final outputs =
+                  tx.outputs.asMap().entries.map((entry) {
+                    final vout = entry.key;
+                    final output = entry.value;
+                    return TransactionOutputModel.liquid(
+                      txId: tx.txid,
+                      vout: vout,
+                      value: output.unblinded.value,
+                      scriptPubkey: output.scriptPubkey,
+                      standardAddress: output.address.standard,
+                      confidentialAddress: output.address.confidential,
+                    );
+                  }).toList();
 
-          return WalletTransactionModel.liquid(
-            txId: tx.txid,
-            isIncoming: isIncoming,
-            amountSat: finalBalance.abs(),
-            feeSat: tx.fee.toInt(),
-            confirmationTimestamp: tx.timestamp,
-            // isToSelf: false, // TODO: implement if needed
-            inputs: inputs,
-            outputs: outputs,
-          );
-        })
-        .whereType<WalletTransactionModel>()
-        .toList();
+              return WalletTransactionModel.liquid(
+                txId: tx.txid,
+                isIncoming: isIncoming,
+                amountSat: finalBalance.abs(),
+                feeSat: tx.fee.toInt(),
+                confirmationTimestamp: tx.timestamp,
+                // isToSelf: false, // TODO: implement if needed
+                inputs: inputs,
+                outputs: outputs,
+              );
+            })
+            .whereType<WalletTransactionModel>()
+            .toList();
 
     return walletTxs;
   }
@@ -350,9 +348,7 @@ class LwkWalletDatasource implements WalletDatasource {
     if (networkFee.isAbsolute) {
       throw Exception('Absolute fee is not supported for liquid yet!');
     }
-    debugPrint(
-      networkFee.value.toDouble().toString(),
-    );
+    debugPrint(networkFee.value.toDouble().toString());
     final pset = await lwkWallet.buildLbtcTx(
       sats: BigInt.from(amountSat ?? 0),
       outAddress: address,
@@ -360,25 +356,23 @@ class LwkWalletDatasource implements WalletDatasource {
       drain: drain,
     );
     final decoded = await lwkWallet.decodeTx(pset: pset);
-    debugPrint(
-      decoded.absoluteFees.toString(),
-    );
+    debugPrint(decoded.absoluteFees.toString());
     return pset;
   }
 
-  Future<Uint8List> signPset(
+  Future<String> signPset(
     String pset, {
     required PrivateLwkWalletModel wallet,
   }) async {
     final lwkWallet = await _createPrivateWallet(wallet);
 
-    final signedBytes = await lwkWallet.signTx(
+    final signedPset = await lwkWallet.signTx(
       network: wallet.isTestnet ? lwk.Network.testnet : lwk.Network.mainnet,
       pset: pset,
       mnemonic: wallet.mnemonic,
     );
 
-    return signedBytes;
+    return signedPset;
   }
 
   Future<(int, int)> decodePsbtAmounts({
@@ -416,9 +410,7 @@ class LwkWalletDatasource implements WalletDatasource {
     return wallet;
   }
 
-  Future<lwk.Wallet> _createPrivateWallet(
-    WalletModel walletModel,
-  ) async {
+  Future<lwk.Wallet> _createPrivateWallet(WalletModel walletModel) async {
     if (walletModel is! PrivateLwkWalletModel) {
       throw Exception('Wallet is not an LWK wallet');
     }

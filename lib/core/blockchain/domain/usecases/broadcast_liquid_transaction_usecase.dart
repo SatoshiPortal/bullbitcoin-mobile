@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 
@@ -10,15 +8,15 @@ class BroadcastLiquidTransactionUsecase {
   BroadcastLiquidTransactionUsecase({
     required LiquidBlockchainRepository liquidBlockchainRepository,
     required SettingsRepository settingsRepository,
-  })  : _settingsRepository = settingsRepository,
-        _liquidBlockchain = liquidBlockchainRepository;
+  }) : _settingsRepository = settingsRepository,
+       _liquidBlockchain = liquidBlockchainRepository;
 
-  Future<String> execute(Uint8List transaction) async {
+  Future<String> execute(String signedPset) async {
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
       final txId = await _liquidBlockchain.broadcastTransaction(
-        transaction,
+        signedPset: signedPset,
         isTestnet: environment.isTestnet,
       );
 

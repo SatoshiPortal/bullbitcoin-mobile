@@ -13,8 +13,8 @@ class BoltzStorageDatasource {
   BoltzStorageDatasource({
     required KeyValueStorageDatasource<String> localSwapStorage,
     required KeyValueStorageDatasource<String> secureSwapStorage,
-  })  : _localSwapStorage = localSwapStorage,
-        _secureSwapStorage = secureSwapStorage;
+  }) : _localSwapStorage = localSwapStorage,
+       _secureSwapStorage = secureSwapStorage;
 
   // LOCAL STORAGE
   Future<void> store(SwapModel swap) async {
@@ -36,30 +36,30 @@ class BoltzStorageDatasource {
     final SwapModel? swap = await get(swapId);
     if (swap == null) return null;
 
-    return swap.maybeMap(
-      lnReceive: (lnReceiveSwap) => lnReceiveSwap,
-      orElse: () => null,
-    );
+    return switch (swap) {
+      LnReceiveSwapModel() => swap,
+      _ => null,
+    };
   }
 
   Future<LnSendSwapModel?> getLnSendSwapModel(String swapId) async {
     final SwapModel? swap = await get(swapId);
     if (swap == null) return null;
 
-    return swap.maybeMap(
-      lnSend: (lnSendSwap) => lnSendSwap,
-      orElse: () => null,
-    );
+    return switch (swap) {
+      LnSendSwapModel() => swap,
+      _ => null,
+    };
   }
 
   Future<ChainSwapModel?> getChainSwapModel(String swapId) async {
     final SwapModel? swap = await get(swapId);
     if (swap == null) return null;
 
-    return swap.maybeMap(
-      chain: (chainSwap) => chainSwap,
-      orElse: () => null,
-    );
+    return switch (swap) {
+      ChainSwapModel() => swap,
+      _ => null,
+    };
   }
 
   Future<List<SwapModel>> getAll() async {

@@ -6,7 +6,7 @@ part 'tx.freezed.dart';
 part 'tx.g.dart';
 
 @freezed
-class Tx with _$Tx {
+abstract class Tx with _$Tx {
   const factory Tx({
     required String txid,
     required int version,

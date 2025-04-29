@@ -90,11 +90,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     Emitter<BackupWalletState> emit,
   ) async {
     try {
-      emit(
-        state.copyWith(
-          status: BackupWalletStatus.loading,
-        ),
-      );
+      emit(state.copyWith(status: BackupWalletStatus.loading));
 
       await Future.delayed(const Duration(seconds: 2));
       await connectToGoogleDriveUsecase.execute();
@@ -122,26 +118,21 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
 
   Future<void> _startBackup(Emitter<BackupWalletState> emit) async {
     try {
-      emit(
-        state.copyWith(
-          status: BackupWalletStatus.loading,
-        ),
-      );
+      emit(state.copyWith(status: BackupWalletStatus.loading));
 
       final encryptedBackup = await createEncryptedBackupUsecase.execute();
 
       emit(state.copyWith(backupFile: encryptedBackup));
 
-      await state.vaultProvider.when(
-        fileSystem: (filePath) async {
-          if (filePath.isEmpty) throw Exception('No file path selected');
-          await saveToFileSystemUsecase.execute(filePath, encryptedBackup);
-        },
-        googleDrive: () async {
+      switch (state.vaultProvider) {
+        case FileSystem(:final fileAsString):
+          if (fileAsString.isEmpty) throw Exception('No file path selected');
+          await saveToFileSystemUsecase.execute(fileAsString, encryptedBackup);
+        case GoogleDrive():
           await saveToGoogleDriveUsecase.execute(encryptedBackup);
-        },
-        iCloud: () => throw UnimplementedError('iCloud backup not implemented'),
-      );
+        case ICloud():
+          throw UnimplementedError('iCloud backup not implemented');
+      }
 
       emit(state.copyWith(status: BackupWalletStatus.success));
     } catch (e) {

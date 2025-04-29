@@ -17,12 +17,14 @@ import 'package:hive/hive.dart';
 
 class SwapsLocator {
   static Future<void> registerDatasources() async {
-    final boltzSwapsBox =
-        await Hive.openBox<String>(HiveBoxNameConstants.boltzSwaps);
+    final boltzSwapsBox = await Hive.openBox<String>(
+      HiveBoxNameConstants.boltzSwaps,
+    );
     locator.registerLazySingleton<KeyValueStorageDatasource<String>>(
       () => HiveStorageDatasourceImpl<String>(boltzSwapsBox),
-      instanceName: LocatorInstanceNameConstants
-          .boltzSwapsHiveStorageDatasourceInstanceName,
+      instanceName:
+          LocatorInstanceNameConstants
+              .boltzSwapsHiveStorageDatasourceInstanceName,
     );
   }
 
@@ -37,8 +39,9 @@ class SwapsLocator {
                   LocatorInstanceNameConstants.secureStorageDatasource,
             ),
             localSwapStorage: locator<KeyValueStorageDatasource<String>>(
-              instanceName: LocatorInstanceNameConstants
-                  .boltzSwapsHiveStorageDatasourceInstanceName,
+              instanceName:
+                  LocatorInstanceNameConstants
+                      .boltzSwapsHiveStorageDatasourceInstanceName,
             ),
           ),
         ),
@@ -56,8 +59,9 @@ class SwapsLocator {
                   LocatorInstanceNameConstants.secureStorageDatasource,
             ),
             localSwapStorage: locator<KeyValueStorageDatasource<String>>(
-              instanceName: LocatorInstanceNameConstants
-                  .boltzSwapsHiveStorageDatasourceInstanceName,
+              instanceName:
+                  LocatorInstanceNameConstants
+                      .boltzSwapsHiveStorageDatasourceInstanceName,
             ),
           ),
         ),
@@ -71,10 +75,13 @@ class SwapsLocator {
     // add swap watcher service
     locator.registerLazySingleton<SwapWatcherService>(
       () => SwapWatcherServiceImpl(
-        boltzRepo: locator<SwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ) as BoltzSwapRepositoryImpl,
+        boltzRepo:
+            locator<SwapRepository>(
+                  instanceName:
+                      LocatorInstanceNameConstants
+                          .boltzSwapRepositoryInstanceName,
+                )
+                as BoltzSwapRepositoryImpl,
         walletAddressRepository: locator<WalletAddressRepository>(),
       ),
       instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
@@ -83,10 +90,13 @@ class SwapsLocator {
     // add swap watcher service
     locator.registerLazySingleton<SwapWatcherService>(
       () => SwapWatcherServiceImpl(
-        boltzRepo: locator<SwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
-        ) as BoltzSwapRepositoryImpl,
+        boltzRepo:
+            locator<SwapRepository>(
+                  instanceName:
+                      LocatorInstanceNameConstants
+                          .boltzTestnetSwapRepositoryInstanceName,
+                )
+                as BoltzSwapRepositoryImpl,
         walletAddressRepository: locator<WalletAddressRepository>(),
       ),
       instanceName:
@@ -102,8 +112,9 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetSwapRepository: locator<SwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );
@@ -115,8 +126,9 @@ class SwapsLocator {
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
         ),
         testnetSwapRepository: locator<SwapRepository>(
-          instanceName: LocatorInstanceNameConstants
-              .boltzTestnetSwapRepositoryInstanceName,
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
         ),
       ),
     );

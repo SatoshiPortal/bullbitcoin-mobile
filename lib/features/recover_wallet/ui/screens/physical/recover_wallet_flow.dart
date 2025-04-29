@@ -31,17 +31,21 @@ class _RecoverPhysicalWalletFlowState extends State<RecoverPhysicalWalletFlow> {
   Widget build(BuildContext context) {
     return BlocProvider<RecoverWalletBloc>(
       create: (_) => recoverWalletBloc,
-      child: BlocSelector<RecoverWalletBloc, RecoverWalletState,
-          RecoverWalletStatus>(
+      child: BlocSelector<
+        RecoverWalletBloc,
+        RecoverWalletState,
+        RecoverWalletStatus
+      >(
         selector: (state) => state.recoverWalletStatus,
         builder: (context, RecoverWalletStatus recoverWalletStatus) {
-          return recoverWalletStatus.maybeMap(
-            orElse: () => const SizedBox.shrink(),
-            initial: (_) => const RecoverPhysicalWalletInputScreen(),
-            loading: (_) => const RecoverPhysicalWalletInputScreen(),
-            success: (_) => const RecoverPhysicalWalletSuccessScreen(),
-            // failure: (e) => const RecoverPhysicalWalletErrorScreen(),
-          );
+          return switch (recoverWalletStatus) {
+            RecoverWalletInitialized _ =>
+              const RecoverPhysicalWalletInputScreen(),
+            RecoverWalletLoading _ => const RecoverPhysicalWalletInputScreen(),
+            RecoverWalletOK _ => const RecoverPhysicalWalletSuccessScreen(),
+            // RecoverWalletFailure() => const RecoverPhysicalWalletErrorScreen(),
+            _ => const SizedBox.shrink(),
+          };
         },
       ),
     );

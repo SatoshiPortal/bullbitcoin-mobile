@@ -5,7 +5,7 @@ part 'tx_vin.freezed.dart';
 part 'tx_vin.g.dart';
 
 @freezed
-class TxVin with _$TxVin {
+abstract class TxVin with _$TxVin {
   const factory TxVin({
     String? coinbase,
     int? sequence,

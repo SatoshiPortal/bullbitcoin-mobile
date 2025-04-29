@@ -4,7 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'transactions_state.freezed.dart';
 
 @freezed
-class TransactionsState with _$TransactionsState {
+abstract class TransactionsState with _$TransactionsState {
   const factory TransactionsState({
     List<Transaction>? transactions,
     @Default(false) bool isSyncing,

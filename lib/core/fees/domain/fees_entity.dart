@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'fees_entity.freezed.dart';
 
 @freezed
-class NetworkFee with _$NetworkFee {
+sealed class NetworkFee with _$NetworkFee {
   const NetworkFee._();
 
   const factory NetworkFee.absolute(int value) = AbsoluteFee;
@@ -13,14 +13,14 @@ class NetworkFee with _$NetworkFee {
   bool get isRelative => this is RelativeFee;
 
   @override
-  num get value => when(
-        absolute: (value) => value,
-        relative: (value) => value,
-      );
+  num get value => switch (this) {
+    AbsoluteFee(:final value) => value,
+    RelativeFee(:final value) => value,
+  };
 }
 
 @freezed
-class FeeOptions with _$FeeOptions {
+abstract class FeeOptions with _$FeeOptions {
   const factory FeeOptions({
     required NetworkFee fastest,
     required NetworkFee economic,
@@ -30,44 +30,46 @@ class FeeOptions with _$FeeOptions {
 
   FeeOptions toAbsolute(int size) {
     return FeeOptions(
-      fastest: fastest.when(
-        absolute: (value) => NetworkFee.absolute(value),
-        relative: (value) => NetworkFee.absolute((value * size).round()),
-      ),
-      economic: economic.when(
-        absolute: (value) => NetworkFee.absolute(value),
-        relative: (value) => NetworkFee.absolute((value * size).round()),
-      ),
-      slow: slow.when(
-        absolute: (value) => NetworkFee.absolute(value),
-        relative: (value) => NetworkFee.absolute((value * size).round()),
-      ),
+      fastest: switch (fastest) {
+        AbsoluteFee(:final value) => NetworkFee.absolute(value),
+        RelativeFee(:final value) => NetworkFee.absolute(
+          (value * size).round(),
+        ),
+      },
+      economic: switch (economic) {
+        AbsoluteFee(:final value) => NetworkFee.absolute(value),
+        RelativeFee(:final value) => NetworkFee.absolute(
+          (value * size).round(),
+        ),
+      },
+      slow: switch (slow) {
+        AbsoluteFee(:final value) => NetworkFee.absolute(value),
+        RelativeFee(:final value) => NetworkFee.absolute(
+          (value * size).round(),
+        ),
+      },
     );
   }
 
   FeeOptions toRelative(int size) {
     return FeeOptions(
-      fastest: fastest.when(
-        absolute: (value) => NetworkFee.relative(value / size),
-        relative: (value) => NetworkFee.relative(value),
-      ),
-      economic: economic.when(
-        absolute: (value) => NetworkFee.relative(value / size),
-        relative: (value) => NetworkFee.relative(value),
-      ),
-      slow: slow.when(
-        absolute: (value) => NetworkFee.relative(value / size),
-        relative: (value) => NetworkFee.relative(value),
-      ),
+      fastest: switch (fastest) {
+        AbsoluteFee(:final value) => NetworkFee.relative(value / size),
+        RelativeFee(:final value) => NetworkFee.relative(value),
+      },
+      economic: switch (economic) {
+        AbsoluteFee(:final value) => NetworkFee.relative(value / size),
+        RelativeFee(:final value) => NetworkFee.relative(value),
+      },
+      slow: switch (slow) {
+        AbsoluteFee(:final value) => NetworkFee.relative(value / size),
+        RelativeFee(:final value) => NetworkFee.relative(value),
+      },
     );
   }
 }
 
-enum FeeSelection {
-  fastest,
-  economic,
-  slow,
-}
+enum FeeSelection { fastest, economic, slow }
 
 extension FeeSelectionName on FeeSelection {
   String title() {

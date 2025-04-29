@@ -46,76 +46,71 @@ sealed class PayjoinModel with _$PayjoinModel {
   bool get isExpireAtPassed =>
       DateTime.now().millisecondsSinceEpoch ~/ 1000 > expireAt;
 
-  String get id => when(
-        receiver: (
-          id,
-          address,
-          isTestnet,
-          receiver,
-          walletId,
-          pjUri,
-          maxFeeRateSatPerVb,
-          expireAt,
-          originalTxBytes,
-          originalTxId,
-          amountSat,
-          proposalPsbt,
-          txId,
-          isExpired,
-          isCompleted,
-        ) =>
-            id,
-        sender: (
-          uri,
-          sender,
-          walletId,
-          originalPsbt,
-          originalTxId,
-          expireAt,
-          proposalPsbt,
-          txId,
-          isExpired,
-          isCompleted,
-        ) =>
-            uri,
-      );
+  String get id => switch (this) {
+    PayjoinReceiverModel(:final id) => id,
+    PayjoinSenderModel(:final uri) => uri,
+  };
 
   Payjoin toEntity() {
-    return map(
-      receiver: (model) => Payjoin.receiver(
-        status: isCompleted
-            ? PayjoinStatus.completed
-            : isExpired
-                ? PayjoinStatus.expired
-                : proposalPsbt != null
-                    ? PayjoinStatus.proposed
-                    : model.originalTxBytes != null
-                        ? PayjoinStatus.requested
-                        : PayjoinStatus.started,
-        id: model.id,
-        pjUri: model.pjUri,
-        walletId: model.walletId,
-        originalTxBytes: model.originalTxBytes,
-        originalTxId: model.originalTxId,
-        amountSat: model.amountSat,
-        proposalPsbt: model.proposalPsbt,
-        txId: model.txId,
-      ),
-      sender: (model) => Payjoin.sender(
-        status: isCompleted
-            ? PayjoinStatus.completed
-            : isExpired
-                ? PayjoinStatus.expired
-                : proposalPsbt != null
-                    ? PayjoinStatus.proposed
-                    : PayjoinStatus.requested,
-        uri: model.uri,
-        walletId: model.walletId,
-        originalPsbt: model.originalPsbt,
-        originalTxId: model.originalTxId,
-        proposalPsbt: model.proposalPsbt,
-        txId: model.txId,
-      ),
-    );
+    return switch (this) {
+      PayjoinReceiverModel(
+        :final id,
+        :final pjUri,
+        :final walletId,
+        :final originalTxBytes,
+        :final originalTxId,
+        :final amountSat,
+        :final proposalPsbt,
+        :final txId,
+        :final isCompleted,
+        :final isExpired,
+      ) =>
+        Payjoin.receiver(
+          status:
+              isCompleted
+                  ? PayjoinStatus.completed
+                  : isExpired
+                  ? PayjoinStatus.expired
+                  : proposalPsbt != null
+                  ? PayjoinStatus.proposed
+                  : originalTxBytes != null
+                  ? PayjoinStatus.requested
+                  : PayjoinStatus.started,
+          id: id,
+          pjUri: pjUri,
+          walletId: walletId,
+          originalTxBytes: originalTxBytes,
+          originalTxId: originalTxId,
+          amountSat: amountSat,
+          proposalPsbt: proposalPsbt,
+          txId: txId,
+        ),
+      PayjoinSenderModel(
+        :final uri,
+        :final walletId,
+        :final originalPsbt,
+        :final originalTxId,
+        :final proposalPsbt,
+        :final txId,
+        :final isCompleted,
+        :final isExpired,
+      ) =>
+        Payjoin.sender(
+          status:
+              isCompleted
+                  ? PayjoinStatus.completed
+                  : isExpired
+                  ? PayjoinStatus.expired
+                  : proposalPsbt != null
+                  ? PayjoinStatus.proposed
+                  : PayjoinStatus.requested,
+          uri: uri,
+          walletId: walletId,
+          originalPsbt: originalPsbt,
+          originalTxId: originalTxId,
+          proposalPsbt: proposalPsbt,
+          txId: txId,
+        ),
+    };
   }
 }

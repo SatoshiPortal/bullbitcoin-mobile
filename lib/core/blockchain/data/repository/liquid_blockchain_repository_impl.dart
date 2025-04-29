@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
@@ -13,12 +11,12 @@ class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
   const LiquidBlockchainRepositoryImpl({
     required LwkLiquidBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
-  })  : _blockchain = blockchainDatasource,
-        _electrumServerStorage = electrumServerStorageDatasource;
+  }) : _blockchain = blockchainDatasource,
+       _electrumServerStorage = electrumServerStorageDatasource;
 
   @override
-  Future<String> broadcastTransaction(
-    Uint8List transaction, {
+  Future<String> broadcastTransaction({
+    required String signedPset,
     required bool isTestnet,
   }) {
     // Todo: Should we first try the custom and only if it fails or doesn't exist
@@ -36,10 +34,11 @@ class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
     //     );
 
     return _blockchain.broadcastTransaction(
-      transaction,
-      electrumServerUrl: isTestnet
-          ? ApiServiceConstants.publicliquidElectrumTestUrlPath
-          : ApiServiceConstants.bbLiquidElectrumUrlPath,
+      signedPset: signedPset,
+      electrumServerUrl:
+          isTestnet
+              ? ApiServiceConstants.publicliquidElectrumTestUrlPath
+              : ApiServiceConstants.bbLiquidElectrumUrlPath,
     );
   }
 }

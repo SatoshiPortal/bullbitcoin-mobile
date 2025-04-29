@@ -28,17 +28,20 @@ class CurrencyText extends StatelessWidget {
 
     if (showFiat) {
       final price = context.select(
-        (BitcoinPriceBloc _) => _.state.calculateFiatPrice(satsAmount),
+        (BitcoinPriceBloc bloc) => bloc.state.calculateFiatPrice(satsAmount),
       );
       if (price == null) return const SizedBox.shrink();
 
       text = price;
     } else {
-      final unit = context.select((SettingsCubit _) => _.state?.bitcoinUnit);
+      final unit = context.select(
+        (SettingsCubit cubit) => cubit.state?.bitcoinUnit,
+      );
       if (unit == null) return const SizedBox.shrink();
 
       final amount = context.select(
-        (BitcoinPriceBloc _) => _.state.displayBTCAmount(satsAmount, unit),
+        (BitcoinPriceBloc bloc) =>
+            bloc.state.displayBTCAmount(satsAmount, unit),
       );
 
       if (amount == null) return const SizedBox.shrink();
@@ -47,18 +50,13 @@ class CurrencyText extends StatelessWidget {
     }
 
     final hideAmt = context.select(
-      (SettingsCubit _) => _.state?.hideAmounts ?? true,
+      (SettingsCubit cubit) => cubit.state?.hideAmounts ?? true,
     );
 
     if (hideAmt) {
       text = '** ${text.split(' ').last}';
     }
 
-    return BBText(
-      text,
-      style: style,
-      color: color,
-      textAlign: textAlign,
-    );
+    return BBText(text, style: style, color: color, textAlign: textAlign);
   }
 }

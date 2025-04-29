@@ -4,7 +4,7 @@ part 'recoverbull_wallet.freezed.dart';
 part 'recoverbull_wallet.g.dart';
 
 @freezed
-class RecoverBullWallet with _$RecoverBullWallet {
+abstract class RecoverBullWallet with _$RecoverBullWallet {
   const factory RecoverBullWallet({
     @Default([]) List<String> mnemonic,
     @Default('') String masterFingerprint,

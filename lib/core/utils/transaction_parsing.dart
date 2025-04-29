@@ -8,10 +8,12 @@ class TransactionParsing {
   }) async {
     debugPrint('Extracting inputs from psbt: $psbt');
     final tx = await bdk.PartiallySignedTransaction.fromString(psbt);
-    final inputs = await tx.extractTx().input();
+    final inputs = tx.extractTx().input();
     final usedUtxos = inputs.map(
-      (input) =>
-          (txId: input.previousOutput.txid, vout: input.previousOutput.vout),
+      (input) => (
+        txId: input.previousOutput.txid,
+        vout: input.previousOutput.vout,
+      ),
     );
 
     debugPrint("Extracted utxo's: $usedUtxos");
@@ -42,7 +44,7 @@ class TransactionParsing {
       transactionBytes: transactionBytes,
     );
 
-    final outputs = await tx.output();
+    final outputs = tx.output();
     BigInt totalAmount = BigInt.zero;
     for (final output in outputs) {
       final scriptPubkey = output.scriptPubkey;

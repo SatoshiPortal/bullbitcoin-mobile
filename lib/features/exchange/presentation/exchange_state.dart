@@ -6,7 +6,7 @@ part 'exchange_state.freezed.dart';
 
 // Exchange State using Freezed
 @freezed
-class ExchangeState with _$ExchangeState {
+abstract class ExchangeState with _$ExchangeState {
   const factory ExchangeState({
     @Default(true) bool isLoading,
     @Default(false) bool hasError,

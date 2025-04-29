@@ -14,24 +14,27 @@ class WalletTransactionMapper {
     String? payjoinId,
     String? exchangeId,
   }) {
-    return walletTransactionModel.map(
-      bitcoin: (model) => WalletTransaction.bitcoin(
+    return switch (walletTransactionModel) {
+      BitcoinWalletTransactionModel() => WalletTransaction.bitcoin(
         walletId: walletId,
-        direction: model.isIncoming
-            ? WalletTransactionDirection.incoming
-            : WalletTransactionDirection.outgoing,
-        status: model.confirmationTimestamp == null
-            ? WalletTransactionStatus.pending
-            : WalletTransactionStatus.confirmed,
-        txId: model.txId,
-        amountSat: model.amountSat,
-        feeSat: model.feeSat,
-        confirmationTime: model.confirmationTimestamp != null
-            ? DateTime.fromMillisecondsSinceEpoch(
-                model.confirmationTimestamp! * 1000,
-              )
-            : null,
-        isToSelf: model.isToSelf,
+        direction:
+            walletTransactionModel.isIncoming
+                ? WalletTransactionDirection.incoming
+                : WalletTransactionDirection.outgoing,
+        status:
+            walletTransactionModel.confirmationTimestamp == null
+                ? WalletTransactionStatus.pending
+                : WalletTransactionStatus.confirmed,
+        txId: walletTransactionModel.txId,
+        amountSat: walletTransactionModel.amountSat,
+        feeSat: walletTransactionModel.feeSat,
+        confirmationTime:
+            walletTransactionModel.confirmationTimestamp != null
+                ? DateTime.fromMillisecondsSinceEpoch(
+                  walletTransactionModel.confirmationTimestamp! * 1000,
+                )
+                : null,
+        isToSelf: walletTransactionModel.isToSelf,
         labels: labels ?? [],
         payjoinId: payjoinId ?? '',
         swapId: swapId ?? '',
@@ -39,29 +42,32 @@ class WalletTransactionMapper {
         inputs: inputs,
         outputs: outputs,
       ),
-      liquid: (model) => WalletTransaction.liquid(
+      LiquidWalletTransactionModel() => WalletTransaction.liquid(
         walletId: walletId,
-        direction: model.isIncoming
-            ? WalletTransactionDirection.incoming
-            : WalletTransactionDirection.outgoing,
-        status: model.confirmationTimestamp == null
-            ? WalletTransactionStatus.pending
-            : WalletTransactionStatus.confirmed,
-        txId: model.txId,
-        amountSat: model.amountSat,
-        feeSat: model.feeSat,
-        confirmationTime: model.confirmationTimestamp != null
-            ? DateTime.fromMillisecondsSinceEpoch(
-                model.confirmationTimestamp! * 1000,
-              )
-            : null,
-        isToSelf: model.isToSelf,
+        direction:
+            walletTransactionModel.isIncoming
+                ? WalletTransactionDirection.incoming
+                : WalletTransactionDirection.outgoing,
+        status:
+            walletTransactionModel.confirmationTimestamp == null
+                ? WalletTransactionStatus.pending
+                : WalletTransactionStatus.confirmed,
+        txId: walletTransactionModel.txId,
+        amountSat: walletTransactionModel.amountSat,
+        feeSat: walletTransactionModel.feeSat,
+        confirmationTime:
+            walletTransactionModel.confirmationTimestamp != null
+                ? DateTime.fromMillisecondsSinceEpoch(
+                  walletTransactionModel.confirmationTimestamp! * 1000,
+                )
+                : null,
+        isToSelf: walletTransactionModel.isToSelf,
         labels: labels ?? [],
         swapId: swapId ?? '',
         exchangeId: exchangeId ?? '',
         inputs: inputs,
         outputs: outputs,
       ),
-    );
+    };
   }
 }

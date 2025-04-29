@@ -1,17 +1,15 @@
-import 'dart:typed_data';
-
 import 'package:lwk/lwk.dart' as lwk;
 
 class LwkLiquidBlockchainDatasource {
   const LwkLiquidBlockchainDatasource();
 
-  Future<String> broadcastTransaction(
-    Uint8List transaction, {
+  Future<String> broadcastTransaction({
+    required String signedPset,
     required String electrumServerUrl,
   }) async {
-    final txId = await lwk.Wallet.broadcastTx(
+    final txId = await lwk.Blockchain.broadcastSignedPset(
       electrumUrl: electrumServerUrl,
-      txBytes: transaction,
+      signedPset: signedPset,
     );
     return txId;
   }

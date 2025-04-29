@@ -25,9 +25,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
     final fiatCurrency = context.select(
       (SendCubit send) => send.state.fiatCurrencyCode,
     );
-    final utxos = context.select(
-      (SendCubit send) => send.state.utxos,
-    );
+    final utxos = context.select((SendCubit send) => send.state.utxos);
     final selectedUtxos = context.select(
       (SendCubit send) => send.state.selectedUtxos,
     );
@@ -35,15 +33,17 @@ class CoinSelectionBottomSheet extends StatelessWidget {
       0,
       (previousValue, element) => previousValue + element.amountSat.toInt(),
     );
-    final selectedUtxoTotal = bitcoinUnit == BitcoinUnit.btc
-        ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
-        : FormatAmount.sats(selectedUtxoTotalSat);
+    final selectedUtxoTotal =
+        bitcoinUnit == BitcoinUnit.btc
+            ? FormatAmount.btc(ConvertAmount.satsToBtc(selectedUtxoTotalSat))
+            : FormatAmount.sats(selectedUtxoTotalSat);
     final amountToSendSat = context.select(
       (SendCubit send) => send.state.confirmedAmountSat ?? 0,
     );
-    final amountToSend = bitcoinUnit == BitcoinUnit.btc
-        ? FormatAmount.btc(ConvertAmount.satsToBtc(amountToSendSat))
-        : FormatAmount.sats(amountToSendSat);
+    final amountToSend =
+        bitcoinUnit == BitcoinUnit.btc
+            ? FormatAmount.btc(ConvertAmount.satsToBtc(amountToSendSat))
+            : FormatAmount.sats(amountToSendSat);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -70,10 +70,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
             ],
           ),
           const Gap(32),
-          BBText(
-            selectedUtxoTotal,
-            style: context.font.displaySmall,
-          ),
+          BBText(selectedUtxoTotal, style: context.font.displaySmall),
           const Gap(8),
           BBText(
             'Amount requested: $amountToSend',
@@ -93,7 +90,7 @@ class CoinSelectionBottomSheet extends StatelessWidget {
                 fiatCurrency: fiatCurrency,
               );
             },
-            separatorBuilder: (_, __) => const Gap(24),
+            separatorBuilder: (_, _) => const Gap(24),
             itemCount: utxos.length,
             shrinkWrap: true,
           ),

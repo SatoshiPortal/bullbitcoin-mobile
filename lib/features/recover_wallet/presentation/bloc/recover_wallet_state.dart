@@ -2,14 +2,15 @@ part of 'recover_wallet_bloc.dart';
 
 @freezed
 sealed class RecoverWalletStatus with _$RecoverWalletStatus {
-  const factory RecoverWalletStatus.initial() = _Initial;
-  const factory RecoverWalletStatus.loading() = _Loading;
-  const factory RecoverWalletStatus.success() = _Success;
-  const factory RecoverWalletStatus.failure(String message) = _Failure;
+  const factory RecoverWalletStatus.initial() = RecoverWalletInitialized;
+  const factory RecoverWalletStatus.loading() = RecoverWalletLoading;
+  const factory RecoverWalletStatus.success() = RecoverWalletOK;
+  const factory RecoverWalletStatus.failure(String message) =
+      RecoverWalletFailure;
 }
 
 @freezed
-sealed class RecoverWalletState implements _$RecoverWalletState {
+sealed class RecoverWalletState with _$RecoverWalletState {
   const factory RecoverWalletState({
     @Default(12) int wordsCount,
     // @Default([]) List<({String word, bool tapped})> words,
@@ -34,8 +35,8 @@ List<({String word, bool tapped})> importW(List<String> words) =>
     words.map((e) => (word: e, tapped: false)).toList();
 
 List<({String word, bool tapped})> emptyWords(int len) => [
-      for (int i = 0; i < len; i++) (word: '', tapped: false),
-    ];
+  for (int i = 0; i < len; i++) (word: '', tapped: false),
+];
 
 const secureTN1 = [
   'upper',

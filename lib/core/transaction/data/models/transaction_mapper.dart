@@ -27,25 +27,27 @@ class TransactionMapper {
       size: BigInt.parse(row.size),
       vsize: BigInt.parse(row.vsize),
       locktime: row.locktime,
-      vin: (json.decode(row.vin) as List)
-          .map((e) => TxVin.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      vout: (json.decode(row.vout) as List)
-          .map((e) => TxVout.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      vin:
+          (json.decode(row.vin) as List)
+              .map((e) => TxVin.fromJson(e as Map<String, dynamic>))
+              .toList(),
+      vout:
+          (json.decode(row.vout) as List)
+              .map((e) => TxVout.fromJson(e as Map<String, dynamic>))
+              .toList(),
     );
   }
 
   static Future<Tx> fromBytes(List<int> bytes) async {
     final bdkTx = await bdk.Transaction.fromBytes(transactionBytes: bytes);
 
-    final txid = await bdkTx.txid();
-    final version = await bdkTx.version();
-    final vsize = await bdkTx.vsize();
-    final size = await bdkTx.size();
-    final locktime = (await bdkTx.lockTime()).field0;
-    final inputs = await bdkTx.input();
-    final outputs = await bdkTx.output();
+    final txid = bdkTx.txid();
+    final version = bdkTx.version();
+    final vsize = bdkTx.vsize();
+    final size = bdkTx.size();
+    final locktime = bdkTx.lockTime().field0;
+    final inputs = bdkTx.input();
+    final outputs = bdkTx.output();
 
     final vout = <TxVout>[];
     for (var i = 0; i < outputs.length; i++) {
@@ -69,7 +71,7 @@ class TransactionMapper {
       txid: input.previousOutput.txid,
       vout: input.previousOutput.vout,
       sequence: input.sequence,
-      scriptSig: TxScriptSig(bytes: input.scriptSig.bytes),
+      scriptSig: TxScriptSig(bytes: input.scriptSig!.bytes),
     );
   }
 

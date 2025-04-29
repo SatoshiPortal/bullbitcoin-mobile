@@ -5,8 +5,8 @@ Future<String> invoiceFromLnAddress({
   required int amountSat,
 }) async {
   try {
-    final invoice = await invoiceFromLnurl(
-      lnurl: lnAddress,
+    final lnurl = Lnurl(value: lnAddress);
+    final invoice = await lnurl.fetchInvoice(
       msats: BigInt.from(amountSat * 1000),
     );
     return invoice;

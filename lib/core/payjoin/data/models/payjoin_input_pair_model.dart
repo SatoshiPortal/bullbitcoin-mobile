@@ -6,7 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'payjoin_input_pair_model.freezed.dart';
 
 @freezed
-class PayjoinInputPairModel with _$PayjoinInputPairModel {
+abstract class PayjoinInputPairModel with _$PayjoinInputPairModel {
   const factory PayjoinInputPairModel({
     required String txId,
     required int vout,

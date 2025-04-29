@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 
 class BroadcastLiquidUsecase {
@@ -10,12 +8,12 @@ class BroadcastLiquidUsecase {
   }) : _liquidBlockchainRepository = liquidBlockchainRepository;
 
   Future<String> execute({
-    required Uint8List signedTx,
+    required String signedPset,
     required bool isTestnet,
   }) async {
     try {
       return await _liquidBlockchainRepository.broadcastTransaction(
-        signedTx,
+        signedPset: signedPset,
         isTestnet: isTestnet,
       );
     } catch (e) {

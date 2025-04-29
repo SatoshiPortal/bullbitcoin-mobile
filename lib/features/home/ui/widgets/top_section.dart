@@ -60,10 +60,7 @@ class _UIState extends State<_UI> {
 
   @override
   void initState() {
-    image = Image.asset(
-      Assets.images2.bgRed.path,
-      fit: BoxFit.fitHeight,
-    );
+    image = Image.asset(Assets.images2.bgRed.path, fit: BoxFit.fitHeight);
     super.initState();
   }
 
@@ -72,17 +69,9 @@ class _UIState extends State<_UI> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        Transform.rotate(
-          angle: 3.141,
-          child: image,
-        ),
+        Transform.rotate(angle: 3.141, child: image),
         const _Amounts(),
-        const Positioned(
-          top: 54,
-          left: 0,
-          right: 0,
-          child: _TopNav(),
-        ),
+        const Positioned(top: 54, left: 0, right: 0, child: _TopNav()),
       ],
     );
   }
@@ -140,7 +129,7 @@ class _EyeToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hide = context.select(
-      (SettingsCubit _) => _.state?.hideAmounts ?? true,
+      (SettingsCubit settingsCubit) => settingsCubit.state?.hideAmounts ?? true,
     );
     return GestureDetector(
       onTap: () {
@@ -150,9 +139,7 @@ class _EyeToggle extends StatelessWidget {
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
-          border: Border.all(
-            color: context.colour.surfaceBright,
-          ),
+          border: Border.all(color: context.colour.surfaceBright),
           color: context.colour.scrim,
         ),
         child: Icon(
@@ -171,7 +158,8 @@ class _FiatAmt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fiatPriceIsNull = context.select(
-      (BitcoinPriceBloc _) => _.state.bitcoinPrice == null,
+      (BitcoinPriceBloc bitcoinPriceBloc) =>
+          bitcoinPriceBloc.state.bitcoinPrice == null,
     );
 
     if (fiatPriceIsNull) return const SizedBox.shrink();
@@ -184,9 +172,7 @@ class _FiatAmt extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: context.colour.surfaceDim,
-        ),
+        border: Border.all(color: context.colour.surfaceDim),
         color: context.colour.surfaceDim,
       ),
       child: CurrencyText(
@@ -260,7 +246,9 @@ class _BullLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final syncing = context.select((HomeBloc _) => _.state.isSyncing);
+    final syncing = context.select(
+      (HomeBloc homeBloc) => homeBloc.state.isSyncing,
+    );
 
     if (!syncing) {
       return InkWell(

@@ -15,9 +15,10 @@ class OnboardingPhysicalRecovery extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<OnboardingBloc, OnboardingState>(
-      listenWhen: (previous, current) =>
-          previous.step != current.step ||
-          previous.onboardingStepStatus != current.onboardingStepStatus,
+      listenWhen:
+          (previous, current) =>
+              previous.step != current.step ||
+              previous.onboardingStepStatus != current.onboardingStepStatus,
       listener: (context, state) {
         if (state.step == OnboardingStep.recover &&
             state.onboardingStepStatus == OnboardingStepStatus.success) {
@@ -33,20 +34,13 @@ class OnboardingPhysicalRecovery extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Gap(40),
-                    _WordGrid(),
-                    Gap(80),
-                  ],
+                  children: [Gap(40), _WordGrid(), Gap(80)],
                 ),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  _Button(),
-                  SizedBox(height: 20),
-                ],
+                children: [_Button(), SizedBox(height: 20)],
               ),
             ],
           ),
@@ -61,19 +55,23 @@ class _WordGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hintWords = context.select((OnboardingBloc _) => _.state.hintWords);
-    final validWords = context.select((OnboardingBloc _) => _.state.validWords);
+    final hintWords = context.select(
+      (OnboardingBloc onboardingBloc) => onboardingBloc.state.hintWords,
+    );
+    final validWords = context.select(
+      (OnboardingBloc onboardingBloc) => onboardingBloc.state.validWords,
+    );
     return SeedWordsGrid(
       wordCount: 12,
       validWords: validWords,
       hintWords: hintWords,
-      onWordChanged: (_) {
+      onWordChanged: (wordChange) {
         context.read<OnboardingBloc>().add(
-              OnboardingRecoveryWordChanged(
-                index: _.index,
-                word: _.word,
-              ),
-            );
+          OnboardingRecoveryWordChanged(
+            index: wordChange.index,
+            word: wordChange.word,
+          ),
+        );
       },
     );
   }
@@ -84,18 +82,19 @@ class _Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasAllValidWords =
-        context.select((OnboardingBloc _) => _.state.hasAllValidWords());
+    final hasAllValidWords = context.select(
+      (OnboardingBloc onboardingBloc) =>
+          onboardingBloc.state.hasAllValidWords(),
+    );
 
     final loading = context.select(
-      (OnboardingBloc _) =>
-          _.state.onboardingStepStatus == OnboardingStepStatus.loading,
+      (OnboardingBloc onboardingBloc) =>
+          onboardingBloc.state.onboardingStepStatus ==
+          OnboardingStepStatus.loading,
     );
 
     if (loading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     return Padding(
@@ -104,9 +103,9 @@ class _Button extends StatelessWidget {
         label: 'Recover',
         onPressed: () {
           if (hasAllValidWords) {
-            context
-                .read<OnboardingBloc>()
-                .add(const OnboardingRecoverWalletClicked());
+            context.read<OnboardingBloc>().add(
+              const OnboardingRecoverWalletClicked(),
+            );
           }
         },
         bgColor: context.colour.secondary,

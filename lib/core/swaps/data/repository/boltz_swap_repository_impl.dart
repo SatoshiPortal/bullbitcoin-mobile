@@ -11,14 +11,11 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 class BoltzSwapRepositoryImpl implements SwapRepository {
   final BoltzDatasource _boltz;
 
-  BoltzSwapRepositoryImpl({
-    required BoltzDatasource boltz,
-  }) : _boltz = boltz;
+  BoltzSwapRepositoryImpl({required BoltzDatasource boltz}) : _boltz = boltz;
 
   @override
-  Stream<Swap> get swapUpdatesStream => _boltz.swapUpdatesStream.map(
-        (swapModel) => swapModel.toEntity(),
-      );
+  Stream<Swap> get swapUpdatesStream =>
+      _boltz.swapUpdatesStream.map((swapModel) => swapModel.toEntity());
 
   /// RECEIVE LN TO BTC
   @override
@@ -134,9 +131,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<void> coopSignBitcoinToLightningSwap({
-    required String swapId,
-  }) async {
+  Future<void> coopSignBitcoinToLightningSwap({required String swapId}) async {
     await _boltz.coopSignBtcSubmarineSwap(swapId: swapId);
     await _updateCompletedSendSwap(swapId: swapId);
     return;
@@ -185,9 +180,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<void> coopSignLiquidToLightningSwap({
-    required String swapId,
-  }) async {
+  Future<void> coopSignLiquidToLightningSwap({required String swapId}) async {
     await _boltz.coopSignLbtcSubmarineSwap(swapId: swapId);
     await _updateCompletedSendSwap(swapId: swapId);
     return;
@@ -375,26 +368,24 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     // check the status before updating it
     // it is possible that the stream updates the status before this method
     // we don't want a status ahead of paid to be updated back to paid
-    final updatedSwap = swap.maybeMap(
-      lnSend: (lnSendSwap) => lnSendSwap.copyWith(
+    final updatedSwap = switch (swap) {
+      LnSendSwap() => swap.copyWith(
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
       ),
-      chain: (chainSwap) => chainSwap.copyWith(
+      ChainSwap() => swap.copyWith(
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
       ),
-      orElse: () => throw "Only lnSend or chain swaps can be marked as paid",
-    );
+      _ => throw "Only lnSend or chain swaps can be marked as paid",
+    };
 
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  Future<void> updateExpiredSwap({
-    required String swapId,
-  }) async {
+  Future<void> updateExpiredSwap({required String swapId}) async {
     final swapModel = await _boltz.storage.get(swapId);
     if (swapModel == null) {
       throw "No swap model found";
@@ -403,15 +394,11 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     if (swap.status != SwapStatus.pending) {
       throw "Can only update status of a pending swap";
     }
-    final updatedSwap = swap.copyWith(
-      status: SwapStatus.expired,
-    );
+    final updatedSwap = swap.copyWith(status: SwapStatus.expired);
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  Future<void> updateFailedSwap({
-    required String swapId,
-  }) async {
+  Future<void> updateFailedSwap({required String swapId}) async {
     final swapModel = await _boltz.storage.get(swapId);
     if (swapModel == null) {
       throw "No swap model found";
@@ -420,16 +407,12 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     if (swap.status != SwapStatus.pending) {
       throw "Can only update status of a pending swap";
     }
-    final updatedSwap = swap.copyWith(
-      status: SwapStatus.failed,
-    );
+    final updatedSwap = swap.copyWith(status: SwapStatus.failed);
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
   /// PRIVATE
-  Future<void> _updateCompletedSendSwap({
-    required String swapId,
-  }) async {
+  Future<void> _updateCompletedSendSwap({required String swapId}) async {
     final swapModel = await _boltz.storage.get(swapId);
     if (swapModel == null) {
       throw "No swap model found";
@@ -442,20 +425,20 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     }
 
     // Handle each type separately
-    final updatedSwap = swap.map(
-      lnReceive: (lnReceiveSwap) => lnReceiveSwap.copyWith(
+    final updatedSwap = switch (swap) {
+      LnReceiveSwap() => swap.copyWith(
         completionTime: DateTime.now(),
         status: SwapStatus.completed,
       ),
-      lnSend: (lnSendSwap) => lnSendSwap.copyWith(
+      LnSendSwap() => swap.copyWith(
         completionTime: DateTime.now(),
         status: SwapStatus.completed,
       ),
-      chain: (chainSwap) => chainSwap.copyWith(
+      ChainSwap() => swap.copyWith(
         completionTime: DateTime.now(),
         status: SwapStatus.completed,
       ),
-    );
+    };
 
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
@@ -600,11 +583,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   Future<Invoice> decodeInvoice({required String invoice}) async {
     // TODO: implement decodeInvoice
     final (sats, expired, bip21) = await _boltz.decodeInvoice(invoice);
-    return Invoice(
-      sats: sats,
-      isExpired: expired,
-      magicBip21: bip21,
-    );
+    return Invoice(sats: sats, isExpired: expired, magicBip21: bip21);
   }
 
   @override

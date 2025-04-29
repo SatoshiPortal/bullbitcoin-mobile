@@ -10,26 +10,32 @@ class WalletAddressMapper {
     int? balanceSat,
     int? highestPreviousBalanceSat,
   }) {
-    return walletAddressModel.when(
-      bitcoin: (index, address) => WalletAddress.bitcoin(
-        walletId: walletId,
-        index: index,
-        address: address,
-        keyChain: keyChain,
-        status: status,
-        balanceSat: balanceSat,
-        highestPreviousBalanceSat: highestPreviousBalanceSat,
-      ),
-      liquid: (index, standard, confidential) => WalletAddress.liquid(
-        walletId: walletId,
-        index: index,
-        standard: standard,
-        confidential: confidential,
-        keyChain: keyChain,
-        status: status,
-        balanceSat: balanceSat,
-        highestPreviousBalanceSat: highestPreviousBalanceSat,
-      ),
-    );
+    return switch (walletAddressModel) {
+      BitcoinWalletAddressModel(:final index, :final address) =>
+        WalletAddress.bitcoin(
+          walletId: walletId,
+          index: index,
+          address: address,
+          keyChain: keyChain,
+          status: status,
+          balanceSat: balanceSat,
+          highestPreviousBalanceSat: highestPreviousBalanceSat,
+        ),
+      LiquidWalletAddressModel(
+        :final index,
+        :final standard,
+        :final confidential,
+      ) =>
+        WalletAddress.liquid(
+          walletId: walletId,
+          index: index,
+          standard: standard,
+          confidential: confidential,
+          keyChain: keyChain,
+          status: status,
+          balanceSat: balanceSat,
+          highestPreviousBalanceSat: highestPreviousBalanceSat,
+        ),
+    };
   }
 }

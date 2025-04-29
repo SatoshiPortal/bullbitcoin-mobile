@@ -59,9 +59,7 @@ class _Screen extends StatelessWidget {
                         const Gap(40),
 
                         GridView.builder(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
                           physics:
                               const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling
                           shrinkWrap:
@@ -69,16 +67,14 @@ class _Screen extends StatelessWidget {
                           itemCount: wordsCount,
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 16,
-                            crossAxisSpacing: 32,
-                            childAspectRatio: 3.5,
-                          ),
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 32,
+                                childAspectRatio: 3.5,
+                              ),
 
                           itemBuilder: (context, index) {
-                            return MnemonicWordInputField(
-                              wordIndex: index,
-                            );
+                            return MnemonicWordInputField(wordIndex: index);
                           },
                         ),
                       ],
@@ -92,10 +88,7 @@ class _Screen extends StatelessWidget {
           const Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _Button(),
-              SizedBox(height: 20),
-            ],
+            children: [_Button(), SizedBox(height: 20)],
           ),
         ],
       ),
@@ -108,18 +101,19 @@ class _Button extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasAllValidWords =
-        context.select((RecoverWalletBloc _) => _.state.hasAllValidWords);
+    final hasAllValidWords = context.select(
+      (RecoverWalletBloc recoverWalletBloc) =>
+          recoverWalletBloc.state.hasAllValidWords,
+    );
 
     final creating = context.select(
-      (RecoverWalletBloc _) =>
-          _.state.recoverWalletStatus == const RecoverWalletStatus.loading(),
+      (RecoverWalletBloc recoverWalletBloc) =>
+          recoverWalletBloc.state.recoverWalletStatus ==
+          const RecoverWalletStatus.loading(),
     );
 
     if (creating) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     return Padding(
@@ -128,9 +122,9 @@ class _Button extends StatelessWidget {
         label: 'Recover',
         onPressed: () {
           if (hasAllValidWords) {
-            context
-                .read<RecoverWalletBloc>()
-                .add(const RecoverWalletConfirmed());
+            context.read<RecoverWalletBloc>().add(
+              const RecoverWalletConfirmed(),
+            );
           }
         },
         bgColor: context.colour.secondary,

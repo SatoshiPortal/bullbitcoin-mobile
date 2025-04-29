@@ -88,7 +88,7 @@ enum WalletSource {
 }
 
 @freezed
-class Wallet with _$Wallet {
+abstract class Wallet with _$Wallet {
   const factory Wallet({
     required String origin,
     @Default('') String label,
@@ -116,33 +116,22 @@ class Wallet with _$Wallet {
   String get id => origin;
 
   String getWalletTypeString() {
-    String str = '';
-
-    switch (network) {
-      case Network.bitcoinMainnet:
-      case Network.bitcoinTestnet:
-        str = 'Bitcoin network';
-
-      case Network.liquidMainnet:
-      case Network.liquidTestnet:
-        str = 'Liquid and Lightning network';
-    }
-
-    return str;
+    return switch (network) {
+      Network.bitcoinMainnet || Network.bitcoinTestnet => 'Bitcoin network',
+      Network.liquidMainnet ||
+      Network.liquidTestnet => 'Liquid and Lightning network',
+    };
   }
 
   String getLabel() {
     if (!isDefault) return label;
 
-    switch (network) {
-      case Network.bitcoinMainnet:
-      case Network.bitcoinTestnet:
-        return 'Secure Bitcoin wallet';
-
-      case Network.liquidMainnet:
-      case Network.liquidTestnet:
-        return 'Instant payments wallet';
-    }
+    return switch (network) {
+      Network.bitcoinMainnet ||
+      Network.bitcoinTestnet => 'Secure Bitcoin wallet',
+      Network.liquidMainnet ||
+      Network.liquidTestnet => 'Instant payments wallet',
+    };
   }
 
   bool get isTestnet {
@@ -154,13 +143,8 @@ class Wallet with _$Wallet {
     return network == Network.liquidMainnet || network == Network.liquidTestnet;
   }
 
-  bool get isWatchOnly {
-    switch (source) {
-      case WalletSource.xpub:
-      case WalletSource.coldcard:
-        return true;
-      default:
-        return false;
-    }
-  }
+  bool get isWatchOnly => switch (source) {
+    WalletSource.xpub || WalletSource.coldcard => true,
+    _ => false,
+  };
 }

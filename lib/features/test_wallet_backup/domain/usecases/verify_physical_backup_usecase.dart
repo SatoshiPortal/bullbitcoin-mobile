@@ -1,4 +1,5 @@
-import 'package:bb_mobile/core/seed/data/models/seed_model.dart' show SeedModel;
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart'
+    show MnemonicSeedModel, SeedModel;
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
@@ -10,8 +11,8 @@ class VerifyPhysicalBackupUsecase {
   VerifyPhysicalBackupUsecase({
     required WalletRepository walletRepository,
     required SeedRepository seedRepository,
-  })  : _walletRepository = walletRepository,
-        _seedRepository = seedRepository;
+  }) : _walletRepository = walletRepository,
+       _seedRepository = seedRepository;
 
   Future<bool> execute(List<String> mnemonic) async {
     try {
@@ -28,14 +29,16 @@ class VerifyPhysicalBackupUsecase {
       final defaultSeed = await _seedRepository.get(defaultFingerprint);
 
       final defaultSeedModel = SeedModel.fromEntity(defaultSeed);
-      final mnemonicWords = defaultSeedModel.maybeMap(
-        mnemonic: (mnemonic) => mnemonic.mnemonicWords,
-        orElse: () => throw Exception('Default seed is not a mnemonic seed'),
-      );
+      final mnemonicWords = switch (defaultSeedModel) {
+        MnemonicSeedModel(:final mnemonicWords) => mnemonicWords,
+        _ => throw Exception('Default seed is not a mnemonic seed'),
+      };
 
       return mnemonic.length == mnemonicWords.length &&
-          List.generate(mnemonic.length, (i) => mnemonic[i] == mnemonicWords[i])
-              .every((element) => element);
+          List.generate(
+            mnemonic.length,
+            (i) => mnemonic[i] == mnemonicWords[i],
+          ).every((element) => element);
     } catch (e) {
       debugPrint('$VerifyPhysicalBackupUsecase: $e');
       rethrow;

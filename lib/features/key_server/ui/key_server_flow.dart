@@ -48,11 +48,13 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
       child: MultiBlocProvider(
         providers: [
           BlocProvider.value(
-            value: locator<KeyServerCubit>()
-              ..updateKeyServerState(
-                backupFile: widget.backupFile,
-                flow: CurrentKeyServerFlow.fromString(widget.currentFlow ?? ''),
-              ),
+            value:
+                locator<KeyServerCubit>()..updateKeyServerState(
+                  backupFile: widget.backupFile,
+                  flow: CurrentKeyServerFlow.fromString(
+                    widget.currentFlow ?? '',
+                  ),
+                ),
           ),
           BlocProvider.value(value: locator<OnboardingBloc>()),
           BlocProvider.value(value: locator<BackupWalletBloc>()),
@@ -82,13 +84,20 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
                   isLoading: _isLoading(keyState, onBoardingState, testState),
                   hasError: _hasError(keyState, onBoardingState, testState),
                   title: _getTitle(keyState, onBoardingState, testState),
-                  description:
-                      _getMessage(keyState, onBoardingState, testState),
-                  errorMessage:
-                      _getErrorMessage(keyState, onBoardingState, testState),
-                  onTap: _hasError(keyState, onBoardingState, testState)
-                      ? () => _handleError(context)
-                      : null,
+                  description: _getMessage(
+                    keyState,
+                    onBoardingState,
+                    testState,
+                  ),
+                  errorMessage: _getErrorMessage(
+                    keyState,
+                    onBoardingState,
+                    testState,
+                  ),
+                  onTap:
+                      _hasError(keyState, onBoardingState, testState)
+                          ? () => _handleError(context)
+                          : null,
                 );
               }
 
@@ -129,7 +138,10 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     OnboardingState o,
     TestWalletBackupState t,
   ) =>
-      k.status.maybeWhen(failure: (_) => true, orElse: () => false) ||
+      switch (k.status) {
+        KeyServerFailure _ => true,
+        _ => false,
+      } ||
       o.statusError.isNotEmpty ||
       t.status == TestWalletBackupStatus.error;
 
@@ -159,24 +171,26 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     TestWalletBackupState t,
   ) {
     if (!_hasError(k, o, t)) return null;
-    return k.status.maybeWhen(
-      failure: (message) => message,
-      orElse: () => o.statusError.isNotEmpty
-          ? o.statusError
-          : t.statusError.isNotEmpty
-              ? t.statusError
-              : 'An error occurred',
-    );
+
+    return switch (k.status) {
+      KeyServerFailure(:final message) => message,
+      _ =>
+        o.statusError.isNotEmpty
+            ? o.statusError
+            : t.statusError.isNotEmpty
+            ? t.statusError
+            : 'An error occurred',
+    };
   }
 
   void _handleError(BuildContext context) {
     if (CurrentKeyServerFlow.fromString(widget.currentFlow ?? '') ==
         CurrentKeyServerFlow.recovery) {
       context.read<KeyServerCubit>().updateKeyServerState(
-            backupFile: widget.backupFile,
-            status: const KeyServerOperationStatus.initial(),
-            flow: CurrentKeyServerFlow.fromString(widget.currentFlow ?? ''),
-          );
+        backupFile: widget.backupFile,
+        status: const KeyServerOperationStatus.initial(),
+        flow: CurrentKeyServerFlow.fromString(widget.currentFlow ?? ''),
+      );
     } else {
       context.read<KeyServerCubit>()
         ..clearError()
@@ -194,20 +208,20 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     if (widget.fromOnboarding &&
         onBoardingState.onboardingStepStatus == OnboardingStepStatus.none) {
       context.read<OnboardingBloc>().add(
-            StartWalletRecovery(
-              backupKey: state.backupKey,
-              backupFile: state.backupFile,
-            ),
-          );
+        StartWalletRecovery(
+          backupKey: state.backupKey,
+          backupFile: state.backupFile,
+        ),
+      );
     } else if (!(testWalletBackupState.status ==
             TestWalletBackupStatus.success) &&
         !widget.fromOnboarding) {
       context.read<TestWalletBackupBloc>().add(
-            StartVaultBackupTesting(
-              backupKey: state.backupKey,
-              backupFile: state.backupFile,
-            ),
-          );
+        StartVaultBackupTesting(
+          backupKey: state.backupKey,
+          backupFile: state.backupFile,
+        ),
+      );
     }
   }
 

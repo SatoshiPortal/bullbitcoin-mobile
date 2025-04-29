@@ -18,9 +18,9 @@ class CreateEncryptedVaultUsecase {
     required RecoverBullRepository recoverBullRepository,
     required SeedRepository seedRepository,
     required WalletRepository walletRepository,
-  })  : _recoverBullRepository = recoverBullRepository,
-        _seedRepository = seedRepository,
-        _walletRepository = walletRepository;
+  }) : _recoverBullRepository = recoverBullRepository,
+       _seedRepository = seedRepository,
+       _walletRepository = walletRepository;
 
   Future<String> execute() async {
     try {
@@ -43,11 +43,11 @@ class CreateEncryptedVaultUsecase {
       final defaultFingerprint = defaultWallet.masterFingerprint;
       final defaultSeed = await _seedRepository.get(defaultFingerprint);
       final defaultSeedModel = SeedModel.fromEntity(defaultSeed);
-      final mnemonic = defaultSeedModel.maybeMap(
-        mnemonic: (mnemonic) => mnemonic.mnemonicWords,
-        orElse: () =>
-            throw 'CreateEncryptedVaultUsecase: Default seed is not a bytes seed',
-      );
+      final mnemonic = switch (defaultSeedModel) {
+        MnemonicSeedModel(:final mnemonicWords) => mnemonicWords,
+        _ =>
+          throw 'CreateEncryptedVaultUsecase: Default seed is not a bytes seed',
+      };
       final defaultXprv = Bip32Derivation.getXprvFromSeed(
         defaultSeed.bytes,
         defaultWallet.network,
@@ -65,8 +65,10 @@ class CreateEncryptedVaultUsecase {
       // Derive the backup key using BIP85
       final derivationPath = Bip85Derivation.generateBackupKeyPath();
 
-      final backupKey =
-          Bip85Derivation.deriveBackupKey(defaultXprv, derivationPath);
+      final backupKey = Bip85Derivation.deriveBackupKey(
+        defaultXprv,
+        derivationPath,
+      );
 
       // Create an encrypted backup file
       final encryptedBackup = _recoverBullRepository.createBackupFile(

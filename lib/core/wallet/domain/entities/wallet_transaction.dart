@@ -7,15 +7,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_transaction.freezed.dart';
 
-enum WalletTransactionDirection {
-  incoming,
-  outgoing,
-}
+enum WalletTransactionDirection { incoming, outgoing }
 
-enum WalletTransactionStatus {
-  pending,
-  confirmed,
-}
+enum WalletTransactionStatus { pending, confirmed }
 
 @freezed
 sealed class WalletTransaction with _$WalletTransaction implements Labelable {
@@ -111,12 +105,12 @@ sealed class Transaction with _$Transaction {
   }) = SelfTransactionDetail;
 
   TxType get type {
-    return map(
-      onchain: (_) => TxType.onchain,
-      self: (_) => TxType.self,
-      lnSwap: (_) => TxType.lnSwap,
-      chainSwap: (_) => TxType.chainSwap,
-    );
+    return switch (this) {
+      OnchainTransaction() => TxType.onchain,
+      SelfTransactionDetail() => TxType.self,
+      LnSwapTransaction() => TxType.lnSwap,
+      ChainSwapTransaction() => TxType.chainSwap,
+    };
   }
 }
 

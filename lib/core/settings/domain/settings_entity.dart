@@ -8,8 +8,9 @@ enum Environment {
   testnet;
 
   factory Environment.fromName(String name) {
-    return Environment.values
-        .firstWhere((environment) => environment.name == name);
+    return Environment.values.firstWhere(
+      (environment) => environment.name == name,
+    );
   }
 
   bool get isMainnet => this == Environment.mainnet;
@@ -23,18 +24,17 @@ enum BitcoinUnit {
   final String code;
   final int decimals;
 
-  const BitcoinUnit({
-    required this.code,
-    required this.decimals,
-  });
+  const BitcoinUnit({required this.code, required this.decimals});
 
   factory BitcoinUnit.fromName(String name) {
-    return BitcoinUnit.values
-        .firstWhere((bitcoinUnit) => bitcoinUnit.name == name);
+    return BitcoinUnit.values.firstWhere(
+      (bitcoinUnit) => bitcoinUnit.name == name,
+    );
   }
   factory BitcoinUnit.fromCode(String code) {
-    return BitcoinUnit.values
-        .firstWhere((bitcoinUnit) => bitcoinUnit.code == code);
+    return BitcoinUnit.values.firstWhere(
+      (bitcoinUnit) => bitcoinUnit.code == code,
+    );
   }
 }
 
@@ -64,7 +64,7 @@ extension LanguageExtension on Language {
 }
 
 @freezed
-class SettingsEntity with _$SettingsEntity {
+abstract class SettingsEntity with _$SettingsEntity {
   const factory SettingsEntity({
     required Environment environment,
     required BitcoinUnit bitcoinUnit,

@@ -1,14 +1,9 @@
 part of 'electrum_settings_bloc.dart';
 
-enum ElectrumSettingsStatus {
-  none,
-  loading,
-  success,
-  error,
-}
+enum ElectrumSettingsStatus { none, loading, success, error }
 
 @freezed
-class ElectrumSettingsState with _$ElectrumSettingsState {
+abstract class ElectrumSettingsState with _$ElectrumSettingsState {
   const factory ElectrumSettingsState({
     @Default([]) List<ElectrumServer> electrumServers,
     @Default([]) List<ElectrumServer> stagedServers,
@@ -75,9 +70,12 @@ class ElectrumSettingsState with _$ElectrumSettingsState {
     ];
 
     // Filter for the current network type (Bitcoin/Liquid)
-    final serversForNetworkType = serversToCheck
-        .where((server) => _isSameNetworkType(server.network, selectedNetwork))
-        .toList();
+    final serversForNetworkType =
+        serversToCheck
+            .where(
+              (server) => _isSameNetworkType(server.network, selectedNetwork),
+            )
+            .toList();
 
     if (serversForNetworkType.isNotEmpty) {
       return serversForNetworkType.first.validateDomain;
@@ -139,9 +137,10 @@ class ElectrumSettingsState with _$ElectrumSettingsState {
 
   // Get the current server for advanced options
   ElectrumServer? get currentServer {
-    final mainnetNetwork = isSelectedNetworkLiquid
-        ? Network.liquidMainnet
-        : Network.bitcoinMainnet;
+    final mainnetNetwork =
+        isSelectedNetworkLiquid
+            ? Network.liquidMainnet
+            : Network.bitcoinMainnet;
 
     return getServerForNetworkAndProvider(mainnetNetwork, selectedProvider);
   }

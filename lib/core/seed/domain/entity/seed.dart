@@ -11,9 +11,7 @@ sealed class Seed with _$Seed {
   const Seed._();
 
   /// Bytes-based seed
-  const factory Seed.bytes({
-    required Uint8List bytes,
-  }) = BytesSeed;
+  const factory Seed.bytes({required Uint8List bytes}) = BytesSeed;
 
   /// Mnemonic-based seed
   const factory Seed.mnemonic({
@@ -22,15 +20,16 @@ sealed class Seed with _$Seed {
   }) = MnemonicSeed;
 
   Uint8List get bytes {
-    return when(
-      bytes: (b) => b,
-      mnemonic: (mnemonicWords, passphrase) => Uint8List.fromList(
-        Mnemonic.fromWords(
-          words: mnemonicWords,
-          passphrase: passphrase ?? '',
-        ).seed,
-      ),
-    );
+    return switch (this) {
+      BytesSeed(:final bytes) => bytes,
+      MnemonicSeed(:final mnemonicWords, :final passphrase) =>
+        Uint8List.fromList(
+          Mnemonic.fromWords(
+            words: mnemonicWords,
+            passphrase: passphrase ?? '',
+          ).seed,
+        ),
+    };
   }
 
   String get hex => bytes.toHexString();

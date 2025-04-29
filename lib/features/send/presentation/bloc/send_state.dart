@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -49,16 +47,10 @@ enum SendType {
   }
 }
 
-enum SendStep {
-  address,
-  amount,
-  confirm,
-  sending,
-  success,
-}
+enum SendStep { address, amount, confirm, sending, success }
 
 @freezed
-class SendState with _$SendState {
+abstract class SendState with _$SendState {
   const factory SendState({
     @Default(SendStep.address) SendStep step,
     @Default(SendType.lightning) SendType sendType,
@@ -88,7 +80,7 @@ class SendState with _$SendState {
     // prepare
     String? unsignedPsbt,
     String? signedBitcoinPsbt,
-    Uint8List? signedLiquidTx,
+    String? signedLiquidTx,
     LnSendSwap? lightningSwap,
     // confirm
     String? txId,
@@ -115,8 +107,11 @@ class SendState with _$SendState {
   }) = _SendState;
   const SendState._();
 
-  bool get isInputAmountFiat => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
-      .contains(inputAmountCurrencyCode);
+  bool get isInputAmountFiat =>
+      ![
+        BitcoinUnit.btc.code,
+        BitcoinUnit.sats.code,
+      ].contains(inputAmountCurrencyCode);
 
   int get inputAmountSat {
     int amountSat = 0;
@@ -141,17 +136,19 @@ class SendState with _$SendState {
     return ConvertAmount.btcToFiat(inputAmountBtc, exchangeRate);
   }
 
-  double get confirmedAmountBtc => confirmedAmountSat != null
-      ? ConvertAmount.satsToBtc(confirmedAmountSat!)
-      : 0;
+  double get confirmedAmountBtc =>
+      confirmedAmountSat != null
+          ? ConvertAmount.satsToBtc(confirmedAmountSat!)
+          : 0;
 
   double get confirmedAmountFiat {
     return ConvertAmount.btcToFiat(confirmedAmountBtc, exchangeRate);
   }
 
-  double get confirmedSwapAmountBtc => lightningSwap != null
-      ? ConvertAmount.satsToBtc(lightningSwap!.paymentAmount)
-      : 0;
+  double get confirmedSwapAmountBtc =>
+      lightningSwap != null
+          ? ConvertAmount.satsToBtc(lightningSwap!.paymentAmount)
+          : 0;
 
   String get formattedConfirmedAmountBitcoin {
     if (bitcoinUnit == BitcoinUnit.sats) {
@@ -225,9 +222,7 @@ class SendState with _$SendState {
 
     if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
       return FormatAmount.btc(
-        ConvertAmount.satsToBtc(
-          selectedWallet!.balanceSat.toInt(),
-        ),
+        ConvertAmount.satsToBtc(selectedWallet!.balanceSat.toInt()),
       );
     } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
       return FormatAmount.sats(selectedWallet!.balanceSat.toInt());
@@ -257,9 +252,7 @@ class SendState with _$SendState {
       if (bitcoinUnit == BitcoinUnit.sats) {
         return FormatAmount.sats(satsBalance);
       } else {
-        return FormatAmount.btc(
-          ConvertAmount.satsToBtc(satsBalance),
-        );
+        return FormatAmount.btc(ConvertAmount.satsToBtc(satsBalance));
       }
     }
   }

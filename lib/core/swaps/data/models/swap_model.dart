@@ -71,22 +71,22 @@ sealed class SwapModel with _$SwapModel {
   const SwapModel._();
 
   factory SwapModel.fromEntity(Swap swap) {
-    return swap.when(
-      lnReceive: (
-        id,
-        keyIndex,
-        type,
-        status,
-        environment,
-        creationTime,
-        receiveWalletId,
-        invoice,
-        receiveAddress,
-        receiveTxid,
-        fees,
-        completionTime,
-      ) {
-        return SwapModel.lnReceive(
+    return switch (swap) {
+      LnReceiveSwap(
+        id: final id,
+        keyIndex: final keyIndex,
+        type: final type,
+        status: final status,
+        environment: final environment,
+        creationTime: final creationTime,
+        receiveWalletId: final receiveWalletId,
+        invoice: final invoice,
+        receiveAddress: final receiveAddress,
+        receiveTxid: final receiveTxid,
+        fees: final fees,
+        completionTime: final completionTime,
+      ) =>
+        SwapModel.lnReceive(
           id: id,
           type: type.name,
           status: status.name,
@@ -101,27 +101,26 @@ sealed class SwapModel with _$SwapModel {
           boltzFees: fees?.boltzFee,
           lockupFees: fees?.lockupFee,
           claimFees: fees?.claimFee,
-        );
-      },
-      lnSend: (
-        id,
-        keyIndex,
-        type,
-        status,
-        environment,
-        creationTime,
-        sendWalletId,
-        invoice,
-        paymentAddress,
-        paymentAmount,
-        sendTxid,
-        preimage,
-        refundAddress,
-        refundTxid,
-        fees,
-        completionTime,
-      ) {
-        return SwapModel.lnSend(
+        ),
+      LnSendSwap(
+        id: final id,
+        keyIndex: final keyIndex,
+        type: final type,
+        status: final status,
+        environment: final environment,
+        creationTime: final creationTime,
+        sendWalletId: final sendWalletId,
+        invoice: final invoice,
+        paymentAddress: final paymentAddress,
+        paymentAmount: final paymentAmount,
+        sendTxid: final sendTxid,
+        preimage: final preimage,
+        refundAddress: final refundAddress,
+        refundTxid: final refundTxid,
+        fees: final fees,
+        completionTime: final completionTime,
+      ) =>
+        SwapModel.lnSend(
           id: id,
           type: type.name,
           status: status.name,
@@ -140,26 +139,25 @@ sealed class SwapModel with _$SwapModel {
           boltzFees: fees?.boltzFee,
           lockupFees: fees?.lockupFee,
           claimFees: fees?.claimFee,
-        );
-      },
-      chain: (
-        id,
-        keyIndex,
-        type,
-        status,
-        environment,
-        creationTime,
-        sendWalletId,
-        sendTxid,
-        receiveWalletId,
-        receiveAddress,
-        receiveTxid,
-        refundAddress,
-        refundTxid,
-        fees,
-        completionTime,
-      ) {
-        return SwapModel.chain(
+        ),
+      ChainSwap(
+        id: final id,
+        keyIndex: final keyIndex,
+        type: final type,
+        status: final status,
+        environment: final environment,
+        creationTime: final creationTime,
+        sendWalletId: final sendWalletId,
+        sendTxid: final sendTxid,
+        receiveWalletId: final receiveWalletId,
+        receiveAddress: final receiveAddress,
+        receiveTxid: final receiveTxid,
+        refundAddress: final refundAddress,
+        refundTxid: final refundTxid,
+        fees: final fees,
+        completionTime: final completionTime,
+      ) =>
+        SwapModel.chain(
           id: id,
           type: type.name,
           status: status.name,
@@ -177,9 +175,8 @@ sealed class SwapModel with _$SwapModel {
           boltzFees: fees?.boltzFee,
           lockupFees: fees?.lockupFee,
           claimFees: fees?.claimFee,
-        );
-      },
-    );
+        ),
+    };
   }
 
   Swap toEntity() {
@@ -188,83 +185,129 @@ sealed class SwapModel with _$SwapModel {
     final environment = isTestnet ? Environment.testnet : Environment.mainnet;
     final creationDateTime = DateTime.fromMillisecondsSinceEpoch(creationTime);
 
-    return map(
-      lnReceive: (model) => Swap.lnReceive(
-        id: model.id,
-        keyIndex: model.keyIndex,
-        type: swapType,
-        status: swapStatus,
-        environment: environment,
-        creationTime: creationDateTime,
-        receiveWalletId: model.receiveWalletId,
-        invoice: model.invoice,
-        receiveAddress: model.receiveAddress,
-        receiveTxid: model.receiveTxid,
-        fees: SwapFees(
-          boltzFee: model.boltzFees,
-          lockupFee: model.lockupFees,
-          claimFee: model.claimFees,
+    return switch (this) {
+      LnReceiveSwapModel(
+        :final id,
+        :final keyIndex,
+        :final receiveWalletId,
+        :final invoice,
+        :final receiveAddress,
+        :final receiveTxid,
+        :final boltzFees,
+        :final lockupFees,
+        :final claimFees,
+        :final completionTime,
+      ) =>
+        Swap.lnReceive(
+          id: id,
+          keyIndex: keyIndex,
+          type: swapType,
+          status: swapStatus,
+          environment: environment,
+          creationTime: creationDateTime,
+          receiveWalletId: receiveWalletId,
+          invoice: invoice,
+          receiveAddress: receiveAddress,
+          receiveTxid: receiveTxid,
+          fees: SwapFees(
+            boltzFee: boltzFees,
+            lockupFee: lockupFees,
+            claimFee: claimFees,
+          ),
+          completionTime:
+              completionTime != null
+                  ? DateTime.fromMillisecondsSinceEpoch(completionTime)
+                  : null,
         ),
-        completionTime: model.completionTime != null
-            ? DateTime.fromMillisecondsSinceEpoch(model.completionTime!)
-            : null,
-      ),
-      lnSend: (model) => Swap.lnSend(
-        id: model.id,
-        keyIndex: model.keyIndex,
-        type: swapType,
-        status: swapStatus,
-        environment: environment,
-        creationTime: creationDateTime,
-        sendWalletId: model.sendWalletId,
-        invoice: model.invoice,
-        paymentAddress: model.paymentAddress,
-        paymentAmount: model.paymentAmount,
-        sendTxid: model.sendTxid,
-        preimage: model.preimage,
-        refundAddress: model.refundAddress,
-        refundTxid: model.refundTxid,
-        fees: SwapFees(
-          boltzFee: model.boltzFees,
-          lockupFee: model.lockupFees,
-          claimFee: model.claimFees,
+      LnSendSwapModel(
+        :final id,
+        :final keyIndex,
+        :final sendWalletId,
+        :final invoice,
+        :final paymentAddress,
+        :final paymentAmount,
+        :final sendTxid,
+        :final preimage,
+        :final refundAddress,
+        :final refundTxid,
+        :final boltzFees,
+        :final lockupFees,
+        :final claimFees,
+        :final completionTime,
+      ) =>
+        Swap.lnSend(
+          id: id,
+          keyIndex: keyIndex,
+          type: swapType,
+          status: swapStatus,
+          environment: environment,
+          creationTime: creationDateTime,
+          sendWalletId: sendWalletId,
+          invoice: invoice,
+          paymentAddress: paymentAddress,
+          paymentAmount: paymentAmount,
+          sendTxid: sendTxid,
+          preimage: preimage,
+          refundAddress: refundAddress,
+          refundTxid: refundTxid,
+          fees: SwapFees(
+            boltzFee: boltzFees,
+            lockupFee: lockupFees,
+            claimFee: claimFees,
+          ),
+          completionTime:
+              completionTime != null
+                  ? DateTime.fromMillisecondsSinceEpoch(completionTime)
+                  : null,
         ),
-        completionTime: model.completionTime != null
-            ? DateTime.fromMillisecondsSinceEpoch(model.completionTime!)
-            : null,
-      ),
-      chain: (model) => Swap.chain(
-        id: model.id,
-        keyIndex: model.keyIndex,
-        type: swapType,
-        status: swapStatus,
-        environment: environment,
-        creationTime: creationDateTime,
-        sendWalletId: model.sendWalletId,
-        sendTxid: model.sendTxid,
-        receiveWalletId: model.receiveWalletId,
-        receiveAddress: model.receiveAddress,
-        receiveTxid: model.receiveTxid,
-        refundAddress: model.refundAddress,
-        refundTxid: model.refundTxid,
-        fees: SwapFees(
-          boltzFee: model.boltzFees,
-          lockupFee: model.lockupFees,
-          claimFee: model.claimFees,
+      ChainSwapModel(
+        :final id,
+        :final keyIndex,
+        :final sendWalletId,
+        :final sendTxid,
+        :final receiveWalletId,
+        :final receiveAddress,
+        :final receiveTxid,
+        :final refundAddress,
+        :final refundTxid,
+        :final boltzFees,
+        :final lockupFees,
+        :final claimFees,
+        :final completionTime,
+      ) =>
+        Swap.chain(
+          id: id,
+          keyIndex: keyIndex,
+          type: swapType,
+          status: swapStatus,
+          environment: environment,
+          creationTime: creationDateTime,
+          sendWalletId: sendWalletId,
+          sendTxid: sendTxid,
+          receiveWalletId: receiveWalletId,
+          receiveAddress: receiveAddress,
+          receiveTxid: receiveTxid,
+          refundAddress: refundAddress,
+          refundTxid: refundTxid,
+          fees: SwapFees(
+            boltzFee: boltzFees,
+            lockupFee: lockupFees,
+            claimFee: claimFees,
+          ),
+          completionTime:
+              completionTime != null
+                  ? DateTime.fromMillisecondsSinceEpoch(completionTime)
+                  : null,
         ),
-        completionTime: model.completionTime != null
-            ? DateTime.fromMillisecondsSinceEpoch(model.completionTime!)
-            : null,
-      ),
-    );
+    };
   }
 
   // Common helper methods
-  String get swapId => map(
-        lnReceive: (model) => model.id,
-        lnSend: (model) => model.id,
-        chain: (model) => model.id,
-      );
+  String get swapId => switch (this) {
+    LnReceiveSwapModel(:final id) => id,
+    LnSendSwapModel(:final id) => id,
+    ChainSwapModel(:final id) => id,
+  };
 
   // Factory methods for JSON serialization/deserialization
   factory SwapModel.fromJson(Map<String, dynamic> json) =>

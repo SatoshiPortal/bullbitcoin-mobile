@@ -1,7 +1,7 @@
 part of 'backup_settings_cubit.dart';
 
 @freezed
-class BackupSettingsState with _$BackupSettingsState {
+sealed class BackupSettingsState with _$BackupSettingsState {
   factory BackupSettingsState({
     @Default(false) bool isDefaultPhysicalBackupTested,
     DateTime? lastPhysicalBackup,

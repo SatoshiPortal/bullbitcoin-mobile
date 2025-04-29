@@ -78,9 +78,7 @@ class SwapCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colour.onPrimary,
         borderRadius: BorderRadius.circular(2),
-        border: Border.all(
-          color: context.colour.secondaryFixedDim,
-        ),
+        border: Border.all(color: context.colour.secondaryFixedDim),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -100,10 +98,7 @@ class SwapCard extends StatelessWidget {
             ),
           ),
           const Gap(4),
-          BBText(
-            convertionAmount,
-            style: context.font.labelSmall,
-          ),
+          BBText(convertionAmount, style: context.font.labelSmall),
         ],
       ),
     );
@@ -140,27 +135,24 @@ class SwapAvailableBalance extends StatelessWidget {
           color: context.colour.surface,
         ),
         const Gap(4),
-        BBText(
-          'text',
-          style: context.font.labelLarge,
-        ),
+        BBText('text', style: context.font.labelLarge),
         const Spacer(),
         BBButton.small(
           label: 'MAX',
           onPressed: () {},
-          bgColor: maxSelected
-              // ignore: dead_code
-              ? context.colour.secondary
-              : context.colour.onSecondary,
-          textColor: maxSelected
-              // ignore: dead_code
-              ? context.colour.onSecondary
-              : context.colour.secondary,
+          bgColor:
+              maxSelected
+                  ? context.colour.secondary
+                  : context.colour.onSecondary,
+          textColor:
+              maxSelected
+                  ? context.colour.onSecondary
+                  : context.colour.secondary,
           outlined: true,
-          borderColor: maxSelected
-              // ignore: dead_code
-              ? context.colour.onSecondary
-              : context.colour.secondary,
+          borderColor:
+              maxSelected
+                  ? context.colour.onSecondary
+                  : context.colour.secondary,
         ),
       ],
     );
@@ -180,10 +172,7 @@ class SwapFromToDropdown extends StatelessWidget {
       for (final String item in items)
         DropdownMenuItem(
           value: item,
-          child: BBText(
-            item,
-            style: context.font.headlineSmall,
-          ),
+          child: BBText(item, style: context.font.headlineSmall),
         ),
     ];
   }
@@ -218,9 +207,7 @@ class SwapFromToDropdown extends StatelessWidget {
                   Icons.keyboard_arrow_down,
                   color: context.colour.secondary,
                 ),
-                items: [
-                  ...dropdownItems,
-                ],
+                items: [...dropdownItems],
                 onChanged: (value) {},
               ),
             ),

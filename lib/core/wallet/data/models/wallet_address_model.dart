@@ -15,11 +15,10 @@ sealed class WalletAddressModel with _$WalletAddressModel {
   }) = LiquidWalletAddressModel;
   const WalletAddressModel._();
 
-  String get address => when(
-        bitcoin: (int index, String address) => address,
-        liquid: (int index, String standard, String confidential) =>
-            confidential,
-      );
+  String get address => switch (this) {
+    BitcoinWalletAddressModel(:final address) => address,
+    LiquidWalletAddressModel(:final confidential) => confidential,
+  };
 
   String get labelRef => address;
 }

@@ -5,7 +5,7 @@ part 'tx_vout.freezed.dart';
 part 'tx_vout.g.dart';
 
 @freezed
-class TxVout with _$TxVout {
+abstract class TxVout with _$TxVout {
   const factory TxVout({
     required BigInt value,
     required int n,

@@ -3,15 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_address.freezed.dart';
 
-enum WalletAddressKeyChain {
-  internal,
-  external,
-}
+enum WalletAddressKeyChain { internal, external }
 
-enum WalletAddressStatus {
-  unused,
-  used,
-}
+enum WalletAddressStatus { unused, used }
 
 @freezed
 sealed class WalletAddress with _$WalletAddress implements Labelable {
@@ -40,69 +34,27 @@ sealed class WalletAddress with _$WalletAddress implements Labelable {
 
   const WalletAddress._();
 
-  String get address => when(
-        bitcoin: (
-          String walletId,
-          int? index,
-          String address,
-          WalletAddressKeyChain keyChain,
-          WalletAddressStatus status,
-          int? highestPreviousBalanceSat,
-          int? balanceSat,
-          List<String>? labels,
-        ) =>
-            address,
-        liquid: (
-          String walletId,
-          int? index,
-          String standard,
-          String confidential,
-          WalletAddressKeyChain keyChain,
-          WalletAddressStatus status,
-          int? highestPreviousBalanceSat,
-          int? balanceSat,
-          List<String>? labels,
-        ) =>
-            confidential,
-      );
+  String get address => switch (this) {
+    BitcoinWalletAddress(:final address) => address,
+    LiquidWalletAddress(:final confidential) => confidential,
+  };
 
-  String get standardAddress => when(
-        bitcoin: (
-          String walletId,
-          int? index,
-          String address,
-          WalletAddressKeyChain keyChain,
-          WalletAddressStatus status,
-          int? highestPreviousBalanceSat,
-          int? balanceSat,
-          List<String>? labels,
-        ) =>
-            address,
-        liquid: (
-          String walletId,
-          int? index,
-          String standard,
-          String confidential,
-          WalletAddressKeyChain keyChain,
-          WalletAddressStatus status,
-          int? highestPreviousBalanceSat,
-          int? balanceSat,
-          List<String>? labels,
-        ) =>
-            standard,
-      );
+  String get standardAddress => switch (this) {
+    BitcoinWalletAddress(:final address) => address,
+    LiquidWalletAddress(:final standard) => standard,
+  };
 
   /// Returns true if this is a Bitcoin address
-  bool get isBitcoin => maybeMap(
-        bitcoin: (_) => true,
-        orElse: () => false,
-      );
+  bool get isBitcoin => switch (this) {
+    BitcoinWalletAddress() => true,
+    _ => false,
+  };
 
   /// Returns true if this is a Liquid address
-  bool get isLiquid => maybeMap(
-        liquid: (_) => true,
-        orElse: () => false,
-      );
+  bool get isLiquid => switch (this) {
+    LiquidWalletAddress() => true,
+    _ => false,
+  };
 
   @override
   String get labelRef => address;

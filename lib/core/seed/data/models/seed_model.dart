@@ -9,9 +9,7 @@ part 'seed_model.g.dart';
 sealed class SeedModel with _$SeedModel {
   const SeedModel._();
 
-  const factory SeedModel.bytes({
-    required List<int> bytes,
-  }) = BytesSeedModel;
+  const factory SeedModel.bytes({required List<int> bytes}) = BytesSeedModel;
 
   const factory SeedModel.mnemonic({
     required List<String> mnemonicWords,
@@ -20,27 +18,24 @@ sealed class SeedModel with _$SeedModel {
 
   /// Convert `Seed` entity to `SeedModel`
   factory SeedModel.fromEntity(Seed entity) {
-    return entity.when(
-      bytes: (bytes) => SeedModel.bytes(
-        bytes: bytes,
-      ),
-      mnemonic: (mnemonicWords, passphrase) => SeedModel.mnemonic(
-        mnemonicWords: mnemonicWords,
-        passphrase: passphrase,
-      ),
-    );
+    return switch (entity) {
+      BytesSeed(:final bytes) => SeedModel.bytes(bytes: bytes as List<int>),
+      MnemonicSeed(:final mnemonicWords, :final passphrase) =>
+        SeedModel.mnemonic(
+          mnemonicWords: mnemonicWords,
+          passphrase: passphrase,
+        ),
+    };
   }
 
   Seed toEntity() {
-    return when(
-      bytes: (bytes) => Seed.bytes(
+    return switch (this) {
+      BytesSeedModel(:final bytes) => Seed.bytes(
         bytes: Uint8List.fromList(bytes),
       ),
-      mnemonic: (mnemonicWords, passphrase) => Seed.mnemonic(
-        mnemonicWords: mnemonicWords,
-        passphrase: passphrase,
-      ),
-    );
+      MnemonicSeedModel(:final mnemonicWords, :final passphrase) =>
+        Seed.mnemonic(mnemonicWords: mnemonicWords, passphrase: passphrase),
+    };
   }
 
   factory SeedModel.fromJson(Map<String, dynamic> json) =>

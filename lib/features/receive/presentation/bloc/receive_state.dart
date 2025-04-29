@@ -1,13 +1,9 @@
 part of 'receive_bloc.dart';
 
-enum ReceiveType {
-  bitcoin,
-  lightning,
-  liquid,
-}
+enum ReceiveType { bitcoin, lightning, liquid }
 
 @freezed
-class ReceiveState with _$ReceiveState {
+abstract class ReceiveState with _$ReceiveState {
   const factory ReceiveState({
     @Default(ReceiveType.lightning) ReceiveType type,
     Wallet? wallet,
@@ -33,16 +29,15 @@ class ReceiveState with _$ReceiveState {
   const ReceiveState._();
 
   List<String> get inputAmountCurrencyCodes {
-    return [
-      BitcoinUnit.btc.code,
-      BitcoinUnit.sats.code,
-      ...fiatCurrencyCodes,
-    ];
+    return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
   }
 
   bool get swapLimitsFetched => swapLimits != null;
-  bool get isInputAmountFiat => ![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
-      .contains(inputAmountCurrencyCode);
+  bool get isInputAmountFiat =>
+      ![
+        BitcoinUnit.btc.code,
+        BitcoinUnit.sats.code,
+      ].contains(inputAmountCurrencyCode);
 
   int get inputAmountSat {
     int amountSat = 0;
@@ -50,10 +45,7 @@ class ReceiveState with _$ReceiveState {
     if (inputAmount.isNotEmpty) {
       if (isInputAmountFiat) {
         final amountFiat = double.tryParse(inputAmount) ?? 0;
-        amountSat = ConvertAmount.fiatToSats(
-          amountFiat,
-          exchangeRate,
-        );
+        amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
       } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
         amountSat = int.tryParse(inputAmount) ?? 0;
       } else {
@@ -102,9 +94,7 @@ class ReceiveState with _$ReceiveState {
             'pj': pjUri.queryParameters['pj'],
             'pjos': pjUri.queryParameters['pjos'],
           };
-          bip21Uri = bip21Uri.replace(
-            queryParameters: queryParameters,
-          );
+          bip21Uri = bip21Uri.replace(queryParameters: queryParameters);
         }
         return bip21Uri.toString();
       case ReceiveType.lightning:
@@ -241,17 +231,17 @@ class ReceiveState with _$ReceiveState {
   }
 
   String get address => switch (type) {
-        ReceiveType.bitcoin => bitcoinAddress?.address ?? '',
-        ReceiveType.lightning => lightningSwap?.receiveAddress ?? '',
-        ReceiveType.liquid => liquidAddress?.address ?? '',
-      };
+    ReceiveType.bitcoin => bitcoinAddress?.address ?? '',
+    ReceiveType.lightning => lightningSwap?.receiveAddress ?? '',
+    ReceiveType.liquid => liquidAddress?.address ?? '',
+  };
 
   String get abbreviatedAddress => StringFormatting.truncateMiddle(address);
 
   String get txId => switch (type) {
-        ReceiveType.lightning => lightningSwap?.receiveTxid ?? '',
-        _ => tx?.txId ?? '',
-      };
+    ReceiveType.lightning => lightningSwap?.receiveTxid ?? '',
+    _ => tx?.txId ?? '',
+  };
   String get abbreviatedTxId => StringFormatting.truncateMiddle(txId);
 }
 
