@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
@@ -19,7 +19,8 @@ class ImportXpubUsecase {
     String label = '',
   }) async {
     try {
-      final environment = await _settings.getEnvironment();
+      final settings = await _settings.fetch();
+      final environment = settings.environment;
       final bitcoinNetwork = environment == Environment.mainnet
           ? Network.bitcoinMainnet
           : Network.bitcoinTestnet;

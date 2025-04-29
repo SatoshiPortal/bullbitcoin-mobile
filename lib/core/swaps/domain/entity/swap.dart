@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/entity/settings.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

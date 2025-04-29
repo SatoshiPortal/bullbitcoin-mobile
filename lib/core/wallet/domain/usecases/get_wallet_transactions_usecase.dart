@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
@@ -25,7 +25,8 @@ class GetWalletTransactionsUsecase {
     bool sync = false,
   }) async {
     try {
-      final environment = await _settingsRepository.getEnvironment();
+      final settings = await _settingsRepository.fetch();
+      final environment = settings.environment;
       final walletTransactions =
           await _walletTransactionRepository.getWalletTransactions(
         walletId: walletId,

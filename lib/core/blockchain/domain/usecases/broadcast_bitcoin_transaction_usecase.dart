@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 
 class BroadcastBitcoinTransactionUsecase {
   final BitcoinBlockchainRepository _bitcoinBlockchain;
@@ -13,7 +13,8 @@ class BroadcastBitcoinTransactionUsecase {
 
   Future<String> execute(String psbt) async {
     try {
-      final environment = await _settingsRepository.getEnvironment();
+      final settings = await _settingsRepository.fetch();
+      final environment = settings.environment;
       final txId = await _bitcoinBlockchain.broadcastPsbt(
         psbt,
         isTestnet: environment.isTestnet,

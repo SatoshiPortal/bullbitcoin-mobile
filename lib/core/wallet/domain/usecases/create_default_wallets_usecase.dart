@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
-import 'package:bb_mobile/core/settings/domain/repositories/settings_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +44,8 @@ class CreateDefaultWalletsUsecase {
       const scriptType = ScriptType.bip84;
 
       // Get the current environment to determine the network
-      final environment = await _settingsRepository.getEnvironment();
+      final settings = await _settingsRepository.fetch();
+      final environment = settings.environment;
       final bitcoinNetwork = environment.isMainnet
           ? Network.bitcoinMainnet
           : Network.bitcoinTestnet;

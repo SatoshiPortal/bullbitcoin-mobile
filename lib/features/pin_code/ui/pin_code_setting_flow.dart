@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_b
 import 'package:bb_mobile/features/pin_code/ui/screens/choose_pin_code_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/confirm_pin_code_screen.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/ui/components/loading/status_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -47,12 +48,13 @@ class PinCodeSettingFlow extends StatelessWidget {
               case PinCodeSettingStatus.choose:
                 return const ChoosePinCodeScreen();
               case PinCodeSettingStatus.confirm:
-                // TODO: Use correct loading screen
                 return const ConfirmPinCodeScreen();
               case PinCodeSettingStatus.success:
-                return const CircularProgressIndicator();
               case PinCodeSettingStatus.failure:
-                return const CircularProgressIndicator();
+                return const StatusScreen(
+                  title: 'Processing',
+                  description: 'Setting up your PIN code',
+                );
             }
           },
         ),

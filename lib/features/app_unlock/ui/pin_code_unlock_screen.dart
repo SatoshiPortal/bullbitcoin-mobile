@@ -1,8 +1,8 @@
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
 import 'package:bb_mobile/features/pin_code/ui/widgets/numeric_keyboard.dart';
-import 'package:bb_mobile/features/pin_code/ui/widgets/pin_code_display.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
+import 'package:bb_mobile/ui/components/inputs/pin_input.dart' show PinInput;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -87,8 +87,8 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                       BlocSelector<AppUnlockBloc, AppUnlockState, String>(
                         selector: (state) => state.pinCode,
                         builder: (context, pinCode) {
-                          return PinCodeDisplay(
-                            pinCode: pinCode,
+                          return PinInput(
+                            value: pinCode,
                           );
                         },
                       ),

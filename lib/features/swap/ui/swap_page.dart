@@ -149,13 +149,16 @@ class SwapAvailableBalance extends StatelessWidget {
           label: 'MAX',
           onPressed: () {},
           bgColor: maxSelected
+              // ignore: dead_code
               ? context.colour.secondary
               : context.colour.onSecondary,
           textColor: maxSelected
+              // ignore: dead_code
               ? context.colour.onSecondary
               : context.colour.secondary,
           outlined: true,
           borderColor: maxSelected
+              // ignore: dead_code
               ? context.colour.onSecondary
               : context.colour.secondary,
         ),

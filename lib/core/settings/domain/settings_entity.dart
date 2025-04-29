@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'settings.freezed.dart';
+part 'settings_entity.freezed.dart';
 
 enum Environment {
   mainnet,
@@ -64,13 +64,13 @@ extension LanguageExtension on Language {
 }
 
 @freezed
-class SettingsState with _$SettingsState {
-  const factory SettingsState({
+class SettingsEntity with _$SettingsEntity {
+  const factory SettingsEntity({
     required Environment environment,
     required BitcoinUnit bitcoinUnit,
     Language? language,
     required String currencyCode,
     bool? hideAmounts,
-  }) = _SettingsState;
-  const SettingsState._();
+  }) = _SettingsEntity;
+  const SettingsEntity._();
 }
