@@ -19,6 +19,7 @@ class BBInputText extends StatefulWidget {
   final bool onlyNumbers;
   final bool? obscure;
   final TextStyle? style;
+  final bool hideBorder;
   const BBInputText({
     this.uiKey,
     this.controller,
@@ -35,6 +36,7 @@ class BBInputText extends StatefulWidget {
     this.onlyNumbers = false,
     this.obscure = false,
     this.style,
+    this.hideBorder = false,
   });
 
   @override

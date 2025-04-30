@@ -35,21 +35,24 @@ class SwapPage extends StatelessWidget {
           children: [
             SwapFromToDropdown(type: _SwapDropdownType.from),
             Gap(16),
-            Stack(
-              children: [
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: SwapCard(type: _SwapCardType.pay),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: SwapCard(type: _SwapCardType.receive),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: SwapChangeButton(),
-                ),
-              ],
+            SizedBox(
+              height: 135 * 2,
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: SwapCard(type: _SwapCardType.pay),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SwapCard(type: _SwapCardType.receive),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: SwapChangeButton(),
+                  ),
+                ],
+              ),
             ),
             Gap(16),
             SwapAvailableBalance(),
@@ -75,34 +78,38 @@ class SwapCard extends StatelessWidget {
     final convertionAmount =
         _SwapCardType.pay == type ? '~0.00 BTC' : '~0.00 CAD';
 
-    return Container(
-      height: 200,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: context.colour.onPrimary,
-        borderRadius: BorderRadius.circular(2),
-        border: Border.all(color: context.colour.secondaryFixedDim),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          BBText(
-            'You ${type == _SwapCardType.pay ? 'Pay' : 'Receive'}',
-            style: context.font.labelLarge,
-            color: context.colour.outline,
-          ),
-          const Spacer(),
-          IgnorePointer(
-            ignoring: type == _SwapCardType.receive,
-            child: BBInputText(
-              style: context.font.headlineMedium,
-              value: amount,
-              onChanged: (v) {},
+    return Material(
+      elevation: 2,
+      child: Container(
+        height: 130,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: context.colour.onPrimary,
+          borderRadius: BorderRadius.circular(2),
+          border: Border.all(color: context.colour.secondaryFixedDim),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BBText(
+              'You ${type == _SwapCardType.pay ? 'Pay' : 'Receive'}',
+              style: context.font.labelLarge,
+              color: context.colour.outline,
             ),
-          ),
-          const Gap(4),
-          BBText(convertionAmount, style: context.font.labelSmall),
-        ],
+            const Spacer(),
+            IgnorePointer(
+              ignoring: type == _SwapCardType.receive,
+              child: BBInputText(
+                style: context.font.headlineMedium,
+
+                value: amount,
+                onChanged: (v) {},
+              ),
+            ),
+            const Gap(4),
+            BBText(convertionAmount, style: context.font.labelSmall),
+          ],
+        ),
       ),
     );
   }
@@ -113,10 +120,20 @@ class SwapChangeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.swap_vert),
-      iconSize: 32,
-      onPressed: () {},
+    return Material(
+      elevation: 4,
+      borderRadius: BorderRadius.circular(32),
+      child: Container(
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+        ),
+        child: IconButton(
+          icon: const Icon(Icons.swap_vert),
+          iconSize: 32,
+          onPressed: () {},
+        ),
+      ),
     );
   }
 }
@@ -142,6 +159,8 @@ class SwapAvailableBalance extends StatelessWidget {
         const Spacer(),
         BBButton.small(
           label: 'MAX',
+          height: 40,
+          width: 88,
           onPressed: () {},
           bgColor:
               maxSelected
