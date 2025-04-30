@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/get_best_available_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
 
 import 'package:bb_mobile/features/electrum_settings/presentation/bloc/electrum_settings_bloc.dart';
@@ -12,6 +13,7 @@ class ElectrumSettingsLocator {
         getAllElectrumServers: locator<GetAllElectrumServersUsecase>(),
         updateElectrumServerSettings:
             locator<UpdateElectrumServerSettingsUsecase>(),
+        getBestAvailableServer: locator<GetBestAvailableServerUsecase>(),
       ),
     );
   }
