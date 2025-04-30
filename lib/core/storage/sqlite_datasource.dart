@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/labels/data/labels_table.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_receivers_table.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_senders_table.dart';
 import 'package:bb_mobile/core/settings/data/settings_table.dart';
 import 'package:bb_mobile/core/transaction/data/models/transactions_table.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_table.dart';
@@ -7,10 +9,19 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 part 'sqlite_datasource.g.dart';
 
-@DriftDatabase(tables: [Transactions, WalletMetadatas, Labels, Settings])
+@DriftDatabase(
+  tables: [
+    Transactions,
+    WalletMetadatas,
+    Labels,
+    Settings,
+    PayjoinSenders,
+    PayjoinReceivers,
+  ],
+)
 class SqliteDatasource extends _$SqliteDatasource {
   SqliteDatasource([QueryExecutor? executor])
-      : super(executor ?? _openConnection());
+    : super(executor ?? _openConnection());
 
   @override
   int get schemaVersion => 1;

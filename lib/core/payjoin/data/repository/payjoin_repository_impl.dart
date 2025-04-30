@@ -6,9 +6,9 @@ import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
-import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_receiver_model_extension.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_sender_model_extension.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
@@ -20,7 +20,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:flutter/foundation.dart';
 import 'package:synchronized/synchronized.dart';
 
-class PayjoinRepositoryImpl implements PayjoinRepository {
+class PayjoinRepository {
   final PayjoinDatasource _source;
   final SqliteDatasource _sqlite;
   final SeedDatasource _seed;
@@ -30,46 +30,42 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   // Lock to prevent the same utxo from being used in multiple payjoin proposals
   final Lock _lock;
 
-  PayjoinRepositoryImpl({
+  PayjoinRepository({
     required PayjoinDatasource payjoinDatasource,
     required SqliteDatasource sqliteDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
-  })  : _source = payjoinDatasource,
-        _sqlite = sqliteDatasource,
-        _seed = seedDatasource,
-        _bdkWallet = bdkWalletDatasource,
-        _blockchain = blockchainDatasource,
-        _electrumServerStorage = electrumServerStorageDatasource,
-        _lock = Lock();
+  }) : _source = payjoinDatasource,
+       _sqlite = sqliteDatasource,
+       _seed = seedDatasource,
+       _bdkWallet = bdkWalletDatasource,
+       _blockchain = blockchainDatasource,
+       _electrumServerStorage = electrumServerStorageDatasource,
+       _lock = Lock();
 
-  @override
-  Stream<PayjoinReceiver> get requestsForReceivers =>
-      _source.requestsForReceivers.map(
-        (payjoinModel) => payjoinModel.toEntity() as PayjoinReceiver,
-      );
-  @override
-  Stream<PayjoinSender> get proposalsForSenders =>
-      _source.proposalsForSenders.map(
-        (payjoinModel) => payjoinModel.toEntity() as PayjoinSender,
-      );
-  @override
-  Stream<Payjoin> get expiredPayjoins => _source.expiredPayjoins.map(
-        (payjoinModel) => payjoinModel.toEntity(),
-      );
+  Stream<PayjoinReceiver> get requestsForReceivers => _source
+      .requestsForReceivers
+      .map((payjoinModel) => payjoinModel.toEntity());
+  Stream<PayjoinSender> get proposalsForSenders => _source.proposalsForSenders
+      .map((payjoinModel) => payjoinModel.toEntity());
+  Stream<dynamic> get expiredPayjoins =>
+      _source.expiredPayjoins.map((model) => model.toEntity());
 
-  @override
   Future<Payjoin?> getPayjoinByTxId(String txId) async {
-    final payjoinModels = await _source.getAll();
+    final payjoinModels = await _source.fetchAll();
 
     Payjoin? payjoin;
     try {
       final payjoinModel = payjoinModels.firstWhere(
         (payjoin) => payjoin.txId == txId,
       );
-      payjoin = payjoinModel.toEntity();
+      if (payjoinModel is PayjoinSenderModel) {
+        payjoin = payjoinModel.toEntity();
+      } else if (payjoinModel is PayjoinReceiverModel) {
+        payjoin = payjoinModel.toEntity();
+      }
     } catch (e) {
       debugPrint('Payjoin not found for txId: $txId');
     }
@@ -78,33 +74,39 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   // TODO: Remove this and use the general frozen utxo datasource
-  @override
   Future<List<({String txId, int vout})>>
-      getUtxosFrozenByOngoingPayjoins() async {
-    final payjoins = await _source.getAll(onlyOngoing: true);
-
+  getUtxosFrozenByOngoingPayjoins() async {
+    final payjoins = await _source.fetchAll(onlyOngoing: true);
     final inputs = await Future.wait(
       payjoins.map((payjoin) async {
-        final psbt = payjoin is PayjoinReceiverModel
-            ? payjoin.proposalPsbt
-            : (payjoin as PayjoinSenderModel).originalPsbt;
+        final psbt =
+            payjoin is PayjoinReceiverModel
+                ? payjoin.proposalPsbt
+                : (payjoin as PayjoinSenderModel).originalPsbt;
 
-        if (psbt == null) {
-          return null;
+        if (psbt == null) return null;
+
+        String? walletId;
+        if (payjoin is PayjoinSenderModel) {
+          walletId = payjoin.walletId;
+        } else if (payjoin is PayjoinReceiverModel) {
+          walletId = payjoin.walletId;
         }
 
-        final walletMetadata = await _sqlite.managers.walletMetadatas
-            .filter((f) => f.id(payjoin.walletId))
-            .getSingleOrNull();
-
-        if (walletMetadata == null) {
-          return null;
+        WalletMetadataModel? metadata;
+        if (walletId != null) {
+          metadata =
+              await _sqlite.managers.walletMetadatas
+                  .filter((f) => f.id(walletId))
+                  .getSingleOrNull();
         }
+
+        if (metadata == null) return null;
 
         // Extract the spent utxos from the proposal psbt
         final spentUtxos = await TransactionParsing.extractSpentUtxosFromPsbt(
           psbt,
-          isTestnet: walletMetadata.isTestnet,
+          isTestnet: metadata.isTestnet,
         );
         return spentUtxos;
       }),
@@ -116,7 +118,6 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         .toList();
   }
 
-  @override
   Future<PayjoinReceiver> createPayjoinReceiver({
     required String walletId,
     required String address,
@@ -132,12 +133,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       expireAfterSec: expireAfterSec,
     );
 
-    final payjoin = model.toEntity();
-
-    return payjoin as PayjoinReceiver;
+    return model.toEntity();
   }
 
-  @override
   Future<PayjoinSender> createPayjoinSender({
     required String walletId,
     required String bip21,
@@ -157,27 +155,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // Return a payjoin entity with send details
     final payjoin = model.toEntity();
 
-    return payjoin as PayjoinSender;
+    return payjoin;
   }
 
-  @override
-  Future<List<Payjoin>> getAll({
-    int? offset,
-    int? limit,
-    //bool? completed,
-  }) async {
-    final models = await _source.getAll();
-
-    final payjoins = models
-        .map(
-          (model) => model.toEntity(),
-        )
-        .toList();
-
-    return payjoins;
-  }
-
-  @override
   Future<PayjoinReceiver> processRequest({
     required String id,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
@@ -196,16 +176,18 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         'lockedUtxos: --- ${lockedUtxos.map((input) => '${input.txId}:${input.vout}').join(', ')} ---',
       );
 
-      final pdkInputPairs = unspentUtxos
-          .where((unspent) {
-            final isUtxoLocked = lockedUtxos.any((locked) {
-              return unspent.txId == locked.txId && unspent.vout == locked.vout;
-            });
+      final pdkInputPairs =
+          unspentUtxos
+              .where((unspent) {
+                final isUtxoLocked = lockedUtxos.any((locked) {
+                  return unspent.txId == locked.txId &&
+                      unspent.vout == locked.vout;
+                });
 
-            return !isUtxoLocked;
-          })
-          .map((utxo) => PayjoinInputPairModel.fromUtxo(utxo))
-          .toList();
+                return !isUtxoLocked;
+              })
+              .map((utxo) => PayjoinInputPairModel.fromUtxo(utxo))
+              .toList();
 
       debugPrint(
         'pdkInputPairs: --- ${pdkInputPairs.map((input) => '${input.txId}:${input.vout}').join(', ')} ---',
@@ -225,44 +207,44 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         processPsbt: processPsbt,
       );
 
-      return model.toEntity() as PayjoinReceiver;
+      return model.toEntity();
     });
 
     return payjoinReceiver;
   }
 
-  @override
   Future<String> signPsbt({
     required String walletId,
     required String psbt,
   }) async {
-    final walletMetadata = await _sqlite.managers.walletMetadatas
-        .filter((e) => e.id(walletId))
-        .getSingleOrNull();
+    final walletMetadata =
+        await _sqlite.managers.walletMetadatas
+            .filter((e) => e.id(walletId))
+            .getSingleOrNull();
 
     if (walletMetadata == null) {
       throw Exception('Wallet metadata not found');
     }
 
-    final seed = await _seed.get(
-      walletMetadata.masterFingerprint,
-    ) as MnemonicSeed;
+    final seed =
+        await _seed.get(walletMetadata.masterFingerprint) as MnemonicSeed;
     final mnemonic = seed.mnemonicWords.join(' ');
 
-    final wallet = WalletModel.privateBdk(
-      id: walletId,
-      scriptType: ScriptType.fromName(walletMetadata.scriptType),
-      mnemonic: mnemonic,
-      passphrase: seed.passphrase,
-      isTestnet: walletMetadata.isTestnet,
-    ) as PrivateBdkWalletModel;
+    final wallet =
+        WalletModel.privateBdk(
+              id: walletId,
+              scriptType: ScriptType.fromName(walletMetadata.scriptType),
+              mnemonic: mnemonic,
+              passphrase: seed.passphrase,
+              isTestnet: walletMetadata.isTestnet,
+            )
+            as PrivateBdkWalletModel;
 
     final signedPsbt = await _bdkWallet.signPsbt(psbt, wallet: wallet);
 
     return signedPsbt;
   }
 
-  @override
   Future<PayjoinSender> broadcastPsbt({
     required String payjoinId,
     required String finalizedPsbt,
@@ -272,27 +254,24 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     //  first one fails?
     final electrumServer =
         await _electrumServerStorage.getDefaultServerByProvider(
-              DefaultElectrumServerProvider.blockstream,
-              network: network,
-            ) ??
-            ElectrumServerModel.blockstream(
-              isTestnet: network.isTestnet,
-              isLiquid: network.isLiquid,
-            );
+          DefaultElectrumServerProvider.blockstream,
+          network: network,
+        ) ??
+        ElectrumServerModel.blockstream(
+          isTestnet: network.isTestnet,
+          isLiquid: network.isLiquid,
+        );
 
     await _blockchain.broadcastPsbt(
       finalizedPsbt,
       electrumServer: electrumServer,
     );
 
-    final model = await _source.completeSender(
-      payjoinId,
-    );
+    final model = await _source.completeSender(payjoinId);
 
-    return model.toEntity() as PayjoinSender;
+    return model.toEntity();
   }
 
-  @override
   Future<PayjoinReceiver> broadcastOriginalTransaction({
     required String payjoinId,
     required Uint8List originalTxBytes,
@@ -302,24 +281,22 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     //  first one fails?
     final electrumServer =
         await _electrumServerStorage.getDefaultServerByProvider(
-              DefaultElectrumServerProvider.blockstream,
-              network: network,
-            ) ??
-            ElectrumServerModel.blockstream(
-              isTestnet: network.isTestnet,
-              isLiquid: network.isLiquid,
-            );
+          DefaultElectrumServerProvider.blockstream,
+          network: network,
+        ) ??
+        ElectrumServerModel.blockstream(
+          isTestnet: network.isTestnet,
+          isLiquid: network.isLiquid,
+        );
 
     await _blockchain.broadcastTransaction(
       originalTxBytes,
       electrumServer: electrumServer,
     );
 
-    final model = await _source.completeReceiver(
-      payjoinId,
-    );
+    final model = await _source.completeReceiver(payjoinId);
 
-    return model.toEntity() as PayjoinReceiver;
+    return model.toEntity();
   }
 }
 

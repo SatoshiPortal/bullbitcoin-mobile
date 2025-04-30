@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/payjoin/data/services/payjoin_watcher_service_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -49,6 +50,22 @@ void main() {
     await AppLocator.setup();
 
     // Make sure we are running in testnet environment
+    final settings = locator<SettingsRepository>();
+    try {
+      final s = await settings.fetch();
+      debugPrint('settings: $s');
+    } catch (e) {
+      debugPrint('settings: store default');
+      await settings.store(
+        id: 1,
+        environment: Environment.mainnet,
+        bitcoinUnit: BitcoinUnit.btc,
+        currency: 'USD',
+        language: Language.unitedStatesEnglish,
+        hideAmounts: false,
+      );
+    }
+
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
 
     walletRepository = locator<WalletRepository>();
@@ -81,13 +98,9 @@ void main() {
   });
 
   test('Wallets have funds to payjoin', () async {
-    senderWallet = await walletRepository.getWallet(
-      senderWallet.id,
-    );
+    senderWallet = await walletRepository.getWallet(senderWallet.id);
     final senderBalance = senderWallet.balanceSat;
-    receiverWallet = await walletRepository.getWallet(
-      receiverWallet.id,
-    );
+    receiverWallet = await walletRepository.getWallet(receiverWallet.id);
     final receiverBalance = receiverWallet.balanceSat;
     debugPrint('Sender balance: $senderBalance');
     debugPrint('Receiver balance: $receiverBalance');
@@ -115,7 +128,7 @@ void main() {
 
   group('Payjoin Integration Tests', () {
     group('with one receive and one send', () {
-      late StreamSubscription<Payjoin> payjoinSubscription;
+      late StreamSubscription<dynamic> payjoinSubscription;
       late Completer<bool> payjoinReceiverProposedEvent;
       late Completer<bool> payjoinSenderCompletedEvent;
       late Completer<bool> payjoinReceiverExpiredEvent;
@@ -127,17 +140,17 @@ void main() {
 
         payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
           debugPrint('Payjoin event for ${payjoin.id}: ${payjoin.status}');
-          switch (payjoin) {
-            case PayjoinReceiver _:
-              if (payjoin.status == PayjoinStatus.proposed) {
-                payjoinReceiverProposedEvent.complete(true);
-              } else if (payjoin.status == PayjoinStatus.expired) {
-                payjoinReceiverExpiredEvent.complete(true);
-              }
-            case PayjoinSender _:
-              if (payjoin.status == PayjoinStatus.completed) {
-                payjoinSenderCompletedEvent.complete(true);
-              }
+
+          if (payjoin is PayjoinReceiver) {
+            if (payjoin.status == PayjoinStatus.proposed) {
+              payjoinReceiverProposedEvent.complete(true);
+            } else if (payjoin.status == PayjoinStatus.expired) {
+              payjoinReceiverExpiredEvent.complete(true);
+            }
+          } else if (payjoin is PayjoinSender) {
+            if (payjoin.status == PayjoinStatus.completed) {
+              payjoinSenderCompletedEvent.complete(true);
+            }
           }
         });
       });
@@ -187,17 +200,15 @@ void main() {
         //  The receiver will process the request automatically and sends a
         //  payjoin proposal back to the payjoin directory which should complete
         //  the payjoin session for the receiver's side.
-        final didReceiverPropose = await Future.any(
-          [
-            payjoinReceiverProposedEvent.future,
-            Future.delayed(
-              const Duration(
-                seconds: PayjoinConstants.directoryPollingInterval * 3,
-              ),
-              () => false,
+        final didReceiverPropose = await Future.any([
+          payjoinReceiverProposedEvent.future,
+          Future.delayed(
+            const Duration(
+              seconds: PayjoinConstants.directoryPollingInterval * 3,
             ),
-          ],
-        );
+            () => false,
+          ),
+        ]);
         expect(didReceiverPropose, true);
 
         // Once the proposal is sent by the receiver, it is automatically fetched
@@ -205,17 +216,15 @@ void main() {
         // The sender will process the proposal automatically and broadcast the
         //  final transaction to the network which should complete the payjoin
         //  session for the sender's side.
-        final didSenderComplete = await Future.any(
-          [
-            payjoinSenderCompletedEvent.future,
-            Future.delayed(
-              const Duration(
-                seconds: PayjoinConstants.directoryPollingInterval * 3,
-              ),
-              () => false,
+        final didSenderComplete = await Future.any([
+          payjoinSenderCompletedEvent.future,
+          Future.delayed(
+            const Duration(
+              seconds: PayjoinConstants.directoryPollingInterval * 3,
             ),
-          ],
-        );
+            () => false,
+          ),
+        ]);
         expect(didSenderComplete, true);
       });
 
@@ -225,39 +234,34 @@ void main() {
 
       test('should fail if the sender does not have enough funds', () {});
 
-      test(
-        'should expire if time to wait for a request is over',
-        () async {
-          // Make the payjoin receiver expire before it polls the
-          //  payjoin directory for the first time.
-          const expireAfterSec = PayjoinConstants.directoryPollingInterval - 1;
-          // Generate receiver address from receiver wallet
-          final address = await addressRepository.getNewAddress(
-            walletId: receiverWallet.id,
-          );
+      test('should expire if time to wait for a request is over', () async {
+        // Make the payjoin receiver expire before it polls the
+        //  payjoin directory for the first time.
+        const expireAfterSec = PayjoinConstants.directoryPollingInterval - 1;
+        // Generate receiver address from receiver wallet
+        final address = await addressRepository.getNewAddress(
+          walletId: receiverWallet.id,
+        );
 
-          // Start a receiver session with the expiration time
-          final payjoin = await receiveWithPayjoinUsecase.execute(
-            walletId: receiverWallet.id,
-            address: address.address,
-            expireAfterSec: expireAfterSec,
-          );
-          debugPrint('Payjoin receiver created: ${payjoin.id}');
+        // Start a receiver session with the expiration time
+        final payjoin = await receiveWithPayjoinUsecase.execute(
+          walletId: receiverWallet.id,
+          address: address.address,
+          expireAfterSec: expireAfterSec,
+        );
+        debugPrint('Payjoin receiver created: ${payjoin.id}');
 
-          final didReceiverExpire = await Future.any(
-            [
-              payjoinReceiverExpiredEvent.future,
-              Future.delayed(
-                const Duration(
-                  seconds: PayjoinConstants.directoryPollingInterval * 2,
-                ),
-                () => false,
-              ),
-            ],
-          );
-          expect(didReceiverExpire, true);
-        },
-      );
+        final didReceiverExpire = await Future.any([
+          payjoinReceiverExpiredEvent.future,
+          Future.delayed(
+            const Duration(
+              seconds: PayjoinConstants.directoryPollingInterval * 2,
+            ),
+            () => false,
+          ),
+        ]);
+        expect(didReceiverExpire, true);
+      });
 
       tearDown(() {
         payjoinSubscription.cancel();
@@ -270,21 +274,21 @@ void main() {
       final List<String> receiverAddresses = [];
       final List<Uri> payjoinUris = [];
       final Map<String, Completer<bool>> payjoinCompleters = {};
-      late StreamSubscription<Payjoin> payjoinSubscription;
+      late StreamSubscription<dynamic> payjoinSubscription;
 
       setUp(() {
         payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
           debugPrint('Payjoin event for ${payjoin.id}: ${payjoin.status}');
-          switch (payjoin) {
-            case PayjoinReceiver _:
-              if (payjoin.status == PayjoinStatus.proposed) {
-                // Complete the receiver side when it has send a proposal
-                payjoinCompleters[payjoin.id]!.complete(true);
-              }
-            case PayjoinSender _:
-              if (payjoin.status == PayjoinStatus.completed) {
-                payjoinCompleters[payjoin.id]!.complete(true);
-              }
+
+          if (payjoin is PayjoinReceiver) {
+            if (payjoin.status == PayjoinStatus.proposed) {
+              // Complete the receiver side when it has send a proposal
+              payjoinCompleters[payjoin.id]!.complete(true);
+            }
+          } else if (payjoin is PayjoinSender) {
+            if (payjoin.status == PayjoinStatus.completed) {
+              payjoinCompleters[payjoin.id]!.complete(true);
+            }
           }
         });
       });
@@ -379,29 +383,29 @@ void main() {
               payjoinCompleters[payjoinSender.id] = Completer();
             }
 
-            final didAllComplete = await Future.any(
-              [
-                Future.wait(payjoinCompleters.values.map((e) => e.future)).then(
-                  (results) => results.every(
-                    (completed) => completed == true, // Ensure all completed
-                  ),
+            final didAllComplete = await Future.any([
+              Future.wait(payjoinCompleters.values.map((e) => e.future)).then(
+                (results) => results.every(
+                  (completed) => completed == true, // Ensure all completed
                 ),
-                Future.delayed(
-                  const Duration(
-                    seconds: PayjoinConstants.directoryPollingInterval *
-                        3 *
-                        numberOfPayjoins,
-                  ),
-                  () => false,
+              ),
+              Future.delayed(
+                const Duration(
+                  seconds:
+                      PayjoinConstants.directoryPollingInterval *
+                      3 *
+                      numberOfPayjoins,
                 ),
-              ],
-            );
+                () => false,
+              ),
+            ]);
             expect(didAllComplete, true);
           });
         },
         timeout: const Timeout(
           Duration(
-            minutes: PayjoinConstants.directoryPollingInterval *
+            minutes:
+                PayjoinConstants.directoryPollingInterval *
                 3 *
                 numberOfPayjoins,
           ),

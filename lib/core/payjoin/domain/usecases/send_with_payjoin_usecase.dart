@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 
 class SendWithPayjoinUsecase {
@@ -9,8 +9,8 @@ class SendWithPayjoinUsecase {
   const SendWithPayjoinUsecase({
     required PayjoinRepository payjoinRepository,
     required BitcoinWalletRepository bitcoinWalletRepository,
-  })  : _payjoinRepository = payjoinRepository,
-        _bitcoinWalletRepository = bitcoinWalletRepository;
+  }) : _payjoinRepository = payjoinRepository,
+       _bitcoinWalletRepository = bitcoinWalletRepository;
 
   Future<PayjoinSender> execute({
     required String walletId,

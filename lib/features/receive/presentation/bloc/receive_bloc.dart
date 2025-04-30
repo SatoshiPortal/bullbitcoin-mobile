@@ -36,38 +36,37 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
     required GetSettingsUsecase getSettingsUsecase,
     required ConvertSatsToCurrencyAmountUsecase
-        convertSatsToCurrencyAmountUsecase,
+    convertSatsToCurrencyAmountUsecase,
     required GetReceiveAddressUsecase getReceiveAddressUsecase,
     required CreateReceiveSwapUsecase createReceiveSwapUsecase,
     required ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase,
     required BroadcastOriginalTransactionUsecase
-        broadcastOriginalTransactionUsecase,
+    broadcastOriginalTransactionUsecase,
     required WatchPayjoinUsecase watchPayjoinUsecase,
     required WatchWalletTransactionByAddressUsecase
-        watchWalletTransactionByAddressUsecase,
+    watchWalletTransactionByAddressUsecase,
     required WatchSwapUsecase watchSwapUsecase,
     required CreateLabelUsecase createLabelUsecase,
     required GetSwapLimitsUsecase getSwapLimitsUsecase,
     Wallet? wallet,
-  })  : _getWalletsUsecase = getWalletsUsecase,
-        _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
-        _getSettingsUsecase = getSettingsUsecase,
-        _convertSatsToCurrencyAmountUsecase =
-            convertSatsToCurrencyAmountUsecase,
-        _getReceiveAddressUsecase = getReceiveAddressUsecase,
-        _createReceiveSwapUsecase = createReceiveSwapUsecase,
-        _receiveWithPayjoinUsecase = receiveWithPayjoinUsecase,
-        _broadcastOriginalTransactionUsecase =
-            broadcastOriginalTransactionUsecase,
-        _watchPayjoinUsecase = watchPayjoinUsecase,
-        _watchWalletTransactionByAddressUsecase =
-            watchWalletTransactionByAddressUsecase,
-        _watchSwapUsecase = watchSwapUsecase,
-        _createLabelUsecase = createLabelUsecase,
-        _getSwapLimitsUsecase = getSwapLimitsUsecase,
-        _wallet = wallet,
-        // Lightning is the default when pressing the receive button on the home screen
-        super(const ReceiveState()) {
+  }) : _getWalletsUsecase = getWalletsUsecase,
+       _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
+       _getSettingsUsecase = getSettingsUsecase,
+       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
+       _getReceiveAddressUsecase = getReceiveAddressUsecase,
+       _createReceiveSwapUsecase = createReceiveSwapUsecase,
+       _receiveWithPayjoinUsecase = receiveWithPayjoinUsecase,
+       _broadcastOriginalTransactionUsecase =
+           broadcastOriginalTransactionUsecase,
+       _watchPayjoinUsecase = watchPayjoinUsecase,
+       _watchWalletTransactionByAddressUsecase =
+           watchWalletTransactionByAddressUsecase,
+       _watchSwapUsecase = watchSwapUsecase,
+       _createLabelUsecase = createLabelUsecase,
+       _getSwapLimitsUsecase = getSwapLimitsUsecase,
+       _wallet = wallet,
+       // Lightning is the default when pressing the receive button on the home screen
+       super(const ReceiveState()) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
     on<ReceiveLiquidStarted>(_onLiquidStarted);
@@ -91,11 +90,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   final GetReceiveAddressUsecase _getReceiveAddressUsecase;
   final ReceiveWithPayjoinUsecase _receiveWithPayjoinUsecase;
   final BroadcastOriginalTransactionUsecase
-      _broadcastOriginalTransactionUsecase;
+  _broadcastOriginalTransactionUsecase;
   final CreateReceiveSwapUsecase _createReceiveSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final WatchWalletTransactionByAddressUsecase
-      _watchWalletTransactionByAddressUsecase;
+  _watchWalletTransactionByAddressUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final CreateLabelUsecase _createLabelUsecase;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
@@ -150,9 +149,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(
           state.copyWith(
             bitcoinUnit: bitcoinUnit,
-            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
-                ? state.inputAmountCurrencyCode
-                : bitcoinUnit.code,
+            inputAmountCurrencyCode:
+                state.inputAmountCurrencyCode.isNotEmpty
+                    ? state.inputAmountCurrencyCode
+                    : bitcoinUnit.code,
           ),
         );
       }
@@ -173,8 +173,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       var bitcoinAddress = state.bitcoinAddress;
       if (bitcoinAddress == null) {
         // If the bitcoin address is not set yet, we need to get it from the wallet
-        final address =
-            await _getReceiveAddressUsecase.execute(walletId: wallet.id);
+        final address = await _getReceiveAddressUsecase.execute(
+          walletId: wallet.id,
+        );
         bitcoinAddress = address;
         emit(state.copyWith(bitcoinAddress: bitcoinAddress));
       }
@@ -194,12 +195,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           error = e;
         }
 
-        emit(
-          state.copyWith(
-            payjoin: payjoin,
-            error: error,
-          ),
-        );
+        emit(state.copyWith(payjoin: payjoin, error: error));
       }
 
       if (state.exchangeRate == 0) {
@@ -215,9 +211,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         address: bitcoinAddress.address,
       );
     } catch (e) {
-      emit(
-        state.copyWith(error: e),
-      );
+      emit(state.copyWith(error: e));
     }
   }
 
@@ -251,9 +245,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(
           state.copyWith(
             bitcoinUnit: bitcoinUnit,
-            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
-                ? state.inputAmountCurrencyCode
-                : bitcoinUnit.code,
+            inputAmountCurrencyCode:
+                state.inputAmountCurrencyCode.isNotEmpty
+                    ? state.inputAmountCurrencyCode
+                    : bitcoinUnit.code,
           ),
         );
       }
@@ -300,9 +295,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(state.copyWith(exchangeRate: exchangeRate));
       }
     } catch (e) {
-      emit(
-        state.copyWith(error: e),
-      );
+      emit(state.copyWith(error: e));
     }
   }
 
@@ -333,9 +326,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(
           state.copyWith(
             bitcoinUnit: bitcoinUnit,
-            inputAmountCurrencyCode: state.inputAmountCurrencyCode.isNotEmpty
-                ? state.inputAmountCurrencyCode
-                : bitcoinUnit.code,
+            inputAmountCurrencyCode:
+                state.inputAmountCurrencyCode.isNotEmpty
+                    ? state.inputAmountCurrencyCode
+                    : bitcoinUnit.code,
           ),
         );
       }
@@ -367,8 +361,9 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
       var liquidAddress = state.liquidAddress;
       if (liquidAddress == null) {
         // If the liquid address is not set yet, we need to get it from the wallet
-        final address =
-            await _getReceiveAddressUsecase.execute(walletId: wallet.id);
+        final address = await _getReceiveAddressUsecase.execute(
+          walletId: wallet.id,
+        );
         liquidAddress = address;
         emit(state.copyWith(liquidAddress: liquidAddress));
       }
@@ -386,9 +381,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         address: liquidAddress.address,
       );
     } catch (e) {
-      emit(
-        state.copyWith(error: e),
-      );
+      emit(state.copyWith(error: e));
     }
   }
 
@@ -405,18 +398,20 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         final amountFiat = double.tryParse(event.amount);
         final isDecimalPoint = event.amount == '.';
 
-        amount = amountFiat == null && !isDecimalPoint
-            ? state.inputAmount
-            : event.amount;
+        amount =
+            amountFiat == null && !isDecimalPoint
+                ? state.inputAmount
+                : event.amount;
       } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
         // If the amount is in sats, make sure it is a valid BigInt and do not
         //  allow a decimal point.
         final amountSats = BigInt.tryParse(event.amount);
         final hasDecimals = event.amount.contains('.');
 
-        amount = amountSats == null || hasDecimals
-            ? state.inputAmount
-            : event.amount;
+        amount =
+            amountSats == null || hasDecimals
+                ? state.inputAmount
+                : event.amount;
       } else {
         // If the amount is in BTC, make sure it is a valid double and
         //  do not allow more than 8 decimal places.
@@ -424,21 +419,16 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         final decimals = event.amount.split('.').last.length;
         final isDecimalPoint = event.amount == '.';
 
-        amount = (amountBtc == null && !isDecimalPoint) ||
-                decimals > BitcoinUnit.btc.decimals
-            ? state.inputAmount
-            : event.amount;
+        amount =
+            (amountBtc == null && !isDecimalPoint) ||
+                    decimals > BitcoinUnit.btc.decimals
+                ? state.inputAmount
+                : event.amount;
       }
 
-      emit(
-        state.copyWith(
-          inputAmount: amount,
-        ),
-      );
+      emit(state.copyWith(inputAmount: amount));
     } catch (e) {
-      emit(
-        state.copyWith(error: e),
-      );
+      emit(state.copyWith(error: e));
     }
   }
 
@@ -449,8 +439,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     double exchangeRate = state.exchangeRate;
     String fiatCurrencyCode = state.fiatCurrencyCode;
 
-    if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code]
-        .contains(event.currencyCode)) {
+    if (![
+      BitcoinUnit.btc.code,
+      BitcoinUnit.sats.code,
+    ].contains(event.currencyCode)) {
       // If the currency is a fiat currency, retrieve the exchange rate and replace
       //  the current exchange rate and fiat currency code.
       fiatCurrencyCode = event.currencyCode;
@@ -484,27 +476,15 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     final confirmedAmountSat = state.inputAmountSat;
-    emit(
-      state.copyWith(
-        confirmedAmountSat: confirmedAmountSat,
-      ),
-    );
+    emit(state.copyWith(confirmedAmountSat: confirmedAmountSat));
     if (state.wallet == null) {
-      emit(
-        state.copyWith(
-          error: Exception('No wallet found'),
-        ),
-      );
+      emit(state.copyWith(error: Exception('No wallet found')));
       return;
     }
     if (state.type != ReceiveType.lightning) {
       return;
     }
-    emit(
-      state.copyWith(
-        creatingSwap: true,
-      ),
-    );
+    emit(state.copyWith(creatingSwap: true));
     LnReceiveSwap? swap;
     Object? error;
     try {
@@ -532,12 +512,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         );
         return;
       }
-      emit(
-        state.copyWith(
-          lightningSwap: null,
-          amountException: null,
-        ),
-      );
+      emit(state.copyWith(lightningSwap: null, amountException: null));
       swap = await _createReceiveSwapUsecase.execute(
         walletId: state.wallet!.id,
         type: SwapType.lightningToLiquid,
@@ -553,20 +528,11 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     } catch (e) {
       debugPrint('Swap creation failed: $e');
       error = e;
-      emit(
-        state.copyWith(
-          error: error,
-          creatingSwap: false,
-        ),
-      );
+      emit(state.copyWith(error: error, creatingSwap: false));
     }
 
     emit(
-      state.copyWith(
-        lightningSwap: swap,
-        creatingSwap: false,
-        error: error,
-      ),
+      state.copyWith(lightningSwap: swap, creatingSwap: false, error: error),
     );
   }
 
@@ -574,9 +540,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveNoteChanged event,
     Emitter<ReceiveState> emit,
   ) async {
-    emit(
-      state.copyWith(note: event.note),
-    );
+    emit(state.copyWith(note: event.note));
   }
 
   Future<void> _onNoteSaved(
@@ -615,9 +579,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async {
     // This toggle switch button is only available in the bitcoin receive screen
     if (state.type == ReceiveType.bitcoin) {
-      emit(
-        state.copyWith(isAddressOnly: event.isAddressOnly),
-      );
+      emit(state.copyWith(isAddressOnly: event.isAddressOnly));
     }
   }
 
@@ -626,11 +588,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     emit(
-      state.copyWith(
-        bitcoinAddress: null,
-        liquidAddress: null,
-        payjoin: null,
-      ),
+      state.copyWith(bitcoinAddress: null, liquidAddress: null, payjoin: null),
     );
 
     try {
@@ -681,9 +639,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         address: address.address,
       );
     } catch (e) {
-      emit(
-        state.copyWith(error: e),
-      );
+      emit(state.copyWith(error: e));
     }
   }
 
@@ -696,11 +652,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     if (state.type == ReceiveType.bitcoin &&
         state.payjoin?.id != null &&
         updatedPayjoin.id == state.payjoin!.id) {
-      emit(
-        state.copyWith(
-          payjoin: updatedPayjoin,
-        ),
-      );
+      emit(state.copyWith(payjoin: updatedPayjoin));
     }
   }
 
@@ -727,11 +679,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async {
     final tx = event.tx;
 
-    emit(
-      state.copyWith(
-        tx: tx,
-      ),
-    );
+    emit(state.copyWith(tx: tx));
   }
 
   Future<void> _onLightningSwapUpdated(
@@ -755,17 +703,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   void _watchPayjoin(String payjoinId) {
     // Cancel the previous subscription if it exists
     _payjoinSubscription?.cancel();
-    _payjoinSubscription =
-        _watchPayjoinUsecase.execute(ids: [payjoinId]).listen(
-      (updatedPayjoin) {
-        debugPrint(
-          '[ReceiveBloc] Watched payjoin ${updatedPayjoin.id} updated: ${updatedPayjoin.status}',
-        );
-        if (updatedPayjoin is PayjoinReceiver) {
-          add(ReceivePayjoinUpdated(updatedPayjoin));
-        }
-      },
-    );
+    _payjoinSubscription = _watchPayjoinUsecase.execute(ids: [payjoinId]).listen((
+      updatedPayjoin,
+    ) {
+      debugPrint(
+        '[ReceiveBloc] Watched payjoin ${updatedPayjoin.id} updated: ${updatedPayjoin.status}',
+      );
+      add(ReceivePayjoinUpdated(updatedPayjoin));
+    });
   }
 
   void _watchWalletTransactionToAddress({
@@ -775,16 +720,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     // Cancel the previous subscription if it exists
     _walletTransactionSubscription?.cancel();
     _walletTransactionSubscription = _watchWalletTransactionByAddressUsecase
-        .execute(
-      walletId: walletId,
-      toAddress: address,
-    )
+        .execute(walletId: walletId, toAddress: address)
         .listen((tx) {
-      debugPrint(
-        '[ReceiveBloc] Watched transaction ${tx.txId} updated: ${tx.status}',
-      );
-      add(ReceiveTransactionReceived(tx));
-    });
+          debugPrint(
+            '[ReceiveBloc] Watched transaction ${tx.txId} updated: ${tx.status}',
+          );
+          add(ReceiveTransactionReceived(tx));
+        });
   }
 
   void _watchLnReceiveSwap(String swapId) {

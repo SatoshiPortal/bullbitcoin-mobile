@@ -1,8 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:bb_mobile/core/payjoin/domain/services/payjoin_watcher_service.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
@@ -10,23 +9,23 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:flutter/material.dart';
 
-class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
+class PayjoinWatcherService {
   final PayjoinRepository _payjoin;
   final WalletRepository _wallet;
   final BitcoinWalletRepository _bitcoinWallet;
   final WalletUtxoRepository _utxoRepository;
-  final StreamController<Payjoin> _payjoinStreamController;
+  final StreamController<dynamic> _payjoinStreamController;
 
-  PayjoinWatcherServiceImpl({
+  PayjoinWatcherService({
     required PayjoinRepository payjoinRepository,
     required WalletRepository walletRepository,
     required BitcoinWalletRepository bitcoinWalletRepository,
     required WalletUtxoRepository utxoRepository,
-  })  : _payjoin = payjoinRepository,
-        _wallet = walletRepository,
-        _bitcoinWallet = bitcoinWalletRepository,
-        _utxoRepository = utxoRepository,
-        _payjoinStreamController = StreamController<Payjoin>.broadcast() {
+  }) : _payjoin = payjoinRepository,
+       _wallet = walletRepository,
+       _bitcoinWallet = bitcoinWalletRepository,
+       _utxoRepository = utxoRepository,
+       _payjoinStreamController = StreamController<Payjoin>.broadcast() {
     // Listen to payjoin events from the repository and process them
     _payjoin.requestsForReceivers.listen((payjoin) async {
       debugPrint('Received payjoin request: ${payjoin.id}');
@@ -34,9 +33,7 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
       //  that a payjoin request was received.
       _payjoinStreamController.add(payjoin);
       // Process the payjoin request
-      await _processPayjoinRequest(
-        payjoin,
-      );
+      await _processPayjoinRequest(payjoin);
     });
     _payjoin.proposalsForSenders.listen((payjoin) async {
       debugPrint('Received payjoin proposal: ${payjoin.id}');
@@ -60,30 +57,34 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
     });
   }
 
-  @override
-  Stream<Payjoin> get payjoins => _payjoinStreamController.stream;
+  Stream<dynamic> get payjoins => _payjoinStreamController.stream;
 
   Future<void> _processPayjoinRequest(PayjoinReceiver payjoin) async {
     debugPrint('Processing payjoin request: ${payjoin.id}');
     final walletId = payjoin.walletId;
-    final unspentUtxos =
-        await _utxoRepository.getWalletUtxos(walletId: walletId);
+    final unspentUtxos = await _utxoRepository.getWalletUtxos(
+      walletId: walletId,
+    );
 
     try {
       final processedPayjoin = await _payjoin.processRequest(
         id: payjoin.id,
-        hasOwnedInputs: (inputScript) => _bitcoinWallet.isScriptOfWallet(
-          script: inputScript,
-          walletId: walletId,
-        ),
-        hasReceiverOutput: (outputScript) => _bitcoinWallet.isScriptOfWallet(
-          walletId: walletId,
-          script: outputScript,
-        ),
+        hasOwnedInputs:
+            (inputScript) => _bitcoinWallet.isScriptOfWallet(
+              script: inputScript,
+              walletId: walletId,
+            ),
+        hasReceiverOutput:
+            (outputScript) => _bitcoinWallet.isScriptOfWallet(
+              walletId: walletId,
+              script: outputScript,
+            ),
         unspentUtxos: unspentUtxos.whereType<BitcoinWalletUtxo>().toList(),
         processPsbt: (psbt) async {
-          final signedPsbt =
-              await _bitcoinWallet.signPsbt(psbt, walletId: walletId);
+          final signedPsbt = await _bitcoinWallet.signPsbt(
+            psbt,
+            walletId: walletId,
+          );
           return signedPsbt;
         },
       );
@@ -118,8 +119,10 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
     final network = wallet.network;
 
     try {
-      final finalizedPsbt =
-          await _bitcoinWallet.signPsbt(proposalPsbt, walletId: walletId);
+      final finalizedPsbt = await _bitcoinWallet.signPsbt(
+        proposalPsbt,
+        walletId: walletId,
+      );
 
       final processedPayjoin = await _payjoin.broadcastPsbt(
         payjoinId: payjoin.id,
@@ -142,8 +145,9 @@ class PayjoinWatcherServiceImpl implements PayjoinWatcherService {
 
       if (payjoin.originalTxBytes == null) {
         debugPrint(
-            'No original transaction bytes to broadcast found for payjoin:'
-            ' ${payjoin.id}');
+          'No original transaction bytes to broadcast found for payjoin:'
+          ' ${payjoin.id}',
+        );
         return;
       }
       // Get the network from the wallet of the payjoin to make sure the
