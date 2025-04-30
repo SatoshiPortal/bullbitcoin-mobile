@@ -74,7 +74,9 @@ class _ActionRow extends StatelessWidget {
             _ActionButton(
               icon: Assets.icons.swap.path,
               label: 'Swap',
-              onPressed: () {},
+              onPressed: () {
+                context.pushNamed(AppRoute.swap.name);
+              },
               position: _ButtonPosition.last,
             ),
           ],
@@ -121,10 +123,7 @@ class _ActionButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(icon, height: 24, width: 24),
-              BBText(
-                label,
-                style: context.font.bodyLarge,
-              ),
+              BBText(label, style: context.font.bodyLarge),
             ],
           ),
         ),

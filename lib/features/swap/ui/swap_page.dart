@@ -34,6 +34,7 @@ class SwapPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SwapFromToDropdown(type: _SwapDropdownType.from),
+            Gap(16),
             Stack(
               children: [
                 Align(
@@ -41,16 +42,18 @@ class SwapPage extends StatelessWidget {
                   child: SwapCard(type: _SwapCardType.pay),
                 ),
                 Align(
-                  alignment: Alignment.centerRight,
-                  child: SwapChangeButton(),
-                ),
-                Align(
                   alignment: Alignment.bottomCenter,
                   child: SwapCard(type: _SwapCardType.receive),
                 ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SwapChangeButton(),
+                ),
               ],
             ),
+            Gap(16),
             SwapAvailableBalance(),
+            Gap(16),
             SwapFromToDropdown(type: _SwapDropdownType.to),
             Spacer(),
             SwapContinueButton(),
@@ -73,7 +76,7 @@ class SwapCard extends StatelessWidget {
         _SwapCardType.pay == type ? '~0.00 BTC' : '~0.00 CAD';
 
     return Container(
-      height: 114,
+      height: 200,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: context.colour.onPrimary,
@@ -92,7 +95,7 @@ class SwapCard extends StatelessWidget {
           IgnorePointer(
             ignoring: type == _SwapCardType.receive,
             child: BBInputText(
-              style: context.font.displaySmall,
+              style: context.font.headlineMedium,
               value: amount,
               onChanged: (v) {},
             ),
