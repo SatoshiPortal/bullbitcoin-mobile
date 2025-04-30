@@ -55,6 +55,26 @@ class PayjoinDatasource {
       _proposalSentController.stream;
 
   Stream<dynamic> get expiredPayjoins => _expiredController.stream;
+  Future<(OhttpKeys?, Url?)> fetchOhttpKeyAndRelay({
+    required Url payjoinDirectory,
+  }) async {
+    Url? ohttpRelay;
+    OhttpKeys? ohttpKeys;
+    for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
+      try {
+        final relay = await Url.fromStr(ohttpRelayUrl);
+        ohttpKeys = await fetchOhttpKeys(
+          ohttpRelay: relay,
+          payjoinDirectory: payjoinDirectory,
+        );
+        ohttpRelay = relay;
+        break;
+      } catch (e) {
+        continue;
+      }
+    }
+    return (ohttpKeys, ohttpRelay);
+  }
 
   Future<PayjoinReceiverModel> createReceiver({
     required String walletId,
@@ -68,21 +88,9 @@ class PayjoinDatasource {
           expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
       final payjoinDirectory = await Url.fromStr(_payjoinDirectoryUrl);
 
-      Url? ohttpRelay;
-      OhttpKeys? ohttpKeys;
-      for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
-        try {
-          final relay = await Url.fromStr(ohttpRelayUrl);
-          ohttpKeys = await fetchOhttpKeys(
-            ohttpRelay: relay,
-            payjoinDirectory: payjoinDirectory,
-          );
-          ohttpRelay = relay;
-          break;
-        } catch (e) {
-          continue;
-        }
-      }
+      final (ohttpKeys, ohttpRelay) = await fetchOhttpKeyAndRelay(
+        payjoinDirectory: payjoinDirectory,
+      );
 
       if (ohttpRelay == null || ohttpKeys == null) {
         throw Exception('All OHTTP relays failed');

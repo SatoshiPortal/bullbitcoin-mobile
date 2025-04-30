@@ -1,8 +1,13 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/get_best_available_server_usecase.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/check_payjoin_relay_health_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
@@ -11,6 +16,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_any_wallet_syncing_u
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/home/domain/entity/warning.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -27,20 +34,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required RestartSwapWatcherUsecase restartSwapWatcherUsecase,
     required InitializeTorUsecase initializeTorUsecase,
     required CheckForTorInitializationOnStartupUsecase
-        checkForTorInitializationOnStartupUsecase,
+    checkForTorInitializationOnStartupUsecase,
     required GetApiKeyUsecase getApiKeyUsecase,
     required GetUserSummaryUseCase getUserSummaryUseCase,
-  })  : _getWalletsUsecase = getWalletsUsecase,
-        _checkAnyWalletSyncingUsecase = checkAnyWalletSyncingUsecase,
-        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
-        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
-        _restartSwapWatcherUsecase = restartSwapWatcherUsecase,
-        _initializeTorUsecase = initializeTorUsecase,
-        _checkForTorInitializationOnStartupUsecase =
-            checkForTorInitializationOnStartupUsecase,
-        _getApiKeyUsecase = getApiKeyUsecase,
-        _getUserSummaryUsecase = getUserSummaryUseCase,
-        super(const HomeState()) {
+    required GetBestAvailableServerUsecase getBestAvailableServerUsecase,
+    required CheckPayjoinRelayHealthUsecase checkPayjoinRelayHealth,
+    required GetSwapLimitsUsecase getSwapLimitsUsecase,
+  }) : _getWalletsUsecase = getWalletsUsecase,
+       _checkAnyWalletSyncingUsecase = checkAnyWalletSyncingUsecase,
+       _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
+       _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
+       _restartSwapWatcherUsecase = restartSwapWatcherUsecase,
+       _initializeTorUsecase = initializeTorUsecase,
+       _checkForTorInitializationOnStartupUsecase =
+           checkForTorInitializationOnStartupUsecase,
+       _getApiKeyUsecase = getApiKeyUsecase,
+       _getUserSummaryUsecase = getUserSummaryUseCase,
+       _getBestAvailableServerUsecase = getBestAvailableServerUsecase,
+       _checkPayjoinRelayHealth = checkPayjoinRelayHealth,
+       _getSwapLimitsUsecase = getSwapLimitsUsecase,
+       super(const HomeState()) {
     on<HomeStarted>(_onStarted);
     on<HomeRefreshed>(_onRefreshed);
     on<HomeWalletSyncStarted>(_onWalletSyncStarted);
@@ -48,6 +61,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<StartTorInitialization>(_onStartTorInitialization);
     on<GetUserDetails>(_onGetUserDetails);
     on<ChangeHomeTab>(_onChangeHomeTab);
+    on<CheckAllWarnings>(_onCheckAllWarnings);
     add(const GetUserDetails());
   }
 
@@ -58,10 +72,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final RestartSwapWatcherUsecase _restartSwapWatcherUsecase;
   final InitializeTorUsecase _initializeTorUsecase;
   final CheckForTorInitializationOnStartupUsecase
-      _checkForTorInitializationOnStartupUsecase;
+  _checkForTorInitializationOnStartupUsecase;
   final GetApiKeyUsecase _getApiKeyUsecase;
   final GetUserSummaryUseCase _getUserSummaryUsecase;
-
+  final GetBestAvailableServerUsecase _getBestAvailableServerUsecase;
+  final CheckPayjoinRelayHealthUsecase _checkPayjoinRelayHealth;
+  final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
 
@@ -79,10 +95,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> _onStarted(
-    HomeStarted event,
-    Emitter<HomeState> emit,
-  ) async {
+  Future<void> _onStarted(HomeStarted event, Emitter<HomeState> emit) async {
     try {
       // Don't sync the wallets here so the wallet list is shown immediately
       // and the sync is done after that
@@ -99,20 +112,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const HomeRefreshed());
-
+      add(const CheckAllWarnings());
       // Now subscribe to syncs starts and finishes to update the UI with the syncing indicator
       await _startedSyncsSubscription
           ?.cancel(); // cancel any previous subscription
       await _finishedSyncsSubscription
           ?.cancel(); // cancel any previous subscription
-      _startedSyncsSubscription =
-          _watchStartedWalletSyncsUsecase.execute().listen(
-                (wallet) => add(HomeWalletSyncStarted(wallet)),
-              );
-      _finishedSyncsSubscription =
-          _watchFinishedWalletSyncsUsecase.execute().listen(
-                (wallet) => add(HomeWalletSyncFinished(wallet)),
-              );
+      _startedSyncsSubscription = _watchStartedWalletSyncsUsecase
+          .execute()
+          .listen((wallet) => add(HomeWalletSyncStarted(wallet)));
+      _finishedSyncsSubscription = _watchFinishedWalletSyncsUsecase
+          .execute()
+          .listen((wallet) => add(HomeWalletSyncFinished(wallet)));
     } catch (e) {
       emit(HomeState(status: HomeStatus.failure, error: e));
     }
@@ -142,11 +153,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       await _restartSwapWatcherUsecase.execute();
     } catch (e) {
       emit(
-        state.copyWith(
-          isSyncing: false,
-          status: HomeStatus.failure,
-          error: e,
-        ),
+        state.copyWith(isSyncing: false, status: HomeStatus.failure, error: e),
       );
     }
   }
@@ -179,12 +186,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         ),
       );
     } catch (e) {
-      emit(
-        state.copyWith(
-          status: HomeStatus.failure,
-          error: e,
-        ),
-      );
+      emit(state.copyWith(status: HomeStatus.failure, error: e));
     }
   }
 
@@ -192,11 +194,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     StartTorInitialization event,
     Emitter<HomeState> emit,
   ) async {
-    emit(
-      state.copyWith(
-        status: HomeStatus.loading,
-      ),
-    );
+    emit(state.copyWith(status: HomeStatus.loading));
     final isTorIniatizationEnabled =
         await _checkForTorInitializationOnStartupUsecase.execute();
 
@@ -218,6 +216,109 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(state.copyWith(userSummary: userSummary, checkingUser: false));
     } catch (e) {
       emit(state.copyWith(error: e, checkingUser: false, userSummary: null));
+    }
+  }
+
+  Future<void> _onCheckAllWarnings(
+    CheckAllWarnings event,
+    Emitter<HomeState> emit,
+  ) async {
+    final defaultWallets = await _getWalletsUsecase.execute(onlyDefaults: true);
+    if (defaultWallets.isEmpty) {
+      emit(state.copyWith(warnings: const []));
+      return;
+    }
+
+    final warnings = <HomeWarning>[];
+
+    // Run all checks in parallel
+    await Future.wait([
+      // Check electrum servers
+      _checkElectrumServers(defaultWallets, warnings),
+
+      // Check payjoin health
+      _checkPayjoinHealth(warnings),
+
+      // Check swap server
+      _checkSwapServer(defaultWallets.first.isTestnet, warnings),
+    ]);
+
+    emit(state.copyWith(warnings: warnings));
+  }
+
+  Future<void> _checkElectrumServers(
+    List<Wallet> defaultWallets,
+    List<HomeWarning> warnings,
+  ) async {
+    bool bitcoinServerDown = false;
+    bool liquidServerDown = false;
+
+    await Future.wait(
+      defaultWallets.map((wallet) async {
+        final electrumServer = await _getBestAvailableServerUsecase.execute(
+          network: wallet.network,
+        );
+        if (electrumServer.status != ElectrumServerStatus.online) {
+          if (wallet.isLiquid) {
+            liquidServerDown = true;
+          } else {
+            bitcoinServerDown = true;
+          }
+        }
+      }),
+    );
+
+    if (bitcoinServerDown || liquidServerDown) {
+      final title = switch ((bitcoinServerDown, liquidServerDown)) {
+        (true, true) => 'Bitcoin & Liquid electrum server failure',
+        (true, false) => 'Bitcoin electrum server failure',
+        (false, true) => 'Liquid electrum server failure',
+        _ => '',
+      };
+
+      warnings.add(
+        HomeWarning(
+          title: title,
+          description: 'Click to configure electrum server settings',
+          actionRoute: AppRoute.settings.name,
+          type: WarningType.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _checkPayjoinHealth(List<HomeWarning> warnings) async {
+    final isHealthy = await _checkPayjoinRelayHealth.execute();
+    if (!isHealthy) {
+      warnings.add(
+        HomeWarning(
+          title: 'Payjoin Service Unreachable',
+          description: 'Contact support for assistance',
+          actionRoute: AppRoute.settings.name,
+          type: WarningType.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _checkSwapServer(
+    bool isTestnet,
+    List<HomeWarning> warnings,
+  ) async {
+    try {
+      await _getSwapLimitsUsecase.execute(
+        type: SwapType.bitcoinToLiquid,
+        isTestnet: isTestnet,
+      );
+    } catch (e) {
+      warnings.add(
+        HomeWarning(
+          title: 'Boltz Server Unreachable',
+          description: 'Contact support for assistance',
+          actionRoute: AppRoute.settings.name,
+          type: WarningType.error,
+        ),
+      );
     }
   }
 }

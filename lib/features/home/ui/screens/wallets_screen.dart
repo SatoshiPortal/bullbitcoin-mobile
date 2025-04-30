@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class HomeWalletsScreen extends StatelessWidget {
-  const HomeWalletsScreen({
-    super.key,
-  });
+  const HomeWalletsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +17,7 @@ class HomeWalletsScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                HomeErrors(),
-                HomeWalletCards(),
-              ],
+              children: [HomeWarnings(), HomeWalletCards()],
             ),
           ),
         ),

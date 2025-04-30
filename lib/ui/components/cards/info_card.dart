@@ -33,21 +33,13 @@ class InfoCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 4,
-              height: 75,
-              color: tagColor,
-            ),
+            Container(width: 4, height: 75, color: tagColor),
             Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.info_outline_rounded,
-                    size: 24,
-                    color: tagColor,
-                  ),
+                  Icon(Icons.info_outline_rounded, size: 24, color: tagColor),
                   const Gap(12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,7 +47,7 @@ class InfoCard extends StatelessWidget {
                       BBText(
                         title,
                         style: context.font.bodyLarge,
-                        color: context.colour.secondary,
+                        color: tagColor,
                       ),
                       const Gap(4),
                       Container(
