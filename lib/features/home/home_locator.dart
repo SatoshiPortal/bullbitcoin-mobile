@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/usecases/get_best_available_server_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
@@ -27,6 +28,7 @@ class HomeLocator {
             locator<CheckForTorInitializationOnStartupUsecase>(),
         getApiKeyUsecase: locator<GetApiKeyUsecase>(),
         getUserSummaryUseCase: locator<GetUserSummaryUseCase>(),
+        getBestAvailableServerUsecase: locator<GetBestAvailableServerUsecase>(),
       ),
     );
   }
