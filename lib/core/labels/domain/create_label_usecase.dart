@@ -14,7 +14,7 @@ class CreateLabelUsecase {
     bool? spendable,
   }) async {
     try {
-      _labelRepository.store(
+      await _labelRepository.store(
         label: label,
         origin: origin,
         entity: entity,

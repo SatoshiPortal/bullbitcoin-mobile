@@ -122,7 +122,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       final apiKey = await _getApiKeyUsecase.execute();
       if (apiKey == null) {
         final Uri url = Uri.parse('https://${state.baseUrl}');
-        webViewController.loadRequest(url);
+        await webViewController.loadRequest(url);
       } else {
         emit(state.copyWith(showLoginSuccessDialog: true));
         // final bbxUrl = dotenv.env['BBX_URL'];
@@ -150,7 +150,7 @@ class ExchangeCubit extends Cubit<ExchangeState> {
       }
       final success = await _saveApiKeyUsecase.execute(jsonString);
       if (success) {
-        _checkForAPIKeyAndLoadDetails();
+        await _checkForAPIKeyAndLoadDetails();
         debugPrint('API key successfully stored');
       } else {
         debugPrint('Failed to store API key');

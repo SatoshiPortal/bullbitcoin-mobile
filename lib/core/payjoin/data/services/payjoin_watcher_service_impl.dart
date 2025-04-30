@@ -93,7 +93,7 @@ class PayjoinWatcherService {
       debugPrint('Error processing payjoin request: $e');
       // The payjoin request was not processed correctly, so we need to broadcast
       // the original transaction instead.
-      _broadcastOriginalTransaction(payjoin);
+      await _broadcastOriginalTransaction(payjoin);
     }
   }
 

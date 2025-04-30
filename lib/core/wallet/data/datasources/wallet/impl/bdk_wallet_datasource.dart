@@ -121,7 +121,7 @@ class BdkWalletDatasource implements WalletDatasource {
         // parts of the app to listen to
         _walletSyncFinishedController.add(wallet.id);
         // Remove the sync so future syncs can be triggered
-        _activeSyncs.remove(wallet.id);
+        await _activeSyncs.remove(wallet.id);
       }
     });
   }
