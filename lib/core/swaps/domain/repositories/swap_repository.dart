@@ -67,7 +67,7 @@ abstract class SwapRepository {
   });
   // CHAIN SWAPS
   Future<ChainSwap> createLiquidToBitcoinSwap({
-    required String bitcoinMnemonic,
+    required String sendWalletMnemonic,
     required String sendWalletId,
     required int amountSat,
     required bool isTestnet,
@@ -78,7 +78,7 @@ abstract class SwapRepository {
   });
 
   Future<ChainSwap> createBitcoinToLiquidSwap({
-    required String liquidMnemonic,
+    required String sendWalletMnemonic,
     required String sendWalletId,
     required int amountSat,
     required bool isTestnet,
