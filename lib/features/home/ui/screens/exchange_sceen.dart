@@ -11,8 +11,9 @@ class HomeExchangeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasUser =
-        context.select((HomeBloc bloc) => bloc.state.showExchangeHome);
+    final hasUser = context.select(
+      (HomeBloc bloc) => bloc.state.showExchangeHome,
+    );
 
     if (!hasUser) return const BullBitcoinWebViewPage();
 
@@ -32,10 +33,7 @@ class _ExchangeHome extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                HomeErrors(),
-                HomeExchangeBalanceCards(),
-              ],
+              children: [HomeWarnings(), HomeExchangeBalanceCards()],
             ),
           ),
         ),
