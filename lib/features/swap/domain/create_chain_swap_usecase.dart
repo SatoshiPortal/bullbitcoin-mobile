@@ -44,7 +44,7 @@ class CreateChainSwapUsecase {
               as MnemonicSeed;
 
       final liquidWalletMnemonic =
-          await _seedRepository.get(bitcoinWallet.masterFingerprint)
+          await _seedRepository.get(liquidWallet.masterFingerprint)
               as MnemonicSeed;
 
       final btcElectrumUrl =
