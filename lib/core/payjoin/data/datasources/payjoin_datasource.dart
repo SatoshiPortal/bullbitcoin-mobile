@@ -199,13 +199,13 @@ class PayjoinDatasource {
   Future<void> _storeReceiver(PayjoinReceiverModel model) async {
     await _sqliteDatasource
         .into(_sqliteDatasource.payjoinReceivers)
-        .insert(model);
+        .insertOnConflictUpdate(model);
   }
 
   Future<void> _storeSender(PayjoinSenderModel model) async {
     await _sqliteDatasource
         .into(_sqliteDatasource.payjoinSenders)
-        .insert(model);
+        .insertOnConflictUpdate(model);
   }
 
   Future<PayjoinReceiverModel?> fetchReceiver(String id) async {
