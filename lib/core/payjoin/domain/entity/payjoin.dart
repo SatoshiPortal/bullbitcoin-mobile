@@ -11,8 +11,11 @@ sealed class Payjoin with _$Payjoin {
   const factory Payjoin.receiver({
     @Default(PayjoinStatus.requested) PayjoinStatus status,
     required String id,
+    required bool isTestnet,
     required String walletId,
     required String pjUri,
+    required DateTime createdAt,
+    required DateTime expiresAt,
     Uint8List? originalTxBytes,
     String? originalTxId,
     BigInt? amountSat,
@@ -22,9 +25,12 @@ sealed class Payjoin with _$Payjoin {
   const factory Payjoin.sender({
     @Default(PayjoinStatus.requested) PayjoinStatus status,
     required String uri,
+    required bool isTestnet,
     required String walletId,
     required String originalPsbt,
     required String originalTxId,
+    required DateTime createdAt,
+    required DateTime expiresAt,
     String? proposalPsbt,
     String? txId,
   }) = PayjoinSender;

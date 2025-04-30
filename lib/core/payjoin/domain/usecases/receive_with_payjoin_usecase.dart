@@ -1,6 +1,7 @@
-import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 
 class ReceiveWithPayjoinUsecase {
   final PayjoinRepository _payjoinRepository;
@@ -26,7 +27,8 @@ class ReceiveWithPayjoinUsecase {
         address: address,
         isTestnet: environment.isTestnet,
         maxFeeRateSatPerVb: BigInt.from(10000),
-        expireAfterSec: expireAfterSec,
+        expireAfterSec:
+            expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec,
       );
 
       return payjoinReceiver;

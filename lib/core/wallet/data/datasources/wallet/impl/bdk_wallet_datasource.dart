@@ -128,7 +128,7 @@ class BdkWalletDatasource implements WalletDatasource {
 
   Future<bool> isMine(
     Uint8List scriptBytes, {
-    required PublicBdkWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     final script = bdk.ScriptBuf(bytes: scriptBytes);
@@ -145,7 +145,7 @@ class BdkWalletDatasource implements WalletDatasource {
     bool? drain,
     List<WalletUtxoModel>? selected,
     bool replaceByFee = true,
-    required PublicBdkWalletModel wallet,
+    required WalletModel wallet,
   }) async {
     final bdkWallet = await _createPublicWallet(wallet);
     bdk.TxBuilder txBuilder;

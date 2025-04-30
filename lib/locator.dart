@@ -25,6 +25,7 @@ class AppLocator {
     locator.enableRegisteringMultipleInstancesOfOneType();
 
     // Register core dependencies first
+    CoreLocator.register();
     await CoreLocator.registerDatasources();
     await CoreLocator.registerRepositories();
     CoreLocator.registerServices();

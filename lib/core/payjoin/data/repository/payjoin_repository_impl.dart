@@ -4,24 +4,26 @@ import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchai
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:bb_mobile/core/payjoin/data/datasources/payjoin_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
-import 'package:bb_mobile/core/payjoin/data/models/payjoin_receiver_model_extension.dart';
-import 'package:bb_mobile/core/payjoin/data/models/payjoin_sender_model_extension.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:flutter/foundation.dart';
 import 'package:synchronized/synchronized.dart';
 
-class PayjoinRepository {
-  final PayjoinDatasource _source;
+class PayjoinRepositoryImpl implements PayjoinRepository {
+  final LocalPayjoinDatasource _localPayjoinDatasource;
+  final PdkPayjoinDatasource _pdkPayjoinDatasource;
   final SqliteDatasource _sqlite;
   final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
@@ -30,53 +32,64 @@ class PayjoinRepository {
   // Lock to prevent the same utxo from being used in multiple payjoin proposals
   final Lock _lock;
 
-  PayjoinRepository({
-    required PayjoinDatasource payjoinDatasource,
+  final StreamController<Payjoin> _payjoinStreamController;
+
+  PayjoinRepositoryImpl({
+    required LocalPayjoinDatasource localPayjoinDatasource,
+    required PdkPayjoinDatasource pdkPayjoinDatasource,
     required SqliteDatasource sqliteDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
-  }) : _source = payjoinDatasource,
+  }) : _localPayjoinDatasource = localPayjoinDatasource,
+       _pdkPayjoinDatasource = pdkPayjoinDatasource,
        _sqlite = sqliteDatasource,
        _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource,
        _blockchain = blockchainDatasource,
        _electrumServerStorage = electrumServerStorageDatasource,
-       _lock = Lock();
+       _lock = Lock(),
+       _payjoinStreamController = StreamController<Payjoin>.broadcast() {
+    // Listen to payjoin events from the datasource and process them
+    _pdkPayjoinDatasource.requestsForReceivers.listen(_processPayjoinRequest);
+    _pdkPayjoinDatasource.proposalsForSenders.listen(_processPayjoinProposal);
+    _pdkPayjoinDatasource.expiredPayjoins.listen(_processExpiredPayjoin);
 
-  Stream<PayjoinReceiver> get requestsForReceivers => _source
-      .requestsForReceivers
-      .map((payjoinModel) => payjoinModel.toEntity());
-  Stream<PayjoinSender> get proposalsForSenders => _source.proposalsForSenders
-      .map((payjoinModel) => payjoinModel.toEntity());
-  Stream<dynamic> get expiredPayjoins =>
-      _source.expiredPayjoins.map((model) => model.toEntity());
+    // Now that the listeners are set up, we can resume processing of possible
+    //  ongoing payjoins.
+    _resumePayjoins();
+  }
 
-  Future<Payjoin?> getPayjoinByTxId(String txId) async {
-    final payjoinModels = await _source.fetchAll();
+  @override
+  Stream<Payjoin> get payjoinStream => _payjoinStreamController.stream;
 
-    Payjoin? payjoin;
-    try {
-      final payjoinModel = payjoinModels.firstWhere(
-        (payjoin) => payjoin.txId == txId,
-      );
-      if (payjoinModel is PayjoinSenderModel) {
-        payjoin = payjoinModel.toEntity();
-      } else if (payjoinModel is PayjoinReceiverModel) {
-        payjoin = payjoinModel.toEntity();
-      }
-    } catch (e) {
-      debugPrint('Payjoin not found for txId: $txId');
-    }
+  @override
+  Future<List<Payjoin>> getPayjoins({bool onlyOngoing = false}) async {
+    final models = await _localPayjoinDatasource.getAll(
+      onlyOngoing: onlyOngoing,
+    );
 
-    return payjoin;
+    final payjoins = models.map((model) => model.toEntity()).toList();
+
+    return payjoins;
+  }
+
+  @override
+  Future<List<Payjoin>> getPayjoinsByTxId(String txId) async {
+    final payjoinModels = await _localPayjoinDatasource.getByTxId(txId);
+
+    return payjoinModels
+        .map((payjoinModel) => payjoinModel.toEntity())
+        .toList();
   }
 
   // TODO: Remove this and use the general frozen utxo datasource
+  @override
   Future<List<({String txId, int vout})>>
   getUtxosFrozenByOngoingPayjoins() async {
-    final payjoins = await _source.fetchAll(onlyOngoing: true);
+    final payjoins = await _localPayjoinDatasource.getAll(onlyOngoing: true);
+
     final inputs = await Future.wait(
       payjoins.map((payjoin) async {
         final psbt =
@@ -84,29 +97,23 @@ class PayjoinRepository {
                 ? payjoin.proposalPsbt
                 : (payjoin as PayjoinSenderModel).originalPsbt;
 
-        if (psbt == null) return null;
-
-        String? walletId;
-        if (payjoin is PayjoinSenderModel) {
-          walletId = payjoin.walletId;
-        } else if (payjoin is PayjoinReceiverModel) {
-          walletId = payjoin.walletId;
+        if (psbt == null) {
+          return null;
         }
 
-        WalletMetadataModel? metadata;
-        if (walletId != null) {
-          metadata =
-              await _sqlite.managers.walletMetadatas
-                  .filter((f) => f.id(walletId))
-                  .getSingleOrNull();
-        }
+        final walletMetadata =
+            await _sqlite.managers.walletMetadatas
+                .filter((f) => f.id(payjoin.walletId))
+                .getSingleOrNull();
 
-        if (metadata == null) return null;
+        if (walletMetadata == null) {
+          return null;
+        }
 
         // Extract the spent utxos from the proposal psbt
         final spentUtxos = await TransactionParsing.extractSpentUtxosFromPsbt(
           psbt,
-          isTestnet: metadata.isTestnet,
+          isTestnet: walletMetadata.isTestnet,
         );
         return spentUtxos;
       }),
@@ -118,14 +125,15 @@ class PayjoinRepository {
         .toList();
   }
 
+  @override
   Future<PayjoinReceiver> createPayjoinReceiver({
     required String walletId,
     required String address,
     required bool isTestnet,
     required BigInt maxFeeRateSatPerVb,
-    int? expireAfterSec,
+    required int expireAfterSec,
   }) async {
-    final model = await _source.createReceiver(
+    final model = await _pdkPayjoinDatasource.createReceiver(
       walletId: walletId,
       address: address,
       isTestnet: isTestnet,
@@ -133,119 +141,259 @@ class PayjoinRepository {
       expireAfterSec: expireAfterSec,
     );
 
-    return model.toEntity();
+    // Store the payjoin receiver in the local database
+    await _localPayjoinDatasource.createReceiver(model);
+
+    final payjoin = model.toEntity() as PayjoinReceiver;
+
+    return payjoin;
   }
 
+  @override
   Future<PayjoinSender> createPayjoinSender({
     required String walletId,
+    required bool isTestnet,
     required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
   }) async {
     // Create the payjoin sender session
-    final model = await _source.createSender(
+    final model = await _pdkPayjoinDatasource.createSender(
       walletId: walletId,
+      isTestnet: isTestnet,
       bip21: bip21,
       originalPsbt: originalPsbt,
       networkFeesSatPerVb: networkFeesSatPerVb,
       expireAfterSec: expireAfterSec,
     );
 
+    // Store the payjoin sender in the local database
+    await _localPayjoinDatasource.createSender(model);
+
     // Return a payjoin entity with send details
     final payjoin = model.toEntity();
 
-    return payjoin;
+    return payjoin as PayjoinSender;
   }
 
-  Future<PayjoinReceiver> processRequest({
-    required String id,
-    required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
-    required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
-    required List<BitcoinWalletUtxo> unspentUtxos,
-    required FutureOr<String> Function(String) processPsbt,
-  }) async {
-    // A lock is needed here to make sure the proposal of a payjoin is stored
-    //  before another payjoin checks for available inputs to create a proposal
-    final payjoinReceiver = await _lock.synchronized(() async {
-      debugPrint('unspentUtxos: $unspentUtxos');
-      // Make sure the inputs to select from for the proposal are not used by
-      //  ongoing payjoins already
+  @override
+  Future<PayjoinReceiver?> tryBroadcastOriginalTransaction(
+    PayjoinReceiver payjoin,
+  ) async {
+    try {
+      // TODO: Should we get all the electrum servers and try another one if the
+      //  first one fails?
+      final electrumServer =
+          await _electrumServerStorage.getDefaultServerByProvider(
+            DefaultElectrumServerProvider.blockstream,
+            network:
+                payjoin.isTestnet
+                    ? Network.bitcoinTestnet
+                    : Network.bitcoinMainnet,
+          ) ??
+          ElectrumServerModel.blockstream(
+            isTestnet: payjoin.isTestnet,
+            isLiquid: false,
+          );
+
+      await _blockchain.broadcastTransaction(
+        payjoin.originalTxBytes!,
+        electrumServer: electrumServer,
+      );
+
+      // Update the local database with the completed payjoin
+      final model = await _localPayjoinDatasource.getReceiver(payjoin.id);
+      if (model == null) {
+        throw Exception('Payjoin receiver not found');
+      }
+      final completedModel = model.copyWith(isCompleted: true);
+      await _localPayjoinDatasource.update(completedModel);
+
+      return model.toEntity() as PayjoinReceiver;
+    } catch (e) {
+      debugPrint('Error broadcasting original transaction: $e');
+      return null;
+    }
+  }
+
+  Future<void> _processPayjoinRequest(PayjoinReceiverModel model) async {
+    debugPrint('Processing payjoin request: ${model.id}');
+    // Update the local database with the new payjoin request
+    await _localPayjoinDatasource.update(model);
+
+    final payjoin = model.toEntity() as PayjoinReceiver;
+
+    // Notify higher layers that a new payjoin request was received
+    _payjoinStreamController.add(payjoin);
+
+    // Now try to process the request
+    PayjoinReceiver? result;
+    try {
+      final wallet = await _loadWallet(model.walletId);
+      final unspentUtxos = await _bdkWallet.getUtxos(wallet: wallet);
+      result = await _proposePayjoin(model, wallet, unspentUtxos);
+    } catch (e) {
+      debugPrint('Error processing payjoin request: $e');
+      result = await tryBroadcastOriginalTransaction(payjoin);
+    }
+
+    if (result != null) {
+      _payjoinStreamController.add(result);
+    }
+  }
+
+  Future<void> _processPayjoinProposal(PayjoinSenderModel payjoinModel) async {
+    // Update the local database with the new payjoin proposal
+    await _localPayjoinDatasource.update(payjoinModel);
+
+    final payjoin = payjoinModel.toEntity() as PayjoinSender;
+
+    _payjoinStreamController.add(payjoin);
+
+    PayjoinSender? result;
+    try {
+      final wallet = await _loadWallet(payjoin.walletId);
+      final finalizedPsbt = await _bdkWallet.signPsbt(
+        payjoin.proposalPsbt!,
+        wallet: wallet,
+      );
+      result = await _broadcastPsbt(
+        payjoinId: payjoin.id,
+        finalizedPsbt: finalizedPsbt,
+        network:
+            payjoinModel.isTestnet
+                ? Network.bitcoinTestnet
+                : Network.bitcoinMainnet,
+      );
+    } catch (e) {
+      debugPrint('Error broadcasting payjoin proposal: $e');
+      // TODO: Handle this, maybe by sending the original transaction instead
+    }
+
+    if (result != null) {
+      _payjoinStreamController.add(result);
+    }
+  }
+
+  Future<void> _processExpiredPayjoin(PayjoinModel payjoinModel) async {
+    // Update the local database with the expired payjoin
+    await _localPayjoinDatasource.update(payjoinModel);
+
+    final payjoin = payjoinModel.toEntity();
+
+    _payjoinStreamController.add(payjoin);
+
+    // TODO: Unfreeze the utxo used in the payjoin
+
+    if (payjoin is PayjoinReceiver && payjoin.originalTxBytes != null) {
+      // If the payjoin is a receiver and it has the original transaction bytes
+      //  at expiration, we broadcast the original transaction automatically.
+      await tryBroadcastOriginalTransaction(payjoin);
+    }
+  }
+
+  Future<void> _resumePayjoins() async {
+    final models = await _localPayjoinDatasource.getAll(onlyOngoing: true);
+    for (final model in models) {
+      if (model.isExpiryTimePassed) {
+        // If the payjoin is expired, we should update the model and
+        //  store it as expired so it won't be processed again unnecessarily.
+        final updatedModel = model.copyWith(isExpired: true);
+        await _localPayjoinDatasource.update(updatedModel);
+        // Notify the repository layers that the payjoin has expired
+        _payjoinStreamController.add(model.toEntity());
+      } else if (model is PayjoinReceiverModel) {
+        if (model.originalTxBytes == null) {
+          // If the original tx bytes are not present, it means the receiver
+          //  needs to listen for a payjoin request from the sender.
+          _pdkPayjoinDatasource.startListeningForRequest(model);
+        } else if (model.proposalPsbt == null) {
+          // If the original tx bytes are present but the proposal psbt is not,
+          //  it means the receiver has already received a payjoin request and
+          //  it should be processed.
+          _processPayjoinRequest(model);
+        } else {
+          // Todo: listen for the broadcast of the transaction
+        }
+      } else if (model is PayjoinSenderModel) {
+        if (model.proposalPsbt == null) {
+          // If the proposal psbt is not present, it means the sender needs to
+          //  listen for a payjoin proposal from the receiver.
+          _pdkPayjoinDatasource.startListeningForProposal(model);
+        } else {
+          // If the proposal psbt is present, it means a payjoin proposal was
+          //  already received  and it should be processed.
+          _processPayjoinProposal(model);
+        }
+      }
+    }
+  }
+
+  Future<PrivateBdkWalletModel> _loadWallet(String walletId) async {
+    final metadata =
+        await _sqlite.managers.walletMetadatas
+            .filter((e) => e.id(walletId))
+            .getSingleOrNull();
+    if (metadata == null) throw Exception('Wallet metadata not found');
+
+    final seed = await _seed.get(metadata.masterFingerprint) as MnemonicSeed;
+    final mnemonic = seed.mnemonicWords.join(' ');
+
+    return WalletModel.privateBdk(
+          id: walletId,
+          scriptType: ScriptType.fromName(metadata.scriptType),
+          mnemonic: mnemonic,
+          passphrase: seed.passphrase,
+          isTestnet: metadata.isTestnet,
+        )
+        as PrivateBdkWalletModel;
+  }
+
+  Future<PayjoinReceiver?> _proposePayjoin(
+    PayjoinReceiverModel payjoin,
+    PrivateBdkWalletModel wallet,
+    List<WalletUtxoModel> unspentUtxos,
+  ) {
+    return _lock.synchronized(() async {
       final lockedUtxos = await getUtxosFrozenByOngoingPayjoins();
-      debugPrint(
-        'lockedUtxos: --- ${lockedUtxos.map((input) => '${input.txId}:${input.vout}').join(', ')} ---',
-      );
+      final inputPairs = _filterAvailableUtxos(unspentUtxos, lockedUtxos);
 
-      final pdkInputPairs =
-          unspentUtxos
-              .where((unspent) {
-                final isUtxoLocked = lockedUtxos.any((locked) {
-                  return unspent.txId == locked.txId &&
-                      unspent.vout == locked.vout;
-                });
-
-                return !isUtxoLocked;
-              })
-              .map((utxo) => PayjoinInputPairModel.fromUtxo(utxo))
-              .toList();
-
-      debugPrint(
-        'pdkInputPairs: --- ${pdkInputPairs.map((input) => '${input.txId}:${input.vout}').join(', ')} ---',
-      );
-
-      if (pdkInputPairs.isEmpty) {
+      if (inputPairs.isEmpty) {
         throw const NoInputsToPayjoinException(
           message: 'No inputs available to create a new payjoin proposal',
         );
       }
 
-      final model = await _source.processRequest(
-        id: id,
-        hasOwnedInputs: hasOwnedInputs,
-        hasReceiverOutput: hasReceiverOutput,
-        inputPairs: pdkInputPairs,
-        processPsbt: processPsbt,
+      final freshModel = await _localPayjoinDatasource.getReceiver(payjoin.id);
+      if (freshModel == null) throw Exception('Payjoin receiver not found');
+
+      final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
+        receiverModel: freshModel,
+        hasOwnedInputs: (script) => _bdkWallet.isMine(script, wallet: wallet),
+        hasReceiverOutput:
+            (script) => _bdkWallet.isMine(script, wallet: wallet),
+        inputPairs: inputPairs,
+        processPsbt: (psbt) => _bdkWallet.signPsbt(psbt, wallet: wallet),
       );
 
-      return model.toEntity();
+      await _localPayjoinDatasource.update(updatedModel);
+      return updatedModel.toEntity() as PayjoinReceiver;
     });
-
-    return payjoinReceiver;
   }
 
-  Future<String> signPsbt({
-    required String walletId,
-    required String psbt,
-  }) async {
-    final walletMetadata =
-        await _sqlite.managers.walletMetadatas
-            .filter((e) => e.id(walletId))
-            .getSingleOrNull();
-
-    if (walletMetadata == null) {
-      throw Exception('Wallet metadata not found');
-    }
-
-    final seed =
-        await _seed.get(walletMetadata.masterFingerprint) as MnemonicSeed;
-    final mnemonic = seed.mnemonicWords.join(' ');
-
-    final wallet =
-        WalletModel.privateBdk(
-              id: walletId,
-              scriptType: ScriptType.fromName(walletMetadata.scriptType),
-              mnemonic: mnemonic,
-              passphrase: seed.passphrase,
-              isTestnet: walletMetadata.isTestnet,
-            )
-            as PrivateBdkWalletModel;
-
-    final signedPsbt = await _bdkWallet.signPsbt(psbt, wallet: wallet);
-
-    return signedPsbt;
+  List<PayjoinInputPairModel> _filterAvailableUtxos(
+    List<WalletUtxoModel> unspent,
+    List<({String txId, int vout})> locked,
+  ) {
+    return unspent
+        .where((u) => !locked.any((l) => l.txId == u.txId && l.vout == u.vout))
+        .whereType<BitcoinWalletUtxoModel>()
+        .map((u) => PayjoinInputPairModel.fromWalletUtxoModel(u))
+        .toList();
   }
 
-  Future<PayjoinSender> broadcastPsbt({
+  Future<PayjoinSender> _broadcastPsbt({
     required String payjoinId,
     required String finalizedPsbt,
     required Network network,
@@ -267,36 +415,15 @@ class PayjoinRepository {
       electrumServer: electrumServer,
     );
 
-    final model = await _source.completeSender(payjoinId);
+    // Update the local database with the completed payjoin
+    final model = await _localPayjoinDatasource.getSender(payjoinId);
+    if (model == null) {
+      throw Exception('Payjoin sender not found');
+    }
+    final completedModel = model.copyWith(isCompleted: true);
+    await _localPayjoinDatasource.update(completedModel);
 
-    return model.toEntity();
-  }
-
-  Future<PayjoinReceiver> broadcastOriginalTransaction({
-    required String payjoinId,
-    required Uint8List originalTxBytes,
-    required Network network,
-  }) async {
-    // TODO: Should we get all the electrum servers and try another one if the
-    //  first one fails?
-    final electrumServer =
-        await _electrumServerStorage.getDefaultServerByProvider(
-          DefaultElectrumServerProvider.blockstream,
-          network: network,
-        ) ??
-        ElectrumServerModel.blockstream(
-          isTestnet: network.isTestnet,
-          isLiquid: network.isLiquid,
-        );
-
-    await _blockchain.broadcastTransaction(
-      originalTxBytes,
-      electrumServer: electrumServer,
-    );
-
-    final model = await _source.completeReceiver(payjoinId);
-
-    return model.toEntity();
+    return completedModel.toEntity() as PayjoinSender;
   }
 }
 

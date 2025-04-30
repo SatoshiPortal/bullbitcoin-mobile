@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/labels/data/labels_table.dart';
-import 'package:bb_mobile/core/payjoin/data/models/payjoin_receivers_table.dart';
-import 'package:bb_mobile/core/payjoin/data/models/payjoin_senders_table.dart';
 import 'package:bb_mobile/core/settings/data/settings_table.dart';
 import 'package:bb_mobile/core/transaction/data/models/transactions_table.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_table.dart';
@@ -15,8 +13,8 @@ part 'sqlite_datasource.g.dart';
     WalletMetadatas,
     Labels,
     Settings,
-    PayjoinSenders,
-    PayjoinReceivers,
+    //PayjoinSenders,
+    //PayjoinReceivers,
   ],
 )
 class SqliteDatasource extends _$SqliteDatasource {
