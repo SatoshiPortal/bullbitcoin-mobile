@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class BdkBitcoinBlockchainDatasource {
@@ -10,8 +10,9 @@ class BdkBitcoinBlockchainDatasource {
     String finalizedPsbt, {
     required ElectrumServerModel electrumServer,
   }) async {
-    final blockchain =
-        await _createBlockchainFromElectrumServer(electrumServer);
+    final blockchain = await _createBlockchainFromElectrumServer(
+      electrumServer,
+    );
     final psbt = await bdk.PartiallySignedTransaction.fromString(finalizedPsbt);
     final tx = psbt.extractTx();
     final txId = await blockchain.broadcast(transaction: tx);
@@ -22,8 +23,9 @@ class BdkBitcoinBlockchainDatasource {
     Uint8List transaction, {
     required ElectrumServerModel electrumServer,
   }) async {
-    final blockchain =
-        await _createBlockchainFromElectrumServer(electrumServer);
+    final blockchain = await _createBlockchainFromElectrumServer(
+      electrumServer,
+    );
     final tx = await bdk.Transaction.fromBytes(transactionBytes: transaction);
     final txId = await blockchain.broadcast(transaction: tx);
     return txId;

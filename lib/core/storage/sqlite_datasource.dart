@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/data/models/electrum_servers_table.dart';
 import 'package:bb_mobile/core/labels/data/labels_table.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_senders_table.dart';
@@ -17,6 +18,7 @@ part 'sqlite_datasource.g.dart';
     Settings,
     PayjoinSenders,
     PayjoinReceivers,
+    ElectrumServers,
   ],
 )
 class SqliteDatasource extends _$SqliteDatasource {

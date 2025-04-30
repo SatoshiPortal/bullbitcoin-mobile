@@ -1,31 +1,22 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_best_available_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
-import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:hive/hive.dart';
 
 class ElectrumLocator {
   static Future<void> registerDatasources() async {
-    final electrumServersBox = await Hive.openBox<String>(
-      HiveBoxNameConstants.electrumServers,
-    );
     locator.registerLazySingleton<ElectrumServerStorageDatasource>(
-      () => ElectrumServerStorageDatasource(
-        electrumServerStorage: HiveStorageDatasourceImpl<String>(
-          electrumServersBox,
-        ),
-      ),
+      () =>
+          ElectrumServerStorageDatasource(sqliteDatasource: SqliteDatasource()),
     );
   }
 
   static void registerRepositories() {
     locator.registerLazySingleton<ElectrumServerRepository>(
-      () => ElectrumServerRepositoryImpl(
+      () => ElectrumServerRepository(
         electrumServerStorageDatasource:
             locator<ElectrumServerStorageDatasource>(),
       ),

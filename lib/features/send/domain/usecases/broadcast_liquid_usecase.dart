@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/data/repository/liquid_blockchain_repository_impl.dart';
 
 class BroadcastLiquidUsecase {
   final LiquidBlockchainRepository _liquidBlockchainRepository;

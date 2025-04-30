@@ -8,7 +8,7 @@ class SettingsRepository {
   final SqliteDatasource _sqlite;
 
   SettingsRepository({required SqliteDatasource sqliteDatasource})
-      : _sqlite = sqliteDatasource;
+    : _sqlite = sqliteDatasource;
 
   Future<void> store({
     required int id,
@@ -68,7 +68,8 @@ class SettingsRepository {
   }
 
   Future<void> setHideAmounts(bool hide) async {
-    await _sqlite.managers.settings
-        .update((f) => f(id: const Value(1), hideAmounts: Value(hide)));
+    await _sqlite.managers.settings.update(
+      (f) => f(id: const Value(1), hideAmounts: Value(hide)),
+    );
   }
 }

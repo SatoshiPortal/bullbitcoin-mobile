@@ -1,20 +1,18 @@
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
-import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 
-class LiquidBlockchainRepositoryImpl implements LiquidBlockchainRepository {
+class LiquidBlockchainRepository {
   final LwkLiquidBlockchainDatasource _blockchain;
   // ignore: unused_field
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
-  const LiquidBlockchainRepositoryImpl({
+  const LiquidBlockchainRepository({
     required LwkLiquidBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   }) : _blockchain = blockchainDatasource,
        _electrumServerStorage = electrumServerStorageDatasource;
 
-  @override
   Future<String> broadcastTransaction({
     required String signedPset,
     required bool isTestnet,

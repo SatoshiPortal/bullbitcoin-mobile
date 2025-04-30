@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/electrum/data/models/electrum_servers_table.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/payjoin_datasource.dart';
@@ -242,18 +242,17 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
         walletModels.map((walletModel) async {
           final isLiquid = walletModel is PublicLwkWalletModel;
 
-          final electrumServer =
-              await _electrumServerStorage.getDefaultServerByProvider(
-                DefaultElectrumServerProvider.blockstream,
+          final electrumServer = await _electrumServerStorage
+              .getDefaultServerByProvider(
+                provider: ElectrumServerProvider.blockstream,
                 network: Network.fromEnvironment(
                   isTestnet: walletModel.isTestnet,
                   isLiquid: isLiquid,
                 ),
-              ) ??
-              ElectrumServerModel.blockstream(
-                isTestnet: walletModel.isTestnet,
-                isLiquid: isLiquid,
               );
+          if (electrumServer == null) {
+            throw 'electrum server missing from sqlite';
+          }
 
           final walletTransactionDatasource =
               isLiquid

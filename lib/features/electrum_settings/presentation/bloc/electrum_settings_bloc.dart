@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/electrum/data/models/electrum_servers_table.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_best_available_server_usecase.dart';
@@ -40,7 +41,7 @@ class ElectrumSettingsBloc
     on<SetupBlockchain>(_onSetupBlockchain);
     on<SaveElectrumServerChanges>(_onSaveElectrumServerChanges);
     on<ToggleCustomServerActive>(_onToggleCustomServerActive);
-    on<ToggleDefaultServerPreset>(_onToggleDefaultServerPreset);
+    on<ToggleDefaultServerProvider>(_onToggleDefaultServerProvider);
     on<ToggleCustomServer>(_onToggleCustomServer);
   }
 
@@ -100,9 +101,7 @@ class ElectrumSettingsBloc
   Future<ElectrumServerProvider> _determineCurrentProvider(
     List<ElectrumServer> servers,
   ) async {
-    if (servers.isEmpty) {
-      return const ElectrumServerProvider.defaultProvider();
-    }
+    if (servers.isEmpty) return ElectrumServerProvider.bull;
 
     final network =
         state.isSelectedNetworkLiquid
@@ -285,7 +284,7 @@ class ElectrumSettingsBloc
     UpdateCustomServerMainnet event,
     Emitter<ElectrumSettingsState> emit,
   ) {
-    if (state.selectedProvider is! CustomElectrumServerProvider) return;
+    if (state.selectedProvider is! ElectrumServerProvider.custom) return;
 
     final List<ElectrumServer> updatedStagedServers = List<ElectrumServer>.from(
       state.stagedServers,
@@ -815,7 +814,7 @@ class ElectrumSettingsBloc
     emit(state.copyWith(stagedServers: updatedStagedServers));
   }
 
-  void _onToggleDefaultServerPreset(
+  void _onToggleDefaultServerProvider(
     ToggleDefaultServerPreset event,
     Emitter<ElectrumSettingsState> emit,
   ) {

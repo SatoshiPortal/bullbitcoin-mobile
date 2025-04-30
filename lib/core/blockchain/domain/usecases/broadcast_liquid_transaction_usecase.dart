@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/data/repository/liquid_blockchain_repository_impl.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 
 class BroadcastLiquidTransactionUsecase {
