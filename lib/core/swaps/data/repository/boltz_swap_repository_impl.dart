@@ -207,8 +207,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<Swap> createBitcoinToLiquidSwap({
-    required String mnemonic,
+  Future<ChainSwap> createBitcoinToLiquidSwap({
+    required String liquidMnemonic,
     required String sendWalletId,
     required int amountSat,
     required bool isTestnet,
@@ -220,7 +220,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     final index = await _nextChainKeyIndex(sendWalletId);
     final chainSwap = await _boltz.createBtcToLbtcChainSwap(
       sendWalletId: sendWalletId,
-      mnemonic: mnemonic,
+      mnemonic: liquidMnemonic,
       index: index,
       amountSat: amountSat,
       isTestnet: isTestnet,
@@ -230,12 +230,12 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       externalRecipientAddress: externalRecipientAddress,
     );
 
-    return chainSwap.toEntity();
+    return chainSwap.toEntity() as ChainSwap;
   }
 
   @override
-  Future<Swap> createLiquidToBitcoinSwap({
-    required String mnemonic,
+  Future<ChainSwap> createLiquidToBitcoinSwap({
+    required String bitcoinMnemonic,
     required String sendWalletId,
     required int amountSat,
     required bool isTestnet,
@@ -247,7 +247,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     final index = await _nextChainKeyIndex(sendWalletId);
     final chainSwap = await _boltz.createLbtcToBtcChainSwap(
       sendWalletId: sendWalletId,
-      mnemonic: mnemonic,
+      mnemonic: bitcoinMnemonic,
       index: index,
       amountSat: amountSat,
       isTestnet: isTestnet,
@@ -257,7 +257,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
       externalRecipientAddress: externalRecipientAddress,
     );
 
-    return chainSwap.toEntity();
+    return chainSwap.toEntity() as ChainSwap;
   }
 
   @override

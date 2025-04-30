@@ -4,9 +4,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 
 abstract class SwapRepository {
   // LIMITS
-  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees({
-    required SwapType type,
-  });
+  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees({required SwapType type});
 
   // RECEIVE SWAPS
   Future<LnReceiveSwap> createLightningToLiquidSwap({
@@ -48,9 +46,7 @@ abstract class SwapRepository {
     required bool isTestnet,
     required String electrumUrl,
   });
-  Future<void> coopSignBitcoinToLightningSwap({
-    required String swapId,
-  });
+  Future<void> coopSignBitcoinToLightningSwap({required String swapId});
   Future<String> refundBitcoinToLightningSwap({
     required String swapId,
     required String bitcoinAddress,
@@ -63,17 +59,15 @@ abstract class SwapRepository {
     required bool isTestnet,
     required String electrumUrl,
   });
-  Future<void> coopSignLiquidToLightningSwap({
-    required String swapId,
-  });
+  Future<void> coopSignLiquidToLightningSwap({required String swapId});
   Future<String> refundLiquidToLightningSwap({
     required String swapId,
     required String liquidAddress,
     required int absoluteFees,
   });
   // CHAIN SWAPS
-  Future<Swap> createLiquidToBitcoinSwap({
-    required String mnemonic,
+  Future<ChainSwap> createLiquidToBitcoinSwap({
+    required String bitcoinMnemonic,
     required String sendWalletId,
     required int amountSat,
     required bool isTestnet,
@@ -83,8 +77,8 @@ abstract class SwapRepository {
     String? externalRecipientAddress,
   });
 
-  Future<Swap> createBitcoinToLiquidSwap({
-    required String mnemonic,
+  Future<ChainSwap> createBitcoinToLiquidSwap({
+    required String liquidMnemonic,
     required String sendWalletId,
     required int amountSat,
     required bool isTestnet,
@@ -120,23 +114,15 @@ abstract class SwapRepository {
     required int absoluteFees,
   });
 
-  Future<Invoice> decodeInvoice({
-    required String invoice,
-  });
+  Future<Invoice> decodeInvoice({required String invoice});
 
   // SWAP STORAGE UTILITY
-  Future<Swap> getSwap({
-    required String swapId,
-  });
-  Future<LnSendSwap?> getSendSwapByInvoice({
-    required String invoice,
-  });
+  Future<Swap> getSwap({required String swapId});
+  Future<LnSendSwap?> getSendSwapByInvoice({required String invoice});
   Future<List<Swap>> getOngoingSwaps();
   Future<List<Swap>> getAllSwaps();
 
-  Future<void> updateSwap({
-    required Swap swap,
-  });
+  Future<void> updateSwap({required Swap swap});
 
   Future<void> updatePaidSendSwap({
     required String swapId,
@@ -149,9 +135,7 @@ abstract class SwapRepository {
   });
 
   // STREAM
-  Future<void> reinitializeStreamWithSwaps({
-    required List<String> swapIds,
-  });
+  Future<void> reinitializeStreamWithSwaps({required List<String> swapIds});
 
   // Add a method to subscribe to swap updates
   Stream<Swap> get swapUpdatesStream;
