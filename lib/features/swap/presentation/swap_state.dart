@@ -11,12 +11,12 @@ import 'package:intl/intl.dart';
 
 part 'swap_state.freezed.dart';
 
-enum SwapStep { amount, confirm, sending, success }
+enum SwapPageStep { amount, confirm, sending, success }
 
 @freezed
 abstract class SwapState with _$SwapState {
   const factory SwapState({
-    @Default(SwapStep.amount) SwapStep step,
+    @Default(SwapPageStep.amount) SwapPageStep step,
     // input
     @Default('') String receiverAddress,
     @Default([]) List<Wallet> wallets,
@@ -43,7 +43,7 @@ abstract class SwapState with _$SwapState {
     String? unsignedPsbt,
     String? signedBitcoinPsbt,
     String? signedLiquidTx,
-    LnSendSwap? lightningSwap,
+    ChainSwap? swap,
     // confirm
     String? txId,
     Object? error,
@@ -105,9 +105,7 @@ abstract class SwapState with _$SwapState {
   }
 
   double get confirmedSwapAmountBtc =>
-      lightningSwap != null
-          ? ConvertAmount.satsToBtc(lightningSwap!.paymentAmount)
-          : 0;
+      swap != null ? ConvertAmount.satsToBtc(swap!.paymentAmount) : 0;
 
   String get formattedConfirmedAmountBitcoin {
     if (bitcoinUnit == BitcoinUnit.sats) {
@@ -133,7 +131,7 @@ abstract class SwapState with _$SwapState {
   }
 
   String get formattedSwapAmountBitcoin {
-    if (lightningSwap == null) return '0';
+    if (swap == null) return '0';
     if (bitcoinUnit == BitcoinUnit.sats) {
       // For sats, use integer formatting without decimals
       final currencyFormatter = NumberFormat.currency(
@@ -141,7 +139,7 @@ abstract class SwapState with _$SwapState {
         decimalDigits: 0, // Use 0 decimals for sats
         customPattern: '#,##0 ¤',
       );
-      return currencyFormatter.format(lightningSwap!.paymentAmount);
+      return currencyFormatter.format(swap!.paymentAmount);
     } else {
       // For BTC, use the standard decimal formatting
       final currencyFormatter = NumberFormat.currency(
@@ -239,8 +237,7 @@ abstract class SwapState with _$SwapState {
       swapAmountAboveLimit;
 
   bool get isSwapCompleted {
-    return lightningSwap != null &&
-        lightningSwap!.status == SwapStatus.completed;
+    return swap != null && swap!.status == SwapStatus.completed;
   }
 
   bool get disableConfirmSend =>

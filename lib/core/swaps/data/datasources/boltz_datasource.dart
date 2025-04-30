@@ -410,6 +410,8 @@ class BoltzDatasource {
       creationTime: DateTime.now().millisecondsSinceEpoch,
       sendWalletId: sendWalletId,
       receiveWalletId: receiveWalletId,
+      paymentAddress: chainSwap.scriptAddress,
+      paymentAmount: chainSwap.outAmount.toInt(),
       receiveAddress: externalRecipientAddress,
       boltzFees: (chainFees.lbtcFees.percentage * amountSat / 100).ceil(),
       lockupFees:
@@ -459,6 +461,8 @@ class BoltzDatasource {
       creationTime: DateTime.now().millisecondsSinceEpoch,
       sendWalletId: sendWalletId,
       receiveWalletId: receiveWalletId,
+      paymentAddress: chainSwap.scriptAddress,
+      paymentAmount: chainSwap.outAmount.toInt(),
       receiveAddress: externalRecipientAddress,
       boltzFees: (chainFees.btcFees.percentage * amountSat / 100).ceil(),
       lockupFees:
