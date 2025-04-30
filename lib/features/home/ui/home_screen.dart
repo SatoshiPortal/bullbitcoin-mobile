@@ -16,8 +16,9 @@ class HomeScreen extends StatelessWidget {
     return BlocProvider<HomeBloc>(
       create: (context) => locator<HomeBloc>()..add(const HomeStarted()),
       child: BlocListener<SettingsCubit, SettingsEntity?>(
-        listenWhen: (previous, current) =>
-            previous?.environment != current?.environment,
+        listenWhen:
+            (previous, current) =>
+                previous?.environment != current?.environment,
         listener: (context, settings) {
           context.read<HomeBloc>().add(const HomeStarted());
         },
