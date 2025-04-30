@@ -36,16 +36,18 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
       }
 
       final socket = await Socket.connect(
-        uri.host,
-        uri.port,
-        timeout: Duration(seconds: timeout ?? 5),
-      ).then((socket) {
-        socket.destroy();
-        return ElectrumServerStatus.online;
-      }).catchError((error) {
-        debugPrint('Socket connection error: $error');
-        return ElectrumServerStatus.offline;
-      });
+            uri.host,
+            uri.port,
+            timeout: Duration(seconds: timeout ?? 5),
+          )
+          .then((socket) {
+            socket.destroy();
+            return ElectrumServerStatus.online;
+          })
+          .catchError((error) {
+            debugPrint('Socket connection error: $error');
+            return ElectrumServerStatus.offline;
+          });
       return socket;
     } catch (e) {
       debugPrint('Error checking server connectivity: $e');
@@ -117,75 +119,15 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
       final server = model.toEntity();
       if (checkStatus && model.url.isNotEmpty) {
         // Check connectivity if needed
-        final status =
-            await _checkServerConnectivity(model.url, server.timeout);
+        final status = await _checkServerConnectivity(
+          model.url,
+          server.timeout,
+        );
         return server.copyWith(status: status);
       }
       return server;
     }
     return null;
-  }
-
-  /// Gets the preferred server by network based on availability and priority
-  @override
-  Future<ElectrumServer> getPreferredServer({
-    required Network network,
-    bool checkStatus = true,
-  }) async {
-    // Get all available servers for this network
-    final servers = await getElectrumServers(
-      network: network,
-      checkStatus: checkStatus,
-    );
-
-    // Create a prioritized list based on the selection criteria
-    final List<ElectrumServer> prioritizedServers =
-        List<ElectrumServer>.from(servers);
-
-    // Sort by:
-    // 1. Online status first
-    // 2. IsActive flag for custom servers
-    // 3. Priority value
-    prioritizedServers.sort((a, b) {
-      // Online status is the highest priority
-      if (a.status == ElectrumServerStatus.online &&
-          b.status != ElectrumServerStatus.online) {
-        return -1;
-      }
-      if (b.status == ElectrumServerStatus.online &&
-          a.status != ElectrumServerStatus.online) {
-        return 1;
-      }
-
-      // For servers with the same online status, check isActive for custom servers
-      final aIsCustomAndActive =
-          a.electrumServerProvider is CustomElectrumServerProvider &&
-              a.isActive;
-      final bIsCustomAndActive =
-          b.electrumServerProvider is CustomElectrumServerProvider &&
-              b.isActive;
-
-      if (aIsCustomAndActive && !bIsCustomAndActive) {
-        return -1;
-      }
-      if (!aIsCustomAndActive && bIsCustomAndActive) {
-        return 1;
-      }
-
-      // Finally, use priority value (lower number = higher priority)
-      return a.priority.compareTo(b.priority);
-    });
-
-    // If we found any servers, return the best one
-    if (prioritizedServers.isNotEmpty) {
-      return prioritizedServers.first;
-    }
-
-    // Fallback to a default BullBitcoin server as last resort
-    return ElectrumServer.defaultServer(
-      provider: DefaultElectrumServerProvider.bullBitcoin,
-      network: network,
-    );
   }
 
   @override
@@ -196,9 +138,7 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
     List<ElectrumServer> servers = [];
 
     // Get custom server if available
-    final customServer = await getCustomServer(
-      network: network,
-    );
+    final customServer = await getCustomServer(network: network);
     if (customServer != null) {
       servers.add(customServer);
     }
@@ -229,14 +169,17 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
       for (final server in servers) {
         if (server.url.isNotEmpty) {
           try {
-            final status =
-                await _checkServerConnectivity(server.url, server.timeout);
+            final status = await _checkServerConnectivity(
+              server.url,
+              server.timeout,
+            );
             debugPrint('Server: ${server.url}, Status: $status');
             serversWithStatus.add(server.copyWith(status: status));
           } catch (e) {
             debugPrint('Error checking server status: $e');
-            serversWithStatus
-                .add(server.copyWith(status: ElectrumServerStatus.offline));
+            serversWithStatus.add(
+              server.copyWith(status: ElectrumServerStatus.offline),
+            );
           }
         } else {
           serversWithStatus.add(server);
@@ -247,6 +190,25 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
     }
 
     return servers;
+  }
+
+  @override
+  Future<ElectrumServer> getPrioritizedServer({
+    required Network network,
+    bool checkStatus = false,
+  }) async {
+    // Get custom server if available
+    final model = await _electrumServerStorage.getPrioritizedServer(
+      network: network,
+    );
+
+    final server = model.toEntity();
+    if (checkStatus && model.url.isNotEmpty) {
+      // Check connectivity if needed
+      final status = await _checkServerConnectivity(model.url, server.timeout);
+      return server.copyWith(status: status);
+    }
+    return server;
   }
 }
 

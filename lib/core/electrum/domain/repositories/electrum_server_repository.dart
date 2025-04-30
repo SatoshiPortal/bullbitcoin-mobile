@@ -22,10 +22,8 @@ abstract class ElectrumServerRepository {
     required Network network,
     required bool checkStatus,
   });
-
-  /// Gets the best server for a network based on status and priority
-  Future<ElectrumServer> getPreferredServer({
+  Future<ElectrumServer> getPrioritizedServer({
     required Network network,
-    bool checkStatus = true,
+    bool checkStatus = false,
   });
 }
