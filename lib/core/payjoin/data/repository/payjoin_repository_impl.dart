@@ -12,12 +12,14 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:flutter/foundation.dart';
+import 'package:payjoin_flutter/uri.dart' show Url;
 import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepository {
@@ -71,6 +73,11 @@ class PayjoinRepository {
     }
 
     return payjoin;
+  }
+
+  Future<void> checkOhttpRelayHealth() async {
+    final directory = await Url.fromStr(PayjoinConstants.directoryUrl);
+    _source.fetchOhttpKeyAndRelay(payjoinDirectory: directory);
   }
 
   // TODO: Remove this and use the general frozen utxo datasource
