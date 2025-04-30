@@ -75,9 +75,12 @@ class PayjoinRepository {
     return payjoin;
   }
 
-  Future<void> checkOhttpRelayHealth() async {
+  Future<bool> checkOhttpRelayHealth() async {
     final directory = await Url.fromStr(PayjoinConstants.directoryUrl);
-    _source.fetchOhttpKeyAndRelay(payjoinDirectory: directory);
+    final (ohttpKeys, ohttpRelay) = await _source.fetchOhttpKeyAndRelay(
+      payjoinDirectory: directory,
+    );
+    return ohttpKeys != null && ohttpRelay != null;
   }
 
   // TODO: Remove this and use the general frozen utxo datasource

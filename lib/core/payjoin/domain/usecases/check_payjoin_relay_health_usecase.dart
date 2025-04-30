@@ -10,8 +10,7 @@ class CheckPayjoinRelayHealthUsecase {
 
   Future<bool> execute() async {
     try {
-      _repository.checkOhttpRelayHealth();
-      return true;
+      return await _repository.checkOhttpRelayHealth();
     } catch (e) {
       debugPrint('Error checking Payjoin relay health: $e');
       return false;
