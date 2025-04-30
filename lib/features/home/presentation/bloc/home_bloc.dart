@@ -223,17 +223,38 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     CheckAllWarnings event,
     Emitter<HomeState> emit,
   ) async {
-    final warnings = <HomeWarning>[];
     final defaultWallets = await _getWalletsUsecase.execute(onlyDefaults: true);
     if (defaultWallets.isEmpty) {
-      emit(state.copyWith(warnings: warnings));
+      emit(state.copyWith(warnings: const []));
       return;
     }
-    if (defaultWallets.isNotEmpty) {
-      bool bitcoinServerDown = false;
-      bool liquidServerDown = false;
 
-      for (final wallet in defaultWallets) {
+    final warnings = <HomeWarning>[];
+
+    // Run all checks in parallel
+    await Future.wait([
+      // Check electrum servers
+      _checkElectrumServers(defaultWallets, warnings),
+
+      // Check payjoin health
+      _checkPayjoinHealth(warnings),
+
+      // Check swap server
+      _checkSwapServer(defaultWallets.first.isTestnet, warnings),
+    ]);
+
+    emit(state.copyWith(warnings: warnings));
+  }
+
+  Future<void> _checkElectrumServers(
+    List<Wallet> defaultWallets,
+    List<HomeWarning> warnings,
+  ) async {
+    bool bitcoinServerDown = false;
+    bool liquidServerDown = false;
+
+    await Future.wait(
+      defaultWallets.map((wallet) async {
         final electrumServer = await _getBestAvailableServerUsecase.execute(
           network: wallet.network,
         );
@@ -244,55 +265,60 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             bitcoinServerDown = true;
           }
         }
-      }
+      }),
+    );
 
-      if (bitcoinServerDown || liquidServerDown) {
-        String title;
-        if (bitcoinServerDown && liquidServerDown) {
-          title = 'Bitcoin & Liquid electrum server failure';
-        } else if (bitcoinServerDown) {
-          title = 'Bitcoin electrum server failure';
-        } else {
-          title = 'Liquid electrum server failure';
-        }
+    if (bitcoinServerDown || liquidServerDown) {
+      final title = switch ((bitcoinServerDown, liquidServerDown)) {
+        (true, true) => 'Bitcoin & Liquid electrum server failure',
+        (true, false) => 'Bitcoin electrum server failure',
+        (false, true) => 'Liquid electrum server failure',
+        _ => '',
+      };
 
-        warnings.add(
-          HomeWarning(
-            title: title,
-            description: 'Click to configure electrum server settings',
-            actionRoute: AppRoute.settings.name,
-            type: WarningType.error,
-          ),
-        );
-      }
-      final isHealthy = await _checkPayjoinRelayHealth.execute();
-      if (!isHealthy) {
-        warnings.add(
-          HomeWarning(
-            title: 'Payjoin Service Unreachable',
-            description: 'Contact support for assistance',
-            actionRoute: AppRoute.settings.name,
-            type: WarningType.error,
-          ),
-        );
-      }
-      try {
-        await _getSwapLimitsUsecase.execute(
-          type: SwapType.bitcoinToLiquid,
-          isTestnet: defaultWallets.first.isTestnet,
-        );
-      } catch (e) {
-        warnings.add(
-          HomeWarning(
-            title: 'Boltz Server Unreachable',
-            description: 'Contact support for assistance',
-            actionRoute: AppRoute.settings.name,
-            type: WarningType.error,
-          ),
-        );
-      }
+      warnings.add(
+        HomeWarning(
+          title: title,
+          description: 'Click to configure electrum server settings',
+          actionRoute: AppRoute.settings.name,
+          type: WarningType.error,
+        ),
+      );
+    }
+  }
 
-      emit(state.copyWith(warnings: warnings));
+  Future<void> _checkPayjoinHealth(List<HomeWarning> warnings) async {
+    final isHealthy = await _checkPayjoinRelayHealth.execute();
+    if (!isHealthy) {
+      warnings.add(
+        HomeWarning(
+          title: 'Payjoin Service Unreachable',
+          description: 'Contact support for assistance',
+          actionRoute: AppRoute.settings.name,
+          type: WarningType.error,
+        ),
+      );
+    }
+  }
+
+  Future<void> _checkSwapServer(
+    bool isTestnet,
+    List<HomeWarning> warnings,
+  ) async {
+    try {
+      await _getSwapLimitsUsecase.execute(
+        type: SwapType.bitcoinToLiquid,
+        isTestnet: isTestnet,
+      );
+    } catch (e) {
+      warnings.add(
+        HomeWarning(
+          title: 'Boltz Server Unreachable',
+          description: 'Contact support for assistance',
+          actionRoute: AppRoute.settings.name,
+          type: WarningType.error,
+        ),
+      );
     }
   }
 }
