@@ -72,8 +72,8 @@ class CreateChainSwapUsecase {
         case SwapType.liquidToBitcoin:
           return await swapRepository.createLiquidToBitcoinSwap(
             sendWalletMnemonic: liquidWalletMnemonic.mnemonicWords.join(' '),
-            sendWalletId: bitcoinWalletId,
-            receiveWalletId: liquidWalletId,
+            sendWalletId: liquidWalletId,
+            receiveWalletId: bitcoinWalletId,
             amountSat: amountSat!,
             isTestnet: isTestnet,
             btcElectrumUrl: btcElectrumUrl,

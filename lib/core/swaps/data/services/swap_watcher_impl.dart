@@ -52,6 +52,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
 
     final swaps = await _boltzRepo.getOngoingSwaps();
     final swapIdsToWatch = swaps.map((swap) => swap.id).toList();
+    debugPrint('Watching Swaps: ${swapIdsToWatch.join(', ')}');
     await _boltzRepo.reinitializeStreamWithSwaps(swapIds: swapIdsToWatch);
     startWatching();
   }
