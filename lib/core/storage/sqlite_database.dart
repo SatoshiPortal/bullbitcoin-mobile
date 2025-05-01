@@ -33,4 +33,12 @@ class SqliteDatabase extends _$SqliteDatabase {
       native: const DriftNativeOptions(), // TODO(azad): constant path
     );
   }
+
+  Future<void> clearCacheTables() async {
+    final cacheTables = [transactions];
+
+    for (final table in cacheTables) {
+      await delete(table).go();
+    }
+  }
 }

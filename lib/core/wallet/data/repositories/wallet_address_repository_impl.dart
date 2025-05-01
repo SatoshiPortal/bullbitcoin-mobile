@@ -13,10 +13,10 @@ class WalletAddressRepositoryImpl implements WalletAddressRepository {
   final WalletDatasource _lwkWallet;
 
   WalletAddressRepositoryImpl({
-    required SqliteDatabase sqliteDatasource,
+    required SqliteDatabase sqlite,
     required WalletDatasource bdkWalletDatasource,
     required WalletDatasource lwkWalletDatasource,
-  }) : _sqlite = sqliteDatasource,
+  }) : _sqlite = sqlite,
        _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource;
 

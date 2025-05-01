@@ -6,7 +6,7 @@ import 'package:bb_mobile/locator.dart';
 class LabelsLocator {
   static void registerRepositories() {
     locator.registerLazySingleton<LabelRepository>(
-      () => LabelRepository(sqliteDatasource: locator<SqliteDatabase>()),
+      () => LabelRepository(sqlite: locator<SqliteDatabase>()),
     );
   }
 

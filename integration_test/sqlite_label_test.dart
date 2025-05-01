@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/locator.dart';
@@ -11,10 +11,10 @@ import 'fixtures/labels_fixtures.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  locator.registerLazySingleton<SqliteDatasource>(() => SqliteDatasource());
-  final sqlite = locator<SqliteDatasource>();
+  locator.registerLazySingleton<SqliteDatabase>(() => SqliteDatabase());
+  final sqlite = locator<SqliteDatabase>();
   locator.registerLazySingleton<LabelRepository>(
-    () => LabelRepository(sqliteDatasource: sqlite),
+    () => LabelRepository(sqlite: sqlite),
   );
   final labelRepository = locator<LabelRepository>();
 
@@ -51,10 +51,12 @@ void main() {
         spendable: aLabel.spendable,
       );
 
-      final fetchByLabel =
-          await labelRepository.fetchByLabel(label: aLabel.label);
-      final fetchByRef =
-          await labelRepository.fetchByEntity<WalletAddress>(entity: address);
+      final fetchByLabel = await labelRepository.fetchByLabel(
+        label: aLabel.label,
+      );
+      final fetchByRef = await labelRepository.fetchByEntity<WalletAddress>(
+        entity: address,
+      );
 
       expect(fetchByLabel.length, 1);
       expect(fetchByRef.length, 1);
@@ -71,7 +73,9 @@ void main() {
 
     test('Create and store multiple labels', () async {
       for (final label in labels) {
-        await sqlite.into(sqlite.labels).insertOnConflictUpdate(
+        await sqlite
+            .into(sqlite.labels)
+            .insertOnConflictUpdate(
               LabelModel(
                 label: label.label,
                 type: label.type,
@@ -93,8 +97,9 @@ void main() {
     });
 
     test('Read labels by reference', () async {
-      final addressLabels =
-          await labelRepository.fetchByEntity<WalletAddress>(entity: address);
+      final addressLabels = await labelRepository.fetchByEntity<WalletAddress>(
+        entity: address,
+      );
       expect(addressLabels, isNotNull);
       expect(addressLabels.length, 3);
 
@@ -102,9 +107,7 @@ void main() {
       final labelTexts = addressLabels.map((l) => l.label).toList();
       expect(
         labelTexts,
-        containsAll(
-          ['Bitcoin Purchase', 'Cold Storage', 'Hardware Wallet'],
-        ),
+        containsAll(['Bitcoin Purchase', 'Cold Storage', 'Hardware Wallet']),
       );
 
       // Read labels for the first transaction (should have 3 labels)
@@ -118,15 +121,14 @@ void main() {
       debugPrint(
         'Found ${addressLabels.length} labels for address ${addresses[0]}',
       );
-      debugPrint(
-        'Found ${txLabels.length} labels for transaction ${txids[0]}',
-      );
+      debugPrint('Found ${txLabels.length} labels for transaction ${txids[0]}');
     });
 
     test('Read labels by label value', () async {
       // Read labels with the shared label "Important Transaction" (should be 3)
-      final importantLabels =
-          await labelRepository.fetchByLabel(label: 'Important Transaction');
+      final importantLabels = await labelRepository.fetchByLabel(
+        label: 'Important Transaction',
+      );
       expect(importantLabels, isNotNull);
       expect(importantLabels.length, 3);
 
@@ -140,29 +142,32 @@ void main() {
       );
     });
 
-    test('Read labels by label value and verify different reference types',
-        () async {
-      final bitcoinPurchaseLabels =
-          await labelRepository.fetchByLabel(label: 'Bitcoin Purchase');
-      expect(bitcoinPurchaseLabels, isNotNull);
-      expect(bitcoinPurchaseLabels.length, 2);
+    test(
+      'Read labels by label value and verify different reference types',
+      () async {
+        final bitcoinPurchaseLabels = await labelRepository.fetchByLabel(
+          label: 'Bitcoin Purchase',
+        );
+        expect(bitcoinPurchaseLabels, isNotNull);
+        expect(bitcoinPurchaseLabels.length, 2);
 
-      // final addressLabel = bitcoinPurchaseLabels.firstWhere(
-      //   (label) => label.type == Entity.address,
-      //   orElse: () => throw Exception('No address label found'),
-      // );
-      // final txLabel = bitcoinPurchaseLabels.firstWhere(
-      //   (label) => label.type == Entity.tx,
-      //   orElse: () => throw Exception('No transaction label found'),
-      // );
+        // final addressLabel = bitcoinPurchaseLabels.firstWhere(
+        //   (label) => label.type == Entity.address,
+        //   orElse: () => throw Exception('No address label found'),
+        // );
+        // final txLabel = bitcoinPurchaseLabels.firstWhere(
+        //   (label) => label.type == Entity.tx,
+        //   orElse: () => throw Exception('No transaction label found'),
+        // );
 
-      // expect(addresses.contains(addressLabel.ref), isTrue);
-      // expect(txids.contains(txLabel.ref), isTrue);
+        // expect(addresses.contains(addressLabel.ref), isTrue);
+        // expect(txids.contains(txLabel.ref), isTrue);
 
-      // debugPrint('Found "Bitcoin Purchase" labels for:');
-      // debugPrint('  Address: ${addressLabel.ref} (type: ${addressLabel.type})');
-      // debugPrint('  Transaction: ${txLabel.ref} (type: ${txLabel.type})');
-    });
+        // debugPrint('Found "Bitcoin Purchase" labels for:');
+        // debugPrint('  Address: ${addressLabel.ref} (type: ${addressLabel.type})');
+        // debugPrint('  Transaction: ${txLabel.ref} (type: ${txLabel.type})');
+      },
+    );
 
     test('Delete a specific label', () async {
       const tmpLabel = 'Temporary Label';
@@ -171,14 +176,15 @@ void main() {
         entity: address,
       );
 
-      final addressLabels =
-          await labelRepository.fetchByEntity<WalletAddress>(entity: address);
+      final addressLabels = await labelRepository.fetchByEntity<WalletAddress>(
+        entity: address,
+      );
       expect(addressLabels.length, 4, reason: 'we should have 4 labels');
 
       await labelRepository.trashOneLabel(label: tmpLabel, entity: address);
 
-      final updatedAddressLabels =
-          await labelRepository.fetchByEntity<WalletAddress>(entity: address);
+      final updatedAddressLabels = await labelRepository
+          .fetchByEntity<WalletAddress>(entity: address);
       expect(
         updatedAddressLabels.length,
         3,

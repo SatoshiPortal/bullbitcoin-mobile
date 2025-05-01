@@ -14,10 +14,10 @@ class LiquidWalletRepositoryImpl implements LiquidWalletRepository {
   final LwkWalletDatasource _lwkWallet;
 
   LiquidWalletRepositoryImpl({
-    required SqliteDatabase sqliteDatasource,
+    required SqliteDatabase sqlite,
     required SeedDatasource seedDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
-  }) : _sqlite = sqliteDatasource,
+  }) : _sqlite = sqlite,
        _seed = seedDatasource,
        _lwkWallet = lwkWalletDatasource;
 

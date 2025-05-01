@@ -1,21 +1,18 @@
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:drift/drift.dart';
 
 class ElectrumServerStorageDatasource {
-  final SqliteDatasource _sqliteDatasource;
+  final SqliteDatabase _sqlite;
 
-  const ElectrumServerStorageDatasource({
-    required SqliteDatasource sqliteDatasource,
-  }) : _sqliteDatasource = sqliteDatasource;
+  const ElectrumServerStorageDatasource({required SqliteDatabase sqlite})
+    : _sqlite = sqlite;
 
   Future<void> store(ElectrumServerModel server) async {
     final row = server.toSqlite();
-    await _sqliteDatasource
-        .into(_sqliteDatasource.electrumServers)
-        .insertOnConflictUpdate(row);
+    await _sqlite.into(_sqlite.electrumServers).insertOnConflictUpdate(row);
   }
 
   /// Get a default server by preset type
@@ -32,7 +29,7 @@ class ElectrumServerStorageDatasource {
     }
 
     final rows =
-        await _sqliteDatasource.managers.electrumServers
+        await _sqlite.managers.electrumServers
             .filter(
               (f) =>
                   f.isLiquid(network.isLiquid) &
@@ -49,7 +46,7 @@ class ElectrumServerStorageDatasource {
     required Network network,
   }) async {
     final row =
-        await _sqliteDatasource.managers.electrumServers
+        await _sqlite.managers.electrumServers
             .filter(
               (f) =>
                   f.isLiquid(network.isLiquid) &
@@ -65,7 +62,7 @@ class ElectrumServerStorageDatasource {
     required Network network,
   }) async {
     final rows =
-        await _sqliteDatasource.managers.electrumServers
+        await _sqlite.managers.electrumServers
             .filter(
               (f) =>
                   f.isLiquid(network.isLiquid) & f.isTestnet(network.isTestnet),

@@ -55,7 +55,7 @@ class WalletLocator {
   static void registerRepositories() {
     locator.registerLazySingleton<BitcoinWalletRepository>(
       () => BitcoinWalletRepositoryImpl(
-        sqliteDatasource: locator<SqliteDatabase>(),
+        sqlite: locator<SqliteDatabase>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         seedDatasource: locator<SeedDatasource>(),
       ),
@@ -63,7 +63,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<LiquidWalletRepository>(
       () => LiquidWalletRepositoryImpl(
-        sqliteDatasource: locator<SqliteDatabase>(),
+        sqlite: locator<SqliteDatabase>(),
         seedDatasource: locator<SeedDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
       ),
@@ -71,7 +71,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<WalletRepository>(
       () => WalletRepositoryImpl(
-        sqliteDatasource: locator<SqliteDatabase>(),
+        sqlite: locator<SqliteDatabase>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         electrumServerStorageDatasource:
@@ -81,7 +81,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<WalletUtxoRepository>(
       () => WalletUtxoRepositoryImpl(
-        sqliteDatasource: locator<SqliteDatabase>(),
+        sqlite: locator<SqliteDatabase>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
@@ -90,7 +90,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<WalletAddressRepository>(
       () => WalletAddressRepositoryImpl(
-        sqliteDatasource: locator<SqliteDatabase>(),
+        sqlite: locator<SqliteDatabase>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
       ),
@@ -98,7 +98,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<WalletTransactionRepository>(
       () => WalletTransactionRepositoryImpl(
-        sqliteDatasource: locator<SqliteDatabase>(),
+        sqlite: locator<SqliteDatabase>(),
         bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
         lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
         electrumServerStorage: locator<ElectrumServerStorageDatasource>(),

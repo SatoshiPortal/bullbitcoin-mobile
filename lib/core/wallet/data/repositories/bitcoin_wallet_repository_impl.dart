@@ -18,10 +18,10 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
   final BdkWalletDatasource _bdkWallet;
 
   BitcoinWalletRepositoryImpl({
-    required SqliteDatabase sqliteDatasource,
+    required SqliteDatabase sqlite,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
-  }) : _sqlite = sqliteDatasource,
+  }) : _sqlite = sqlite,
        _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource;
 

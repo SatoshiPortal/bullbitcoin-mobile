@@ -8,8 +8,7 @@ class SettingsRepository {
   // TODO: move db to datasource and inject datasource here instead of db
   final SqliteDatabase _sqlite;
 
-  SettingsRepository({required SqliteDatabase sqliteDatasource})
-    : _sqlite = sqliteDatasource;
+  SettingsRepository({required SqliteDatabase sqlite}) : _sqlite = sqlite;
 
   Future<void> store({
     required int id,

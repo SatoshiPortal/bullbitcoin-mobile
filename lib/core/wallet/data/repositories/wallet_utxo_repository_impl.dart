@@ -11,17 +11,17 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   // TODO: move db to datasource of the required data here and inject the
   //  respective datasource here instead of db
-  final SqliteDatabase _sqliteDatasource;
+  final SqliteDatabase _sqlite;
   final WalletDatasource _bdkWalletDatasource;
   final WalletDatasource _lwkWalletDatasource;
   final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
 
   WalletUtxoRepositoryImpl({
-    required SqliteDatabase sqliteDatasource,
+    required SqliteDatabase sqlite,
     required WalletDatasource bdkWalletDatasource,
     required WalletDatasource lwkWalletDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
-  }) : _sqliteDatasource = sqliteDatasource,
+  }) : _sqlite = sqlite,
        _bdkWalletDatasource = bdkWalletDatasource,
        _lwkWalletDatasource = lwkWalletDatasource,
        _frozenWalletUtxoDatasource = frozenWalletUtxoDatasource;
@@ -29,7 +29,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
   @override
   Future<List<WalletUtxo>> getWalletUtxos({required String walletId}) async {
     final metadata =
-        await _sqliteDatasource.managers.walletMetadatas
+        await _sqlite.managers.walletMetadatas
             .filter((e) => e.id(walletId))
             .getSingleOrNull();
 
@@ -62,7 +62,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
       utxoModels.map((model) async {
         // Get labels for the UTXO if any
         final labelModels =
-            await _sqliteDatasource.managers.labels
+            await _sqlite.managers.labels
                 .filter((f) => f.type(Entity.output.name))
                 .filter((f) => f.ref(model.labelRef))
                 .get();
@@ -77,11 +77,11 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
           case LiquidWalletUtxoModel _:
             final (standardAddressLabels, confidentialAddressLabels) =
                 await (
-                  _sqliteDatasource.managers.labels
+                  _sqlite.managers.labels
                       .filter((f) => f.type(Entity.address.name))
                       .filter((f) => f.ref(model.standardAddress))
                       .get(),
-                  _sqliteDatasource.managers.labels
+                  _sqlite.managers.labels
                       .filter((f) => f.type(Entity.address.name))
                       .filter((f) => f.ref(model.confidentialAddress))
                       .get(),
@@ -93,7 +93,7 @@ class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
             ];
           case BitcoinWalletUtxoModel _:
             addressLabels =
-                await _sqliteDatasource.managers.labels
+                await _sqlite.managers.labels
                     .filter((f) => f.type(Entity.address.name))
                     .filter((f) => f.ref(model.address))
                     .get();

@@ -24,11 +24,11 @@ class WalletRepositoryImpl implements WalletRepository {
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
   WalletRepositoryImpl({
-    required SqliteDatabase sqliteDatasource,
+    required SqliteDatabase sqlite,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
-  }) : _sqlite = sqliteDatasource,
+  }) : _sqlite = sqlite,
        _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource,
        _electrumServerStorage = electrumServerStorageDatasource {

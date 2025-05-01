@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 
 final addresses = [
   'bc1q7cyfzrq4xm3nscpkevj8ug3u8dgxs2j4h8c9at',
@@ -51,16 +51,8 @@ final labels = [
     ref: addresses[2],
     label: 'Donation Address',
   ),
-  LabelModel(
-    type: Entity.tx.name,
-    ref: txids[0],
-    label: 'Bitcoin Purchase',
-  ),
-  LabelModel(
-    type: Entity.tx.name,
-    ref: txids[0],
-    label: 'Investment',
-  ),
+  LabelModel(type: Entity.tx.name, ref: txids[0], label: 'Bitcoin Purchase'),
+  LabelModel(type: Entity.tx.name, ref: txids[0], label: 'Investment'),
   LabelModel(
     type: Entity.tx.name,
     ref: txids[0],

@@ -26,13 +26,13 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final BoltzStorageDatasource _swapDatasource;
 
   WalletTransactionRepositoryImpl({
-    required SqliteDatabase sqliteDatasource,
+    required SqliteDatabase sqlite,
     required WalletDatasource bdkWalletTransactionDatasource,
     required WalletDatasource lwkWalletTransactionDatasource,
     required ElectrumServerStorageDatasource electrumServerStorage,
     required LocalPayjoinDatasource payjoinDatasource,
     required BoltzStorageDatasource swapDatasource,
-  }) : _sqlite = sqliteDatasource,
+  }) : _sqlite = sqlite,
        _bdkWalletTransactionDatasource = bdkWalletTransactionDatasource,
        _lwkWalletTransactionDatasource = lwkWalletTransactionDatasource,
        _electrumServerStorage = electrumServerStorage,

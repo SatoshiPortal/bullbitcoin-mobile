@@ -58,8 +58,7 @@ class LabelRepository {
   // TODO: move db to datasource and inject datasource here instead of db
   final SqliteDatabase _sqlite;
 
-  LabelRepository({required SqliteDatabase sqliteDatasource})
-    : _sqlite = sqliteDatasource;
+  LabelRepository({required SqliteDatabase sqlite}) : _sqlite = sqlite;
 
   Future<void> store<T extends Labelable>({
     required String label,

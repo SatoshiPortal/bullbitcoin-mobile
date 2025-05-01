@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/locator.dart';
@@ -7,8 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  locator.registerLazySingleton<SqliteDatasource>(() => SqliteDatasource());
-  final sqlite = locator<SqliteDatasource>();
+  locator.registerLazySingleton<SqliteDatabase>(() => SqliteDatabase());
+  final sqlite = locator<SqliteDatabase>();
 
   group('WalletMetadata Sqlite Integration Tests', () {
     test('', () async {
@@ -52,9 +52,10 @@ void main() {
       await sqlite.into(sqlite.walletMetadatas).insert(metadata);
 
       // Fetch one
-      final fetchedMetadata = await sqlite.managers.walletMetadatas
-          .filter((e) => e.id(metadata.id))
-          .getSingleOrNull();
+      final fetchedMetadata =
+          await sqlite.managers.walletMetadatas
+              .filter((e) => e.id(metadata.id))
+              .getSingleOrNull();
       expect(fetchedMetadata, isNotNull);
       expect(fetchedMetadata!.id, metadata.id);
 

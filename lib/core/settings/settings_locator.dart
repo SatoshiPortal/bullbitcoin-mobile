@@ -6,7 +6,7 @@ import 'package:bb_mobile/locator.dart';
 class SettingsLocator {
   static Future<void> registerRepositories() async {
     locator.registerLazySingleton<SettingsRepository>(
-      () => SettingsRepository(sqliteDatasource: locator<SqliteDatabase>()),
+      () => SettingsRepository(sqlite: locator<SqliteDatabase>()),
     );
   }
 

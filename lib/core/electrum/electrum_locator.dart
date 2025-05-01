@@ -4,15 +4,13 @@ import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repo
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_best_available_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/locator.dart';
 
 class ElectrumLocator {
   static Future<void> registerDatasources() async {
     locator.registerLazySingleton<ElectrumServerStorageDatasource>(
-      () => ElectrumServerStorageDatasource(
-        sqliteDatasource: locator<SqliteDatasource>(),
-      ),
+      () => ElectrumServerStorageDatasource(sqlite: locator<SqliteDatabase>()),
     );
   }
 
