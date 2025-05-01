@@ -1,11 +1,13 @@
 // ignore_for_file: dead_code
 
 import 'package:bb_mobile/features/swap/presentation/swap_bloc.dart';
+import 'package:bb_mobile/features/swap/presentation/swap_state.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
+import 'package:bb_mobile/ui/screens/send_confirm_screen.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,6 +32,25 @@ class SwapFlow extends StatelessWidget {
 
 class SwapPage extends StatelessWidget {
   const SwapPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final step = context.select<SwapCubit, SwapPageStep>(
+      (cubit) => cubit.state.step,
+    );
+    switch (step) {
+      case SwapPageStep.amount:
+        return const SwapAmountPage();
+      case SwapPageStep.confirm:
+        return const SwapConfirmPage();
+      case _:
+        return const SizedBox.shrink();
+    }
+  }
+}
+
+class SwapAmountPage extends StatelessWidget {
+  const SwapAmountPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -368,6 +389,86 @@ class SwapContinueWithAmountButton extends StatelessWidget {
         if (disableContinueWithAmounts) return;
         context.read<SwapCubit>().continueWithAmountsClicked();
       },
+    );
+  }
+}
+
+class SwapConfirmPage extends StatelessWidget {
+  const SwapConfirmPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final formattedConfirmedAmountBitcoin = context.select(
+      (SwapCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
+    );
+    final sendWalletLabel = context.select(
+      (SwapCubit cubit) => cubit.state.fromWalletLabel,
+    );
+    final receiveWalletLabel = context.select(
+      (SwapCubit cubit) => cubit.state.toWalletLabel,
+    );
+    final swap = context.select((SwapCubit cubit) => cubit.state.swap);
+    // ignore: unused_local_variable
+    final swapFees = context.select((SwapCubit cubit) => cubit.state.swapFees);
+    // ignore: unused_local_variable
+    final confirmedAmountSat = context.select(
+      (SwapCubit cubit) => cubit.state.confirmedAmountSat,
+    );
+    final buildError = context.select(
+      (SwapCubit cubit) => cubit.state.buildTransactionException,
+    );
+    final confirmError = context.select(
+      (SwapCubit cubit) => cubit.state.confirmTransactionException,
+    );
+    final sendNetwork = context.select(
+      (SwapCubit cubit) => cubit.state.fromWalletNetwork,
+    );
+
+    return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          title: 'Swap',
+          actionIcon: Icons.help_outline,
+          onAction: () {},
+          onBack: () => context.pop(),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Gap(24),
+            CommonSendConfirmTopArea(
+              formattedConfirmedAmountBitcoin: formattedConfirmedAmountBitcoin,
+              sendType: SendType.swap,
+            ),
+            const Gap(40),
+
+            CommonChainSwapSendInfoSection(
+              sendWalletLabel: sendWalletLabel,
+              receiveWalletLabel: receiveWalletLabel,
+              formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
+              formattedFiatEquivalent: '',
+              swapId: swap!.id,
+              totalSwapFees: '',
+            ),
+            const Gap(64),
+            // const _Warning(),
+            CommonConfirmSendErrorSection(
+              confirmError: confirmError,
+              buildError: buildError,
+            ),
+            CommonSendBottomButtons(
+              isBitcoinWallet: sendNetwork == WalletNetwork.bitcoin,
+              blocProviderValue: context.read<SwapCubit>(),
+              onSendPressed: () {},
+              disableSendButton: true,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

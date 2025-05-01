@@ -10,13 +10,17 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class SendConfirmTopArea extends StatelessWidget {
-  const SendConfirmTopArea({
+enum SendType { send, swap }
+
+class CommonSendConfirmTopArea extends StatelessWidget {
+  const CommonSendConfirmTopArea({
     super.key,
     required String formattedConfirmedAmountBitcoin,
-  }) : _formattedConfirmedAmountBitcoin = formattedConfirmedAmountBitcoin;
+    required SendType sendType,
+  }) : _formattedConfirmedAmountBitcoin = formattedConfirmedAmountBitcoin,
+       _sendType = sendType;
   final String _formattedConfirmedAmountBitcoin;
-
+  final SendType _sendType;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -30,14 +34,20 @@ class SendConfirmTopArea extends StatelessWidget {
             color: context.colour.secondaryFixedDim,
             shape: BoxShape.circle,
           ),
-          child: Image.asset(
-            Assets.icons.rightArrow.path,
-            height: 24,
-            width: 24,
-          ),
+          child:
+              _sendType == SendType.send
+                  ? Image.asset(
+                    Assets.icons.rightArrow.path,
+                    height: 24,
+                    width: 24,
+                  )
+                  : Image.asset(Assets.icons.swap.path, height: 24, width: 24),
         ),
         const Gap(16),
-        BBText('Confirm Send', style: context.font.bodyMedium),
+        if (_sendType == SendType.send)
+          BBText('Confirm Send', style: context.font.bodyMedium)
+        else
+          BBText('Confirm Swap', style: context.font.bodyMedium),
         const Gap(4),
         BBText(
           _formattedConfirmedAmountBitcoin,
@@ -49,8 +59,8 @@ class SendConfirmTopArea extends StatelessWidget {
   }
 }
 
-class InfoRow extends StatelessWidget {
-  const InfoRow({super.key, required this.title, required this.details});
+class CommonInfoRow extends StatelessWidget {
+  const CommonInfoRow({super.key, required this.title, required this.details});
 
   final String title;
   final Widget details;
@@ -74,8 +84,8 @@ class InfoRow extends StatelessWidget {
   }
 }
 
-class OnchainSendInfoSection extends StatelessWidget {
-  const OnchainSendInfoSection({
+class CommonOnchainSendInfoSection extends StatelessWidget {
+  const CommonOnchainSendInfoSection({
     required String sendWalletLabel,
     required String addressOrInvoice,
     required String formattedBitcoinAmount,
@@ -105,7 +115,7 @@ class OnchainSendInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          InfoRow(
+          CommonInfoRow(
             title: 'From',
             details: BBText(
               _sendWalletLabel,
@@ -114,7 +124,7 @@ class OnchainSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          CommonInfoRow(
             title: 'To',
             details: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -143,7 +153,7 @@ class OnchainSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          CommonInfoRow(
             title: 'Amount',
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -158,7 +168,7 @@ class OnchainSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          CommonInfoRow(
             title: 'Network fees',
             details: BBText(
               "$_absoluteFees sats",
@@ -167,7 +177,7 @@ class OnchainSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          CommonInfoRow(
             title: 'Fee Priority',
             details: InkWell(
               child: Row(
@@ -196,8 +206,8 @@ class OnchainSendInfoSection extends StatelessWidget {
   }
 }
 
-class LnSwapSendInfoSection extends StatelessWidget {
-  const LnSwapSendInfoSection({
+class CommonLnSwapSendInfoSection extends StatelessWidget {
+  const CommonLnSwapSendInfoSection({
     required String sendWalletLabel,
     required String addressOrInvoice,
     required String formattedBitcoinAmount,
@@ -228,7 +238,7 @@ class LnSwapSendInfoSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          InfoRow(
+          CommonInfoRow(
             title: 'From',
             details: BBText(
               _sendWalletLabel,
@@ -237,7 +247,7 @@ class LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          CommonInfoRow(
             title: 'Swap ID',
             details: BBText(
               _swapId,
@@ -246,7 +256,7 @@ class LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          CommonInfoRow(
             title: 'To',
             details: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -280,7 +290,7 @@ class LnSwapSendInfoSection extends StatelessWidget {
             // ),
           ),
           _divider(context),
-          InfoRow(
+          CommonInfoRow(
             title: 'Amount',
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -295,7 +305,7 @@ class LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
+          CommonInfoRow(
             title: 'Total fees',
             details: BBText(
               "$_totalSwapFees sats",
@@ -310,8 +320,8 @@ class LnSwapSendInfoSection extends StatelessWidget {
   }
 }
 
-class SendBottomButtons extends StatelessWidget {
-  const SendBottomButtons({
+class CommonSendBottomButtons extends StatelessWidget {
+  const CommonSendBottomButtons({
     required bool isBitcoinWallet,
     required StateStreamableSource<Object?> blocProviderValue,
     required bool disableSendButton,
@@ -355,7 +365,7 @@ class SendBottomButtons extends StatelessWidget {
             ),
             const Gap(12),
           ],
-          ConfirmSendButton(
+          CommonConfirmSendButton(
             disableSendButton: _disableSendButton,
             onPressed: _onSendPressed,
           ),
@@ -365,8 +375,133 @@ class SendBottomButtons extends StatelessWidget {
   }
 }
 
-class ConfirmSendButton extends StatelessWidget {
-  const ConfirmSendButton({
+class CommonChainSwapSendInfoSection extends StatelessWidget {
+  const CommonChainSwapSendInfoSection({
+    required String sendWalletLabel,
+    String? receiveWalletLabel,
+    String? receiveAddress,
+    required String formattedBitcoinAmount,
+    required String formattedFiatEquivalent,
+    required String swapId,
+    required String totalSwapFees,
+  }) : _sendWalletLabel = sendWalletLabel,
+       _receiveWalletLabel = receiveWalletLabel,
+       _receiveAddress = receiveAddress,
+       _formattedBitcoinAmount = formattedBitcoinAmount,
+       _formattedFiatEquivalent = formattedFiatEquivalent,
+       _swapId = swapId,
+       _totalSwapFees = totalSwapFees;
+  final String _sendWalletLabel;
+  final String? _receiveWalletLabel;
+  final String? _receiveAddress;
+  final String _formattedBitcoinAmount;
+  final String _formattedFiatEquivalent;
+  final String _swapId;
+  final String _totalSwapFees;
+
+  Widget _divider(BuildContext context) {
+    return Container(height: 1, color: context.colour.secondaryFixedDim);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CommonInfoRow(
+            title: 'From',
+            details: BBText(
+              _sendWalletLabel,
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+          CommonInfoRow(
+            title: 'Swap ID',
+            details: BBText(
+              _swapId,
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+          CommonInfoRow(
+            title: 'To',
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_receiveWalletLabel != null)
+                  BBText(
+                    _receiveWalletLabel,
+                    style: context.font.bodyLarge,
+                    textAlign: TextAlign.end,
+                  )
+                else ...[
+                  BBText(
+                    StringFormatting.truncateMiddle(_receiveAddress!),
+                    style: context.font.bodyLarge,
+                    textAlign: TextAlign.end,
+                  ),
+                  const Gap(4),
+                  InkWell(
+                    child: Icon(
+                      Icons.copy,
+                      color: context.colour.primary,
+                      size: 16,
+                    ),
+                    onTap: () {
+                      Clipboard.setData(ClipboardData(text: _receiveAddress));
+                    },
+                  ),
+                ],
+              ],
+            ),
+            // const Gap(4),
+            // InkWell(
+            //   child: Icon(
+            //     Icons.copy,
+            //     color: context.colour.primary,
+            //     size: 16,
+            //   ),
+            // ),
+          ),
+          _divider(context),
+          CommonInfoRow(
+            title: 'Amount',
+            details: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                BBText(_formattedBitcoinAmount, style: context.font.bodyLarge),
+                BBText(
+                  '~$_formattedFiatEquivalent',
+                  style: context.font.labelSmall,
+                  color: context.colour.surfaceContainer,
+                ),
+              ],
+            ),
+          ),
+          _divider(context),
+          CommonInfoRow(
+            title: 'Total fees',
+            details: BBText(
+              "$_totalSwapFees sats",
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+        ],
+      ),
+    );
+  }
+}
+
+class CommonConfirmSendButton extends StatelessWidget {
+  const CommonConfirmSendButton({
     super.key,
     required bool disableSendButton,
     required Function onPressed,
@@ -389,8 +524,8 @@ class ConfirmSendButton extends StatelessWidget {
   }
 }
 
-class ConfirmSendErrorSection extends StatelessWidget {
-  const ConfirmSendErrorSection({
+class CommonConfirmSendErrorSection extends StatelessWidget {
+  const CommonConfirmSendErrorSection({
     required BuildTransactionException? buildError,
     required ConfirmTransactionException? confirmError,
   }) : _buildError = buildError,

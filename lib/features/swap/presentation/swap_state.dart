@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
+import 'package:bb_mobile/core/errors/send_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -6,7 +7,6 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
-import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap_state.freezed.dart';
@@ -137,6 +137,16 @@ abstract class SwapState with _$SwapState {
     return fromWallet!.balanceSat.toInt();
   }
 
+  String get fromWalletLabel {
+    if (fromWallet == null) return '';
+    return fromWallet!.label;
+  }
+
+  String get toWalletLabel {
+    if (toWallet == null) return '';
+    return toWallet!.label;
+  }
+
   String formattedFromWalletBalance() {
     if (fromWallet == null) return '0';
 
@@ -221,6 +231,15 @@ abstract class SwapState with _$SwapState {
     }
   }
 
+  String get formattedConfirmedAmountBitcoin {
+    if (confirmedFromAmountSat == null) return '0 sats';
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(confirmedFromAmountSat!);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(confirmedFromAmountSat!));
+    }
+  }
+
   double get inputAmountBtc => ConvertAmount.satsToBtc(fromAmountSat);
 
   double get confirmedAmountBtc =>
@@ -257,14 +276,4 @@ abstract class SwapState with _$SwapState {
       // fromWalletBalance < fromAmountSat ||
       creatingSwap ||
       amountConfirmedClicked;
-}
-
-class SwapCreationException implements Exception {
-  final String message;
-
-  SwapCreationException(this.message);
-
-  @override
-  String toString() => message;
-  String get displayMessage => 'Failed to create swap.';
 }
