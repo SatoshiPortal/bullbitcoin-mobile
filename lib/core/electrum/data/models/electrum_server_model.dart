@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -37,7 +38,6 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
     @Default(true) bool validateDomain,
     required bool isTestnet,
     required bool isLiquid,
-    @Default(false) bool isActive,
     @Default(0) int priority,
   }) = CustomElectrumServerModel;
 
@@ -53,32 +53,34 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
     return switch (this) {
       CustomElectrumServerModel() => (this as CustomElectrumServerModel).url,
       BullBitcoinElectrumServerModel() => switch (network) {
-          Network.bitcoinMainnet => ApiServiceConstants.bbElectrumUrl,
-          Network.bitcoinTestnet => ApiServiceConstants.bbElectrumTestUrl,
-          Network.liquidMainnet => ApiServiceConstants.bbLiquidElectrumUrlPath,
-          Network.liquidTestnet =>
-            ApiServiceConstants.publicLiquidElectrumUrlPath,
-        },
+        Network.bitcoinMainnet => ApiServiceConstants.bbElectrumUrl,
+        Network.bitcoinTestnet => ApiServiceConstants.bbElectrumTestUrl,
+        Network.liquidMainnet => ApiServiceConstants.bbLiquidElectrumUrlPath,
+        Network.liquidTestnet =>
+          ApiServiceConstants.publicLiquidElectrumUrlPath,
+      },
       BlockstreamElectrumServerModel() => switch (network) {
-          Network.bitcoinMainnet => ApiServiceConstants.publicElectrumUrl,
-          Network.bitcoinTestnet => ApiServiceConstants.publicElectrumTestUrl,
-          Network.liquidMainnet =>
-            ApiServiceConstants.publicLiquidElectrumUrlPath,
-          Network.liquidTestnet =>
-            ApiServiceConstants.publicliquidElectrumTestUrlPath,
-        },
+        Network.bitcoinMainnet => ApiServiceConstants.publicElectrumUrl,
+        Network.bitcoinTestnet => ApiServiceConstants.publicElectrumTestUrl,
+        Network.liquidMainnet =>
+          ApiServiceConstants.publicLiquidElectrumUrlPath,
+        Network.liquidTestnet =>
+          ApiServiceConstants.publicliquidElectrumTestUrlPath,
+      },
     };
   }
 
   /// Get the SOCKS5 proxy for this server (only available for custom servers)
-  String? get socks5 => this is CustomElectrumServerModel
-      ? (this as CustomElectrumServerModel).socks5
-      : null;
+  String? get socks5 =>
+      this is CustomElectrumServerModel
+          ? (this as CustomElectrumServerModel).socks5
+          : null;
 
   /// Flag indicating if this is a custom active server
-  bool get isActive =>
-      this is CustomElectrumServerModel &&
-      (this as CustomElectrumServerModel).isActive;
+  bool get isActive => switch (this) {
+    CustomElectrumServerModel(:final isActive) => isActive,
+    _ => false,
+  };
 
   factory ElectrumServerModel.fromJson(Map<String, dynamic> json) =>
       _$ElectrumServerModelFromJson(json);
@@ -122,7 +124,6 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
         validateDomain: entity.validateDomain,
         isTestnet: entity.network.isTestnet,
         isLiquid: entity.network.isLiquid,
-        isActive: entity.isActive,
         priority: entity.priority,
       );
     }
@@ -175,5 +176,84 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
           priority: priority,
         );
     }
+  }
+
+  factory ElectrumServerModel.fromSqlite(ElectrumServerRow row) {
+    final network = Network.fromEnvironment(
+      isTestnet: row.isTestnet,
+      isLiquid: row.isLiquid,
+    );
+
+    final isBullBitcoin = switch (network) {
+      Network.bitcoinMainnet => row.url == ApiServiceConstants.bbElectrumUrl,
+      Network.bitcoinTestnet =>
+        row.url == ApiServiceConstants.bbElectrumTestUrl,
+      Network.liquidMainnet =>
+        row.url == ApiServiceConstants.bbLiquidElectrumUrlPath,
+      Network.liquidTestnet =>
+        row.url == ApiServiceConstants.publicLiquidElectrumUrlPath,
+    };
+
+    if (isBullBitcoin) {
+      return BullBitcoinElectrumServerModel(
+        retry: row.retry,
+        timeout: row.timeout,
+        stopGap: row.stopGap,
+        validateDomain: row.validateDomain,
+        isTestnet: row.isTestnet,
+        isLiquid: row.isLiquid,
+        priority: row.priority,
+      );
+    }
+
+    final isBlockstream = switch (network) {
+      Network.bitcoinMainnet =>
+        row.url == ApiServiceConstants.publicElectrumUrl,
+      Network.bitcoinTestnet =>
+        row.url == ApiServiceConstants.publicElectrumTestUrl,
+      Network.liquidMainnet =>
+        row.url == ApiServiceConstants.publicLiquidElectrumUrlPath,
+      Network.liquidTestnet =>
+        row.url == ApiServiceConstants.publicliquidElectrumTestUrlPath,
+    };
+
+    if (isBlockstream) {
+      return BlockstreamElectrumServerModel(
+        retry: row.retry,
+        timeout: row.timeout,
+        stopGap: row.stopGap,
+        validateDomain: row.validateDomain,
+        isTestnet: row.isTestnet,
+        isLiquid: row.isLiquid,
+        priority: row.priority,
+      );
+    }
+
+    return CustomElectrumServerModel(
+      url: row.url,
+      socks5: row.socks5,
+      retry: row.retry,
+      timeout: row.timeout,
+      stopGap: row.stopGap,
+      validateDomain: row.validateDomain,
+      isTestnet: row.isTestnet,
+      isLiquid: row.isLiquid,
+      priority: row.priority,
+    );
+  }
+
+  ElectrumServerRow toSqlite() {
+    return ElectrumServerRow(
+      url: url,
+      socks5: socks5,
+      retry: retry,
+      timeout: timeout,
+      stopGap: stopGap,
+      validateDomain: validateDomain,
+      isTestnet: isTestnet,
+      isLiquid: isLiquid,
+      priority: priority,
+      isActive: isActive,
+    );
   }
 }

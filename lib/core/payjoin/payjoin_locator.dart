@@ -33,7 +33,7 @@ class PayjoinLocator {
       () => PayjoinRepositoryImpl(
         localPayjoinDatasource: locator<LocalPayjoinDatasource>(),
         pdkPayjoinDatasource: locator<PdkPayjoinDatasource>(),
-        sqliteDatasource: locator<SqliteDatabase>(),
+        sqlite: locator<SqliteDatabase>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         seedDatasource: locator<SeedDatasource>(),
         blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),

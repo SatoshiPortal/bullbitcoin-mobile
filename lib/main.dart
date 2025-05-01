@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bb_mobile/bloc_observer.dart';
+import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
+import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
@@ -56,6 +58,47 @@ Future main() async {
           language: Language.unitedStatesEnglish,
           hideAmounts: false,
         );
+      }
+
+      // Seed electrum servers
+      // TODO(azad): refactor in a global Database.seed function
+      final electrumStorage = locator<ElectrumServerStorageDatasource>();
+      final defaultsElectrumServers = [
+        ElectrumServerModel.blockstream(
+          isTestnet: false,
+          isLiquid: false,
+        ), // btc main
+        ElectrumServerModel.blockstream(
+          isTestnet: false,
+          isLiquid: true,
+        ), // liq main
+        ElectrumServerModel.blockstream(
+          isTestnet: true,
+          isLiquid: false,
+        ), // btc test
+        ElectrumServerModel.blockstream(
+          isTestnet: true,
+          isLiquid: true,
+        ), // liq test
+        ElectrumServerModel.bullBitcoin(
+          isTestnet: false,
+          isLiquid: false,
+        ), // btc main
+        ElectrumServerModel.bullBitcoin(
+          isTestnet: false,
+          isLiquid: true,
+        ), // liq main
+        ElectrumServerModel.bullBitcoin(
+          isTestnet: true,
+          isLiquid: false,
+        ), // btc test
+        ElectrumServerModel.bullBitcoin(
+          isTestnet: true,
+          isLiquid: true,
+        ), // liq test
+      ];
+      for (final defaultElectrumServer in defaultsElectrumServers) {
+        await electrumStorage.store(defaultElectrumServer);
       }
 
       Bloc.observer = AppBlocObserver();

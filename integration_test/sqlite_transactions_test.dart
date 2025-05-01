@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/transaction/data/electrum_service.dart';
 import 'package:bb_mobile/core/transaction/data/models/transaction_mapper.dart';
 import 'package:bb_mobile/core/transaction/data/transaction_repository.dart';
@@ -11,11 +11,11 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  locator.registerLazySingleton<SqliteDatasource>(() => SqliteDatasource());
+  locator.registerLazySingleton<SqliteDatabase>(() => SqliteDatabase());
 
-  final sqlite = locator<SqliteDatasource>();
+  final sqlite = locator<SqliteDatabase>();
 
-  // final sqlite = locator<SqliteDatasource>();
+  // final sqlite = locator<SqliteDatabase>();
   final electrum = ElectrumService(host: 'wes.bullbitcoin.com', port: 50002);
   const txid =
       'ff47a0a1dfdcf68327242d2cbfb229a5ba7e3e67572c2d4f390c51b1a89d56e5';
@@ -26,9 +26,10 @@ void main() {
   group('Sqlite Integration Tests', () {
     test('Fetch tx bytes from Electrum and store it into Sqlite', () async {
       // Ensure the tx does not exists in sqlite
-      final sqliteTx = await sqlite.managers.transactions
-          .filter((e) => e.txid(txid))
-          .getSingleOrNull();
+      final sqliteTx =
+          await sqlite.managers.transactions
+              .filter((e) => e.txid(txid))
+              .getSingleOrNull();
       expect(sqliteTx, isNull);
 
       // Fetch the transaction from electrum
@@ -50,9 +51,10 @@ void main() {
       );
 
       // Fetch the transaction locally from sqlite
-      final sqliteFetched = await sqlite.managers.transactions
-          .filter((e) => e.txid(txid))
-          .getSingleOrNull();
+      final sqliteFetched =
+          await sqlite.managers.transactions
+              .filter((e) => e.txid(txid))
+              .getSingleOrNull();
       expect(sqliteFetched, isNotNull);
       expect(sqliteFetched!.txid, txid);
     });
@@ -61,9 +63,10 @@ void main() {
       final transactionRepository = TransactionRepository();
 
       // Ensure the tx does not exists in sqlite
-      var sqliteTx = await sqlite.managers.transactions
-          .filter((e) => e.txid(txid))
-          .getSingleOrNull();
+      var sqliteTx =
+          await sqlite.managers.transactions
+              .filter((e) => e.txid(txid))
+              .getSingleOrNull();
       expect(sqliteTx, isNull);
 
       // Fetch a transaction and cache it in sqlite if not present
@@ -71,9 +74,10 @@ void main() {
       expect(tx.txid, txid);
 
       // Ensure the tx is now stored in sqlite
-      sqliteTx = await sqlite.managers.transactions
-          .filter((e) => e.txid(txid))
-          .getSingleOrNull();
+      sqliteTx =
+          await sqlite.managers.transactions
+              .filter((e) => e.txid(txid))
+              .getSingleOrNull();
       expect(sqliteTx, isNotNull);
       expect(tx.txid, sqliteTx!.txid);
     });

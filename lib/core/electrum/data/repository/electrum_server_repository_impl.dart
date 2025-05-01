@@ -17,7 +17,7 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
   @override
   Future<void> setElectrumServer(ElectrumServer server) async {
     final model = ElectrumServerModel.fromEntity(server);
-    await _electrumServerStorage.set(model);
+    await _electrumServerStorage.store(model);
   }
 
   /// Checks if a server is reachable by attempting a socket connection
@@ -62,7 +62,7 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
     bool checkStatus = false,
   }) async {
     // Try to get the server from storage
-    final model = await _electrumServerStorage.getDefaultServerByProvider(
+    final model = await _electrumServerStorage.fetchDefaultServerByProvider(
       provider,
       network: network,
     );
@@ -111,7 +111,7 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
     bool checkStatus = false,
   }) async {
     // Get custom server if available
-    final model = await _electrumServerStorage.getCustomServer(
+    final model = await _electrumServerStorage.fetchCustomServer(
       network: network,
     );
 
@@ -198,7 +198,7 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
     bool checkStatus = false,
   }) async {
     // Get custom server if available
-    final model = await _electrumServerStorage.getPrioritizedServer(
+    final model = await _electrumServerStorage.fetchPrioritizedServer(
       network: network,
     );
 
