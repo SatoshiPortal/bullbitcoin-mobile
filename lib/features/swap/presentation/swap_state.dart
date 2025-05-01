@@ -11,7 +11,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap_state.freezed.dart';
 
-enum SwapPageStep { amount, confirm, sending, success }
+enum SwapPageStep { amount, confirm, progress, success }
 
 enum WalletNetwork { bitcoin, liquid }
 

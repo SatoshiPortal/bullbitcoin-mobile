@@ -62,8 +62,8 @@ class SwapLocator {
       ),
     );
 
-    locator.registerFactory<UpdatePaidSendSwapUsecase>(
-      () => UpdatePaidSendSwapUsecase(
+    locator.registerFactory<UpdatePaidChainSwapUsecase>(
+      () => UpdatePaidChainSwapUsecase(
         swapRepository: locator<SwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,

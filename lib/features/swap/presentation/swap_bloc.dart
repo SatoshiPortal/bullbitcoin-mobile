@@ -306,6 +306,8 @@ class SwapCubit extends Cubit<SwapState> {
       final swap = state.swap;
       if (swap == null) return;
 
+      final settings = await _getSettingsUsecase.execute();
+      final isTestnet = settings.environment == Environment.testnet;
       final bitcoinWalletId =
           state.fromWalletNetwork == WalletNetwork.bitcoin
               ? state.fromWalletId
@@ -315,12 +317,9 @@ class SwapCubit extends Cubit<SwapState> {
               ? state.fromWalletId
               : state.toWalletId;
 
-      final bitcoinWallet = await _getWalletUsecase.execute(bitcoinWalletId!);
-      final liquidWallet = await _getWalletUsecase.execute(liquidWalletId!);
-
       if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
         final psbt = await _prepareBitcoinSendUsecase.execute(
-          walletId: bitcoinWalletId,
+          walletId: bitcoinWalletId!,
           address: swap.paymentAddress,
           amountSat: swap.paymentAmount,
           networkFee: NetworkFee.absolute(swap.fees!.claimFee!),
@@ -333,26 +332,33 @@ class SwapCubit extends Cubit<SwapState> {
         await _updatePaidChainSwapUsecase.execute(
           txid: txid,
           swapId: swap.id,
-          network: bitcoinWallet.network,
+          network: Network.fromEnvironment(
+            isTestnet: isTestnet,
+            isLiquid: false,
+          ),
         );
       } else {
         final psbt = await _prepareLiquidSendUsecase.execute(
-          walletId: liquidWalletId,
+          walletId: liquidWalletId!,
           address: swap.paymentAddress,
           amountSat: swap.paymentAmount,
           networkFee: NetworkFee.absolute(swap.fees!.claimFee!),
         );
         final signedPsbt = await _signLiquidTxUsecase.execute(
-          walletId: bitcoinWalletId,
+          walletId: liquidWalletId,
           psbt: psbt,
         );
         final txid = await _broadcastLiquidTxUsecase.execute(signedPsbt);
         await _updatePaidChainSwapUsecase.execute(
           txid: txid,
           swapId: swap.id,
-          network: liquidWallet.network,
+          network: Network.fromEnvironment(
+            isTestnet: isTestnet,
+            isLiquid: true,
+          ),
         );
       }
+      emit(state.copyWith(step: SwapPageStep.progress));
     } catch (e) {
       emit(
         state.copyWith(

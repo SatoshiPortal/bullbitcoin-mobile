@@ -466,7 +466,7 @@ class SwapConfirmPage extends StatelessWidget {
               onSendPressed: () {
                 context.read<SwapCubit>().confirmSwapClicked();
               },
-              disableSendButton: true,
+              disableSendButton: false,
             ),
           ],
         ),
