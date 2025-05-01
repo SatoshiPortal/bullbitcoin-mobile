@@ -11,7 +11,7 @@ import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
-import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
+import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
@@ -337,7 +337,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             .getSingleOrNull();
     if (metadata == null) throw Exception('Wallet metadata not found');
 
-    final seed = await _seed.get(metadata.masterFingerprint) as MnemonicSeed;
+    final seed =
+        await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
     final mnemonic = seed.mnemonicWords.join(' ');
 
     return WalletModel.privateBdk(

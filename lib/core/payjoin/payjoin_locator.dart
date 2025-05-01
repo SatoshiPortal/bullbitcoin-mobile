@@ -24,7 +24,7 @@ class PayjoinLocator {
     );
 
     locator.registerLazySingleton<PdkPayjoinDatasource>(
-      () => PdkPayjoinDatasource(dio: locator<Dio>()),
+      () => PdkPayjoinDatasource(dio: Dio()),
     );
   }
 
