@@ -23,17 +23,25 @@ class ElectrumServerStorageDatasource {
     DefaultElectrumServerProvider provider, {
     required Network network,
   }) async {
-    final row =
+    int? priority;
+    switch (provider) {
+      case DefaultElectrumServerProvider.bullBitcoin:
+        priority = 1;
+      case DefaultElectrumServerProvider.blockstream:
+        priority = 2;
+    }
+
+    final rows =
         await _sqliteDatasource.managers.electrumServers
             .filter(
               (f) =>
                   f.isLiquid(network.isLiquid) &
                   f.isTestnet(network.isTestnet) &
-                  f.priority.not(0),
+                  f.priority(priority),
             )
-            .getSingleOrNull();
-    if (row == null) return null;
-    return ElectrumServerModel.fromSqlite(row);
+            .get();
+
+    return ElectrumServerModel.fromSqlite(rows.first);
   }
 
   /// Get custom server for a specific network
