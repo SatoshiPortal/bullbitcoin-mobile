@@ -1,12 +1,10 @@
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'electrum_server.freezed.dart';
 
-enum DefaultElectrumServerProvider {
-  bullBitcoin,
-  blockstream,
-}
+enum DefaultElectrumServerProvider { bullBitcoin, blockstream }
 
 @freezed
 class ElectrumServerProvider with _$ElectrumServerProvider {
@@ -46,23 +44,24 @@ sealed class ElectrumServer with _$ElectrumServer {
     int retry = 5,
     bool validateDomain = true,
     int? priority,
-  }) =>
-      ElectrumServer(
-        url: provider == DefaultElectrumServerProvider.bullBitcoin
-            ? 'https://electrum.blockstream.info'
-            : 'https://electrum.blockstream.info',
-        electrumServerProvider: ElectrumServerProvider.defaultProvider(
-          defaultServerProvider: provider,
-        ),
-        network: network,
-        stopGap: stopGap,
-        timeout: timeout,
-        retry: retry,
-        validateDomain: validateDomain,
-        status: status,
-        priority: priority ??
-            (provider == DefaultElectrumServerProvider.bullBitcoin ? 1 : 2),
-      );
+  }) => ElectrumServer(
+    url:
+        provider == DefaultElectrumServerProvider.bullBitcoin
+            ? ApiServiceConstants.bbElectrumUrl
+            : ApiServiceConstants.publicElectrumUrl,
+    electrumServerProvider: ElectrumServerProvider.defaultProvider(
+      defaultServerProvider: provider,
+    ),
+    network: network,
+    stopGap: stopGap,
+    timeout: timeout,
+    retry: retry,
+    validateDomain: validateDomain,
+    status: status,
+    priority:
+        priority ??
+        (provider == DefaultElectrumServerProvider.bullBitcoin ? 1 : 2),
+  );
 
   // Custom constructor for custom server with isActive flag
   factory ElectrumServer.customServer({
@@ -75,17 +74,16 @@ sealed class ElectrumServer with _$ElectrumServer {
     int retry = 5,
     bool validateDomain = true,
     bool isActive = true,
-  }) =>
-      ElectrumServer(
-        url: url,
-        socks5: socks5,
-        network: network,
-        stopGap: stopGap,
-        timeout: timeout,
-        retry: retry,
-        validateDomain: validateDomain,
-        status: status,
-        isActive: isActive,
-        electrumServerProvider: const ElectrumServerProvider.customProvider(),
-      );
+  }) => ElectrumServer(
+    url: url,
+    socks5: socks5,
+    network: network,
+    stopGap: stopGap,
+    timeout: timeout,
+    retry: retry,
+    validateDomain: validateDomain,
+    status: status,
+    isActive: isActive,
+    electrumServerProvider: const ElectrumServerProvider.customProvider(),
+  );
 }
