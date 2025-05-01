@@ -229,13 +229,13 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     final claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
       swapId: swap.id,
       absoluteFees: swap.fees!.claimFee!,
-      bitcoinClaimAddress: claimAddress.address,
+      bitcoinClaimAddress: swap.receiveAddress ?? claimAddress.address,
       liquidRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
     final updatedSwap = swap.copyWith(
       receiveTxid: claimTxid,
-      receiveAddress: claimAddress.address,
+      receiveAddress: swap.receiveAddress ?? claimAddress.address,
       status: SwapStatus.completed,
       completionTime: DateTime.now(),
     );
@@ -286,13 +286,13 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     final claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
       swapId: swap.id,
       absoluteFees: swap.fees!.claimFee!,
-      liquidClaimAddress: claimAddress.address,
+      liquidClaimAddress: swap.receiveAddress ?? claimAddress.address,
       bitcoinRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
     final updatedSwap = swap.copyWith(
       receiveTxid: claimTxid,
-      receiveAddress: claimAddress.address,
+      receiveAddress: swap.receiveAddress ?? claimAddress.address,
       status: SwapStatus.completed,
       completionTime: DateTime.now(),
     );
