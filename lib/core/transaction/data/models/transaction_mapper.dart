@@ -71,7 +71,10 @@ class TransactionMapper {
       txid: input.previousOutput.txid,
       vout: input.previousOutput.vout,
       sequence: input.sequence,
-      scriptSig: TxScriptSig(bytes: input.scriptSig!.bytes),
+      scriptSig:
+          input.scriptSig != null
+              ? TxScriptSig(bytes: input.scriptSig!.bytes)
+              : null,
     );
   }
 
