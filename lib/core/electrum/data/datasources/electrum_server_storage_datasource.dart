@@ -38,6 +38,8 @@ class ElectrumServerStorageDatasource {
             )
             .get();
 
+    if (rows.isEmpty) throw 'No servers found for $provider and $network ';
+
     return ElectrumServerModel.fromSqlite(rows.first);
   }
 
