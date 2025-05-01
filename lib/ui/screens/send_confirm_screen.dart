@@ -248,15 +248,6 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
-            title: 'Swap ID',
-            details: BBText(
-              _swapId,
-              style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
-            ),
-          ),
-          _divider(context),
-          CommonInfoRow(
             title: 'To',
             details: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -288,6 +279,15 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
             //     size: 16,
             //   ),
             // ),
+          ),
+          _divider(context),
+          CommonInfoRow(
+            title: 'Swap ID',
+            details: BBText(
+              _swapId,
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
           ),
           _divider(context),
           CommonInfoRow(
@@ -419,15 +419,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          CommonInfoRow(
-            title: 'Swap ID',
-            details: BBText(
-              _swapId,
-              style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
-            ),
-          ),
-          _divider(context),
+
           CommonInfoRow(
             title: 'To',
             details: Row(
@@ -471,6 +463,15 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           CommonInfoRow(
+            title: 'Swap ID',
+            details: BBText(
+              _swapId,
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+          CommonInfoRow(
             title: 'Amount',
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -488,7 +489,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           CommonInfoRow(
             title: 'Total fees',
             details: BBText(
-              "$_totalSwapFees sats",
+              _totalSwapFees,
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),

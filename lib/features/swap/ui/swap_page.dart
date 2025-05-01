@@ -92,13 +92,12 @@ class SwapAmountPage extends StatelessWidget {
                 ],
               ),
             ),
-            Gap(32),
-            SwapFromToDropdown(type: _SwapDropdownType.to),
             Gap(16),
             SwapFeesInformation(),
             Gap(32),
+            SwapFromToDropdown(type: _SwapDropdownType.to),
+            Gap(32),
             SwapCreationError(),
-
             Spacer(),
             SwapContinueWithAmountButton(),
           ],
@@ -408,12 +407,7 @@ class SwapConfirmPage extends StatelessWidget {
       (SwapCubit cubit) => cubit.state.toWalletLabel,
     );
     final swap = context.select((SwapCubit cubit) => cubit.state.swap);
-    // ignore: unused_local_variable
-    final swapFees = context.select((SwapCubit cubit) => cubit.state.swapFees);
-    // ignore: unused_local_variable
-    final confirmedAmountSat = context.select(
-      (SwapCubit cubit) => cubit.state.confirmedAmountSat,
-    );
+
     final buildError = context.select(
       (SwapCubit cubit) => cubit.state.buildTransactionException,
     );
@@ -423,7 +417,9 @@ class SwapConfirmPage extends StatelessWidget {
     final sendNetwork = context.select(
       (SwapCubit cubit) => cubit.state.fromWalletNetwork,
     );
-
+    final totalFees = context.select(
+      (SwapCubit cubit) => cubit.state.estimatedFeesFormatted,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -452,7 +448,7 @@ class SwapConfirmPage extends StatelessWidget {
               formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
               formattedFiatEquivalent: '',
               swapId: swap!.id,
-              totalSwapFees: '',
+              totalSwapFees: totalFees,
             ),
             const Gap(64),
             // const _Warning(),

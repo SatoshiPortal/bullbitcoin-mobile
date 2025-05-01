@@ -280,6 +280,7 @@ class SwapCubit extends Cubit<SwapState> {
       emit(
         state.copyWith(
           amountConfirmedClicked: false,
+          confirmedFromAmountSat: state.fromAmountSat,
           step: SwapPageStep.confirm,
           swap: swap,
           creatingSwap: false,

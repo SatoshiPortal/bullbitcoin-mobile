@@ -36,7 +36,6 @@ abstract class SwapState with _$SwapState {
     @Default('L-BTC') String selectedToCurrencyCode,
     (SwapLimits, SwapFees)? btcToLbtcSwapLimitsAndFees,
     (SwapLimits, SwapFees)? lbtcToBtcSwapLimitsAndFees,
-    int? confirmedAmountSat,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
 
     @Default('') String label,
@@ -243,8 +242,8 @@ abstract class SwapState with _$SwapState {
   double get inputAmountBtc => ConvertAmount.satsToBtc(fromAmountSat);
 
   double get confirmedAmountBtc =>
-      confirmedAmountSat != null
-          ? ConvertAmount.satsToBtc(confirmedAmountSat!)
+      confirmedFromAmountSat != null
+          ? ConvertAmount.satsToBtc(confirmedFromAmountSat!)
           : 0;
 
   double get confirmedSwapAmountBtc =>
