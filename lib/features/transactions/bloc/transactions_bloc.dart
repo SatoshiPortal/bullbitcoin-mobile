@@ -13,16 +13,17 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
     required CheckAnyWalletSyncingUsecase checkAnyWalletSyncingUsecase,
-  })  : _getWalletTransactionsUsecase = getWalletTransactionsUsecase,
-        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
-        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
-        _checkAnyWalletSyncingUsecase = checkAnyWalletSyncingUsecase,
-        super(const TransactionsState()) {
+  }) : _getWalletTransactionsUsecase = getWalletTransactionsUsecase,
+       _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
+       _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
+       _checkAnyWalletSyncingUsecase = checkAnyWalletSyncingUsecase,
+       super(const TransactionsState()) {
     _startedSyncsSubscription = _watchStartedWalletSyncsUsecase
         .execute()
         .listen((_) => emit(state.copyWith(isSyncing: true)));
-    _finishedSyncsSubscription =
-        _watchFinishedWalletSyncsUsecase.execute().listen((_) => loadTxs());
+    _finishedSyncsSubscription = _watchFinishedWalletSyncsUsecase
+        .execute()
+        .listen((_) => loadTxs());
   }
 
   final GetWalletTransactionsUsecase _getWalletTransactionsUsecase;
@@ -55,7 +56,9 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         ),
       );
     } catch (e) {
-      if (!isClosed) {
+      if (e is GetTransactionsException) {
+        emit(state.copyWith(err: e.message));
+      } else if (!isClosed) {
         emit(state.copyWith(err: e));
       }
     }
