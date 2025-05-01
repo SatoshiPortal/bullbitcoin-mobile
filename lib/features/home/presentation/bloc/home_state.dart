@@ -10,6 +10,7 @@ sealed class HomeState with _$HomeState {
     @Default(HomeTabs.wallets) HomeTabs selectedTab,
     @Default(HomeStatus.initial) HomeStatus status,
     @Default([]) List<Wallet> wallets,
+    @Default([]) List<HomeWarning> warnings,
     @Default(false) bool isSyncing,
     @Default(null) Object? error,
     UserSummaryModel? userSummary,
@@ -17,28 +18,26 @@ sealed class HomeState with _$HomeState {
   }) = _HomeState;
   const HomeState._();
 
-  Wallet? defaultLiquidWallet() => wallets.isEmpty
-      ? null
-      : wallets
-          .where(
-            (wallet) => wallet.isDefault && wallet.network.isLiquid,
-          )
-          .firstOrNull;
-  Wallet? defaultBitcoinWallet() => wallets.isEmpty
-      ? null
-      : wallets
-          .where(
-            (wallet) => wallet.isDefault && wallet.network.isBitcoin,
-          )
-          .firstOrNull;
+  Wallet? defaultLiquidWallet() =>
+      wallets.isEmpty
+          ? null
+          : wallets
+              .where((wallet) => wallet.isDefault && wallet.network.isLiquid)
+              .firstOrNull;
+  Wallet? defaultBitcoinWallet() =>
+      wallets.isEmpty
+          ? null
+          : wallets
+              .where((wallet) => wallet.isDefault && wallet.network.isBitcoin)
+              .firstOrNull;
 
   List<Wallet> nonDefaultWallets() =>
       wallets.where((wallet) => !wallet.isDefault).toList();
 
   int totalBalance() => wallets.fold<int>(
-        0,
-        (previousValue, element) => previousValue + element.balanceSat.toInt(),
-      );
+    0,
+    (previousValue, element) => previousValue + element.balanceSat.toInt(),
+  );
 
   bool showBackupWarning() {
     final defaultWallets = wallets.where((wallet) => wallet.isDefault);

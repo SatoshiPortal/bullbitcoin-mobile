@@ -48,6 +48,27 @@ class PdkPayjoinDatasource {
 
   Stream<PayjoinModel> get expiredPayjoins => _expiredController.stream;
 
+  Future<(OhttpKeys?, Url?)> fetchOhttpKeyAndRelay({
+    required Url payjoinDirectory,
+  }) async {
+    Url? ohttpRelay;
+    OhttpKeys? ohttpKeys;
+    for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
+      try {
+        final relay = await Url.fromStr(ohttpRelayUrl);
+        ohttpKeys = await fetchOhttpKeys(
+          ohttpRelay: relay,
+          payjoinDirectory: payjoinDirectory,
+        );
+        ohttpRelay = relay;
+        break;
+      } catch (e) {
+        continue;
+      }
+    }
+    return (ohttpKeys, ohttpRelay);
+  }
+
   Future<PayjoinReceiverModel> createReceiver({
     required String walletId,
     required String address,
@@ -58,21 +79,9 @@ class PdkPayjoinDatasource {
     try {
       final payjoinDirectory = await Url.fromStr(_payjoinDirectoryUrl);
 
-      Url? ohttpRelay;
-      OhttpKeys? ohttpKeys;
-      for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
-        try {
-          final relay = await Url.fromStr(ohttpRelayUrl);
-          ohttpKeys = await fetchOhttpKeys(
-            ohttpRelay: relay,
-            payjoinDirectory: payjoinDirectory,
-          );
-          ohttpRelay = relay;
-          break;
-        } catch (e) {
-          continue;
-        }
-      }
+      final (ohttpKeys, ohttpRelay) = await fetchOhttpKeyAndRelay(
+        payjoinDirectory: payjoinDirectory,
+      );
 
       if (ohttpRelay == null || ohttpKeys == null) {
         throw Exception('All OHTTP relays failed');
@@ -158,7 +167,7 @@ class PdkPayjoinDatasource {
             as PayjoinSenderModel;
 
     // Start listening for a payjoin proposal from the receiver in an isolate
-    startListeningForProposal(model);
+    await startListeningForProposal(model);
 
     return model;
   }

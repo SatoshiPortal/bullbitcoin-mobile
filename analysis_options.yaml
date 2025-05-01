@@ -5,6 +5,7 @@ linter:
     avoid_classes_with_only_static_members: false
     avoid_dynamic_calls: false
     no_wildcard_variable_uses: false
+    unawaited_futures: true
     
 
 analyzer:

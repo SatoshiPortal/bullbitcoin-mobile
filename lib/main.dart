@@ -23,46 +23,49 @@ import 'package:lwk/lwk.dart';
 import 'package:payjoin_flutter/common.dart';
 
 Future main() async {
-  runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  await runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
 
-    await Future.wait([
-      Hive.initFlutter(),
-      LibLwk.init(),
-      BoltzCore.init(),
-      LibBip85.init(),
-      PConfig.initializeApp(),
-      dotenv.load(isOptional: true),
-    ]);
+      await Future.wait([
+        Hive.initFlutter(),
+        LibLwk.init(),
+        BoltzCore.init(),
+        LibBip85.init(),
+        PConfig.initializeApp(),
+        dotenv.load(isOptional: true),
+      ]);
 
-    // The Locator setup might depend on the initialization of the libraries above
-    //  so it's important to call it after the initialization
-    await AppLocator.setup();
+      // The Locator setup might depend on the initialization of the libraries above
+      //  so it's important to call it after the initialization
+      await AppLocator.setup();
 
-    // TODO(azad): There is probably a better way to initialize the settings
-    // Initialize the settings
-    final settings = locator<SettingsRepository>();
-    try {
-      final s = await settings.fetch();
-      debugPrint('settings: $s');
-    } catch (e) {
-      debugPrint('settings: store default');
-      await settings.store(
-        id: 1,
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.btc,
-        currency: 'USD',
-        language: Language.unitedStatesEnglish,
-        hideAmounts: false,
-      );
-    }
+      // TODO(azad): There is probably a better way to initialize the settings
+      // Initialize the settings
+      final settings = locator<SettingsRepository>();
+      try {
+        final s = await settings.fetch();
+        debugPrint('settings: $s');
+      } catch (e) {
+        debugPrint('settings: store default');
+        await settings.store(
+          id: 1,
+          environment: Environment.mainnet,
+          bitcoinUnit: BitcoinUnit.btc,
+          currency: 'USD',
+          language: Language.unitedStatesEnglish,
+          hideAmounts: false,
+        );
+      }
 
-    Bloc.observer = AppBlocObserver();
+      Bloc.observer = AppBlocObserver();
 
-    runApp(const BullBitcoinWalletApp());
-  }, (error, stack) {
-    log('\n\nError: $error \nStack: $stack\n\n');
-  });
+      runApp(const BullBitcoinWalletApp());
+    },
+    (error, stack) {
+      log('\n\nError: $error \nStack: $stack\n\n');
+    },
+  );
 }
 
 class BullBitcoinWalletApp extends StatefulWidget {
@@ -81,9 +84,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     super.initState();
 
     // Initialize the AppLifecycleListener class and pass callbacks
-    _listener = AppLifecycleListener(
-      onStateChange: _onStateChanged,
-    );
+    _listener = AppLifecycleListener(onStateChange: _onStateChanged);
   }
 
   @override
@@ -132,39 +133,32 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider.value(value: locator<SettingsCubit>()..init()),
         BlocProvider.value(
-          value: locator<SettingsCubit>()..init(),
+          value: locator<AppStartupBloc>()..add(const AppStartupStarted()),
         ),
         BlocProvider.value(
-          value: locator<AppStartupBloc>()
-            ..add(
-              const AppStartupStarted(),
-            ),
-        ),
-        BlocProvider.value(
-          value: locator<BitcoinPriceBloc>()
-            ..add(
-              const BitcoinPriceStarted(),
-            ),
+          value: locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
         ),
       ],
       child: BlocSelector<SettingsCubit, SettingsEntity?, Language?>(
         selector: (settings) => settings?.language,
-        builder: (context, language) => MaterialApp.router(
-          title: 'BullBitcoin Wallet',
-          debugShowCheckedModeBanner: false,
-          routerConfig: AppRouter.router,
-          // routeInformationParser: router.routeInformationParser,
-          // routeInformationProvider: router.routeInformationProvider,
-          // routerDelegate: router.routerDelegate,
-          theme: AppTheme.themeData(AppThemeType.light),
-          locale: language?.locale,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          builder: (_, child) {
-            return AppStartupWidget(app: child!);
-          },
-        ),
+        builder:
+            (context, language) => MaterialApp.router(
+              title: 'BullBitcoin Wallet',
+              debugShowCheckedModeBanner: false,
+              routerConfig: AppRouter.router,
+              // routeInformationParser: router.routeInformationParser,
+              // routeInformationProvider: router.routeInformationProvider,
+              // routerDelegate: router.routerDelegate,
+              theme: AppTheme.themeData(AppThemeType.light),
+              locale: language?.locale,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              builder: (_, child) {
+                return AppStartupWidget(app: child!);
+              },
+            ),
       ),
     );
   }

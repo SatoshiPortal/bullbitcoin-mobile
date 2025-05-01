@@ -32,6 +32,10 @@ class GetUserDetails extends HomeEvent {
   const GetUserDetails();
 }
 
+class CheckAllWarnings extends HomeEvent {
+  const CheckAllWarnings();
+}
+
 class ChangeHomeTab extends HomeEvent {
   final HomeTabs selectedTab;
 

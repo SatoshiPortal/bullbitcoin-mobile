@@ -201,7 +201,7 @@ class SendCubit extends Cubit<SendState> {
         amountSat: state.inputAmountSat,
       );
       // Listen to the wallet syncing status to update the wallet balance and its utxos
-      _selectedWalletSyncingSubscription?.cancel();
+      await _selectedWalletSyncingSubscription?.cancel();
       _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
           .execute(walletId: wallet.id)
           .listen((wallet) async {
@@ -716,9 +716,9 @@ class SendCubit extends Cubit<SendState> {
           network: state.selectedWallet!.network,
         );
       }
-      Future.delayed(const Duration(seconds: 3));
+      await Future.delayed(const Duration(seconds: 3));
       // Start syncing the wallet now that the transaction is confirmed
-      _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
+      await _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
       emit(
         state.copyWith(step: SendStep.success, broadcastingTransaction: false),
       );

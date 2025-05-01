@@ -68,7 +68,7 @@ class DescriptorDerivation {
         ? bdk.KeychainKind.internalChain
         : bdk.KeychainKind.externalChain;
 
-    bdk.Descriptor.newBip84Public(
+    await bdk.Descriptor.newBip84Public(
       publicKey: publicKey,
       fingerPrint: fingerprint,
       network: network,

@@ -36,9 +36,10 @@ class ElectrumServerStorageDatasource {
     required Network network,
   }) async {
     // Determine the appropriate key prefix based on preset
-    final keyPrefix = preset == DefaultElectrumServerProvider.bullBitcoin
-        ? SettingsConstants.bullBitcoinElectrumServerKeyPrefix
-        : SettingsConstants.blockstreamElectrumServerKeyPrefix;
+    final keyPrefix =
+        preset == DefaultElectrumServerProvider.bullBitcoin
+            ? SettingsConstants.bullBitcoinElectrumServerKeyPrefix
+            : SettingsConstants.blockstreamElectrumServerKeyPrefix;
 
     final key = '$keyPrefix${network.name}';
     final value = await _electrumServerStorage.getValue(key);
@@ -50,7 +51,7 @@ class ElectrumServerStorageDatasource {
   }
 
   /// Get custom server for a specific network
-  Future<CustomElectrumServerModel?> getCustomServer({
+  Future<ElectrumServerModel?> getCustomServer({
     required Network network,
   }) async {
     final key =
@@ -67,5 +68,43 @@ class ElectrumServerStorageDatasource {
     }
 
     return null;
+  }
+
+  Future<ElectrumServerModel> getPrioritizedServer({
+    required Network network,
+  }) async {
+    final List<ElectrumServerModel> servers = [];
+
+    // Get custom server if available
+    final customServer = await getCustomServer(network: network);
+    if (customServer != null &&
+        customServer.isActive &&
+        customServer.url.isNotEmpty) {
+      return customServer;
+    }
+
+    // Get BullBitcoin server (priority 1)
+    final bullBitcoin = await getDefaultServerByProvider(
+      DefaultElectrumServerProvider.bullBitcoin,
+      network: network,
+    );
+    if (bullBitcoin != null) {
+      servers.add(bullBitcoin);
+    }
+
+    // Get Blockstream server (priority 2)
+    final blockstream = await getDefaultServerByProvider(
+      DefaultElectrumServerProvider.blockstream,
+      network: network,
+    );
+    if (blockstream != null) {
+      servers.add(blockstream);
+    }
+    if (servers.isEmpty) {
+      return ElectrumServerModel.bullBitcoin(isTestnet: false, isLiquid: false);
+    }
+    // Sort servers by priority
+    servers.sort((a, b) => a.priority.compareTo(b.priority));
+    return servers.first;
   }
 }

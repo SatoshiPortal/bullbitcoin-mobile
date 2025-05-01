@@ -20,8 +20,8 @@ class BoltzDatasource {
   BoltzDatasource({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
     required BoltzStorageDatasource boltzStore,
-  })  : _baseUrl = url,
-        _boltzStore = boltzStore {
+  }) : _baseUrl = url,
+       _boltzStore = boltzStore {
     _httpsUrl = 'https://$_baseUrl';
     _initializeBoltzWebSocket();
   }
@@ -33,9 +33,7 @@ class BoltzDatasource {
   StreamController<SwapModel> get swapUpdatesController =>
       _swapUpdatesController;
 
-  Future<swap_entity.SwapFees> getSwapFees(
-    swap_entity.SwapType type,
-  ) async {
+  Future<swap_entity.SwapFees> getSwapFees(swap_entity.SwapType type) async {
     final allFees = Fees(boltzUrl: _httpsUrl);
     switch (type) {
       case swap_entity.SwapType.lightningToBitcoin:
@@ -74,7 +72,8 @@ class BoltzDatasource {
         final fees = await allFees.chain();
         final swapFees = swap_entity.SwapFees(
           boltzPercent: fees.lbtcFees.percentage,
-          lockupFee: fees.btcFees.userLockup.toInt() +
+          lockupFee:
+              fees.btcFees.userLockup.toInt() +
               fees.btcFees.server.toInt() +
               fees.lbtcFees.server.toInt(),
           claimFee: fees.lbtcFees.userClaim.toInt(),
@@ -84,7 +83,8 @@ class BoltzDatasource {
         final fees = await allFees.chain();
         final swapFees = swap_entity.SwapFees(
           boltzPercent: fees.lbtcFees.percentage,
-          lockupFee: fees.btcFees.userLockup.toInt() +
+          lockupFee:
+              fees.btcFees.userLockup.toInt() +
               fees.btcFees.server.toInt() +
               fees.lbtcFees.server.toInt(),
           claimFee: fees.lbtcFees.userClaim.toInt(),
@@ -225,12 +225,8 @@ class BoltzDatasource {
     final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
 
     return broadcastViaBoltz
-        ? btcLnSwap.broadcastLocal(
-            signedHex: signedTxHex,
-          )
-        : btcLnSwap.broadcastBoltz(
-            signedHex: signedTxHex,
-          );
+        ? btcLnSwap.broadcastLocal(signedHex: signedTxHex)
+        : btcLnSwap.broadcastBoltz(signedHex: signedTxHex);
   }
 
   Future<String> broadcastLbtcLnSwap({
@@ -241,12 +237,8 @@ class BoltzDatasource {
     final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
 
     return broadcastViaBoltz
-        ? lbtcLnSwap.broadcastLocal(
-            signedHex: signedTxHex,
-          )
-        : lbtcLnSwap.broadcastBoltz(
-            signedHex: signedTxHex,
-          );
+        ? lbtcLnSwap.broadcastLocal(signedHex: signedTxHex)
+        : lbtcLnSwap.broadcastBoltz(signedHex: signedTxHex);
   }
 
   Future<SwapModel> createBtcSubmarineSwap({
@@ -281,10 +273,11 @@ class BoltzDatasource {
       invoice: invoice,
       paymentAddress: btcLnSwap.scriptAddress,
       paymentAmount: btcLnSwap.outAmount.toInt(),
-      boltzFees: (submarineFees.btcFees.percentage *
-              (btcLnSwap.outAmount.toInt()) /
-              100)
-          .ceil(),
+      boltzFees:
+          (submarineFees.btcFees.percentage *
+                  (btcLnSwap.outAmount.toInt()) /
+                  100)
+              .ceil(),
       lockupFees: submarineFees.btcFees.minerFees.toInt(),
       claimFees: submarineFees.btcFees.minerFees.toInt(),
     );
@@ -326,10 +319,11 @@ class BoltzDatasource {
       invoice: invoice,
       paymentAddress: lbtcLnSwap.scriptAddress,
       paymentAmount: lbtcLnSwap.outAmount.toInt(),
-      boltzFees: (submarineFees.lbtcFees.percentage *
-              (lbtcLnSwap.outAmount.toInt()) /
-              100)
-          .ceil(),
+      boltzFees:
+          (submarineFees.lbtcFees.percentage *
+                  (lbtcLnSwap.outAmount.toInt()) /
+                  100)
+              .ceil(),
       lockupFees: submarineFees.lbtcFees.minerFees.toInt(),
       claimFees: submarineFees.lbtcFees.minerFees.toInt(),
     );
@@ -416,9 +410,12 @@ class BoltzDatasource {
       creationTime: DateTime.now().millisecondsSinceEpoch,
       sendWalletId: sendWalletId,
       receiveWalletId: receiveWalletId,
+      paymentAddress: chainSwap.scriptAddress,
+      paymentAmount: chainSwap.outAmount.toInt(),
       receiveAddress: externalRecipientAddress,
       boltzFees: (chainFees.lbtcFees.percentage * amountSat / 100).ceil(),
-      lockupFees: chainFees.btcFees.userLockup.toInt() +
+      lockupFees:
+          chainFees.btcFees.userLockup.toInt() +
           chainFees.btcFees.server.toInt() +
           chainFees.lbtcFees.server.toInt(),
       claimFees: chainFees.lbtcFees.userClaim.toInt(),
@@ -464,11 +461,14 @@ class BoltzDatasource {
       creationTime: DateTime.now().millisecondsSinceEpoch,
       sendWalletId: sendWalletId,
       receiveWalletId: receiveWalletId,
+      paymentAddress: chainSwap.scriptAddress,
+      paymentAmount: chainSwap.outAmount.toInt(),
       receiveAddress: externalRecipientAddress,
       boltzFees: (chainFees.btcFees.percentage * amountSat / 100).ceil(),
-      lockupFees: chainFees.lbtcFees.userLockup.toInt() +
-          chainFees.btcFees.server.toInt() +
-          chainFees.lbtcFees.server.toInt(),
+      lockupFees:
+          chainFees.lbtcFees.userLockup.toInt() +
+          chainFees.lbtcFees.server.toInt() +
+          chainFees.btcFees.server.toInt(),
       claimFees: chainFees.btcFees.userClaim.toInt(),
     );
     await _boltzStore.store(swapModel);
@@ -485,13 +485,13 @@ class BoltzDatasource {
     final chainSwap = await _boltzStore.getChainSwap(swapId);
     return broadcastViaBoltz
         ? chainSwap.broadcastLocal(
-            signedHex: signedTxHex,
-            kind: SwapTxKind.refund,
-          )
+          signedHex: signedTxHex,
+          kind: SwapTxKind.refund,
+        )
         : chainSwap.broadcastBoltz(
-            signedHex: signedTxHex,
-            kind: SwapTxKind.refund,
-          );
+          signedHex: signedTxHex,
+          kind: SwapTxKind.refund,
+        );
   }
 
   Future<String> claimBtcToLbtcChainSwap({
@@ -534,13 +534,13 @@ class BoltzDatasource {
     final chainSwap = await _boltzStore.getChainSwap(swapId);
     return broadcastViaBoltz
         ? chainSwap.broadcastLocal(
-            signedHex: signedTxHex,
-            kind: SwapTxKind.claim,
-          )
+          signedHex: signedTxHex,
+          kind: SwapTxKind.claim,
+        )
         : chainSwap.broadcastBoltz(
-            signedHex: signedTxHex,
-            kind: SwapTxKind.claim,
-          );
+          signedHex: signedTxHex,
+          kind: SwapTxKind.claim,
+        );
   }
 
   Future<String> refundBtcToLbtcChainSwap({
@@ -577,7 +577,7 @@ class BoltzDatasource {
       final reverse = await fees.reverse();
       return (
         reverse.btcLimits.minimal.toInt(),
-        reverse.btcLimits.maximal.toInt()
+        reverse.btcLimits.maximal.toInt(),
       );
     } catch (e) {
       debugPrint(e.toString());
@@ -591,7 +591,7 @@ class BoltzDatasource {
       final reverse = await fees.reverse();
       return (
         reverse.lbtcLimits.minimal.toInt(),
-        reverse.lbtcLimits.maximal.toInt()
+        reverse.lbtcLimits.maximal.toInt(),
       );
     } catch (e) {
       debugPrint(e.toString());
@@ -604,7 +604,7 @@ class BoltzDatasource {
     final submarine = await fees.submarine();
     return (
       submarine.btcLimits.minimal.toInt(),
-      submarine.btcLimits.maximal.toInt()
+      submarine.btcLimits.maximal.toInt(),
     );
   }
 
@@ -613,7 +613,7 @@ class BoltzDatasource {
     final submarine = await fees.submarine();
     return (
       submarine.lbtcLimits.minimal.toInt(),
-      submarine.lbtcLimits.maximal.toInt()
+      submarine.lbtcLimits.maximal.toInt(),
     );
   }
 
@@ -638,9 +638,7 @@ class BoltzDatasource {
           final swapId = event.id;
           final boltzStatus = event.status;
           try {
-            Future.delayed(
-              const Duration(milliseconds: 1000),
-            );
+            await Future.delayed(const Duration(milliseconds: 1000));
             final swapModel = await _boltzStore.get(swapId);
             if (swapModel == null) {
               debugPrint('No swap found for id: $swapId');
@@ -733,9 +731,10 @@ class BoltzDatasource {
                 // Check if this swap needs to be refunded (no refundTxid)
                 if (swapModel is ChainSwapModel ||
                     swapModel is LnSendSwapModel) {
-                  final refunded = swapModel is ChainSwapModel
-                      ? swapModel.refundTxid != null
-                      : (swapModel as LnSendSwapModel).refundTxid != null;
+                  final refunded =
+                      swapModel is ChainSwapModel
+                          ? swapModel.refundTxid != null
+                          : (swapModel as LnSendSwapModel).refundTxid != null;
 
                   if (!refunded) {
                     updatedSwapModel = swapModel.copyWith(
@@ -760,13 +759,15 @@ class BoltzDatasource {
                 // Transaction failed - check if refundable
                 if (swapModel is ChainSwapModel ||
                     swapModel is LnSendSwapModel) {
-                  final hasSentFunds = swapModel is ChainSwapModel
-                      ? swapModel.sendTxid != null
-                      : (swapModel as LnSendSwapModel).sendTxid != null;
+                  final hasSentFunds =
+                      swapModel is ChainSwapModel
+                          ? swapModel.sendTxid != null
+                          : (swapModel as LnSendSwapModel).sendTxid != null;
 
-                  final hasRefunded = swapModel is ChainSwapModel
-                      ? swapModel.refundTxid != null
-                      : (swapModel as LnSendSwapModel).refundTxid != null;
+                  final hasRefunded =
+                      swapModel is ChainSwapModel
+                          ? swapModel.refundTxid != null
+                          : (swapModel as LnSendSwapModel).refundTxid != null;
 
                   if (hasSentFunds && !hasRefunded) {
                     updatedSwapModel = swapModel.copyWith(
@@ -784,13 +785,15 @@ class BoltzDatasource {
                 // Check if funds were sent but not refunded
                 if (swapModel is ChainSwapModel ||
                     swapModel is LnSendSwapModel) {
-                  final hasSentFunds = swapModel is ChainSwapModel
-                      ? swapModel.sendTxid != null
-                      : (swapModel as LnSendSwapModel).sendTxid != null;
+                  final hasSentFunds =
+                      swapModel is ChainSwapModel
+                          ? swapModel.sendTxid != null
+                          : (swapModel as LnSendSwapModel).sendTxid != null;
 
-                  final hasRefunded = swapModel is ChainSwapModel
-                      ? swapModel.refundTxid != null
-                      : (swapModel as LnSendSwapModel).refundTxid != null;
+                  final hasRefunded =
+                      swapModel is ChainSwapModel
+                          ? swapModel.refundTxid != null
+                          : (swapModel as LnSendSwapModel).refundTxid != null;
 
                   if (hasSentFunds && !hasRefunded) {
                     updatedSwapModel = swapModel.copyWith(
@@ -810,9 +813,10 @@ class BoltzDatasource {
               case SwapStatus.swapRefunded:
                 if (swapModel is ChainSwapModel ||
                     swapModel is LnSendSwapModel) {
-                  final hasRefunded = swapModel is ChainSwapModel
-                      ? swapModel.refundTxid != null
-                      : (swapModel as LnSendSwapModel).refundTxid != null;
+                  final hasRefunded =
+                      swapModel is ChainSwapModel
+                          ? swapModel.refundTxid != null
+                          : (swapModel as LnSendSwapModel).refundTxid != null;
 
                   if (!hasRefunded) {
                     updatedSwapModel = swapModel.copyWith(
@@ -830,13 +834,15 @@ class BoltzDatasource {
                 // Handle error states
                 if (swapModel is ChainSwapModel ||
                     swapModel is LnSendSwapModel) {
-                  final hasSentFunds = swapModel is ChainSwapModel
-                      ? swapModel.sendTxid != null
-                      : (swapModel as LnSendSwapModel).sendTxid != null;
+                  final hasSentFunds =
+                      swapModel is ChainSwapModel
+                          ? swapModel.sendTxid != null
+                          : (swapModel as LnSendSwapModel).sendTxid != null;
 
-                  final hasRefunded = swapModel is ChainSwapModel
-                      ? swapModel.refundTxid != null
-                      : (swapModel as LnSendSwapModel).refundTxid != null;
+                  final hasRefunded =
+                      swapModel is ChainSwapModel
+                          ? swapModel.refundTxid != null
+                          : (swapModel as LnSendSwapModel).refundTxid != null;
 
                   if (hasSentFunds && !hasRefunded) {
                     updatedSwapModel = swapModel.copyWith(

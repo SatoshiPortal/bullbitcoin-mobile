@@ -109,6 +109,8 @@ sealed class Swap with _$Swap {
     required Environment environment,
     required DateTime creationTime,
     required String sendWalletId,
+    required String paymentAddress,
+    required int paymentAmount,
     String? sendTxid,
     String? receiveWalletId,
     String? receiveAddress,

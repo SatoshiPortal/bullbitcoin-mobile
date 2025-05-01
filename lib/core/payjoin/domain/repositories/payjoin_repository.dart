@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 
 abstract class PayjoinRepository {
   Stream<Payjoin> get payjoinStream;
+  Future<bool> checkOhttpRelayHealth();
   Future<List<Payjoin>> getPayjoins({bool onlyOngoing = false});
   Future<List<Payjoin>> getPayjoinsByTxId(String txId);
   Future<List<({String txId, int vout})>> getUtxosFrozenByOngoingPayjoins();

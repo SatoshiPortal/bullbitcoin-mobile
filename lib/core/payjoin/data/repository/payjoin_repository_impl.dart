@@ -13,12 +13,14 @@ import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.da
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter/foundation.dart';
+import 'package:payjoin_flutter/uri.dart' show Url;
 import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
@@ -82,6 +84,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     return payjoinModels
         .map((payjoinModel) => payjoinModel.toEntity())
         .toList();
+  }
+
+  @override
+  Future<bool> checkOhttpRelayHealth() async {
+    final directory = await Url.fromStr(PayjoinConstants.directoryUrl);
+    final (ohttpKeys, ohttpRelay) = await _pdkPayjoinDatasource
+        .fetchOhttpKeyAndRelay(payjoinDirectory: directory);
+    return ohttpKeys != null && ohttpRelay != null;
   }
 
   // TODO: Remove this and use the general frozen utxo datasource
@@ -307,12 +317,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (model.originalTxBytes == null) {
           // If the original tx bytes are not present, it means the receiver
           //  needs to listen for a payjoin request from the sender.
-          _pdkPayjoinDatasource.startListeningForRequest(model);
+          await _pdkPayjoinDatasource.startListeningForRequest(model);
         } else if (model.proposalPsbt == null) {
           // If the original tx bytes are present but the proposal psbt is not,
           //  it means the receiver has already received a payjoin request and
           //  it should be processed.
-          _processPayjoinRequest(model);
+          await _processPayjoinRequest(model);
         } else {
           // Todo: listen for the broadcast of the transaction
         }
@@ -320,11 +330,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (model.proposalPsbt == null) {
           // If the proposal psbt is not present, it means the sender needs to
           //  listen for a payjoin proposal from the receiver.
-          _pdkPayjoinDatasource.startListeningForProposal(model);
+          await _pdkPayjoinDatasource.startListeningForProposal(model);
         } else {
           // If the proposal psbt is present, it means a payjoin proposal was
           //  already received  and it should be processed.
-          _processPayjoinProposal(model);
+          await _processPayjoinProposal(model);
         }
       }
     }
