@@ -77,9 +77,10 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
           : null;
 
   /// Flag indicating if this is a custom active server
-  bool get isActive =>
-      this is CustomElectrumServerModel &&
-      (this as CustomElectrumServerModel).isActive;
+  bool get isActive => switch (this) {
+    CustomElectrumServerModel(:final isActive) => isActive,
+    _ => false,
+  };
 
   factory ElectrumServerModel.fromJson(Map<String, dynamic> json) =>
       _$ElectrumServerModelFromJson(json);
@@ -252,6 +253,7 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
       isTestnet: isTestnet,
       isLiquid: isLiquid,
       priority: priority,
+      isActive: isActive,
     );
   }
 }

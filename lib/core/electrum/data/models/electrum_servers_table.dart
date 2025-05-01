@@ -10,6 +10,7 @@ class ElectrumServers extends Table {
   BoolColumn get validateDomain => boolean()();
   BoolColumn get isTestnet => boolean()();
   BoolColumn get isLiquid => boolean()();
+  BoolColumn get isActive => boolean()();
   IntColumn get priority => integer()();
 
   @override
