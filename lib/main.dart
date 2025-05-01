@@ -23,7 +23,7 @@ import 'package:lwk/lwk.dart';
 import 'package:payjoin_flutter/common.dart';
 
 Future main() async {
-  await runZonedGuarded(
+  runZonedGuarded(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
 
