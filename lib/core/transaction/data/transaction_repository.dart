@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/transaction/data/electrum_service.dart';
 import 'package:bb_mobile/core/transaction/data/models/transaction_mapper.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
@@ -12,10 +12,11 @@ class TransactionRepository {
   TransactionRepository();
 
   Future<Tx> fetch({required String txid}) async {
-    final sqlite = locator<SqliteDatasource>();
-    final cachedTransaction = await sqlite.managers.transactions
-        .filter((e) => e.txid(txid))
-        .getSingleOrNull();
+    final sqlite = locator<SqliteDatabase>();
+    final cachedTransaction =
+        await sqlite.managers.transactions
+            .filter((e) => e.txid(txid))
+            .getSingleOrNull();
 
     if (cachedTransaction != null) {
       return TransactionMapper.fromSqlite(cachedTransaction);

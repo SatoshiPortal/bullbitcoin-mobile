@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart';
@@ -18,7 +18,9 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
-  final SqliteDatasource _sqlite;
+  // TODO: move db to datasource of the required data here and inject the
+  //  respective datasource here instead of db
+  final SqliteDatabase _sqlite;
   final WalletDatasource _bdkWalletTransactionDatasource;
   final WalletDatasource _lwkWalletTransactionDatasource;
   final ElectrumServerStorageDatasource _electrumServerStorage;
@@ -26,7 +28,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final BoltzStorageDatasource _swapDatasource;
 
   WalletTransactionRepositoryImpl({
-    required SqliteDatasource sqliteDatasource,
+    required SqliteDatabase sqliteDatasource,
     required WalletDatasource bdkWalletTransactionDatasource,
     required WalletDatasource lwkWalletTransactionDatasource,
     required ElectrumServerStorageDatasource electrumServerStorage,

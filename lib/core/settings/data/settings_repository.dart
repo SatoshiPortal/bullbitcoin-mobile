@@ -1,14 +1,15 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart' show Value;
 
 class SettingsRepository {
-  final SqliteDatasource _sqlite;
+  // TODO: move db to datasource and inject datasource here instead of db
+  final SqliteDatabase _sqlite;
 
-  SettingsRepository({required SqliteDatasource sqliteDatasource})
-      : _sqlite = sqliteDatasource;
+  SettingsRepository({required SqliteDatabase sqliteDatasource})
+    : _sqlite = sqliteDatasource;
 
   Future<void> store({
     required int id,
@@ -68,7 +69,8 @@ class SettingsRepository {
   }
 
   Future<void> setHideAmounts(bool hide) async {
-    await _sqlite.managers.settings
-        .update((f) => f(id: const Value(1), hideAmounts: Value(hide)));
+    await _sqlite.managers.settings.update(
+      (f) => f(id: const Value(1), hideAmounts: Value(hide)),
+    );
   }
 }

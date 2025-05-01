@@ -28,7 +28,7 @@ class CoreLocator {
     await PayjoinLocator.registerDatasources();
     await RecoverbullLocator.registerDatasources();
     SeedLocator.registerDatasources();
-    StorageLocator.registerDatasourcer();
+    StorageLocator.registerDatasources();
     await SwapsLocator.registerDatasources();
     await WalletLocator.registerDatasourceres();
   }

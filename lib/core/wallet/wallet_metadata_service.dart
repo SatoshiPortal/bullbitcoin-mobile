@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -52,7 +52,8 @@ class WalletMetadataService {
     Network network,
     ScriptType script,
     String account,
-  }) decodeOrigin({required String origin}) {
+  })
+  decodeOrigin({required String origin}) {
     final list = json.decode(origin) as List<String>;
 
     ScriptType script;
@@ -85,7 +86,7 @@ class WalletMetadataService {
       fingerprint: list.first,
       network: network,
       script: script,
-      account: list.last
+      account: list.last,
     );
   }
 
@@ -108,17 +109,17 @@ class WalletMetadataService {
       final xprv = Bip32Derivation.getXprvFromSeed(seed.bytes, network);
       descriptor =
           await DescriptorDerivation.derivePublicBitcoinDescriptorFromXpriv(
-        xprv,
-        scriptType: scriptType,
-        isTestnet: network.isTestnet,
-      );
+            xprv,
+            scriptType: scriptType,
+            isTestnet: network.isTestnet,
+          );
       changeDescriptor =
           await DescriptorDerivation.derivePublicBitcoinDescriptorFromXpriv(
-        xprv,
-        scriptType: scriptType,
-        isTestnet: network.isTestnet,
-        isInternalKeychain: true,
-      );
+            xprv,
+            scriptType: scriptType,
+            isTestnet: network.isTestnet,
+            isInternalKeychain: true,
+          );
     } else {
       if (seed is! MnemonicSeed) {
         throw MnemonicSeedNeededException(
@@ -128,10 +129,10 @@ class WalletMetadataService {
 
       descriptor =
           await DescriptorDerivation.derivePublicLiquidDescriptorFromMnemonic(
-        seed.mnemonicWords.join(' '),
-        scriptType: scriptType,
-        isTestnet: network.isTestnet,
-      );
+            seed.mnemonicWords.join(' '),
+            scriptType: scriptType,
+            isTestnet: network.isTestnet,
+          );
       changeDescriptor = descriptor;
     }
 
@@ -180,19 +181,19 @@ class WalletMetadataService {
 
     final descriptor =
         await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
-      xpubBase58,
-      fingerprint: fingerprint,
-      scriptType: scriptType,
-      isTestnet: network.isTestnet,
-    );
+          xpubBase58,
+          fingerprint: fingerprint,
+          scriptType: scriptType,
+          isTestnet: network.isTestnet,
+        );
     final changeDescriptor =
         await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
-      xpubBase58,
-      fingerprint: fingerprint,
-      scriptType: scriptType,
-      isTestnet: network.isTestnet,
-      isInternalKeychain: true,
-    );
+          xpubBase58,
+          fingerprint: fingerprint,
+          scriptType: scriptType,
+          isTestnet: network.isTestnet,
+          isInternalKeychain: true,
+        );
 
     return WalletMetadataModel(
       id: WalletMetadataService.encodeOrigin(
