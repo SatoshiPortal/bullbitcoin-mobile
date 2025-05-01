@@ -14,6 +14,7 @@ import 'package:bb_mobile/features/receive/receive_locator.dart';
 import 'package:bb_mobile/features/recover_wallet/recover_wallet_locator.dart';
 import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
+import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
 import 'package:get_it/get_it.dart';
 
@@ -48,6 +49,6 @@ class AppLocator {
     BackupWalletLocator.setup();
     TestWalletBackupLocator.setup();
     ImportWatchOnlyWalletLocator.setup();
-    SendLocator.setup();
+    SwapLocator.setup();
   }
 }

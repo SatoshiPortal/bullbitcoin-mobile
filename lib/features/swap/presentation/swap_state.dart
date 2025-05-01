@@ -21,12 +21,13 @@ abstract class SwapState with _$SwapState {
   const factory SwapState({
     @Default(SwapPageStep.amount) SwapPageStep step,
     // input
+    @Default(true) bool loadingWallets,
     @Default([]) List<Wallet> fromWallets,
     @Default([]) List<Wallet> toWallets,
     @Default(WalletNetwork.bitcoin) WalletNetwork fromWalletNetwork,
     @Default(WalletNetwork.liquid) WalletNetwork toWalletNetwork,
-    String? swapFromWalletId,
-    String? swapToWalletId,
+    String? fromWalletId,
+    String? toWalletId,
     @Default('') String fromAmount,
     @Default('') String toAmount,
     int? confirmedFromAmountSat,
@@ -42,7 +43,6 @@ abstract class SwapState with _$SwapState {
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('CAD') String fiatCurrencyCode,
-    @Default('') String inputAmountCurrencyCode,
     @Default(0) double exchangeRate,
     @Default('') String label,
     @Default([]) List<WalletUtxo> utxos,
@@ -92,37 +92,43 @@ abstract class SwapState with _$SwapState {
   //   return wallets.where((w) => !w.isLiquid).toList();
   // }
 
-  List<String> get fromWalletLabels {
-    return fromWallets.map((w) => w.label).toList();
+  List<({String id, String label})> get fromWalletDropdownItems {
+    if (fromWallets.isEmpty) return [];
+    return fromWallets.map((w) => (id: w.id, label: w.label)).toList();
   }
 
-  List<String> get toWalletLabels {
-    return toWallets.map((w) => w.label).toList();
-  }
-
-  String get selectedFromWalletLabel {
-    return fromWallets.firstWhere((w) => w.id == swapFromWalletId).label;
-  }
-
-  String get selectedToWalletLabel {
-    return toWallets.firstWhere((w) => w.id == swapToWalletId).label;
+  List<({String id, String label})> get toWalletDropdownItems {
+    if (toWallets.isEmpty) return [];
+    return toWallets.map((w) => (id: w.id, label: w.label)).toList();
   }
 
   Wallet? get getFromWallets {
     if (fromWallets.isEmpty) return null;
-    return fromWallets.firstWhereOrNull((w) => w.id == swapFromWalletId);
+    return fromWallets.firstWhereOrNull((w) => w.id == fromWalletId);
   }
 
   Wallet? get getToWallets {
     if (toWallets.isEmpty) return null;
-    return toWallets.firstWhereOrNull((w) => w.id == swapToWalletId);
+    return toWallets.firstWhereOrNull((w) => w.id == toWalletId);
+  }
+
+  int get fromWalletBalance {
+    if (getFromWallets == null) return 0;
+    return getFromWallets!.balanceSat.toInt();
+  }
+
+  String formattedFromWalletBalance() {
+    if (getFromWallets == null) return '0';
+
+    if (bitcoinUnit == BitcoinUnit.btc) {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(fromWalletBalance));
+    } else {
+      return FormatAmount.sats(fromWalletBalance);
+    }
   }
 
   bool get isInputAmountFiat =>
-      ![
-        BitcoinUnit.btc.code,
-        BitcoinUnit.sats.code,
-      ].contains(inputAmountCurrencyCode);
+      ![BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(bitcoinUnit.code);
 
   int get inputAmountSat {
     int amountSat = 0;
@@ -130,7 +136,7 @@ abstract class SwapState with _$SwapState {
       if (isInputAmountFiat) {
         final amountFiat = double.tryParse(amount) ?? 0;
         amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
-      } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+      } else if (bitcoinUnit == BitcoinUnit.sats) {
         amountSat = int.tryParse(amount) ?? 0;
       } else {
         final amountBtc = double.tryParse(amount) ?? 0;
@@ -229,11 +235,11 @@ abstract class SwapState with _$SwapState {
   // String formattedWalletBalance() {
   //   if (selectedWallet == null) return '0';
 
-  //   if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
+  //   if (bitcoinUnit == BitcoinUnit.btc.code) {
   //     return FormatAmount.btc(
   //       ConvertAmount.satsToBtc(selectedWallet!.balanceSat.toInt()),
   //     );
-  //   } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+  //   } else if (bitcoinUnit == BitcoinUnit.sats.code) {
   //     return FormatAmount.sats(selectedWallet!.balanceSat.toInt());
   //   } else {
   //     return FormatAmount.fiat(
@@ -241,7 +247,7 @@ abstract class SwapState with _$SwapState {
   //         selectedWallet!.balanceSat.toInt(),
   //         exchangeRate,
   //       ),
-  //       inputAmountCurrencyCode,
+  //       bitcoinUnit,
   //     );
   //   }
   // }
@@ -251,8 +257,8 @@ abstract class SwapState with _$SwapState {
 
   //   final satsBalance = selectedWallet!.balanceSat.toInt();
 
-  //   if (inputAmountCurrencyCode == BitcoinUnit.btc.code ||
-  //       inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+  //   if (bitcoinUnit == BitcoinUnit.btc.code ||
+  //       bitcoinUnit == BitcoinUnit.sats.code) {
   //     return FormatAmount.fiat(
   //       ConvertAmount.satsToFiat(satsBalance, exchangeRate),
   //       fiatCurrencyCode,
@@ -292,6 +298,8 @@ abstract class SwapState with _$SwapState {
     return swap != null && swap!.status == SwapStatus.completed;
   }
 
-  bool get disableConfirmSend =>
-      buildingTransaction || signingTransaction || broadcastingTransaction;
+  bool get disableContinueWithAmounts =>
+      fromWalletBalance == 0 ||
+      fromWalletBalance < inputAmountSat ||
+      creatingSwap;
 }

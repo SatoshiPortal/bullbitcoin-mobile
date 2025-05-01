@@ -140,7 +140,7 @@ class AppRouter {
       GoRoute(
         name: AppRoute.swap.name,
         path: AppRoute.swap.path,
-        builder: (context, state) => const SwapPage(),
+        builder: (context, state) => const SwapFlow(),
       ),
       GoRoute(
         name: AppRoute.txs.name,

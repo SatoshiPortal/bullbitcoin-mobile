@@ -50,6 +50,9 @@ class SwapPage extends StatelessWidget {
           children: [
             SwapFromToDropdown(type: _SwapDropdownType.from),
             Gap(16),
+            SwapAvailableBalance(),
+
+            Gap(16),
             SizedBox(
               height: 135 * 2,
               child: Stack(
@@ -70,11 +73,9 @@ class SwapPage extends StatelessWidget {
               ),
             ),
             Gap(16),
-            SwapAvailableBalance(),
-            Gap(16),
             SwapFromToDropdown(type: _SwapDropdownType.to),
             Spacer(),
-            SwapContinueButton(),
+            SwapContinueWithAmountButton(),
           ],
         ),
       ),
@@ -146,7 +147,9 @@ class SwapChangeButton extends StatelessWidget {
         child: IconButton(
           icon: const Icon(Icons.swap_vert),
           iconSize: 32,
-          onPressed: () {},
+          onPressed: () {
+            context.read<SwapCubit>().switchFromAndToWallets();
+          },
         ),
       ),
     );
@@ -159,7 +162,9 @@ class SwapAvailableBalance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
-    const balance = '53.00 BTC';
+    final balance = context.select(
+      (SwapCubit cubit) => cubit.state.formattedFromWalletBalance(),
+    );
     const maxSelected = false;
 
     return Row(
@@ -170,7 +175,7 @@ class SwapAvailableBalance extends StatelessWidget {
           color: context.colour.surface,
         ),
         const Gap(4),
-        BBText('text', style: context.font.labelLarge),
+        BBText(balance, style: context.font.labelLarge),
         const Spacer(),
         BBButton.small(
           label: 'MAX',
@@ -200,23 +205,38 @@ class SwapFromToDropdown extends StatelessWidget {
   const SwapFromToDropdown({super.key, required this.type});
 
   final _SwapDropdownType type;
-
-  List<DropdownMenuItem<String>> _buildDropdownItems(
+  // make the DropFownMenuItem be a named tuple
+  List<DropdownMenuItem> _buildDropdownItems(
     BuildContext context,
-    List<String> items,
+    List<({String label, String id})> items,
   ) {
     return [
-      for (final String item in items)
+      for (final ({String label, String id}) item in items)
         DropdownMenuItem(
-          value: item,
-          child: BBText(item, style: context.font.headlineSmall),
+          value: item.id,
+          child: BBText(item.label, style: context.font.headlineSmall),
         ),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    final items = ['CAD', 'USD'];
+    final items = context.select(
+      (SwapCubit cubit) =>
+          type == _SwapDropdownType.from
+              ? cubit.state.fromWalletDropdownItems
+              : cubit.state.toWalletDropdownItems,
+    );
+    if (items.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final id = context.select(
+      (SwapCubit cubit) =>
+          type == _SwapDropdownType.from
+              ? cubit.state.fromWalletId
+              : cubit.state.toWalletId,
+    );
+
     final dropdownItems = _buildDropdownItems(context, items);
 
     return Column(
@@ -234,8 +254,8 @@ class SwapFromToDropdown extends StatelessWidget {
             color: context.colour.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
-              child: DropdownButtonFormField<String>(
-                value: 'CAD',
+              child: DropdownButtonFormField(
+                value: id,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -244,8 +264,18 @@ class SwapFromToDropdown extends StatelessWidget {
                   Icons.keyboard_arrow_down,
                   color: context.colour.secondary,
                 ),
-                items: [...dropdownItems],
-                onChanged: (value) {},
+                items: dropdownItems,
+                onChanged: (value) {
+                  if (value != null) {
+                    type == _SwapDropdownType.from
+                        ? context.read<SwapCubit>().updateSelectedFromWallet(
+                          value as String,
+                        )
+                        : context.read<SwapCubit>().updateSelectedToWallet(
+                          value as String,
+                        );
+                  }
+                },
               ),
             ),
           ),
@@ -255,15 +285,19 @@ class SwapFromToDropdown extends StatelessWidget {
   }
 }
 
-class SwapContinueButton extends StatelessWidget {
-  const SwapContinueButton({super.key});
+class SwapContinueWithAmountButton extends StatelessWidget {
+  const SwapContinueWithAmountButton({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final disableContinueWithAmounts = context.select(
+      (SwapCubit cubit) => cubit.state.disableContinueWithAmounts,
+    );
     return BBButton.big(
       label: 'Continue',
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
+      disabled: disableContinueWithAmounts,
       onPressed: () {},
     );
   }

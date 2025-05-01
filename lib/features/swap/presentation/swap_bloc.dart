@@ -54,7 +54,6 @@ class SwapCubit extends Cubit<SwapState> {
   }) : _getSettingsUsecase = getSettingsUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
        _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
-
        _getNetworkFeesUsecase = getNetworkFeesUsecase,
        _getWalletUtxosUsecase = getWalletUtxosUsecase,
        _prepareBitcoinSendUsecase = prepareBitcoinSendUsecase,
@@ -65,7 +64,6 @@ class SwapCubit extends Cubit<SwapState> {
        _broadcastBitcoinTxUsecase = broadcastBitcoinTxUsecase,
        _getWalletsUsecase = getWalletsUsecase,
        _getWalletUsecase = getWalletUsecase,
-
        _getSwapLimitsUsecase = getSwapLimitsUsecase,
        _watchSwapUsecase = watchSwapUsecase,
        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
@@ -134,8 +132,9 @@ class SwapCubit extends Cubit<SwapState> {
       state.copyWith(
         fromWallets: bitcoinWallets,
         toWallets: liquidWallets,
-        swapFromWalletId: liquidWallets.first.id,
-        swapToWalletId: defaultBitcoinWallet.id,
+        fromWalletId: defaultBitcoinWallet.id,
+        toWalletId: liquidWallets.first.id,
+        loadingWallets: false,
       ),
     );
   }
@@ -149,8 +148,18 @@ class SwapCubit extends Cubit<SwapState> {
         toWalletNetwork: state.fromWalletNetwork,
         selectedFromCurrencyCode: state.selectedToCurrencyCode,
         selectedToCurrencyCode: state.selectedFromCurrencyCode,
+        fromWalletId: state.toWalletId,
+        toWalletId: state.fromWalletId,
       ),
     );
+  }
+
+  void updateSelectedFromWallet(String walletId) {
+    emit(state.copyWith(fromWalletId: walletId));
+  }
+
+  void updateSelectedToWallet(String walletId) {
+    emit(state.copyWith(toWalletId: walletId));
   }
 
   void backClicked() {
@@ -173,8 +182,8 @@ class SwapCubit extends Cubit<SwapState> {
         emit(state.copyWith(swap: updatedSwap));
         if (updatedSwap.status == SwapStatus.completed) {
           // Start syncing the wallet now that the swap is completed
-          _getWalletUsecase.execute(state.swapFromWalletId!, sync: true);
-          _getWalletUsecase.execute(state.swapToWalletId!, sync: true);
+          _getWalletUsecase.execute(state.fromWalletId!, sync: true);
+          _getWalletUsecase.execute(state.toWalletId!, sync: true);
 
           emit(state.copyWith(step: SwapPageStep.success));
         }
