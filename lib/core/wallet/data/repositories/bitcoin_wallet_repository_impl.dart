@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
@@ -12,17 +12,18 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 
 class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
-  final SqliteDatasource _sqlite;
+  // TODO: move db to datasource and inject datasource here instead of db
+  final SqliteDatabase _sqlite;
   final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
 
   BitcoinWalletRepositoryImpl({
-    required SqliteDatasource sqliteDatasource,
+    required SqliteDatabase sqliteDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
-  })  : _sqlite = sqliteDatasource,
-        _seed = seedDatasource,
-        _bdkWallet = bdkWalletDatasource;
+  }) : _sqlite = sqliteDatasource,
+       _seed = seedDatasource,
+       _bdkWallet = bdkWalletDatasource;
 
   @override
   Future<String> buildPsbt({
@@ -35,9 +36,10 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     List<WalletUtxo>? selected,
     bool? replaceByFee,
   }) async {
-    final metadata = await _sqlite.managers.walletMetadatas
-        .filter((e) => e.id(walletId))
-        .getSingleOrNull();
+    final metadata =
+        await _sqlite.managers.walletMetadatas
+            .filter((e) => e.id(walletId))
+            .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
@@ -47,12 +49,14 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
-    final wallet = WalletModel.publicBdk(
-      externalDescriptor: metadata.externalPublicDescriptor,
-      internalDescriptor: metadata.internalPublicDescriptor,
-      isTestnet: metadata.isTestnet,
-      id: metadata.id,
-    ) as PublicBdkWalletModel;
+    final wallet =
+        WalletModel.publicBdk(
+              externalDescriptor: metadata.externalPublicDescriptor,
+              internalDescriptor: metadata.internalPublicDescriptor,
+              isTestnet: metadata.isTestnet,
+              id: metadata.id,
+            )
+            as PublicBdkWalletModel;
     final psbt = await _bdkWallet.buildPsbt(
       wallet: wallet,
       address: address,
@@ -69,13 +73,11 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
   }
 
   @override
-  Future<String> signPsbt(
-    String psbt, {
-    required String walletId,
-  }) async {
-    final metadata = await _sqlite.managers.walletMetadatas
-        .filter((e) => e.id(walletId))
-        .getSingleOrNull();
+  Future<String> signPsbt(String psbt, {required String walletId}) async {
+    final metadata =
+        await _sqlite.managers.walletMetadatas
+            .filter((e) => e.id(walletId))
+            .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
@@ -89,18 +91,17 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
         await _seed.get(metadata.masterFingerprint) as MnemonicSeedModel;
     final mnemonic = seed.mnemonicWords.join(' ');
 
-    final wallet = WalletModel.privateBdk(
-      id: metadata.id,
-      mnemonic: mnemonic,
-      passphrase: seed.passphrase,
-      scriptType: ScriptType.fromName(metadata.scriptType),
-      isTestnet: metadata.isTestnet,
-    ) as PrivateBdkWalletModel;
+    final wallet =
+        WalletModel.privateBdk(
+              id: metadata.id,
+              mnemonic: mnemonic,
+              passphrase: seed.passphrase,
+              scriptType: ScriptType.fromName(metadata.scriptType),
+              isTestnet: metadata.isTestnet,
+            )
+            as PrivateBdkWalletModel;
 
-    final signedPsbt = await _bdkWallet.signPsbt(
-      wallet: wallet,
-      psbt,
-    );
+    final signedPsbt = await _bdkWallet.signPsbt(wallet: wallet, psbt);
 
     return signedPsbt;
   }
@@ -110,9 +111,10 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
     required String walletId,
     required Uint8List script,
   }) async {
-    final metadata = await _sqlite.managers.walletMetadatas
-        .filter((e) => e.id(walletId))
-        .getSingleOrNull();
+    final metadata =
+        await _sqlite.managers.walletMetadatas
+            .filter((e) => e.id(walletId))
+            .getSingleOrNull();
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');
@@ -122,12 +124,14 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
       throw Exception('Wallet $walletId is not a Bitcoin wallet');
     }
 
-    final wallet = WalletModel.publicBdk(
-      externalDescriptor: metadata.externalPublicDescriptor,
-      internalDescriptor: metadata.internalPublicDescriptor,
-      isTestnet: metadata.isTestnet,
-      id: metadata.id,
-    ) as PublicBdkWalletModel;
+    final wallet =
+        WalletModel.publicBdk(
+              externalDescriptor: metadata.externalPublicDescriptor,
+              internalDescriptor: metadata.internalPublicDescriptor,
+              isTestnet: metadata.isTestnet,
+              id: metadata.id,
+            )
+            as PublicBdkWalletModel;
 
     final isFromWallet = await _bdkWallet.isMine(script, wallet: wallet);
 

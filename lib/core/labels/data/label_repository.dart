@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/labels/data/label_model_mapper.dart';
 import 'package:bb_mobile/core/labels/domain/label_entity.dart';
 import 'package:bb_mobile/core/labels/domain/labelable.dart';
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -55,10 +55,11 @@ enum Entity {
 }
 
 class LabelRepository {
-  final SqliteDatasource _sqlite;
+  // TODO: move db to datasource and inject datasource here instead of db
+  final SqliteDatabase _sqlite;
 
-  LabelRepository({required SqliteDatasource sqliteDatasource})
-      : _sqlite = sqliteDatasource;
+  LabelRepository({required SqliteDatabase sqliteDatasource})
+    : _sqlite = sqliteDatasource;
 
   Future<void> store<T extends Labelable>({
     required String label,
@@ -86,9 +87,10 @@ class LabelRepository {
   Future<List<Label>> fetchByEntity<T extends Labelable>({
     required T entity,
   }) async {
-    final labelModels = await _sqlite.managers.labels
-        .filter((l) => l.ref(entity.labelRef))
-        .get();
+    final labelModels =
+        await _sqlite.managers.labels
+            .filter((l) => l.ref(entity.labelRef))
+            .get();
     return labelModels.map((model) => model.toEntity()).toList();
   }
 

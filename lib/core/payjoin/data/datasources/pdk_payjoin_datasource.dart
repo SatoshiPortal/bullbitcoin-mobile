@@ -268,7 +268,7 @@ class PdkPayjoinDatasource {
     );
 
     debugPrint(
-      'Payjoin request processed and proposal sent for ${receiver.id}: $proposalPsbt',
+      'Payjoin request processed and proposal sent for ${receiver.id()}: $proposalPsbt',
     );
 
     return updatedModel;

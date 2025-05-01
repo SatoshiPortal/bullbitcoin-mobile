@@ -12,7 +12,7 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
@@ -26,7 +26,8 @@ import 'package:synchronized/synchronized.dart';
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final LocalPayjoinDatasource _localPayjoinDatasource;
   final PdkPayjoinDatasource _pdkPayjoinDatasource;
-  final SqliteDatasource _sqlite;
+  // TODO: move db to datasource and inject datasource here instead of db
+  final SqliteDatabase _sqlite;
   final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
   final BdkBitcoinBlockchainDatasource _blockchain;
@@ -39,7 +40,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   PayjoinRepositoryImpl({
     required LocalPayjoinDatasource localPayjoinDatasource,
     required PdkPayjoinDatasource pdkPayjoinDatasource,
-    required SqliteDatasource sqliteDatasource,
+    required SqliteDatabase sqliteDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
