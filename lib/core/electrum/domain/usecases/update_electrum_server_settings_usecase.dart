@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class UpdateElectrumServerSettingsUsecase {
@@ -9,9 +9,7 @@ class UpdateElectrumServerSettingsUsecase {
     required ElectrumServerRepository electrumServerRepository,
   }) : _electrumServerRepository = electrumServerRepository;
 
-  Future<bool> execute({
-    required ElectrumServer electrumServer,
-  }) async {
+  Future<bool> execute({required ElectrumServer electrumServer}) async {
     try {
       // Update server in repository
       await _electrumServerRepository.setElectrumServer(electrumServer);

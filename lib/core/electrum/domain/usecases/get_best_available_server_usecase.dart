@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class GetBestAvailableServerUsecase {

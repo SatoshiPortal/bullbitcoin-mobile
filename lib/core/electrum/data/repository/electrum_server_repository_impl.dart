@@ -3,18 +3,16 @@ import 'dart:io';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:bb_mobile/core/electrum/domain/repositories/electrum_server_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter/foundation.dart';
 
-class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
+class ElectrumServerRepository {
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
-  const ElectrumServerRepositoryImpl({
+  const ElectrumServerRepository({
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   }) : _electrumServerStorage = electrumServerStorageDatasource;
 
-  @override
   Future<void> setElectrumServer(ElectrumServer server) async {
     final model = ElectrumServerModel.fromEntity(server);
     await _electrumServerStorage.store(model);
@@ -55,7 +53,6 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
     }
   }
 
-  @override
   Future<ElectrumServer?> getDefaultServerByProvider({
     required DefaultElectrumServerProvider provider,
     required Network network,
@@ -67,45 +64,20 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
       network: network,
     );
 
-    // Check connectivity if needed
-    if (model != null) {
-      // Get the URL directly from the model
-      final url = model.url;
-      final server = model.toEntity();
+    if (model == null) throw '$provider is not accessible';
 
-      if (checkStatus) {
-        // Check connectivity
-        final status = await _checkServerConnectivity(url, server.timeout);
-        return server.copyWith(status: status);
-      }
-      return server;
-    }
-
-    // If no server is found in storage, create a default one with appropriate priority
-    final priority = switch (provider) {
-      DefaultElectrumServerProvider.bullBitcoin => 1,
-      DefaultElectrumServerProvider.blockstream => 2,
-    };
-
-    final defaultServer = ElectrumServer.defaultServer(
-      provider: provider,
-      network: network,
-      priority: priority,
-    );
+    // Get the URL directly from the model
+    final url = model.url;
+    final server = model.toEntity();
 
     if (checkStatus) {
-      final serverModel = ElectrumServerModel.fromEntity(defaultServer);
-      final status = await _checkServerConnectivity(
-        serverModel.url,
-        defaultServer.timeout,
-      );
-      return defaultServer.copyWith(status: status);
+      // Check connectivity
+      final status = await _checkServerConnectivity(url, server.timeout);
+      return server.copyWith(status: status);
     }
-
-    return defaultServer;
+    return server;
   }
 
-  @override
   Future<ElectrumServer?> getCustomServer({
     required Network network,
     bool checkStatus = false,
@@ -130,7 +102,6 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
     return null;
   }
 
-  @override
   Future<List<ElectrumServer>> getElectrumServers({
     required Network network,
     required bool checkStatus,
@@ -192,7 +163,6 @@ class ElectrumServerRepositoryImpl implements ElectrumServerRepository {
     return servers;
   }
 
-  @override
   Future<ElectrumServer> getPrioritizedServer({
     required Network network,
     bool checkStatus = false,
