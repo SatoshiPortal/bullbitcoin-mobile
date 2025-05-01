@@ -92,10 +92,6 @@ Future main() async {
           isTestnet: true,
           isLiquid: false,
         ), // btc test
-        ElectrumServerModel.bullBitcoin(
-          isTestnet: true,
-          isLiquid: true,
-        ), // liq test
       ];
       for (final defaultElectrumServer in defaultsElectrumServers) {
         await electrumStorage.store(defaultElectrumServer);
