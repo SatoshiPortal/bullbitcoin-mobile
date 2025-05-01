@@ -50,18 +50,20 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.btc.path,
               label: 'Buy',
               onPressed: () {
-                context.pushNamed(AppRoute.buy.name);
+                // context.pushNamed(AppRoute.buy.name);
               },
               position: _ButtonPosition.first,
+              disabled: true,
             ),
             const Gap(1),
             _ActionButton(
               icon: Assets.icons.dollar.path,
               label: 'Sell',
               onPressed: () {
-                context.pushNamed(AppRoute.sell.name);
+                // context.pushNamed(AppRoute.sell.name);
               },
               position: _ButtonPosition.middle,
+              disabled: true,
             ),
             const Gap(1),
             _ActionButton(
@@ -69,6 +71,7 @@ class _ActionRow extends StatelessWidget {
               label: 'Pay',
               onPressed: () {},
               position: _ButtonPosition.middle,
+              disabled: true,
             ),
             const Gap(1),
             _ActionButton(
@@ -78,6 +81,7 @@ class _ActionRow extends StatelessWidget {
                 context.pushNamed(AppRoute.swap.name);
               },
               position: _ButtonPosition.last,
+              disabled: false,
             ),
           ],
         ),
@@ -92,12 +96,14 @@ class _ActionButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     required this.position,
+    required this.disabled,
   });
 
   final String icon;
   final String label;
   final Function onPressed;
   final _ButtonPosition position;
+  final bool disabled;
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +123,7 @@ class _ActionButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: radius,
             color: context.colour.onPrimary,
+            backgroundBlendMode: disabled ? BlendMode.softLight : null,
           ),
           child: Column(
             spacing: 8,

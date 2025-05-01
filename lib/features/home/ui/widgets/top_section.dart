@@ -195,9 +195,7 @@ class _TopNav extends StatelessWidget {
       children: [
         const Gap(8),
         IconButton(
-          onPressed: () {
-            context.read<HomeBloc>().add(const HomeRefreshed());
-          },
+          onPressed: () {},
           visualDensity: VisualDensity.compact,
           iconSize: 24,
           color: context.colour.onPrimary,
