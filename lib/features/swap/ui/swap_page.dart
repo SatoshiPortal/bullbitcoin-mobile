@@ -1,6 +1,5 @@
 // ignore_for_file: dead_code
 
-import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';

@@ -122,7 +122,7 @@ class SwapCubit extends Cubit<SwapState> {
     );
   }
 
-  void init() async {
+  Future<void> init() async {
     final wallets = await _getWalletsUsecase.execute();
     final liquidWallets = wallets.where((w) => w.isLiquid).toList();
     final bitcoinWallets = wallets.where((w) => !w.isLiquid).toList();
