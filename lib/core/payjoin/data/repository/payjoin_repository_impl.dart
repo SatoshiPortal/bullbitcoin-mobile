@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
@@ -195,17 +193,12 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     try {
       // TODO: Should we get all the electrum servers and try another one if the
       //  first one fails?
-      final electrumServer =
-          await _electrumServerStorage.fetchDefaultServerByProvider(
-            DefaultElectrumServerProvider.blockstream,
+      final electrumServer = await _electrumServerStorage
+          .fetchPrioritizedServer(
             network:
                 payjoin.isTestnet
                     ? Network.bitcoinTestnet
                     : Network.bitcoinMainnet,
-          ) ??
-          ElectrumServerModel.blockstream(
-            isTestnet: payjoin.isTestnet,
-            isLiquid: false,
           );
 
       await _blockchain.broadcastTransaction(
@@ -412,15 +405,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }) async {
     // TODO: Should we get all the electrum servers and try another one if the
     //  first one fails?
-    final electrumServer =
-        await _electrumServerStorage.fetchDefaultServerByProvider(
-          DefaultElectrumServerProvider.blockstream,
-          network: network,
-        ) ??
-        ElectrumServerModel.blockstream(
-          isTestnet: network.isTestnet,
-          isLiquid: network.isLiquid,
-        );
+    final electrumServer = await _electrumServerStorage.fetchPrioritizedServer(
+      network: network,
+    );
 
     await _blockchain.broadcastPsbt(
       finalizedPsbt,

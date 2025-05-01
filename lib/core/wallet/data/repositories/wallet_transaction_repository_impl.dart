@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
@@ -248,17 +246,12 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
         walletModels.map((walletModel) async {
           final isLiquid = walletModel is PublicLwkWalletModel;
 
-          final electrumServer =
-              await _electrumServerStorage.fetchDefaultServerByProvider(
-                DefaultElectrumServerProvider.blockstream,
+          final electrumServer = await _electrumServerStorage
+              .fetchPrioritizedServer(
                 network: Network.fromEnvironment(
                   isTestnet: walletModel.isTestnet,
                   isLiquid: isLiquid,
                 ),
-              ) ??
-              ElectrumServerModel.blockstream(
-                isTestnet: walletModel.isTestnet,
-                isLiquid: isLiquid,
               );
 
           final walletTransactionDatasource =

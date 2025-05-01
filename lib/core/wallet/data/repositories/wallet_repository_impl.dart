@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:async/async.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
@@ -420,18 +418,12 @@ class WalletRepositoryImpl implements WalletRepository {
 
   Future<void> _syncWallet(WalletModel wallet) async {
     final isLiquid = wallet is PublicLwkWalletModel;
-    final electrumServer =
-        await _electrumServerStorage.fetchDefaultServerByProvider(
-          DefaultElectrumServerProvider.blockstream,
-          network: Network.fromEnvironment(
-            isTestnet: wallet.isTestnet,
-            isLiquid: isLiquid,
-          ),
-        ) ??
-        ElectrumServerModel.blockstream(
-          isTestnet: wallet.isTestnet,
-          isLiquid: isLiquid,
-        );
+    final electrumServer = await _electrumServerStorage.fetchPrioritizedServer(
+      network: Network.fromEnvironment(
+        isTestnet: wallet.isTestnet,
+        isLiquid: isLiquid,
+      ),
+    );
     if (isLiquid) {
       await _lwkWallet.sync(wallet: wallet, electrumServer: electrumServer);
     } else {
