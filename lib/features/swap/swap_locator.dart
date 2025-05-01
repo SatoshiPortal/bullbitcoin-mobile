@@ -26,6 +26,7 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/create_chain_swap_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -130,6 +131,7 @@ class SwapLocator {
         calculateLiquidAbsoluteFeesUsecase:
             locator<CalculateLiquidAbsoluteFeesUsecase>(),
         createChainSwapUsecase: locator<CreateChainSwapUsecase>(),
+        updatePaidChainSwapUsecase: locator<UpdatePaidChainSwapUsecase>(),
       ),
     );
   }

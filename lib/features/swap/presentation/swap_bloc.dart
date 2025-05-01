@@ -26,6 +26,7 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/swap/domain/create_chain_swap_usecase.dart';
+import 'package:bb_mobile/features/swap/domain/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,6 +55,7 @@ class SwapCubit extends Cubit<SwapState> {
     required CalculateLiquidAbsoluteFeesUsecase
     calculateLiquidAbsoluteFeesUsecase,
     required CreateChainSwapUsecase createChainSwapUsecase,
+    required UpdatePaidChainSwapUsecase updatePaidChainSwapUsecase,
   }) : _getSettingsUsecase = getSettingsUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
        _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
@@ -74,6 +76,7 @@ class SwapCubit extends Cubit<SwapState> {
            calculateBitcoinAbsoluteFeesUsecase,
        _calculateLiquidAbsoluteFeesUsecase = calculateLiquidAbsoluteFeesUsecase,
        _createChainSwapUsecase = createChainSwapUsecase,
+       _updatePaidChainSwapUsecase = updatePaidChainSwapUsecase,
        super(const SwapState());
 
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
@@ -97,6 +100,7 @@ class SwapCubit extends Cubit<SwapState> {
 
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
+  final UpdatePaidChainSwapUsecase _updatePaidChainSwapUsecase;
 
   StreamSubscription<Swap>? _swapSubscription;
   StreamSubscription<Wallet>? _selectedWalletSyncingSubscription;
@@ -292,6 +296,69 @@ class SwapCubit extends Cubit<SwapState> {
           creatingSwap: false,
           swapCreationException: SwapCreationException(e.toString()),
           amountConfirmedClicked: false,
+        ),
+      );
+    }
+  }
+
+  Future<void> confirmSwapClicked() async {
+    try {
+      final swap = state.swap;
+      if (swap == null) return;
+
+      final bitcoinWalletId =
+          state.fromWalletNetwork == WalletNetwork.bitcoin
+              ? state.fromWalletId
+              : state.toWalletId;
+      final liquidWalletId =
+          state.fromWalletNetwork == WalletNetwork.liquid
+              ? state.fromWalletId
+              : state.toWalletId;
+
+      final bitcoinWallet = await _getWalletUsecase.execute(bitcoinWalletId!);
+      final liquidWallet = await _getWalletUsecase.execute(liquidWalletId!);
+
+      if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
+        final psbt = await _prepareBitcoinSendUsecase.execute(
+          walletId: bitcoinWalletId,
+          address: swap.paymentAddress,
+          amountSat: swap.paymentAmount,
+          networkFee: NetworkFee.absolute(swap.fees!.claimFee!),
+        );
+        final signedPsbt = await _signBitcoinTxUsecase.execute(
+          walletId: bitcoinWalletId,
+          psbt: psbt,
+        );
+        final txid = await _broadcastBitcoinTxUsecase.execute(signedPsbt);
+        await _updatePaidChainSwapUsecase.execute(
+          txid: txid,
+          swapId: swap.id,
+          network: bitcoinWallet.network,
+        );
+      } else {
+        final psbt = await _prepareLiquidSendUsecase.execute(
+          walletId: liquidWalletId,
+          address: swap.paymentAddress,
+          amountSat: swap.paymentAmount,
+          networkFee: NetworkFee.absolute(swap.fees!.claimFee!),
+        );
+        final signedPsbt = await _signLiquidTxUsecase.execute(
+          walletId: bitcoinWalletId,
+          psbt: psbt,
+        );
+        final txid = await _broadcastLiquidTxUsecase.execute(signedPsbt);
+        await _updatePaidChainSwapUsecase.execute(
+          txid: txid,
+          swapId: swap.id,
+          network: liquidWallet.network,
+        );
+      }
+    } catch (e) {
+      emit(
+        state.copyWith(
+          confirmTransactionException: ConfirmTransactionException(
+            e.toString(),
+          ),
         ),
       );
     }

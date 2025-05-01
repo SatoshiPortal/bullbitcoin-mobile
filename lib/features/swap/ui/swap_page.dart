@@ -2,6 +2,7 @@
 
 import 'package:bb_mobile/features/swap/presentation/swap_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_state.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
@@ -12,6 +13,7 @@ import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
 enum _SwapCardType { pay, receive }
@@ -43,6 +45,8 @@ class SwapPage extends StatelessWidget {
         return const SwapAmountPage();
       case SwapPageStep.confirm:
         return const SwapConfirmPage();
+      case SwapPageStep.progress:
+        return const SwapProgressPage();
       case _:
         return const SizedBox.shrink();
     }
@@ -459,9 +463,69 @@ class SwapConfirmPage extends StatelessWidget {
             CommonSendBottomButtons(
               isBitcoinWallet: sendNetwork == WalletNetwork.bitcoin,
               blocProviderValue: context.read<SwapCubit>(),
-              onSendPressed: () {},
+              onSendPressed: () {
+                context.read<SwapCubit>().confirmSwapClicked();
+              },
               disableSendButton: true,
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SwapProgressPage extends StatelessWidget {
+  const SwapProgressPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        flexibleSpace: TopBar(
+          title: 'Swap',
+          actionIcon: Icons.help_outline,
+          onAction: () {},
+          onBack: () => context.pop(),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            const Spacer(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  Gif(
+                    autostart: Autostart.loop,
+                    height: 123,
+                    image: AssetImage(Assets.images2.cubesLoading.path),
+                  ),
+
+                  const Gap(8),
+                  BBText('Sending...', style: context.font.headlineLarge),
+                  const Gap(8),
+                  BBText(
+                    'The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.',
+                    style: context.font.bodyMedium,
+                    maxLines: 4,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            const Spacer(flex: 2),
+            BBButton.big(
+              label: 'Go home',
+              onPressed: () {},
+              bgColor: context.colour.secondary,
+              textColor: context.colour.onSecondary,
+            ),
+            const Gap(32),
           ],
         ),
       ),
