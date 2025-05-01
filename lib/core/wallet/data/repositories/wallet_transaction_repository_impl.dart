@@ -249,7 +249,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
           final isLiquid = walletModel is PublicLwkWalletModel;
 
           final electrumServer =
-              await _electrumServerStorage.getDefaultServerByProvider(
+              await _electrumServerStorage.fetchDefaultServerByProvider(
                 DefaultElectrumServerProvider.blockstream,
                 network: Network.fromEnvironment(
                   isTestnet: walletModel.isTestnet,

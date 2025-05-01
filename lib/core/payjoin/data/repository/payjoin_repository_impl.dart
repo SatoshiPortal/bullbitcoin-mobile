@@ -196,7 +196,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       // TODO: Should we get all the electrum servers and try another one if the
       //  first one fails?
       final electrumServer =
-          await _electrumServerStorage.getDefaultServerByProvider(
+          await _electrumServerStorage.fetchDefaultServerByProvider(
             DefaultElectrumServerProvider.blockstream,
             network:
                 payjoin.isTestnet
@@ -413,7 +413,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     // TODO: Should we get all the electrum servers and try another one if the
     //  first one fails?
     final electrumServer =
-        await _electrumServerStorage.getDefaultServerByProvider(
+        await _electrumServerStorage.fetchDefaultServerByProvider(
           DefaultElectrumServerProvider.blockstream,
           network: network,
         ) ??

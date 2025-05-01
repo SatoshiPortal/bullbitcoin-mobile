@@ -12,8 +12,8 @@ class BitcoinBlockchainRepositoryImpl implements BitcoinBlockchainRepository {
   const BitcoinBlockchainRepositoryImpl({
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
-  })  : _blockchain = blockchainDatasource,
-        _electrumServerStorage = electrumServerStorageDatasource;
+  }) : _blockchain = blockchainDatasource,
+       _electrumServerStorage = electrumServerStorageDatasource;
 
   @override
   Future<String> broadcastPsbt(
@@ -23,17 +23,14 @@ class BitcoinBlockchainRepositoryImpl implements BitcoinBlockchainRepository {
     // Todo: Should we first try the custom and only if it fails or doesn't exist
     // try the default bullbitcoin and blockstream servers?
     final electrumServerModel =
-        await _electrumServerStorage.getDefaultServerByProvider(
-              DefaultElectrumServerProvider.blockstream,
-              network: Network.fromEnvironment(
-                isTestnet: isTestnet,
-                isLiquid: false,
-              ),
-            ) ??
-            ElectrumServerModel.blockstream(
-              isTestnet: isTestnet,
-              isLiquid: false,
-            );
+        await _electrumServerStorage.fetchDefaultServerByProvider(
+          DefaultElectrumServerProvider.blockstream,
+          network: Network.fromEnvironment(
+            isTestnet: isTestnet,
+            isLiquid: false,
+          ),
+        ) ??
+        ElectrumServerModel.blockstream(isTestnet: isTestnet, isLiquid: false);
 
     return _blockchain.broadcastPsbt(
       finalizedPsbt,
