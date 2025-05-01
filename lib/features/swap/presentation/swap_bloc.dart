@@ -122,6 +122,37 @@ class SwapCubit extends Cubit<SwapState> {
     );
   }
 
+  void init() async {
+    final wallets = await _getWalletsUsecase.execute();
+    final liquidWallets = wallets.where((w) => w.isLiquid).toList();
+    final bitcoinWallets = wallets.where((w) => !w.isLiquid).toList();
+    final defaultBitcoinWallet = bitcoinWallets.firstWhere(
+      (w) => w.isDefault,
+      orElse: () => bitcoinWallets.first,
+    );
+    emit(
+      state.copyWith(
+        fromWallets: bitcoinWallets,
+        toWallets: liquidWallets,
+        swapFromWalletId: liquidWallets.first.id,
+        swapToWalletId: defaultBitcoinWallet.id,
+      ),
+    );
+  }
+
+  void switchFromAndToWallets() {
+    emit(
+      state.copyWith(
+        fromWallets: state.toWallets,
+        toWallets: state.fromWallets,
+        fromWalletNetwork: state.toWalletNetwork,
+        toWalletNetwork: state.fromWalletNetwork,
+        selectedFromCurrencyCode: state.selectedToCurrencyCode,
+        selectedToCurrencyCode: state.selectedFromCurrencyCode,
+      ),
+    );
+  }
+
   void backClicked() {
     if (state.step == SwapPageStep.amount) {
       emit(state.copyWith(step: SwapPageStep.amount));

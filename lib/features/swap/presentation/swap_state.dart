@@ -14,15 +14,29 @@ part 'swap_state.freezed.dart';
 
 enum SwapPageStep { amount, confirm, sending, success }
 
+enum WalletNetwork { bitcoin, liquid }
+
 @freezed
 abstract class SwapState with _$SwapState {
   const factory SwapState({
     @Default(SwapPageStep.amount) SwapPageStep step,
     // input
-    @Default('') String receiverAddress,
-    @Default([]) List<Wallet> wallets,
+    @Default([]) List<Wallet> fromWallets,
+    @Default([]) List<Wallet> toWallets,
+    @Default(WalletNetwork.bitcoin) WalletNetwork fromWalletNetwork,
+    @Default(WalletNetwork.liquid) WalletNetwork toWalletNetwork,
     String? swapFromWalletId,
     String? swapToWalletId,
+    @Default('') String fromAmount,
+    @Default('') String toAmount,
+    int? confirmedFromAmountSat,
+    @Default('') String receiverAddress,
+
+    // @Default([]) List<String> fromCurrencyCodes,
+    // @Default([]) List<String> toCurrencyCodes,
+    @Default('BTC') String selectedFromCurrencyCode,
+    @Default('L-BTC') String selectedToCurrencyCode,
+
     @Default('') String amount,
     int? confirmedAmountSat,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
@@ -68,24 +82,40 @@ abstract class SwapState with _$SwapState {
   }) = _SwapState;
   const SwapState._();
 
-  Wallet? get liquidWallet {
-    if (wallets.isEmpty) return null;
-    return wallets.firstWhereOrNull((w) => w.isLiquid);
+  // Wallet? get liquidWallet {
+  //   if (wallets.isEmpty) return null;
+  //   return wallets.firstWhereOrNull((w) => w.isLiquid);
+  // }
+
+  // List<Wallet>? get bitcoinWallets {
+  //   if (wallets.isEmpty) return null;
+  //   return wallets.where((w) => !w.isLiquid).toList();
+  // }
+
+  List<String> get fromWalletLabels {
+    return fromWallets.map((w) => w.label).toList();
   }
 
-  List<Wallet>? get bitcoinWallets {
-    if (wallets.isEmpty) return null;
-    return wallets.where((w) => !w.isLiquid).toList();
+  List<String> get toWalletLabels {
+    return toWallets.map((w) => w.label).toList();
   }
 
-  Wallet? get getSwapFromWallet {
-    if (wallets.isEmpty) return null;
-    return wallets.firstWhereOrNull((w) => w.id == swapFromWalletId);
+  String get selectedFromWalletLabel {
+    return fromWallets.firstWhere((w) => w.id == swapFromWalletId).label;
   }
 
-  Wallet? get getSwapToWallet {
-    if (wallets.isEmpty) return null;
-    return wallets.firstWhereOrNull((w) => w.id == swapToWalletId);
+  String get selectedToWalletLabel {
+    return toWallets.firstWhere((w) => w.id == swapToWalletId).label;
+  }
+
+  Wallet? get getFromWallets {
+    if (fromWallets.isEmpty) return null;
+    return fromWallets.firstWhereOrNull((w) => w.id == swapFromWalletId);
+  }
+
+  Wallet? get getToWallets {
+    if (toWallets.isEmpty) return null;
+    return toWallets.firstWhereOrNull((w) => w.id == swapToWalletId);
   }
 
   bool get isInputAmountFiat =>
@@ -96,7 +126,7 @@ abstract class SwapState with _$SwapState {
 
   int get inputAmountSat {
     int amountSat = 0;
-    if (amount.isNotEmpty) {
+    if (fromAmount.isNotEmpty) {
       if (isInputAmountFiat) {
         final amountFiat = double.tryParse(amount) ?? 0;
         amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
