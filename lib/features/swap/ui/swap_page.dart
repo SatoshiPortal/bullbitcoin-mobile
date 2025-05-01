@@ -51,7 +51,6 @@ class SwapPage extends StatelessWidget {
             SwapFromToDropdown(type: _SwapDropdownType.from),
             Gap(16),
             SwapAvailableBalance(),
-
             Gap(16),
             SizedBox(
               height: 135 * 2,
@@ -72,8 +71,13 @@ class SwapPage extends StatelessWidget {
                 ],
               ),
             ),
-            Gap(16),
+            Gap(32),
             SwapFromToDropdown(type: _SwapDropdownType.to),
+            Gap(16),
+            SwapFeesInformation(),
+            Gap(32),
+            SwapCreationError(),
+
             Spacer(),
             SwapContinueWithAmountButton(),
           ],
@@ -90,9 +94,19 @@ class SwapCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amount = _SwapCardType.pay == type ? '0 CAD' : '0 BTC';
-    final convertionAmount =
-        _SwapCardType.pay == type ? '~0.00 BTC' : '~0.00 CAD';
+    final amount = context.select(
+      (SwapCubit cubit) =>
+          type == _SwapCardType.pay
+              ? cubit.state.fromAmount
+              : cubit.state.formattedToAmount,
+    );
+
+    final conversionAmount = context.select(
+      (SwapCubit cubit) =>
+          type == _SwapCardType.pay
+              ? cubit.state.formattedFromAmountEquivalent
+              : cubit.state.formattedToAmountEquivalent,
+    );
 
     return Material(
       elevation: 2,
@@ -117,13 +131,19 @@ class SwapCard extends StatelessWidget {
               ignoring: type == _SwapCardType.receive,
               child: BBInputText(
                 style: context.font.headlineMedium,
-
                 value: amount,
-                onChanged: (v) {},
+                onChanged: (v) {
+                  if (type == _SwapCardType.pay) {
+                    context.read<SwapCubit>().amountChanged(v);
+                  }
+                },
               ),
             ),
             const Gap(4),
-            BBText(convertionAmount, style: context.font.labelSmall),
+            if (amount == '0' || amount.isEmpty)
+              const SizedBox.shrink()
+            else
+              BBText(conversionAmount, style: context.font.labelSmall),
           ],
         ),
       ),
@@ -195,8 +215,54 @@ class SwapAvailableBalance extends StatelessWidget {
               maxSelected
                   ? context.colour.onSecondary
                   : context.colour.secondary,
+          disabled: true,
         ),
       ],
+    );
+  }
+}
+
+class SwapFeesInformation extends StatelessWidget {
+  const SwapFeesInformation({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    final totalFees = context.select(
+      (SwapCubit cubit) => cubit.state.estimatedFeesFormatted,
+    );
+
+    return Row(
+      children: [
+        BBText(
+          'Total Fees ',
+          style: context.font.labelLarge,
+          color: context.colour.surface,
+        ),
+        const Gap(4),
+        BBText(totalFees, style: context.font.labelLarge),
+      ],
+    );
+  }
+}
+
+class SwapCreationError extends StatelessWidget {
+  const SwapCreationError({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // ignore: unused_local_variable
+    final swapCreationError = context.select(
+      (SwapCubit cubit) => cubit.state.swapCreationException,
+    );
+    if (swapCreationError == null) {
+      return const SizedBox.shrink();
+    }
+    return BBText(
+      swapCreationError.message,
+      style: context.font.labelLarge,
+      color: context.colour.error,
+      maxLines: 4,
     );
   }
 }
@@ -298,7 +364,10 @@ class SwapContinueWithAmountButton extends StatelessWidget {
       bgColor: context.colour.secondary,
       textColor: context.colour.onSecondary,
       disabled: disableContinueWithAmounts,
-      onPressed: () {},
+      onPressed: () {
+        if (disableContinueWithAmounts) return;
+        context.read<SwapCubit>().continueWithAmountsClicked();
+      },
     );
   }
 }

@@ -6,8 +6,10 @@ import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_tran
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
@@ -122,6 +124,9 @@ class SwapCubit extends Cubit<SwapState> {
 
   Future<void> init() async {
     final wallets = await _getWalletsUsecase.execute();
+    final settings = await _getSettingsUsecase.execute();
+    final bitcoinUnit = settings.bitcoinUnit;
+
     final liquidWallets = wallets.where((w) => w.isLiquid).toList();
     final bitcoinWallets = wallets.where((w) => !w.isLiquid).toList();
     final defaultBitcoinWallet = bitcoinWallets.firstWhere(
@@ -135,8 +140,49 @@ class SwapCubit extends Cubit<SwapState> {
         fromWalletId: defaultBitcoinWallet.id,
         toWalletId: liquidWallets.first.id,
         loadingWallets: false,
+        bitcoinUnit: bitcoinUnit,
       ),
     );
+
+    await loadSwapLimits();
+  }
+
+  Future<void> loadSwapLimits() async {
+    try {
+      final settings = await _getSettingsUsecase.execute();
+      final isTestnet = settings.environment == Environment.testnet;
+      final lbtcToBtcswapLimits = await _getSwapLimitsUsecase.execute(
+        type: SwapType.liquidToBitcoin,
+        isTestnet: isTestnet,
+      );
+      emit(state.copyWith(lbtcToBtcSwapLimitsAndFees: lbtcToBtcswapLimits));
+      final btcToLbtcSwapLimits = await _getSwapLimitsUsecase.execute(
+        type: SwapType.bitcoinToLiquid,
+        isTestnet: isTestnet,
+      );
+      emit(state.copyWith(btcToLbtcSwapLimitsAndFees: btcToLbtcSwapLimits));
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  Future<void> loadFees() async {
+    if (state.fromWallet == null) return;
+    try {
+      final fees = await _getNetworkFeesUsecase.execute(
+        network: state.fromWallet!.network,
+      );
+      emit(
+        state.copyWith(
+          feesList: fees,
+          customFee: null,
+          selectedFee: fees.fastest,
+          selectedFeeOption: FeeSelection.fastest,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
   }
 
   void switchFromAndToWallets() {
@@ -167,6 +213,85 @@ class SwapCubit extends Cubit<SwapState> {
       emit(state.copyWith(step: SwapPageStep.amount));
     } else if (state.step == SwapPageStep.confirm) {
       emit(state.copyWith(step: SwapPageStep.amount));
+    }
+  }
+
+  void amountChanged(String amount) {
+    try {
+      clearAllExceptions();
+      String validatedAmount;
+
+      if (amount.isEmpty) {
+        validatedAmount = amount;
+      } else if (state.bitcoinUnit == BitcoinUnit.btc) {
+        final amountBtc = double.tryParse(amount);
+        final decimals =
+            amount.contains('.') ? amount.split('.').last.length : 0;
+        final isDecimalPoint = amount == '.';
+
+        validatedAmount =
+            (amountBtc == null && !isDecimalPoint) ||
+                    decimals > BitcoinUnit.btc.decimals
+                ? state.fromAmount
+                : amount;
+      } else {
+        final satoshis = BigInt.tryParse(amount);
+        final hasDecimals = amount.contains('.');
+
+        if (satoshis != null && !hasDecimals) {
+          validatedAmount = satoshis.toString();
+        } else {
+          validatedAmount = state.fromAmount;
+        }
+      }
+      emit(state.copyWith(fromAmount: validatedAmount));
+      emit(state.copyWith(toAmount: state.calculateToAmount));
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  Future<void> continueWithAmountsClicked() async {
+    try {
+      emit(state.copyWith(amountConfirmedClicked: true));
+      final bitcoinWalletId =
+          state.fromWalletNetwork == WalletNetwork.bitcoin
+              ? state.fromWalletId
+              : state.toWalletId;
+
+      final liquidWalletId =
+          state.fromWalletNetwork == WalletNetwork.liquid
+              ? state.fromWalletId
+              : state.toWalletId;
+      final swapType =
+          state.fromWalletNetwork == WalletNetwork.bitcoin
+              ? SwapType.bitcoinToLiquid
+              : SwapType.liquidToBitcoin;
+      emit(state.copyWith(creatingSwap: true));
+      final swap = await _createChainSwapUsecase.execute(
+        bitcoinWalletId: bitcoinWalletId!,
+        liquidWalletId: liquidWalletId!,
+        type: swapType,
+        amountSat: state.fromAmountSat,
+      );
+
+      _watchChainSwap(swap.id);
+      emit(
+        state.copyWith(
+          amountConfirmedClicked: false,
+          step: SwapPageStep.confirm,
+          swap: swap,
+          creatingSwap: false,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          creatingSwap: false,
+          swapCreationException: SwapCreationException(e.toString()),
+          amountConfirmedClicked: false,
+        ),
+      );
     }
   }
 

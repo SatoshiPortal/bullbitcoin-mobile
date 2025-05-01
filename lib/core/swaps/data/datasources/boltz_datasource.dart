@@ -34,62 +34,69 @@ class BoltzDatasource {
       _swapUpdatesController;
 
   Future<swap_entity.SwapFees> getSwapFees(swap_entity.SwapType type) async {
-    final allFees = Fees(boltzUrl: _httpsUrl);
-    switch (type) {
-      case swap_entity.SwapType.lightningToBitcoin:
-        final fees = await allFees.reverse();
-        final swapFees = swap_entity.SwapFees(
-          boltzPercent: fees.btcFees.percentage,
-          lockupFee: fees.btcFees.minerFees.lockup.toInt(),
-          claimFee: fees.btcFees.minerFees.claim.toInt(),
-        );
-        return swapFees;
-      case swap_entity.SwapType.lightningToLiquid:
-        final fees = await allFees.reverse();
-        final swapFees = swap_entity.SwapFees(
-          boltzPercent: fees.lbtcFees.percentage,
-          lockupFee: fees.lbtcFees.minerFees.lockup.toInt(),
-          claimFee: fees.lbtcFees.minerFees.claim.toInt(),
-        );
-        return swapFees;
-      case swap_entity.SwapType.bitcoinToLightning:
-        final fees = await allFees.submarine();
-        final swapFees = swap_entity.SwapFees(
-          boltzPercent: fees.btcFees.percentage,
-          lockupFee: fees.btcFees.minerFees.toInt(),
-          claimFee: fees.btcFees.minerFees.toInt(),
-        );
-        return swapFees;
-      case swap_entity.SwapType.liquidToLightning:
-        final fees = await allFees.submarine();
-        final swapFees = swap_entity.SwapFees(
-          boltzPercent: fees.lbtcFees.percentage,
-          lockupFee: fees.lbtcFees.minerFees.toInt(),
-          claimFee: fees.lbtcFees.minerFees.toInt(),
-        );
-        return swapFees;
-      case swap_entity.SwapType.bitcoinToLiquid:
-        final fees = await allFees.chain();
-        final swapFees = swap_entity.SwapFees(
-          boltzPercent: fees.lbtcFees.percentage,
-          lockupFee:
-              fees.btcFees.userLockup.toInt() +
-              fees.btcFees.server.toInt() +
-              fees.lbtcFees.server.toInt(),
-          claimFee: fees.lbtcFees.userClaim.toInt(),
-        );
-        return swapFees;
-      case swap_entity.SwapType.liquidToBitcoin:
-        final fees = await allFees.chain();
-        final swapFees = swap_entity.SwapFees(
-          boltzPercent: fees.lbtcFees.percentage,
-          lockupFee:
-              fees.btcFees.userLockup.toInt() +
-              fees.btcFees.server.toInt() +
-              fees.lbtcFees.server.toInt(),
-          claimFee: fees.lbtcFees.userClaim.toInt(),
-        );
-        return swapFees;
+    try {
+      final allFees = Fees(boltzUrl: _httpsUrl);
+      switch (type) {
+        case swap_entity.SwapType.lightningToBitcoin:
+          final fees = await allFees.reverse();
+          final swapFees = swap_entity.SwapFees(
+            boltzPercent: fees.btcFees.percentage,
+            lockupFee: fees.btcFees.minerFees.lockup.toInt(),
+            claimFee: fees.btcFees.minerFees.claim.toInt(),
+          );
+          return swapFees;
+        case swap_entity.SwapType.lightningToLiquid:
+          final fees = await allFees.reverse();
+          final swapFees = swap_entity.SwapFees(
+            boltzPercent: fees.lbtcFees.percentage,
+            lockupFee: fees.lbtcFees.minerFees.lockup.toInt(),
+            claimFee: fees.lbtcFees.minerFees.claim.toInt(),
+          );
+          return swapFees;
+        case swap_entity.SwapType.bitcoinToLightning:
+          final fees = await allFees.submarine();
+          final swapFees = swap_entity.SwapFees(
+            boltzPercent: fees.btcFees.percentage,
+            lockupFee: fees.btcFees.minerFees.toInt(),
+            claimFee: fees.btcFees.minerFees.toInt(),
+          );
+          return swapFees;
+        case swap_entity.SwapType.liquidToLightning:
+          final fees = await allFees.submarine();
+          final swapFees = swap_entity.SwapFees(
+            boltzPercent: fees.lbtcFees.percentage,
+            lockupFee: fees.lbtcFees.minerFees.toInt(),
+            claimFee: fees.lbtcFees.minerFees.toInt(),
+          );
+          return swapFees;
+        case swap_entity.SwapType.bitcoinToLiquid:
+          final fees = await allFees.chain();
+          final swapFees = swap_entity.SwapFees(
+            boltzPercent: fees.lbtcFees.percentage,
+            lockupFee:
+                fees.btcFees.userLockup.toInt() +
+                fees.btcFees.server.toInt() +
+                fees.lbtcFees.server.toInt(),
+            claimFee: fees.lbtcFees.userClaim.toInt(),
+          );
+          return swapFees;
+        case swap_entity.SwapType.liquidToBitcoin:
+          final fees = await allFees.chain();
+          final swapFees = swap_entity.SwapFees(
+            boltzPercent: fees.lbtcFees.percentage,
+            lockupFee:
+                fees.btcFees.userLockup.toInt() +
+                fees.btcFees.server.toInt() +
+                fees.lbtcFees.server.toInt(),
+            claimFee: fees.lbtcFees.userClaim.toInt(),
+          );
+          return swapFees;
+      }
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
     }
   }
 
@@ -104,36 +111,43 @@ class BoltzDatasource {
     required String magicRouteHintAddress,
     String? description,
   }) async {
-    final fees = Fees(boltzUrl: _httpsUrl);
-    final reverseFees = await fees.reverse();
-    final btcLnSwap = await BtcLnSwap.newReverse(
-      mnemonic: mnemonic,
-      index: BigInt.from(index),
-      outAmount: BigInt.from(outAmount),
-      network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
-      electrumUrl: electrumUrl,
-      boltzUrl: _httpsUrl,
-      outAddress: magicRouteHintAddress,
-      description: description,
-    );
-    await _boltzStore.storeBtcLnSwap(btcLnSwap);
-    final swapModel = SwapModel.lnReceive(
-      id: btcLnSwap.id,
-      status: swap_entity.SwapStatus.pending.name,
-      type: swap_entity.SwapType.lightningToBitcoin.name,
-      isTestnet: isTestnet,
-      keyIndex: index,
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      receiveWalletId: walletId,
-      invoice: btcLnSwap.invoice,
-      boltzFees: (reverseFees.btcFees.percentage * outAmount / 100).ceil(),
-      lockupFees: reverseFees.btcFees.minerFees.lockup.toInt(),
-      claimFees: reverseFees.btcFees.minerFees.claim.toInt(),
-      receiveAddress: magicRouteHintAddress,
-    );
-    await _boltzStore.store(swapModel);
-    subscribeToSwaps([swapModel.id]);
-    return swapModel;
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final reverseFees = await fees.reverse();
+      final btcLnSwap = await BtcLnSwap.newReverse(
+        mnemonic: mnemonic,
+        index: BigInt.from(index),
+        outAmount: BigInt.from(outAmount),
+        network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
+        electrumUrl: electrumUrl,
+        boltzUrl: _httpsUrl,
+        outAddress: magicRouteHintAddress,
+        description: description,
+      );
+      await _boltzStore.storeBtcLnSwap(btcLnSwap);
+      final swapModel = SwapModel.lnReceive(
+        id: btcLnSwap.id,
+        status: swap_entity.SwapStatus.pending.name,
+        type: swap_entity.SwapType.lightningToBitcoin.name,
+        isTestnet: isTestnet,
+        keyIndex: index,
+        creationTime: DateTime.now().millisecondsSinceEpoch,
+        receiveWalletId: walletId,
+        invoice: btcLnSwap.invoice,
+        boltzFees: (reverseFees.btcFees.percentage * outAmount / 100).ceil(),
+        lockupFees: reverseFees.btcFees.minerFees.lockup.toInt(),
+        claimFees: reverseFees.btcFees.minerFees.claim.toInt(),
+        receiveAddress: magicRouteHintAddress,
+      );
+      await _boltzStore.store(swapModel);
+      subscribeToSwaps([swapModel.id]);
+      return swapModel;
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<String> claimBtcReverseSwap({
@@ -142,13 +156,20 @@ class BoltzDatasource {
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
-    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+    try {
+      final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
 
-    return btcLnSwap.claim(
-      outAddress: claimAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
-      tryCooperate: tryCooperate,
-    );
+      return btcLnSwap.claim(
+        outAddress: claimAddress,
+        minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+        tryCooperate: tryCooperate,
+      );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<SwapModel> createLBtcReverseSwap({
@@ -197,7 +218,9 @@ class BoltzDatasource {
 
       return swapModel;
     } catch (e) {
-      debugPrint(e.toString());
+      if (e is BoltzError) {
+        throw e.message;
+      }
       rethrow;
     }
   }
@@ -208,13 +231,20 @@ class BoltzDatasource {
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
-    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+    try {
+      final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
 
-    return lbtcLnSwap.claim(
-      outAddress: claimAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
-      tryCooperate: tryCooperate,
-    );
+      return lbtcLnSwap.claim(
+        outAddress: claimAddress,
+        minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+        tryCooperate: tryCooperate,
+      );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<String> broadcastBtcLnSwap({
@@ -222,11 +252,18 @@ class BoltzDatasource {
     required String signedTxHex,
     required bool broadcastViaBoltz,
   }) async {
-    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+    try {
+      final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
 
-    return broadcastViaBoltz
-        ? btcLnSwap.broadcastLocal(signedHex: signedTxHex)
-        : btcLnSwap.broadcastBoltz(signedHex: signedTxHex);
+      return broadcastViaBoltz
+          ? btcLnSwap.broadcastLocal(signedHex: signedTxHex)
+          : btcLnSwap.broadcastBoltz(signedHex: signedTxHex);
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<String> broadcastLbtcLnSwap({
@@ -234,11 +271,18 @@ class BoltzDatasource {
     required String signedTxHex,
     required bool broadcastViaBoltz,
   }) async {
-    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+    try {
+      final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
 
-    return broadcastViaBoltz
-        ? lbtcLnSwap.broadcastLocal(signedHex: signedTxHex)
-        : lbtcLnSwap.broadcastBoltz(signedHex: signedTxHex);
+      return broadcastViaBoltz
+          ? lbtcLnSwap.broadcastLocal(signedHex: signedTxHex)
+          : lbtcLnSwap.broadcastBoltz(signedHex: signedTxHex);
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<SwapModel> createBtcSubmarineSwap({
@@ -249,42 +293,49 @@ class BoltzDatasource {
     required bool isTestnet,
     required String electrumUrl,
   }) async {
-    final fees = Fees(boltzUrl: _httpsUrl);
-    final submarineFees = await fees.submarine();
-    final btcLnSwap = await BtcLnSwap.newSubmarine(
-      mnemonic: mnemonic,
-      index: BigInt.from(index),
-      invoice: invoice,
-      network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
-      electrumUrl: electrumUrl,
-      boltzUrl: _httpsUrl,
-    );
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final submarineFees = await fees.submarine();
+      final btcLnSwap = await BtcLnSwap.newSubmarine(
+        mnemonic: mnemonic,
+        index: BigInt.from(index),
+        invoice: invoice,
+        network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
+        electrumUrl: electrumUrl,
+        boltzUrl: _httpsUrl,
+      );
 
-    await _boltzStore.storeBtcLnSwap(btcLnSwap);
+      await _boltzStore.storeBtcLnSwap(btcLnSwap);
 
-    final swapModel = SwapModel.lnSend(
-      id: btcLnSwap.id,
-      status: swap_entity.SwapStatus.pending.name,
-      type: swap_entity.SwapType.bitcoinToLightning.name,
-      isTestnet: isTestnet,
-      keyIndex: index,
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      sendWalletId: walletId,
-      invoice: invoice,
-      paymentAddress: btcLnSwap.scriptAddress,
-      paymentAmount: btcLnSwap.outAmount.toInt(),
-      boltzFees:
-          (submarineFees.btcFees.percentage *
-                  (btcLnSwap.outAmount.toInt()) /
-                  100)
-              .ceil(),
-      lockupFees: submarineFees.btcFees.minerFees.toInt(),
-      claimFees: submarineFees.btcFees.minerFees.toInt(),
-    );
-    await _boltzStore.store(swapModel);
-    subscribeToSwaps([swapModel.id]);
+      final swapModel = SwapModel.lnSend(
+        id: btcLnSwap.id,
+        status: swap_entity.SwapStatus.pending.name,
+        type: swap_entity.SwapType.bitcoinToLightning.name,
+        isTestnet: isTestnet,
+        keyIndex: index,
+        creationTime: DateTime.now().millisecondsSinceEpoch,
+        sendWalletId: walletId,
+        invoice: invoice,
+        paymentAddress: btcLnSwap.scriptAddress,
+        paymentAmount: btcLnSwap.outAmount.toInt(),
+        boltzFees:
+            (submarineFees.btcFees.percentage *
+                    (btcLnSwap.outAmount.toInt()) /
+                    100)
+                .ceil(),
+        lockupFees: submarineFees.btcFees.minerFees.toInt(),
+        claimFees: submarineFees.btcFees.minerFees.toInt(),
+      );
+      await _boltzStore.store(swapModel);
+      subscribeToSwaps([swapModel.id]);
 
-    return swapModel;
+      return swapModel;
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<SwapModel> createLbtcSubmarineSwap({
@@ -295,54 +346,75 @@ class BoltzDatasource {
     required bool isTestnet,
     required String electrumUrl,
   }) async {
-    final fees = Fees(boltzUrl: _httpsUrl);
-    final submarineFees = await fees.submarine();
-    final lbtcLnSwap = await LbtcLnSwap.newSubmarine(
-      mnemonic: mnemonic,
-      index: BigInt.from(index),
-      invoice: invoice,
-      network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
-      electrumUrl: electrumUrl,
-      boltzUrl: _httpsUrl,
-    );
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final submarineFees = await fees.submarine();
+      final lbtcLnSwap = await LbtcLnSwap.newSubmarine(
+        mnemonic: mnemonic,
+        index: BigInt.from(index),
+        invoice: invoice,
+        network: isTestnet ? Chain.liquidTestnet : Chain.liquid,
+        electrumUrl: electrumUrl,
+        boltzUrl: _httpsUrl,
+      );
 
-    await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
+      await _boltzStore.storeLbtcLnSwap(lbtcLnSwap);
 
-    final swapModel = SwapModel.lnSend(
-      id: lbtcLnSwap.id,
-      status: swap_entity.SwapStatus.pending.name,
-      type: swap_entity.SwapType.liquidToLightning.name,
-      isTestnet: isTestnet,
-      keyIndex: index,
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      sendWalletId: walletId,
-      invoice: invoice,
-      paymentAddress: lbtcLnSwap.scriptAddress,
-      paymentAmount: lbtcLnSwap.outAmount.toInt(),
-      boltzFees:
-          (submarineFees.lbtcFees.percentage *
-                  (lbtcLnSwap.outAmount.toInt()) /
-                  100)
-              .ceil(),
-      lockupFees: submarineFees.lbtcFees.minerFees.toInt(),
-      claimFees: submarineFees.lbtcFees.minerFees.toInt(),
-    );
+      final swapModel = SwapModel.lnSend(
+        id: lbtcLnSwap.id,
+        status: swap_entity.SwapStatus.pending.name,
+        type: swap_entity.SwapType.liquidToLightning.name,
+        isTestnet: isTestnet,
+        keyIndex: index,
+        creationTime: DateTime.now().millisecondsSinceEpoch,
+        sendWalletId: walletId,
+        invoice: invoice,
+        paymentAddress: lbtcLnSwap.scriptAddress,
+        paymentAmount: lbtcLnSwap.outAmount.toInt(),
+        boltzFees:
+            (submarineFees.lbtcFees.percentage *
+                    (lbtcLnSwap.outAmount.toInt()) /
+                    100)
+                .ceil(),
+        lockupFees: submarineFees.lbtcFees.minerFees.toInt(),
+        claimFees: submarineFees.lbtcFees.minerFees.toInt(),
+      );
 
-    await _boltzStore.store(swapModel);
-    subscribeToSwaps([swapModel.id]);
+      await _boltzStore.store(swapModel);
+      subscribeToSwaps([swapModel.id]);
 
-    return swapModel;
+      return swapModel;
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<void> coopSignBtcSubmarineSwap({required String swapId}) async {
-    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
-    return btcLnSwap.coopCloseSubmarine();
+    try {
+      final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+      return btcLnSwap.coopCloseSubmarine();
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
-    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
-    await lbtcLnSwap.coopCloseSubmarine();
-    return;
+    try {
+      final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+      await lbtcLnSwap.coopCloseSubmarine();
+      return;
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<String> refundBtcSubmarineSwap({
@@ -351,12 +423,19 @@ class BoltzDatasource {
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
-    final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
-    return btcLnSwap.refund(
-      outAddress: refundAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
-      tryCooperate: tryCooperate,
-    );
+    try {
+      final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+      return btcLnSwap.refund(
+        outAddress: refundAddress,
+        minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+        tryCooperate: tryCooperate,
+      );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<String> refundLbtcSubmarineSwap({
@@ -365,14 +444,21 @@ class BoltzDatasource {
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
-    final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
-    debugPrint(lbtcLnSwap.id);
-    debugPrint(lbtcLnSwap.network.toString());
-    return lbtcLnSwap.refund(
-      outAddress: refundAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
-      tryCooperate: tryCooperate,
-    );
+    try {
+      final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+      debugPrint(lbtcLnSwap.id);
+      debugPrint(lbtcLnSwap.network.toString());
+      return lbtcLnSwap.refund(
+        outAddress: refundAddress,
+        minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+        tryCooperate: tryCooperate,
+      );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<SwapModel> createBtcToLbtcChainSwap({
@@ -386,43 +472,50 @@ class BoltzDatasource {
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
-    final fees = Fees(boltzUrl: _httpsUrl);
-    final chainFees = await fees.chain();
-    final chainSwap = await ChainSwap.newSwap(
-      mnemonic: mnemonic,
-      index: BigInt.from(index),
-      boltzUrl: _httpsUrl,
-      direction: ChainSwapDirection.btcToLbtc,
-      amount: BigInt.from(amountSat),
-      isTestnet: isTestnet,
-      btcElectrumUrl: btcElectrumUrl,
-      lbtcElectrumUrl: lbtcElectrumUrl,
-    );
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final chainFees = await fees.chain();
+      final chainSwap = await ChainSwap.newSwap(
+        mnemonic: mnemonic,
+        index: BigInt.from(index),
+        boltzUrl: _httpsUrl,
+        direction: ChainSwapDirection.btcToLbtc,
+        amount: BigInt.from(amountSat),
+        isTestnet: isTestnet,
+        btcElectrumUrl: btcElectrumUrl,
+        lbtcElectrumUrl: lbtcElectrumUrl,
+      );
 
-    await _boltzStore.storeChainSwap(chainSwap);
+      await _boltzStore.storeChainSwap(chainSwap);
 
-    final swapModel = SwapModel.chain(
-      id: chainSwap.id,
-      status: swap_entity.SwapStatus.pending.name,
-      type: swap_entity.SwapType.bitcoinToLiquid.name,
-      isTestnet: isTestnet,
-      keyIndex: index,
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      sendWalletId: sendWalletId,
-      receiveWalletId: receiveWalletId,
-      paymentAddress: chainSwap.scriptAddress,
-      paymentAmount: chainSwap.outAmount.toInt(),
-      receiveAddress: externalRecipientAddress,
-      boltzFees: (chainFees.lbtcFees.percentage * amountSat / 100).ceil(),
-      lockupFees:
-          chainFees.btcFees.userLockup.toInt() +
-          chainFees.btcFees.server.toInt() +
-          chainFees.lbtcFees.server.toInt(),
-      claimFees: chainFees.lbtcFees.userClaim.toInt(),
-    );
-    await _boltzStore.store(swapModel);
-    subscribeToSwaps([swapModel.id]);
-    return swapModel;
+      final swapModel = SwapModel.chain(
+        id: chainSwap.id,
+        status: swap_entity.SwapStatus.pending.name,
+        type: swap_entity.SwapType.bitcoinToLiquid.name,
+        isTestnet: isTestnet,
+        keyIndex: index,
+        creationTime: DateTime.now().millisecondsSinceEpoch,
+        sendWalletId: sendWalletId,
+        receiveWalletId: receiveWalletId,
+        paymentAddress: chainSwap.scriptAddress,
+        paymentAmount: chainSwap.outAmount.toInt(),
+        receiveAddress: externalRecipientAddress,
+        boltzFees: (chainFees.lbtcFees.percentage * amountSat / 100).ceil(),
+        lockupFees:
+            chainFees.btcFees.userLockup.toInt() +
+            chainFees.btcFees.server.toInt() +
+            chainFees.lbtcFees.server.toInt(),
+        claimFees: chainFees.lbtcFees.userClaim.toInt(),
+      );
+      await _boltzStore.store(swapModel);
+      subscribeToSwaps([swapModel.id]);
+      return swapModel;
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<SwapModel> createLbtcToBtcChainSwap({
@@ -436,45 +529,52 @@ class BoltzDatasource {
     String? receiveWalletId,
     String? externalRecipientAddress,
   }) async {
-    final fees = Fees(boltzUrl: _httpsUrl);
-    final chainFees = await fees.chain();
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final chainFees = await fees.chain();
 
-    final chainSwap = await ChainSwap.newSwap(
-      mnemonic: mnemonic,
-      index: BigInt.from(index),
-      boltzUrl: _httpsUrl,
-      direction: ChainSwapDirection.lbtcToBtc,
-      amount: BigInt.from(amountSat),
-      isTestnet: isTestnet,
-      btcElectrumUrl: btcElectrumUrl,
-      lbtcElectrumUrl: lbtcElectrumUrl,
-    );
+      final chainSwap = await ChainSwap.newSwap(
+        mnemonic: mnemonic,
+        index: BigInt.from(index),
+        boltzUrl: _httpsUrl,
+        direction: ChainSwapDirection.lbtcToBtc,
+        amount: BigInt.from(amountSat),
+        isTestnet: isTestnet,
+        btcElectrumUrl: btcElectrumUrl,
+        lbtcElectrumUrl: lbtcElectrumUrl,
+      );
 
-    await _boltzStore.storeChainSwap(chainSwap);
+      await _boltzStore.storeChainSwap(chainSwap);
 
-    final swapModel = SwapModel.chain(
-      id: chainSwap.id,
-      status: swap_entity.SwapStatus.pending.name,
-      type: swap_entity.SwapType.liquidToBitcoin.name,
-      isTestnet: isTestnet,
-      keyIndex: index,
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      sendWalletId: sendWalletId,
-      receiveWalletId: receiveWalletId,
-      paymentAddress: chainSwap.scriptAddress,
-      paymentAmount: chainSwap.outAmount.toInt(),
-      receiveAddress: externalRecipientAddress,
-      boltzFees: (chainFees.btcFees.percentage * amountSat / 100).ceil(),
-      lockupFees:
-          chainFees.lbtcFees.userLockup.toInt() +
-          chainFees.lbtcFees.server.toInt() +
-          chainFees.btcFees.server.toInt(),
-      claimFees: chainFees.btcFees.userClaim.toInt(),
-    );
-    await _boltzStore.store(swapModel);
-    subscribeToSwaps([swapModel.id]);
+      final swapModel = SwapModel.chain(
+        id: chainSwap.id,
+        status: swap_entity.SwapStatus.pending.name,
+        type: swap_entity.SwapType.liquidToBitcoin.name,
+        isTestnet: isTestnet,
+        keyIndex: index,
+        creationTime: DateTime.now().millisecondsSinceEpoch,
+        sendWalletId: sendWalletId,
+        receiveWalletId: receiveWalletId,
+        paymentAddress: chainSwap.scriptAddress,
+        paymentAmount: chainSwap.outAmount.toInt(),
+        receiveAddress: externalRecipientAddress,
+        boltzFees: (chainFees.btcFees.percentage * amountSat / 100).ceil(),
+        lockupFees:
+            chainFees.lbtcFees.userLockup.toInt() +
+            chainFees.lbtcFees.server.toInt() +
+            chainFees.btcFees.server.toInt(),
+        claimFees: chainFees.btcFees.userClaim.toInt(),
+      );
+      await _boltzStore.store(swapModel);
+      subscribeToSwaps([swapModel.id]);
 
-    return swapModel;
+      return swapModel;
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<String> broadcastChainSwapRefund({
@@ -482,16 +582,23 @@ class BoltzDatasource {
     required String signedTxHex,
     required bool broadcastViaBoltz,
   }) async {
-    final chainSwap = await _boltzStore.getChainSwap(swapId);
-    return broadcastViaBoltz
-        ? chainSwap.broadcastLocal(
-          signedHex: signedTxHex,
-          kind: SwapTxKind.refund,
-        )
-        : chainSwap.broadcastBoltz(
-          signedHex: signedTxHex,
-          kind: SwapTxKind.refund,
-        );
+    try {
+      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      return broadcastViaBoltz
+          ? chainSwap.broadcastLocal(
+            signedHex: signedTxHex,
+            kind: SwapTxKind.refund,
+          )
+          : chainSwap.broadcastBoltz(
+            signedHex: signedTxHex,
+            kind: SwapTxKind.refund,
+          );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<String> claimBtcToLbtcChainSwap({
@@ -501,13 +608,20 @@ class BoltzDatasource {
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
-    final chainSwap = await _boltzStore.getChainSwap(swapId);
-    return await chainSwap.claim(
-      outAddress: claimLiquidAddress,
-      refundAddress: refundBitcoinAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
-      tryCooperate: tryCooperate,
-    );
+    try {
+      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      return await chainSwap.claim(
+        outAddress: claimLiquidAddress,
+        refundAddress: refundBitcoinAddress,
+        minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+        tryCooperate: tryCooperate,
+      );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<String> claimLbtcToBtcChainSwap({
@@ -517,13 +631,20 @@ class BoltzDatasource {
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
-    final chainSwap = await _boltzStore.getChainSwap(swapId);
-    return await chainSwap.claim(
-      outAddress: claimBitcoinAddress,
-      refundAddress: refundLiquidAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
-      tryCooperate: tryCooperate,
-    );
+    try {
+      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      return await chainSwap.claim(
+        outAddress: claimBitcoinAddress,
+        refundAddress: refundLiquidAddress,
+        minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+        tryCooperate: tryCooperate,
+      );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<String> broadcastChainSwapClaim({
@@ -531,16 +652,23 @@ class BoltzDatasource {
     required String signedTxHex,
     required bool broadcastViaBoltz,
   }) async {
-    final chainSwap = await _boltzStore.getChainSwap(swapId);
-    return broadcastViaBoltz
-        ? chainSwap.broadcastLocal(
-          signedHex: signedTxHex,
-          kind: SwapTxKind.claim,
-        )
-        : chainSwap.broadcastBoltz(
-          signedHex: signedTxHex,
-          kind: SwapTxKind.claim,
-        );
+    try {
+      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      return broadcastViaBoltz
+          ? chainSwap.broadcastLocal(
+            signedHex: signedTxHex,
+            kind: SwapTxKind.claim,
+          )
+          : chainSwap.broadcastBoltz(
+            signedHex: signedTxHex,
+            kind: SwapTxKind.claim,
+          );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<String> refundBtcToLbtcChainSwap({
@@ -549,12 +677,19 @@ class BoltzDatasource {
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
-    final chainSwap = await _boltzStore.getChainSwap(swapId);
-    return await chainSwap.refund(
-      refundAddress: refundBitcoinAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
-      tryCooperate: tryCooperate,
-    );
+    try {
+      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      return await chainSwap.refund(
+        refundAddress: refundBitcoinAddress,
+        minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+        tryCooperate: tryCooperate,
+      );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<String> refundLbtcToBtcChainSwap({
@@ -563,12 +698,19 @@ class BoltzDatasource {
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
-    final chainSwap = await _boltzStore.getChainSwap(swapId);
-    return await chainSwap.refund(
-      refundAddress: refundLiquidAddress,
-      minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
-      tryCooperate: tryCooperate,
-    );
+    try {
+      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      return await chainSwap.refund(
+        refundAddress: refundLiquidAddress,
+        minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
+        tryCooperate: tryCooperate,
+      );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<(int, int)> getBtcReverseSwapLimits() async {
@@ -580,7 +722,9 @@ class BoltzDatasource {
         reverse.btcLimits.maximal.toInt(),
       );
     } catch (e) {
-      debugPrint(e.toString());
+      if (e is BoltzError) {
+        throw e.message;
+      }
       rethrow;
     }
   }
@@ -594,39 +738,72 @@ class BoltzDatasource {
         reverse.lbtcLimits.maximal.toInt(),
       );
     } catch (e) {
-      debugPrint(e.toString());
+      if (e is BoltzError) {
+        throw e.message;
+      }
       rethrow;
     }
   }
 
   Future<(int, int)> getBtcSubmarineSwapLimits() async {
-    final fees = Fees(boltzUrl: _httpsUrl);
-    final submarine = await fees.submarine();
-    return (
-      submarine.btcLimits.minimal.toInt(),
-      submarine.btcLimits.maximal.toInt(),
-    );
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final submarine = await fees.submarine();
+      return (
+        submarine.btcLimits.minimal.toInt(),
+        submarine.btcLimits.maximal.toInt(),
+      );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<(int, int)> getLbtcSubmarineSwapLimits() async {
-    final fees = Fees(boltzUrl: _httpsUrl);
-    final submarine = await fees.submarine();
-    return (
-      submarine.lbtcLimits.minimal.toInt(),
-      submarine.lbtcLimits.maximal.toInt(),
-    );
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final submarine = await fees.submarine();
+      return (
+        submarine.lbtcLimits.minimal.toInt(),
+        submarine.lbtcLimits.maximal.toInt(),
+      );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<(int, int)> getBtcToLbtcChainSwapLimits() async {
-    final fees = Fees(boltzUrl: _httpsUrl);
-    final chain = await fees.chain();
-    return (chain.btcLimits.minimal.toInt(), chain.btcLimits.maximal.toInt());
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final chain = await fees.chain();
+      return (chain.btcLimits.minimal.toInt(), chain.btcLimits.maximal.toInt());
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   Future<(int, int)> getLbtcToBtcChainSwapLimits() async {
-    final fees = Fees(boltzUrl: _httpsUrl);
-    final chain = await fees.chain();
-    return (chain.lbtcLimits.minimal.toInt(), chain.lbtcLimits.maximal.toInt());
+    try {
+      final fees = Fees(boltzUrl: _httpsUrl);
+      final chain = await fees.chain();
+      return (
+        chain.lbtcLimits.minimal.toInt(),
+        chain.lbtcLimits.maximal.toInt(),
+      );
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 
   void _initializeBoltzWebSocket() {
@@ -943,13 +1120,19 @@ class BoltzDatasource {
   }
 
   Future<(int, bool, String?)> decodeInvoice(String invoice) async {
-    // TODO: implement decodeInvoice
-    final decoded = await DecodedInvoice.fromString(
-      s: invoice,
-      boltzUrl: _httpsUrl,
-    );
-    // convert decoded.msats to sats by dividing by 1000 and rounding down
-    final sats = (decoded.msats ~/ BigInt.from(1000)).toInt();
-    return (sats, decoded.isExpired, decoded.bip21);
+    try {
+      final decoded = await DecodedInvoice.fromString(
+        s: invoice,
+        boltzUrl: _httpsUrl,
+      );
+      // convert decoded.msats to sats by dividing by 1000 and rounding down
+      final sats = (decoded.msats ~/ BigInt.from(1000)).toInt();
+      return (sats, decoded.isExpired, decoded.bip21);
+    } catch (e) {
+      if (e is BoltzError) {
+        throw e.message;
+      }
+      rethrow;
+    }
   }
 }

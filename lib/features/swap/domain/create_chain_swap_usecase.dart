@@ -83,7 +83,7 @@ class CreateChainSwapUsecase {
           throw Exception('Swap Type provided is not a chain swap!');
       }
     } catch (e) {
-      rethrow;
+      throw e.toString();
     }
   }
 }
