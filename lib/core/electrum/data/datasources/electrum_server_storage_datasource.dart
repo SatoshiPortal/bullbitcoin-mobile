@@ -63,11 +63,27 @@ class ElectrumServerStorageDatasource {
   Future<ElectrumServerModel> fetchPrioritizedServer({
     required Network network,
   }) async {
+    final isCustomActive =
+        await _sqlite.managers.electrumServers
+            .filter(
+              (f) =>
+                  f.isLiquid(network.isLiquid) &
+                  f.isTestnet(network.isTestnet) &
+                  f.isActive(true),
+            )
+            .getSingleOrNull();
+
+    if (isCustomActive != null) {
+      return ElectrumServerModel.fromSqlite(isCustomActive);
+    }
+
     final rows =
         await _sqlite.managers.electrumServers
             .filter(
               (f) =>
-                  f.isLiquid(network.isLiquid) & f.isTestnet(network.isTestnet),
+                  f.isLiquid(network.isLiquid) &
+                  f.isTestnet(network.isTestnet) &
+                  f.priority.not(0),
             )
             .get();
 
