@@ -3,13 +3,10 @@ import 'dart:developer';
 import 'dart:isolate';
 
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
-import 'package:bb_mobile/core/payjoin/data/models/payjoin_receiver_model_extension.dart';
-import 'package:bb_mobile/core/payjoin/data/models/payjoin_sender_model_extension.dart';
-import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:dio/dio.dart';
-import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:payjoin_flutter/bitcoin_ffi.dart';
 import 'package:payjoin_flutter/common.dart';
@@ -17,16 +14,12 @@ import 'package:payjoin_flutter/receive.dart';
 import 'package:payjoin_flutter/send.dart';
 import 'package:payjoin_flutter/uri.dart';
 
-class PayjoinDatasource {
+class PdkPayjoinDatasource {
   final String _payjoinDirectoryUrl;
   final Dio _dio;
-  final SqliteDatasource _sqliteDatasource;
-  final StreamController<PayjoinReceiverModel> _payjoinRequestedController =
-      StreamController.broadcast();
-  final StreamController<PayjoinSenderModel> _proposalSentController =
-      StreamController.broadcast();
-  final StreamController<dynamic> _expiredController =
-      StreamController.broadcast();
+  final StreamController<PayjoinReceiverModel> _payjoinRequestedController;
+  final StreamController<PayjoinSenderModel> _proposalSentController;
+  final StreamController<PayjoinModel> _expiredController;
 
   // Background processing
   Isolate? _receiversIsolate;
@@ -36,17 +29,16 @@ class PayjoinDatasource {
   final Completer _receiversIsolateReady;
   final Completer _sendersIsolateReady;
 
-  PayjoinDatasource({
+  PdkPayjoinDatasource({
     String payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
     required Dio dio,
-    required SqliteDatasource sqliteDatasource,
   }) : _payjoinDirectoryUrl = payjoinDirectoryUrl,
        _dio = dio,
-       _sqliteDatasource = sqliteDatasource,
+       _payjoinRequestedController = StreamController.broadcast(),
+       _proposalSentController = StreamController.broadcast(),
+       _expiredController = StreamController.broadcast(),
        _receiversIsolateReady = Completer(),
-       _sendersIsolateReady = Completer() {
-    _resumePayjoins();
-  }
+       _sendersIsolateReady = Completer();
 
   Stream<PayjoinReceiverModel> get requestsForReceivers =>
       _payjoinRequestedController.stream;
@@ -54,7 +46,8 @@ class PayjoinDatasource {
   Stream<PayjoinSenderModel> get proposalsForSenders =>
       _proposalSentController.stream;
 
-  Stream<dynamic> get expiredPayjoins => _expiredController.stream;
+  Stream<PayjoinModel> get expiredPayjoins => _expiredController.stream;
+
   Future<(OhttpKeys?, Url?)> fetchOhttpKeyAndRelay({
     required Url payjoinDirectory,
   }) async {
@@ -81,11 +74,9 @@ class PayjoinDatasource {
     required String address,
     required bool isTestnet,
     required BigInt maxFeeRateSatPerVb,
-    int? expireAfterSec,
+    required int expireAfterSec,
   }) async {
     try {
-      final expirySec =
-          expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec;
       final payjoinDirectory = await Url.fromStr(_payjoinDirectoryUrl);
 
       final (ohttpKeys, ohttpRelay) = await fetchOhttpKeyAndRelay(
@@ -102,35 +93,26 @@ class PayjoinDatasource {
         directory: payjoinDirectory,
         ohttpKeys: ohttpKeys,
         ohttpRelay: ohttpRelay,
-        expireAfter: BigInt.from(expirySec),
+        expireAfter: BigInt.from(expireAfterSec),
       );
 
       // Create and store the model to keep track of the payjoin session
-      final model = PayjoinReceiverModel(
-        id: receiver.id(),
-        address: address,
-        isTestnet: isTestnet,
-        receiver: receiver.toJson(),
-        walletId: walletId,
-        pjUri: receiver.pjUriBuilder().build().asString(),
-        maxFeeRateSatPerVb: maxFeeRateSatPerVb,
-        expireAt:
-            (DateTime.now().millisecondsSinceEpoch ~/ 1000) +
-            expirySec, // Expire after the given seconds
-        isCompleted: false,
-        isExpired: false,
-      );
-      await _storeReceiver(model);
+      final model =
+          PayjoinModel.receiver(
+                id: receiver.id(),
+                address: address,
+                isTestnet: isTestnet,
+                receiver: receiver.toJson(),
+                walletId: walletId,
+                pjUri: receiver.pjUriBuilder().build().asString(),
+                maxFeeRateSatPerVb: maxFeeRateSatPerVb,
+                createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+                expireAfterSec: expireAfterSec,
+              )
+              as PayjoinReceiverModel;
 
       // Start listening for a payjoin request from the sender in an isolate
-      if (_receiversIsolate == null) {
-        await _spawnReceiversIsolate();
-      }
-      // Make sure the isolate is ready and so messages can be send over the port
-      await _receiversIsolateReady.future;
-      // We send the model to the isolate so the isolate has all the information
-      //  it needs.
-      _receiversIsolatePort?.send(model.toJson());
+      await startListeningForRequest(model);
 
       return model;
     } catch (e) {
@@ -140,6 +122,7 @@ class PayjoinDatasource {
 
   Future<PayjoinSenderModel> createSender({
     required String walletId,
+    required bool isTestnet,
     required String bip21,
     required String originalPsbt,
     required double networkFeesSatPerVb,
@@ -168,86 +151,35 @@ class PayjoinDatasource {
 
     // Create and store the model with the data needed to keep track of the
     //  payjoin session
-    final model = PayjoinSenderModel(
-      uri: uri.asString(),
-      sender: senderJson,
-      walletId: walletId,
-      originalPsbt: originalPsbt,
-      originalTxId: await TransactionParsing.getTxIdFromPsbt(originalPsbt),
-      expireAt:
-          (DateTime.now().millisecondsSinceEpoch ~/ 1000) +
-          expirySec, // Expire after the given seconds
-      isCompleted: false,
-      isExpired: false,
-    );
-    await _storeSender(model);
+    final model =
+        PayjoinModel.sender(
+              uri: uri.asString(),
+              isTestnet: isTestnet,
+              sender: senderJson,
+              walletId: walletId,
+              originalPsbt: originalPsbt,
+              originalTxId: await TransactionParsing.getTxIdFromPsbt(
+                originalPsbt,
+              ),
+              createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+              expireAfterSec: expirySec,
+            )
+            as PayjoinSenderModel;
 
     // Start listening for a payjoin proposal from the receiver in an isolate
-    if (_sendersIsolate == null) {
-      await _spawnSendersIsolate();
-    }
-    // Wait until the senders isolate is set to send messages to the port
-    await _sendersIsolateReady.future;
-    // Send the model so the isolate has all the info about the payjoin
-    _sendersIsolatePort?.send(model.toJson());
+    await startListeningForProposal(model);
 
     return model;
   }
 
-  Future<void> _store(dynamic model) async {
-    if (model is PayjoinReceiverModel) {
-      await _storeReceiver(model);
-    } else if (model is PayjoinSenderModel) {
-      await _storeSender(model);
-    } else {
-      throw 'Unexpected ${model.runtimeType}';
-    }
-  }
-
-  Future<void> _storeReceiver(PayjoinReceiverModel model) async {
-    await _sqliteDatasource
-        .into(_sqliteDatasource.payjoinReceivers)
-        .insertOnConflictUpdate(model);
-  }
-
-  Future<void> _storeSender(PayjoinSenderModel model) async {
-    await _sqliteDatasource
-        .into(_sqliteDatasource.payjoinSenders)
-        .insertOnConflictUpdate(model);
-  }
-
-  Future<PayjoinReceiverModel?> fetchReceiver(String id) async {
-    return await _sqliteDatasource.managers.payjoinReceivers
-        .filter((f) => f.id(id))
-        .getSingleOrNull();
-  }
-
-  Future<PayjoinSenderModel?> fetchSender(String uri) async {
-    return await _sqliteDatasource.managers.payjoinSenders
-        .filter((f) => f.uri(uri))
-        .getSingleOrNull();
-  }
-
-  Future<List<dynamic>> fetchAll({bool onlyOngoing = false}) async {
-    final senders = await _sqliteDatasource.managers.payjoinSenders.get();
-    final receivers = await _sqliteDatasource.managers.payjoinReceivers.get();
-    return [...senders, ...receivers];
-  }
-
-  Future<PayjoinReceiverModel> processRequest({
-    required String id,
+  Future<PayjoinReceiverModel> proposePayjoin({
+    required PayjoinReceiverModel receiverModel,
     required FutureOr<bool> Function(Uint8List) hasOwnedInputs,
     required FutureOr<bool> Function(Uint8List) hasReceiverOutput,
     required List<PayjoinInputPairModel> inputPairs,
     required FutureOr<String> Function(String) processPsbt,
   }) async {
-    final model = await fetchReceiver(id);
-
-    if (model == null) {
-      throw Exception('No model found');
-    }
-
-    final receiver = Receiver.fromJson(model.receiver);
+    final receiver = Receiver.fromJson(receiverModel.receiver);
     final request = await getRequest(receiver: receiver, dio: _dio);
 
     if (request == null) {
@@ -318,56 +250,46 @@ class PayjoinDatasource {
     final inputsCommitted = await inputsContributed.commitInputs();
     final proposal = await inputsCommitted.finalizeProposal(
       processPsbt: processPsbt,
-      maxFeeRateSatPerVb: model.maxFeeRateSatPerVb,
+      maxFeeRateSatPerVb: receiverModel.maxFeeRateSatPerVb,
     );
 
     // Now that the request is processed and the proposal is ready, send it to
     //  the sender through the payjoin directory
-    await _proposePayjoin(proposal);
+    await _sendPayjoinProposal(proposal);
 
     // Update the model with the proposal psbt so it can be known a proposal has
     //  been sent
     final proposalPsbt = await proposal.psbt();
-    final updatedModel = model.copyWith(
+
+    final updatedModel = receiverModel.copyWith(
       receiver: receiver.toJson(),
-      proposalPsbt: Value(proposalPsbt),
-      txId: Value(await TransactionParsing.getTxIdFromPsbt(proposalPsbt)),
+      proposalPsbt: proposalPsbt,
+      txId: await TransactionParsing.getTxIdFromPsbt(proposalPsbt),
     );
-    await _storeReceiver(updatedModel);
 
     debugPrint(
-      'Payjoin request processed and proposal sent for $id: $proposalPsbt',
+      'Payjoin request processed and proposal sent for ${receiver.id}: $proposalPsbt',
     );
 
     return updatedModel;
   }
 
-  Future<PayjoinSenderModel> completeSender(String uri) async {
-    final model = await fetchSender(uri);
-
-    if (model == null) {
-      throw Exception('No model found');
+  Future<void> startListeningForRequest(PayjoinReceiverModel payjoin) async {
+    if (_receiversIsolate == null) {
+      // Start the isolate if it is not running yet
+      await _spawnReceiversIsolate();
     }
-
-    // Nothing more to do from the sender side
-    final updatedModel = model.copyWith(isCompleted: true);
-    await _storeSender(updatedModel);
-
-    return updatedModel;
+    await _receiversIsolateReady.future;
+    _receiversIsolatePort?.send(payjoin.toJson());
   }
 
-  Future<PayjoinReceiverModel> completeReceiver(String id) async {
-    final model = await fetchReceiver(id);
-
-    if (model == null) {
-      throw Exception('No model found');
+  Future<void> startListeningForProposal(PayjoinSenderModel payjoin) async {
+    if (_sendersIsolate == null) {
+      // Start the isolate if it is not running yet
+      await _spawnSendersIsolate();
     }
-
-    // Nothing more to do from the sender side
-    final updatedModel = model.copyWith(isCompleted: true);
-    await _storeReceiver(updatedModel);
-
-    return updatedModel;
+    await _sendersIsolateReady.future;
+    _sendersIsolatePort?.send(payjoin.toJson());
   }
 
   /// Starts the isolate to listen for payjoin requests.
@@ -376,7 +298,7 @@ class PayjoinDatasource {
     final receivePort = ReceivePort();
 
     // Listen to messages from the receive isolate
-    receivePort.listen((message) async {
+    receivePort.listen((message) {
       if (message is SendPort) {
         _receiversIsolatePort = message;
         _receiversIsolateReady.complete();
@@ -385,11 +307,9 @@ class PayjoinDatasource {
           'Received message of found payjoin request in main isolate: $message',
         );
         final model = PayjoinReceiverModel.fromJson(message);
-        // Store the model received from the isolate
-        await _storeReceiver(model);
 
-        // Send the updated payjoin model to the higher repository layers for
-        //  processing and/or notification to the user
+        // Send the updated payjoin model to the higher repository layers so it
+        //  can be stored locally and processed further
         if (model.isExpired) {
           _expiredController.add(model);
         } else {
@@ -413,19 +333,16 @@ class PayjoinDatasource {
     final receivePort = ReceivePort();
 
     // Listen for messages from the senders isolate
-    receivePort.listen((message) async {
+    receivePort.listen((message) {
       if (message is SendPort) {
         _sendersIsolatePort = message;
         _sendersIsolateReady.complete();
       } else if (message is Map<String, dynamic>) {
         final model = PayjoinSenderModel.fromJson(message);
-        // Store the model received from the isolate
-        await _storeSender(model);
 
         // Send the updated payjoin model to the higher repository layers for
         //  processing and notification to the user
         if (model.isExpired) {
-          // TODO(azad): sender not receiver?
           _expiredController.add(model);
         } else {
           // If not expired, it means a proposal was received
@@ -487,9 +404,9 @@ class PayjoinDatasource {
               );
               final updatedModel = receiverModel.copyWith(
                 receiver: receiver.toJson(),
-                originalTxBytes: Value(originalTxBytes),
-                originalTxId: Value(originalTxId),
-                amountSat: Value(amountSat),
+                originalTxBytes: originalTxBytes,
+                originalTxId: originalTxId,
+                amountSat: amountSat,
               );
 
               // Notify the main isolate so it can be processed further
@@ -530,7 +447,10 @@ class PayjoinDatasource {
       );
       final sender = Sender.fromJson(senderModel.sender);
       log('[Senders Isolate] Requesting payjoin...');
-      final context = await PayjoinDatasource.request(sender: sender, dio: dio);
+      final context = await PdkPayjoinDatasource.request(
+        sender: sender,
+        dio: dio,
+      );
       log('[Senders Isolate] Payjoin requested.');
 
       // Periodically check for a proposal from the receiver
@@ -539,7 +459,7 @@ class PayjoinDatasource {
         (Timer timer) async {
           log('[Senders Isolate]Checking for proposal in senders isolate');
           try {
-            final proposalPsbt = await PayjoinDatasource.getProposalPsbt(
+            final proposalPsbt = await PdkPayjoinDatasource.getProposalPsbt(
               context: context,
               dio: dio,
             );
@@ -553,8 +473,8 @@ class PayjoinDatasource {
               //  further processing so send it through the model as well as
               //  its txId.
               final updatedModel = senderModel.copyWith(
-                proposalPsbt: Value(proposalPsbt),
-                txId: Value(txId),
+                proposalPsbt: proposalPsbt,
+                txId: txId,
               );
 
               // Notify the main isolate so the payjoin can be processed further
@@ -609,7 +529,7 @@ class PayjoinDatasource {
     }
   }
 
-  Future<void> _proposePayjoin(PayjoinProposal proposal) async {
+  Future<void> _sendPayjoinProposal(PayjoinProposal proposal) async {
     final (req, ohttpCtx) = await proposal.extractV2Req();
     final res = await _dio.post(
       req.url.asString(),
@@ -711,61 +631,6 @@ class PayjoinDatasource {
         throw PayjoinExpiredException('Payjoin sender expired');
       }
       return null;
-    }
-  }
-
-  Future<void> _resumePayjoins() async {
-    final models = await fetchAll(onlyOngoing: true); // dynamic
-
-    for (final model in models) {
-      if ((model is PayjoinSenderModel && model.isExpireAtPassed) ||
-          (model is PayjoinReceiverModel && model.isExpireAtPassed)) {
-        // If the payjoin is expired, we should update the model and
-        //  store it as expired so it won't be processed again unnecessarily.
-        final updatedModel = model.copyWith(isExpired: true);
-        await _store(updatedModel);
-        // Notify the repository layers that the payjoin has expired
-        _expiredController.add(model);
-      } else if (model is PayjoinReceiverModel) {
-        if (model.originalTxBytes == null) {
-          // If the original tx bytes are not present, it means the receiver
-          //  needs to listen for a payjoin request from the sender, we do this
-          //  in the isolate.
-          if (_receiversIsolate == null) {
-            // Start the isolate if it is not running yet
-            await _spawnReceiversIsolate();
-          }
-          await _receiversIsolateReady.future;
-          _receiversIsolatePort?.send(model.toJson());
-        } else if (model.proposalPsbt == null) {
-          // If the original tx bytes are present but the proposal psbt is not,
-          //  it means the receiver has received a payjoin request and it should
-          //  be processed with help of upper layers, so we notify them through
-          //  the stream.
-          _payjoinRequestedController.add(model);
-        } else {
-          // Todo: add to stream to notify that a proposal was already sent and
-          // listen for the broadcasted transaction
-        }
-      } else if (model is PayjoinSenderModel) {
-        if (model.proposalPsbt == null) {
-          // If the proposal psbt is not present, it means no proposal has been
-          //  sent yet, so we need to request one from the receiver through the
-          //  payjoin directory. We do this and wait for the proposal in the
-          //  isolate.
-          if (_sendersIsolate == null) {
-            // Start the isolate if it is not running yet
-            await _spawnSendersIsolate();
-          }
-          await _sendersIsolateReady.future;
-          _sendersIsolatePort?.send(model.toJson());
-        } else {
-          // If the proposal psbt is present, it means a payjoin proposal was
-          //  sent by the receiver already and it should be processed and
-          //  broadcasted by upper layers, so we notify them through the stream.
-          _proposalSentController.add(model);
-        }
-      }
     }
   }
 }

@@ -1,16 +1,12 @@
-import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 
 class BroadcastOriginalTransactionUsecase {
   final PayjoinRepository _payjoin;
-  final WalletRepository _wallet;
 
   BroadcastOriginalTransactionUsecase({
     required PayjoinRepository payjoinRepository,
-    required WalletRepository walletRepository,
-  }) : _payjoin = payjoinRepository,
-       _wallet = walletRepository;
+  }) : _payjoin = payjoinRepository;
 
   Future<PayjoinReceiver> execute(PayjoinReceiver payjoin) async {
     try {
@@ -21,20 +17,16 @@ class BroadcastOriginalTransactionUsecase {
         );
       }
 
-      // Get the network from the wallet to make sure we are
-      // broadcasting the transaction to the correct network.
-      // No need to sync the wallet data, since we just need the network info
-      // which is static.
-      final wallet = await _wallet.getWallet(payjoin.walletId);
+      // Try to broadcast the original transaction for the payjoin
+      final result = await _payjoin.tryBroadcastOriginalTransaction(payjoin);
 
-      final network = wallet.network;
+      if (result == null) {
+        throw BroadcastOriginalTransactionException(
+          'Failed to broadcast original transaction for payjoin: ${payjoin.id}',
+        );
+      }
 
-      // Broadcast the original transaction using the Electrum server
-      return await _payjoin.broadcastOriginalTransaction(
-        payjoinId: payjoin.id,
-        originalTxBytes: payjoin.originalTxBytes!,
-        network: network,
-      );
+      return result;
     } catch (e) {
       throw BroadcastOriginalTransactionException('$e');
     }

@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
-import 'package:bb_mobile/core/payjoin/data/datasources/payjoin_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
@@ -21,7 +22,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletDatasource _bdkWalletTransactionDatasource;
   final WalletDatasource _lwkWalletTransactionDatasource;
   final ElectrumServerStorageDatasource _electrumServerStorage;
-  final PayjoinDatasource _payjoinDatasource;
+  final LocalPayjoinDatasource _payjoinDatasource;
   final BoltzStorageDatasource _swapDatasource;
 
   WalletTransactionRepositoryImpl({
@@ -29,7 +30,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     required WalletDatasource bdkWalletTransactionDatasource,
     required WalletDatasource lwkWalletTransactionDatasource,
     required ElectrumServerStorageDatasource electrumServerStorage,
-    required PayjoinDatasource payjoinDatasource,
+    required LocalPayjoinDatasource payjoinDatasource,
     required BoltzStorageDatasource swapDatasource,
   }) : _sqlite = sqliteDatasource,
        _bdkWalletTransactionDatasource = bdkWalletTransactionDatasource,
@@ -57,7 +58,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
             environment: environment,
             sync: sync,
           ),
-          _payjoinDatasource.fetchAll(),
+          _payjoinDatasource.getAll(),
           _swapDatasource.getAll(),
         ).wait;
 
@@ -153,9 +154,12 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               );
               if (payjoinModel is PayjoinReceiverModel) {
                 payjoinId = payjoinModel.id;
+              } else {
+                payjoinId = (payjoinModel as PayjoinSenderModel).uri;
               }
             } catch (_) {
-              // Payjoin not found
+              // Transaction is not a payjoin
+              payjoinId = null;
             }
 
             return WalletTransactionMapper.toEntity(

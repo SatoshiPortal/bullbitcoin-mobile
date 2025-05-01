@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/payjoin/data/services/payjoin_watcher_service_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -26,7 +26,7 @@ void main() {
   late WalletRepository walletRepository;
   late WalletAddressRepository addressRepository;
   late WalletUtxoRepository utxoRepository;
-  late PayjoinWatcherService payjoinWatcherService;
+  late PayjoinRepository payjoinRepository;
   late ReceiveWithPayjoinUsecase receiveWithPayjoinUsecase;
   late SendWithPayjoinUsecase sendWithPayjoinUsecase;
   late PrepareBitcoinSendUsecase prepareBitcoinSendUsecase;
@@ -36,9 +36,9 @@ void main() {
   // TODO: Change and move these to github secrets so the testnet coins for our integration
   //  tests are not at risk of being used by others.
   const senderMnemonic =
-      'model float claim feature convince exchange truck cream assume fancy swamp offer';
-  const receiverMnemonic =
       'duty tattoo frown crazy pelican aisle area wrist robot stove taxi material';
+  const receiverMnemonic =
+      'model float claim feature convince exchange truck cream assume fancy swamp offer';
 
   setUpAll(() async {
     await Future.wait([
@@ -71,7 +71,7 @@ void main() {
     walletRepository = locator<WalletRepository>();
     addressRepository = locator<WalletAddressRepository>();
     utxoRepository = locator<WalletUtxoRepository>();
-    payjoinWatcherService = locator<PayjoinWatcherService>();
+    payjoinRepository = locator<PayjoinRepository>();
     receiveWithPayjoinUsecase = locator<ReceiveWithPayjoinUsecase>();
     sendWithPayjoinUsecase = locator<SendWithPayjoinUsecase>();
     prepareBitcoinSendUsecase = locator<PrepareBitcoinSendUsecase>();
@@ -138,7 +138,7 @@ void main() {
         payjoinSenderCompletedEvent = Completer();
         payjoinReceiverExpiredEvent = Completer();
 
-        payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
+        payjoinSubscription = payjoinRepository.payjoinStream.listen((payjoin) {
           debugPrint('Payjoin event for ${payjoin.id}: ${payjoin.status}');
 
           if (payjoin is PayjoinReceiver) {
@@ -188,6 +188,7 @@ void main() {
 
         final payjoinSender = await sendWithPayjoinUsecase.execute(
           walletId: senderWallet.id,
+          isTestnet: senderWallet.isTestnet,
           bip21: pjUri.toString(),
           unsignedOriginalPsbt: originalPsbt,
           networkFeesSatPerVb: networkFeesSatPerVb,
@@ -277,7 +278,7 @@ void main() {
       late StreamSubscription<dynamic> payjoinSubscription;
 
       setUp(() {
-        payjoinSubscription = payjoinWatcherService.payjoins.listen((payjoin) {
+        payjoinSubscription = payjoinRepository.payjoinStream.listen((payjoin) {
           debugPrint('Payjoin event for ${payjoin.id}: ${payjoin.status}');
 
           if (payjoin is PayjoinReceiver) {
@@ -372,6 +373,7 @@ void main() {
 
               final payjoinSender = await sendWithPayjoinUsecase.execute(
                 walletId: senderWallet.id,
+                isTestnet: senderWallet.isTestnet,
                 bip21: payjoinUris[i].toString(),
                 unsignedOriginalPsbt: originalPsbt,
                 networkFeesSatPerVb: networkFeesSatPerVb,

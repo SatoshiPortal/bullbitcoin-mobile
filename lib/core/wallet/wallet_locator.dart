@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/payjoin/data/datasources/payjoin_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
@@ -102,7 +102,7 @@ class WalletLocator {
         bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
         lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
         electrumServerStorage: locator<ElectrumServerStorageDatasource>(),
-        payjoinDatasource: locator<PayjoinDatasource>(),
+        payjoinDatasource: locator<LocalPayjoinDatasource>(),
         swapDatasource: locator<BoltzStorageDatasource>(),
       ),
     );
@@ -118,9 +118,7 @@ class WalletLocator {
       ),
     );
     locator.registerFactory<GetWalletUsecase>(
-      () => GetWalletUsecase(
-        walletRepository: locator<WalletRepository>(),
-      ),
+      () => GetWalletUsecase(walletRepository: locator<WalletRepository>()),
     );
     locator.registerFactory<GetWalletsUsecase>(
       () => GetWalletsUsecase(

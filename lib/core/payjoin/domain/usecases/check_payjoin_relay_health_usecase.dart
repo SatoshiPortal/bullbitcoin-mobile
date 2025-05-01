@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
+import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:flutter/widgets.dart';
 
 class CheckPayjoinRelayHealthUsecase {

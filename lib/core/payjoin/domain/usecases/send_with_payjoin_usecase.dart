@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 
 class SendWithPayjoinUsecase {
@@ -14,6 +15,7 @@ class SendWithPayjoinUsecase {
 
   Future<PayjoinSender> execute({
     required String walletId,
+    required bool isTestnet,
     required String bip21,
     required String unsignedOriginalPsbt,
     required double networkFeesSatPerVb,
@@ -27,10 +29,12 @@ class SendWithPayjoinUsecase {
 
       final pjSender = await _payjoinRepository.createPayjoinSender(
         walletId: walletId,
+        isTestnet: isTestnet,
         bip21: bip21,
         originalPsbt: signedOriginalPsbt,
         networkFeesSatPerVb: networkFeesSatPerVb,
-        expireAfterSec: expireAfterSec,
+        expireAfterSec:
+            expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec,
       );
 
       return pjSender;

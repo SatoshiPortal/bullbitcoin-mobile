@@ -7,12 +7,18 @@ import 'package:bb_mobile/core/payjoin/payjoin_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
 import 'package:bb_mobile/core/settings/settings_locator.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
 import 'package:bb_mobile/core/tor/tor_locator.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
+import 'package:bb_mobile/locator.dart';
 
 class CoreLocator {
+  static void register() {
+    locator.registerLazySingleton<SqliteDatabase>(() => SqliteDatabase());
+  }
+
   static Future<void> registerDatasources() async {
     await TorLocator.registerDatasources();
     BlockchainLocator.registerDatasources();
@@ -44,7 +50,6 @@ class CoreLocator {
   }
 
   static void registerServices() {
-    PayjoinLocator.registerServices();
     SeedLocator.registerServices();
     SwapsLocator.registerServices();
   }
