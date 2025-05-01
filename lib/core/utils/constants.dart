@@ -66,6 +66,7 @@ class ApiServiceConstants {
 
   // Liquid Electrum servers
   static const bbLiquidElectrumUrlPath = 'les.bullbitcoin.com:995';
+  static const bbLiquidElectrumTestUrlPath = 'les.bullbitcoin.com:465';
   static const publicLiquidElectrumUrlPath = 'blockstream.info:995';
   static const publicliquidElectrumTestUrlPath = 'blockstream.info:465';
 
@@ -75,7 +76,8 @@ class ApiServiceConstants {
 
   // BullBitcoin API
 
-  static final bullBitcoinKeyServerApiUrlPath = dotenv.env['KEY_SERVER'] ??
+  static final bullBitcoinKeyServerApiUrlPath =
+      dotenv.env['KEY_SERVER'] ??
       'http://o7rwmpnfkzdcay2gotla6sbrviu27wcgck7nsjrq77nqhtwbjvwcraad.onion';
 
   static String bbAuthUrl =

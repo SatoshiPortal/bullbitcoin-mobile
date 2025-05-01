@@ -57,7 +57,7 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
         Network.bitcoinTestnet => ApiServiceConstants.bbElectrumTestUrl,
         Network.liquidMainnet => ApiServiceConstants.bbLiquidElectrumUrlPath,
         Network.liquidTestnet =>
-          ApiServiceConstants.publicLiquidElectrumUrlPath,
+          ApiServiceConstants.bbLiquidElectrumTestUrlPath,
       },
       BlockstreamElectrumServerModel() => switch (network) {
         Network.bitcoinMainnet => ApiServiceConstants.publicElectrumUrl,
@@ -191,7 +191,7 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
       Network.liquidMainnet =>
         row.url == ApiServiceConstants.bbLiquidElectrumUrlPath,
       Network.liquidTestnet =>
-        row.url == ApiServiceConstants.publicLiquidElectrumUrlPath,
+        row.url == ApiServiceConstants.bbLiquidElectrumTestUrlPath,
     };
 
     if (isBullBitcoin) {
