@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:drift/drift.dart';
 
-@DataClassName('PayjoinReceiverTable')
+@DataClassName('PayjoinReceiverRow')
 class PayjoinReceivers extends Table {
   TextColumn get id => text()();
   TextColumn get address => text()();
@@ -25,7 +25,7 @@ class PayjoinReceivers extends Table {
   Set<Column> get primaryKey => {id};
 }
 
-@DataClassName('PayjoinSenderTable')
+@DataClassName('PayjoinSenderRow')
 class PayjoinSenders extends Table {
   TextColumn get uri => text()();
   BoolColumn get isTestnet => boolean()();
@@ -126,8 +126,8 @@ class LocalPayjoinDatasource {
   }
 
   Future<List<PayjoinModel>> getAll({bool onlyOngoing = false}) async {
-    List<PayjoinReceiverTable> receivers;
-    List<PayjoinSenderTable> senders;
+    List<PayjoinReceiverRow> receivers;
+    List<PayjoinSenderRow> senders;
 
     if (onlyOngoing) {
       receivers =
@@ -171,7 +171,7 @@ class LocalPayjoinDatasource {
     bool onlyOngoing = false,
   }) async {
     final receiversTable = _db.managers.payjoinReceivers;
-    List<PayjoinReceiverTable> receivers;
+    List<PayjoinReceiverRow> receivers;
     if (onlyOngoing) {
       receivers =
           await receiversTable
@@ -194,7 +194,7 @@ class LocalPayjoinDatasource {
     bool onlyOngoing = false,
   }) async {
     final sendersTable = _db.managers.payjoinSenders;
-    List<PayjoinSenderTable> senders;
+    List<PayjoinSenderRow> senders;
 
     if (onlyOngoing) {
       senders =

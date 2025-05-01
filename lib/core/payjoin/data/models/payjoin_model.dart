@@ -47,7 +47,7 @@ sealed class PayjoinModel with _$PayjoinModel {
   factory PayjoinModel.fromJson(Map<String, dynamic> json) =>
       _$PayjoinModelFromJson(json);
 
-  factory PayjoinModel.fromReceiverTable(PayjoinReceiverTable table) =>
+  factory PayjoinModel.fromReceiverTable(PayjoinReceiverRow table) =>
       PayjoinReceiverModel(
         id: table.id,
         address: table.address,
@@ -65,7 +65,7 @@ sealed class PayjoinModel with _$PayjoinModel {
         txId: table.txId,
       );
 
-  factory PayjoinModel.fromSenderTable(PayjoinSenderTable table) =>
+  factory PayjoinModel.fromSenderTable(PayjoinSenderRow table) =>
       PayjoinSenderModel(
         uri: table.uri,
         isTestnet: table.isTestnet,
