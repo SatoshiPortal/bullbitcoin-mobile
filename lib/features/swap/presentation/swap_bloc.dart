@@ -142,7 +142,9 @@ class SwapCubit extends Cubit<SwapState> {
         emit(state.copyWith(swap: updatedSwap));
         if (updatedSwap.status == SwapStatus.completed) {
           // Start syncing the wallet now that the swap is completed
-          _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
+          _getWalletUsecase.execute(state.swapFromWalletId!, sync: true);
+          _getWalletUsecase.execute(state.swapToWalletId!, sync: true);
+
           emit(state.copyWith(step: SwapPageStep.success));
         }
       }

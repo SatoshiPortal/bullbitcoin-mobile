@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -20,7 +21,8 @@ abstract class SwapState with _$SwapState {
     // input
     @Default('') String receiverAddress,
     @Default([]) List<Wallet> wallets,
-    Wallet? selectedWallet,
+    String? swapFromWalletId,
+    String? swapToWalletId,
     @Default('') String amount,
     int? confirmedAmountSat,
     @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
@@ -60,12 +62,32 @@ abstract class SwapState with _$SwapState {
     SwapLimitsException? swapLimitsException,
     BuildTransactionException? buildTransactionException,
     ConfirmTransactionException? confirmTransactionException,
-
     // swapLimits
     SwapLimits? swapLimits,
     SwapFees? swapFees,
   }) = _SwapState;
   const SwapState._();
+
+  Wallet? get liquidWallet {
+    if (wallets.isEmpty) return null;
+    return wallets.firstWhereOrNull((w) => w.isLiquid);
+  }
+
+  List<Wallet>? get bitcoinWallets {
+    if (wallets.isEmpty) return null;
+    return wallets.where((w) => !w.isLiquid).toList();
+  }
+
+  Wallet? get getSwapFromWallet {
+    if (wallets.isEmpty) return null;
+    return wallets.firstWhereOrNull((w) => w.id == swapFromWalletId);
+  }
+
+  Wallet? get getSwapToWallet {
+    if (wallets.isEmpty) return null;
+    return wallets.firstWhereOrNull((w) => w.id == swapToWalletId);
+  }
+
   bool get isInputAmountFiat =>
       ![
         BitcoinUnit.btc.code,
@@ -174,50 +196,50 @@ abstract class SwapState with _$SwapState {
     }
   }
 
-  String formattedWalletBalance() {
-    if (selectedWallet == null) return '0';
+  // String formattedWalletBalance() {
+  //   if (selectedWallet == null) return '0';
 
-    if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
-      return FormatAmount.btc(
-        ConvertAmount.satsToBtc(selectedWallet!.balanceSat.toInt()),
-      );
-    } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-      return FormatAmount.sats(selectedWallet!.balanceSat.toInt());
-    } else {
-      return FormatAmount.fiat(
-        ConvertAmount.satsToFiat(
-          selectedWallet!.balanceSat.toInt(),
-          exchangeRate,
-        ),
-        inputAmountCurrencyCode,
-      );
-    }
-  }
+  //   if (inputAmountCurrencyCode == BitcoinUnit.btc.code) {
+  //     return FormatAmount.btc(
+  //       ConvertAmount.satsToBtc(selectedWallet!.balanceSat.toInt()),
+  //     );
+  //   } else if (inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+  //     return FormatAmount.sats(selectedWallet!.balanceSat.toInt());
+  //   } else {
+  //     return FormatAmount.fiat(
+  //       ConvertAmount.satsToFiat(
+  //         selectedWallet!.balanceSat.toInt(),
+  //         exchangeRate,
+  //       ),
+  //       inputAmountCurrencyCode,
+  //     );
+  //   }
+  // }
 
-  String formattedApproximateBalance() {
-    if (selectedWallet == null) return '0';
+  // String formattedApproximateBalance() {
+  //   if (selectedWallet == null) return '0';
 
-    final satsBalance = selectedWallet!.balanceSat.toInt();
+  //   final satsBalance = selectedWallet!.balanceSat.toInt();
 
-    if (inputAmountCurrencyCode == BitcoinUnit.btc.code ||
-        inputAmountCurrencyCode == BitcoinUnit.sats.code) {
-      return FormatAmount.fiat(
-        ConvertAmount.satsToFiat(satsBalance, exchangeRate),
-        fiatCurrencyCode,
-      );
-    } else {
-      if (bitcoinUnit == BitcoinUnit.sats) {
-        return FormatAmount.sats(satsBalance);
-      } else {
-        return FormatAmount.btc(ConvertAmount.satsToBtc(satsBalance));
-      }
-    }
-  }
+  //   if (inputAmountCurrencyCode == BitcoinUnit.btc.code ||
+  //       inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+  //     return FormatAmount.fiat(
+  //       ConvertAmount.satsToFiat(satsBalance, exchangeRate),
+  //       fiatCurrencyCode,
+  //     );
+  //   } else {
+  //     if (bitcoinUnit == BitcoinUnit.sats) {
+  //       return FormatAmount.sats(satsBalance);
+  //     } else {
+  //       return FormatAmount.btc(ConvertAmount.satsToBtc(satsBalance));
+  //     }
+  //   }
+  // }
 
-  bool walletHasBalance() {
-    if (selectedWallet == null) return false;
-    return inputAmountSat <= selectedWallet!.balanceSat.toInt();
-  }
+  // bool walletHasBalance() {
+  //   if (selectedWallet == null) return false;
+  //   return inputAmountSat <= selectedWallet!.balanceSat.toInt();
+  // }
 
   bool get swapAmountBelowLimit {
     if (inputAmountSat != 0) {
