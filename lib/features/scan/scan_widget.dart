@@ -51,6 +51,7 @@ class _ScanWidgetState extends State<ScanWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: context.colour.secondaryFixedDim,
       body: Stack(
@@ -60,122 +61,134 @@ class _ScanWidgetState extends State<ScanWidget> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const Spacer(),
-                Image.asset(
-                  Assets.qRPlaceholder.path,
-                  height: 172,
-                  width: 172,
-                ),
-                const Gap(36),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 48),
-                  child: BBText(
-                    'Scan any Bitcoin or Lightning QR code to pay with bitcoin.',
-                    style: context.font.labelSmall,
-                    color: context.colour.secondary,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                  ),
-                ),
-                const Spacer(),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    bottom: 40,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (_error.isNotEmpty) ...[
-                        BBText(
-                          _error,
-                          color: context.colour.error,
-                          style: context.font.labelSmall,
-                          textAlign: TextAlign.center,
-                        ),
-                        const Gap(16),
-                      ],
-                      BBButton.small(
-                        onPressed: _cameraInitialized
-                            ? () {
-                                if (_controller != null) {
-                                  _controller!.dispose();
-                                  _cameraInitialized = false;
-                                }
-                              }
-                            : () async {
-                                await _initCamera();
-                              },
-                        label: _cameraInitialized
-                            ? 'Camera Initialized'
-                            : 'Open Camera',
-                        bgColor: context.colour.onPrimary,
-                        textColor: context.colour.secondary,
-                        width: 12,
+                if (_controller != null && _cameraInitialized) ...[
+                  Container(
+                    height:
+                        size.height *
+                        0.6, // Increased height to accommodate button
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: BlocProvider(
+                      create: (_) {
+                        final cubit = ScanCubit(controller: _controller!);
+                        // Start scanning automatically when camera preview is shown
+                        cubit.startScanning();
+                        return cubit;
+                      },
+                      child: BlocBuilder<ScanCubit, ScanState>(
+                        builder: (context, state) {
+                          return Stack(
+                            fit:
+                                StackFit
+                                    .expand, // Added to ensure proper fitting
+                            children: [
+                              CameraPreview(
+                                _controller!,
+                              ), // Removed Positioned.fill
+                              if (state.data.isNotEmpty)
+                                Positioned(
+                                  bottom:
+                                      60, // Increased to avoid overlap with button
+                                  left: 0,
+                                  right: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(8),
+                                    color: Colors.black54,
+                                    child: BBText(
+                                      state.data.length > 50
+                                          ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
+                                          : state.data,
+                                      color: context.colour.onPrimary,
+                                      style: context.font.labelSmall,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              if (state.isStreaming)
+                                Positioned(
+                                  bottom: 16, // Added padding from bottom
+                                  left: 16,
+                                  right: 16,
+                                  child: SizedBox(
+                                    // Wrapped with SizedBox instead of Center
+                                    width: double.infinity,
+                                    child: BBButton.small(
+                                      onPressed: () {
+                                        context
+                                            .read<ScanCubit>()
+                                            .stopScanning();
+                                      },
+                                      label: 'Stop Scan',
+                                      bgColor: context.colour.onPrimary,
+                                      textColor: context.colour.secondary,
+                                      width: 12,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
                       ),
-                      if (_controller != null && _cameraInitialized)
-                        SizedBox(
-                          height: 300,
-                          width: 300,
-                          child: BlocProvider(
-                            create: (_) => ScanCubit(controller: _controller!),
-                            child: BlocBuilder<ScanCubit, ScanState>(
-                              builder: (context, state) {
-                                return Stack(
-                                  children: [
-                                    Positioned.fill(
-                                      child: CameraPreview(_controller!),
-                                    ),
-                                    if (state.data.isNotEmpty)
-                                      Positioned(
-                                        bottom: 20,
-                                        left: 0,
-                                        right: 0,
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8),
-                                          color: Colors.black54,
-                                          child: BBText(
-                                            state.data.length > 50
-                                                ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
-                                                : state.data,
-                                            color: context.colour.onPrimary,
-                                            style: context.font.labelSmall,
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                      ),
-                                    Positioned(
-                                      bottom: 60,
-                                      left: 0,
-                                      right: 0,
-                                      child: Center(
-                                        child: BBButton.small(
-                                          onPressed: () {
-                                            final cubit =
-                                                context.read<ScanCubit>();
-                                            state.isStreaming
-                                                ? cubit.stopScanning()
-                                                : cubit.startScanning();
-                                          },
-                                          label: state.isStreaming
-                                              ? 'Stop Scan'
-                                              : 'Start Scan',
-                                          bgColor: context.colour.onPrimary,
-                                          textColor: context.colour.secondary,
-                                          width: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                    ],
+                    ),
                   ),
-                ),
+                ] else ...[
+                  const Gap(50),
+                  Image.asset(
+                    Assets.qRPlaceholder.path,
+                    height: 221,
+                    width: 221,
+                  ),
+                  const Gap(32),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 48),
+                    child: BBText(
+                      'Scan any Bitcoin or Lightning QR code to pay with bitcoin.',
+                      style: context.font.bodyMedium,
+                      color: context.colour.outlineVariant,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 52,
+                      vertical: 32,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (_error.isNotEmpty) ...[
+                          BBText(
+                            _error,
+                            color: context.colour.error,
+                            style: context.font.labelSmall,
+                            textAlign: TextAlign.center,
+                          ),
+                          const Gap(16),
+                        ],
+                        BBButton.small(
+                          outlined: true,
+                          onPressed:
+                              _cameraInitialized
+                                  ? () {
+                                    if (_controller != null) {
+                                      _controller!.dispose();
+                                      _cameraInitialized = false;
+                                    }
+                                  }
+                                  : () async {
+                                    await _initCamera();
+                                  },
+                          label: 'Open the Camera',
+                          bgColor: Colors.transparent,
+                          borderColor: context.colour.surfaceContainer,
+                          textColor: context.colour.secondary,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Spacer(),
+                ],
               ],
             ),
           ),
