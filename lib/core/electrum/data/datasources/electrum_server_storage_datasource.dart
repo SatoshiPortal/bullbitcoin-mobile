@@ -60,9 +60,7 @@ class ElectrumServerStorageDatasource {
         await _sqliteDatasource.managers.electrumServers
             .filter(
               (f) =>
-                  f.isLiquid(network.isLiquid) &
-                  f.isTestnet(network.isTestnet) &
-                  f.priority(0),
+                  f.isLiquid(network.isLiquid) & f.isTestnet(network.isTestnet),
             )
             .get();
 
