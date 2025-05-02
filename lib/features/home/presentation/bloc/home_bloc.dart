@@ -269,6 +269,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     if (bitcoinServerDown || liquidServerDown) {
+      // ignore: unused_local_variable
       final title = switch ((bitcoinServerDown, liquidServerDown)) {
         (true, true) => 'Bitcoin & Liquid electrum server failure',
         (true, false) => 'Bitcoin electrum server failure',
@@ -276,14 +277,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         _ => '',
       };
 
-      warnings.add(
-        HomeWarning(
-          title: title,
-          description: 'Click to configure electrum server settings',
-          actionRoute: AppRoute.settings.name,
-          type: WarningType.error,
-        ),
-      );
+      // warnings.add(
+      //   HomeWarning(
+      //     title: title,
+      //     description: 'Click to configure electrum server settings',
+      //     actionRoute: AppRoute.settings.name,
+      //     type: WarningType.error,
+      //   ),
+      // );
     }
   }
 
