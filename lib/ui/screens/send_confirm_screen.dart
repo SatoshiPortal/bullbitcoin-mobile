@@ -395,6 +395,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
   final String? _receiveWalletLabel;
   final String? _receiveAddress;
   final String _formattedBitcoinAmount;
+  // ignore: unused_field
   final String _formattedFiatEquivalent;
   final String _swapId;
   final String _totalSwapFees;
@@ -477,11 +478,11 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 BBText(_formattedBitcoinAmount, style: context.font.bodyLarge),
-                BBText(
-                  '~$_formattedFiatEquivalent',
-                  style: context.font.labelSmall,
-                  color: context.colour.surfaceContainer,
-                ),
+                // BBText(
+                //   '~$_formattedFiatEquivalent',
+                //   style: context.font.labelSmall,
+                //   color: context.colour.surfaceContainer,
+                // ),
               ],
             ),
           ),
