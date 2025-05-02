@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/transactions/bloc/transactions_bloc.dart';
-import 'package:bb_mobile/features/transactions/ui/widgets/txs_filter_row.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/txs_filter_row.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
