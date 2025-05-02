@@ -51,82 +51,82 @@ class _ScanWidgetState extends State<ScanWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: context.colour.secondaryFixedDim,
       body: Stack(
         children: [
           // const _BG(),
-          Center(
+          SafeArea(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (_controller != null && _cameraInitialized) ...[
-                  Container(
-                    height:
-                        size.height *
-                        0.6, // Increased height to accommodate button
-                    padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: BlocProvider(
-                      create: (_) {
-                        final cubit = ScanCubit(controller: _controller!);
-                        // Start scanning automatically when camera preview is shown
-                        cubit.startScanning();
-                        return cubit;
-                      },
-                      child: BlocBuilder<ScanCubit, ScanState>(
-                        builder: (context, state) {
-                          return Stack(
-                            fit:
-                                StackFit
-                                    .expand, // Added to ensure proper fitting
-                            children: [
-                              CameraPreview(
-                                _controller!,
-                              ), // Removed Positioned.fill
-                              if (state.data.isNotEmpty)
-                                Positioned(
-                                  bottom:
-                                      60, // Increased to avoid overlap with button
-                                  left: 0,
-                                  right: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8),
-                                    color: Colors.black54,
-                                    child: BBText(
-                                      state.data.length > 50
-                                          ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
-                                          : state.data,
-                                      color: context.colour.onPrimary,
-                                      style: context.font.labelSmall,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              if (state.isStreaming)
-                                Positioned(
-                                  bottom: 16, // Added padding from bottom
-                                  left: 16,
-                                  right: 16,
-                                  child: SizedBox(
-                                    // Wrapped with SizedBox instead of Center
-                                    width: double.infinity,
-                                    child: BBButton.small(
-                                      onPressed: () {
-                                        context
-                                            .read<ScanCubit>()
-                                            .stopScanning();
-                                      },
-                                      label: 'Stop Scan',
-                                      bgColor: context.colour.onPrimary,
-                                      textColor: context.colour.secondary,
-                                      width: 12,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          );
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        top: 16,
+                        bottom: 16,
+                      ),
+                      child: BlocProvider(
+                        create: (_) {
+                          final cubit = ScanCubit(controller: _controller!);
+                          // Start scanning automatically when camera preview is shown
+                          cubit.startScanning();
+                          return cubit;
                         },
+                        child: BlocBuilder<ScanCubit, ScanState>(
+                          builder: (context, state) {
+                            return ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  CameraPreview(_controller!),
+                                  if (state.data.isNotEmpty)
+                                    Positioned(
+                                      bottom: 60,
+                                      left: 0,
+                                      right: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        color: Colors.black54,
+                                        child: BBText(
+                                          state.data.length > 50
+                                              ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
+                                              : state.data,
+                                          color: context.colour.onPrimary,
+                                          style: context.font.labelSmall,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  if (state.isStreaming)
+                                    Positioned(
+                                      bottom: 16,
+                                      left: 16,
+                                      right: 16,
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                        child: BBButton.small(
+                                          onPressed: () {
+                                            context
+                                                .read<ScanCubit>()
+                                                .stopScanning();
+                                          },
+                                          label: 'Stop Scan',
+                                          bgColor: context.colour.onPrimary,
+                                          textColor: context.colour.secondary,
+                                          width: 12,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),
@@ -148,7 +148,6 @@ class _ScanWidgetState extends State<ScanWidget> {
                       maxLines: 2,
                     ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 52,
