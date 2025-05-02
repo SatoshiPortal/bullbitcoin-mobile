@@ -24,13 +24,13 @@ class BitcoinBlockchainRepositoryImpl implements BitcoinBlockchainRepository {
     // try the default bullbitcoin and blockstream servers?
     final electrumServerModel =
         await _electrumServerStorage.fetchDefaultServerByProvider(
-          DefaultElectrumServerProvider.blockstream,
+          DefaultElectrumServerProvider.bullBitcoin,
           network: Network.fromEnvironment(
             isTestnet: isTestnet,
             isLiquid: false,
           ),
         ) ??
-        ElectrumServerModel.blockstream(isTestnet: isTestnet, isLiquid: false);
+        ElectrumServerModel.bullBitcoin(isTestnet: isTestnet, isLiquid: false);
 
     return _blockchain.broadcastPsbt(
       finalizedPsbt,

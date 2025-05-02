@@ -41,8 +41,9 @@ class SendScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final step =
-        context.select<SendCubit, SendStep>((cubit) => cubit.state.step);
+    final step = context.select<SendCubit, SendStep>(
+      (cubit) => cubit.state.step,
+    );
     switch (step) {
       case SendStep.address:
         return const SendAddressScreen();
@@ -117,9 +118,7 @@ class SendAddressScreen extends StatelessWidget {
 }
 
 class SendContinueWithAddressButton extends StatelessWidget {
-  const SendContinueWithAddressButton({
-    super.key,
-  });
+  const SendContinueWithAddressButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -148,8 +147,9 @@ class AddressField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final address = context
-        .select<SendCubit, String>((cubit) => cubit.state.addressOrInvoice);
+    final address = context.select<SendCubit, String>(
+      (cubit) => cubit.state.addressOrInvoice,
+    );
 
     return PasteInput(
       text: address,
@@ -159,9 +159,7 @@ class AddressField extends StatelessWidget {
 }
 
 class AddressErrorSection extends StatelessWidget {
-  const AddressErrorSection({
-    super.key,
-  });
+  const AddressErrorSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -218,10 +216,7 @@ class SendAmountScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Send',
-          onBack: () => context.pop(),
-        ),
+        flexibleSpace: TopBar(title: 'Send', onBack: () => context.pop()),
       ),
       body: BlocBuilder<SendCubit, SendState>(
         builder: (context, state) {
@@ -258,20 +253,18 @@ class SendAmountScreen extends StatelessWidget {
                         amountEquivalent: state.formattedAmountInputEquivalent,
                         availableCurrencies: [
                           ...state.fiatCurrencyCodes,
-                          ...[
-                            BitcoinUnit.btc.code,
-                            BitcoinUnit.sats.code,
-                          ],
+                          ...[BitcoinUnit.btc.code, BitcoinUnit.sats.code],
                         ],
                         onNoteChanged: cubit.noteChanged,
                         onCurrencyChanged: cubit.currencyCodeChanged,
-                        error: balanceError != null
-                            ? balanceError.toString()
-                            : !walletHasBalance
+                        error:
+                            balanceError != null
+                                ? balanceError.toString()
+                                : !walletHasBalance
                                 ? 'Insufficient balance'
                                 : swapLimitsError != null
-                                    ? swapLimitsError.toString()
-                                    : swapCreationError?.toString(),
+                                ? swapLimitsError.toString()
+                                : swapCreationError?.toString(),
                       ),
                       const Gap(64),
                       BalanceRow(
@@ -311,9 +304,7 @@ class SendAmountScreen extends StatelessWidget {
 }
 
 class SendAmountConfirmButton extends StatelessWidget {
-  const SendAmountConfirmButton({
-    super.key,
-  });
+  const SendAmountConfirmButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -339,9 +330,7 @@ class SendAmountConfirmButton extends StatelessWidget {
 }
 
 class NetworkDisplay extends StatelessWidget {
-  const NetworkDisplay({
-    super.key,
-  });
+  const NetworkDisplay({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -382,7 +371,8 @@ class SendConfirmScreen extends StatelessWidget {
           onBack: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -393,7 +383,7 @@ class SendConfirmScreen extends StatelessWidget {
               const _SwapSendInfoSection()
             else
               const _OnchainSendInfoSection(),
-            const Gap(64),
+            const Spacer(),
             // const _Warning(),
             const _ConfirmSendErrorSection(),
             const _BottomButtons(),
@@ -409,11 +399,13 @@ class _ConfirmSendErrorSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final buildError = context
-        .select((SendCubit cubit) => cubit.state.buildTransactionException);
+    final buildError = context.select(
+      (SendCubit cubit) => cubit.state.buildTransactionException,
+    );
 
-    final confirmError = context
-        .select((SendCubit cubit) => cubit.state.confirmTransactionException);
+    final confirmError = context.select(
+      (SendCubit cubit) => cubit.state.confirmTransactionException,
+    );
 
     if (buildError != null) {
       return Padding(
@@ -508,10 +500,11 @@ class _BottomButtons extends StatelessWidget {
                   context: context,
                   isScrollControlled: true,
                   backgroundColor: context.colour.secondaryFixed,
-                  builder: (BuildContext buildContext) => BlocProvider.value(
-                    value: context.read<SendCubit>(),
-                    child: const AdvancedOptionsBottomSheet(),
-                  ),
+                  builder:
+                      (BuildContext buildContext) => BlocProvider.value(
+                        value: context.read<SendCubit>(),
+                        child: const AdvancedOptionsBottomSheet(),
+                      ),
                 );
               },
               borderColor: context.colour.secondary,
@@ -529,9 +522,7 @@ class _BottomButtons extends StatelessWidget {
 }
 
 class ConfirmSendButton extends StatelessWidget {
-  const ConfirmSendButton({
-    super.key,
-  });
+  const ConfirmSendButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -704,9 +695,7 @@ class _SwapSendInfoSection extends StatelessWidget {
     final formattedFiatEquivalent = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
-    final swap = context.select(
-      (SendCubit cubit) => cubit.state.lightningSwap,
-    );
+    final swap = context.select((SendCubit cubit) => cubit.state.lightningSwap);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -796,11 +785,7 @@ class _SwapSendInfoSection extends StatelessWidget {
 }
 
 class InfoRow extends StatelessWidget {
-  const InfoRow({
-    super.key,
-    required this.title,
-    required this.details,
-  });
+  const InfoRow({super.key, required this.title, required this.details});
 
   final String title;
   final Widget details;
@@ -817,9 +802,7 @@ class InfoRow extends StatelessWidget {
             color: context.colour.surfaceContainer,
           ),
           const Gap(24),
-          Expanded(
-            child: details,
-          ),
+          Expanded(child: details),
         ],
       ),
     );

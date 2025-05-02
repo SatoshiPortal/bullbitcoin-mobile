@@ -69,7 +69,7 @@ class SwapAmountPage extends StatelessWidget {
         ),
       ),
       body: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -435,7 +435,8 @@ class SwapConfirmPage extends StatelessWidget {
           onBack: () => context.pop(),
         ),
       ),
-      body: SingleChildScrollView(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -445,7 +446,6 @@ class SwapConfirmPage extends StatelessWidget {
               sendType: SendType.swap,
             ),
             const Gap(40),
-
             CommonChainSwapSendInfoSection(
               sendWalletLabel: sendWalletLabel,
               receiveWalletLabel: receiveWalletLabel,
@@ -454,12 +454,15 @@ class SwapConfirmPage extends StatelessWidget {
               swapId: swap!.id,
               totalSwapFees: totalFees,
             ),
-            const Gap(64),
+            // const Gap(64),
+            // const Spacer(),
+            const Spacer(),
             // const _Warning(),
             CommonConfirmSendErrorSection(
               confirmError: confirmError,
               buildError: buildError,
             ),
+
             CommonSendBottomButtons(
               isBitcoinWallet: sendNetwork == WalletNetwork.bitcoin,
               blocProviderValue: context.read<SwapCubit>(),

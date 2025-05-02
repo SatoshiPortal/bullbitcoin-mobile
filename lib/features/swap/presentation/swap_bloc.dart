@@ -150,7 +150,6 @@ class SwapCubit extends Cubit<SwapState> {
     );
 
     await loadSwapLimits();
-    await loadFees();
   }
 
   Future<void> loadSwapLimits() async {
@@ -282,6 +281,8 @@ class SwapCubit extends Cubit<SwapState> {
       );
 
       _watchChainSwap(swap.id);
+      await loadFees();
+
       emit(
         state.copyWith(
           amountConfirmedClicked: false,
@@ -323,7 +324,7 @@ class SwapCubit extends Cubit<SwapState> {
           walletId: bitcoinWalletId!,
           address: swap.paymentAddress,
           amountSat: swap.paymentAmount,
-          networkFee: const NetworkFee.relative(0.1),
+          networkFee: state.feesList!.fastest,
         );
         final signedPsbt = await _signBitcoinTxUsecase.execute(
           walletId: bitcoinWalletId,

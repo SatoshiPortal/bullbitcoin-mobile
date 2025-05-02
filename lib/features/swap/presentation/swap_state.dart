@@ -76,16 +76,6 @@ abstract class SwapState with _$SwapState {
   }) = _SwapState;
   const SwapState._();
 
-  // Wallet? get liquidWallet {
-  //   if (wallets.isEmpty) return null;
-  //   return wallets.firstWhereOrNull((w) => w.isLiquid);
-  // }
-
-  // List<Wallet>? get bitcoinWallets {
-  //   if (wallets.isEmpty) return null;
-  //   return wallets.where((w) => !w.isLiquid).toList();
-  // }
-
   String get estimatedFeesFormatted {
     int totalFees = 0;
     if (fromWalletNetwork == WalletNetwork.bitcoin &&
@@ -272,7 +262,7 @@ abstract class SwapState with _$SwapState {
 
   bool get disableContinueWithAmounts =>
       fromWalletBalance == 0 ||
-      // fromWalletBalance < fromAmountSat ||
+      fromWalletBalance < fromAmountSat ||
       creatingSwap ||
       amountConfirmedClicked;
 }
