@@ -123,7 +123,7 @@ class _ActionButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: radius,
             color: context.colour.onPrimary,
-            backgroundBlendMode: disabled ? BlendMode.softLight : null,
+            backgroundBlendMode: disabled ? BlendMode.darken : null,
           ),
           child: Column(
             spacing: 8,
