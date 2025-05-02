@@ -6,6 +6,7 @@ import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
@@ -89,36 +90,43 @@ class _ScanWidgetState extends State<ScanWidget> {
                                       bottom: 60,
                                       left: 0,
                                       right: 0,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(8),
-                                        color: Colors.black54,
-                                        child: BBText(
-                                          state.data.length > 50
-                                              ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
-                                              : state.data,
-                                          color: context.colour.onPrimary,
-                                          style: context.font.labelSmall,
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                  if (state.isStreaming)
-                                    Positioned(
-                                      bottom: 16,
-                                      left: 16,
-                                      right: 16,
-                                      child: SizedBox(
-                                        width: double.infinity,
-                                        child: BBButton.small(
-                                          onPressed: () {
-                                            context
-                                                .read<ScanCubit>()
-                                                .stopScanning();
-                                          },
-                                          label: 'Stop Scan',
-                                          bgColor: context.colour.onPrimary,
-                                          textColor: context.colour.secondary,
-                                          width: 12,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          final data = state.data;
+                                          Clipboard.setData(
+                                            ClipboardData(text: data),
+                                          );
+                                          debugPrint(
+                                            'Copied to clipboard: $data',
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8),
+                                          color: Colors.black54,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Expanded(
+                                                child: BBText(
+                                                  state.data.length > 50
+                                                      ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
+                                                      : state.data,
+                                                  color:
+                                                      context.colour.onPrimary,
+                                                  style:
+                                                      context.font.labelSmall,
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Icon(
+                                                Icons.copy,
+                                                size: 16,
+                                                color: context.colour.onPrimary,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
