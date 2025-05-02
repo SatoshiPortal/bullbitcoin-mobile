@@ -1,9 +1,10 @@
-import 'package:bb_mobile/core/electrum/data/models/electrum_servers_table.dart';
-import 'package:bb_mobile/core/labels/data/labels_table.dart';
-import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
-import 'package:bb_mobile/core/settings/data/settings_table.dart';
-import 'package:bb_mobile/core/transaction/data/models/transactions_table.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_table.dart';
+import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
+import 'package:bb_mobile/core/storage/tables/labels_table.dart';
+import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
+import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
+import 'package:bb_mobile/core/storage/tables/settings_table.dart';
+import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
