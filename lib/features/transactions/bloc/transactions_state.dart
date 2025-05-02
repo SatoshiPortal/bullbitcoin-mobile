@@ -6,16 +6,16 @@ part 'transactions_state.freezed.dart';
 @freezed
 abstract class TransactionsState with _$TransactionsState {
   const factory TransactionsState({
-    List<Transaction>? transactions,
+    List<WalletTransaction>? transactions,
     @Default(false) bool isSyncing,
     Object? err,
   }) = _TransactionsState;
   const TransactionsState._();
 
-  List<Transaction> get sortedTransactions {
+  List<WalletTransaction> get sortedTransactions {
     if (transactions == null) return [];
 
-    final txList = List<Transaction>.from(transactions!);
+    final txList = List<WalletTransaction>.from(transactions!);
     txList.sort((a, b) {
       // If both transactions have confirmationTime, sort by time (newest first)
       if (a.confirmationTime != null && b.confirmationTime != null) {

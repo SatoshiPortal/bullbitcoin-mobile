@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/bloc/transactions_bloc.dart';
@@ -44,8 +43,9 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loading =
-        context.select((TransactionsCubit cubit) => cubit.state.isSyncing);
+    final loading = context.select(
+      (TransactionsCubit cubit) => cubit.state.isSyncing,
+    );
     final err = context.select((TransactionsCubit cubit) => cubit.state.err);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,22 +61,18 @@ class _Screen extends StatelessWidget {
               color: context.colour.error,
             ),
           ),
-        const Expanded(
-          child: TxsList(),
-        ),
+        const Expanded(child: TxsList()),
       ],
     );
   }
 }
 
 class TxsList extends StatelessWidget {
-  const TxsList({
-    super.key,
-  });
+  const TxsList({super.key});
 
   (IconData, Color, String) getTxDetails(
     BuildContext context,
-    Transaction tx,
+    WalletTransaction tx,
   ) {
     // TODO: define DetailedTransaction entity with all the details
 
@@ -84,18 +80,16 @@ class TxsList extends StatelessWidget {
     Color color;
     String walletType;
 
-    switch (tx.network) {
-      case Network.bitcoinMainnet:
-      case Network.bitcoinTestnet:
+    switch (tx) {
+      case BitcoinWalletTransaction _:
         color = context.colour.onTertiary;
         walletType = 'Bitcoin';
 
-      case Network.liquidMainnet:
-      case Network.liquidTestnet:
+      case LiquidWalletTransaction _:
         color = context.colour.tertiary;
         walletType = 'Liquid';
     }
-    if (tx.type == TxType.lnSwap) {
+    if (tx.swapId.isNotEmpty) {
       walletType = 'Lightning';
     }
 
@@ -112,8 +106,9 @@ class TxsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final txs = context
-        .select((TransactionsCubit cubit) => cubit.state.sortedTransactions);
+    final txs = context.select(
+      (TransactionsCubit cubit) => cubit.state.sortedTransactions,
+    );
 
     final List<TxItem> txItems = [];
     if (txs.isNotEmpty) {
@@ -138,10 +133,7 @@ class TxsList extends StatelessWidget {
     }
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      children: [
-        const Gap(16.0),
-        ...txItems,
-      ],
+      children: [const Gap(16.0), ...txItems],
     );
   }
 }
@@ -170,21 +162,22 @@ class _FilterRowState extends State<FilterRow> {
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
-        children: filters.map((filter) {
-          final isSelected = filter == selectedFilter;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: FilterItem(
-              title: filter,
-              isSelected: isSelected,
-              onTap: () {
-                setState(() {
-                  selectedFilter = filter;
-                });
-              },
-            ),
-          );
-        }).toList(),
+        children:
+            filters.map((filter) {
+              final isSelected = filter == selectedFilter;
+              return Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: FilterItem(
+                  title: filter,
+                  isSelected: isSelected,
+                  onTap: () {
+                    setState(() {
+                      selectedFilter = filter;
+                    });
+                  },
+                ),
+              );
+            }).toList(),
       ),
     );
   }
@@ -212,17 +205,19 @@ class FilterItem extends StatelessWidget {
           color: isSelected ? context.colour.secondary : Colors.transparent,
           borderRadius: BorderRadius.circular(2.0),
           border: Border.all(
-            color: isSelected
-                ? context.colour.secondaryFixedDim
-                : context.colour.outline,
+            color:
+                isSelected
+                    ? context.colour.secondaryFixedDim
+                    : context.colour.outline,
           ),
         ),
         child: BBText(
           title,
           style: context.font.bodyMedium?.copyWith(
-            color: isSelected
-                ? context.colour.onSecondary
-                : context.colour.secondary,
+            color:
+                isSelected
+                    ? context.colour.onSecondary
+                    : context.colour.secondary,
           ),
         ),
       ),
@@ -264,9 +259,7 @@ class TxItem extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
               color: context.colour.onPrimary,
-              border: Border.all(
-                color: context.colour.surface,
-              ),
+              border: Border.all(color: context.colour.surface),
               borderRadius: BorderRadius.circular(2.0),
             ),
             child: Icon(icon, color: context.colour.secondary),
@@ -295,8 +288,10 @@ class TxItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 4.0,
+                  vertical: 2.0,
+                ),
                 decoration: BoxDecoration(
                   color: walletColor,
                   borderRadius: BorderRadius.circular(2.0),

@@ -6,14 +6,22 @@ part 'transaction_input_model.freezed.dart';
 
 @freezed
 sealed class TransactionInputModel with _$TransactionInputModel {
-  const factory TransactionInputModel({
+  const factory TransactionInputModel.bitcoin({
     required String txId,
     required int vin,
     BigInt? value,
     Uint8List? scriptSig,
     required String previousTxId,
     required int previousTxVout,
-  }) = _TransactionInputModel;
+  }) = BitcoinTransactionInputModel;
+  const factory TransactionInputModel.liquid({
+    required String txId,
+    required int vin,
+    BigInt? value,
+    required String scriptPubkey,
+    required String previousTxId,
+    required int previousTxVout,
+  }) = LiquidTransactionInputModel;
   const TransactionInputModel._();
 
   String get labelRef => '$txId:$vin';

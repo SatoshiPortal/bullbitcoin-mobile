@@ -315,9 +315,15 @@ class BdkWalletDatasource implements WalletDatasource {
             isIncoming
                 ? tx.received - tx.sent
                 : tx.sent - tx.received - (tx.fee ?? BigInt.zero);
-        bool isToSelf =
-            true; // Changed to false when an input/output is not from self
 
+        // Start with the assumption that the transaction is to self
+        // and update it to false if any input or output is not owned by the wallet
+        // TODO: Instead of starting with isToSelf on true, optimize the code by
+        //  adding an `isOwn` field to the TransactionInputModel and
+        //  TransactionOutputModel and then check if all inputs and outputs are
+        //  owned by the wallet or not to determine if the transaction is to
+        //  self or not.
+        bool isToSelf = true;
         final (inputModels, outputModels) =
             await (
               Future.wait(
@@ -341,7 +347,7 @@ class BdkWalletDatasource implements WalletDatasource {
                     isToSelf = false;
                   }
 
-                  return TransactionInputModel(
+                  return TransactionInputModel.bitcoin(
                     txId: tx.txid,
                     vin: vin,
                     scriptSig: input.scriptSig?.bytes,

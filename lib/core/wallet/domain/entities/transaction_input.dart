@@ -7,7 +7,7 @@ part 'transaction_input.freezed.dart';
 
 @freezed
 sealed class TransactionInput with _$TransactionInput implements Labelable {
-  const factory TransactionInput({
+  const factory TransactionInput.bitcoin({
     required String txId,
     required int vin,
     BigInt? value,
@@ -15,7 +15,16 @@ sealed class TransactionInput with _$TransactionInput implements Labelable {
     required String previousTxId,
     required int previousTxVout,
     @Default([]) List<String> labels,
-  }) = _TransactionInput;
+  }) = BitcoinTransactionInput;
+  const factory TransactionInput.liquid({
+    required String txId,
+    required int vin,
+    BigInt? value,
+    required String scriptPubkey,
+    required String previousTxId,
+    required int previousTxVout,
+    @Default([]) List<String> labels,
+  }) = LiquidTransactionInput;
   const TransactionInput._();
 
   @override

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/utils/uint_8_list_x.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
@@ -300,10 +299,11 @@ class LwkWalletDatasource implements WalletDatasource {
                   tx.inputs.asMap().entries.map((entry) {
                     final vin = entry.key;
                     final input = entry.value;
-                    return TransactionInputModel(
+
+                    return TransactionInputModel.liquid(
                       txId: tx.txid,
                       vin: vin,
-                      scriptSig: Uint8ListX.fromHexString(input.scriptPubkey),
+                      scriptPubkey: input.scriptPubkey,
                       previousTxId: input.outpoint.txid,
                       previousTxVout: input.outpoint.vout,
                     );

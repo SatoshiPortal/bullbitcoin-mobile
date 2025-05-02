@@ -56,7 +56,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         ),
       );
     } catch (e) {
-      if (e is GetTransactionsException) {
+      if (e is GetWalletTransactionsException) {
         emit(state.copyWith(err: e.message));
       } else if (!isClosed) {
         emit(state.copyWith(err: e));
