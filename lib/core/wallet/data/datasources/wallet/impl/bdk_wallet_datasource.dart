@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
@@ -280,6 +281,10 @@ class BdkWalletDatasource implements WalletDatasource {
     final bdkWallet = await _createWallet(wallet);
     final network = bdkWallet.network();
     final transactions = bdkWallet.listTransactions(includeRaw: true);
+    final allTransactionOutputs = await _getAllOutputsOfTransactions(
+      transactions,
+      isTestnet: wallet.isTestnet,
+    );
 
     // Map the transactions to WalletTransactionModel
     final List<WalletTransactionModel?> walletTxs = await Future.wait(
@@ -319,10 +324,18 @@ class BdkWalletDatasource implements WalletDatasource {
                 inputs.asMap().entries.map((entry) async {
                   final input = entry.value;
                   final vin = entry.key;
-                  final isOwnInput = await isMine(
-                    input.scriptSig!.bytes,
-                    wallet: wallet as PublicBdkWalletModel,
+                  final previousOutput = input.previousOutput;
+                  final output = allTransactionOutputs.firstWhereOrNull(
+                    (output) =>
+                        output.txId == previousOutput.txid &&
+                        output.vout == previousOutput.vout,
                   );
+                  final isOwnInput =
+                      output != null &&
+                      await isMine(
+                        output.scriptPubkey,
+                        wallet: wallet as PublicBdkWalletModel,
+                      );
 
                   if (!isOwnInput) {
                     isToSelf = false;
@@ -331,9 +344,9 @@ class BdkWalletDatasource implements WalletDatasource {
                   return TransactionInputModel(
                     txId: tx.txid,
                     vin: vin,
-                    scriptSig: input.scriptSig!.bytes,
-                    previousTxId: input.previousOutput.txid,
-                    previousTxVout: input.previousOutput.vout,
+                    scriptSig: input.scriptSig?.bytes,
+                    previousTxId: previousOutput.txid,
+                    previousTxVout: previousOutput.vout,
                   );
                 }).toList(),
               ),
@@ -529,6 +542,38 @@ class BdkWalletDatasource implements WalletDatasource {
     }
 
     return balance;
+  }
+
+  Future<List<BitcoinTransactionOutputModel>> _getAllOutputsOfTransactions(
+    List<bdk.TransactionDetails> transactions, {
+    required bool isTestnet,
+  }) async {
+    final listOfOutputs = await Future.wait(
+      transactions.map((tx) async {
+        final outputs = tx.transaction!.output();
+        final models = await Future.wait(
+          outputs.asMap().entries.map((outputEntry) async {
+            final vout = outputEntry.key;
+            final output = outputEntry.value;
+            return TransactionOutputModel.bitcoin(
+              txId: tx.txid,
+              vout: vout,
+              value: output.value,
+              scriptPubkey: output.scriptPubkey.bytes,
+              address:
+                  await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+                    output.scriptPubkey.bytes,
+                    isTestnet: isTestnet,
+                  ),
+            );
+          }),
+        );
+        return models;
+      }),
+    );
+
+    final allOutputs = listOfOutputs.expand((i) => i).toList();
+    return allOutputs.whereType<BitcoinTransactionOutputModel>().toList();
   }
 
   Future<bdk.Wallet> _createWallet(WalletModel walletModel) {

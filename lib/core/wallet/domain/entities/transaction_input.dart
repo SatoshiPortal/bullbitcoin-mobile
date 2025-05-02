@@ -11,7 +11,7 @@ sealed class TransactionInput with _$TransactionInput implements Labelable {
     required String txId,
     required int vin,
     BigInt? value,
-    required Uint8List scriptSig,
+    Uint8List? scriptSig,
     required String previousTxId,
     required int previousTxVout,
     @Default([]) List<String> labels,
