@@ -1,35 +1,81 @@
+import 'dart:collection';
+
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transactions_state.freezed.dart';
 
+enum TransactionsFilter { all, send, receive, swap, payjoin, sell, buy }
+
 @freezed
 abstract class TransactionsState with _$TransactionsState {
   const factory TransactionsState({
-    List<WalletTransaction>? transactions,
+    @Default([]) List<WalletTransaction> transactions,
     @Default(false) bool isSyncing,
+    @Default(TransactionsFilter.all) TransactionsFilter filter,
     Object? err,
   }) = _TransactionsState;
   const TransactionsState._();
 
-  List<WalletTransaction> get sortedTransactions {
-    if (transactions == null) return [];
+  Map<int, List<WalletTransaction>> get transactionsByDay {
+    final Map<int, List<WalletTransaction>> grouped = {};
 
-    final txList = List<WalletTransaction>.from(transactions!);
-    txList.sort((a, b) {
-      // If both transactions have confirmationTime, sort by time (newest first)
-      if (a.confirmationTime != null && b.confirmationTime != null) {
-        return b.confirmationTime!.compareTo(a.confirmationTime!);
+    for (final tx in filteredTransactions) {
+      int day;
+      if (tx.confirmationTime == null) {
+        // Pending transactions can't be assigned to a specific day yet, since
+        //  they are in the future we assign them to a day that is always
+        //  greater than any other day. This way they will always be at the top
+        //  of the list when sorted by date.
+        day = 8640000000000000; // Max milliseconds value for DateTime
+      } else {
+        final date = tx.confirmationTime!;
+        day = DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
       }
 
-      // Null confirmationTime transactions are considered pending and should be at the top
-      if (a.confirmationTime == null) return -1;
-      if (b.confirmationTime == null) return 1;
+      grouped.putIfAbsent(day, () => []).add(tx);
+    }
 
-      // This line should never be reached but is required for completeness
-      return 0;
+    // Sort transactions inside each day
+    grouped.forEach((_, txs) {
+      txs.sort((a, b) {
+        final aTime =
+            a.confirmationTime ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bTime =
+            b.confirmationTime ?? DateTime.fromMillisecondsSinceEpoch(0);
+        return bTime.compareTo(aTime); // descending
+      });
     });
 
-    return txList;
+    // Sort days in descending order and preserve order with LinkedHashMap
+    final sorted = SplayTreeMap<int, List<WalletTransaction>>.from(
+      grouped,
+      (a, b) => b.compareTo(a), // descending key sort
+    );
+
+    return LinkedHashMap<int, List<WalletTransaction>>.from(sorted);
+  }
+
+  List<WalletTransaction> get filteredTransactions {
+    return transactions
+        .where((tx) {
+          switch (filter) {
+            case TransactionsFilter.all:
+              return true;
+            case TransactionsFilter.send:
+              return tx.isOutgoing;
+            case TransactionsFilter.receive:
+              return !tx.isOutgoing;
+            case TransactionsFilter.swap:
+              return tx.isSwap;
+            case TransactionsFilter.payjoin:
+              return tx.isPayjoin;
+            case TransactionsFilter.sell:
+              return false;
+            case TransactionsFilter.buy:
+              return false;
+          }
+        })
+        .toList(growable: false);
   }
 }

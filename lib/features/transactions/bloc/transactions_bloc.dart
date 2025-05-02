@@ -63,4 +63,8 @@ class TransactionsCubit extends Cubit<TransactionsState> {
       }
     }
   }
+
+  void setFilter(TransactionsFilter filter) {
+    emit(state.copyWith(filter: filter));
+  }
 }
