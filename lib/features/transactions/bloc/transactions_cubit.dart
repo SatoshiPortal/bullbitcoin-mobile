@@ -1,11 +1,17 @@
 import 'dart:async';
+import 'dart:collection';
 
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_any_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/transactions/bloc/transactions_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'transactions_cubit.freezed.dart';
+part 'transactions_state.dart';
 
 class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({

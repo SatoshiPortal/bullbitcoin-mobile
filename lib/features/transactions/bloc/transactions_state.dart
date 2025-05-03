@@ -1,9 +1,4 @@
-import 'dart:collection';
-
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'transactions_state.freezed.dart';
+part of 'transactions_cubit.dart';
 
 enum TransactionsFilter { all, send, receive, swap, payjoin, sell, buy }
 
@@ -13,6 +8,7 @@ abstract class TransactionsState with _$TransactionsState {
     @Default([]) List<WalletTransaction> transactions,
     @Default(false) bool isSyncing,
     @Default(TransactionsFilter.all) TransactionsFilter filter,
+    @Default([]) List<Payjoin> ongoingPayjoins,
     Object? err,
   }) = _TransactionsState;
   const TransactionsState._();
@@ -65,7 +61,7 @@ abstract class TransactionsState with _$TransactionsState {
             case TransactionsFilter.send:
               return tx.isOutgoing;
             case TransactionsFilter.receive:
-              return !tx.isOutgoing;
+              return tx.isIncoming;
             case TransactionsFilter.swap:
               return tx.isSwap;
             case TransactionsFilter.payjoin:

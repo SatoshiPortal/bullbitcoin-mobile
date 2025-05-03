@@ -1,8 +1,8 @@
-import 'package:bb_mobile/features/transactions/bloc/transactions_bloc.dart';
+import 'package:bb_mobile/features/transactions/bloc/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_filter_row.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
-import 'package:bb_mobile/locator.dart';
+
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -16,24 +16,21 @@ class TransactionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => locator<TransactionsCubit>()..loadTxs(),
-      child: Scaffold(
-        appBar: AppBar(
-          forceMaterialTransparency: true,
-          automaticallyImplyLeading: false,
-          titleSpacing: 0,
-          title: TopBar(
-            title: 'Transactions',
-            onBack: () {
-              context.pop();
-            },
-          ),
-          backgroundColor: context.colour.onPrimary,
-          elevation: 0,
+    return Scaffold(
+      appBar: AppBar(
+        forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        title: TopBar(
+          title: 'Transactions',
+          onBack: () {
+            context.pop();
+          },
         ),
-        body: const _Screen(),
+        backgroundColor: context.colour.onPrimary,
+        elevation: 0,
       ),
+      body: const _Screen(),
     );
   }
 }

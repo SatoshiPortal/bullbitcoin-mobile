@@ -16,6 +16,7 @@ import 'package:bb_mobile/features/send/send_locator.dart';
 import 'package:bb_mobile/features/settings/settings_locator.dart';
 import 'package:bb_mobile/features/swap/swap_locator.dart';
 import 'package:bb_mobile/features/test_wallet_backup/test_wallet_backup_locator.dart';
+import 'package:bb_mobile/features/transactions/transactions_locator.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt locator = GetIt.instance;
@@ -43,6 +44,7 @@ class AppLocator {
     SettingsLocator.setup();
     BitcoinPriceLocator.setup();
     HomeLocator.setup();
+    TransactionsLocator.setup();
     ReceiveLocator.setup();
     SendLocator.setup();
     BackupSettingsLocator.setup();

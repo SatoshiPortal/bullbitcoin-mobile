@@ -10,8 +10,7 @@ import 'package:bb_mobile/features/send/ui/send_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_page.dart';
-import 'package:bb_mobile/features/transactions/transactions_locator.dart';
-import 'package:bb_mobile/features/transactions/ui/screens/transactions_screen.dart';
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/ui/screens/dev_page.dart';
 import 'package:bb_mobile/ui/screens/route_error_screen.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +32,6 @@ enum AppRoute {
   sell('/sell'),
   buy('/buy'),
   swap('/swap'),
-  txs('/txs'),
 
   devStart('/dev-start'),
   devReceive('/dev-receive'),
@@ -142,14 +140,7 @@ class AppRouter {
         path: AppRoute.swap.path,
         builder: (context, state) => const SwapFlow(),
       ),
-      GoRoute(
-        name: AppRoute.txs.name,
-        path: AppRoute.txs.path,
-        builder: (context, state) {
-          TransactionsLocator.setup();
-          return const TransactionsScreen();
-        },
-      ),
+      TransactionsRouter.route,
       ReceiveRouter.route,
       DevPages.devStart,
       OnboardingRouter.route,

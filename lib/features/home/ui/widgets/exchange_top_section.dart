@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/cards/action_card.dart';
@@ -210,7 +211,7 @@ class _TopNav extends StatelessWidget {
         const Gap(20),
         IconButton(
           onPressed: () {
-            context.pushNamed(AppRoute.txs.name);
+            context.pushNamed(TransactionsRoute.transactions.name);
           },
           visualDensity: VisualDensity.compact,
           color: context.colour.onPrimary,

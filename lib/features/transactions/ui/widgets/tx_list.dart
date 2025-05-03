@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/transactions/bloc/transactions_bloc.dart';
+import 'package:bb_mobile/features/transactions/bloc/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
 import 'package:bb_mobile/ui/themes/fonts.dart';
 import 'package:flutter/material.dart';
