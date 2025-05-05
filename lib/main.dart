@@ -2,10 +2,9 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:bb_mobile/bloc_observer.dart';
-import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/seed/sqlite_seed.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
@@ -42,60 +41,8 @@ Future main() async {
       //  so it's important to call it after the initialization
       await AppLocator.setup();
 
-      // TODO(azad): There is probably a better way to initialize the settings
-      // Initialize the settings
-      final settings = locator<SettingsRepository>();
-      try {
-        final s = await settings.fetch();
-        debugPrint('settings: $s');
-      } catch (e) {
-        debugPrint('settings: store default');
-        await settings.store(
-          id: 1,
-          environment: Environment.mainnet,
-          bitcoinUnit: BitcoinUnit.btc,
-          currency: 'USD',
-          language: Language.unitedStatesEnglish,
-          hideAmounts: false,
-        );
-      }
-
-      // Seed electrum servers
-      // TODO(azad): refactor in a global Database.seed function
-      final electrumStorage = locator<ElectrumServerStorageDatasource>();
-      final defaultsElectrumServers = [
-        ElectrumServerModel.blockstream(
-          isTestnet: false,
-          isLiquid: false,
-        ), // btc main
-        ElectrumServerModel.blockstream(
-          isTestnet: false,
-          isLiquid: true,
-        ), // liq main
-        ElectrumServerModel.blockstream(
-          isTestnet: true,
-          isLiquid: false,
-        ), // btc test
-        ElectrumServerModel.blockstream(
-          isTestnet: true,
-          isLiquid: true,
-        ), // liq test
-        ElectrumServerModel.bullBitcoin(
-          isTestnet: false,
-          isLiquid: false,
-        ), // btc main
-        ElectrumServerModel.bullBitcoin(
-          isTestnet: false,
-          isLiquid: true,
-        ), // liq main
-        ElectrumServerModel.bullBitcoin(
-          isTestnet: true,
-          isLiquid: false,
-        ), // btc test
-      ];
-      for (final defaultElectrumServer in defaultsElectrumServers) {
-        await electrumStorage.store(defaultElectrumServer);
-      }
+      // Populate the database with needed data
+      await locator<SqliteDatabase>().seedTables();
 
       Bloc.observer = AppBlocObserver();
 
