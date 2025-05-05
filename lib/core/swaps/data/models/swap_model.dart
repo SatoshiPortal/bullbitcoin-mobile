@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -322,4 +324,140 @@ sealed class SwapModel with _$SwapModel {
   // Factory methods for JSON serialization/deserialization
   factory SwapModel.fromJson(Map<String, dynamic> json) =>
       _$SwapModelFromJson(json);
+
+  factory SwapModel.fromSqlite(SwapRow swap) {
+    switch (swap.direction) {
+      case SwapDirection.receive:
+        return SwapModel.lnReceive(
+          id: swap.id,
+          type: swap.type,
+          status: swap.status,
+          isTestnet: swap.isTestnet,
+          keyIndex: swap.keyIndex,
+          creationTime: swap.creationTime,
+          receiveWalletId: swap.receiveWalletId!,
+          receiveAddress: swap.receiveAddress,
+          receiveTxid: swap.receiveTxid,
+          completionTime: swap.completionTime,
+          boltzFees: swap.boltzFees,
+          lockupFees: swap.lockupFees,
+          claimFees: swap.claimFees,
+          invoice: swap.invoice!,
+        );
+      case SwapDirection.send:
+        return SwapModel.lnSend(
+          id: swap.id,
+          type: swap.type,
+          status: swap.status,
+          isTestnet: swap.isTestnet,
+          keyIndex: swap.keyIndex,
+          creationTime: swap.creationTime,
+          sendWalletId: swap.sendWalletId!,
+          sendTxid: swap.sendTxid,
+          paymentAddress: swap.paymentAddress!,
+          paymentAmount: swap.paymentAmount!,
+          refundAddress: swap.refundAddress,
+          refundTxid: swap.refundTxid,
+          completionTime: swap.completionTime,
+          boltzFees: swap.boltzFees,
+          lockupFees: swap.lockupFees,
+          claimFees: swap.claimFees,
+          invoice: swap.invoice!,
+        );
+      case SwapDirection.onchain:
+        return SwapModel.chain(
+          id: swap.id,
+          type: swap.type,
+          status: swap.status,
+          isTestnet: swap.isTestnet,
+          keyIndex: swap.keyIndex,
+          creationTime: swap.creationTime,
+          sendWalletId: swap.sendWalletId!,
+          receiveWalletId: swap.receiveWalletId,
+          sendTxid: swap.sendTxid,
+          paymentAddress: swap.paymentAddress!,
+          paymentAmount: swap.paymentAmount!,
+          receiveAddress: swap.receiveAddress,
+          receiveTxid: swap.receiveTxid,
+          refundAddress: swap.refundAddress,
+          refundTxid: swap.refundTxid,
+          completionTime: swap.completionTime,
+          boltzFees: swap.boltzFees,
+          lockupFees: swap.lockupFees,
+          claimFees: swap.claimFees,
+        );
+    }
+  }
+
+  SwapRow toSqlite() {
+    if (this is LnReceiveSwapModel) {
+      final swap = this as LnReceiveSwapModel;
+      return SwapRow(
+        id: swap.id,
+        type: swap.type,
+        direction: SwapDirection.receive,
+        status: swap.status,
+        isTestnet: swap.isTestnet,
+        keyIndex: swap.keyIndex,
+        creationTime: swap.creationTime,
+        receiveWalletId: swap.receiveWalletId,
+        invoice: swap.invoice,
+        receiveAddress: swap.receiveAddress,
+        receiveTxid: swap.receiveTxid,
+        completionTime: swap.completionTime,
+        boltzFees: swap.boltzFees,
+        lockupFees: swap.lockupFees,
+        claimFees: swap.claimFees,
+      );
+    } else if (this is LnSendSwapModel) {
+      final swap = this as LnSendSwapModel;
+      return SwapRow(
+        id: swap.id,
+        type: swap.type,
+        direction: SwapDirection.send,
+        status: swap.status,
+        isTestnet: swap.isTestnet,
+        keyIndex: swap.keyIndex,
+        creationTime: swap.creationTime,
+        sendWalletId: swap.sendWalletId,
+        sendTxid: swap.sendTxid,
+        preimage: swap.preimage,
+        refundAddress: swap.refundAddress,
+        refundTxid: swap.refundTxid,
+        invoice: swap.invoice,
+        paymentAddress: swap.paymentAddress,
+        paymentAmount: swap.paymentAmount,
+        completionTime: swap.completionTime,
+        boltzFees: swap.boltzFees,
+        lockupFees: swap.lockupFees,
+        claimFees: swap.claimFees,
+      );
+    } else if (this is ChainSwapModel) {
+      final swap = this as ChainSwapModel;
+      return SwapRow(
+        id: swap.id,
+        type: swap.type,
+        direction: SwapDirection.onchain,
+        status: swap.status,
+        isTestnet: swap.isTestnet,
+        keyIndex: swap.keyIndex,
+        creationTime: swap.creationTime,
+        sendWalletId: swap.sendWalletId,
+        sendTxid: swap.sendTxid,
+        refundAddress: swap.refundAddress,
+        refundTxid: swap.refundTxid,
+        paymentAddress: swap.paymentAddress,
+        paymentAmount: swap.paymentAmount,
+        receiveWalletId: swap.receiveWalletId,
+        receiveAddress: swap.receiveAddress,
+        receiveTxid: swap.receiveTxid,
+        completionTime: swap.completionTime,
+        boltzFees: swap.boltzFees,
+        lockupFees: swap.lockupFees,
+        claimFees: swap.claimFees,
+      );
+    } else {
+      throw UnsupportedError('$SwapModel unsupported: $runtimeType');
+    }
+  }
 }
