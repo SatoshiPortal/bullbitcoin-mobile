@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_server_connectivity_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_best_available_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
@@ -19,13 +21,18 @@ class ElectrumSettingsBloc
   final GetAllElectrumServersUsecase _getAllElectrumServers;
   final UpdateElectrumServerSettingsUsecase _updateElectrumServerSettings;
   final GetBestAvailableServerUsecase _getBestAvailableServerUsecase;
+  final CheckElectrumServerConnectivityUsecase _checkElectrumServerConnectivity;
+
   ElectrumSettingsBloc({
     required GetAllElectrumServersUsecase getAllElectrumServers,
     required UpdateElectrumServerSettingsUsecase updateElectrumServerSettings,
     required GetBestAvailableServerUsecase getBestAvailableServer,
+    required CheckElectrumServerConnectivityUsecase
+    checkElectrumServerConnectivity,
   }) : _getAllElectrumServers = getAllElectrumServers,
        _updateElectrumServerSettings = updateElectrumServerSettings,
        _getBestAvailableServerUsecase = getBestAvailableServer,
+       _checkElectrumServerConnectivity = checkElectrumServerConnectivity,
        super(const ElectrumSettingsState()) {
     on<LoadServers>(_onLoadServers);
     on<CheckServerStatus>(_onCheckServerStatus);
