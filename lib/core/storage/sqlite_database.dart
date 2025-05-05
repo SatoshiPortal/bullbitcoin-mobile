@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
 import 'package:bb_mobile/core/storage/tables/settings_table.dart';
+import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:drift/drift.dart';
@@ -19,6 +20,7 @@ part 'sqlite_database.g.dart';
     PayjoinSenders,
     PayjoinReceivers,
     ElectrumServers,
+    Swaps,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {

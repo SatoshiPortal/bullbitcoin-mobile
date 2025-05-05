@@ -60,7 +60,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
             sync: sync,
           ),
           _payjoinDatasource.fetchAll(),
-          _swapDatasource.getAll(),
+          _swapDatasource.fetchAll(),
         ).wait;
 
     final walletTransactionLists = await Future.wait(
