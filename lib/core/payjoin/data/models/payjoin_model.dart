@@ -138,3 +138,41 @@ sealed class PayjoinModel with _$PayjoinModel {
     }
   }
 }
+
+extension PayjoinReceiverSqlite on PayjoinReceiverModel {
+  PayjoinReceiverRow toSqlite() => PayjoinReceiverRow(
+    id: id,
+    address: address,
+    isTestnet: isTestnet,
+    receiver: receiver,
+    walletId: walletId,
+    pjUri: pjUri,
+    maxFeeRateSatPerVb: maxFeeRateSatPerVb,
+    createdAt: createdAt,
+    expireAfterSec: expireAfterSec,
+    originalTxBytes: originalTxBytes,
+    originalTxId: originalTxId,
+    amountSat: amountSat,
+    proposalPsbt: proposalPsbt,
+    txId: txId,
+    isExpired: isExpired,
+    isCompleted: isCompleted,
+  );
+}
+
+extension PayjoinSenderSqlite on PayjoinSenderModel {
+  PayjoinSenderRow toSqlite() => PayjoinSenderRow(
+    uri: uri,
+    isTestnet: isTestnet,
+    sender: sender,
+    walletId: walletId,
+    originalPsbt: originalPsbt,
+    originalTxId: originalTxId,
+    createdAt: createdAt,
+    expireAfterSec: expireAfterSec,
+    proposalPsbt: proposalPsbt,
+    txId: txId,
+    isExpired: isExpired,
+    isCompleted: isCompleted,
+  );
+}

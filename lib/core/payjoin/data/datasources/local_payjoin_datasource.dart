@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:drift/drift.dart';
 
 class LocalPayjoinDatasource {
   final SqliteDatabase _db;
@@ -9,26 +8,8 @@ class LocalPayjoinDatasource {
 
   Future<void> storeReceiver(PayjoinReceiverModel receiver) async {
     try {
-      await _db.managers.payjoinReceivers.create(
-        (r) => r(
-          id: receiver.id,
-          address: receiver.address,
-          isTestnet: receiver.isTestnet,
-          receiver: receiver.receiver,
-          walletId: receiver.walletId,
-          pjUri: receiver.pjUri,
-          maxFeeRateSatPerVb: receiver.maxFeeRateSatPerVb,
-          createdAt: receiver.createdAt,
-          expireAfterSec: receiver.expireAfterSec,
-          originalTxBytes: Value(receiver.originalTxBytes),
-          originalTxId: Value(receiver.originalTxId),
-          amountSat: Value(receiver.amountSat),
-          proposalPsbt: Value(receiver.proposalPsbt),
-          txId: Value(receiver.txId),
-          isExpired: receiver.isExpired,
-          isCompleted: receiver.isCompleted,
-        ),
-      );
+      final row = receiver.toSqlite();
+      await _db.into(_db.payjoinReceivers).insertOnConflictUpdate(row);
     } catch (e) {
       throw CreateReceiverException('$e');
     }
@@ -36,22 +17,8 @@ class LocalPayjoinDatasource {
 
   Future<void> storeSender(PayjoinSenderModel sender) async {
     try {
-      await _db.managers.payjoinSenders.create(
-        (s) => s(
-          uri: sender.uri,
-          isTestnet: sender.isTestnet,
-          sender: sender.sender,
-          walletId: sender.walletId,
-          originalPsbt: sender.originalPsbt,
-          originalTxId: sender.originalTxId,
-          createdAt: sender.createdAt,
-          expireAfterSec: sender.expireAfterSec,
-          proposalPsbt: Value(sender.proposalPsbt),
-          txId: Value(sender.txId),
-          isExpired: sender.isExpired,
-          isCompleted: sender.isCompleted,
-        ),
-      );
+      final row = sender.toSqlite();
+      await _db.into(_db.payjoinSenders).insertOnConflictUpdate(row);
     } catch (e) {
       throw CreateSenderException('$e');
     }
@@ -63,9 +30,7 @@ class LocalPayjoinDatasource {
             .filter((f) => f.id(id))
             .getSingleOrNull();
 
-    if (receiver == null) {
-      return null;
-    }
+    if (receiver == null) return null;
 
     return PayjoinModel.fromReceiverTable(receiver) as PayjoinReceiverModel;
   }
@@ -76,9 +41,7 @@ class LocalPayjoinDatasource {
             .filter((f) => f.uri(uri))
             .getSingleOrNull();
 
-    if (sender == null) {
-      return null;
-    }
+    if (sender == null) return null;
 
     return PayjoinModel.fromSenderTable(sender) as PayjoinSenderModel;
   }
@@ -175,47 +138,9 @@ class LocalPayjoinDatasource {
   Future<void> update(PayjoinModel payjoin) async {
     try {
       if (payjoin is PayjoinReceiverModel) {
-        await _db.managers.payjoinReceivers
-            .filter((f) => f.id(payjoin.id))
-            .update(
-              (r) => r(
-                id: Value(payjoin.id),
-                address: Value(payjoin.address),
-                isTestnet: Value(payjoin.isTestnet),
-                receiver: Value(payjoin.receiver),
-                walletId: Value(payjoin.walletId),
-                pjUri: Value(payjoin.pjUri),
-                maxFeeRateSatPerVb: Value(payjoin.maxFeeRateSatPerVb),
-                createdAt: Value(payjoin.createdAt),
-                expireAfterSec: Value(payjoin.expireAfterSec),
-                originalTxBytes: Value(payjoin.originalTxBytes),
-                originalTxId: Value(payjoin.originalTxId),
-                amountSat: Value(payjoin.amountSat),
-                proposalPsbt: Value(payjoin.proposalPsbt),
-                txId: Value(payjoin.txId),
-                isExpired: Value(payjoin.isExpired),
-                isCompleted: Value(payjoin.isCompleted),
-              ),
-            );
+        await storeReceiver(payjoin);
       } else if (payjoin is PayjoinSenderModel) {
-        await _db.managers.payjoinSenders
-            .filter((f) => f.uri(payjoin.uri))
-            .update(
-              (s) => s(
-                uri: Value(payjoin.uri),
-                isTestnet: Value(payjoin.isTestnet),
-                sender: Value(payjoin.sender),
-                walletId: Value(payjoin.walletId),
-                originalPsbt: Value(payjoin.originalPsbt),
-                originalTxId: Value(payjoin.originalTxId),
-                createdAt: Value(payjoin.createdAt),
-                expireAfterSec: Value(payjoin.expireAfterSec),
-                proposalPsbt: Value(payjoin.proposalPsbt),
-                txId: Value(payjoin.txId),
-                isExpired: Value(payjoin.isExpired),
-                isCompleted: Value(payjoin.isCompleted),
-              ),
-            );
+        await storeSender(payjoin);
       }
     } catch (e) {
       throw UpdateException('$e');
