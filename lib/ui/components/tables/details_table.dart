@@ -1,10 +1,10 @@
-import 'package:bb_mobile/ui/components/tables/table_item.dart';
+import 'package:bb_mobile/ui/components/tables/details_table_item.dart';
 import 'package:flutter/material.dart';
 
-class Table extends StatelessWidget {
-  const Table({super.key, required this.items});
+class DetailsTable extends StatelessWidget {
+  const DetailsTable({super.key, required this.items});
 
-  final List<TableItem> items;
+  final List<DetailsTableItem> items;
 
   @override
   Widget build(BuildContext context) {
