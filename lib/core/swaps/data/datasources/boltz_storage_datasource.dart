@@ -23,7 +23,7 @@ class BoltzStorageDatasource {
     await _localSwapStorage.saveValue(key: swap.id, value: jsonString);
   }
 
-  Future<SwapModel?> get(String swapId) async {
+  Future<SwapModel?> fetch(String swapId) async {
     final jsonString = await _localSwapStorage.getValue(swapId);
     if (jsonString == null) {
       return null;
@@ -32,8 +32,8 @@ class BoltzStorageDatasource {
     return SwapModel.fromJson(jsonMap);
   }
 
-  Future<LnReceiveSwapModel?> getLnReceiveSwapModel(String swapId) async {
-    final SwapModel? swap = await get(swapId);
+  Future<LnReceiveSwapModel?> fetchLnReceiveSwapModel(String swapId) async {
+    final SwapModel? swap = await fetch(swapId);
     if (swap == null) return null;
 
     return switch (swap) {
@@ -42,8 +42,8 @@ class BoltzStorageDatasource {
     };
   }
 
-  Future<LnSendSwapModel?> getLnSendSwapModel(String swapId) async {
-    final SwapModel? swap = await get(swapId);
+  Future<LnSendSwapModel?> fetchLnSendSwapModel(String swapId) async {
+    final SwapModel? swap = await fetch(swapId);
     if (swap == null) return null;
 
     return switch (swap) {
@@ -52,8 +52,8 @@ class BoltzStorageDatasource {
     };
   }
 
-  Future<ChainSwapModel?> getChainSwapModel(String swapId) async {
-    final SwapModel? swap = await get(swapId);
+  Future<ChainSwapModel?> fetchChainSwapModel(String swapId) async {
+    final SwapModel? swap = await fetch(swapId);
     if (swap == null) return null;
 
     return switch (swap) {
@@ -62,7 +62,7 @@ class BoltzStorageDatasource {
     };
   }
 
-  Future<List<SwapModel>> getAll() async {
+  Future<List<SwapModel>> fetchAll() async {
     final allEntries = await _localSwapStorage.getAll();
     final swaps = <SwapModel>[];
     for (final jsonString in allEntries.values) {
@@ -73,7 +73,7 @@ class BoltzStorageDatasource {
     return swaps;
   }
 
-  Future<void> delete(String swapId) async {
+  Future<void> trash(String swapId) async {
     await _localSwapStorage.deleteValue(swapId);
   }
 
@@ -96,13 +96,13 @@ class BoltzStorageDatasource {
     await _secureSwapStorage.saveValue(key: key, value: jsonSwap);
   }
 
-  Future<BtcLnSwap> getBtcLnSwap(String swapId) async {
+  Future<BtcLnSwap> fetchBtcLnSwap(String swapId) async {
     final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
     final jsonSwap = await _secureSwapStorage.getValue(key) as String;
     return BtcLnSwap.fromJson(jsonStr: jsonSwap);
   }
 
-  Future<LbtcLnSwap> getLbtcLnSwap(String swapId) async {
+  Future<LbtcLnSwap> fetchLbtcLnSwap(String swapId) async {
     try {
       final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
       final jsonSwap = await _secureSwapStorage.getValue(key) as String;
@@ -114,7 +114,7 @@ class BoltzStorageDatasource {
     }
   }
 
-  Future<ChainSwap> getChainSwap(String swapId) async {
+  Future<ChainSwap> fetchChainSwap(String swapId) async {
     final key = '${SecureStorageKeyPrefixConstants.swap}$swapId';
     final jsonSwap = await _secureSwapStorage.getValue(key) as String;
     return ChainSwap.fromJson(jsonStr: jsonSwap);

@@ -347,7 +347,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   // STORAGE
   @override
   Future<Swap> getSwap({required String swapId}) async {
-    final swapModel = await _boltz.storage.get(swapId);
+    final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
       throw "No swap found";
     }
@@ -359,7 +359,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String txid,
   }) async {
-    final swapModel = await _boltz.storage.get(swapId);
+    final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
       throw "No swap model found";
     }
@@ -386,7 +386,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   Future<void> updateExpiredSwap({required String swapId}) async {
-    final swapModel = await _boltz.storage.get(swapId);
+    final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
       throw "No swap model found";
     }
@@ -399,7 +399,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   Future<void> updateFailedSwap({required String swapId}) async {
-    final swapModel = await _boltz.storage.get(swapId);
+    final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
       throw "No swap model found";
     }
@@ -413,7 +413,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   /// PRIVATE
   Future<void> _updateCompletedSendSwap({required String swapId}) async {
-    final swapModel = await _boltz.storage.get(swapId);
+    final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
       throw "No swap model found";
     }
@@ -451,7 +451,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   Future<List<Swap>> _getRevSwapsForWallet(String walletId) async {
-    return (await _boltz.storage.getAll())
+    return (await _boltz.storage.fetchAll())
         .map((swapModel) => swapModel.toEntity())
         .where(
           (swap) =>
@@ -469,7 +469,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   Future<List<Swap>> _getSubSwapsForWallet(String walletId) async {
-    return (await _boltz.storage.getAll())
+    return (await _boltz.storage.fetchAll())
         .map((swapModel) => swapModel.toEntity())
         .where(
           (swap) =>
@@ -487,7 +487,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   Future<List<Swap>> _getChainSwapsForWallet(String walletId) async {
-    return (await _boltz.storage.getAll())
+    return (await _boltz.storage.fetchAll())
         .map((swapModel) => swapModel.toEntity())
         .where(
           (swap) =>
@@ -509,7 +509,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     _boltz.resetStream();
     _boltz.subscribeToSwaps(swapIds);
     // final allSwapsToWatch = swapIds.map((swapId) async {
-    //   final swap = await _boltz.storage.get(swapId);
+    //   final swap = await _boltz.storage.fetch(swapId);
     //   return swap?.toEntity();
     // });
     // add to the swapUpdateStream
@@ -524,7 +524,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   @override
   Future<List<Swap>> getOngoingSwaps() async {
-    final allSwapModels = await _boltz.storage.getAll();
+    final allSwapModels = await _boltz.storage.fetchAll();
     final allSwaps =
         allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
     return allSwaps
@@ -541,7 +541,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   @override
   Future<List<Swap>> getAllSwaps() async {
-    final allSwapModels = await _boltz.storage.getAll();
+    final allSwapModels = await _boltz.storage.fetchAll();
     final allSwaps =
         allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
     return allSwaps;
@@ -591,7 +591,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required WalletTransaction baseWalletTx,
     required Network network,
   }) async {
-    final allSwapModels = await _boltz.storage.getAll();
+    final allSwapModels = await _boltz.storage.fetchAll();
     if (allSwapModels.isEmpty) {
       return null;
     }
@@ -640,7 +640,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
 
   @override
   Future<LnSendSwap?> getSendSwapByInvoice({required String invoice}) async {
-    final allSwaps = await _boltz.storage.getAll();
+    final allSwaps = await _boltz.storage.fetchAll();
     for (final swapModel in allSwaps) {
       final swap = swapModel.toEntity();
       if (swap.type == SwapType.lightningToBitcoin ||

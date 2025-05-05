@@ -157,7 +157,7 @@ class BoltzDatasource {
     required bool tryCooperate,
   }) async {
     try {
-      final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+      final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
 
       return btcLnSwap.claim(
         outAddress: claimAddress,
@@ -232,7 +232,7 @@ class BoltzDatasource {
     required bool tryCooperate,
   }) async {
     try {
-      final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+      final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
 
       return lbtcLnSwap.claim(
         outAddress: claimAddress,
@@ -253,7 +253,7 @@ class BoltzDatasource {
     required bool broadcastViaBoltz,
   }) async {
     try {
-      final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+      final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
 
       return broadcastViaBoltz
           ? btcLnSwap.broadcastLocal(signedHex: signedTxHex)
@@ -272,7 +272,7 @@ class BoltzDatasource {
     required bool broadcastViaBoltz,
   }) async {
     try {
-      final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+      final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
 
       return broadcastViaBoltz
           ? lbtcLnSwap.broadcastLocal(signedHex: signedTxHex)
@@ -394,7 +394,7 @@ class BoltzDatasource {
 
   Future<void> coopSignBtcSubmarineSwap({required String swapId}) async {
     try {
-      final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+      final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
       return btcLnSwap.coopCloseSubmarine();
     } catch (e) {
       if (e is BoltzError) {
@@ -406,7 +406,7 @@ class BoltzDatasource {
 
   Future<void> coopSignLbtcSubmarineSwap({required String swapId}) async {
     try {
-      final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+      final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
       await lbtcLnSwap.coopCloseSubmarine();
       return;
     } catch (e) {
@@ -424,7 +424,7 @@ class BoltzDatasource {
     required bool tryCooperate,
   }) async {
     try {
-      final btcLnSwap = await _boltzStore.getBtcLnSwap(swapId);
+      final btcLnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
       return btcLnSwap.refund(
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
@@ -445,7 +445,7 @@ class BoltzDatasource {
     required bool tryCooperate,
   }) async {
     try {
-      final lbtcLnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+      final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
       debugPrint(lbtcLnSwap.id);
       debugPrint(lbtcLnSwap.network.toString());
       return lbtcLnSwap.refund(
@@ -583,7 +583,7 @@ class BoltzDatasource {
     required bool broadcastViaBoltz,
   }) async {
     try {
-      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return broadcastViaBoltz
           ? chainSwap.broadcastLocal(
             signedHex: signedTxHex,
@@ -609,7 +609,7 @@ class BoltzDatasource {
     required bool tryCooperate,
   }) async {
     try {
-      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return await chainSwap.claim(
         outAddress: claimLiquidAddress,
         refundAddress: refundBitcoinAddress,
@@ -632,7 +632,7 @@ class BoltzDatasource {
     required bool tryCooperate,
   }) async {
     try {
-      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return await chainSwap.claim(
         outAddress: claimBitcoinAddress,
         refundAddress: refundLiquidAddress,
@@ -653,7 +653,7 @@ class BoltzDatasource {
     required bool broadcastViaBoltz,
   }) async {
     try {
-      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return broadcastViaBoltz
           ? chainSwap.broadcastLocal(
             signedHex: signedTxHex,
@@ -678,7 +678,7 @@ class BoltzDatasource {
     required bool tryCooperate,
   }) async {
     try {
-      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return await chainSwap.refund(
         refundAddress: refundBitcoinAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
@@ -699,7 +699,7 @@ class BoltzDatasource {
     required bool tryCooperate,
   }) async {
     try {
-      final chainSwap = await _boltzStore.getChainSwap(swapId);
+      final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return await chainSwap.refund(
         refundAddress: refundLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
@@ -856,7 +856,7 @@ class BoltzDatasource {
           final boltzStatus = event.status;
           try {
             await Future.delayed(const Duration(milliseconds: 1000));
-            final swapModel = await _boltzStore.get(swapId);
+            final swapModel = await _boltzStore.fetch(swapId);
             if (swapModel == null) {
               debugPrint('No swap found for id: $swapId');
               return;
