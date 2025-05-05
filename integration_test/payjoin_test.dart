@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
-import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/seed/sqlite_seed.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
@@ -18,13 +17,14 @@ import 'package:bb_mobile/features/recover_wallet/domain/usecases/recover_or_cre
 import 'package:bb_mobile/features/send/domain/usecases/prepare_bitcoin_send_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:payjoin_flutter/src/generated/frb_generated.dart';
 import 'package:test/test.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   late WalletRepository walletRepository;
   late WalletAddressRepository addressRepository;
   late WalletUtxoRepository utxoRepository;
@@ -43,54 +43,11 @@ void main() {
       'model float claim feature convince exchange truck cream assume fancy swamp offer';
 
   setUpAll(() async {
-    await Future.wait([
-      dotenv.load(isOptional: true),
-      Hive.initFlutter(),
-      core.init(),
-    ]);
+    await Future.wait([dotenv.load(isOptional: true), core.init()]);
 
     await AppLocator.setup();
 
-    // Make sure we are running in testnet environment
-    final settings = locator<SettingsRepository>();
-    try {
-      final s = await settings.fetch();
-      debugPrint('settings: $s');
-    } catch (e) {
-      debugPrint('settings: store default');
-      await settings.store(
-        id: 1,
-        environment: Environment.mainnet,
-        bitcoinUnit: BitcoinUnit.btc,
-        currency: 'USD',
-        language: Language.unitedStatesEnglish,
-        hideAmounts: false,
-      );
-    }
-
-    debugPrint('electrum: store defaults');
-    final electrumStorage = locator<ElectrumServerStorageDatasource>();
-    final defaultsElectrumServers = [
-      ElectrumServerModel.blockstream(
-        isTestnet: false,
-        isLiquid: false,
-      ), // btc main
-      ElectrumServerModel.blockstream(
-        isTestnet: false,
-        isLiquid: true,
-      ), // liq main
-      ElectrumServerModel.blockstream(
-        isTestnet: true,
-        isLiquid: false,
-      ), // btc test
-      ElectrumServerModel.blockstream(
-        isTestnet: true,
-        isLiquid: true,
-      ), // liq test
-    ];
-    for (final defaultElectrumServer in defaultsElectrumServers) {
-      await electrumStorage.store(defaultElectrumServer);
-    }
+    await locator<SqliteDatabase>().seedTables();
 
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
 

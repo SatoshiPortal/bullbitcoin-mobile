@@ -14,7 +14,6 @@ import 'package:bip85/bip85.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hex/hex.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lwk/lwk.dart';
 import 'package:test/test.dart';
 
@@ -58,8 +57,7 @@ void main() {
   setUpAll(() async {
     try {
       debugPrint('Starting test setup...');
-      dotenv.load(isOptional: true);
-      await Hive.initFlutter();
+      await dotenv.load(isOptional: true);
       await LibBip85.init();
       await LibLwk.init();
       await AppLocator.setup();
@@ -95,84 +93,80 @@ void main() {
     }
   });
 
-  test(
-    'Complete RecoverBull Flow Test',
-    () async {
-      const password = 'SecurePassw0rd!';
+  test('Complete RecoverBull Flow Test', () async {
+    const password = 'SecurePassw0rd!';
 
-      debugPrint('Starting recovery flow test...');
-      await waitForTor();
-      expect(await torRepository.isTorReady, true);
-      Future.delayed(const Duration(seconds: 2));
+    debugPrint('Starting recovery flow test...');
+    await waitForTor();
+    expect(await torRepository.isTorReady, true);
+    await Future.delayed(const Duration(seconds: 2));
 
-      // First attempt restore with dummy data
-      debugPrint('Attempting restore with dummy data...');
-      try {
-        await restoreEncryptedVault.execute(
-          backupFile: utf8.decode(HEX.decode(dummyBackupFile)),
-          backupKey: dummyBackupKey,
-        );
-      } catch (e) {
-        debugPrint('Initial restore attempt completed: $e');
-      }
-      final derivedBackupKey = await deriveBackupKeyFromDefaultWallet.execute(
+    // First attempt restore with dummy data
+    debugPrint('Attempting restore with dummy data...');
+    try {
+      await restoreEncryptedVault.execute(
         backupFile: utf8.decode(HEX.decode(dummyBackupFile)),
+        backupKey: dummyBackupKey,
       );
-      expect(derivedBackupKey, equals(dummyBackupKey));
-      debugPrint('Backup key restored successfully');
+    } catch (e) {
+      debugPrint('Initial restore attempt completed: $e');
+    }
+    final derivedBackupKey = await deriveBackupKeyFromDefaultWallet.execute(
+      backupFile: utf8.decode(HEX.decode(dummyBackupFile)),
+    );
+    expect(derivedBackupKey, equals(dummyBackupKey));
+    debugPrint('Backup key restored successfully');
 
-      // Create new backup and compare
-      debugPrint('Creating new backup for comparison...');
-      final backupFile = await createEncryptedVault.execute().timeout(
-            const Duration(seconds: 2),
-            onTimeout: () => throw Exception('Backup creation timeout'),
-          );
-      debugPrint('Checking server connection...');
-      await checkKeyServerConnection.execute().timeout(
-            const Duration(seconds: 10),
-            onTimeout: () => throw Exception('Server connection timeout'),
-          );
-      // Derive and compare backup keys
-      debugPrint('Deriving and comparing backup keys...');
-      final backupKey = await deriveBackupKey.execute(backupFile: backupFile);
+    // Create new backup and compare
+    debugPrint('Creating new backup for comparison...');
+    final backupFile = await createEncryptedVault.execute().timeout(
+      const Duration(seconds: 2),
+      onTimeout: () => throw Exception('Backup creation timeout'),
+    );
+    debugPrint('Checking server connection...');
+    await checkKeyServerConnection.execute().timeout(
+      const Duration(seconds: 10),
+      onTimeout: () => throw Exception('Server connection timeout'),
+    );
+    // Derive and compare backup keys
+    debugPrint('Deriving and comparing backup keys...');
+    final backupKey = await deriveBackupKey.execute(backupFile: backupFile);
 
-      // Test recovery process
-      debugPrint('Testing recovery process...');
-      await storeBackupKey.execute(
-        password: password,
+    // Test recovery process
+    debugPrint('Testing recovery process...');
+    await storeBackupKey.execute(
+      password: password,
+      backupFile: backupFile,
+      backupKey: backupKey,
+    );
+
+    final restoredBackupKey = await restoreBackupKey.execute(
+      backupFile: backupFile,
+      password: password,
+    );
+    expect(restoredBackupKey, equals(backupKey));
+
+    // Final restore attempt
+    // debugPrint('Attempting final restore...');
+    try {
+      await restoreEncryptedVault.execute(
         backupFile: backupFile,
-        backupKey: backupKey,
+        backupKey: restoredBackupKey,
       );
-
-      final restoredBackupKey = await restoreBackupKey.execute(
-        backupFile: backupFile,
-        password: password,
-      );
-      expect(restoredBackupKey, equals(backupKey));
-
-      // Final restore attempt
-      // debugPrint('Attempting final restore...');
-      try {
-        await restoreEncryptedVault.execute(
-          backupFile: backupFile,
-          backupKey: restoredBackupKey,
-        );
-      } catch (e) {
-        if (e.toString().contains('default wallet already exists')) {
-          debugPrint('Default wallet exists - Test successful');
-        } else {
-          rethrow;
-        }
+    } catch (e) {
+      if (e.toString().contains('default wallet already exists')) {
+        debugPrint('Default wallet exists - Test successful');
+      } else {
+        rethrow;
       }
+    }
 
-      // Verify final state
-      debugPrint('Verifying wallet state...');
-      final wallets = await walletRepository.getWallets(sync: true);
-      expect(wallets, isNotEmpty);
-      debugPrint('Test completed successfully');
-    },
-    timeout: const Timeout(Duration(minutes: 5)),
-  );
+    // Verify final state
+    debugPrint('Verifying wallet state...');
+    final wallets = await walletRepository.getWallets(sync: true);
+    expect(wallets, isNotEmpty);
+    debugPrint('Test completed successfully');
+  }, timeout: const Timeout(Duration(minutes: 5)));
 
   tearDownAll(() async {
     try {
