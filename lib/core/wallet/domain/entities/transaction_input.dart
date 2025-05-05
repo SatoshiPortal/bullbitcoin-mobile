@@ -21,7 +21,7 @@ sealed class TransactionInput with _$TransactionInput implements Labelable {
     required String txId,
     required int vin,
     required bool isOwn,
-    BigInt? value,
+    required BigInt value,
     required String scriptPubkey,
     required String previousTxId,
     required int previousTxVout,

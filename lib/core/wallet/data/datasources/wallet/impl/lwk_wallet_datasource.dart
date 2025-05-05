@@ -267,6 +267,7 @@ class LwkWalletDatasource implements WalletDatasource {
   }) async {
     final lwkWallet = await _createPublicWallet(wallet);
     final transactions = await lwkWallet.txs();
+    final usedAddressesMap = await _getUsedAddressesMap(wallet: wallet);
 
     final network =
         wallet.isTestnet ? Network.liquidTestnet : Network.liquidMainnet;
@@ -284,6 +285,7 @@ class LwkWalletDatasource implements WalletDatasource {
           if (!matches) return null; // Skip this transaction
         }
 
+        final isIncoming = tx.kind != 'outgoing';
         final balances = tx.balances;
         final finalBalance =
             balances
@@ -292,7 +294,8 @@ class LwkWalletDatasource implements WalletDatasource {
                 .firstOrNull ??
             0;
 
-        final isIncoming = tx.kind != 'outgoing';
+        final isToSelf = finalBalance.abs() == tx.fee.toInt();
+        int changeAmountInToSelf = 0;
 
         final (inputs, outputs) =
             await (
@@ -301,16 +304,16 @@ class LwkWalletDatasource implements WalletDatasource {
                   final vin = entry.key;
                   final input = entry.value;
 
-                  final inputAddress = await _findAddress(
-                    input.address,
-                    wallet: wallet,
-                  );
-                  final isOwn = inputAddress != null;
+                  final walletInputAddress =
+                      usedAddressesMap[input.address.standard] ??
+                      usedAddressesMap[input.address.confidential];
+                  final isOwn = isToSelf || walletInputAddress != null;
 
                   return TransactionInputModel.liquid(
                     txId: tx.txid,
                     vin: vin,
                     isOwn: isOwn,
+                    value: input.unblinded.value,
                     scriptPubkey: input.scriptPubkey,
                     previousTxId: input.outpoint.txid,
                     previousTxVout: input.outpoint.vout,
@@ -323,11 +326,15 @@ class LwkWalletDatasource implements WalletDatasource {
                   final vout = entry.key;
                   final output = entry.value;
 
-                  final outputAddress = await _findAddress(
-                    output.address,
-                    wallet: wallet,
-                  );
-                  final isOwn = outputAddress != null;
+                  final walletOutputAddress =
+                      usedAddressesMap[output.address.standard] ??
+                      usedAddressesMap[output.address.confidential];
+
+                  final isOwn = isToSelf || walletOutputAddress != null;
+                  if (isToSelf && walletOutputAddress == null) {
+                    changeAmountInToSelf += output.unblinded.value.toInt();
+                  }
+
                   return TransactionOutputModel.liquid(
                     txId: tx.txid,
                     vout: vout,
@@ -341,14 +348,20 @@ class LwkWalletDatasource implements WalletDatasource {
               ),
             ).wait;
 
-        final isToSelf =
-            inputs.every((input) => input.isOwn) &&
-            outputs.every((output) => output.isOwn);
+        final sumOutputs = outputs
+            .map((i) => i.value?.toInt() ?? 0)
+            .fold(0, (int a, b) => a + b);
+        final netAmountSat =
+            isToSelf
+                ? sumOutputs - changeAmountInToSelf
+                : isIncoming
+                ? finalBalance
+                : finalBalance.abs() - tx.fee.toInt();
 
         return WalletTransactionModel.liquid(
           txId: tx.txid,
           isIncoming: isIncoming,
-          amountSat: finalBalance.abs(),
+          amountSat: netAmountSat,
           feeSat: tx.fee.toInt(),
           confirmationTimestamp: tx.timestamp,
           isToSelf: isToSelf,
@@ -408,23 +421,42 @@ class LwkWalletDatasource implements WalletDatasource {
     return (decoded.balances.first.value, decoded.absoluteFees.toInt());
   }
 
-  Future<WalletAddressModel?> _findAddress(
-    lwk.Address address, {
+  Future<Map<String, LiquidWalletAddressModel>> _getUsedAddressesMap({
     required WalletModel wallet,
+    int batchSize = 10,
   }) async {
     final lastUnusedAddress = await getLastUnusedAddress(wallet: wallet);
-    final beforeIndex = lastUnusedAddress.index;
-    for (int i = beforeIndex; i >= 0; i--) {
-      final addressAtIndex =
-          await getAddressByIndex(i, wallet: wallet)
-              as LiquidWalletAddressModel;
-      if (addressAtIndex.standard == address.standard ||
-          addressAtIndex.confidential == address.confidential) {
-        return addressAtIndex;
+    final lastIndex = lastUnusedAddress.index;
+
+    final addressMap = <String, LiquidWalletAddressModel>{};
+
+    // Get address by index in batches
+    // This is to avoid loading too many addresses at once when a wallet
+    // has a lot of addresses after some time.
+    final List<Future<void>> currentBatch = [];
+
+    for (int i = 0; i <= lastIndex; i++) {
+      final future = getAddressByIndex(i, wallet: wallet).then((addr) {
+        final address = addr as LiquidWalletAddressModel;
+        addressMap[address.standard] = address;
+        addressMap[address.confidential] = address;
+      });
+
+      currentBatch.add(future);
+
+      // When the batch is full, wait for all to finish
+      if (currentBatch.length >= batchSize) {
+        await Future.wait(currentBatch);
+        currentBatch.clear();
       }
     }
 
-    return null;
+    // Await any remaining futures
+    if (currentBatch.isNotEmpty) {
+      await Future.wait(currentBatch);
+    }
+
+    return addressMap;
   }
 
   Future<String> _getDbPath(String dbName) async {

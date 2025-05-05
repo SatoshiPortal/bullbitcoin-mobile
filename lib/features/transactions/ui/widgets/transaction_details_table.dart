@@ -46,6 +46,16 @@ class TransactionDetailsTable extends StatelessWidget {
                   : 'Amount',
           displayValue: FormatAmount.sats(amountSat).toUpperCase(),
         ),
+        if (tx?.isToSelf == true)
+          DetailsTableItem(
+            label: 'Amount received',
+            displayValue: FormatAmount.sats(amountSat).toUpperCase(),
+          ),
+        if (tx?.isOutgoing == true)
+          DetailsTableItem(
+            label: 'Transaction Fee',
+            displayValue: FormatAmount.sats(tx?.feeSat ?? 0).toUpperCase(),
+          ),
         DetailsTableItem(
           label: 'Wallet',
           displayValue:
@@ -89,16 +99,31 @@ class TransactionDetailsTable extends StatelessWidget {
           ),
           if (swap.completionTime != null)
             DetailsTableItem(
-              label: 'Time received',
+              label: 'Swap time received',
               displayValue: DateFormat(
                 'MMM d, y, h:mm a',
               ).format(swap.completionTime!),
+            ),
+          if (swap.fees != null)
+            DetailsTableItem(
+              label: 'Total Swap fees',
+              displayValue:
+                  FormatAmount.sats(
+                    (swap.fees!.claimFee ?? 0) +
+                        (swap.fees!.boltzFee ?? 0) +
+                        (swap.fees!.lockupFee ?? 0),
+                  ).toUpperCase(),
             ),
         ],
         if (payjoin != null) ...[
           DetailsTableItem(
             label: 'Payjoin status',
-            displayValue: payjoin.status.name,
+            displayValue:
+                payjoin.isCompleted
+                    ? 'Completed'
+                    : payjoin.isExpired
+                    ? 'Expired'
+                    : payjoin.status.name,
           ),
           DetailsTableItem(
             label: 'Payjoin creation time',

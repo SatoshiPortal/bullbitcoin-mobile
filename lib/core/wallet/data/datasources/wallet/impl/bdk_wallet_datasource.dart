@@ -310,12 +310,6 @@ class BdkWalletDatasource implements WalletDatasource {
           if (!matches) return null;
         }
 
-        final isIncoming = tx.received > tx.sent;
-        final netAmountSat =
-            isIncoming
-                ? tx.received - tx.sent
-                : tx.sent - tx.received - (tx.fee ?? BigInt.zero);
-
         // Map inputs and outputs to their respective models
         final inputModels =
             inputs.asMap().entries.map((entry) {
@@ -346,6 +340,20 @@ class BdkWalletDatasource implements WalletDatasource {
         final isToSelf =
             inputModels.every((input) => input.isOwn) &&
             outputModels.every((output) => output.isOwn);
+
+        final isIncoming = tx.received > tx.sent;
+        final netAmountSat =
+            isToSelf
+                ? // When sending to self, the fee is paid by this wallet and is
+                // the only thing that changes from the balance
+                tx.sent - (tx.fee ?? BigInt.zero)
+                : isIncoming
+                ? // If incoming, fee is paid by sender, so not deducted from
+                // wallet's balance
+                tx.received - tx.sent
+                : // If outgoing, fee is paid by this wallet, so deducted here
+                // to know the net amount
+                tx.sent - tx.received - (tx.fee ?? BigInt.zero);
 
         return WalletTransactionModel.bitcoin(
           txId: tx.txid,
