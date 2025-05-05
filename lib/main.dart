@@ -19,7 +19,6 @@ import 'package:boltz/boltz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lwk/lwk.dart';
 import 'package:payjoin_flutter/common.dart';
 
@@ -29,7 +28,6 @@ Future main() async {
       WidgetsFlutterBinding.ensureInitialized();
 
       await Future.wait([
-        Hive.initFlutter(),
         LibLwk.init(),
         BoltzCore.init(),
         LibBip85.init(),
