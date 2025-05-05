@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
+import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
@@ -64,6 +66,30 @@ void main() {
         language: Language.unitedStatesEnglish,
         hideAmounts: false,
       );
+    }
+
+    debugPrint('electrum: store defaults');
+    final electrumStorage = locator<ElectrumServerStorageDatasource>();
+    final defaultsElectrumServers = [
+      ElectrumServerModel.blockstream(
+        isTestnet: false,
+        isLiquid: false,
+      ), // btc main
+      ElectrumServerModel.blockstream(
+        isTestnet: false,
+        isLiquid: true,
+      ), // liq main
+      ElectrumServerModel.blockstream(
+        isTestnet: true,
+        isLiquid: false,
+      ), // btc test
+      ElectrumServerModel.blockstream(
+        isTestnet: true,
+        isLiquid: true,
+      ), // liq test
+    ];
+    for (final defaultElectrumServer in defaultsElectrumServers) {
+      await electrumStorage.store(defaultElectrumServer);
     }
 
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
