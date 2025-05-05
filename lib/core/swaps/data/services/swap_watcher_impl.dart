@@ -1,14 +1,19 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/fees/data/fees_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class SwapWatcherServiceImpl implements SwapWatcherService {
   final BoltzSwapRepositoryImpl _boltzRepo;
   final WalletAddressRepository _walletAddressRepository;
+  final FeesRepository _feesRepository;
+  final SettingsRepository _settingsRepository;
 
   final StreamController<Swap> _swapStreamController =
       StreamController<Swap>.broadcast();
@@ -16,8 +21,12 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   SwapWatcherServiceImpl({
     required BoltzSwapRepositoryImpl boltzRepo,
     required WalletAddressRepository walletAddressRepository,
+    required FeesRepository feesRepository,
+    required SettingsRepository settingsRepository,
   }) : _boltzRepo = boltzRepo,
-       _walletAddressRepository = walletAddressRepository {
+       _walletAddressRepository = walletAddressRepository,
+       _feesRepository = feesRepository,
+       _settingsRepository = settingsRepository {
     startWatching();
   }
   @override
@@ -185,11 +194,20 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     if (!address.isLiquid) {
       throw Exception('Refund Address is not a Liquid address');
     }
+    final settings = await _settingsRepository.fetch();
+    final environment = settings.environment;
+    final network = Network.fromEnvironment(
+      isTestnet: environment.isTestnet,
+      isLiquid: true,
+    );
+
+    final networkFee = await _feesRepository.getNetworkFees(network: network);
+    final absoluteFeeOptions = networkFee.toAbsolute(140);
     // TODO: add label to liquid address
     final refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
       swapId: swap.id,
       liquidAddress: address.address,
-      absoluteFees: swap.fees!.claimFee!,
+      absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
     );
     // TODO: add label to txid
     final updatedSwap = swap.copyWith(
@@ -253,9 +271,18 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       throw Exception('Refund address is not a Bitcoin address');
     }
     // TODO: add label to bitcoin refund address
+    final settings = await _settingsRepository.fetch();
+    final environment = settings.environment;
+    final network = Network.fromEnvironment(
+      isTestnet: environment.isTestnet,
+      isLiquid: false,
+    );
+    final networkFee = await _feesRepository.getNetworkFees(network: network);
+    final absoluteFeeOptions = networkFee.toAbsolute(140);
+
     final refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
       swapId: swap.id,
-      absoluteFees: swap.fees!.claimFee!,
+      absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
       bitcoinRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid

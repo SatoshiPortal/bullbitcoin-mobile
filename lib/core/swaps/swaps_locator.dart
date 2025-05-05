@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/fees/data/fees_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/hive_storage_datasource_impl.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
@@ -74,6 +76,8 @@ class SwapsLocator {
                 )
                 as BoltzSwapRepositoryImpl,
         walletAddressRepository: locator<WalletAddressRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+        feesRepository: locator<FeesRepository>(),
       ),
       instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
     );
@@ -89,6 +93,8 @@ class SwapsLocator {
                 )
                 as BoltzSwapRepositoryImpl,
         walletAddressRepository: locator<WalletAddressRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+        feesRepository: locator<FeesRepository>(),
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,

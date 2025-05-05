@@ -323,7 +323,7 @@ class SwapCubit extends Cubit<SwapState> {
         final psbt = await _prepareBitcoinSendUsecase.execute(
           walletId: bitcoinWalletId!,
           address: swap.paymentAddress,
-          amountSat: swap.paymentAmount,
+          amountSat: 2500,
           networkFee: state.feesList!.fastest,
         );
         final signedPsbt = await _signBitcoinTxUsecase.execute(
@@ -343,7 +343,7 @@ class SwapCubit extends Cubit<SwapState> {
         final psbt = await _prepareLiquidSendUsecase.execute(
           walletId: liquidWalletId!,
           address: swap.paymentAddress,
-          amountSat: swap.paymentAmount,
+          amountSat: 2500,
           networkFee: state.feesList!.fastest,
         );
         final signedPsbt = await _signLiquidTxUsecase.execute(
