@@ -1,4 +1,6 @@
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
+import 'package:bb_mobile/core/storage/seed/sqlite_seed.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
@@ -12,7 +14,6 @@ import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
 const mnemonics = [
@@ -40,9 +41,10 @@ void main() {
 
   setUpAll(() async {
     await dotenv.load(isOptional: true);
-    lwk.LibLwk.init();
-    await Hive.initFlutter();
+    await lwk.LibLwk.init();
     await AppLocator.setup();
+
+    await locator<SqliteDatabase>().seedTables();
 
     for (final mnemonic in mnemonics) {
       final w = await locator<RecoverOrCreateWalletUsecase>().execute(
@@ -87,32 +89,35 @@ void main() {
     );
   });
 
-  test('Bdk: concurrent sync calls for a wallet should not trigger a new sync',
-      () async {
-    final realDatasource = BdkWalletDatasource();
-    final spyDatasource = SyncSpyBdkWalletDatasource(realDatasource);
+  test(
+    'Bdk: concurrent sync calls for a wallet should not trigger a new sync',
+    () async {
+      final realDatasource = BdkWalletDatasource();
+      final spyDatasource = SyncSpyBdkWalletDatasource(realDatasource);
 
-    const calls = 20;
+      const calls = 20;
 
-    for (final wallet in bdkWallets) {
-      final futures = List.generate(
-        calls,
-        (_) => spyDatasource.sync(wallet: wallet, electrumServer: bdkElectrum),
-      );
+      for (final wallet in bdkWallets) {
+        final futures = List.generate(
+          calls,
+          (_) =>
+              spyDatasource.sync(wallet: wallet, electrumServer: bdkElectrum),
+        );
 
-      await Future.wait(futures);
+        await Future.wait(futures);
 
-      final walletCalls = spyDatasource.callCount[wallet.id] ?? 0;
-      final walletSyncs = spyDatasource.getActualSyncRuns(wallet.id);
+        final walletCalls = spyDatasource.callCount[wallet.id] ?? 0;
+        final walletSyncs = spyDatasource.getActualSyncRuns(wallet.id);
 
-      debugPrint(
-        'Wallet: ${wallet.id}, Calls: $walletCalls, Syncs: $walletSyncs',
-      );
+        debugPrint(
+          'Wallet: ${wallet.id}, Calls: $walletCalls, Syncs: $walletSyncs',
+        );
 
-      expect(walletCalls, equals(calls));
-      expect(walletSyncs, equals(1));
-    }
-  });
+        expect(walletCalls, equals(calls));
+        expect(walletSyncs, equals(1));
+      }
+    },
+  );
 
   test('Bdk: Syncs are independent for different wallet ids', () async {
     final realDatasource = BdkWalletDatasource();
@@ -141,50 +146,55 @@ void main() {
     expect(totalActualSyncs, totalCalls);
   });
 
-  test('Bdk: should trigger a second real sync after the first completes',
-      () async {
-    final realDatasource = BdkWalletDatasource();
-    final spyDatasource = SyncSpyBdkWalletDatasource(realDatasource);
+  test(
+    'Bdk: should trigger a second real sync after the first completes',
+    () async {
+      final realDatasource = BdkWalletDatasource();
+      final spyDatasource = SyncSpyBdkWalletDatasource(realDatasource);
 
-    final wallet = bdkWallets.first;
+      final wallet = bdkWallets.first;
 
-    await spyDatasource.sync(wallet: wallet, electrumServer: bdkElectrum);
+      await spyDatasource.sync(wallet: wallet, electrumServer: bdkElectrum);
 
-    final syncsAfterFirst = spyDatasource.getActualSyncRuns(wallet.id);
-    expect(syncsAfterFirst, equals(1));
+      final syncsAfterFirst = spyDatasource.getActualSyncRuns(wallet.id);
+      expect(syncsAfterFirst, equals(1));
 
-    await spyDatasource.sync(wallet: wallet, electrumServer: bdkElectrum);
+      await spyDatasource.sync(wallet: wallet, electrumServer: bdkElectrum);
 
-    final syncsAfterSecond = spyDatasource.getActualSyncRuns(wallet.id);
-    expect(syncsAfterSecond, equals(2));
-  });
+      final syncsAfterSecond = spyDatasource.getActualSyncRuns(wallet.id);
+      expect(syncsAfterSecond, equals(2));
+    },
+  );
 
-  test('Lwk: concurrent sync calls for a wallet should not trigger a new sync',
-      () async {
-    final realDatasource = LwkWalletDatasource();
-    final spyDatasource = SyncSpyLwkWalletDatasource(realDatasource);
+  test(
+    'Lwk: concurrent sync calls for a wallet should not trigger a new sync',
+    () async {
+      final realDatasource = LwkWalletDatasource();
+      final spyDatasource = SyncSpyLwkWalletDatasource(realDatasource);
 
-    const calls = 20;
+      const calls = 20;
 
-    for (final wallet in lwkWallets) {
-      final futures = List.generate(
-        calls,
-        (_) => spyDatasource.sync(wallet: wallet, electrumServer: lwkElectrum),
-      );
+      for (final wallet in lwkWallets) {
+        final futures = List.generate(
+          calls,
+          (_) =>
+              spyDatasource.sync(wallet: wallet, electrumServer: lwkElectrum),
+        );
 
-      await Future.wait(futures);
+        await Future.wait(futures);
 
-      final walletCalls = spyDatasource.callCount[wallet.id] ?? 0;
-      final walletSyncs = spyDatasource.getActualSyncRuns(wallet.id);
+        final walletCalls = spyDatasource.callCount[wallet.id] ?? 0;
+        final walletSyncs = spyDatasource.getActualSyncRuns(wallet.id);
 
-      debugPrint(
-        'Wallet: ${wallet.id}, Calls: $walletCalls, Syncs: $walletSyncs',
-      );
+        debugPrint(
+          'Wallet: ${wallet.id}, Calls: $walletCalls, Syncs: $walletSyncs',
+        );
 
-      expect(walletCalls, equals(calls));
-      expect(walletSyncs, equals(1));
-    }
-  });
+        expect(walletCalls, equals(calls));
+        expect(walletSyncs, equals(1));
+      }
+    },
+  );
 
   test('Lwk: Syncs are independent for different wallet ids', () async {
     final realDatasource = LwkWalletDatasource();
@@ -213,23 +223,25 @@ void main() {
     expect(totalActualSyncs, totalCalls);
   });
 
-  test('Lwk: should trigger a second real sync after the first completes',
-      () async {
-    final realDatasource = LwkWalletDatasource();
-    final spyDatasource = SyncSpyLwkWalletDatasource(realDatasource);
+  test(
+    'Lwk: should trigger a second real sync after the first completes',
+    () async {
+      final realDatasource = LwkWalletDatasource();
+      final spyDatasource = SyncSpyLwkWalletDatasource(realDatasource);
 
-    final wallet = lwkWallets.first;
+      final wallet = lwkWallets.first;
 
-    await spyDatasource.sync(wallet: wallet, electrumServer: lwkElectrum);
+      await spyDatasource.sync(wallet: wallet, electrumServer: lwkElectrum);
 
-    final syncsAfterFirst = spyDatasource.getActualSyncRuns(wallet.id);
-    expect(syncsAfterFirst, equals(1));
+      final syncsAfterFirst = spyDatasource.getActualSyncRuns(wallet.id);
+      expect(syncsAfterFirst, equals(1));
 
-    await spyDatasource.sync(wallet: wallet, electrumServer: lwkElectrum);
+      await spyDatasource.sync(wallet: wallet, electrumServer: lwkElectrum);
 
-    final syncsAfterSecond = spyDatasource.getActualSyncRuns(wallet.id);
-    expect(syncsAfterSecond, equals(2));
-  });
+      final syncsAfterSecond = spyDatasource.getActualSyncRuns(wallet.id);
+      expect(syncsAfterSecond, equals(2));
+    },
+  );
 }
 
 class SyncSpyBdkWalletDatasource implements WalletDatasource {
@@ -253,8 +265,7 @@ class SyncSpyBdkWalletDatasource implements WalletDatasource {
   Future<List<WalletTransactionModel>> getTransactions({
     required WalletModel wallet,
     String? toAddress,
-  }) =>
-      throw UnimplementedError();
+  }) => throw UnimplementedError();
 
   @override
   Future<BigInt> getAddressBalanceSat(
@@ -343,8 +354,7 @@ class SyncSpyLwkWalletDatasource implements WalletDatasource {
   Future<List<WalletTransactionModel>> getTransactions({
     required WalletModel wallet,
     String? toAddress,
-  }) =>
-      throw UnimplementedError();
+  }) => throw UnimplementedError();
 
   @override
   Future<BigInt> getAddressBalanceSat(
