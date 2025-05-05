@@ -122,7 +122,6 @@ dependencies:
   webview_flutter_android: ^4.3.4
   webview_flutter_wkwebview: ^3.18.5
   async: ^2.11.0
-  shared_preferences: ^2.5.3
   drift: '^2.19.1+1'
   drift_flutter: ^0.2.0
 
