@@ -1,20 +1,9 @@
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'electrum_server.freezed.dart';
-
-enum DefaultElectrumServerProvider { bullBitcoin, blockstream }
-
-@freezed
-class ElectrumServerProvider with _$ElectrumServerProvider {
-  const factory ElectrumServerProvider.customProvider() =
-      CustomElectrumServerProvider;
-  const factory ElectrumServerProvider.defaultProvider({
-    @Default(DefaultElectrumServerProvider.bullBitcoin)
-    DefaultElectrumServerProvider defaultServerProvider,
-  }) = DefaultServerProvider;
-}
 
 enum ElectrumServerStatus { online, offline, unknown }
 
