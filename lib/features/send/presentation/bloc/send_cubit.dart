@@ -145,6 +145,10 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
+  void onClickAddressOrInvoice(String addressOrInvoice) {
+    emit(state.copyWith(addressOrInvoice: addressOrInvoice));
+  }
+
   void backClicked() {
     if (state.step == SendStep.address) {
       emit(state.copyWith(step: SendStep.address));

@@ -1,6 +1,8 @@
 import 'package:bb_mobile/features/scan/presentation/scan_cubit.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_state.dart';
+import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -50,13 +52,27 @@ class _ScanWidgetState extends State<ScanWidget> {
     super.dispose();
   }
 
+  /// Handles clicking on a scanned address/invoice
+  /// Copies to clipboard, shows feedback, and returns data to previous screen
+  void onClickAddressOrInvoice(BuildContext context, String data) {
+    Clipboard.setData(ClipboardData(text: data));
+    locator<SendCubit>().onClickAddressOrInvoice(data);
+    // Show feedback toast
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Copied to clipboard'),
+        duration: Duration(seconds: 1),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.colour.secondaryFixedDim,
       body: Stack(
         children: [
-          // const _BG(),
           SafeArea(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -90,44 +106,20 @@ class _ScanWidgetState extends State<ScanWidget> {
                                       bottom: 60,
                                       left: 0,
                                       right: 0,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          final data = state.data;
-                                          Clipboard.setData(
-                                            ClipboardData(text: data),
-                                          );
-                                          debugPrint(
-                                            'Copied to clipboard: $data',
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8),
-                                          color: Colors.black54,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Expanded(
-                                                child: BBText(
-                                                  state.data.length > 50
-                                                      ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
-                                                      : state.data,
-                                                  color:
-                                                      context.colour.onPrimary,
-                                                  style:
-                                                      context.font.labelSmall,
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              Icon(
-                                                Icons.copy,
-                                                size: 16,
-                                                color: context.colour.onPrimary,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                                      child: BBButton.big(
+                                        iconData: Icons.copy,
+                                        textStyle: context.font.labelSmall,
+                                        textColor: context.colour.onPrimary,
+                                        onPressed:
+                                            () => onClickAddressOrInvoice(
+                                              context,
+                                              state.data,
+                                            ),
+                                        label:
+                                            state.data.length > 50
+                                                ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
+                                                : state.data,
+                                        bgColor: Colors.transparent,
                                       ),
                                     ),
                                 ],
@@ -181,6 +173,7 @@ class _ScanWidgetState extends State<ScanWidget> {
                                     if (_controller != null) {
                                       _controller!.dispose();
                                       _cameraInitialized = false;
+                                      setState(() {});
                                     }
                                   }
                                   : () async {
