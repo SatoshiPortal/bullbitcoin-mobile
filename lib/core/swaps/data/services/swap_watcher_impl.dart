@@ -144,11 +144,24 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     if (!address.isBitcoin) {
       throw Exception('Refund Address is not a Bitcoin address');
     }
+    final settings = await _settingsRepository.fetch();
+    final environment = settings.environment;
+    final network = Network.fromEnvironment(
+      isTestnet: environment.isTestnet,
+      isLiquid: true,
+    );
+
+    final networkFee = await _feesRepository.getNetworkFees(network: network);
+    final txSize = await _boltzRepo.getSwapRefundTxSize(
+      swapId: swap.id,
+      swapType: swap.type,
+    );
+    final absoluteFeeOptions = networkFee.toAbsolute(txSize);
     // TODO: add label to bitcoin address
     final refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
       swapId: swap.id,
       bitcoinAddress: address.address,
-      absoluteFees: swap.fees!.claimFee!,
+      absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
     );
     // TODO: add label to txid
     final updatedSwap = swap.copyWith(
@@ -202,7 +215,11 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     );
 
     final networkFee = await _feesRepository.getNetworkFees(network: network);
-    final absoluteFeeOptions = networkFee.toAbsolute(140);
+    final txSize = await _boltzRepo.getSwapRefundTxSize(
+      swapId: swap.id,
+      swapType: swap.type,
+    );
+    final absoluteFeeOptions = networkFee.toAbsolute(txSize);
     // TODO: add label to liquid address
     final refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
       swapId: swap.id,
@@ -278,7 +295,12 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       isLiquid: false,
     );
     final networkFee = await _feesRepository.getNetworkFees(network: network);
-    final absoluteFeeOptions = networkFee.toAbsolute(140);
+    final txSize = await _boltzRepo.getSwapRefundTxSize(
+      swapId: swap.id,
+      swapType: swap.type,
+      refundAddressForChainSwaps: refundAddress.address,
+    );
+    final absoluteFeeOptions = networkFee.toAbsolute(txSize);
 
     final refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
       swapId: swap.id,
@@ -337,9 +359,24 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       throw Exception('Claim address is not a Liquid address');
     }
     // TODO: add label to liquid refund address
+    final settings = await _settingsRepository.fetch();
+    final environment = settings.environment;
+    final network = Network.fromEnvironment(
+      isTestnet: environment.isTestnet,
+      isLiquid: true,
+    );
+
+    final networkFee = await _feesRepository.getNetworkFees(network: network);
+    final txSize = await _boltzRepo.getSwapRefundTxSize(
+      swapId: swap.id,
+      swapType: swap.type,
+      refundAddressForChainSwaps: refundAddress.address,
+    );
+    final absoluteFeeOptions = networkFee.toAbsolute(txSize);
+
     final refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
       swapId: swap.id,
-      absoluteFees: swap.fees!.claimFee!,
+      absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
       liquidRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid

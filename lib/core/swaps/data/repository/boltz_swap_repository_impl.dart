@@ -655,4 +655,36 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     }
     return null;
   }
+
+  @override
+  Future<int> getSwapRefundTxSize({
+    required String swapId,
+    required SwapType swapType,
+    bool isCooperative = true,
+    String? refundAddressForChainSwaps,
+  }) async {
+    switch (swapType) {
+      case SwapType.lightningToBitcoin:
+        return 0;
+      case SwapType.lightningToLiquid:
+        return 0;
+      case SwapType.liquidToLightning:
+        return await _boltz.getLbtLnRefundTxSize(
+          swapId: swapId,
+          isCooperative: isCooperative,
+        );
+      case SwapType.bitcoinToLightning:
+        return await _boltz.getBtcLnRefundTxSize(
+          swapId: swapId,
+          isCooperative: isCooperative,
+        );
+      case SwapType.liquidToBitcoin:
+      case SwapType.bitcoinToLiquid:
+        return await _boltz.getChainRefundTxSize(
+          swapId: swapId,
+          isCooperative: isCooperative,
+          refundAddress: refundAddressForChainSwaps!,
+        );
+    }
+  }
 }

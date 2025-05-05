@@ -116,6 +116,12 @@ abstract class SwapRepository {
 
   Future<Invoice> decodeInvoice({required String invoice});
 
+  Future<int> getSwapRefundTxSize({
+    required String swapId,
+    required SwapType swapType,
+    bool isCooperative = true,
+    String? refundAddressForChainSwaps,
+  });
   // SWAP STORAGE UTILITY
   Future<Swap> getSwap({required String swapId});
   Future<LnSendSwap?> getSendSwapByInvoice({required String invoice});

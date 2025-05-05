@@ -806,6 +806,46 @@ class BoltzDatasource {
     }
   }
 
+  Future<int> getLbtLnRefundTxSize({
+    required String swapId,
+    bool isCooperative = true,
+  }) async {
+    final lnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+    final size = await lnSwap.refundTxSize(isCooperative: isCooperative);
+    return size.toInt();
+  }
+
+  Future<int> getBtcLnRefundTxSize({
+    required String swapId,
+    bool isCooperative = true,
+  }) async {
+    final lnSwap = await _boltzStore.getBtcLnSwap(swapId);
+    final size = await lnSwap.refundTxSize(isCooperative: isCooperative);
+    return size.toInt();
+  }
+
+  Future<int> getChainRefundTxSize({
+    required String swapId,
+    required String refundAddress,
+    bool isCooperative = true,
+  }) async {
+    final chainSwap = await _boltzStore.getChainSwap(swapId);
+    final size = await chainSwap.refundTxSize(
+      refundAddress: refundAddress,
+      tryCooperate: isCooperative,
+    );
+    return size.toInt();
+  }
+
+  // Future<int> getChainTxSize({
+  //   required String swapId,
+  //   bool isCooperative = true,
+  // }) async {
+  //   final chainSwap = await _boltzStore.getChainSwap(swapId);
+  //   final size = await chainSwap.txSize(isCooperative: isCooperative);
+  //   return size.toInt();
+  // }
+
   void _initializeBoltzWebSocket() {
     try {
       _boltzWebSocket = BoltzWebSocket.create(_baseUrl);
