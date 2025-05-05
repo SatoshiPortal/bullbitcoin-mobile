@@ -116,8 +116,8 @@ class _ScanWidgetState extends State<ScanWidget> {
                                               state.data,
                                             ),
                                         label:
-                                            state.data.length > 50
-                                                ? '${state.data.substring(0, 20)}...${state.data.substring(state.data.length - 20)}'
+                                            state.data.length > 30
+                                                ? '${state.data.substring(0, 10)}…${state.data.substring(state.data.length - 10)}'
                                                 : state.data,
                                         bgColor: Colors.transparent,
                                       ),
