@@ -69,8 +69,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Future<Payjoin?> getPayjoinById(String payjoinId) async {
     final (receiver, sender) =
         await (
-          _localPayjoinDatasource.getReceiver(payjoinId),
-          _localPayjoinDatasource.getSender(payjoinId),
+          _localPayjoinDatasource.fetchReceiver(payjoinId),
+          _localPayjoinDatasource.fetchSender(payjoinId),
         ).wait;
     if (receiver != null) {
       return receiver.toEntity();
@@ -84,7 +84,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Future<List<Payjoin>> getPayjoins({bool onlyOngoing = false}) async {
-    final models = await _localPayjoinDatasource.getAll(
+    final models = await _localPayjoinDatasource.fetchAll(
       onlyOngoing: onlyOngoing,
     );
 
@@ -95,7 +95,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Future<List<Payjoin>> getPayjoinsByTxId(String txId) async {
-    final payjoinModels = await _localPayjoinDatasource.getByTxId(txId);
+    final payjoinModels = await _localPayjoinDatasource.fetchByTxId(txId);
 
     return payjoinModels
         .map((payjoinModel) => payjoinModel.toEntity())
@@ -114,7 +114,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   @override
   Future<List<({String txId, int vout})>>
   getUtxosFrozenByOngoingPayjoins() async {
-    final payjoins = await _localPayjoinDatasource.getAll(onlyOngoing: true);
+    final payjoins = await _localPayjoinDatasource.fetchAll(onlyOngoing: true);
 
     final inputs = await Future.wait(
       payjoins.map((payjoin) async {
@@ -168,7 +168,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     );
 
     // Store the payjoin receiver in the local database
-    await _localPayjoinDatasource.createReceiver(model);
+    await _localPayjoinDatasource.storeReceiver(model);
 
     final payjoin = model.toEntity() as PayjoinReceiver;
 
@@ -195,7 +195,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     );
 
     // Store the payjoin sender in the local database
-    await _localPayjoinDatasource.createSender(model);
+    await _localPayjoinDatasource.storeSender(model);
 
     // Return a payjoin entity with send details
     final payjoin = model.toEntity();
@@ -224,7 +224,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
 
       // Update the local database with the completed payjoin
-      final model = await _localPayjoinDatasource.getReceiver(payjoin.id);
+      final model = await _localPayjoinDatasource.fetchReceiver(payjoin.id);
       if (model == null) {
         throw Exception('Payjoin receiver not found');
       }
@@ -315,7 +315,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   Future<void> _resumePayjoins() async {
-    final models = await _localPayjoinDatasource.getAll(onlyOngoing: true);
+    final models = await _localPayjoinDatasource.fetchAll(onlyOngoing: true);
     for (final model in models) {
       if (model.isExpiryTimePassed) {
         // If the payjoin is expired, we should update the model and
@@ -387,7 +387,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         );
       }
 
-      final freshModel = await _localPayjoinDatasource.getReceiver(payjoin.id);
+      final freshModel = await _localPayjoinDatasource.fetchReceiver(
+        payjoin.id,
+      );
       if (freshModel == null) throw Exception('Payjoin receiver not found');
 
       final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
@@ -432,7 +434,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     );
 
     // Update the local database with the completed payjoin
-    final model = await _localPayjoinDatasource.getSender(payjoinId);
+    final model = await _localPayjoinDatasource.fetchSender(payjoinId);
     if (model == null) {
       throw Exception('Payjoin sender not found');
     }

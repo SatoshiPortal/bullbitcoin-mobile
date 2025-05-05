@@ -59,7 +59,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
             environment: environment,
             sync: sync,
           ),
-          _payjoinDatasource.getAll(),
+          _payjoinDatasource.fetchAll(),
           _swapDatasource.getAll(),
         ).wait;
 

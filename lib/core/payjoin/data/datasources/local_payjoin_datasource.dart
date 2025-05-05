@@ -7,7 +7,7 @@ class LocalPayjoinDatasource {
 
   LocalPayjoinDatasource({required SqliteDatabase db}) : _db = db;
 
-  Future<void> createReceiver(PayjoinReceiverModel receiver) async {
+  Future<void> storeReceiver(PayjoinReceiverModel receiver) async {
     try {
       await _db.managers.payjoinReceivers.create(
         (r) => r(
@@ -34,7 +34,7 @@ class LocalPayjoinDatasource {
     }
   }
 
-  Future<void> createSender(PayjoinSenderModel sender) async {
+  Future<void> storeSender(PayjoinSenderModel sender) async {
     try {
       await _db.managers.payjoinSenders.create(
         (s) => s(
@@ -57,7 +57,7 @@ class LocalPayjoinDatasource {
     }
   }
 
-  Future<PayjoinReceiverModel?> getReceiver(String id) async {
+  Future<PayjoinReceiverModel?> fetchReceiver(String id) async {
     final receiver =
         await _db.managers.payjoinReceivers
             .filter((f) => f.id(id))
@@ -70,7 +70,7 @@ class LocalPayjoinDatasource {
     return PayjoinModel.fromReceiverTable(receiver) as PayjoinReceiverModel;
   }
 
-  Future<PayjoinSenderModel?> getSender(String uri) async {
+  Future<PayjoinSenderModel?> fetchSender(String uri) async {
     final sender =
         await _db.managers.payjoinSenders
             .filter((f) => f.uri(uri))
@@ -83,7 +83,7 @@ class LocalPayjoinDatasource {
     return PayjoinModel.fromSenderTable(sender) as PayjoinSenderModel;
   }
 
-  Future<List<PayjoinModel>> getAll({bool onlyOngoing = false}) async {
+  Future<List<PayjoinModel>> fetchAll({bool onlyOngoing = false}) async {
     List<PayjoinReceiverRow> receivers;
     List<PayjoinSenderRow> senders;
 
@@ -112,7 +112,7 @@ class LocalPayjoinDatasource {
     ];
   }
 
-  Future<List<PayjoinModel>> getByTxId(String txId) async {
+  Future<List<PayjoinModel>> fetchByTxId(String txId) async {
     final (receivers, senders) =
         await (
           _db.managers.payjoinReceivers.filter((f) => f.txId(txId)).get(),
@@ -125,7 +125,7 @@ class LocalPayjoinDatasource {
     ];
   }
 
-  Future<List<PayjoinReceiverModel>> getReceivers({
+  Future<List<PayjoinReceiverModel>> fetchReceivers({
     bool onlyOngoing = false,
   }) async {
     final receiversTable = _db.managers.payjoinReceivers;
@@ -148,7 +148,7 @@ class LocalPayjoinDatasource {
         .toList();
   }
 
-  Future<List<PayjoinSenderModel>> getSenders({
+  Future<List<PayjoinSenderModel>> fetchSenders({
     bool onlyOngoing = false,
   }) async {
     final sendersTable = _db.managers.payjoinSenders;
