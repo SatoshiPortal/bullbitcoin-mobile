@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-class ReceiveArrowBadge extends StatelessWidget {
-  const ReceiveArrowBadge({super.key});
+class TransactionDirectionBadge extends StatelessWidget {
+  const TransactionDirectionBadge({super.key, required this.isIncoming});
+
+  final bool isIncoming;
 
   @override
   Widget build(BuildContext context) {
@@ -11,9 +13,7 @@ class ReceiveArrowBadge extends StatelessWidget {
       width: 72,
       height: 72,
       decoration: BoxDecoration(
-        border: Border.all(
-          color: theme.colorScheme.surface,
-        ),
+        border: Border.all(color: theme.colorScheme.surface),
         color: theme.colorScheme.onPrimary,
         borderRadius: BorderRadius.circular(60),
         boxShadow: [
@@ -25,7 +25,7 @@ class ReceiveArrowBadge extends StatelessWidget {
         ],
       ),
       child: Icon(
-        Icons.south_east,
+        isIncoming ? Icons.south_east : Icons.north_east,
         color: theme.colorScheme.secondary,
       ),
     );

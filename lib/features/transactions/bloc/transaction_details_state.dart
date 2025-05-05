@@ -4,6 +4,7 @@ part of 'transaction_details_cubit.dart';
 sealed class TransactionDetailsState with _$TransactionDetailsState {
   const factory TransactionDetailsState({
     WalletTransaction? transaction,
+    Wallet? wallet,
     Payjoin? payjoin,
     Swap? swap,
     Object? err,

@@ -10,6 +10,7 @@ sealed class TransactionOutput with _$TransactionOutput implements Labelable {
   const factory TransactionOutput.bitcoin({
     required String txId,
     required int vout,
+    required bool isOwn,
     BigInt? value,
     required Uint8List scriptPubkey,
     required String address,
@@ -19,6 +20,7 @@ sealed class TransactionOutput with _$TransactionOutput implements Labelable {
   const factory TransactionOutput.liquid({
     required String txId,
     required int vout,
+    required bool isOwn,
     required BigInt value,
     required String scriptPubkey,
     required String standardAddress,

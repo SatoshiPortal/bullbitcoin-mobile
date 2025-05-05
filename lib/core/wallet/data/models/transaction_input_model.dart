@@ -9,6 +9,7 @@ sealed class TransactionInputModel with _$TransactionInputModel {
   const factory TransactionInputModel.bitcoin({
     required String txId,
     required int vin,
+    required bool isOwn,
     BigInt? value,
     Uint8List? scriptSig,
     required String previousTxId,
@@ -17,6 +18,7 @@ sealed class TransactionInputModel with _$TransactionInputModel {
   const factory TransactionInputModel.liquid({
     required String txId,
     required int vin,
+    required bool isOwn,
     BigInt? value,
     required String scriptPubkey,
     required String previousTxId,

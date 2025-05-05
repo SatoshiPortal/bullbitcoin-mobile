@@ -29,6 +29,7 @@ class ReceiveTransactionDetailsTable extends StatelessWidget {
     final abbreviatedTxId = context.select(
       (ReceiveBloc bloc) => bloc.state.abbreviatedTxId,
     );
+
     return DetailsTable(
       items: [
         DetailsTableItem(

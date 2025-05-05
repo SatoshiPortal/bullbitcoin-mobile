@@ -11,6 +11,7 @@ class TransactionInputMapper {
         return TransactionInput.bitcoin(
           txId: transactionInputModel.txId,
           vin: transactionInputModel.vin,
+          isOwn: transactionInputModel.isOwn,
           value: transactionInputModel.value,
           scriptSig: transactionInputModel.scriptSig,
           previousTxId: transactionInputModel.previousTxId,
@@ -21,6 +22,7 @@ class TransactionInputMapper {
         return TransactionInput.liquid(
           txId: transactionInputModel.txId,
           vin: transactionInputModel.vin,
+          isOwn: transactionInputModel.isOwn,
           value: transactionInputModel.value,
           scriptPubkey: transactionInputModel.scriptPubkey,
           previousTxId: transactionInputModel.previousTxId,
@@ -36,6 +38,7 @@ class TransactionInputMapper {
         return TransactionInputModel.bitcoin(
           txId: transactionInput.txId,
           vin: transactionInput.vin,
+          isOwn: transactionInput.isOwn,
           value: transactionInput.value,
           scriptSig: transactionInput.scriptSig,
           previousTxId: transactionInput.previousTxId,
@@ -45,6 +48,7 @@ class TransactionInputMapper {
         return TransactionInputModel.liquid(
           txId: transactionInput.txId,
           vin: transactionInput.vin,
+          isOwn: transactionInput.isOwn,
           value: transactionInput.value,
           scriptPubkey: transactionInput.scriptPubkey,
           previousTxId: transactionInput.previousTxId,

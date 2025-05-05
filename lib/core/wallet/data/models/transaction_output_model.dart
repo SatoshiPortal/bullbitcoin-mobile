@@ -9,6 +9,7 @@ sealed class TransactionOutputModel with _$TransactionOutputModel {
   const factory TransactionOutputModel.bitcoin({
     required String txId,
     required int vout,
+    required bool isOwn,
     BigInt? value,
     required Uint8List scriptPubkey,
     required String address,
@@ -16,6 +17,7 @@ sealed class TransactionOutputModel with _$TransactionOutputModel {
   const factory TransactionOutputModel.liquid({
     required String txId,
     required int vout,
+    required bool isOwn,
     required BigInt value,
     required String scriptPubkey,
     required String standardAddress,

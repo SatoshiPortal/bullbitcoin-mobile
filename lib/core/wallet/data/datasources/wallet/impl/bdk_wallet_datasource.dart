@@ -283,7 +283,7 @@ class BdkWalletDatasource implements WalletDatasource {
     final transactions = bdkWallet.listTransactions(includeRaw: true);
     final allTransactionOutputs = await _getAllOutputsOfTransactions(
       transactions,
-      isTestnet: wallet.isTestnet,
+      wallet: wallet,
     );
 
     // Map the transactions to WalletTransactionModel
@@ -316,74 +316,36 @@ class BdkWalletDatasource implements WalletDatasource {
                 ? tx.received - tx.sent
                 : tx.sent - tx.received - (tx.fee ?? BigInt.zero);
 
-        // Start with the assumption that the transaction is to self
-        // and update it to false if any input or output is not owned by the wallet
-        // TODO: Instead of starting with isToSelf on true, optimize the code by
-        //  adding an `isOwn` field to the TransactionInputModel and
-        //  TransactionOutputModel and then check if all inputs and outputs are
-        //  owned by the wallet or not to determine if the transaction is to
-        //  self or not.
-        bool isToSelf = true;
-        final (inputModels, outputModels) =
-            await (
-              Future.wait(
-                inputs.asMap().entries.map((entry) async {
-                  final input = entry.value;
-                  final vin = entry.key;
-                  final previousOutput = input.previousOutput;
-                  final output = allTransactionOutputs.firstWhereOrNull(
-                    (output) =>
-                        output.txId == previousOutput.txid &&
-                        output.vout == previousOutput.vout,
-                  );
-                  final isOwnInput =
-                      output != null &&
-                      await isMine(
-                        output.scriptPubkey,
-                        wallet: wallet as PublicBdkWalletModel,
-                      );
+        // Map inputs and outputs to their respective models
+        final inputModels =
+            inputs.asMap().entries.map((entry) {
+              final input = entry.value;
+              final vin = entry.key;
+              final previousOutput = input.previousOutput;
+              final output = allTransactionOutputs.firstWhereOrNull(
+                (output) =>
+                    output.txId == previousOutput.txid &&
+                    output.vout == previousOutput.vout,
+              );
 
-                  if (!isOwnInput) {
-                    isToSelf = false;
-                  }
+              return TransactionInputModel.bitcoin(
+                txId: tx.txid,
+                vin: vin,
+                isOwn: output?.isOwn ?? false,
+                scriptSig: input.scriptSig?.bytes,
+                previousTxId: previousOutput.txid,
+                previousTxVout: previousOutput.vout,
+              );
+            }).toList();
+        final outputModels =
+            allTransactionOutputs
+                .where((output) => output.txId == tx.txid)
+                .toList();
 
-                  return TransactionInputModel.bitcoin(
-                    txId: tx.txid,
-                    vin: vin,
-                    scriptSig: input.scriptSig?.bytes,
-                    previousTxId: previousOutput.txid,
-                    previousTxVout: previousOutput.vout,
-                  );
-                }).toList(),
-              ),
-              Future.wait(
-                outputs.asMap().entries.map((entry) async {
-                  final vout = entry.key;
-                  final output = entry.value;
-                  final scriptPubkeyBytes = output.scriptPubkey.bytes;
-                  final isOwnOutput = await isMine(
-                    scriptPubkeyBytes,
-                    wallet: wallet as PublicBdkWalletModel,
-                  );
-
-                  if (!isOwnOutput) {
-                    isToSelf = false;
-                  }
-
-                  return TransactionOutputModel.bitcoin(
-                    txId: tx.txid,
-                    vout: vout,
-                    value: output.value,
-                    scriptPubkey: scriptPubkeyBytes,
-                    address:
-                        await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
-                          scriptPubkeyBytes,
-                          isTestnet: wallet.isTestnet,
-                        ),
-                  );
-                }).toList(),
-              ),
-            ).wait;
+        // Check if all inputs and outputs are owned by the wallet itself
+        final isToSelf =
+            inputModels.every((input) => input.isOwn) &&
+            outputModels.every((output) => output.isOwn);
 
         return WalletTransactionModel.bitcoin(
           txId: tx.txid,
@@ -552,7 +514,7 @@ class BdkWalletDatasource implements WalletDatasource {
 
   Future<List<BitcoinTransactionOutputModel>> _getAllOutputsOfTransactions(
     List<bdk.TransactionDetails> transactions, {
-    required bool isTestnet,
+    required WalletModel wallet,
   }) async {
     final listOfOutputs = await Future.wait(
       transactions.map((tx) async {
@@ -561,15 +523,17 @@ class BdkWalletDatasource implements WalletDatasource {
           outputs.asMap().entries.map((outputEntry) async {
             final vout = outputEntry.key;
             final output = outputEntry.value;
+            final scriptPubkeyBytes = output.scriptPubkey.bytes;
             return TransactionOutputModel.bitcoin(
               txId: tx.txid,
               vout: vout,
+              isOwn: await isMine(scriptPubkeyBytes, wallet: wallet),
               value: output.value,
-              scriptPubkey: output.scriptPubkey.bytes,
+              scriptPubkey: scriptPubkeyBytes,
               address:
                   await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
                     output.scriptPubkey.bytes,
-                    isTestnet: isTestnet,
+                    isTestnet: wallet.isTestnet,
                   ),
             );
           }),

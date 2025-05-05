@@ -10,6 +10,7 @@ class TransactionOutputMapper {
         return TransactionOutputModel.bitcoin(
           txId: transactionOutput.txId,
           vout: transactionOutput.vout,
+          isOwn: transactionOutput.isOwn,
           value: transactionOutput.value,
           scriptPubkey: transactionOutput.scriptPubkey,
           address: transactionOutput.address,
@@ -18,6 +19,7 @@ class TransactionOutputMapper {
         return TransactionOutputModel.liquid(
           txId: transactionOutput.txId,
           vout: transactionOutput.vout,
+          isOwn: transactionOutput.isOwn,
           value: transactionOutput.value,
           scriptPubkey: transactionOutput.scriptPubkey,
           standardAddress: transactionOutput.standardAddress,
@@ -36,6 +38,7 @@ class TransactionOutputMapper {
         return TransactionOutput.bitcoin(
           txId: transactionOutputModel.txId,
           vout: transactionOutputModel.vout,
+          isOwn: transactionOutputModel.isOwn,
           value: transactionOutputModel.value,
           labels: labels,
           scriptPubkey: transactionOutputModel.scriptPubkey,
@@ -46,6 +49,7 @@ class TransactionOutputMapper {
         return TransactionOutput.liquid(
           txId: transactionOutputModel.txId,
           vout: transactionOutputModel.vout,
+          isOwn: transactionOutputModel.isOwn,
           value: transactionOutputModel.value,
           labels: labels,
           scriptPubkey: transactionOutputModel.scriptPubkey,

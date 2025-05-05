@@ -51,6 +51,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   Future<void> loadTxs() async {
     try {
+      emit(state.copyWith(isSyncing: true));
       final transactions = await _getWalletTransactionsUsecase.execute();
       final isSyncing = _checkAnyWalletSyncingUsecase.execute();
 

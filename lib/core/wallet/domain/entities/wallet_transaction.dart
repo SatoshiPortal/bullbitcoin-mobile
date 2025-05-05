@@ -56,10 +56,30 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
   bool get isSwap => swapId.isNotEmpty;
   bool get isExchange => exchangeId.isNotEmpty;
 
+  String get toAddress {
+    TransactionOutput? output;
+    if (isToSelf) {
+      output = outputs.first;
+    } else if (direction == WalletTransactionDirection.incoming) {
+      output = outputs.firstWhere((output) => output.isOwn);
+    } else {
+      output = outputs.firstWhere((output) => !output.isOwn);
+    }
+
+    switch (output) {
+      case BitcoinTransactionOutput _:
+        return output.address;
+      case LiquidTransactionOutput _:
+        return output.confidentialAddress;
+    }
+  }
+
   @override
   String get labelRef => txId;
 }
 
+// TODO: remove this Transaction class after Transaction details is implemented
+// fully without this extra Transaction class.
 // This is the final type that is translated from a WalletTransaction
 // It knows the specific details of the transaction like if its a swap, payjoin etc.
 @freezed

@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/widgets/receive_arrow_badge.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_transaction_details_table.dart';
 import 'package:bb_mobile/router.dart';
+import 'package:bb_mobile/ui/components/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -49,7 +49,7 @@ class ReceiveDetailsScreen extends StatelessWidget {
             child: Center(
               child: Column(
                 children: [
-                  const ReceiveArrowBadge(),
+                  const TransactionDirectionBadge(isIncoming: true),
                   const Gap(24),
                   BBText('Payment received', style: context.font.headlineLarge),
                   const Gap(8),
@@ -85,7 +85,6 @@ class ReceiveDetailsScreen extends StatelessWidget {
             ),
           ),
         ),
-        // child: AmountPage(),
       ),
     );
   }
