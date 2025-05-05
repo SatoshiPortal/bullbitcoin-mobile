@@ -70,7 +70,9 @@ abstract class SendState with _$SendState {
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(false) bool replaceByFee,
-    FeeOptions? feesList,
+
+    FeeOptions? bitcoinFeesList,
+    FeeOptions? liquidFeesList,
     NetworkFee? selectedFee,
     // TODO: remove absFee and make usecases return size so abs fee can
     // be calculated from NetworkFee
@@ -102,8 +104,13 @@ abstract class SendState with _$SendState {
     ConfirmTransactionException? confirmTransactionException,
 
     // swapLimits
-    SwapLimits? swapLimits,
-    SwapFees? swapFees,
+    SwapLimits? bitcoinSwapLimits,
+    SwapLimits? liquidSwapLimits,
+    SwapLimits? selectedSwapLimits,
+
+    SwapFees? bitcoinSwapFees,
+    SwapFees? liquidSwapFees,
+    SwapFees? selectedSwapFees,
   }) = _SendState;
   const SendState._();
 
@@ -257,10 +264,11 @@ abstract class SendState with _$SendState {
     }
   }
 
-  bool walletHasBalance() {
-    if (selectedWallet == null) return false;
-    return inputAmountSat <= selectedWallet!.balanceSat.toInt();
-  }
+  bool get walletHasBalance =>
+      // ignore: avoid_bool_literals_in_conditional_expressions
+      selectedWallet == null
+          ? false
+          : inputAmountSat <= selectedWallet!.balanceSat.toInt();
 
   String sendTypeName() {
     switch (sendType) {
@@ -277,21 +285,23 @@ abstract class SendState with _$SendState {
 
   bool get swapAmountBelowLimit {
     if (isLightning && inputAmountSat != 0) {
-      return swapLimits != null && inputAmountSat < swapLimits!.min;
+      return selectedSwapLimits != null &&
+          inputAmountSat < selectedSwapLimits!.min;
     }
     return false;
   }
 
   bool get swapAmountAboveLimit {
     if (isLightning) {
-      return swapLimits != null && inputAmountSat > swapLimits!.max;
+      return selectedSwapLimits != null &&
+          inputAmountSat > selectedSwapLimits!.max;
     }
     return false;
   }
 
   bool get isSwapAmountValid =>
       isLightning &&
-      (swapLimits == null ||
+      (selectedSwapLimits == null ||
           inputAmountSat == 0 ||
           swapAmountBelowLimit ||
           swapAmountAboveLimit);

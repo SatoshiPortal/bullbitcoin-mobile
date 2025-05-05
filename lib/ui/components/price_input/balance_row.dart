@@ -7,12 +7,14 @@ import 'package:gap/gap.dart';
 class BalanceRow extends StatelessWidget {
   final String balance;
   final String currencyCode;
+  final bool showMax;
   final void Function() onMaxPressed;
 
   const BalanceRow({
     super.key,
     required this.balance,
     required this.currencyCode,
+    required this.showMax,
     required this.onMaxPressed,
   });
 
@@ -22,10 +24,7 @@ class BalanceRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          Container(
-            height: 1,
-            color: context.colour.secondaryFixedDim,
-          ),
+          Container(height: 1, color: context.colour.secondaryFixedDim),
           const Gap(14),
           Row(
             children: [
@@ -42,15 +41,16 @@ class BalanceRow extends StatelessWidget {
                 color: context.colour.secondary,
               ),
               const Spacer(),
-              BBButton.small(
-                label: 'MAX',
-                height: 30,
-                width: 51,
-                bgColor: context.colour.secondaryFixedDim,
-                textColor: context.colour.secondary,
-                textStyle: context.font.labelLarge,
-                onPressed: () => onMaxPressed(),
-              ),
+              if (showMax)
+                BBButton.small(
+                  label: 'MAX',
+                  height: 30,
+                  width: 51,
+                  bgColor: context.colour.secondaryFixedDim,
+                  textColor: context.colour.secondary,
+                  textStyle: context.font.labelLarge,
+                  onPressed: () => onMaxPressed(),
+                ),
               const Gap(8),
             ],
           ),

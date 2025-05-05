@@ -195,7 +195,7 @@ class SendCubit extends Cubit<SendState> {
         return;
       }
 
-      final wallet = await _bestWalletUsecase.execute(
+      final wallet = _bestWalletUsecase.execute(
         wallets: state.wallets,
         request: paymentRequest,
         amountSat: state.inputAmountSat,
@@ -216,22 +216,12 @@ class SendCubit extends Cubit<SendState> {
           sendType: sendType,
         ),
       );
-      final loadSwapLimits =
-          paymentRequest.isBolt11 || paymentRequest.isLnAddress;
 
+      await loadSwapLimits();
       final swapType =
           wallet.isLiquid
               ? SwapType.liquidToLightning
               : SwapType.bitcoinToLightning;
-
-      if (loadSwapLimits) {
-        final (swapLimits, swapFees) = await _getSwapLimitsUsecase.execute(
-          isTestnet: wallet.network.isTestnet,
-          type: swapType,
-        );
-        emit(state.copyWith(swapLimits: swapLimits, swapFees: swapFees));
-      }
-
       // for bolt12 or lnaddress we need to redirect to the amount page and only create a swap after amount is set
 
       if (paymentRequest.isBolt11) {
@@ -292,6 +282,61 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
+  Future<void> loadSwapLimits() async {
+    final paymentRequest = state.paymentRequest!;
+    final loadSwapLimits =
+        paymentRequest.isBolt11 || paymentRequest.isLnAddress;
+
+    if (loadSwapLimits) {
+      final (liquidSwapLimits, liquidSwapFees) = await _getSwapLimitsUsecase
+          .execute(
+            isTestnet: state.selectedWallet!.network.isTestnet,
+            type: SwapType.liquidToLightning,
+          );
+      emit(
+        state.copyWith(
+          liquidSwapLimits: liquidSwapLimits,
+          liquidSwapFees: liquidSwapFees,
+        ),
+      );
+      final (bitcoinSwapLimits, bitcoinSwapFees) = await _getSwapLimitsUsecase
+          .execute(
+            isTestnet: state.selectedWallet!.network.isTestnet,
+            type: SwapType.bitcoinToLightning,
+          );
+      emit(
+        state.copyWith(
+          bitcoinSwapLimits: bitcoinSwapLimits,
+          bitcoinSwapFees: bitcoinSwapFees,
+        ),
+      );
+    }
+  }
+
+  void toggleSwapLimitsForWallet() {
+    if (state.selectedWallet == null) return;
+
+    final walletNetwork = state.selectedWallet!.network;
+    switch (walletNetwork) {
+      case Network.bitcoinMainnet:
+      case Network.bitcoinTestnet:
+        emit(
+          state.copyWith(
+            selectedSwapFees: state.bitcoinSwapFees,
+            selectedSwapLimits: state.bitcoinSwapLimits,
+          ),
+        );
+      case Network.liquidMainnet:
+      case Network.liquidTestnet:
+        emit(
+          state.copyWith(
+            selectedSwapFees: state.liquidSwapFees,
+            selectedSwapLimits: state.liquidSwapLimits,
+          ),
+        );
+    }
+  }
+
   Future<bool> hasBalance() async {
     if (state.selectedWallet == null && state.paymentRequest == null) {
       return false;
@@ -306,13 +351,15 @@ class SendCubit extends Cubit<SendState> {
           isTestnet: wallet.network.isTestnet,
         );
         final invoiceAmount = invoice.sats;
-        final feeEstimate = state.swapFees?.totalFees(invoiceAmount) ?? 0;
+        final feeEstimate =
+            state.selectedSwapFees?.totalFees(invoiceAmount) ?? 0;
         final totalPayable = invoiceAmount + feeEstimate;
         return wallet.balanceSat.toInt() > totalPayable;
 
       case LnAddressPaymentRequest _:
         final invoiceAmount = state.inputAmountSat;
-        final feeEstimate = state.swapFees?.totalFees(invoiceAmount) ?? 0;
+        final feeEstimate =
+            state.selectedSwapFees?.totalFees(invoiceAmount) ?? 0;
         final totalPayable = invoiceAmount + feeEstimate;
         return wallet.balanceSat.toInt() > totalPayable;
 
@@ -380,10 +427,48 @@ class SendCubit extends Cubit<SendState> {
         validatedAmount =
             amountFiat == null && !isDecimalPoint ? state.amount : amount;
       }
-
       emit(state.copyWith(amount: validatedAmount, sendMax: false));
+      updateBestWallet();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  Future<void> updateBestWallet() async {
+    try {
+      // clearAllExceptions();
+      if (state.paymentRequest == null || state.selectedWallet == null) return;
+      final previousSelectedWallet = state.selectedWallet!;
+
+      emit(state.copyWith(loadingBestWallet: true));
+
+      final wallet = _bestWalletUsecase.execute(
+        wallets: state.wallets,
+        request: state.paymentRequest!,
+        amountSat: state.inputAmountSat,
+      );
+      emit(
+        state.copyWith(
+          selectedWallet: wallet,
+          loadingBestWallet: false,
+          insufficientBalanceException: null,
+        ),
+      );
+
+      if (state.selectedWallet!.id != previousSelectedWallet.id) {
+        toggleNetworkFeeForWallet();
+        toggleSwapLimitsForWallet();
+        await _selectedWalletSyncingSubscription?.cancel();
+        _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
+            .execute(walletId: wallet.id)
+            .listen((wallet) async {
+              emit(state.copyWith(selectedWallet: wallet));
+              await loadFees();
+              await loadUtxos();
+            });
+      }
+    } catch (e) {
+      emit(state.copyWith(loadingBestWallet: false));
     }
   }
 
@@ -416,7 +501,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             swapLimitsException: SwapLimitsException(
-              'Amount below minimum swap limit: ${state.swapLimits!.min} sats',
+              'Amount below minimum swap limit: ${state.selectedSwapLimits!.min} sats',
             ),
             amountConfirmedClicked: false,
           ),
@@ -427,7 +512,7 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(
             swapLimitsException: SwapLimitsException(
-              'Amount above maximum swap limit: ${state.swapLimits!.max} sats',
+              'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
             ),
             amountConfirmedClicked: false,
           ),
@@ -440,7 +525,7 @@ class SendCubit extends Cubit<SendState> {
           walletId: state.selectedWallet!.id,
           type: swapType,
           lnAddress: state.addressOrInvoice,
-          amountSat: state.confirmedAmountSat,
+          amountSat: state.inputAmountSat,
         );
         _watchLnSendSwap(swap.id);
         emit(
@@ -528,19 +613,47 @@ class SendCubit extends Cubit<SendState> {
   Future<void> loadFees() async {
     if (state.selectedWallet == null) return;
     try {
-      final fees = await _getNetworkFeesUsecase.execute(
-        network: state.selectedWallet!.network,
+      final settings = await _getSettingsUsecase.execute();
+      final environment = settings.environment;
+      final bitcoinNetwork = Network.fromEnvironment(
+        isTestnet: environment.isTestnet,
+        isLiquid: false,
+      );
+      final liquidNetwork = Network.fromEnvironment(
+        isTestnet: environment.isTestnet,
+        isLiquid: true,
+      );
+      final bitcoinFees = await _getNetworkFeesUsecase.execute(
+        network: bitcoinNetwork,
+      );
+      final liquidFees = await _getNetworkFeesUsecase.execute(
+        network: liquidNetwork,
       );
       emit(
         state.copyWith(
-          feesList: fees,
+          bitcoinFeesList: bitcoinFees,
+          liquidFeesList: liquidFees,
           customFee: null,
-          selectedFee: fees.fastest,
           selectedFeeOption: FeeSelection.fastest,
         ),
       );
+      toggleNetworkFeeForWallet();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  void toggleNetworkFeeForWallet() {
+    if (state.selectedWallet == null) return;
+
+    final walletNetwork = state.selectedWallet!.network;
+    switch (walletNetwork) {
+      case Network.bitcoinMainnet:
+      case Network.bitcoinTestnet:
+        emit(state.copyWith(selectedFee: state.bitcoinFeesList!.fastest));
+      case Network.liquidMainnet:
+      case Network.liquidTestnet:
+        emit(state.copyWith(selectedFee: state.liquidFeesList!.fastest));
     }
   }
 

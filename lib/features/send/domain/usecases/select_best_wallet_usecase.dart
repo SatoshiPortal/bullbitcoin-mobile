@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 class SelectBestWalletUsecase {
   SelectBestWalletUsecase();
 
-  Future<Wallet> execute({
+  Wallet execute({
     required List<Wallet> wallets,
     required PaymentRequest request,
     int? amountSat,
@@ -59,11 +59,12 @@ class SelectBestWalletUsecase {
       if (request is LnAddressPaymentRequest) {
         try {
           // Use liquid
-          return _selectBestWallet(
+          final wallet = _selectBestWallet(
             amountSat ?? 0,
             Network.liquidMainnet,
             wallets,
           );
+          return wallet;
         } catch (_) {
           // unless liquid doesn’t have balance, use bitcoin
           return _selectBestWallet(
@@ -81,16 +82,17 @@ class SelectBestWalletUsecase {
     }
   }
 
-  Future<Wallet> _selectBestWallet(
+  Wallet _selectBestWallet(
     int satoshis,
     Network network,
     List<Wallet> wallets,
-  ) async {
+  ) {
     // Default first
     for (final w in wallets) {
       if (w.isDefault &&
           w.network == network &&
-          w.balanceSat.toInt() >= satoshis) {
+          w.balanceSat.toInt() >= satoshis &&
+          w.balanceSat.toInt() != 0) {
         return w;
       }
     }

@@ -231,7 +231,10 @@ class SendAmountScreen extends StatelessWidget {
             (SendCubit cubit) => cubit.state.swapCreationException,
           );
           final walletHasBalance = context.select(
-            (SendCubit cubit) => cubit.state.walletHasBalance(),
+            (SendCubit cubit) => cubit.state.walletHasBalance,
+          );
+          final isLightning = context.select(
+            (SendCubit cubit) => cubit.state.isLightning,
           );
           return IgnorePointer(
             ignoring: state.amountConfirmedClicked,
@@ -270,6 +273,7 @@ class SendAmountScreen extends StatelessWidget {
                       BalanceRow(
                         balance: state.formattedWalletBalance(),
                         currencyCode: '',
+                        showMax: !isLightning,
                         onMaxPressed: cubit.onMaxPressed,
                       ),
                       DialPad(
@@ -309,7 +313,7 @@ class SendAmountConfirmButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasBalance = context.select(
-      (SendCubit cubit) => cubit.state.walletHasBalance(),
+      (SendCubit cubit) => cubit.state.walletHasBalance,
     );
     final amountConfirmedClicked = context.select(
       (SendCubit cubit) => cubit.state.amountConfirmedClicked,
@@ -317,12 +321,19 @@ class SendAmountConfirmButton extends StatelessWidget {
     final creatingSwap = context.select(
       (SendCubit cubit) => cubit.state.creatingSwap,
     );
+    final loadingBestWallet = context.select(
+      (SendCubit cubit) => cubit.state.loadingBestWallet,
+    );
     return BBButton.big(
       label: 'Continue',
       onPressed: () {
         context.read<SendCubit>().onAmountConfirmed();
       },
-      disabled: amountConfirmedClicked || !hasBalance || creatingSwap,
+      disabled:
+          amountConfirmedClicked ||
+          !hasBalance ||
+          creatingSwap ||
+          loadingBestWallet,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );
