@@ -23,12 +23,12 @@ class CreateReceiveSwapUsecase {
     required SeedRepository seedRepository,
     required GetReceiveAddressUsecase getNewAddressUsecase,
     required LabelRepository labelRepository,
-  })  : _walletRepository = walletRepository,
-        _swapRepository = swapRepository,
-        _swapRepositoryTestnet = swapRepositoryTestnet,
-        _seedRepository = seedRepository,
-        _getNewAddressUsecase = getNewAddressUsecase,
-        _labelRepository = labelRepository;
+  }) : _walletRepository = walletRepository,
+       _swapRepository = swapRepository,
+       _swapRepositoryTestnet = swapRepositoryTestnet,
+       _seedRepository = seedRepository,
+       _getNewAddressUsecase = getNewAddressUsecase,
+       _labelRepository = labelRepository;
 
   Future<LnReceiveSwap> execute({
     required String walletId,
@@ -45,14 +45,10 @@ class CreateReceiveSwapUsecase {
         type: type,
       );
       if (amountSat < limits.min) {
-        throw Exception(
-          'Minimum Swap Amount: $limits.min sats',
-        );
+        throw Exception('Minimum Swap Amount: $limits.min sats');
       }
       if (amountSat > limits.max) {
-        throw Exception(
-          'Maximum Swap Amount: $limits.max sats',
-        );
+        throw Exception('Maximum Swap Amount: $limits.max sats');
       }
 
       final mnemonicSeed =
@@ -70,20 +66,22 @@ class CreateReceiveSwapUsecase {
         );
       }
 
-      final btcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.bbElectrumTestUrl
-          : ApiServiceConstants.bbElectrumUrl;
+      final btcElectrumUrl =
+          wallet.network.isTestnet
+              ? ApiServiceConstants.bbElectrumTestUrl
+              : ApiServiceConstants.bbElectrumUrl;
 
-      final lbtcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.publicElectrumTestUrl
-          : ApiServiceConstants.bbLiquidElectrumUrlPath;
+      final lbtcElectrumUrl =
+          wallet.network.isTestnet
+              ? ApiServiceConstants.publicElectrumTestUrl
+              : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       final claimAddress = await _getNewAddressUsecase.execute(
         walletId: walletId,
         newAddress: true,
       );
 
-      if (description != null || description!.isNotEmpty) {
+      if (description != null && description.isNotEmpty) {
         await _labelRepository.store<WalletAddress>(
           entity: claimAddress,
           label: description,
@@ -114,9 +112,7 @@ class CreateReceiveSwapUsecase {
             description: description,
           );
         default:
-          throw Exception(
-            'This is not a swap for the receive feature!',
-          );
+          throw Exception('This is not a swap for the receive feature!');
       }
     } catch (e) {
       rethrow;
