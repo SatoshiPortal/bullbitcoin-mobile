@@ -36,7 +36,12 @@ class TransactionDetailsTable extends StatelessWidget {
     return DetailsTable(
       items: [
         DetailsTableItem(
-          label: 'Amount received',
+          label:
+              tx?.isIncoming != null
+                  ? tx!.isIncoming
+                      ? 'Amount received'
+                      : 'Amount sent'
+                  : 'Amount',
           displayValue: FormatAmount.sats(amountSat).toUpperCase(),
         ),
         DetailsTableItem(
