@@ -860,9 +860,14 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> onConfirmTransactionClicked() async {
     await createTransaction();
-    emit(state.copyWith(step: SendStep.sending));
     await signTransaction();
+    if (!state.isLightning) {
+      emit(state.copyWith(step: SendStep.sending));
+    }
     await broadcastTransaction();
+    if (state.isLightning) {
+      emit(state.copyWith(step: SendStep.sending));
+    }
   }
 
   Future<void> currencyCodeChanged(String currencyCode) async {
