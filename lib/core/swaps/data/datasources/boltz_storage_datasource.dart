@@ -1,35 +1,35 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:boltz/boltz.dart';
 import 'package:flutter/material.dart';
 
 class BoltzStorageDatasource {
-  final KeyValueStorageDatasource<String> _localSwapStorage;
+  final SqliteDatabase _localSwapStorage;
   final KeyValueStorageDatasource _secureSwapStorage;
 
   BoltzStorageDatasource({
-    required KeyValueStorageDatasource<String> localSwapStorage,
+    required SqliteDatabase localSwapStorage,
     required KeyValueStorageDatasource<String> secureSwapStorage,
   }) : _localSwapStorage = localSwapStorage,
        _secureSwapStorage = secureSwapStorage;
 
   // LOCAL STORAGE
   Future<void> store(SwapModel swap) async {
-    final swapJsonMap = swap.toJson();
-    final jsonString = jsonEncode(swapJsonMap);
-    await _localSwapStorage.saveValue(key: swap.id, value: jsonString);
+    final row = swap.toSqlite();
+    await _localSwapStorage
+        .into(_localSwapStorage.swaps)
+        .insertOnConflictUpdate(row);
   }
 
   Future<SwapModel?> fetch(String swapId) async {
-    final jsonString = await _localSwapStorage.getValue(swapId);
-    if (jsonString == null) {
-      return null;
-    }
-    final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
-    return SwapModel.fromJson(jsonMap);
+    final swap =
+        await _localSwapStorage.managers.swaps
+            .filter((f) => f.id(swapId))
+            .getSingleOrNull();
+    if (swap == null) return null;
+    return SwapModel.fromSqlite(swap);
   }
 
   Future<LnReceiveSwapModel?> fetchLnReceiveSwapModel(String swapId) async {
@@ -63,18 +63,12 @@ class BoltzStorageDatasource {
   }
 
   Future<List<SwapModel>> fetchAll() async {
-    final allEntries = await _localSwapStorage.getAll();
-    final swaps = <SwapModel>[];
-    for (final jsonString in allEntries.values) {
-      final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
-      final swap = SwapModel.fromJson(jsonMap);
-      swaps.add(swap);
-    }
-    return swaps;
+    final all = await _localSwapStorage.managers.swaps.get();
+    return all.map((e) => SwapModel.fromSqlite(e)).toList();
   }
 
   Future<void> trash(String swapId) async {
-    await _localSwapStorage.deleteValue(swapId);
+    await _localSwapStorage.managers.swaps.filter((f) => f.id(swapId)).delete();
   }
 
   // SECURE STORAGE
