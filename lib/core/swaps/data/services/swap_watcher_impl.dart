@@ -242,8 +242,21 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     await _boltzRepo.coopSignBitcoinToLightningSwap(swapId: swap.id);
   }
 
-  Future<void> _processSendLiquidToLnCoopSign({required Swap swap}) async {
-    await _boltzRepo.coopSignLiquidToLightningSwap(swapId: swap.id);
+  Future<void> _processSendLiquidToLnCoopSign({
+    required LnSendSwap swap,
+  }) async {
+    // TODO: temporary fix, better fix should update the model to hold this value
+    // can be done after sqlite upgrade is completed.
+    final isBatched = swap.paymentAmount < 1000;
+    if (isBatched) {
+      final updatedSwap = swap.copyWith(
+        status: SwapStatus.completed,
+        completionTime: DateTime.now(),
+      );
+      await _boltzRepo.updateSwap(swap: updatedSwap);
+    } else {
+      await _boltzRepo.coopSignLiquidToLightningSwap(swapId: swap.id);
+    }
   }
 
   Future<void> _processChainLiquidToBitcoinClaim({

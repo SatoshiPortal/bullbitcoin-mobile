@@ -282,6 +282,8 @@ abstract class SendState with _$SendState {
   }
 
   bool get isLightning => sendType == SendType.lightning;
+  bool get isLightningBitcoinSwap =>
+      isLightning && selectedWallet!.network.isBitcoin;
 
   bool get swapAmountBelowLimit {
     if (isLightning && inputAmountSat != 0) {

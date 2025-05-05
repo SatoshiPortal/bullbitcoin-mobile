@@ -23,6 +23,7 @@ class TransactionDetailsTable extends StatelessWidget {
     final swap = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swap,
     );
+    // ignore: unused_local_variable
     final payjoin = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.payjoin,
     );
