@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchai
 import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart'
+    show DefaultElectrumServerProvider;
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class BitcoinBlockchainRepositoryImpl implements BitcoinBlockchainRepository {
@@ -30,7 +31,12 @@ class BitcoinBlockchainRepositoryImpl implements BitcoinBlockchainRepository {
             isLiquid: false,
           ),
         ) ??
-        ElectrumServerModel.bullBitcoin(isTestnet: isTestnet, isLiquid: false);
+        ElectrumServerModel.defaultServer(
+          isTestnet: isTestnet,
+          isLiquid: false,
+          defaultElectrumServerProvider:
+              DefaultElectrumServerProvider.bullBitcoin,
+        );
 
     return _blockchain.broadcastPsbt(
       finalizedPsbt,

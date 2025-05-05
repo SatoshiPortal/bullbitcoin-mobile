@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter/foundation.dart';
 
@@ -19,7 +20,7 @@ class ElectrumServerRepository {
   }
 
   /// Checks if a server is reachable by attempting a socket connection
-  Future<ElectrumServerStatus> _checkServerConnectivity(
+  Future<ElectrumServerStatus> checkServerConnectivity(
     String url,
     int? timeout,
   ) async {
@@ -72,7 +73,7 @@ class ElectrumServerRepository {
 
     if (checkStatus) {
       // Check connectivity
-      final status = await _checkServerConnectivity(url, server.timeout);
+      final status = await checkServerConnectivity(url, server.timeout);
       return server.copyWith(status: status);
     }
     return server;
@@ -91,10 +92,7 @@ class ElectrumServerRepository {
       final server = model.toEntity();
       if (checkStatus && model.url.isNotEmpty) {
         // Check connectivity if needed
-        final status = await _checkServerConnectivity(
-          model.url,
-          server.timeout,
-        );
+        final status = await checkServerConnectivity(model.url, server.timeout);
         return server.copyWith(status: status);
       }
       return server;
@@ -140,7 +138,7 @@ class ElectrumServerRepository {
       for (final server in servers) {
         if (server.url.isNotEmpty) {
           try {
-            final status = await _checkServerConnectivity(
+            final status = await checkServerConnectivity(
               server.url,
               server.timeout,
             );
@@ -175,7 +173,7 @@ class ElectrumServerRepository {
     final server = model.toEntity();
     if (checkStatus && model.url.isNotEmpty) {
       // Check connectivity if needed
-      final status = await _checkServerConnectivity(model.url, server.timeout);
+      final status = await checkServerConnectivity(model.url, server.timeout);
       return server.copyWith(status: status);
     }
     return server;
