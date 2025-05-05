@@ -810,7 +810,7 @@ class BoltzDatasource {
     required String swapId,
     bool isCooperative = true,
   }) async {
-    final lnSwap = await _boltzStore.getLbtcLnSwap(swapId);
+    final lnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
     final size = await lnSwap.refundTxSize(isCooperative: isCooperative);
     return size.toInt();
   }
@@ -819,7 +819,7 @@ class BoltzDatasource {
     required String swapId,
     bool isCooperative = true,
   }) async {
-    final lnSwap = await _boltzStore.getBtcLnSwap(swapId);
+    final lnSwap = await _boltzStore.fetchBtcLnSwap(swapId);
     final size = await lnSwap.refundTxSize(isCooperative: isCooperative);
     return size.toInt();
   }
@@ -829,7 +829,7 @@ class BoltzDatasource {
     required String refundAddress,
     bool isCooperative = true,
   }) async {
-    final chainSwap = await _boltzStore.getChainSwap(swapId);
+    final chainSwap = await _boltzStore.fetchChainSwap(swapId);
     final size = await chainSwap.refundTxSize(
       refundAddress: refundAddress,
       tryCooperate: isCooperative,
@@ -841,7 +841,7 @@ class BoltzDatasource {
   //   required String swapId,
   //   bool isCooperative = true,
   // }) async {
-  //   final chainSwap = await _boltzStore.getChainSwap(swapId);
+  //   final chainSwap = await _boltzStore.fetchChainSwap(swapId);
   //   final size = await chainSwap.txSize(isCooperative: isCooperative);
   //   return size.toInt();
   // }
