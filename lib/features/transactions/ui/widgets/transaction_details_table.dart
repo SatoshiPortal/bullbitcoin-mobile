@@ -68,7 +68,8 @@ class TransactionDetailsTable extends StatelessWidget {
           displayValue: abbreviatedAddress,
           copyValue: address,
         ),
-        DetailsTableItem(label: 'Address notes', displayValue: addressLabels),
+        if (addressLabels.isNotEmpty)
+          DetailsTableItem(label: 'Address notes', displayValue: addressLabels),
         DetailsTableItem(
           label: 'Transaction ID',
           displayValue: abbreviatedTxId,
