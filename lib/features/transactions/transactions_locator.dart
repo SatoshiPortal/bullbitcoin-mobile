@@ -1,4 +1,7 @@
+import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_any_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -24,7 +27,10 @@ class TransactionsLocator {
     locator.registerFactory<TransactionDetailsCubit>(
       () => TransactionDetailsCubit(
         getWalletUsecase: locator<GetWalletUsecase>(),
+        getSwapUsecase: locator<GetSwapUsecase>(),
+        watchSwapUsecase: locator<WatchSwapUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
+        getPayjoinByIdUsecase: locator<GetPayjoinByIdUsecase>(),
       ),
     );
   }

@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -15,15 +18,21 @@ part 'transaction_details_state.dart';
 class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   TransactionDetailsCubit({
     required GetWalletUsecase getWalletUsecase,
-    //required GetPayjoinUsecase getPayjoinUsecase,
+    required GetSwapUsecase getSwapUsecase,
+    required WatchSwapUsecase watchSwapUsecase,
+    required GetPayjoinByIdUsecase getPayjoinByIdUsecase,
     required WatchPayjoinUsecase watchPayjoinUsecase,
   }) : _getWalletUsecase = getWalletUsecase,
-       //_getPayjoinUsecase = getPayjoinUsecase,
+       _getSwapUsecase = getSwapUsecase,
+       _watchSwapUsecase = watchSwapUsecase,
+       _getPayjoinByIdUsecase = getPayjoinByIdUsecase,
        _watchPayjoinUsecase = watchPayjoinUsecase,
        super(const TransactionDetailsState());
 
   final GetWalletUsecase _getWalletUsecase;
-  //final GetPayjoinUsecase _getPayjoinUsecase;
+  final GetSwapUsecase _getSwapUsecase;
+  final WatchSwapUsecase _watchSwapUsecase;
+  final GetPayjoinByIdUsecase _getPayjoinByIdUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
 
   StreamSubscription? _payjoinSubscription;
@@ -50,19 +59,27 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       if (tx is BitcoinWalletTransaction) {
         final payjoinId = tx.payjoinId;
         if (payjoinId.isNotEmpty) {
-          //final payjoin = await _getPayjoinUsecase.execute(payjoinId);
+          final payjoin = await _getPayjoinByIdUsecase.execute(payjoinId);
           _payjoinSubscription = _watchPayjoinUsecase
               .execute(ids: [payjoinId])
               .listen((payjoin) => emit(state.copyWith(payjoin: payjoin)));
 
-          //emit(state.copyWith(payjoin: payjoin));
+          emit(state.copyWith(payjoin: payjoin));
         }
       }
 
       final swapId = tx.swapId;
       if (swapId.isNotEmpty) {
-        // Todo: get swap by id
-        // Todo: watch swap by id
+        // Get swap by id
+        final swap = await _getSwapUsecase.execute(
+          swapId,
+          isTestnet: wallet.isTestnet,
+        );
+        // Watch swap by id so the UI can update if the state changes
+        _swapSubscription = _watchSwapUsecase
+            .execute(swapId)
+            .listen((swap) => emit(state.copyWith(swap: swap)));
+        emit(state.copyWith(swap: swap));
       }
     } catch (e) {
       if (!isClosed) {
@@ -77,12 +94,12 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       final wallet = await _getWalletUsecase.execute(payjoinId);
       emit(state.copyWith(wallet: wallet));
 
-      //final payjoin = await _getPayjoinUsecase.execute(payjoinId);
+      final payjoin = await _getPayjoinByIdUsecase.execute(payjoinId);
       _payjoinSubscription = _watchPayjoinUsecase
           .execute(ids: [payjoinId])
           .listen((payjoin) => emit(state.copyWith(payjoin: payjoin)));
 
-      //emit(state.copyWith(payjoin: payjoin));
+      emit(state.copyWith(payjoin: payjoin));
     } catch (e) {
       if (!isClosed) {
         emit(state.copyWith(err: e));

@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
+import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
@@ -162,6 +163,28 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               payjoinId = null;
             }
 
+            String? swapId;
+            try {
+              final swapModel = swaps.firstWhere((swap) {
+                switch (swap) {
+                  case LnReceiveSwapModel _:
+                    return swap.receiveTxid == walletTransactionModel.txId;
+                  case LnSendSwapModel _:
+                    return swap.sendTxid == walletTransactionModel.txId;
+                  case ChainSwapModel _:
+                    if (walletTransactionModel.isIncoming) {
+                      return swap.receiveTxid == walletTransactionModel.txId;
+                    } else {
+                      return swap.sendTxid == walletTransactionModel.txId;
+                    }
+                }
+              });
+              swapId = swapModel.id;
+            } catch (_) {
+              // Transaction is not a swap
+              swapId = null;
+            }
+
             return WalletTransactionMapper.toEntity(
               walletTransactionModel,
               walletId: walletModel.id,
@@ -169,6 +192,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               outputs: outputs,
               labels: labels.map((model) => model.label).toList(),
               payjoinId: payjoinId,
+              swapId: swapId,
             );
           }).toList(),
         );

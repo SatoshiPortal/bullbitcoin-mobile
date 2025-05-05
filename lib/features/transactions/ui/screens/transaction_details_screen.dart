@@ -68,7 +68,10 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const TransactionDetailsTable(),
                   const Gap(62),
                   BBButton.big(
-                    label: 'Edit label',
+                    label:
+                        tx != null && tx.labels.isEmpty
+                            ? 'Add label'
+                            : 'Edit label',
                     onPressed: () {},
                     bgColor: Colors.transparent,
                     textColor: theme.colorScheme.secondary,

@@ -66,6 +66,23 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   Stream<Payjoin> get payjoinStream => _payjoinStreamController.stream;
 
   @override
+  Future<Payjoin?> getPayjoinById(String payjoinId) async {
+    final (receiver, sender) =
+        await (
+          _localPayjoinDatasource.getReceiver(payjoinId),
+          _localPayjoinDatasource.getSender(payjoinId),
+        ).wait;
+    if (receiver != null) {
+      return receiver.toEntity();
+    }
+    if (sender != null) {
+      return sender.toEntity();
+    }
+    // No payjoin found with the given ID
+    return null;
+  }
+
+  @override
   Future<List<Payjoin>> getPayjoins({bool onlyOngoing = false}) async {
     final models = await _localPayjoinDatasource.getAll(
       onlyOngoing: onlyOngoing,

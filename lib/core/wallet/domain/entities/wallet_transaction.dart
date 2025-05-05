@@ -56,15 +56,18 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
   bool get isSwap => swapId.isNotEmpty;
   bool get isExchange => exchangeId.isNotEmpty;
 
-  String get toAddress {
-    TransactionOutput? output;
+  TransactionOutput get destinationOutput {
     if (isToSelf) {
-      output = outputs.first;
+      return outputs.first;
     } else if (direction == WalletTransactionDirection.incoming) {
-      output = outputs.firstWhere((output) => output.isOwn);
+      return outputs.firstWhere((output) => output.isOwn);
     } else {
-      output = outputs.firstWhere((output) => !output.isOwn);
+      return outputs.firstWhere((output) => !output.isOwn);
     }
+  }
+
+  String get toAddress {
+    final output = destinationOutput;
 
     switch (output) {
       case BitcoinTransactionOutput _:
@@ -72,6 +75,11 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
       case LiquidTransactionOutput _:
         return output.confidentialAddress;
     }
+  }
+
+  List<String> get toAddressLabels {
+    final output = destinationOutput;
+    return output.addressLabels;
   }
 
   @override

@@ -32,6 +32,7 @@ class TransactionDetailsTable extends StatelessWidget {
     final address = tx?.toAddress ?? '';
     final txId = tx?.txId ?? '';
     final abbreviatedAddress = StringFormatting.truncateMiddle(address);
+    final addressLabels = tx?.toAddressLabels.join(', ') ?? '';
     final abbreviatedTxId = StringFormatting.truncateMiddle(txId);
 
     return DetailsTable(
@@ -54,7 +55,6 @@ class TransactionDetailsTable extends StatelessWidget {
                       : 'Secure Bitcoin'
                   : '',
         ),
-
         DetailsTableItem(label: 'Status', displayValue: tx?.status.name ?? ''),
         if (tx?.confirmationTime != null)
           DetailsTableItem(
@@ -68,13 +68,14 @@ class TransactionDetailsTable extends StatelessWidget {
           displayValue: abbreviatedAddress,
           copyValue: address,
         ),
+        DetailsTableItem(label: 'Address notes', displayValue: addressLabels),
         DetailsTableItem(
           label: 'Transaction ID',
           displayValue: abbreviatedTxId,
           copyValue: txId,
         ),
         if (labels.isNotEmpty)
-          DetailsTableItem(label: 'Note', displayValue: labels),
+          DetailsTableItem(label: 'Transaction notes', displayValue: labels),
         if (swap != null) ...[
           DetailsTableItem(
             label: 'Swap status',
@@ -92,6 +93,18 @@ class TransactionDetailsTable extends StatelessWidget {
                 'MMM d, y, h:mm a',
               ).format(swap.completionTime!),
             ),
+        ],
+        if (payjoin != null) ...[
+          DetailsTableItem(
+            label: 'Payjoin status',
+            displayValue: payjoin.status.name,
+          ),
+          DetailsTableItem(
+            label: 'Payjoin creation time',
+            displayValue: DateFormat(
+              'MMM d, y, h:mm a',
+            ).format(payjoin.createdAt),
+          ),
         ],
       ],
     );

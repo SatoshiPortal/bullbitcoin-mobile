@@ -6,6 +6,7 @@ abstract class PayjoinRepository {
   Stream<Payjoin> get payjoinStream;
   Future<bool> checkOhttpRelayHealth();
   Future<List<Payjoin>> getPayjoins({bool onlyOngoing = false});
+  Future<Payjoin?> getPayjoinById(String payjoinId);
   Future<List<Payjoin>> getPayjoinsByTxId(String txId);
   Future<List<({String txId, int vout})>> getUtxosFrozenByOngoingPayjoins();
   Future<PayjoinReceiver> createPayjoinReceiver({
