@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/electrum_settings/presentation/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/locator.dart';
@@ -43,30 +44,17 @@ class _ElectrumServerSettingsContentState
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ElectrumSettingsBloc, ElectrumSettingsState>(
-      listenWhen: (previous, current) =>
-          previous.selectedProvider != current.selectedProvider ||
-          previous.electrumServers != current.electrumServers ||
-          previous.stagedServers != current.stagedServers,
-      listener: (context, state) {
-        if (state.status == ElectrumSettingsStatus.loading) {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              const SnackBar(
-                content: LinearProgressIndicator(),
-                duration: Duration(seconds: 5),
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-              ),
-            );
-        } else {
-          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        }
-      },
-      buildWhen: (previous, current) =>
-          previous.status != current.status ||
-          previous.stagedServers != current.stagedServers ||
-          previous.selectedProvider != current.selectedProvider,
+      listenWhen:
+          (previous, current) =>
+              previous.selectedProvider != current.selectedProvider ||
+              previous.electrumServers != current.electrumServers ||
+              previous.stagedServers != current.stagedServers,
+      listener: (context, state) {},
+      buildWhen:
+          (previous, current) =>
+              previous.status != current.status ||
+              previous.stagedServers != current.stagedServers ||
+              previous.selectedProvider != current.selectedProvider,
       builder: (context, state) {
         return Container(
           constraints: BoxConstraints(
@@ -128,13 +116,15 @@ class _SaveButton extends StatelessWidget {
 
     bool disableSave = false;
     if (state.isCustomServerSelected && hasChanges) {
-      final mainnetNetwork = state.isSelectedNetworkLiquid
-          ? Network.liquidMainnet
-          : Network.bitcoinMainnet;
+      final mainnetNetwork =
+          state.isSelectedNetworkLiquid
+              ? Network.liquidMainnet
+              : Network.bitcoinMainnet;
 
-      final testnetNetwork = state.isSelectedNetworkLiquid
-          ? Network.liquidTestnet
-          : Network.bitcoinTestnet;
+      final testnetNetwork =
+          state.isSelectedNetworkLiquid
+              ? Network.liquidTestnet
+              : Network.bitcoinTestnet;
 
       final mainnetServer = state.getServerForNetworkAndProvider(
         mainnetNetwork,
@@ -146,23 +136,26 @@ class _SaveButton extends StatelessWidget {
         state.selectedProvider,
       );
 
-      disableSave = (mainnetServer?.url ?? '').isEmpty ||
+      disableSave =
+          (mainnetServer?.url ?? '').isEmpty ||
           (testnetServer?.url ?? '').isEmpty;
     }
 
     return BBButton.big(
       label: 'Save',
-      onPressed: hasChanges && !disableSave
-          ? () {
-              context
-                  .read<ElectrumSettingsBloc>()
-                  .add(const SaveElectrumServerChanges());
-              Navigator.of(context).pop();
-            }
-          : () {},
-      bgColor: (hasChanges && !disableSave)
-          ? context.colour.secondary
-          : context.colour.surfaceContainer,
+      onPressed:
+          hasChanges && !disableSave
+              ? () {
+                context.read<ElectrumSettingsBloc>().add(
+                  const SaveElectrumServerChanges(),
+                );
+                Navigator.of(context).pop();
+              }
+              : () {},
+      bgColor:
+          (hasChanges && !disableSave)
+              ? context.colour.secondary
+              : context.colour.surfaceContainer,
       textStyle: context.font.headlineLarge,
       textColor: context.colour.onSecondary,
     );
@@ -183,8 +176,8 @@ class ServerTypeSelector extends StatelessWidget {
       onSelected: (selected) {
         final isCustom = selected == 'Custom';
         context.read<ElectrumSettingsBloc>().add(
-              ToggleCustomServer(isCustomSelected: isCustom),
-            );
+          ToggleCustomServer(isCustomSelected: isCustom),
+        );
       },
     );
   }
@@ -198,12 +191,12 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final networkText =
         state.isSelectedNetworkLiquid ? 'Liquid Network' : 'Bitcoin Network';
-    final mainnetNetwork = state.isSelectedNetworkLiquid
-        ? Network.liquidMainnet
-        : Network.bitcoinMainnet;
+    final mainnetNetwork =
+        state.isSelectedNetworkLiquid
+            ? Network.liquidMainnet
+            : Network.bitcoinMainnet;
     Widget? statusIndicator;
     if (state.isCustomServerSelected) {
-      // For custom provider mode, display a dot based on connectivity
       final customServer = state.getServerForNetworkAndProvider(
         mainnetNetwork,
         const ElectrumServerProvider.customProvider(),
@@ -215,10 +208,7 @@ class _Header extends StatelessWidget {
           margin: const EdgeInsets.only(left: 5),
           width: 8,
           height: 8,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: dotColor,
-          ),
+          decoration: BoxDecoration(shape: BoxShape.circle, color: dotColor),
         );
       }
     } else {
@@ -234,10 +224,7 @@ class _Header extends StatelessWidget {
           margin: const EdgeInsets.only(left: 5),
           width: 8,
           height: 8,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: dotColor,
-          ),
+          decoration: BoxDecoration(shape: BoxShape.circle, color: dotColor),
         );
       }
     }
@@ -252,10 +239,7 @@ class _Header extends StatelessWidget {
               const SizedBox(width: 24),
               Row(
                 children: [
-                  BBText(
-                    networkText,
-                    style: context.font.headlineMedium,
-                  ),
+                  BBText(networkText, style: context.font.headlineMedium),
                   if (statusIndicator != null) statusIndicator,
                 ],
               ),
@@ -268,7 +252,8 @@ class _Header extends StatelessWidget {
           BBButton.big(
             label:
                 'Configure ${state.isSelectedNetworkLiquid ? "Bitcoin" : "Liquid"} Network',
-            onPressed: () => context.read<ElectrumSettingsBloc>().add(
+            onPressed:
+                () => context.read<ElectrumSettingsBloc>().add(
                   state.isSelectedNetworkLiquid
                       ? const ConfigureBitcoinSettings()
                       : const ConfigureLiquidSettings(),
@@ -293,8 +278,9 @@ class _ValidateDomainSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final validateDomain =
-        state.getValidateDomainForProvider(state.selectedProvider);
+    final validateDomain = state.getValidateDomainForProvider(
+      state.selectedProvider,
+    );
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -314,9 +300,9 @@ class _ValidateDomainSwitch extends StatelessWidget {
             (Set<WidgetState> states) => Colors.transparent,
           ),
           onChanged: (_) {
-            context
-                .read<ElectrumSettingsBloc>()
-                .add(const ToggleValidateDomain());
+            context.read<ElectrumSettingsBloc>().add(
+              const ToggleValidateDomain(),
+            );
           },
         ),
       ],
@@ -342,20 +328,17 @@ class _ServerField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
         const Gap(8),
         TextFormField(
           initialValue: initialValue ?? '',
           enabled: enabled,
           decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 16,
             ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
           ),
           onChanged: onChanged,
         ),
@@ -370,12 +353,14 @@ class _ServerUrls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final mainnetNetwork = state.isSelectedNetworkLiquid
-        ? Network.liquidMainnet
-        : Network.bitcoinMainnet;
-    final testnetNetwork = state.isSelectedNetworkLiquid
-        ? Network.liquidTestnet
-        : Network.bitcoinTestnet;
+    final mainnetNetwork =
+        state.isSelectedNetworkLiquid
+            ? Network.liquidMainnet
+            : Network.bitcoinMainnet;
+    final testnetNetwork =
+        state.isSelectedNetworkLiquid
+            ? Network.liquidTestnet
+            : Network.bitcoinTestnet;
 
     final mainnetServer = state.getServerForNetworkAndProvider(
       mainnetNetwork,
@@ -400,8 +385,8 @@ class _ServerUrls extends StatelessWidget {
           onChanged: (value) {
             if (state.isCustomServerSelected) {
               context.read<ElectrumSettingsBloc>().add(
-                    UpdateCustomServerMainnet(customServer: value),
-                  );
+                UpdateCustomServerMainnet(customServer: value),
+              );
             }
           },
         ),
@@ -413,8 +398,8 @@ class _ServerUrls extends StatelessWidget {
           onChanged: (value) {
             if (state.isCustomServerSelected) {
               context.read<ElectrumSettingsBloc>().add(
-                    UpdateCustomServerTestnet(customServer: value),
-                  );
+                UpdateCustomServerTestnet(customServer: value),
+              );
             }
           },
         ),
@@ -439,24 +424,19 @@ class _AdvancedField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(
-          label,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        BBText(label, style: Theme.of(context).textTheme.bodyMedium),
         const Gap(8),
         TextField(
           controller: controller,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             hintText: placeholder,
-            hintStyle: TextStyle(
-              color: context.colour.surfaceContainer,
+            hintStyle: TextStyle(color: context.colour.surfaceContainer),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
             ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           ),
         ),
       ],
@@ -506,83 +486,84 @@ class _AdvancedOptions extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-          left: 24,
-          right: 24,
-          top: 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      builder:
+          (context) => Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+              left: 24,
+              right: 24,
+              top: 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Gap(24),
-                BBText(
-                  'Electrum Options',
-                  style: Theme.of(context).textTheme.headlineMedium,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Gap(24),
+                    BBText(
+                      'Electrum Options',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
+                const Gap(24),
+                _AdvancedField(
+                  label: 'Stop gap',
+                  controller: stopGapController,
+                  placeholder: '20',
+                ),
+                const Gap(16),
+                _AdvancedField(
+                  label: 'Retry (seconds)',
+                  controller: retryController,
+                  placeholder: '5',
+                ),
+                const Gap(16),
+                _AdvancedField(
+                  label: 'Timeout (seconds)',
+                  controller: timeoutController,
+                  placeholder: '5',
+                ),
+                const Gap(24),
+                BBButton.big(
+                  label: 'Save',
+                  onPressed: () {
+                    final stopGapStr = stopGapController.text.trim();
+                    final retryStr = retryController.text.trim();
+                    final timeoutStr = timeoutController.text.trim();
+
+                    final stopGap =
+                        stopGapStr.isNotEmpty ? int.tryParse(stopGapStr) : null;
+                    final retry =
+                        retryStr.isNotEmpty ? int.tryParse(retryStr) : null;
+                    final timeout =
+                        timeoutStr.isNotEmpty ? int.tryParse(timeoutStr) : null;
+
+                    if (stopGap != null || retry != null || timeout != null) {
+                      bloc.add(
+                        UpdateElectrumAdvancedOptions(
+                          stopGap: stopGap,
+                          retry: retry,
+                          timeout: timeout,
+                        ),
+                      );
+                    }
+
+                    Navigator.pop(context);
+                  },
+                  bgColor: context.colour.secondary,
+                  textStyle: context.font.headlineLarge,
+                  textColor: context.colour.onSecondary,
                 ),
               ],
             ),
-            const Gap(24),
-            _AdvancedField(
-              label: 'Stop gap',
-              controller: stopGapController,
-              placeholder: '20',
-            ),
-            const Gap(16),
-            _AdvancedField(
-              label: 'Retry (seconds)',
-              controller: retryController,
-              placeholder: '5',
-            ),
-            const Gap(16),
-            _AdvancedField(
-              label: 'Timeout (seconds)',
-              controller: timeoutController,
-              placeholder: '5',
-            ),
-            const Gap(24),
-            BBButton.big(
-              label: 'Save',
-              onPressed: () {
-                final stopGapStr = stopGapController.text.trim();
-                final retryStr = retryController.text.trim();
-                final timeoutStr = timeoutController.text.trim();
-
-                final stopGap =
-                    stopGapStr.isNotEmpty ? int.tryParse(stopGapStr) : null;
-                final retry =
-                    retryStr.isNotEmpty ? int.tryParse(retryStr) : null;
-                final timeout =
-                    timeoutStr.isNotEmpty ? int.tryParse(timeoutStr) : null;
-
-                if (stopGap != null || retry != null || timeout != null) {
-                  bloc.add(
-                    UpdateElectrumAdvancedOptions(
-                      stopGap: stopGap,
-                      retry: retry,
-                      timeout: timeout,
-                    ),
-                  );
-                }
-
-                Navigator.pop(context);
-              },
-              bgColor: context.colour.secondary,
-              textStyle: context.font.headlineLarge,
-              textColor: context.colour.onSecondary,
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }
