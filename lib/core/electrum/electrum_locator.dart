@@ -39,8 +39,8 @@ class ElectrumLocator {
         electrumServerRepository: locator<ElectrumServerRepository>(),
       ),
     );
-    locator.registerLazySingleton<GetBestAvailableServerUsecase>(
-      () => GetBestAvailableServerUsecase(
+    locator.registerLazySingleton<GetPrioritizedServerUsecase>(
+      () => GetPrioritizedServerUsecase(
         electrumServerRepository: locator<ElectrumServerRepository>(),
       ),
     );
