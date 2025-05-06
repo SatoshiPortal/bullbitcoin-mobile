@@ -289,10 +289,24 @@ class SendAmountScreen extends StatelessWidget {
                         onMaxPressed: cubit.onMaxPressed,
                         walletLabel: selectedWalletLabel,
                       ),
-
                       DialPad(
-                        onNumberPressed: cubit.onNumberPressed,
-                        onBackspacePressed: cubit.onBackspacePressed,
+                        onNumberPressed: (number) {
+                          final inputAmount =
+                              context.read<SendCubit>().state.amount;
+                          final amount = inputAmount + number;
+                          context.read<SendCubit>().amountChanged(amount);
+                        },
+                        onBackspacePressed: () {
+                          final inputAmount =
+                              context.read<SendCubit>().state.amount;
+                          if (inputAmount.isNotEmpty) {
+                            final amount = inputAmount.substring(
+                              0,
+                              inputAmount.length - 1,
+                            );
+                            context.read<SendCubit>().amountChanged(amount);
+                          }
+                        },
                       ),
                       const Gap(64),
                     ],

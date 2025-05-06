@@ -28,11 +28,30 @@ class BalanceRow extends StatelessWidget {
         children: [
           Container(height: 1, color: context.colour.secondaryFixedDim),
           const Gap(14),
+
+          Row(
+            children: [
+              if (walletLabel != null) ...[
+                const Gap(8),
+                BBText(
+                  'Wallet',
+                  style: context.font.labelSmall,
+                  color: context.colour.surface,
+                ),
+                const Gap(4),
+                BBText(
+                  '$walletLabel',
+                  style: context.font.labelMedium,
+                  color: context.colour.secondary,
+                ),
+              ],
+            ],
+          ),
           Row(
             children: [
               const Gap(8),
               BBText(
-                'Wallet Balance',
+                'Balance',
                 style: context.font.labelLarge,
                 color: context.colour.surface,
               ),
@@ -57,25 +76,6 @@ class BalanceRow extends StatelessWidget {
             ],
           ),
           const Gap(4),
-
-          Row(
-            children: [
-              if (walletLabel != null) ...[
-                const Gap(8),
-                BBText(
-                  'Wallet',
-                  style: context.font.labelSmall,
-                  color: context.colour.surface,
-                ),
-                const Gap(4),
-                BBText(
-                  '$walletLabel',
-                  style: context.font.labelMedium,
-                  color: context.colour.secondary,
-                ),
-              ],
-            ],
-          ),
         ],
       ),
     );

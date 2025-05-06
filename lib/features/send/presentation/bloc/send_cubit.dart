@@ -404,10 +404,25 @@ class SendCubit extends Cubit<SendState> {
 
       if (amount.isEmpty) {
         validatedAmount = amount;
-      } else if (state.bitcoinUnit == BitcoinUnit.btc) {
+      } else if (state.isInputAmountFiat) {
+        final amountFiat = double.tryParse(amount);
+        final isDecimalPoint = amount == '.';
+
+        validatedAmount =
+            amountFiat == null && !isDecimalPoint ? state.amount : amount;
+      } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
+        // If the amount is in sats, make sure it is a valid BigInt and do not
+        //  allow a decimal point.
+        final amountSats = BigInt.tryParse(amount);
+        final hasDecimals = amount.contains('.');
+
+        validatedAmount =
+            amountSats == null || hasDecimals ? state.amount : amount;
+      } else {
+        // If the amount is in BTC, make sure it is a valid double and
+        //  do not allow more than 8 decimal places.
         final amountBtc = double.tryParse(amount);
-        final decimals =
-            amount.contains('.') ? amount.split('.').last.length : 0;
+        final decimals = amount.split('.').last.length;
         final isDecimalPoint = amount == '.';
 
         validatedAmount =
@@ -415,22 +430,8 @@ class SendCubit extends Cubit<SendState> {
                     decimals > BitcoinUnit.btc.decimals
                 ? state.amount
                 : amount;
-      } else if (state.bitcoinUnit == BitcoinUnit.sats) {
-        final satoshis = BigInt.tryParse(amount);
-        final hasDecimals = amount.contains('.');
-
-        if (satoshis != null && !hasDecimals) {
-          validatedAmount = satoshis.toString();
-        } else {
-          validatedAmount = state.amount;
-        }
-      } else {
-        final amountFiat = double.tryParse(amount);
-        final isDecimalPoint = amount == '.';
-
-        validatedAmount =
-            amountFiat == null && !isDecimalPoint ? state.amount : amount;
       }
+
       emit(state.copyWith(amount: validatedAmount, sendMax: false));
       updateBestWallet();
     } catch (e) {
