@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 
 final addresses = [
   'bc1q7cyfzrq4xm3nscpkevj8ug3u8dgxs2j4h8c9at',
@@ -15,7 +15,7 @@ final txids = [
 
 final labels = [
   LabelRow(
-    type: Entity.address.name,
+    type: LabelableEntity.address,
     ref: addresses[0],
     label: 'Bitcoin Purchase',
     origin: 'wpkh([d34db33f/84h/0h/0h])',
@@ -23,33 +23,49 @@ final labels = [
   ),
   // this duplicate should be ignored by the storage
   LabelRow(
-    type: Entity.address.name,
+    type: LabelableEntity.address,
     ref: addresses[0],
     label: 'Bitcoin Purchase',
     origin: 'wpkh([d34db33f/84h/0h/0h])',
     spendable: true,
   ),
-  LabelRow(type: Entity.address.name, ref: addresses[0], label: 'Cold Storage'),
   LabelRow(
-    type: Entity.address.name,
+    type: LabelableEntity.address,
+    ref: addresses[0],
+    label: 'Cold Storage',
+  ),
+  LabelRow(
+    type: LabelableEntity.address,
     ref: addresses[0],
     label: 'Hardware Wallet',
     origin: 'integration_test',
   ),
   LabelRow(
-    type: Entity.address.name,
+    type: LabelableEntity.address,
     ref: addresses[1],
     label: 'Exchange Withdrawal',
     origin: 'integration_test',
   ),
   LabelRow(
-    type: Entity.address.name,
+    type: LabelableEntity.address,
     ref: addresses[2],
     label: 'Donation Address',
   ),
-  LabelRow(type: Entity.tx.name, ref: txids[0], label: 'Bitcoin Purchase'),
-  LabelRow(type: Entity.tx.name, ref: txids[0], label: 'Investment'),
-  LabelRow(type: Entity.tx.name, ref: txids[0], label: 'Important Transaction'),
-  LabelRow(type: Entity.tx.name, ref: txids[1], label: 'Important Transaction'),
-  LabelRow(type: Entity.tx.name, ref: txids[2], label: 'Important Transaction'),
+  LabelRow(type: LabelableEntity.tx, ref: txids[0], label: 'Bitcoin Purchase'),
+  LabelRow(type: LabelableEntity.tx, ref: txids[0], label: 'Investment'),
+  LabelRow(
+    type: LabelableEntity.tx,
+    ref: txids[0],
+    label: 'Important Transaction',
+  ),
+  LabelRow(
+    type: LabelableEntity.tx,
+    ref: txids[1],
+    label: 'Important Transaction',
+  ),
+  LabelRow(
+    type: LabelableEntity.tx,
+    ref: txids[2],
+    label: 'Important Transaction',
+  ),
 ];

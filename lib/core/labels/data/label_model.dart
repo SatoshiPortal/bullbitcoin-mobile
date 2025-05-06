@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/labels/domain/label_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'label_model.freezed.dart';
@@ -19,7 +20,7 @@ extension LabelModelMapper on LabelModel {
   static LabelModel fromSqlite(LabelRow row) => LabelModel(
     label: row.label,
     ref: row.ref,
-    type: row.type,
+    type: row.type.name,
     origin: row.origin,
     spendable: row.spendable,
   );
@@ -27,7 +28,7 @@ extension LabelModelMapper on LabelModel {
   LabelRow toSqlite() => LabelRow(
     label: label,
     ref: ref,
-    type: type,
+    type: LabelableEntity.from(type),
     origin: origin,
     spendable: spendable,
   );

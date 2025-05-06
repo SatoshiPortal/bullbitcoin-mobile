@@ -1,50 +1,8 @@
 import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/labels/domain/labelable.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
+import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:drift/drift.dart';
-
-enum Entity {
-  tx,
-  address,
-  pubkey,
-  input,
-  output,
-  xpub;
-
-  static Entity from(String string) {
-    switch (string) {
-      case 'tx':
-        return Entity.tx;
-      case 'address':
-        return Entity.address;
-      case 'pubkey':
-        return Entity.pubkey;
-      case 'input':
-        return Entity.input;
-      case 'output':
-        return Entity.output;
-      case 'xpub':
-        return Entity.xpub;
-      default:
-        throw ArgumentError('Invalid type: $string');
-    }
-  }
-
-  static Entity fromLabelable(Labelable entity) {
-    return switch (entity) {
-      WalletTransaction() => Entity.tx,
-      WalletAddress() => Entity.address,
-      WalletUtxo() || TransactionOutput() => Entity.output,
-      TransactionInput() => Entity.input,
-      _ => throw ArgumentError('Invalid type: $entity'),
-    };
-  }
-}
 
 class LabelDatasource {
   final SqliteDatabase _sqlite;
@@ -60,7 +18,7 @@ class LabelDatasource {
     await _sqlite.managers.labels.create(
       (l) => l(
         label: label,
-        type: Entity.fromLabelable(entity).name,
+        type: LabelableEntity.fromLabelable(entity),
         ref: entity.labelRef,
         origin: Value(origin),
         spendable: Value(spendable),
