@@ -438,6 +438,39 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
+  Future<void> onCurrencyChanged(String currencyCode) async {
+    double exchangeRate = state.exchangeRate;
+    String fiatCurrencyCode = state.fiatCurrencyCode;
+
+    if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(currencyCode)) {
+      // If the currency is a fiat currency, retrieve the exchange rate and replace
+      //  the current exchange rate and fiat currency code.
+      fiatCurrencyCode = currencyCode;
+      exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: currencyCode,
+      );
+    } else {
+      // If the currency is a bitcoin unit, set the fiat currency and exchange
+      //  rate back to the currency from the settings.
+      final currencyValues = await Future.wait([
+        _getSettingsUsecase.execute(),
+        _convertSatsToCurrencyAmountUsecase.execute(),
+      ]);
+
+      fiatCurrencyCode = (currencyValues[0] as SettingsEntity).currencyCode;
+      exchangeRate = currencyValues[1] as double;
+    }
+
+    emit(
+      state.copyWith(
+        inputAmountCurrencyCode: currencyCode,
+        fiatCurrencyCode: fiatCurrencyCode,
+        exchangeRate: exchangeRate,
+        amount: '', // Clear the amount when changing the currency
+      ),
+    );
+  }
+
   Future<void> updateBestWallet() async {
     try {
       // clearAllExceptions();

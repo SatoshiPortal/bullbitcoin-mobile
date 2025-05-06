@@ -8,7 +8,6 @@ import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:intl/intl.dart';
 
 part 'send_state.freezed.dart';
 
@@ -61,10 +60,11 @@ abstract class SendState with _$SendState {
     Wallet? selectedWallet,
     @Default('') String amount,
     int? confirmedAmountSat,
-    @Default(BitcoinUnit.sats) BitcoinUnit bitcoinUnit,
+    BitcoinUnit? bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('CAD') String fiatCurrencyCode,
     @Default('') String inputAmountCurrencyCode,
+
     @Default(0) double exchangeRate,
     @Default('') String label,
     @Default([]) List<WalletUtxo> utxos,
@@ -114,6 +114,10 @@ abstract class SendState with _$SendState {
   }) = _SendState;
   const SendState._();
 
+  List<String> get inputAmountCurrencyCodes {
+    return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
+  }
+
   bool get isInputAmountFiat =>
       ![
         BitcoinUnit.btc.code,
@@ -158,49 +162,22 @@ abstract class SendState with _$SendState {
           : 0;
 
   String get formattedConfirmedAmountBitcoin {
-    if (bitcoinUnit == BitcoinUnit.sats) {
-      // For sats, use integer formatting without decimals
-      final currencyFormatter = NumberFormat.currency(
-        name: bitcoinUnit.code,
-        decimalDigits: 0, // Use 0 decimals for sats
-        customPattern: '#,##0 ¤',
-      );
-      return currencyFormatter.format(confirmedAmountSat ?? 0);
+    if (bitcoinUnit == null) {
+      return '';
+    } else if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(confirmedAmountSat ?? 0);
     } else {
-      // For BTC, use the standard decimal formatting
-      final currencyFormatter = NumberFormat.currency(
-        name: bitcoinUnit.code,
-        decimalDigits: bitcoinUnit.decimals,
-        customPattern: '#,##0.00 ¤',
-      );
-      final formatted = currencyFormatter
-          .format(confirmedAmountBtc)
-          .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-      return formatted;
+      return FormatAmount.btc(confirmedAmountBtc);
     }
   }
 
   String get formattedSwapAmountBitcoin {
-    if (lightningSwap == null) return '0';
+    if (bitcoinUnit == null || lightningSwap == null) return '';
+
     if (bitcoinUnit == BitcoinUnit.sats) {
-      // For sats, use integer formatting without decimals
-      final currencyFormatter = NumberFormat.currency(
-        name: bitcoinUnit.code,
-        decimalDigits: 0, // Use 0 decimals for sats
-        customPattern: '#,##0 ¤',
-      );
-      return currencyFormatter.format(lightningSwap!.paymentAmount);
+      return FormatAmount.sats(lightningSwap!.paymentAmount);
     } else {
-      // For BTC, use the standard decimal formatting
-      final currencyFormatter = NumberFormat.currency(
-        name: bitcoinUnit.code,
-        decimalDigits: bitcoinUnit.decimals,
-        customPattern: '#,##0.00 ¤',
-      );
-      final formatted = currencyFormatter
-          .format(confirmedAmountBtc)
-          .replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-      return formatted;
+      return FormatAmount.btc(confirmedSwapAmountBtc);
     }
   }
 
@@ -211,15 +188,14 @@ abstract class SendState with _$SendState {
   String get formattedAmountInputEquivalent {
     if (isInputAmountFiat) {
       // If the input is in fiat, the equivalent should be in bitcoin
-      if (bitcoinUnit == BitcoinUnit.sats) {
-        // For sats, use integer formatting without decimals
+      if (bitcoinUnit == null) {
+        return '';
+      } else if (bitcoinUnit == BitcoinUnit.sats) {
         return FormatAmount.sats(inputAmountSat);
       } else {
-        // For BTC, use the standard decimal formatting
         return FormatAmount.btc(inputAmountBtc);
       }
     } else {
-      // If the input is in bitcoin, the equivalent should be in fiat
       return FormatAmount.fiat(inputAmountFiat, fiatCurrencyCode);
     }
   }

@@ -9,6 +9,7 @@ class BalanceRow extends StatelessWidget {
   final String currencyCode;
   final bool showMax;
   final void Function() onMaxPressed;
+  final String? walletLabel;
 
   const BalanceRow({
     super.key,
@@ -16,6 +17,7 @@ class BalanceRow extends StatelessWidget {
     required this.currencyCode,
     required this.showMax,
     required this.onMaxPressed,
+    this.walletLabel,
   });
 
   @override
@@ -52,6 +54,26 @@ class BalanceRow extends StatelessWidget {
                   onPressed: () => onMaxPressed(),
                 ),
               const Gap(8),
+            ],
+          ),
+          const Gap(4),
+
+          Row(
+            children: [
+              if (walletLabel != null) ...[
+                const Gap(8),
+                BBText(
+                  'Wallet',
+                  style: context.font.labelSmall,
+                  color: context.colour.surface,
+                ),
+                const Gap(4),
+                BBText(
+                  '$walletLabel',
+                  style: context.font.labelMedium,
+                  color: context.colour.secondary,
+                ),
+              ],
             ],
           ),
         ],

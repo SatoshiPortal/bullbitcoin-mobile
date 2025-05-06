@@ -23,10 +23,7 @@ class PriceInput extends StatelessWidget {
   final Function(String) onNoteChanged;
   final String? error;
 
-  Future<String?> _openPopup(
-    BuildContext context,
-    String selected,
-  ) async {
+  Future<String?> _openPopup(BuildContext context, String selected) async {
     final c = await showModalBottomSheet<String?>(
       useRootNavigator: true,
       context: context,
@@ -75,9 +72,10 @@ class PriceInput extends StatelessWidget {
                       BBText(
                         curr,
                         style: context.font.headlineSmall,
-                        color: selected == curr
-                            ? context.colour.primary
-                            : context.colour.secondary,
+                        color:
+                            selected == curr
+                                ? context.colour.primary
+                                : context.colour.secondary,
                         textAlign: TextAlign.start,
                       ),
                     ],
@@ -119,9 +117,7 @@ class PriceInput extends StatelessWidget {
             const Gap(24),
             BBText(
               amount.isEmpty ? '0' : amount,
-              style: context.font.displaySmall!.copyWith(
-                fontSize: 36,
-              ),
+              style: context.font.displaySmall!.copyWith(fontSize: 36),
               color: context.colour.outlineVariant,
             ),
             const Gap(8),
@@ -133,64 +129,6 @@ class PriceInput extends StatelessWidget {
             const Gap(16),
             InkWell(
               onTap: () async {
-                // final renderBox = equivalentKey.currentContext!
-                //     .findRenderObject()! as RenderBox;
-                // final offset = renderBox.localToGlobal(Offset.zero) / 3;
-                // final size = renderBox.size;
-                // final screenWidth = MediaQuery.of(context).size.width;
-                // const menuWidth = 148.0;
-
-                // final left = screenWidth / 2 - menuWidth / 2;
-
-                // final selected = await showMenu<String>(
-                //   context: context,
-                //   color: context.colour.onPrimary,
-                //   position: RelativeRect.fromLTRB(
-                //     left,
-                //     offset.dy + size.height + 8,
-                //     left,
-                //     0,
-                //   ),
-                //   items: [
-                //     PopupMenuItem<String>(
-                //       enabled: false,
-                //       padding: EdgeInsets.zero,
-                //       child: SizedBox(
-                //         height: 138,
-                //         width: menuWidth, // Match your design
-                //         child: Scrollbar(
-                //           child: ListView.builder(
-                //             padding: EdgeInsets.zero,
-                //             itemCount: availableCurrencies.length,
-                //             itemBuilder: (context, index) {
-                //               final code = availableCurrencies[index];
-                //               return InkWell(
-                //                 onTap: () => Navigator.pop(context, code),
-                //                 child: Padding(
-                //                   padding: const EdgeInsets.symmetric(
-                //                     vertical: 12,
-                //                     horizontal: 16,
-                //                   ),
-                //                   child: Row(
-                //                     children: [
-                //                       //_getCurrencyIcon(code),
-                //                       const SizedBox(width: 8),
-                //                       BBText(
-                //                         code,
-                //                         style: context.font.bodyLarge,
-                //                       ),
-                //                     ],
-                //                   ),
-                //                 ),
-                //               );
-                //             },
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //   ],
-                // );
-
                 final selected = await _openPopup(context, currency);
                 if (selected != null) onCurrencyChanged(selected);
               },

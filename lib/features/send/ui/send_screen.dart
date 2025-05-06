@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/scan/scan_widget.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
@@ -236,6 +235,18 @@ class SendAmountScreen extends StatelessWidget {
           final isLightning = context.select(
             (SendCubit cubit) => cubit.state.isLightning,
           );
+          final inputCurrency = context.select(
+            (SendCubit cubit) => cubit.state.inputAmountCurrencyCode,
+          );
+
+          final availableInputCurrencies = context
+              .select<SendCubit, List<String>>(
+                (bloc) => bloc.state.inputAmountCurrencyCodes,
+              );
+
+          final selectedWalletLabel = context.select(
+            (SendCubit cubit) => cubit.state.selectedWallet!.label,
+          );
           return IgnorePointer(
             ignoring: state.amountConfirmedClicked,
             child: Stack(
@@ -252,14 +263,15 @@ class SendAmountScreen extends StatelessWidget {
                       const Gap(48),
                       PriceInput(
                         amount: state.amount,
-                        currency: state.inputAmountCurrencyCode,
+                        currency: inputCurrency,
                         amountEquivalent: state.formattedAmountInputEquivalent,
-                        availableCurrencies: [
-                          ...state.fiatCurrencyCodes,
-                          ...[BitcoinUnit.btc.code, BitcoinUnit.sats.code],
-                        ],
+                        availableCurrencies: availableInputCurrencies,
                         onNoteChanged: cubit.noteChanged,
-                        onCurrencyChanged: cubit.currencyCodeChanged,
+                        onCurrencyChanged: (currencyCode) {
+                          context.read<SendCubit>().onCurrencyChanged(
+                            currencyCode,
+                          );
+                        },
                         error:
                             balanceError != null
                                 ? balanceError.toString()
@@ -275,7 +287,9 @@ class SendAmountScreen extends StatelessWidget {
                         currencyCode: '',
                         showMax: !isLightning,
                         onMaxPressed: cubit.onMaxPressed,
+                        walletLabel: selectedWalletLabel,
                       ),
+
                       DialPad(
                         onNumberPressed: cubit.onNumberPressed,
                         onBackspacePressed: cubit.onBackspacePressed,
