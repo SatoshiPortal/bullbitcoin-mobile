@@ -417,7 +417,9 @@ class SendCubit extends Cubit<SendState> {
         final hasDecimals = amount.contains('.');
 
         validatedAmount =
-            amountSats == null || hasDecimals ? state.amount : amount;
+            amountSats == null || hasDecimals
+                ? state.amount
+                : amountSats.toString();
       } else {
         // If the amount is in BTC, make sure it is a valid double and
         //  do not allow more than 8 decimal places.
