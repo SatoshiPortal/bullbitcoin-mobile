@@ -12,7 +12,7 @@ class UpdateElectrumServerSettingsUsecase {
   Future<bool> execute({required ElectrumServer electrumServer}) async {
     try {
       await _electrumServerRepository.setElectrumServer(electrumServer);
-      debugPrint('\n Successfully updated Electrum server settings');
+      debugPrint('Successfully updated Electrum server settings');
 
       return true;
     } catch (e) {
