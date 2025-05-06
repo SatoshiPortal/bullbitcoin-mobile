@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -13,8 +14,11 @@ void main() {
 
   locator.registerLazySingleton<SqliteDatabase>(() => SqliteDatabase());
   final sqlite = locator<SqliteDatabase>();
+  locator.registerLazySingleton<LabelDatasource>(
+    () => LabelDatasource(sqlite: sqlite),
+  );
   locator.registerLazySingleton<LabelRepository>(
-    () => LabelRepository(sqlite: sqlite),
+    () => LabelRepository(labelDatasource: locator<LabelDatasource>()),
   );
   final labelRepository = locator<LabelRepository>();
 
@@ -76,7 +80,7 @@ void main() {
         await sqlite
             .into(sqlite.labels)
             .insertOnConflictUpdate(
-              LabelModel(
+              LabelRow(
                 label: label.label,
                 type: label.type,
                 ref: label.ref,
