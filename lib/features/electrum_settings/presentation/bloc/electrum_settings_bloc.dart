@@ -47,7 +47,7 @@ class ElectrumSettingsBloc
     on<SetupBlockchain>(_onSetupBlockchain);
     on<SaveElectrumServerChanges>(_onSaveElectrumServerChanges);
     on<ToggleCustomServerActive>(_onToggleCustomServerActive);
-    on<ToggleDefaultServerPreset>(_onToggleDefaultServerPreset);
+    on<ToggleDefaultServerProvider>(_onToggleDefaultServerProvider);
     on<ToggleCustomServer>(_onToggleCustomServer);
   }
 

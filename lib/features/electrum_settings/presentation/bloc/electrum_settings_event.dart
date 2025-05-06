@@ -34,11 +34,7 @@ class UpdateElectrumAdvancedOptions extends ElectrumSettingsEvent {
   final int? retry;
   final int? timeout;
 
-  const UpdateElectrumAdvancedOptions({
-    this.stopGap,
-    this.retry,
-    this.timeout,
-  });
+  const UpdateElectrumAdvancedOptions({this.stopGap, this.retry, this.timeout});
 }
 
 class ToggleSelectedProvider extends ElectrumSettingsEvent {
@@ -76,7 +72,7 @@ class ToggleCustomServer extends ElectrumSettingsEvent {
 }
 
 // Default server preset toggle - as used in the bloc
-class ToggleDefaultServerPreset extends ElectrumSettingsEvent {
+class ToggleDefaultServerProvider extends ElectrumSettingsEvent {
   final DefaultElectrumServerProvider preset;
-  ToggleDefaultServerPreset({required this.preset});
+  ToggleDefaultServerProvider({required this.preset});
 }
