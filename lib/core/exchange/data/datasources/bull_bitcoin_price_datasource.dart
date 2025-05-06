@@ -6,13 +6,12 @@ class BullBitcoinPriceDatasource {
   final Dio _http;
   final _pricePath = '/public/price';
 
-  BullBitcoinPriceDatasource({
-    required Dio bullBitcoinHttpClient,
-  }) : _http = bullBitcoinHttpClient;
+  BullBitcoinPriceDatasource({required Dio bullBitcoinHttpClient})
+    : _http = bullBitcoinHttpClient;
 
   Future<List<String>> get availableCurrencies async {
     // TODO: fetch the actual list of currencies from the api
-    return ['USD', 'CAD', 'INR', 'CRC', 'EUR'];
+    return ['USD', 'CAD', 'MXN', 'CRC', 'EUR'];
   }
 
   Future<double> getPrice(String currencyCode) async {

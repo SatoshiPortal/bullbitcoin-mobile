@@ -200,13 +200,12 @@ extension _CurrencyStrEx on String {
         return '🇫🇷';
       case 'CAD':
         return '🇨🇦';
-
       case 'INR':
         return '🇮🇳';
-
       case 'CRC':
         return '🇨🇷';
-
+      case 'MXN':
+        return '🇲🇽';
       case 'sats':
       case 'BTC':
       default:
