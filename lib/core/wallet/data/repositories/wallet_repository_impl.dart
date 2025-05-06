@@ -4,32 +4,29 @@ import 'package:async/async.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model_extension.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
-import 'package:drift/drift.dart';
 
 class WalletRepositoryImpl implements WalletRepository {
-  // TODO: move db to datasource of the required data here and inject the
-  //  respective datasource here instead of db
-  final SqliteDatabase _sqlite;
+  final WalletMetadataDatasource _walletMetadataDatasource;
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
   WalletRepositoryImpl({
-    required SqliteDatabase sqlite,
+    required WalletMetadataDatasource walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
-  }) : _sqlite = sqlite,
+  }) : _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource,
        _electrumServerStorage = electrumServerStorageDatasource {
@@ -78,9 +75,7 @@ class WalletRepositoryImpl implements WalletRepository {
       label: walletLabel,
       isDefault: isDefault,
     );
-    await _sqlite
-        .into(_sqlite.walletMetadatas)
-        .insertOnConflictUpdate(metadata);
+    await _walletMetadataDatasource.store(metadata);
 
     // Get the balance
     final balance = await _getBalance(metadata, sync: sync);
@@ -117,9 +112,7 @@ class WalletRepositoryImpl implements WalletRepository {
       label: label,
     );
 
-    await _sqlite
-        .into(_sqlite.walletMetadatas)
-        .insertOnConflictUpdate(metadata);
+    await _walletMetadataDatasource.store(metadata);
 
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
@@ -146,10 +139,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
   @override
   Future<Wallet> getWallet(String walletId, {bool sync = false}) async {
-    final metadata =
-        await _sqlite.managers.walletMetadatas
-            .filter((e) => e.id(walletId))
-            .getSingleOrNull();
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
       throw throw WalletNotFoundException(walletId);
@@ -199,7 +189,7 @@ class WalletRepositoryImpl implements WalletRepository {
     bool? onlyLiquid,
     bool sync = false,
   }) async {
-    final metadatas = await _sqlite.managers.walletMetadatas.get();
+    final metadatas = await _walletMetadataDatasource.fetchAll();
     if (metadatas.isEmpty) return [];
 
     final filteredWallets =
@@ -268,22 +258,15 @@ class WalletRepositoryImpl implements WalletRepository {
     DateTime time, {
     required String walletId,
   }) async {
-    final metadata =
-        await _sqlite.managers.walletMetadatas
-            .filter((e) => e.id(walletId))
-            .getSingleOrNull();
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
       throw WalletNotFoundException(walletId);
     }
 
-    await _sqlite
-        .into(_sqlite.walletMetadatas)
-        .insertOnConflictUpdate(
-          metadata.copyWith(
-            latestEncryptedBackup: Value(time.millisecondsSinceEpoch),
-          ),
-        );
+    await _walletMetadataDatasource.store(
+      metadata.copyWith(latestEncryptedBackup: time.millisecondsSinceEpoch),
+    );
   }
 
   @override
@@ -294,29 +277,20 @@ class WalletRepositoryImpl implements WalletRepository {
     required DateTime? latestPhysicalBackup,
     required String walletId,
   }) async {
-    final metadata =
-        await _sqlite.managers.walletMetadatas
-            .filter((e) => e.id(walletId))
-            .getSingleOrNull();
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
       throw WalletNotFoundException(walletId);
     }
 
-    await _sqlite
-        .into(_sqlite.walletMetadatas)
-        .insertOnConflictUpdate(
-          metadata.copyWith(
-            isEncryptedVaultTested: isEncryptedVaultTested,
-            isPhysicalBackupTested: isPhysicalBackupTested,
-            latestEncryptedBackup: Value(
-              latestEncryptedBackup?.millisecondsSinceEpoch,
-            ),
-            latestPhysicalBackup: Value(
-              latestPhysicalBackup?.millisecondsSinceEpoch,
-            ),
-          ),
-        );
+    await _walletMetadataDatasource.store(
+      metadata.copyWith(
+        isEncryptedVaultTested: isEncryptedVaultTested,
+        isPhysicalBackupTested: isPhysicalBackupTested,
+        latestEncryptedBackup: latestEncryptedBackup?.millisecondsSinceEpoch,
+        latestPhysicalBackup: latestPhysicalBackup?.millisecondsSinceEpoch,
+      ),
+    );
   }
 
   Stream<String> get _walletSyncStartedStream => StreamGroup.merge([
@@ -330,22 +304,15 @@ class WalletRepositoryImpl implements WalletRepository {
   ]);
 
   Future<void> _updateWalletSyncTime(String walletId) async {
-    final metadata =
-        await _sqlite.managers.walletMetadatas
-            .filter((e) => e.id(walletId))
-            .getSingleOrNull();
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
       return;
     }
 
-    final updatedWalletMetadata = metadata.copyWith(
-      syncedAt: Value(DateTime.now()),
-    );
+    final updatedWalletMetadata = metadata.copyWith(syncedAt: DateTime.now());
 
-    await _sqlite
-        .into(_sqlite.walletMetadatas)
-        .insertOnConflictUpdate(updatedWalletMetadata);
+    await _walletMetadataDatasource.store(updatedWalletMetadata);
   }
 
   Future<void> _startAutoSyncing() async {
@@ -355,7 +322,7 @@ class WalletRepositoryImpl implements WalletRepository {
     );
 
     Timer.periodic(autoSyncInterval, (timer) async {
-      final metadatas = await _sqlite.managers.walletMetadatas.get();
+      final metadatas = await _walletMetadataDatasource.fetchAll();
       for (final metadata in metadatas) {
         // Only sync if the time since the last sync is greater than the interval
         if (metadata.syncedAt == null ||

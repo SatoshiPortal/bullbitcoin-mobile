@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model_extension.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -12,30 +12,27 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 
 class WalletUtxoRepositoryImpl implements WalletUtxoRepository {
-  final SqliteDatabase _sqlite;
+  final WalletMetadataDatasource _walletMetadataDatasource;
   final LabelDatasource _labelDatasource;
   final WalletDatasource _bdkWalletDatasource;
   final WalletDatasource _lwkWalletDatasource;
   final FrozenWalletUtxoDatasource _frozenWalletUtxoDatasource;
 
   WalletUtxoRepositoryImpl({
-    required SqliteDatabase sqlite,
+    required WalletMetadataDatasource walletMetadataDatasource,
     required LabelDatasource labelDatasource,
     required WalletDatasource bdkWalletDatasource,
     required WalletDatasource lwkWalletDatasource,
     required FrozenWalletUtxoDatasource frozenWalletUtxoDatasource,
   }) : _labelDatasource = labelDatasource,
-       _sqlite = sqlite,
+       _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWalletDatasource = bdkWalletDatasource,
        _lwkWalletDatasource = lwkWalletDatasource,
        _frozenWalletUtxoDatasource = frozenWalletUtxoDatasource;
 
   @override
   Future<List<WalletUtxo>> getWalletUtxos({required String walletId}) async {
-    final metadata =
-        await _sqlite.managers.walletMetadatas
-            .filter((e) => e.id(walletId))
-            .getSingleOrNull();
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
       throw Exception('Wallet metadata not found for walletId: $walletId');

@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.d
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/bitcoin_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/liquid_wallet_repository_impl.dart';
 import 'package:bb_mobile/core/wallet/data/repositories/wallet_address_repository_impl.dart';
@@ -44,7 +45,10 @@ class WalletLocator {
       () => LwkWalletDatasource(),
     );
 
-    locator.registerLazySingleton<SqliteDatabase>(() => SqliteDatabase());
+    locator.registerLazySingleton<WalletMetadataDatasource>(
+      () =>
+          WalletMetadataDatasource(sqliteDatasource: locator<SqliteDatabase>()),
+    );
 
     locator.registerLazySingleton<FrozenWalletUtxoDatasource>(
       () => FrozenWalletUtxoDatasource(),
@@ -54,7 +58,7 @@ class WalletLocator {
   static void registerRepositories() {
     locator.registerLazySingleton<BitcoinWalletRepository>(
       () => BitcoinWalletRepositoryImpl(
-        sqlite: locator<SqliteDatabase>(),
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         seedDatasource: locator<SeedDatasource>(),
       ),
@@ -62,7 +66,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<LiquidWalletRepository>(
       () => LiquidWalletRepositoryImpl(
-        sqlite: locator<SqliteDatabase>(),
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         seedDatasource: locator<SeedDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
       ),
@@ -70,7 +74,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<WalletRepository>(
       () => WalletRepositoryImpl(
-        sqlite: locator<SqliteDatabase>(),
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         electrumServerStorageDatasource:
@@ -80,7 +84,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<WalletUtxoRepository>(
       () => WalletUtxoRepositoryImpl(
-        sqlite: locator<SqliteDatabase>(),
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         frozenWalletUtxoDatasource: locator<FrozenWalletUtxoDatasource>(),
@@ -90,7 +94,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<WalletAddressRepository>(
       () => WalletAddressRepositoryImpl(
-        sqlite: locator<SqliteDatabase>(),
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
       ),
@@ -98,7 +102,7 @@ class WalletLocator {
 
     locator.registerLazySingleton<WalletTransactionRepository>(
       () => WalletTransactionRepositoryImpl(
-        sqlite: locator<SqliteDatabase>(),
+        walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         labelDatasource: locator<LabelDatasource>(),
         bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
         lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
