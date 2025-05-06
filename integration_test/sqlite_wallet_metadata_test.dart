@@ -13,28 +13,16 @@ void main() {
   group('WalletMetadata Sqlite Integration Tests', () {
     test('', () async {
       const fingerprint = 'master';
-      const isBitcoin = true;
-      const isMainnet = true;
-      const isTestnet = false;
-      const isLiquid = false;
       const scriptType = ScriptType.bip84;
 
       final metadata = WalletMetadataModel(
         masterFingerprint: fingerprint,
         id: WalletMetadataService.encodeOrigin(
           fingerprint: fingerprint,
-          isBitcoin: isBitcoin,
-          isMainnet: isMainnet,
-          isTestnet: isTestnet,
-          isLiquid: isLiquid,
+          network: Network.bitcoinMainnet,
           scriptType: scriptType,
         ),
         xpubFingerprint: 'abc12345',
-        isBitcoin: isBitcoin,
-        isLiquid: isLiquid,
-        isMainnet: isMainnet,
-        isTestnet: isTestnet,
-        scriptType: scriptType.name,
         xpub: 'xpub6CUGRUonZSQ4TWtTMmzXdrXDtypWKiKp5i1Lsfk...',
         externalPublicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub.../0/*)',
         internalPublicDescriptor: 'wpkh([abcd1234/84h/0h/0h]xpub.../1/*)',
