@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/transactions/bloc/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
+import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,24 @@ class TxList extends StatelessWidget {
     final txsByDay = context.select(
       (TransactionsCubit cubit) => cubit.state.transactionsByDay,
     );
+
+    if (txsByDay.isEmpty) {
+      return Center(
+        child: Column(
+          children: [
+            const Gap(16),
+            BBText(
+              'No transactions yet.',
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              style: AppFonts.textTheme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),

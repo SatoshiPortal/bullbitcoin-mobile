@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/bloc/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/transaction_label_bottomsheet.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -15,6 +16,22 @@ import 'package:go_router/go_router.dart';
 
 class TransactionDetailsScreen extends StatelessWidget {
   const TransactionDetailsScreen({super.key});
+
+  Future<void> showTransactionLabelBottomSheet(BuildContext context) async {
+    final receive = context.read<TransactionDetailsCubit>();
+
+    await showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      backgroundColor: context.colour.onPrimary,
+      builder: (context) {
+        return BlocProvider.value(
+          value: receive,
+          child: const TransactionLabelBottomsheet(),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,17 +84,17 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const Gap(24),
                   const TransactionDetailsTable(),
                   const Gap(62),
-                  BBButton.big(
-                    label:
-                        tx != null && tx.labels.isEmpty
-                            ? 'Add label'
-                            : 'Edit label',
-                    onPressed: () {},
-                    bgColor: Colors.transparent,
-                    textColor: theme.colorScheme.secondary,
-                    outlined: true,
-                    borderColor: theme.colorScheme.secondary,
-                  ),
+                  if (tx != null)
+                    BBButton.big(
+                      label: 'Add note',
+                      onPressed: () async {
+                        await showTransactionLabelBottomSheet(context);
+                      },
+                      bgColor: Colors.transparent,
+                      textColor: theme.colorScheme.secondary,
+                      outlined: true,
+                      borderColor: theme.colorScheme.secondary,
+                    ),
                   const Gap(16),
                 ],
               ),

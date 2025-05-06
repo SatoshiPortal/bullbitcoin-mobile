@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
@@ -31,6 +32,7 @@ class TransactionsLocator {
         watchSwapUsecase: locator<WatchSwapUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         getPayjoinByIdUsecase: locator<GetPayjoinByIdUsecase>(),
+        createLabelUsecase: locator<CreateLabelUsecase>(),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
@@ -22,11 +23,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required WatchSwapUsecase watchSwapUsecase,
     required GetPayjoinByIdUsecase getPayjoinByIdUsecase,
     required WatchPayjoinUsecase watchPayjoinUsecase,
+    required CreateLabelUsecase createLabelUsecase,
   }) : _getWalletUsecase = getWalletUsecase,
        _getSwapUsecase = getSwapUsecase,
        _watchSwapUsecase = watchSwapUsecase,
        _getPayjoinByIdUsecase = getPayjoinByIdUsecase,
        _watchPayjoinUsecase = watchPayjoinUsecase,
+       _createLabelUsecase = createLabelUsecase,
        super(const TransactionDetailsState());
 
   final GetWalletUsecase _getWalletUsecase;
@@ -34,6 +37,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   final WatchSwapUsecase _watchSwapUsecase;
   final GetPayjoinByIdUsecase _getPayjoinByIdUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
+  final CreateLabelUsecase _createLabelUsecase;
 
   StreamSubscription? _payjoinSubscription;
   StreamSubscription? _swapSubscription;
@@ -105,5 +109,22 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         emit(state.copyWith(err: e));
       }
     }
+  }
+
+  Future<void> saveTransactionNote(String note) async {
+    // TODO: Permit multiple labels
+    final transaction = state.transaction;
+    if (transaction == null) return;
+
+    await _createLabelUsecase.execute<WalletTransaction>(
+      origin: state.wallet!.origin,
+      entity: transaction,
+      label: note,
+    );
+
+    final updatedTransaction = transaction.copyWith(
+      labels: [...transaction.labels, note],
+    );
+    emit(state.copyWith(transaction: updatedTransaction));
   }
 }

@@ -46,7 +46,7 @@ class DetailsTableItem extends StatelessWidget {
                     displayValue,
                     textAlign: TextAlign.end,
                     overflow: TextOverflow.clip,
-                    maxLines: 1,
+                    //maxLines: 5,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: theme.colorScheme.outlineVariant,
                       decoration:
