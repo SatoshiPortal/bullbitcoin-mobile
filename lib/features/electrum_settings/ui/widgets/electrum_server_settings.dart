@@ -74,24 +74,34 @@ class _ElectrumServerSettingsContentState
                 const Gap(150),
               ] else ...[
                 Flexible(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ServerTypeSelector(state: state),
-                          const Gap(24),
-                          if (state.isCustomServerSelected)
-                            _ServerUrls(state: state),
-                          const Gap(16),
-                          _ValidateDomainSwitch(context: context, state: state),
-                          const Gap(16),
-                          _AdvancedOptions(state: state),
-                          const Gap(32),
-                          _SaveButton(state: state),
-                          const Gap(24),
-                        ],
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
+                    ),
+                    child: SingleChildScrollView(
+                      keyboardDismissBehavior:
+                          ScrollViewKeyboardDismissBehavior.onDrag,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ServerTypeSelector(state: state),
+                            const Gap(24),
+                            if (state.isCustomServerSelected)
+                              _ServerUrls(state: state),
+                            const Gap(16),
+                            _ValidateDomainSwitch(
+                              context: context,
+                              state: state,
+                            ),
+                            const Gap(16),
+                            _AdvancedOptions(state: state),
+                            const Gap(32),
+                            _SaveButton(state: state),
+                            const Gap(24),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -111,7 +121,6 @@ class _SaveButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use the improved hasPendingChanges getter that includes provider type changes
     final bool hasChanges = state.hasPendingChanges;
 
     bool disableSave = false;
@@ -212,7 +221,6 @@ class _Header extends StatelessWidget {
         );
       }
     } else {
-      // For default provider mode, display a dot based on connectivity
       final defaultServer = state.getServerForNetworkAndProvider(
         mainnetNetwork,
         state.selectedProvider,
@@ -340,7 +348,7 @@ class _ServerField extends StatelessWidget {
               vertical: 16,
             ),
           ),
-          onChanged: onChanged,
+          onChanged: enabled ? onChanged : null,
         ),
       ],
     );
@@ -383,11 +391,8 @@ class _ServerUrls extends StatelessWidget {
           initialValue: mainnetUrl,
           enabled: state.isCustomServerSelected,
           onChanged: (value) {
-            if (state.isCustomServerSelected) {
-              context.read<ElectrumSettingsBloc>().add(
-                UpdateCustomServerMainnet(customServer: value),
-              );
-            }
+            final bloc = context.read<ElectrumSettingsBloc>();
+            bloc.add(UpdateCustomServerMainnet(customServer: value));
           },
         ),
         const Gap(16),
@@ -396,11 +401,8 @@ class _ServerUrls extends StatelessWidget {
           initialValue: testnetUrl,
           enabled: state.isCustomServerSelected,
           onChanged: (value) {
-            if (state.isCustomServerSelected) {
-              context.read<ElectrumSettingsBloc>().add(
-                UpdateCustomServerTestnet(customServer: value),
-              );
-            }
+            final bloc = context.read<ElectrumSettingsBloc>();
+            bloc.add(UpdateCustomServerTestnet(customServer: value));
           },
         ),
       ],
