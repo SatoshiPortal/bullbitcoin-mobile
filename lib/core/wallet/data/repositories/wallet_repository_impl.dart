@@ -97,7 +97,7 @@ class WalletRepositoryImpl implements WalletRepository {
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
-      source: WalletSource.fromName(metadata.source),
+      source: metadata.source,
       balanceSat: balance.totalSat,
     );
   }
@@ -139,7 +139,7 @@ class WalletRepositoryImpl implements WalletRepository {
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
-      source: WalletSource.fromName(metadata.source),
+      source: metadata.source,
       balanceSat: balance.totalSat,
     );
   }
@@ -172,7 +172,7 @@ class WalletRepositoryImpl implements WalletRepository {
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
-      source: WalletSource.fromName(metadata.source),
+      source: metadata.source,
       balanceSat: balance.totalSat,
       isEncryptedVaultTested: metadata.isEncryptedVaultTested,
       isPhysicalBackupTested: metadata.isPhysicalBackupTested,
@@ -242,7 +242,7 @@ class WalletRepositoryImpl implements WalletRepository {
             xpub: entry.value.xpub,
             externalPublicDescriptor: entry.value.externalPublicDescriptor,
             internalPublicDescriptor: entry.value.internalPublicDescriptor,
-            source: WalletSource.fromName(entry.value.source),
+            source: entry.value.source,
             balanceSat: balances[entry.key].totalSat,
             isEncryptedVaultTested: entry.value.isEncryptedVaultTested,
             isPhysicalBackupTested: entry.value.isPhysicalBackupTested,

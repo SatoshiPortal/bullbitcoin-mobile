@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
@@ -73,17 +74,6 @@ enum ScriptType {
 
   static ScriptType fromName(String name) {
     return ScriptType.values.firstWhere((script) => script.name == name);
-  }
-}
-
-enum WalletSource {
-  mnemonic,
-  xpub,
-  descriptors,
-  coldcard;
-
-  static WalletSource fromName(String name) {
-    return WalletSource.values.firstWhere((source) => source.name == name);
   }
 }
 
