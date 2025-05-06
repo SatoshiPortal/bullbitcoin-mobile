@@ -93,40 +93,6 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
 
   const ElectrumServerModel._();
 
-  /// Get the actual URL for this server based on network
-  String get serverUrl {
-    if (electrumServerProvider is CustomElectrumServerProvider) {
-      return url; // For custom servers, use the provided URL directly
-    }
-
-    // For default providers, return the appropriate URL based on network
-    if (electrumServerProvider is DefaultServerProvider) {
-      final providerType =
-          (electrumServerProvider as DefaultServerProvider)
-              .defaultServerProvider;
-      return switch ((providerType, isTestnet, isLiquid)) {
-        (DefaultElectrumServerProvider.bullBitcoin, false, false) =>
-          ApiServiceConstants.bbElectrumUrl,
-        (DefaultElectrumServerProvider.bullBitcoin, true, false) =>
-          ApiServiceConstants.bbElectrumTestUrl,
-        (DefaultElectrumServerProvider.bullBitcoin, false, true) =>
-          ApiServiceConstants.bbLiquidElectrumUrlPath,
-        (DefaultElectrumServerProvider.bullBitcoin, true, true) =>
-          ApiServiceConstants.bbLiquidElectrumTestUrlPath,
-        (DefaultElectrumServerProvider.blockstream, false, false) =>
-          ApiServiceConstants.publicElectrumUrl,
-        (DefaultElectrumServerProvider.blockstream, true, false) =>
-          ApiServiceConstants.publicElectrumTestUrl,
-        (DefaultElectrumServerProvider.blockstream, false, true) =>
-          ApiServiceConstants.publicLiquidElectrumUrlPath,
-        (DefaultElectrumServerProvider.blockstream, true, true) =>
-          ApiServiceConstants.publicliquidElectrumTestUrlPath,
-      };
-    }
-
-    return url; // Fallback to the stored URL
-  }
-
   /// Get the SOCKS5 proxy for this server (only available for custom servers)
   String? get serverSocks5 {
     if (electrumServerProvider is CustomElectrumServerProvider) {
