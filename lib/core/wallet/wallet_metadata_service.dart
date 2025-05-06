@@ -9,20 +9,17 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 class WalletMetadataService {
   static String encodeOrigin({
     required String fingerprint,
-    required bool isBitcoin,
-    required bool isMainnet,
-    required bool isTestnet,
-    required bool isLiquid,
+    required Network network,
     required ScriptType scriptType,
   }) {
     String networkPath;
-    if (isBitcoin && isMainnet) {
+    if (network.isBitcoin && network.isMainnet) {
       networkPath = "0h";
-    } else if (isBitcoin && isTestnet) {
+    } else if (network.isBitcoin && network.isTestnet) {
       networkPath = "1h";
-    } else if (isLiquid && isMainnet) {
+    } else if (network.isLiquid && network.isMainnet) {
       networkPath = "1667h";
-    } else if (isLiquid && isTestnet) {
+    } else if (network.isLiquid && network.isTestnet) {
       networkPath = "1668h";
     } else {
       throw 'Unexpected network path';
@@ -32,13 +29,13 @@ class WalletMetadataService {
     String scriptPath = '';
     switch (scriptType) {
       case ScriptType.bip84:
-        prefixFormat = isBitcoin ? 'wpkh([*])' : 'elwpkh([*])';
+        prefixFormat = network.isBitcoin ? 'wpkh([*])' : 'elwpkh([*])';
         scriptPath = '84h';
       case ScriptType.bip49:
-        prefixFormat = isBitcoin ? 'sh(wpkh([*]))' : 'elsh(wpkh([*]))';
+        prefixFormat = network.isBitcoin ? 'sh(wpkh([*]))' : 'elsh(wpkh([*]))';
         scriptPath = '49h';
       case ScriptType.bip44:
-        prefixFormat = isBitcoin ? 'pkh([*])' : 'elpkh([*])';
+        prefixFormat = network.isBitcoin ? 'pkh([*])' : 'elpkh([*])';
         scriptPath = '44h';
     }
 
@@ -139,10 +136,7 @@ class WalletMetadataService {
     return WalletMetadataModel(
       id: encodeOrigin(
         fingerprint: seed.masterFingerprint,
-        isBitcoin: network.isBitcoin,
-        isMainnet: network.isMainnet,
-        isTestnet: network.isTestnet,
-        isLiquid: network.isLiquid,
+        network: network,
         scriptType: scriptType,
       ),
       masterFingerprint: seed.masterFingerprint,
@@ -198,10 +192,7 @@ class WalletMetadataService {
     return WalletMetadataModel(
       id: WalletMetadataService.encodeOrigin(
         fingerprint: fingerprint,
-        isBitcoin: network.isBitcoin,
-        isMainnet: network.isMainnet,
-        isTestnet: network.isTestnet,
-        isLiquid: network.isLiquid,
+        network: network,
         scriptType: scriptType,
       ),
       xpubFingerprint: fingerprint,
