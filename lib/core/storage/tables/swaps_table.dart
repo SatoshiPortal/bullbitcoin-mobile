@@ -6,7 +6,7 @@ enum SwapDirection { send, receive, onchain }
 class Swaps extends Table {
   TextColumn get id => text().withLength(min: 12, max: 12)();
   TextColumn get type => text()();
-  IntColumn get direction => intEnum<SwapDirection>()();
+  TextColumn get direction => textEnum<SwapDirection>()();
   TextColumn get status => text()();
   BoolColumn get isTestnet => boolean()();
   IntColumn get keyIndex => integer()();
