@@ -1,7 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'electrum_server_provider.freezed.dart';
-part 'electrum_server_provider.g.dart';
 
 enum DefaultElectrumServerProvider { bullBitcoin, blockstream }
 
@@ -13,6 +12,4 @@ sealed class ElectrumServerProvider with _$ElectrumServerProvider {
     @Default(DefaultElectrumServerProvider.bullBitcoin)
     DefaultElectrumServerProvider defaultServerProvider,
   }) = DefaultServerProvider;
-  factory ElectrumServerProvider.fromJson(Map<String, dynamic> json) =>
-      _$ElectrumServerProviderFromJson(json);
 }
