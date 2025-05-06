@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart'
     show WalletSource;
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:bb_mobile/locator.dart';
@@ -39,7 +40,7 @@ void main() {
       );
 
       // Store a metadata
-      await sqlite.into(sqlite.walletMetadatas).insert(metadata);
+      await sqlite.into(sqlite.walletMetadatas).insert(metadata.toSqlite());
 
       // Fetch one
       final fetchedMetadata =
