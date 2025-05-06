@@ -16,8 +16,8 @@ class CheckElectrumServerConnectivityUsecase {
     int? timeout,
   }) async {
     return await _electrumServerRepository.checkServerConnectivity(
-      url,
-      timeout,
+      url: url,
+      timeout: timeout,
     );
   }
 }

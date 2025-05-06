@@ -20,10 +20,10 @@ class ElectrumServerRepository {
   }
 
   /// Checks if a server is reachable by attempting a socket connection
-  Future<ElectrumServerStatus> checkServerConnectivity(
-    String url,
+  Future<ElectrumServerStatus> checkServerConnectivity({
+    required String url,
     int? timeout,
-  ) async {
+  }) async {
     try {
       if (url.isEmpty) {
         return ElectrumServerStatus.unknown;
@@ -87,7 +87,7 @@ class ElectrumServerRepository {
   Future<List<ElectrumServer>> getElectrumServers({
     required Network network,
   }) async {
-    List<ElectrumServer> servers = [];
+    final List<ElectrumServer> servers = [];
 
     // Get custom server if available
     final customServer = await getCustomServer(network: network);
@@ -105,7 +105,7 @@ class ElectrumServerRepository {
     }
 
     // Get Blockstream server (priority 2)
-    final blockstream = await getDefaultServerByProvider(
+    final defaultServers = await getDefaultServerByProvider(
       provider: DefaultElectrumServerProvider.blockstream,
       network: network,
     );
