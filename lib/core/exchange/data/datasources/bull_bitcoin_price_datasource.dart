@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 class BullBitcoinPriceDatasource {
   final Dio _http;
@@ -33,7 +34,8 @@ class BullBitcoinPriceDatasource {
       );
 
       if (resp.statusCode == null || resp.statusCode != 200) {
-        throw 'Unable to fetch exchange rate from Bull Bitcoin Exchange API';
+        debugPrint('Pricer error');
+        return 0.0;
       }
       // Parse the response data correctly
       final data = resp.data as Map<String, dynamic>;
@@ -49,7 +51,8 @@ class BullBitcoinPriceDatasource {
 
       return rate;
     } catch (e) {
-      rethrow;
+      debugPrint(e.toString());
+      return 0.0;
     }
   }
 }
