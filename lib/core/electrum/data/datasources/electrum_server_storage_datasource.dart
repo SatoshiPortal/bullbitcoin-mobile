@@ -39,7 +39,7 @@ class ElectrumServerStorageDatasource {
             )
             .get();
 
-    if (rows.isEmpty) throw 'No servers found for $provider and $network ';
+    if (rows.isEmpty) return null;
 
     return ElectrumServerModel.fromSqlite(rows.first);
   }
@@ -58,7 +58,6 @@ class ElectrumServerStorageDatasource {
             )
             .getSingleOrNull();
     if (row == null) return null;
-    debugPrint('Found custom server: ${row.url}, isActive: ${row.isActive}');
     return ElectrumServerModel.fromSqlite(row);
   }
 
@@ -76,28 +75,8 @@ class ElectrumServerStorageDatasource {
                   f.priority(0),
             )
             .getSingleOrNull();
-
     if (activeCustom != null) {
       return ElectrumServerModel.fromSqlite(activeCustom);
-    }
-
-    // If no active custom server, find active default servers and sort by priority
-    final activeDefaults =
-        await _sqlite.managers.electrumServers
-            .filter(
-              (f) =>
-                  f.isLiquid(network.isLiquid) &
-                  f.isTestnet(network.isTestnet) &
-                  f.isActive(true) &
-                  f.priority.not(0),
-            )
-            .get();
-
-    if (activeDefaults.isNotEmpty) {
-      final servers =
-          activeDefaults.map((e) => ElectrumServerModel.fromSqlite(e)).toList();
-      servers.sort((a, b) => a.priority.compareTo(b.priority));
-      return servers.first;
     }
 
     // If no active servers found, get all servers by priority (fallback)

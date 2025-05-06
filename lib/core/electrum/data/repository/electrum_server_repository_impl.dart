@@ -64,10 +64,8 @@ class ElectrumServerRepository {
       network: network,
     );
 
-    if (model == null) throw '$provider is not accessible';
+    if (model == null) return null;
 
-    // Get the URL directly from the model
-    final url = model.url;
     final server = model.toEntity();
 
     return server;
