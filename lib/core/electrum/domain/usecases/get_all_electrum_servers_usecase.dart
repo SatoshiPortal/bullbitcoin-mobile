@@ -9,13 +9,13 @@ class GetAllElectrumServersUsecase {
     required ElectrumServerRepository electrumServerRepository,
   }) : _electrumServerRepository = electrumServerRepository;
 
-  Future<List<ElectrumServer>> execute({
-    required bool checkStatus,
-    required Network network,
-  }) async {
-    return await _electrumServerRepository.getElectrumServers(
-      checkStatus: checkStatus,
-      network: network,
-    );
+  Future<List<ElectrumServer>> execute({required Network network}) async {
+    try {
+      return await _electrumServerRepository.getElectrumServers(
+        network: network,
+      );
+    } catch (e) {
+      rethrow;
+    }
   }
 }
