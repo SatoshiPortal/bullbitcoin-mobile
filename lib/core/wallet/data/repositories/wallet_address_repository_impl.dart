@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_address_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model_extension.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';

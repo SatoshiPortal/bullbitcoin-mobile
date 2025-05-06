@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_transaction_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model_extension.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';

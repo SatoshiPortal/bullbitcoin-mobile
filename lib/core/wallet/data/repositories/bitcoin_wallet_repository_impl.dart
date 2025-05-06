@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_utxo_mapper.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model_extension.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
 
@@ -96,7 +96,7 @@ class BitcoinWalletRepositoryImpl implements BitcoinWalletRepository {
               id: metadata.id,
               mnemonic: mnemonic,
               passphrase: seed.passphrase,
-              scriptType: ScriptType.fromName(metadata.scriptType),
+              scriptType: metadata.scriptType,
               isTestnet: metadata.isTestnet,
             )
             as PrivateBdkWalletModel;

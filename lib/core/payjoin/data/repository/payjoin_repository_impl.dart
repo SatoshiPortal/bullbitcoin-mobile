@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model_extension.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -364,7 +365,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
     return WalletModel.privateBdk(
           id: walletId,
-          scriptType: ScriptType.fromName(metadata.scriptType),
+          scriptType: metadata.scriptType,
           mnemonic: mnemonic,
           passphrase: seed.passphrase,
           isTestnet: metadata.isTestnet,

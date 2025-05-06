@@ -9,6 +9,7 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model_extension.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
@@ -92,7 +93,7 @@ class WalletRepositoryImpl implements WalletRepository {
       isDefault: metadata.isDefault,
       masterFingerprint: metadata.masterFingerprint,
       xpubFingerprint: metadata.xpubFingerprint,
-      scriptType: ScriptType.fromName(metadata.scriptType),
+      scriptType: metadata.scriptType,
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
@@ -134,7 +135,7 @@ class WalletRepositoryImpl implements WalletRepository {
       isDefault: metadata.isDefault,
       masterFingerprint: metadata.masterFingerprint,
       xpubFingerprint: metadata.xpubFingerprint,
-      scriptType: ScriptType.fromName(metadata.scriptType),
+      scriptType: metadata.scriptType,
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
@@ -167,7 +168,7 @@ class WalletRepositoryImpl implements WalletRepository {
       isDefault: metadata.isDefault,
       masterFingerprint: metadata.masterFingerprint,
       xpubFingerprint: metadata.xpubFingerprint,
-      scriptType: ScriptType.fromName(metadata.scriptType),
+      scriptType: metadata.scriptType,
       xpub: metadata.xpub,
       externalPublicDescriptor: metadata.externalPublicDescriptor,
       internalPublicDescriptor: metadata.internalPublicDescriptor,
@@ -237,7 +238,7 @@ class WalletRepositoryImpl implements WalletRepository {
             isDefault: entry.value.isDefault,
             masterFingerprint: entry.value.masterFingerprint,
             xpubFingerprint: entry.value.xpubFingerprint,
-            scriptType: ScriptType.fromName(entry.value.scriptType),
+            scriptType: entry.value.scriptType,
             xpub: entry.value.xpub,
             externalPublicDescriptor: entry.value.externalPublicDescriptor,
             internalPublicDescriptor: entry.value.internalPublicDescriptor,
