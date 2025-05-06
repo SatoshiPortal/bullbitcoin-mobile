@@ -44,7 +44,6 @@ class ElectrumSettingsBloc
     on<UpdateElectrumAdvancedOptions>(_onUpdateElectrumAdvancedOptions);
     on<ToggleSelectedProvider>(_onToggleSelectedProvider);
     on<ToggleValidateDomain>(_onToggleDomainValidation);
-    on<SetupBlockchain>(_onSetupBlockchain);
     on<SaveElectrumServerChanges>(_onSaveElectrumServerChanges);
     on<ToggleCustomServerActive>(_onToggleCustomServerActive);
     on<ToggleDefaultServerProvider>(_onToggleDefaultServerProvider);
@@ -615,32 +614,7 @@ class ElectrumSettingsBloc
     }
   }
 
-  Future<void> _onSetupBlockchain(
-    SetupBlockchain event,
-    Emitter<ElectrumSettingsState> emit,
-  ) async {
-    try {
-      emit(state.copyWith(status: ElectrumSettingsStatus.loading));
-
-      await Future.delayed(const Duration(seconds: 1));
-
-      emit(
-        state.copyWith(
-          status: ElectrumSettingsStatus.success,
-          saveSuccessful: true,
-        ),
-      );
-    } catch (e) {
-      debugPrint('Error setting up blockchain: $e');
-      emit(
-        state.copyWith(
-          status: ElectrumSettingsStatus.error,
-          statusError: 'Failed to set up blockchain',
-        ),
-      );
-    }
-  }
-
+  //todo(stax): optimize this and remove unncessary code
   Future<void> _onToggleDomainValidation(
     ToggleValidateDomain event,
     Emitter<ElectrumSettingsState> emit,
