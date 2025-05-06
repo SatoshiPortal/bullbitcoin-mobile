@@ -1,26 +1,27 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/labels/data/label_repository.dart';
+import 'package:bb_mobile/core/labels/data/label_datasource.dart';
+import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_output_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/wallet_transaction_mapper.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_output_model.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model_extension.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 
 class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
-  // TODO: move db to datasource of the required data here and inject the
-  //  respective datasource here instead of db
-  final SqliteDatabase _sqlite;
+  final WalletMetadataDatasource _walletMetadataDatasource;
+  final LabelDatasource _labelDatasource;
   final WalletDatasource _bdkWalletTransactionDatasource;
   final WalletDatasource _lwkWalletTransactionDatasource;
   final ElectrumServerStorageDatasource _electrumServerStorage;
@@ -28,13 +29,15 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final BoltzStorageDatasource _swapDatasource;
 
   WalletTransactionRepositoryImpl({
-    required SqliteDatabase sqlite,
+    required WalletMetadataDatasource walletMetadataDatasource,
+    required LabelDatasource labelDatasource,
     required WalletDatasource bdkWalletTransactionDatasource,
     required WalletDatasource lwkWalletTransactionDatasource,
     required ElectrumServerStorageDatasource electrumServerStorage,
     required LocalPayjoinDatasource payjoinDatasource,
     required BoltzStorageDatasource swapDatasource,
-  }) : _sqlite = sqlite,
+  }) : _labelDatasource = labelDatasource,
+       _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWalletTransactionDatasource = bdkWalletTransactionDatasource,
        _lwkWalletTransactionDatasource = lwkWalletTransactionDatasource,
        _electrumServerStorage = electrumServerStorage,
@@ -80,11 +83,9 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                 await (
                   Future.wait(
                     walletTransactionModel.inputs.map((inputModel) async {
-                      final inputLabels =
-                          await _sqlite.managers.labels
-                              .filter((f) => f.type(Entity.input.name))
-                              .filter((f) => f.ref(inputModel.labelRef))
-                              .get();
+                      final inputLabels = await _labelDatasource.fetchByEntity(
+                        entity: TransactionInputMapper.toEntity(inputModel),
+                      );
                       return TransactionInputMapper.toEntity(
                         inputModel,
                         labels:
@@ -94,11 +95,9 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                   ),
                   Future.wait(
                     walletTransactionModel.outputs.map((outputModel) async {
-                      final outputLabels =
-                          await _sqlite.managers.labels
-                              .filter((f) => f.type(Entity.output.name))
-                              .filter((f) => f.ref(outputModel.labelRef))
-                              .get();
+                      final outputLabels = await _labelDatasource.fetchByEntity(
+                        entity: TransactionOutputMapper.toEntity(outputModel),
+                      );
                       List<LabelModel> addressLabels;
                       switch (outputModel) {
                         case LiquidTransactionOutputModel _:
@@ -106,20 +105,16 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                             standardAddressLabels,
                             confidentialAddressLabels,
                           ) = await (
-                                _sqlite.managers.labels
-                                    .filter((f) => f.type(Entity.address.name))
-                                    .filter(
-                                      (f) => f.ref(outputModel.standardAddress),
-                                    )
-                                    .get(),
-                                _sqlite.managers.labels
-                                    .filter((f) => f.type(Entity.address.name))
-                                    .filter(
-                                      (f) => f.ref(
-                                        outputModel.confidentialAddress,
-                                      ),
-                                    )
-                                    .get(),
+                                _labelDatasource.fetchByEntity(
+                                  entity: AddressOnly(
+                                    payload: outputModel.standardAddress,
+                                  ),
+                                ),
+                                _labelDatasource.fetchByEntity(
+                                  entity: AddressOnly(
+                                    payload: outputModel.confidentialAddress,
+                                  ),
+                                ),
                               ).wait;
 
                           addressLabels = [
@@ -127,11 +122,9 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                             ...confidentialAddressLabels,
                           ];
                         case BitcoinTransactionOutputModel _:
-                          addressLabels =
-                              await _sqlite.managers.labels
-                                  .filter((f) => f.type(Entity.address.name))
-                                  .filter((f) => f.ref(outputModel.address))
-                                  .get();
+                          addressLabels = await _labelDatasource.fetchByEntity(
+                            entity: AddressOnly(payload: outputModel.address),
+                          );
                       }
                       return TransactionOutputMapper.toEntity(
                         outputModel,
@@ -143,10 +136,14 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                       );
                     }),
                   ),
-                  _sqlite.managers.labels
-                      .filter((f) => f.type(Entity.tx.name))
-                      .filter((f) => f.ref(walletTransactionModel.labelRef))
-                      .get(),
+                  _labelDatasource.fetchByEntity(
+                    entity: WalletTransactionMapper.toEntity(
+                      walletTransactionModel,
+                      walletId: '',
+                      inputs: [],
+                      outputs: [],
+                    ),
+                  ),
                 ).wait;
 
             String? payjoinId;
@@ -229,16 +226,10 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   }) async {
     List<WalletMetadataModel> walletsMetadata;
     if (walletId == null) {
-      walletsMetadata = await _sqlite.managers.walletMetadatas.get();
+      walletsMetadata = await _walletMetadataDatasource.fetchAll();
     } else {
-      final metadata =
-          await _sqlite.managers.walletMetadatas
-              .filter((e) => e.id(walletId))
-              .getSingleOrNull();
-
-      if (metadata == null) {
-        throw Exception('Wallet metadata not found');
-      }
+      final metadata = await _walletMetadataDatasource.fetch(walletId);
+      if (metadata == null) throw Exception('Wallet metadata not found');
 
       walletsMetadata = [metadata];
     }

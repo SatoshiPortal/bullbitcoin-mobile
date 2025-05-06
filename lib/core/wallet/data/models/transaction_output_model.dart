@@ -24,6 +24,4 @@ sealed class TransactionOutputModel with _$TransactionOutputModel {
     required String confidentialAddress,
   }) = LiquidTransactionOutputModel;
   const TransactionOutputModel._();
-
-  String get labelRef => '$txId:$vout';
 }

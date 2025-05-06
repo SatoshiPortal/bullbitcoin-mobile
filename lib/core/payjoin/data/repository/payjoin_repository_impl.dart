@@ -10,11 +10,11 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
-import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model_extension.dart';
+import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -25,8 +25,7 @@ import 'package:synchronized/synchronized.dart';
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final LocalPayjoinDatasource _localPayjoinDatasource;
   final PdkPayjoinDatasource _pdkPayjoinDatasource;
-  // TODO: move db to datasource and inject datasource here instead of db
-  final SqliteDatabase _sqlite;
+  final WalletMetadataDatasource _walletMetadataDatasource;
   final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
   final BdkBitcoinBlockchainDatasource _blockchain;
@@ -39,14 +38,14 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   PayjoinRepositoryImpl({
     required LocalPayjoinDatasource localPayjoinDatasource,
     required PdkPayjoinDatasource pdkPayjoinDatasource,
-    required SqliteDatabase sqlite,
+    required WalletMetadataDatasource walletMetadataDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   }) : _localPayjoinDatasource = localPayjoinDatasource,
        _pdkPayjoinDatasource = pdkPayjoinDatasource,
-       _sqlite = sqlite,
+       _walletMetadataDatasource = walletMetadataDatasource,
        _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource,
        _blockchain = blockchainDatasource,
@@ -128,10 +127,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
           return null;
         }
 
-        final walletMetadata =
-            await _sqlite.managers.walletMetadatas
-                .filter((f) => f.id(payjoin.walletId))
-                .getSingleOrNull();
+        final walletMetadata = await _walletMetadataDatasource.fetch(
+          payjoin.walletId,
+        );
 
         if (walletMetadata == null) {
           return null;
@@ -353,10 +351,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   Future<PrivateBdkWalletModel> _loadWallet(String walletId) async {
-    final metadata =
-        await _sqlite.managers.walletMetadatas
-            .filter((e) => e.id(walletId))
-            .getSingleOrNull();
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
     if (metadata == null) throw Exception('Wallet metadata not found');
 
     final seed =

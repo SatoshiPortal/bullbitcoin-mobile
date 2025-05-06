@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-@DataClassName('SettingsModel')
+@DataClassName('SettingsRow')
 class Settings extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get environment => text()();

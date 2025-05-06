@@ -11,7 +11,7 @@ enum WalletSource {
   }
 }
 
-@DataClassName('WalletMetadataModel')
+@DataClassName('WalletMetadataRow')
 class WalletMetadatas extends Table {
   TextColumn get id => text()();
   TextColumn get masterFingerprint => text()();

@@ -32,16 +32,26 @@ sealed class WalletAddress with _$WalletAddress implements Labelable {
     List<String>? labels,
   }) = LiquidWalletAddress;
 
+  factory WalletAddress.external({required String payload}) = AddressOnly;
+
   const WalletAddress._();
 
   String get address => switch (this) {
     BitcoinWalletAddress(:final address) => address,
     LiquidWalletAddress(:final confidential) => confidential,
+    AddressOnly(:final payload) => payload,
   };
 
   String get standardAddress => switch (this) {
     BitcoinWalletAddress(:final address) => address,
     LiquidWalletAddress(:final standard) => standard,
+    AddressOnly(:final payload) => payload,
+  };
+
+  int get index => switch (this) {
+    BitcoinWalletAddress(:final index) => index,
+    LiquidWalletAddress(:final index) => index,
+    AddressOnly() => 0,
   };
 
   /// Returns true if this is a Bitcoin address

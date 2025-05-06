@@ -1,14 +1,14 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/settings/data/settings_datasource.dart';
+import 'package:bb_mobile/core/settings/data/settings_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:drift/drift.dart' show Value;
 
 class SettingsRepository {
-  // TODO: move db to datasource and inject datasource here instead of db
-  final SqliteDatabase _sqlite;
+  final SettingsDatasource _settingsDatasource;
 
-  SettingsRepository({required SqliteDatabase sqlite}) : _sqlite = sqlite;
+  SettingsRepository({required SettingsDatasource settingsDatasource})
+    : _settingsDatasource = settingsDatasource;
 
   Future<void> store({
     required int id,
@@ -18,58 +18,47 @@ class SettingsRepository {
     required Language language,
     required bool hideAmounts,
   }) async {
-    await _sqlite.managers.settings.create(
-      (s) => s(
-        id: Value(id), // not needed
-        environment: environment.name,
-        bitcoinUnit: bitcoinUnit.name,
+    await _settingsDatasource.store(
+      SettingsModel(
+        id: id,
+        environment: environment,
+        bitcoinUnit: bitcoinUnit,
+        language: language,
         currency: currency,
-        language: language.name,
         hideAmounts: hideAmounts,
       ),
     );
   }
 
   Future<SettingsEntity> fetch() async {
-    final s =
-        await _sqlite.managers.settings.filter((f) => f.id(1)).getSingle();
+    final s = await _settingsDatasource.fetch();
 
     return SettingsEntity(
-      environment: Environment.fromName(s.environment),
-      bitcoinUnit: BitcoinUnit.fromName(s.bitcoinUnit),
+      environment: s.environment,
+      bitcoinUnit: s.bitcoinUnit,
       currencyCode: s.currency,
-      language: Language.fromName(s.language) ?? Language.unitedStatesEnglish,
+      language: s.language,
       hideAmounts: s.hideAmounts,
     );
   }
 
   Future<void> setEnvironment(Environment env) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), environment: Value(env.name)),
-    );
+    await _settingsDatasource.setEnvironment(env);
   }
 
   Future<void> setBitcoinUnit(BitcoinUnit bitcoinUnit) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), bitcoinUnit: Value(bitcoinUnit.name)),
-    );
+    await _settingsDatasource.setBitcoinUnit(bitcoinUnit);
   }
 
   Future<void> setLanguage(Language language) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), language: Value(language.name)),
-    );
+    await _settingsDatasource.setLanguage(language);
   }
 
   Future<void> setCurrency(String currencyCode) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), currency: Value(currencyCode)),
-    );
+    await _settingsDatasource.setCurrency(currencyCode);
   }
 
   Future<void> setHideAmounts(bool hide) async {
-    await _sqlite.managers.settings.update(
-      (f) => f(id: const Value(1), hideAmounts: Value(hide)),
-    );
+    await _settingsDatasource.setHideAmounts(hide);
   }
 }

@@ -1,10 +1,8 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
 class WalletMetadataService {
@@ -52,10 +50,21 @@ class WalletMetadataService {
     String account,
   })
   decodeOrigin({required String origin}) {
-    final list = json.decode(origin) as List<String>;
+    final match = RegExp(
+      r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]',
+    ).firstMatch(origin);
+
+    if (match == null) {
+      throw 'Invalid origin format: $origin';
+    }
+
+    final fingerprint = match.group(1)!;
+    final matchingScript = match.group(2)!;
+    final matchingNetwork = match.group(3)!;
+    final account = match.group(4)!;
 
     ScriptType script;
-    switch (list[1]) {
+    switch (matchingScript) {
       case '84h':
         script = ScriptType.bip84;
       case '49h':
@@ -63,11 +72,11 @@ class WalletMetadataService {
       case '44h':
         script = ScriptType.bip44;
       default:
-        throw 'Unknown script: ${list[1]}';
+        throw 'Unknown script: $matchingScript';
     }
 
     Network network;
-    switch (list[2]) {
+    switch (matchingNetwork) {
       case '0h':
         network = Network.bitcoinMainnet;
       case '1h':
@@ -77,14 +86,14 @@ class WalletMetadataService {
       case '1668h':
         network = Network.liquidTestnet;
       default:
-        throw 'Unknown script: ${list[2]}';
+        throw 'Unknown script: $matchingNetwork';
     }
 
     return (
-      fingerprint: list.first,
+      fingerprint: fingerprint,
       network: network,
       script: script,
-      account: list.last,
+      account: account,
     );
   }
 

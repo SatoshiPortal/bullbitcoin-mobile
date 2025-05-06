@@ -19,6 +19,4 @@ sealed class WalletAddressModel with _$WalletAddressModel {
     BitcoinWalletAddressModel(:final address) => address,
     LiquidWalletAddressModel(:final confidential) => confidential,
   };
-
-  String get labelRef => address;
 }

@@ -48,11 +48,12 @@ enum Language {
 
   const Language(this.languageCode, this.countryCode);
 
-  static Language? fromName(String name) {
+  static Language fromName(String name) {
     try {
       return Language.values.firstWhere((language) => language.name == name);
     } catch (e) {
-      return null;
+      debugPrint('unsupported language fallback on default');
+      return Language.unitedStatesEnglish;
     }
   }
 }
