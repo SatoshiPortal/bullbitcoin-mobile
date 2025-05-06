@@ -31,6 +31,7 @@ class CoreLocator {
     StorageLocator.registerDatasources();
     await SwapsLocator.registerDatasources();
     await WalletLocator.registerDatasourceres();
+    LabelsLocator.registerDatasources();
   }
 
   static Future<void> registerRepositories() async {

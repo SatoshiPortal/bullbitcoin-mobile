@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-@DataClassName('LabelModel')
+@DataClassName('LabelRow')
 class Labels extends Table {
   TextColumn get label => text()();
   TextColumn get ref => text()();
