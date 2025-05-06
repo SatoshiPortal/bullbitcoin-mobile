@@ -23,6 +23,4 @@ sealed class WalletUtxoModel with _$WalletUtxoModel {
     required String confidentialAddress,
   }) = LiquidWalletUtxoModel;
   const WalletUtxoModel._();
-
-  String get labelRef => '$txId:$vout';
 }

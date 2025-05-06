@@ -27,6 +27,4 @@ sealed class WalletTransactionModel with _$WalletTransactionModel {
     @Default(false) bool isToSelf,
   }) = LiquidWalletTransactionModel;
   const WalletTransactionModel._();
-
-  String get labelRef => txId;
 }
