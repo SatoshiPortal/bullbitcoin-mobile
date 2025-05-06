@@ -17,7 +17,7 @@ extension SqliteDatabaseSeed on SqliteDatabase {
     } catch (e) {
       debugPrint('settings: seed default');
       await into(settings).insert(
-        SettingsModel(
+        SettingsRow(
           id: 1,
           environment: Environment.mainnet.name,
           bitcoinUnit: BitcoinUnit.btc.name,
