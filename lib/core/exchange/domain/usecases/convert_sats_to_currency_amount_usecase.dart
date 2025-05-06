@@ -9,16 +9,13 @@ class ConvertSatsToCurrencyAmountUsecase {
   ConvertSatsToCurrencyAmountUsecase({
     required ExchangeRateRepository exchangeRateRepository,
     required SettingsRepository settingsRepository,
-  })  : _exchangeRate = exchangeRateRepository,
-        _settingsRepository = settingsRepository;
+  }) : _exchangeRate = exchangeRateRepository,
+       _settingsRepository = settingsRepository;
 
-  Future<double> execute({
-    BigInt? amountSat,
-    String? currencyCode,
-  }) async {
+  Future<double> execute({BigInt? amountSat, String? currencyCode}) async {
     try {
       final settings = await _settingsRepository.fetch();
-      final currency = settings.currencyCode;
+      final currency = currencyCode ?? settings.currencyCode;
       final availableCurrencies = await _exchangeRate.availableCurrencies;
 
       if (!availableCurrencies.contains(currency)) {
