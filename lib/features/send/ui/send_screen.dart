@@ -882,78 +882,61 @@ class SendSendingScreen extends StatelessWidget {
           title: 'Send',
           actionIcon: Icons.help_outline,
           onAction: () {},
-          onBack: () => context.pop(),
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  Gif(
-                    autostart: Autostart.loop,
-                    height: 123,
-                    image: AssetImage(Assets.images2.cubesLoading.path),
-                  ),
-                  if (!isLnSwap) ...[
-                    const Gap(8),
-                    BBText('Sending...', style: context.font.headlineLarge),
-                    const Gap(8),
-                    BBText(
-                      'Signing & Broadcasting the transaction...',
-                      style: context.font.bodyMedium,
-                      maxLines: 4,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                  if (isLnSwap && !isLnPaid) ...[
-                    const Gap(8),
-                    BBText('Sending...', style: context.font.headlineLarge),
-                    const Gap(8),
-                    if (isLiquid)
-                      BBText(
-                        'The swap is in progress. The invoice will be paid in a few seconds.',
-                        style: context.font.bodyMedium,
-                        maxLines: 4,
-                        textAlign: TextAlign.center,
-                      )
-                    else
-                      BBText(
-                        'The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.',
-                        style: context.font.bodyMedium,
-                        maxLines: 4,
-                        textAlign: TextAlign.center,
-                      ),
-                  ],
-                  if (isLnSwap && isLnPaid) ...[
-                    const Gap(8),
-                    BBText('Invoice Paid.', style: context.font.headlineLarge),
-                    const Gap(8),
-                    BBText(
-                      'The lightning payment is completed. You can return home or wait for the swap to fully close.',
-                      style: context.font.bodyMedium,
-                      maxLines: 4,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ],
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Align(
+          child: Column(
+            children: [
+              const Gap(192),
+              Gif(
+                autostart: Autostart.loop,
+                height: 123,
+                image: AssetImage(Assets.images2.cubesLoading.path),
               ),
-            ),
-            const Spacer(flex: 2),
-            BBButton.big(
-              label: 'Go home',
-              onPressed: () {},
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
-            ),
-            const Gap(32),
-          ],
+              if (!isLnSwap) ...[
+                const Gap(8),
+                BBText('Sending', style: context.font.headlineLarge),
+                const Gap(8),
+                BBText(
+                  'Broadcasting the transaction.',
+                  style: context.font.bodyMedium,
+                  maxLines: 4,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+              if (isLnSwap && !isLnPaid) ...[
+                const Gap(8),
+                BBText('Sending', style: context.font.headlineLarge),
+                const Gap(8),
+                if (isLiquid)
+                  BBText(
+                    'The swap is in progress. The invoice will be paid in a few seconds.',
+                    style: context.font.bodyMedium,
+                    maxLines: 4,
+                    textAlign: TextAlign.center,
+                  )
+                else
+                  BBText(
+                    'The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.',
+                    style: context.font.bodyMedium,
+                    maxLines: 4,
+                    textAlign: TextAlign.center,
+                  ),
+              ],
+            ],
+          ),
         ),
       ),
+
+      // const Spacer(flex: 2),
+      // BBButton.big(
+      //   label: 'Go home',
+      //   onPressed: () {},
+      //   bgColor: context.colour.secondary,
+      //   textColor: context.colour.onSecondary,
+      // ),
     );
   }
 }
@@ -969,6 +952,10 @@ class SendSucessScreen extends StatelessWidget {
 
     final fiatEquivalent = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
+    );
+
+    final isLnSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningSwap != null,
     );
 
     return Scaffold(
@@ -991,7 +978,10 @@ class SendSucessScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const Gap(8),
-                  BBText('Successfully Sent', style: context.font.bodyLarge),
+                  if (isLnSwap)
+                    BBText('Invoice Paid', style: context.font.headlineLarge)
+                  else
+                    BBText('Successfully Sent', style: context.font.bodyLarge),
                   const Gap(8),
                   BBText(
                     amount,

@@ -491,7 +491,7 @@ class SwapProgressPage extends StatelessWidget {
           title: 'Swap',
           actionIcon: Icons.help_outline,
           onAction: () {},
-          onBack: () => context.pop(),
+          onBack: () => null,
         ),
       ),
       body: Padding(
@@ -524,7 +524,7 @@ class SwapProgressPage extends StatelessWidget {
             const Spacer(flex: 2),
             BBButton.big(
               label: 'Go home',
-              onPressed: () {},
+              onPressed: () => context.pop(),
               bgColor: context.colour.secondary,
               textColor: context.colour.onSecondary,
             ),
