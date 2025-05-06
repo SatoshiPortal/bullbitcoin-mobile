@@ -25,7 +25,7 @@ class WalletMetadataService {
     } else if (isLiquid && isTestnet) {
       networkPath = "1668h";
     } else {
-      throw '';
+      throw 'Unexpected network path';
     }
 
     String prefixFormat = '';
