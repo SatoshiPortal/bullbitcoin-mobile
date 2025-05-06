@@ -65,7 +65,10 @@ class TransactionDetailsTable extends StatelessWidget {
                       : 'Secure Bitcoin'
                   : '',
         ),
-        DetailsTableItem(label: 'Status', displayValue: tx?.status.name ?? ''),
+        DetailsTableItem(
+          label: 'Status',
+          displayValue: tx?.status.displayName ?? '',
+        ),
         if (tx?.confirmationTime != null)
           DetailsTableItem(
             label: 'Confirmation time',
@@ -90,7 +93,7 @@ class TransactionDetailsTable extends StatelessWidget {
         if (swap != null) ...[
           DetailsTableItem(
             label: 'Swap status',
-            displayValue: swap.status.name,
+            displayValue: swap.status.displayName,
           ),
           DetailsTableItem(
             label: 'Swap ID',

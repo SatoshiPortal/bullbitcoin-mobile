@@ -21,7 +21,11 @@ enum SwapStatus {
   canCoop,
   completed,
   expired,
-  failed,
+  failed;
+
+  String get displayName {
+    return name.substring(0, 1).toUpperCase() + name.substring(1);
+  }
 }
 
 class SwapFees {

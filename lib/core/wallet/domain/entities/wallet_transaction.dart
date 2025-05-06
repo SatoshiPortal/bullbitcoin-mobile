@@ -9,7 +9,19 @@ part 'wallet_transaction.freezed.dart';
 
 enum WalletTransactionDirection { incoming, outgoing }
 
-enum WalletTransactionStatus { pending, confirmed }
+enum WalletTransactionStatus {
+  pending,
+  confirmed;
+
+  String get displayName {
+    switch (this) {
+      case WalletTransactionStatus.pending:
+        return 'Pending';
+      case WalletTransactionStatus.confirmed:
+        return 'Confirmed';
+    }
+  }
+}
 
 @freezed
 sealed class WalletTransaction with _$WalletTransaction implements Labelable {
