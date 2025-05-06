@@ -411,7 +411,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         amount =
             amountSats == null || hasDecimals
                 ? state.inputAmount
-                : event.amount;
+                : amountSats.toString();
       } else {
         // If the amount is in BTC, make sure it is a valid double and
         //  do not allow more than 8 decimal places.
