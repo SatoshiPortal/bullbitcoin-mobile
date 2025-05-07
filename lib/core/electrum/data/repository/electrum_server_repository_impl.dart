@@ -76,6 +76,28 @@ class ElectrumServerRepository {
     return server;
   }
 
+  Future<List<ElectrumServer>> getAllDefaultServers({
+    required Network network,
+  }) async {
+    final List<ElectrumServer> servers = [];
+    for (final provider in [
+      DefaultElectrumServerProvider.blockstream,
+      DefaultElectrumServerProvider.bullBitcoin,
+    ]) {
+      // Try to get the server from storage
+      final model = await _electrumServerStorage.fetchDefaultServerByProvider(
+        provider,
+        network: network,
+      );
+
+      if (model != null) {
+        servers.add(model.toEntity());
+      }
+    }
+
+    return servers;
+  }
+
   Future<ElectrumServer?> getCustomServer({required Network network}) async {
     // Get custom server if available
     final model = await _electrumServerStorage.fetchCustomServer(
@@ -100,24 +122,8 @@ class ElectrumServerRepository {
       servers.add(customServer);
     }
 
-    // Get BullBitcoin server (priority 1)
-    final bullBitcoin = await getDefaultServerByProvider(
-      provider: DefaultElectrumServerProvider.bullBitcoin,
-      network: network,
-    );
-    if (bullBitcoin != null) {
-      servers.add(bullBitcoin);
-    }
-
-    // Get Blockstream server (priority 2)
-    final defaultServers = await getDefaultServerByProvider(
-      provider: DefaultElectrumServerProvider.blockstream,
-      network: network,
-    );
-    if (defaultServers != null) {
-      servers.add(defaultServers);
-    }
-
+    final defaultServers = await getAllDefaultServers(network: network);
+    servers.addAll(defaultServers);
     return servers;
   }
 
