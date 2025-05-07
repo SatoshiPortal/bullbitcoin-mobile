@@ -21,22 +21,15 @@ abstract class ElectrumSettingsState with _$ElectrumSettingsState {
       selectedNetwork == Network.liquidMainnet ||
       selectedNetwork == Network.liquidTestnet;
 
-  // Helper to check if the selected provider is custom
   bool get isCustomServerSelected =>
       selectedProvider is CustomElectrumServerProvider;
 
-  // Helper to get the default provider value if it's a default provider, or null if custom
-  DefaultElectrumServerProvider get selectedDefaultPreset =>
-      selectedProvider is DefaultServerProvider
-          ? (selectedProvider as DefaultServerProvider).defaultServerProvider
-          : DefaultElectrumServerProvider.bullBitcoin;
-
-  // Helper method to get the current server configuration for UI display
+  // Improved server lookup with better provider comparison
   ElectrumServer? getServerForNetworkAndProvider(
     Network network,
     ElectrumServerProvider provider,
   ) {
-    // First check in staged servers
+    // Check staged servers first - these have priority
     for (final server in stagedServers) {
       if (server.network == network &&
           _areProvidersEqual(server.electrumServerProvider, provider)) {
@@ -44,7 +37,7 @@ abstract class ElectrumSettingsState with _$ElectrumSettingsState {
       }
     }
 
-    // If not in staged servers, check in original electrumServers
+    // Then check original servers
     for (final server in electrumServers) {
       if (server.network == network &&
           _areProvidersEqual(server.electrumServerProvider, provider)) {
@@ -55,43 +48,7 @@ abstract class ElectrumSettingsState with _$ElectrumSettingsState {
     return null;
   }
 
-  // Get the validate domain value for a specific provider
-  bool getValidateDomainForProvider(ElectrumServerProvider provider) {
-    List<ElectrumServer> serversToCheck = [];
-
-    // Get all servers of the specified provider type
-    serversToCheck = [
-      ...stagedServers.where(
-        (server) => _areProvidersEqual(server.electrumServerProvider, provider),
-      ),
-      ...electrumServers.where(
-        (server) => _areProvidersEqual(server.electrumServerProvider, provider),
-      ),
-    ];
-
-    // Filter for the current network type (Bitcoin/Liquid)
-    final serversForNetworkType =
-        serversToCheck
-            .where(
-              (server) => _isSameNetworkType(server.network, selectedNetwork),
-            )
-            .toList();
-
-    if (serversForNetworkType.isNotEmpty) {
-      return serversForNetworkType.first.validateDomain;
-    }
-
-    // Default
-    return true;
-  }
-
-  // Helper method to check if two networks are of the same type (Bitcoin/Liquid)
-  bool _isSameNetworkType(Network network1, Network network2) {
-    return network1.isBitcoin == network2.isBitcoin &&
-        network1.isLiquid == network2.isLiquid;
-  }
-
-  // Helper to compare ElectrumServerProvider objects
+  // More precise provider equality check
   bool _areProvidersEqual(ElectrumServerProvider a, ElectrumServerProvider b) {
     if (a is CustomElectrumServerProvider &&
         b is CustomElectrumServerProvider) {
@@ -103,39 +60,123 @@ abstract class ElectrumSettingsState with _$ElectrumSettingsState {
     return false;
   }
 
-  // Simplified version of hasPendingChanges
-  bool get hasPendingChanges {
-    // The simple check - do we have any staged changes?
-    return stagedServers.isNotEmpty;
+  // Get the validate domain value for a specific provider with better error handling
+  bool getValidateDomainForProvider(ElectrumServerProvider provider) {
+    // First check in staged servers for the current network type
+    final stagedServersForType =
+        stagedServers
+            .where(
+              (server) =>
+                  server.electrumServerProvider == provider &&
+                  server.network == selectedNetwork,
+            )
+            .toList();
+
+    if (stagedServersForType.isNotEmpty) {
+      return stagedServersForType.first.validateDomain;
+    }
+
+    // Then check in original electrumServers for the current network type
+    final serversForType =
+        electrumServers
+            .where(
+              (server) =>
+                  server.electrumServerProvider == provider &&
+                  server.network == selectedNetwork,
+            )
+            .toList();
+
+    if (serversForType.isNotEmpty) {
+      return serversForType.first.validateDomain;
+    }
+
+    // Default value
+    return true;
   }
 
-  // Get all current servers including staged changes
-  List<ElectrumServer> get effectiveServers {
-    final result = List<ElectrumServer>.from(electrumServers);
+  // Improved hasPendingChanges implementation
+  bool get hasPendingChanges {
+    if (stagedServers.isEmpty) return false;
 
-    for (final stagedServer in stagedServers) {
-      final index = result.indexWhere(
-        (server) =>
-            server.network == stagedServer.network &&
-            _areProvidersEqual(
-              server.electrumServerProvider,
-              stagedServer.electrumServerProvider,
-            ),
+    // Check URL validity for custom servers
+    if (isCustomServerSelected) {
+      final mainnetNetwork =
+          isSelectedNetworkLiquid
+              ? Network.liquidMainnet
+              : Network.bitcoinMainnet;
+
+      final testnetNetwork =
+          isSelectedNetworkLiquid
+              ? Network.liquidTestnet
+              : Network.bitcoinTestnet;
+
+      final mainnetServer = getServerForNetworkAndProvider(
+        mainnetNetwork,
+        const ElectrumServerProvider.customProvider(),
       );
 
-      if (index >= 0) {
-        // Replace existing server
-        result[index] = stagedServer;
-      } else {
-        // Add new server
-        result.add(stagedServer);
+      final testnetServer = getServerForNetworkAndProvider(
+        testnetNetwork,
+        const ElectrumServerProvider.customProvider(),
+      );
+
+      // URLs must be non-empty for custom servers
+      if (mainnetServer != null && mainnetServer.url.trim().isEmpty) {
+        return false;
+      }
+
+      if (testnetServer != null && testnetServer.url.trim().isEmpty) {
+        return false;
       }
     }
 
+    // Check if staged servers actually differ from existing servers
+    for (final staged in stagedServers) {
+      final existingServer = electrumServers.firstWhere(
+        (server) =>
+            server.network == staged.network &&
+            server.electrumServerProvider == staged.electrumServerProvider,
+        orElse: () => ElectrumServer(url: "", network: staged.network),
+      );
+
+      // Check if any properties are different
+      if (staged.url != existingServer.url ||
+          staged.validateDomain != existingServer.validateDomain ||
+          staged.isActive != existingServer.isActive ||
+          staged.stopGap != existingServer.stopGap ||
+          staged.retry != existingServer.retry ||
+          staged.timeout != existingServer.timeout ||
+          staged.priority != existingServer.priority) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  // Get all current servers including staged changes with better merging
+  List<ElectrumServer> get effectiveServers {
+    final result = <ElectrumServer>[];
+    final serverMap = <String, ElectrumServer>{};
+
+    // Add all original servers to the map with a unique key
+    for (final server in electrumServers) {
+      final key = server.url + server.network.toString();
+      serverMap[key] = server;
+    }
+
+    // Override or add staged servers
+    for (final stagedServer in stagedServers) {
+      final key = stagedServer.url + stagedServer.network.toString();
+      serverMap[key] = stagedServer;
+    }
+
+    // Convert map back to list
+    result.addAll(serverMap.values);
     return result;
   }
 
-  // Get the current server for advanced options
+  // More reliable current server getter for advanced options
   ElectrumServer? get currentServer {
     final mainnetNetwork =
         isSelectedNetworkLiquid
