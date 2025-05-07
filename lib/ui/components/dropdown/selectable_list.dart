@@ -23,12 +23,12 @@ class SelectableList extends StatelessWidget {
   const SelectableList({
     super.key,
     required this.items,
-    required this.onSelected,
+
     required this.selectedValue,
   });
 
   final List<SelectableListItem> items;
-  final Function(String) onSelected;
+
   final String selectedValue;
 
   @override
@@ -36,13 +36,15 @@ class SelectableList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final item in items)
+        for (final item in items) ...[
           _SelectableRow(
             key: ValueKey(item.title),
             item: item,
-            onSelected: onSelected,
+            onSelected: () => Navigator.pop(context, item.value),
             isSelected: item.value == selectedValue,
           ),
+          const Gap(16),
+        ],
       ],
     );
   }
@@ -57,20 +59,20 @@ class _SelectableRow extends StatelessWidget {
   });
 
   final SelectableListItem item;
-  final Function(String) onSelected;
+  final Function() onSelected;
   final bool isSelected;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       radius: 2,
-      onTap: () {
-        onSelected(item.value);
-      },
+      onTap: onSelected,
       child: Material(
-        elevation: isSelected ? 4 : 0,
+        elevation: isSelected ? 1 : 4,
         borderRadius: BorderRadius.circular(2),
         clipBehavior: Clip.hardEdge,
+        color: context.colour.onSecondary,
+        shadowColor: context.colour.secondary,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Row(

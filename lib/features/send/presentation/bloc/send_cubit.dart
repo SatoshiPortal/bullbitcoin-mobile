@@ -701,6 +701,10 @@ class SendCubit extends Cubit<SendState> {
     emit(state.copyWith(selectedFee: fee, customFee: null));
   }
 
+  void feeOptionSelected(FeeSelection feeSelection) {
+    emit(state.copyWith(selectedFeeOption: feeSelection));
+  }
+
   void customFeesChanged(int feeRate) {
     emit(state.copyWith(customFee: feeRate, selectedFee: null));
   }

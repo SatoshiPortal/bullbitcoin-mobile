@@ -69,6 +69,35 @@ abstract class FeeOptions with _$FeeOptions {
   }
 }
 
+extension FeeOptionsDisplay on FeeOptions {
+  List<(String, String, String)> display(
+    int txSize,
+    double exchangeRate,
+    String currencySymbol,
+  ) {
+    //title
+    // subtitle - Estimated delivery ～ 10 minutes
+    // subtitle2 - 10 sats/byte = 2,083 sats ($1,37) fee
+    return [
+      (
+        'Fastest',
+        'Estimated delivery ~ 10 minutes',
+        '${fastest.value} sats/byte = ${fastest.value * txSize} sats (${(fastest.value * txSize * exchangeRate).toStringAsFixed(2)}) $currencySymbol  fee',
+      ),
+      (
+        'Economic',
+        'Estimated delivery ~ 30 minutes',
+        '${economic.value} sats/byte = ${economic.value * txSize} sats (${(economic.value * txSize * exchangeRate).toStringAsFixed(2)}) $currencySymbol  fee',
+      ),
+      (
+        'Slow',
+        'Estimated delivery ~ few hours',
+        '${slow.value} sats/byte = ${slow.value * txSize} sats (${(slow.value * txSize * exchangeRate).toStringAsFixed(2)}) $currencySymbol  fee',
+      ),
+    ];
+  }
+}
+
 enum FeeSelection { fastest, economic, slow }
 
 extension FeeSelectionName on FeeSelection {
@@ -80,6 +109,19 @@ extension FeeSelectionName on FeeSelection {
         return 'Economic';
       case FeeSelection.slow:
         return 'Slow';
+    }
+  }
+
+  static FeeSelection fromString(String value) {
+    switch (value) {
+      case 'Fastest':
+        return FeeSelection.fastest;
+      case 'Economic':
+        return FeeSelection.economic;
+      case 'Slow':
+        return FeeSelection.slow;
+      default:
+        throw Exception('Unknown fee selection: $value');
     }
   }
 }

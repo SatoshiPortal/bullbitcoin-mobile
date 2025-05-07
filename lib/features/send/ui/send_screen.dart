@@ -9,6 +9,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
+import 'package:bb_mobile/ui/components/dropdown/selectable_list.dart';
 import 'package:bb_mobile/ui/components/inputs/paste_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/price_input/balance_row.dart';
@@ -688,6 +689,18 @@ class _OnchainSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'Fee Priority',
             details: InkWell(
+              onTap: () async {
+                final selected = await _showFeeOptions(
+                  context,
+                  context.read<SendCubit>().state.selectedFeeOption!,
+                  context.read<SendCubit>().state.bitcoinFeesList!,
+                );
+
+                if (selected != null) {
+                  final fee = FeeSelectionName.fromString(selected);
+                  context.read<SendCubit>().feeOptionSelected(fee);
+                }
+              },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -711,6 +724,57 @@ class _OnchainSendInfoSection extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<String?> _showFeeOptions(
+    BuildContext context,
+    FeeSelection selectedFeeOption,
+    FeeOptions feeList,
+  ) async {
+    final fees = feeList.display(
+      140,
+      context.read<SendCubit>().state.exchangeRate,
+      context.read<SendCubit>().state.fiatCurrencyCode,
+    );
+    final List<SelectableListItem> feeOptions = [
+      for (final fee in fees)
+        SelectableListItem(
+          value: fee.$1,
+          title: fee.$1,
+          subtitle1: fee.$2,
+          subtitle2: fee.$3,
+        ),
+    ];
+    final selected = await showModalBottomSheet<String>(
+      useRootNavigator: true,
+      context: context,
+      backgroundColor: context.colour.onSecondary,
+      builder:
+          (BuildContext buildContext) => Padding(
+            padding: const EdgeInsets.all(16),
+
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+
+              children: [
+                const Gap(16),
+
+                BBText(
+                  'Select network fee',
+                  style: context.font.headlineMedium,
+                ),
+                const Gap(16),
+                SelectableList(
+                  selectedValue: selectedFeeOption.title(),
+                  items: feeOptions,
+                ),
+                const Spacer(),
+              ],
+            ),
+          ),
+    );
+
+    return selected;
   }
 }
 
