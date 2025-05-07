@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_server_connectivity_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
@@ -33,6 +34,8 @@ class HomeLocator {
         getBestAvailableServerUsecase: locator<GetPrioritizedServerUsecase>(),
         checkPayjoinRelayHealth: locator<CheckPayjoinRelayHealthUsecase>(),
         getSwapLimitsUsecase: locator<GetSwapLimitsUsecase>(),
+        checkElectrumServerConnectivityUsecase:
+            locator<CheckElectrumServerConnectivityUsecase>(),
       ),
     );
   }

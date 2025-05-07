@@ -226,7 +226,9 @@ class _ServerField extends StatelessWidget {
               vertical: 16,
             ),
             errorText: errorText,
-            errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12),
+            errorStyle: context.font.labelSmall?.copyWith(
+              color: context.colour.error,
+            ),
           ),
           onChanged: enabled ? onChanged : null,
         ),
