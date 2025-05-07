@@ -52,12 +52,7 @@ class _ElectrumServerSettingsContentState
               previous.status != current.status,
       listener: (context, state) {
         if (state.saveSuccessful) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Server settings saved successfully'),
-              duration: Duration(seconds: 2),
-            ),
-          );
+          debugPrint('Settings saved successfully');
         }
       },
       buildWhen:
@@ -113,10 +108,8 @@ class _ElectrumServerSettingsContentState
                             _AdvancedOptions(state: state),
                             const Gap(32),
                             _SaveButton(state: state),
-                          ] else ...[
-                            const Gap(150),
                           ],
-                          const Gap(24),
+                          const Gap(30),
                         ],
                       ),
                     ),
@@ -344,12 +337,7 @@ class _Header extends StatelessWidget {
     Widget? statusIndicator;
     if (state.status == ElectrumSettingsStatus.loading) {
       // Show loading indicator when checking server status
-      statusIndicator = Container(
-        margin: const EdgeInsets.only(left: 5),
-        width: 12,
-        height: 12,
-        child: const CircularProgressIndicator(strokeWidth: 2),
-      );
+      statusIndicator = null;
     } else {
       final selectedServer = state.getServerForNetworkAndProvider(
         mainnetNetwork,
@@ -359,7 +347,8 @@ class _Header extends StatelessWidget {
       if (selectedServer != null) {
         final isConnected =
             selectedServer.status == ElectrumServerStatus.online;
-        final dotColor = isConnected ? Colors.green : Colors.red;
+        final dotColor =
+            isConnected ? context.colour.inverseSurface : context.colour.error;
         statusIndicator = Container(
           margin: const EdgeInsets.only(left: 5),
           width: 8,
@@ -467,7 +456,7 @@ class _AdvancedField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(label, style: Theme.of(context).textTheme.bodyMedium),
+        BBText(label, style: context.font.bodyMedium),
         const Gap(8),
         TextField(
           controller: controller,
@@ -547,7 +536,7 @@ class _AdvancedOptions extends StatelessWidget {
                     const Gap(24),
                     BBText(
                       'Electrum Options',
-                      style: Theme.of(context).textTheme.headlineMedium,
+                      style: context.font.headlineMedium,
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
