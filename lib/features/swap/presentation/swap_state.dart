@@ -155,7 +155,7 @@ abstract class SwapState with _$SwapState {
   }
 
   List<String> get inputAmountCurrencyCodes {
-    return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
+    return [BitcoinUnit.btc.code, BitcoinUnit.sats.code];
   }
 
   bool get isInputAmountFiat =>
