@@ -80,7 +80,10 @@ class ElectrumServerRepository {
     required Network network,
   }) async {
     final List<ElectrumServer> servers = [];
-    for (final provider in DefaultElectrumServerProvider.values) {
+    for (final provider in [
+      DefaultElectrumServerProvider.blockstream,
+      DefaultElectrumServerProvider.bullBitcoin,
+    ]) {
       // Try to get the server from storage
       final model = await _electrumServerStorage.fetchDefaultServerByProvider(
         provider,
@@ -119,7 +122,6 @@ class ElectrumServerRepository {
       servers.add(customServer);
     }
 
-    // Get BullBitcoin server (priority 1)
     final defaultServers = await getAllDefaultServers(network: network);
     servers.addAll(defaultServers);
     return servers;
