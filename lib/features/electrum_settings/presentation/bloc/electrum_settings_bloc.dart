@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.d
 import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_server_connectivity_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/store_electrum_server_settings_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
 import 'package:flutter/foundation.dart';
@@ -19,20 +20,22 @@ part 'electrum_settings_state.dart';
 class ElectrumSettingsBloc
     extends Bloc<ElectrumSettingsEvent, ElectrumSettingsState> {
   final GetAllElectrumServersUsecase _getAllElectrumServers;
-  final UpdateElectrumServerSettingsUsecase _updateElectrumServerSettings;
+  final StoreElectrumServerSettingsUsecase _storeElectrumServerSettings;
   final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
   final CheckElectrumServerConnectivityUsecase _checkElectrumServerConnectivity;
-
+  final UpdateElectrumServerSettingsUsecase _updateElectrumServerSettings;
   ElectrumSettingsBloc({
     required GetAllElectrumServersUsecase getAllElectrumServers,
+    required StoreElectrumServerSettingsUsecase storeElectrumServerSettings,
     required UpdateElectrumServerSettingsUsecase updateElectrumServerSettings,
     required GetPrioritizedServerUsecase getPrioritizedServerUsecase,
     required CheckElectrumServerConnectivityUsecase
     checkElectrumServerConnectivity,
   }) : _getAllElectrumServers = getAllElectrumServers,
-       _updateElectrumServerSettings = updateElectrumServerSettings,
+       _storeElectrumServerSettings = storeElectrumServerSettings,
        _getPrioritizedServerUsecase = getPrioritizedServerUsecase,
        _checkElectrumServerConnectivity = checkElectrumServerConnectivity,
+       _updateElectrumServerSettings = updateElectrumServerSettings,
        super(const ElectrumSettingsState()) {
     on<LoadServers>(_onLoadServers);
     on<CheckServerStatus>(_onCheckServerStatus);
