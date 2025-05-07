@@ -50,12 +50,15 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
     xpubFingerprint: xpubFingerprint,
     isEncryptedVaultTested: isEncryptedVaultTested,
     isPhysicalBackupTested: isPhysicalBackupTested,
+    latestEncryptedBackup: latestEncryptedBackup,
+    latestPhysicalBackup: latestPhysicalBackup,
     xpub: xpub,
     externalPublicDescriptor: externalPublicDescriptor,
     internalPublicDescriptor: internalPublicDescriptor,
     source: source,
     isDefault: isDefault,
     label: label,
+    syncedAt: syncedAt,
   );
 
   static WalletMetadataModel fromSqlite(WalletMetadataRow row) =>
@@ -65,11 +68,14 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
         xpubFingerprint: row.xpubFingerprint,
         isEncryptedVaultTested: row.isEncryptedVaultTested,
         isPhysicalBackupTested: row.isPhysicalBackupTested,
+        latestEncryptedBackup: row.latestEncryptedBackup,
+        latestPhysicalBackup: row.latestPhysicalBackup,
         xpub: row.xpub,
         externalPublicDescriptor: row.externalPublicDescriptor,
         internalPublicDescriptor: row.internalPublicDescriptor,
         source: row.source,
         isDefault: row.isDefault,
         label: row.label,
+        syncedAt: row.syncedAt,
       );
 }
