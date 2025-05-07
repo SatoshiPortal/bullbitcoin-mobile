@@ -356,7 +356,7 @@ class ElectrumSettingsBloc
             : Network.bitcoinMainnet;
 
     // Only check for duplicate URL if non-empty
-    final urlExists = customServer.isNotEmpty && _isADefault(customServer);
+    final urlExists = customServer.isNotEmpty && _isSavedToDb(customServer);
 
     if (urlExists) {
       emit(
@@ -368,83 +368,23 @@ class ElectrumSettingsBloc
       return;
     }
 
-    final int stagedIndex = updatedStagedServers.indexWhere(
+    // Create a key to track the server by network
+    final serverKey = "custom_${network.name}";
+    final Map<String, String> updatedPreviousUrls = Map<String, String>.from(
+      state.previousUrls,
+    );
+
+    // Find original server URL from database (electrumServers)
+    final originalServer = state.electrumServers.firstWhere(
       (server) =>
-          (server.network.isLiquid == network.isLiquid &&
-              server.network.isMainnet) &&
+          server.network == network &&
           server.electrumServerProvider is CustomElectrumServerProvider,
+      orElse: () => ElectrumServer(url: "", network: network),
     );
 
-    if (stagedIndex >= 0) {
-      updatedStagedServers[stagedIndex] = updatedStagedServers[stagedIndex]
-          .copyWith(url: customServer, isActive: customServer.isNotEmpty);
-    } else {
-      final existingServer = state.getServerForNetworkAndProvider(
-        network,
-        const ElectrumServerProvider.customProvider(),
-      );
-
-      if (existingServer != null) {
-        updatedStagedServers.add(
-          existingServer.copyWith(
-            url: customServer,
-            isActive: customServer.isNotEmpty,
-          ),
-        );
-      } else {
-        updatedStagedServers.add(
-          ElectrumServer(
-            url: customServer,
-            network: network,
-            validateDomain: state.getValidateDomainForProvider(
-              state.selectedProvider,
-            ),
-            isActive: customServer.isNotEmpty,
-          ),
-        );
-      }
-    }
-
-    emit(
-      state.copyWith(
-        stagedServers: updatedStagedServers,
-        status: ElectrumSettingsStatus.success,
-      ),
-    );
-  }
-
-  Future<void> _onUpdateCustomServerTestnet(
-    UpdateCustomServerTestnet event,
-    Emitter<ElectrumSettingsState> emit,
-  ) async {
-    if (state.selectedProvider is! CustomElectrumServerProvider) return;
-
-    if (state.status == ElectrumSettingsStatus.error) {
-      emit(
-        state.copyWith(status: ElectrumSettingsStatus.success, statusError: ''),
-      );
-    }
-
-    final List<ElectrumServer> updatedStagedServers = List<ElectrumServer>.from(
-      state.stagedServers,
-    );
-
-    final customServer = event.customServer.trim();
-    final network =
-        state.isSelectedNetworkLiquid
-            ? Network.liquidTestnet
-            : Network.bitcoinTestnet;
-
-    // Only check for duplicate URL if non-empty
-    final urlExists = customServer.isNotEmpty && _isADefault(customServer);
-    if (urlExists) {
-      emit(
-        state.copyWith(
-          status: ElectrumSettingsStatus.error,
-          statusError: 'Testnet: URL is already in use',
-        ),
-      );
-      return;
+    // Store the original URL for later use in update operation
+    if (originalServer.url.isNotEmpty) {
+      updatedPreviousUrls[serverKey] = originalServer.url;
     }
 
     final int stagedIndex = updatedStagedServers.indexWhere(
@@ -486,6 +426,105 @@ class ElectrumSettingsBloc
     emit(
       state.copyWith(
         stagedServers: updatedStagedServers,
+        previousUrls: updatedPreviousUrls,
+        status: ElectrumSettingsStatus.success,
+      ),
+    );
+  }
+
+  Future<void> _onUpdateCustomServerTestnet(
+    UpdateCustomServerTestnet event,
+    Emitter<ElectrumSettingsState> emit,
+  ) async {
+    if (state.selectedProvider is! CustomElectrumServerProvider) return;
+
+    if (state.status == ElectrumSettingsStatus.error) {
+      emit(
+        state.copyWith(status: ElectrumSettingsStatus.success, statusError: ''),
+      );
+    }
+
+    final List<ElectrumServer> updatedStagedServers = List<ElectrumServer>.from(
+      state.stagedServers,
+    );
+
+    final customServer = event.customServer.trim();
+    final network =
+        state.isSelectedNetworkLiquid
+            ? Network.liquidTestnet
+            : Network.bitcoinTestnet;
+
+    // Only check for duplicate URL if non-empty
+    final urlExists = customServer.isNotEmpty && _isSavedToDb(customServer);
+    if (urlExists) {
+      emit(
+        state.copyWith(
+          status: ElectrumSettingsStatus.error,
+          statusError: 'Testnet: URL is already in use',
+        ),
+      );
+      return;
+    }
+
+    // Create a key to track the server by network
+    final serverKey = "custom_${network.name}";
+    final Map<String, String> updatedPreviousUrls = Map<String, String>.from(
+      state.previousUrls,
+    );
+
+    // Find original server URL from database (electrumServers)
+    final originalServer = state.electrumServers.firstWhere(
+      (server) =>
+          server.network == network &&
+          server.electrumServerProvider is CustomElectrumServerProvider,
+      orElse: () => ElectrumServer(url: "", network: network),
+    );
+
+    // Store the original URL for later use in update operation
+    if (originalServer.url.isNotEmpty) {
+      updatedPreviousUrls[serverKey] = originalServer.url;
+    }
+
+    final int stagedIndex = updatedStagedServers.indexWhere(
+      (server) =>
+          server.network == network &&
+          server.electrumServerProvider is CustomElectrumServerProvider,
+    );
+
+    if (stagedIndex >= 0) {
+      updatedStagedServers[stagedIndex] = updatedStagedServers[stagedIndex]
+          .copyWith(url: customServer, isActive: customServer.isNotEmpty);
+    } else {
+      final existingServer = state.getServerForNetworkAndProvider(
+        network,
+        const ElectrumServerProvider.customProvider(),
+      );
+
+      if (existingServer != null) {
+        updatedStagedServers.add(
+          existingServer.copyWith(
+            url: customServer,
+            isActive: customServer.isNotEmpty,
+          ),
+        );
+      } else {
+        updatedStagedServers.add(
+          ElectrumServer(
+            url: customServer,
+            network: network,
+            validateDomain: state.getValidateDomainForProvider(
+              state.selectedProvider,
+            ),
+            isActive: customServer.isNotEmpty,
+          ),
+        );
+      }
+    }
+
+    emit(
+      state.copyWith(
+        stagedServers: updatedStagedServers,
+        previousUrls: updatedPreviousUrls,
         status: ElectrumSettingsStatus.success,
       ),
     );
@@ -719,15 +758,7 @@ class ElectrumSettingsBloc
       final originalServers = List<ElectrumServer>.from(state.electrumServers);
       var stagedServers = List<ElectrumServer>.from(state.stagedServers);
 
-      stagedServers =
-          stagedServers.where((server) {
-            if (server.electrumServerProvider is CustomElectrumServerProvider) {
-              return server.url.isNotEmpty;
-            }
-            return true;
-          }).toList();
-
-      stagedServers = _updateServerPriorities(stagedServers);
+      stagedServers = _updateServerActiveState(stagedServers);
 
       if (state.isCustomServerSelected) {
         for (final server in stagedServers.where(
@@ -750,6 +781,7 @@ class ElectrumSettingsBloc
             );
 
             if (serverStatus == ElectrumServerStatus.offline) {
+              debugPrint('Server is offline: ${server.url}');
               emit(
                 state.copyWith(
                   status: ElectrumSettingsStatus.error,
@@ -760,6 +792,7 @@ class ElectrumSettingsBloc
               return;
             }
           } catch (e) {
+            debugPrint('Server is offline: ${server.url}');
             emit(
               state.copyWith(
                 status: ElectrumSettingsStatus.error,
@@ -782,9 +815,27 @@ class ElectrumSettingsBloc
                 (stagedServer.url.isNotEmpty));
 
         if (shouldSave) {
-          final success = await _updateElectrumServerSettings.execute(
-            electrumServer: stagedServer,
+          bool success;
+
+          // Get previous URL from our state map
+          final serverKey = "custom_${stagedServer.network.name}";
+          final previousUrl = state.previousUrls[serverKey];
+          debugPrint(
+            'Previous URL for ${stagedServer.network.name}: $previousUrl, stagedServer.url: ${stagedServer.url}',
           );
+          // Use update method if previousUrl is available
+          if (stagedServer.electrumServerProvider
+                  is CustomElectrumServerProvider &&
+              previousUrl != null &&
+              _isSavedToDb(previousUrl)) {
+            success = await _updateElectrumServerSettings.execute(
+              electrumServer: stagedServer,
+            );
+          } else {
+            success = await _storeElectrumServerSettings.execute(
+              electrumServer: stagedServer,
+            );
+          }
 
           if (!success) {
             allSaved = false;
@@ -811,6 +862,7 @@ class ElectrumSettingsBloc
           status: ElectrumSettingsStatus.success,
           electrumServers: originalServers,
           stagedServers: [],
+          previousUrls: {}, // Clear previousUrls after save
           saveSuccessful: allSaved,
         ),
       );
@@ -825,26 +877,15 @@ class ElectrumSettingsBloc
     }
   }
 
-  List<ElectrumServer> _updateServerPriorities(List<ElectrumServer> servers) {
+  List<ElectrumServer> _updateServerActiveState(List<ElectrumServer> servers) {
     final isSelectingDefault = state.selectedProvider is DefaultServerProvider;
     return servers.map((server) {
       final provider = server.electrumServerProvider;
       if (provider is DefaultServerProvider) {
-        final defaultProvider = provider.defaultServerProvider;
-
-        return server.copyWith(
-          priority: switch (defaultProvider) {
-            DefaultElectrumServerProvider.bullBitcoin => 1,
-            DefaultElectrumServerProvider.blockstream => 2,
-          },
-        );
-      } else if (provider is CustomElectrumServerProvider) {
-        if (isSelectingDefault) {
-          return server.copyWith(isActive: false, priority: 0);
-        }
-        return server.copyWith(isActive: server.url.isNotEmpty);
+        return server.copyWith(isActive: isSelectingDefault);
+      } else {
+        return server.copyWith(isActive: !isSelectingDefault);
       }
-      return server;
     }).toList();
   }
 
@@ -969,9 +1010,9 @@ class ElectrumSettingsBloc
 
           if (existingIndex >= 0) {
             stagedServersList[existingIndex] = stagedServersList[existingIndex]
-                .copyWith(isActive: true, priority: 0);
+                .copyWith(isActive: true);
           } else {
-            stagedServersList.add(server.copyWith(isActive: true, priority: 0));
+            stagedServersList.add(server.copyWith(isActive: true));
           }
         }
       }
@@ -1008,7 +1049,9 @@ class ElectrumSettingsBloc
       }
     }
 
-    final prioritizedStagedServers = _updateServerPriorities(stagedServersList);
+    final prioritizedStagedServers = _updateServerActiveState(
+      stagedServersList,
+    );
 
     emit(
       state.copyWith(
@@ -1052,7 +1095,7 @@ class ElectrumSettingsBloc
     return ElectrumServerStatus.offline;
   }
 
-  bool _isADefault(String url) {
+  bool _isSavedToDb(String url) {
     if (url.trim().isEmpty) return false;
 
     // Normalize URL for comparison - trim and lower case
