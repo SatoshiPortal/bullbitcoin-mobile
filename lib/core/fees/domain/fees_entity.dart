@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'fees_entity.freezed.dart';
@@ -17,6 +18,14 @@ sealed class NetworkFee with _$NetworkFee {
     AbsoluteFee(:final value) => value,
     RelativeFee(:final value) => value,
   };
+
+  // add to absolute fee
+  NetworkFee toAbsolute(int size) {
+    return switch (this) {
+      AbsoluteFee(:final value) => NetworkFee.absolute(value),
+      RelativeFee(:final value) => NetworkFee.absolute((value * size).round()),
+    };
+  }
 }
 
 @freezed
@@ -78,21 +87,36 @@ extension FeeOptionsDisplay on FeeOptions {
     //title
     // subtitle - Estimated delivery ～ 10 minutes
     // subtitle2 - 10 sats/byte = 2,083 sats ($1,37) fee
+    final fastestAbsValue = fastest.value * txSize;
+    final economicAbsValue = economic.value * txSize;
+    final slowAbsValue = slow.value * txSize;
+    final fastestFiatEq = ConvertAmount.satsToFiat(
+      fastestAbsValue.toInt(),
+      exchangeRate,
+    );
+    final economicFiatEq = ConvertAmount.satsToFiat(
+      economicAbsValue.toInt(),
+      exchangeRate,
+    );
+    final slowFiatEq = ConvertAmount.satsToFiat(
+      slowAbsValue.toInt(),
+      exchangeRate,
+    );
     return [
       (
         'Fastest',
         'Estimated delivery ~ 10 minutes',
-        '${fastest.value} sats/byte = ${fastest.value * txSize} sats (${(fastest.value * txSize * exchangeRate).toStringAsFixed(2)}) $currencySymbol  fee',
+        '${fastest.value} sats/byte = $fastestAbsValue sats (~ $fastestFiatEq) $currencySymbol',
       ),
       (
         'Economic',
         'Estimated delivery ~ 30 minutes',
-        '${economic.value} sats/byte = ${economic.value * txSize} sats (${(economic.value * txSize * exchangeRate).toStringAsFixed(2)}) $currencySymbol  fee',
+        '${economic.value} sats/byte = $economicAbsValue sats (~ $economicFiatEq) $currencySymbol',
       ),
       (
         'Slow',
         'Estimated delivery ~ few hours',
-        '${slow.value} sats/byte = ${slow.value * txSize} sats (${(slow.value * txSize * exchangeRate).toStringAsFixed(2)}) $currencySymbol  fee',
+        '${slow.value} sats/byte = $slowAbsValue sats (~ $slowFiatEq) $currencySymbol',
       ),
     ];
   }

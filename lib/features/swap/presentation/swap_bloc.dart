@@ -373,7 +373,7 @@ class SwapCubit extends Cubit<SwapState> {
               : state.toWalletId;
 
       if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
-        final psbt = await _prepareBitcoinSendUsecase.execute(
+        final psbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: bitcoinWalletId!,
           address: swap.paymentAddress,
           amountSat: swap.paymentAmount,
@@ -381,7 +381,7 @@ class SwapCubit extends Cubit<SwapState> {
         );
         final signedPsbt = await _signBitcoinTxUsecase.execute(
           walletId: bitcoinWalletId,
-          psbt: psbt,
+          psbt: psbtAndTxSize.unsignedPsbt,
         );
         final txid = await _broadcastBitcoinTxUsecase.execute(signedPsbt);
         await _updatePaidChainSwapUsecase.execute(

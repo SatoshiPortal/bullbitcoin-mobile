@@ -702,7 +702,35 @@ class SendCubit extends Cubit<SendState> {
   }
 
   void feeOptionSelected(FeeSelection feeSelection) {
-    emit(state.copyWith(selectedFeeOption: feeSelection));
+    NetworkFee? selectedFee;
+    switch (feeSelection) {
+      case FeeSelection.fastest:
+        selectedFee =
+            state.selectedWallet!.isLiquid
+                ? state.liquidFeesList?.fastest
+                : state.bitcoinFeesList?.fastest;
+      case FeeSelection.economic:
+        selectedFee =
+            state.selectedWallet!.isLiquid
+                ? state.liquidFeesList?.economic
+                : state.bitcoinFeesList?.economic;
+
+      case FeeSelection.slow:
+        selectedFee =
+            state.selectedWallet!.isLiquid
+                ? state.liquidFeesList?.slow
+                : state.bitcoinFeesList?.slow;
+    }
+
+    final absoluteFees =
+        selectedFee?.toAbsolute(state.bitcoinTxSize ?? 0).value.toInt();
+    emit(
+      state.copyWith(
+        selectedFeeOption: feeSelection,
+        selectedFee: selectedFee,
+        absoluteFees: absoluteFees,
+      ),
+    );
   }
 
   void customFeesChanged(int feeRate) {
@@ -746,7 +774,7 @@ class SendCubit extends Cubit<SendState> {
           ),
         );
       } else {
-        final psbt = await _prepareBitcoinSendUsecase.execute(
+        final psbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: state.selectedWallet!.id,
           address: address,
           networkFee: state.selectedFee!,
@@ -757,13 +785,14 @@ class SendCubit extends Cubit<SendState> {
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
         final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-          psbt: psbt,
+          psbt: psbtAndTxSize.unsignedPsbt,
           feeRate: state.selectedFee!.value as double,
         );
         emit(
           state.copyWith(
-            unsignedPsbt: psbt,
+            unsignedPsbt: psbtAndTxSize.unsignedPsbt,
             absoluteFees: absoluteFees,
+            bitcoinTxSize: psbtAndTxSize.txSize,
             buildingTransaction: false,
           ),
         );
@@ -942,10 +971,6 @@ class SendCubit extends Cubit<SendState> {
     );
 
     emit(state.copyWith(exchangeRate: exchangeRate));
-  }
-
-  double approximateBtcFromSats(BigInt sats) {
-    return BigInt.parse(state.amount) / BigInt.parse('100000000');
   }
 
   // Future<void> updateFiatApproximatedAmount() async {

@@ -23,7 +23,6 @@ class SelectableList extends StatelessWidget {
   const SelectableList({
     super.key,
     required this.items,
-
     required this.selectedValue,
   });
 

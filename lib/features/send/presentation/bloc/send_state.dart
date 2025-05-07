@@ -74,6 +74,7 @@ abstract class SendState with _$SendState {
     FeeOptions? bitcoinFeesList,
     FeeOptions? liquidFeesList,
     NetworkFee? selectedFee,
+    int? bitcoinTxSize,
     // TODO: remove absFee and make usecases return size so abs fee can
     // be calculated from NetworkFee
     int? absoluteFees,

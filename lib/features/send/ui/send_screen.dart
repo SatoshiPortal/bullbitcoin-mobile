@@ -685,42 +685,45 @@ class _OnchainSendInfoSection extends StatelessWidget {
               textAlign: TextAlign.end,
             ),
           ),
-          _divider(context),
-          InfoRow(
-            title: 'Fee Priority',
-            details: InkWell(
-              onTap: () async {
-                final selected = await _showFeeOptions(
-                  context,
-                  context.read<SendCubit>().state.selectedFeeOption!,
-                  context.read<SendCubit>().state.bitcoinFeesList!,
-                );
+          if (!selectedWallet.isLiquid) ...[
+            _divider(context),
+            InfoRow(
+              title: 'Fee Priority',
+              details: InkWell(
+                onTap: () async {
+                  final selected = await _showFeeOptions(
+                    context,
+                    context.read<SendCubit>().state.selectedFeeOption!,
+                    context.read<SendCubit>().state.bitcoinFeesList!,
+                  );
 
-                if (selected != null) {
-                  final fee = FeeSelectionName.fromString(selected);
-                  context.read<SendCubit>().feeOptionSelected(fee);
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  BBText(
-                    selectedFeeOption!.title(),
-                    style: context.font.bodyLarge,
-                    color: context.colour.primary,
-                    textAlign: TextAlign.end,
-                  ),
-                  const Gap(4),
-                  Icon(
-                    Icons.arrow_forward_ios_sharp,
-                    color: context.colour.primary,
-                    weight: 100,
-                    size: 12,
-                  ),
-                ],
+                  if (selected != null) {
+                    final fee = FeeSelectionName.fromString(selected);
+                    // ignore: use_build_context_synchronously
+                    context.read<SendCubit>().feeOptionSelected(fee);
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    BBText(
+                      selectedFeeOption!.title(),
+                      style: context.font.bodyLarge,
+                      color: context.colour.primary,
+                      textAlign: TextAlign.end,
+                    ),
+                    const Gap(4),
+                    Icon(
+                      Icons.arrow_forward_ios_sharp,
+                      color: context.colour.primary,
+                      weight: 100,
+                      size: 12,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -732,7 +735,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
     FeeOptions feeList,
   ) async {
     final fees = feeList.display(
-      140,
+      context.read<SendCubit>().state.bitcoinTxSize ?? 140,
       context.read<SendCubit>().state.exchangeRate,
       context.read<SendCubit>().state.fiatCurrencyCode,
     );

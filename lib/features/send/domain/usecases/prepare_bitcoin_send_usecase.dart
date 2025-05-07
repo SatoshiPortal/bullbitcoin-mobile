@@ -15,7 +15,7 @@ class PrepareBitcoinSendUsecase {
   }) : _payjoin = payjoinRepository,
        _bitcoinWalletRepository = bitcoinWalletRepository;
 
-  Future<String> execute({
+  Future<({String unsignedPsbt, int txSize})> execute({
     required String walletId,
     required String address,
     required NetworkFee networkFee,
@@ -49,8 +49,8 @@ class PrepareBitcoinSendUsecase {
         selected: selectedInputs,
         replaceByFee: replaceByFee,
       );
-
-      return psbt;
+      final size = await _bitcoinWalletRepository.getTxSize(psbt: psbt);
+      return (unsignedPsbt: psbt, txSize: size);
     } on NoSpendableUtxoException {
       rethrow;
     } catch (e) {
