@@ -318,9 +318,8 @@ class WalletRepositoryImpl implements WalletRepository {
 
   Future<void> _startAutoSyncing() async {
     // TODO: get from constants
-    const autoSyncInterval = Duration(
-      seconds: SettingsConstants.autoSyncIntervalSeconds,
-    );
+    // TODO(azad): shouldn't we store `autoSyncIntervalSeconds` in sqlite settings?
+    const autoSyncInterval = Duration(seconds: autoSyncIntervalSeconds);
 
     Timer.periodic(autoSyncInterval, (timer) async {
       final metadatas = await _walletMetadataDatasource.fetchAll();
