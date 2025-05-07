@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
-
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -22,15 +22,52 @@ sealed class ElectrumServer with _$ElectrumServer {
     @Default(0) int priority,
   }) = _ElectrumServer;
   const ElectrumServer._();
+
   ElectrumServerProvider get electrumServerProvider {
-    if (url.contains('blockstream')) {
+    // Normalize URL by removing protocol prefix for comparison
+    final normalizedUrl = _normalizeUrl(url);
+
+    // Check against Bull Bitcoin server URLs
+    final bullBitcoinUrls = [
+      _normalizeUrl(ApiServiceConstants.bbElectrumUrl),
+      _normalizeUrl(ApiServiceConstants.bbElectrumTestUrl),
+      _normalizeUrl(ApiServiceConstants.bbLiquidElectrumUrlPath),
+      _normalizeUrl(ApiServiceConstants.bbLiquidElectrumTestUrlPath),
+    ];
+
+    // Check against Blockstream server URLs
+    final blockstreamUrls = [
+      _normalizeUrl(ApiServiceConstants.publicElectrumUrl),
+      _normalizeUrl(ApiServiceConstants.publicElectrumTestUrl),
+      _normalizeUrl(ApiServiceConstants.publicLiquidElectrumUrlPath),
+      _normalizeUrl(ApiServiceConstants.publicliquidElectrumTestUrlPath),
+    ];
+
+    if (bullBitcoinUrls.any((serverUrl) => normalizedUrl.contains(serverUrl))) {
+      return const ElectrumServerProvider.defaultProvider();
+    } else if (blockstreamUrls.any(
+      (serverUrl) => normalizedUrl.contains(serverUrl),
+    )) {
       return const ElectrumServerProvider.defaultProvider(
         defaultServerProvider: DefaultElectrumServerProvider.blockstream,
       );
-    } else if (url.contains('bull')) {
-      return const ElectrumServerProvider.defaultProvider();
     } else {
       return const ElectrumServerProvider.customProvider();
     }
+  }
+
+  // Helper method to normalize URLs by removing protocol prefixes
+  String _normalizeUrl(String serverUrl) {
+    final normalized = serverUrl.toLowerCase().trim();
+    if (normalized.startsWith('ssl://')) {
+      return normalized.substring(6);
+    } else if (normalized.startsWith('tcp://')) {
+      return normalized.substring(6);
+    } else if (normalized.startsWith('http://')) {
+      return normalized.substring(7);
+    } else if (normalized.startsWith('https://')) {
+      return normalized.substring(8);
+    }
+    return normalized;
   }
 }
