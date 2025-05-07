@@ -18,7 +18,7 @@ class ElectrumServerStorageDatasource {
   }
 
   // Fixed update method to ensure new server is stored after deletion
-  Future<bool> update(ElectrumServerModel server, String previousUrl) async {
+  Future<bool> update(ElectrumServerModel server) async {
     // Start a transaction for atomic operation
     return await _sqlite.transaction(() async {
       final networkDeleted =

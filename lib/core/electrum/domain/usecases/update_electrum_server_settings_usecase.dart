@@ -8,15 +8,9 @@ class UpdateElectrumServerSettingsUsecase {
     required ElectrumServerRepository repository,
   }) : _repository = repository;
 
-  Future<bool> execute({
-    required ElectrumServer electrumServer,
-    required String previousUrl,
-  }) async {
+  Future<bool> execute({required ElectrumServer electrumServer}) async {
     try {
-      await _repository.updateElectrumServer(
-        server: electrumServer,
-        existingIndex: previousUrl,
-      );
+      await _repository.updateElectrumServer(server: electrumServer);
       return true;
     } catch (e) {
       return false;
