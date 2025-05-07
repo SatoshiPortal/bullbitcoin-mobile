@@ -7,6 +7,8 @@ abstract class ElectrumSettingsState with _$ElectrumSettingsState {
   const factory ElectrumSettingsState({
     @Default([]) List<ElectrumServer> electrumServers,
     @Default([]) List<ElectrumServer> stagedServers,
+    @Default(<String, String>{})
+    Map<String, String> previousUrls, // Map to store previous URLs
     @Default(ElectrumSettingsStatus.none) ElectrumSettingsStatus status,
     @Default(Network.bitcoinMainnet) Network selectedNetwork,
     @Default(ElectrumServerProvider.defaultProvider())
@@ -145,8 +147,7 @@ abstract class ElectrumSettingsState with _$ElectrumSettingsState {
           staged.isActive != existingServer.isActive ||
           staged.stopGap != existingServer.stopGap ||
           staged.retry != existingServer.retry ||
-          staged.timeout != existingServer.timeout ||
-          staged.priority != existingServer.priority) {
+          staged.timeout != existingServer.timeout) {
         return true;
       }
     }

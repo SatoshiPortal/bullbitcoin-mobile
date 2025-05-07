@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -19,7 +20,7 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
     @Default(true) bool validateDomain,
     @Default(ElectrumServerStatus.unknown) ElectrumServerStatus status,
     @Default(false) bool isActive,
-    @Default(1) int priority,
+    @Default(0) int priority,
   }) = _ElectrumServerModel;
   const ElectrumServerModel._();
 
@@ -47,7 +48,6 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
       validateDomain: validateDomain,
       status: status,
       isActive: isActive,
-      priority: priority,
     );
   }
 
@@ -63,7 +63,14 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
       validateDomain: entity.validateDomain,
       status: entity.status,
       isActive: entity.isActive,
-      priority: entity.priority,
+      priority: switch (entity.electrumServerProvider) {
+        CustomElectrumServerProvider() => 0,
+        DefaultServerProvider(:final defaultServerProvider) =>
+          switch (defaultServerProvider) {
+            DefaultElectrumServerProvider.bullBitcoin => 1,
+            DefaultElectrumServerProvider.blockstream => 2,
+          },
+      },
     );
   }
 
@@ -77,6 +84,8 @@ sealed class ElectrumServerModel with _$ElectrumServerModel {
       validateDomain: row.validateDomain,
       isTestnet: row.isTestnet,
       isLiquid: row.isLiquid,
+      priority: row.priority,
+      isActive: row.isActive,
     );
   }
 
