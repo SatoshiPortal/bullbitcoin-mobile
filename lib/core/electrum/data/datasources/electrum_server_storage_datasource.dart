@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.d
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:drift/drift.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 class ElectrumServerStorageDatasource {
   final SqliteDatabase _sqlite;
@@ -13,7 +13,46 @@ class ElectrumServerStorageDatasource {
 
   Future<void> store(ElectrumServerModel server) async {
     final row = server.toSqlite();
+
     await _sqlite.into(_sqlite.electrumServers).insertOnConflictUpdate(row);
+  }
+
+  // Fixed update method to ensure new server is stored after deletion
+  Future<bool> update(ElectrumServerModel server, String previousUrl) async {
+    // Start a transaction for atomic operation
+    return await _sqlite.transaction(() async {
+      final networkDeleted =
+          await _sqlite.managers.electrumServers
+              .filter(
+                (f) =>
+                    f.isLiquid.equals(server.isLiquid) &
+                    f.isTestnet.equals(server.isTestnet) &
+                    f.priority(0),
+              )
+              .delete();
+
+      debugPrint(
+        'Deleted $networkDeleted existing custom servers for this network',
+      );
+
+      try {
+        await store(server);
+
+        // Double-check the server was stored
+        final checkServer = await fetchCustomServer(
+          network: server.toEntity().network,
+        );
+        if (checkServer != null) {
+          debugPrint('Confirmed server was stored: ${checkServer.url}');
+          return true;
+        }
+      } catch (e) {
+        debugPrint('Failed to store new server: $e');
+        return false;
+      }
+
+      return false;
+    });
   }
 
   /// Get a default server by provider type
@@ -98,9 +137,6 @@ class ElectrumServerStorageDatasource {
       orElse: () => allServers.first,
     );
 
-    debugPrint(
-      'Fallback server: ${bullBitcoin.url}, isActive: ${bullBitcoin.isActive}',
-    );
     return ElectrumServerModel.fromSqlite(bullBitcoin);
   }
 }

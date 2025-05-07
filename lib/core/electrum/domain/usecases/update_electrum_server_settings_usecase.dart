@@ -1,22 +1,24 @@
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:flutter/foundation.dart';
 
 class UpdateElectrumServerSettingsUsecase {
-  final ElectrumServerRepository _electrumServerRepository;
+  final ElectrumServerRepository _repository;
 
   const UpdateElectrumServerSettingsUsecase({
-    required ElectrumServerRepository electrumServerRepository,
-  }) : _electrumServerRepository = electrumServerRepository;
+    required ElectrumServerRepository repository,
+  }) : _repository = repository;
 
-  Future<bool> execute({required ElectrumServer electrumServer}) async {
+  Future<bool> execute({
+    required ElectrumServer electrumServer,
+    required String previousUrl,
+  }) async {
     try {
-      await _electrumServerRepository.setElectrumServer(electrumServer);
-      debugPrint('Successfully updated Electrum server settings');
-
+      await _repository.updateElectrumServer(
+        server: electrumServer,
+        existingIndex: previousUrl,
+      );
       return true;
     } catch (e) {
-      debugPrint('Error updating Electrum server settings: $e');
       return false;
     }
   }
