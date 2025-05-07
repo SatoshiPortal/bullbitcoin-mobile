@@ -347,6 +347,17 @@ abstract class SwapState with _$SwapState {
     return swap != null && swap!.status == SwapStatus.completed;
   }
 
+  bool walletHasBalanceIncludingFees() {
+    if (fromWallet == null) return false;
+    if (fromWalletBalance == 0) return false;
+    if (fromWalletNetwork == WalletNetwork.bitcoin &&
+        toWalletNetwork == WalletNetwork.liquid) {
+      return fromWalletBalance >= fromAmountSat + estimatedBtcToLbtcSwapFees;
+    } else {
+      return fromWalletBalance >= fromAmountSat + estimatedLbtcToBtcSwapFees;
+    }
+  }
+
   bool get disableContinueWithAmounts =>
       fromWalletBalance == 0 ||
       fromWalletBalance < fromAmountSat ||

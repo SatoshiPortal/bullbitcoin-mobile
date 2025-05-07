@@ -303,6 +303,15 @@ class SwapCubit extends Cubit<SwapState> {
   Future<void> continueWithAmountsClicked() async {
     try {
       emit(state.copyWith(amountConfirmedClicked: true));
+      if (!state.walletHasBalanceIncludingFees()) {
+        emit(
+          state.copyWith(
+            insufficientBalanceException: InsufficientBalanceException(),
+            amountConfirmedClicked: false,
+          ),
+        );
+        return;
+      }
       final bitcoinWalletId =
           state.fromWalletNetwork == WalletNetwork.bitcoin
               ? state.fromWalletId

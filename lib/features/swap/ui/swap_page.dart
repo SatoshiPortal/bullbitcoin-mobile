@@ -324,15 +324,30 @@ class SwapCreationError extends StatelessWidget {
     final swapCreationError = context.select(
       (SwapCubit cubit) => cubit.state.swapCreationException,
     );
-    if (swapCreationError == null) {
+    final insuffientBalance = context.select(
+      (SwapCubit cubit) => cubit.state.insufficientBalanceException,
+    );
+    if (swapCreationError == null && insuffientBalance == null) {
       return const SizedBox.shrink();
     }
-    return BBText(
-      swapCreationError.message,
-      style: context.font.labelLarge,
-      color: context.colour.error,
-      maxLines: 4,
-    );
+    if (swapCreationError != null) {
+      return BBText(
+        swapCreationError.message,
+        style: context.font.labelLarge,
+        color: context.colour.error,
+        maxLines: 4,
+      );
+    }
+    if (insuffientBalance != null) {
+      return BBText(
+        insuffientBalance.message,
+        style: context.font.labelLarge,
+        color: context.colour.error,
+        maxLines: 4,
+      );
+    } else {
+      return const SizedBox.shrink();
+    }
   }
 }
 
