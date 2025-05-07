@@ -11,6 +11,14 @@ class HomeWalletTxsList extends StatelessWidget {
     final txsByDay = context.select(
       (TransactionsCubit cubit) => cubit.state.transactionsByDay,
     );
-    return Expanded(child: TransactionsByDayList(transactionsByDay: txsByDay));
+
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(child: TransactionsByDayList(transactionsByDay: txsByDay)),
+        ],
+      ),
+    );
   }
 }

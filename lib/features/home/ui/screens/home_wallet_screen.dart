@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/home/presentation/blocs/home_bloc.dart';
+import 'package:bb_mobile/features/home/ui/widgets/home_bottom_buttons.dart';
 import 'package:bb_mobile/features/home/ui/widgets/home_wallet_balance_card.dart';
 import 'package:bb_mobile/features/home/ui/widgets/home_wallet_txs_list.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -31,15 +32,24 @@ class HomeWalletScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(title: walletName, onBack: context.pop),
       ),
-      body: Column(
+      body: Stack(
+        alignment: Alignment.bottomCenter,
         children: [
-          HomeWalletBalanceCard(
-            balanceSat: wallet.balanceSat.toInt(),
-            isLiquid: wallet.isLiquid,
+          Column(
+            children: [
+              HomeWalletBalanceCard(
+                balanceSat: wallet.balanceSat.toInt(),
+                isLiquid: wallet.isLiquid,
+              ),
+              const Gap(16.0),
+              const HomeWalletTxsList(),
+              const Gap(96),
+            ],
           ),
-          const Gap(16),
-
-          const HomeWalletTxsList(),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 13.0, vertical: 40),
+            child: HomeBottomButtons(),
+          ),
         ],
       ),
     );

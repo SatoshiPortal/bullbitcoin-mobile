@@ -1,7 +1,6 @@
 import 'package:bb_mobile/features/transactions/blocs/transactions_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
 
 class TxsSyncingIndicator extends StatelessWidget {
   const TxsSyncingIndicator({super.key});
@@ -12,10 +11,10 @@ class TxsSyncingIndicator extends StatelessWidget {
       (TransactionsCubit cubit) => cubit.state.isSyncing,
     );
 
-    if (isSyncing) {
-      return const LinearProgressIndicator();
-    } else {
-      return const Gap(4);
-    }
+    return SizedBox(
+      height: 4,
+      child:
+          isSyncing ? const LinearProgressIndicator() : const SizedBox.shrink(),
+    );
   }
 }

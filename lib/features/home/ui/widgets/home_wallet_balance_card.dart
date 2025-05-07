@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/home/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/home/ui/widgets/home_fiat_balance.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -41,30 +42,35 @@ class HomeWalletBalanceCard extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(2),
       ),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
+      child: Stack(
+        children: [
+          const TxsSyncingIndicator(),
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Gap(16),
-                CurrencyText(
-                  balanceSat,
-                  style: theme.textTheme.displaySmall?.copyWith(
-                    color: theme.colorScheme.onPrimary,
-                  ),
-                  showFiat: false,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Gap(16),
+                    CurrencyText(
+                      balanceSat,
+                      style: theme.textTheme.displaySmall?.copyWith(
+                        color: theme.colorScheme.onPrimary,
+                      ),
+                      showFiat: false,
+                    ),
+                    const Gap(16),
+                    const EyeToggle(),
+                  ],
                 ),
-                const Gap(16),
-                const EyeToggle(),
+                const Gap(12),
+                HomeFiatBalance(balanceSat: balanceSat),
               ],
             ),
-            const Gap(12),
-            HomeFiatBalance(balanceSat: balanceSat),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
