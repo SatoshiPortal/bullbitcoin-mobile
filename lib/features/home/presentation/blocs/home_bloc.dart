@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/get_best_available_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
@@ -37,7 +37,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     checkForTorInitializationOnStartupUsecase,
     required GetApiKeyUsecase getApiKeyUsecase,
     required GetUserSummaryUseCase getUserSummaryUseCase,
-    required GetBestAvailableServerUsecase getBestAvailableServerUsecase,
+    required GetPrioritizedServerUsecase getBestAvailableServerUsecase,
     required CheckPayjoinRelayHealthUsecase checkPayjoinRelayHealth,
     required GetSwapLimitsUsecase getSwapLimitsUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
@@ -75,7 +75,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   _checkForTorInitializationOnStartupUsecase;
   final GetApiKeyUsecase _getApiKeyUsecase;
   final GetUserSummaryUseCase _getUserSummaryUsecase;
-  final GetBestAvailableServerUsecase _getBestAvailableServerUsecase;
+  final GetPrioritizedServerUsecase _getBestAvailableServerUsecase;
   final CheckPayjoinRelayHealthUsecase _checkPayjoinRelayHealth;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   StreamSubscription? _startedSyncsSubscription;

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter/foundation.dart';
 
@@ -19,10 +20,10 @@ class ElectrumServerRepository {
   }
 
   /// Checks if a server is reachable by attempting a socket connection
-  Future<ElectrumServerStatus> _checkServerConnectivity(
-    String url,
+  Future<ElectrumServerStatus> checkServerConnectivity({
+    required String url,
     int? timeout,
-  ) async {
+  }) async {
     try {
       if (url.isEmpty) {
         return ElectrumServerStatus.unknown;
@@ -56,7 +57,6 @@ class ElectrumServerRepository {
   Future<ElectrumServer?> getDefaultServerByProvider({
     required DefaultElectrumServerProvider provider,
     required Network network,
-    bool checkStatus = false,
   }) async {
     // Try to get the server from storage
     final model = await _electrumServerStorage.fetchDefaultServerByProvider(
@@ -64,24 +64,14 @@ class ElectrumServerRepository {
       network: network,
     );
 
-    if (model == null) throw '$provider is not accessible';
+    if (model == null) return null;
 
-    // Get the URL directly from the model
-    final url = model.url;
     final server = model.toEntity();
 
-    if (checkStatus) {
-      // Check connectivity
-      final status = await _checkServerConnectivity(url, server.timeout);
-      return server.copyWith(status: status);
-    }
     return server;
   }
 
-  Future<ElectrumServer?> getCustomServer({
-    required Network network,
-    bool checkStatus = false,
-  }) async {
+  Future<ElectrumServer?> getCustomServer({required Network network}) async {
     // Get custom server if available
     final model = await _electrumServerStorage.fetchCustomServer(
       network: network,
@@ -89,14 +79,6 @@ class ElectrumServerRepository {
 
     if (model != null) {
       final server = model.toEntity();
-      if (checkStatus && model.url.isNotEmpty) {
-        // Check connectivity if needed
-        final status = await _checkServerConnectivity(
-          model.url,
-          server.timeout,
-        );
-        return server.copyWith(status: status);
-      }
       return server;
     }
     return null;
@@ -104,9 +86,8 @@ class ElectrumServerRepository {
 
   Future<List<ElectrumServer>> getElectrumServers({
     required Network network,
-    required bool checkStatus,
   }) async {
-    List<ElectrumServer> servers = [];
+    final List<ElectrumServer> servers = [];
 
     // Get custom server if available
     final customServer = await getCustomServer(network: network);
@@ -124,40 +105,12 @@ class ElectrumServerRepository {
     }
 
     // Get Blockstream server (priority 2)
-    final blockstream = await getDefaultServerByProvider(
+    final defaultServers = await getDefaultServerByProvider(
       provider: DefaultElectrumServerProvider.blockstream,
       network: network,
     );
-    if (blockstream != null) {
-      servers.add(blockstream);
-    }
-
-    // Check status for all servers if needed
-    if (checkStatus) {
-      debugPrint('Checking server status for ${servers.length} servers...');
-      final List<ElectrumServer> serversWithStatus = [];
-
-      for (final server in servers) {
-        if (server.url.isNotEmpty) {
-          try {
-            final status = await _checkServerConnectivity(
-              server.url,
-              server.timeout,
-            );
-            debugPrint('Server: ${server.url}, Status: $status');
-            serversWithStatus.add(server.copyWith(status: status));
-          } catch (e) {
-            debugPrint('Error checking server status: $e');
-            serversWithStatus.add(
-              server.copyWith(status: ElectrumServerStatus.offline),
-            );
-          }
-        } else {
-          serversWithStatus.add(server);
-        }
-      }
-
-      servers = serversWithStatus;
+    if (defaultServers != null) {
+      servers.add(defaultServers);
     }
 
     return servers;
@@ -165,7 +118,6 @@ class ElectrumServerRepository {
 
   Future<ElectrumServer> getPrioritizedServer({
     required Network network,
-    bool checkStatus = false,
   }) async {
     // Get custom server if available
     final model = await _electrumServerStorage.fetchPrioritizedServer(
@@ -173,11 +125,6 @@ class ElectrumServerRepository {
     );
 
     final server = model.toEntity();
-    if (checkStatus && model.url.isNotEmpty) {
-      // Check connectivity if needed
-      final status = await _checkServerConnectivity(model.url, server.timeout);
-      return server.copyWith(status: status);
-    }
     return server;
   }
 }

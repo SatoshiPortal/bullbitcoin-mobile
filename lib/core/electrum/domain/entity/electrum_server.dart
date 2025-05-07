@@ -1,20 +1,9 @@
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'electrum_server.freezed.dart';
-
-enum DefaultElectrumServerProvider { bullBitcoin, blockstream }
-
-@freezed
-class ElectrumServerProvider with _$ElectrumServerProvider {
-  const factory ElectrumServerProvider.customProvider() =
-      CustomElectrumServerProvider;
-  const factory ElectrumServerProvider.defaultProvider({
-    @Default(DefaultElectrumServerProvider.bullBitcoin)
-    DefaultElectrumServerProvider defaultServerProvider,
-  }) = DefaultServerProvider;
-}
 
 enum ElectrumServerStatus { online, offline, unknown }
 
@@ -24,7 +13,6 @@ sealed class ElectrumServer with _$ElectrumServer {
     required String url,
     required Network network,
     String? socks5,
-    required ElectrumServerProvider electrumServerProvider,
     @Default(20) int stopGap,
     @Default(5) int timeout,
     @Default(5) int retry,
@@ -33,57 +21,53 @@ sealed class ElectrumServer with _$ElectrumServer {
     @Default(false) bool isActive,
     @Default(0) int priority,
   }) = _ElectrumServer;
+  const ElectrumServer._();
 
-  // Default constructor for standard providers
-  factory ElectrumServer.defaultServer({
-    required DefaultElectrumServerProvider provider,
-    required Network network,
-    ElectrumServerStatus status = ElectrumServerStatus.unknown,
-    int stopGap = 20,
-    int timeout = 5,
-    int retry = 5,
-    bool validateDomain = true,
-    int? priority,
-  }) => ElectrumServer(
-    url:
-        provider == DefaultElectrumServerProvider.bullBitcoin
-            ? ApiServiceConstants.bbElectrumUrl
-            : ApiServiceConstants.publicElectrumUrl,
-    electrumServerProvider: ElectrumServerProvider.defaultProvider(
-      defaultServerProvider: provider,
-    ),
-    network: network,
-    stopGap: stopGap,
-    timeout: timeout,
-    retry: retry,
-    validateDomain: validateDomain,
-    status: status,
-    priority:
-        priority ??
-        (provider == DefaultElectrumServerProvider.bullBitcoin ? 1 : 2),
-  );
+  ElectrumServerProvider get electrumServerProvider {
+    // Normalize URL by removing protocol prefix for comparison
+    final normalizedUrl = _normalizeUrl(url);
 
-  // Custom constructor for custom server with isActive flag
-  factory ElectrumServer.customServer({
-    String url = '',
-    required Network network,
-    String? socks5,
-    ElectrumServerStatus status = ElectrumServerStatus.unknown,
-    int stopGap = 20,
-    int timeout = 5,
-    int retry = 5,
-    bool validateDomain = true,
-    bool isActive = true,
-  }) => ElectrumServer(
-    url: url,
-    socks5: socks5,
-    network: network,
-    stopGap: stopGap,
-    timeout: timeout,
-    retry: retry,
-    validateDomain: validateDomain,
-    status: status,
-    isActive: isActive,
-    electrumServerProvider: const ElectrumServerProvider.customProvider(),
-  );
+    // Check against Bull Bitcoin server URLs
+    final bullBitcoinUrls = [
+      _normalizeUrl(ApiServiceConstants.bbElectrumUrl),
+      _normalizeUrl(ApiServiceConstants.bbElectrumTestUrl),
+      _normalizeUrl(ApiServiceConstants.bbLiquidElectrumUrlPath),
+      _normalizeUrl(ApiServiceConstants.bbLiquidElectrumTestUrlPath),
+    ];
+
+    // Check against Blockstream server URLs
+    final blockstreamUrls = [
+      _normalizeUrl(ApiServiceConstants.publicElectrumUrl),
+      _normalizeUrl(ApiServiceConstants.publicElectrumTestUrl),
+      _normalizeUrl(ApiServiceConstants.publicLiquidElectrumUrlPath),
+      _normalizeUrl(ApiServiceConstants.publicliquidElectrumTestUrlPath),
+    ];
+
+    if (bullBitcoinUrls.any((serverUrl) => normalizedUrl.contains(serverUrl))) {
+      return const ElectrumServerProvider.defaultProvider();
+    } else if (blockstreamUrls.any(
+      (serverUrl) => normalizedUrl.contains(serverUrl),
+    )) {
+      return const ElectrumServerProvider.defaultProvider(
+        defaultServerProvider: DefaultElectrumServerProvider.blockstream,
+      );
+    } else {
+      return const ElectrumServerProvider.customProvider();
+    }
+  }
+
+  // Helper method to normalize URLs by removing protocol prefixes
+  String _normalizeUrl(String serverUrl) {
+    final normalized = serverUrl.toLowerCase().trim();
+    if (normalized.startsWith('ssl://')) {
+      return normalized.substring(6);
+    } else if (normalized.startsWith('tcp://')) {
+      return normalized.substring(6);
+    } else if (normalized.startsWith('http://')) {
+      return normalized.substring(7);
+    } else if (normalized.startsWith('https://')) {
+      return normalized.substring(8);
+    }
+    return normalized;
+  }
 }

@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
+import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_server_connectivity_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers_usecase.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/get_best_available_server_usecase.dart';
+import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
 import 'package:flutter/foundation.dart';
@@ -18,29 +20,32 @@ class ElectrumSettingsBloc
     extends Bloc<ElectrumSettingsEvent, ElectrumSettingsState> {
   final GetAllElectrumServersUsecase _getAllElectrumServers;
   final UpdateElectrumServerSettingsUsecase _updateElectrumServerSettings;
-  final GetBestAvailableServerUsecase _getBestAvailableServerUsecase;
+  final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
+  final CheckElectrumServerConnectivityUsecase _checkElectrumServerConnectivity;
+
   ElectrumSettingsBloc({
     required GetAllElectrumServersUsecase getAllElectrumServers,
     required UpdateElectrumServerSettingsUsecase updateElectrumServerSettings,
-    required GetBestAvailableServerUsecase getBestAvailableServer,
+    required GetPrioritizedServerUsecase getPrioritizedServerUsecase,
+    required CheckElectrumServerConnectivityUsecase
+    checkElectrumServerConnectivity,
   }) : _getAllElectrumServers = getAllElectrumServers,
        _updateElectrumServerSettings = updateElectrumServerSettings,
-       _getBestAvailableServerUsecase = getBestAvailableServer,
+       _getPrioritizedServerUsecase = getPrioritizedServerUsecase,
+       _checkElectrumServerConnectivity = checkElectrumServerConnectivity,
        super(const ElectrumSettingsState()) {
     on<LoadServers>(_onLoadServers);
     on<CheckServerStatus>(_onCheckServerStatus);
     on<ConfigureLiquidSettings>(_onConfigureLiquidSettings);
     on<ConfigureBitcoinSettings>(_onConfigureBitcoinSettings);
-    on<ElectrumServerProviderChanged>(_onElectrumServerProviderChanged);
     on<UpdateCustomServerMainnet>(_onUpdateCustomServerMainnet);
     on<UpdateCustomServerTestnet>(_onUpdateCustomServerTestnet);
     on<UpdateElectrumAdvancedOptions>(_onUpdateElectrumAdvancedOptions);
     on<ToggleSelectedProvider>(_onToggleSelectedProvider);
     on<ToggleValidateDomain>(_onToggleDomainValidation);
-    on<SetupBlockchain>(_onSetupBlockchain);
     on<SaveElectrumServerChanges>(_onSaveElectrumServerChanges);
     on<ToggleCustomServerActive>(_onToggleCustomServerActive);
-    on<ToggleDefaultServerPreset>(_onToggleDefaultServerPreset);
+    on<ToggleDefaultServerProvider>(_onToggleDefaultServerProvider);
     on<ToggleCustomServer>(_onToggleCustomServer);
   }
 
@@ -58,14 +63,11 @@ class ElectrumSettingsBloc
               : [Network.bitcoinMainnet, Network.bitcoinTestnet];
 
       for (final network in networks) {
-        final servers = await _getAllElectrumServers.execute(
-          checkStatus: true,
-          network: network,
-        );
-
+        final servers = await _getAllElectrumServers.execute(network: network);
         allServers.addAll(servers);
       }
 
+      // First emit state without checking connectivity
       if (allServers.isEmpty) {
         emit(
           state.copyWith(
@@ -76,16 +78,19 @@ class ElectrumSettingsBloc
         return;
       }
 
-      final currentProvider = await _determineCurrentProvider(allServers);
+      final prioritizedServer = await _getPrioritizedServerUsecase.execute(
+        network: state.selectedNetwork,
+      );
 
       emit(
         state.copyWith(
           electrumServers: allServers,
-          selectedProvider: currentProvider,
+          selectedProvider: prioritizedServer.electrumServerProvider,
+          status: ElectrumSettingsStatus.success,
         ),
       );
-      add(ToggleSelectedProvider(currentProvider));
-      emit(state.copyWith(status: ElectrumSettingsStatus.success));
+
+      add(ToggleSelectedProvider(prioritizedServer.electrumServerProvider));
     } catch (e) {
       debugPrint('Error loading servers: $e');
       emit(
@@ -97,25 +102,6 @@ class ElectrumSettingsBloc
     }
   }
 
-  Future<ElectrumServerProvider> _determineCurrentProvider(
-    List<ElectrumServer> servers,
-  ) async {
-    if (servers.isEmpty) {
-      return const ElectrumServerProvider.defaultProvider();
-    }
-
-    final network =
-        state.isSelectedNetworkLiquid
-            ? Network.liquidMainnet
-            : Network.bitcoinMainnet;
-
-    final bestServer = await _getBestAvailableServerUsecase.execute(
-      network: network,
-    );
-
-    return bestServer.electrumServerProvider;
-  }
-
   Future<void> _onCheckServerStatus(
     CheckServerStatus event,
     Emitter<ElectrumSettingsState> emit,
@@ -123,26 +109,48 @@ class ElectrumSettingsBloc
     try {
       emit(state.copyWith(status: ElectrumSettingsStatus.loading));
 
-      final updatedServers = await _getAllElectrumServers.execute(
-        checkStatus: true,
-        network: event.network,
-      );
+      if (state.electrumServers.isEmpty) {
+        emit(
+          state.copyWith(
+            status: ElectrumSettingsStatus.error,
+            statusError: 'No servers available',
+          ),
+        );
+        return;
+      }
 
-      final updatedElectrumServers =
-          state.electrumServers.map((server) {
-            final matchingServer = updatedServers.firstWhere(
-              (updated) => _isSameServer(updated, server),
-              orElse: () => server,
+      final serversToCheck =
+          state.electrumServers
+              .where((s) => s.network == event.network)
+              .toList();
+
+      if (serversToCheck.isEmpty) {
+        emit(state.copyWith(status: ElectrumSettingsStatus.success));
+        return;
+      }
+
+      await Future.microtask(() async {
+        for (final server in serversToCheck) {
+          if (server.url.isEmpty) continue;
+
+          final serverStatus = await _checkElectrumServerStatus(server);
+
+          if (!emit.isDone) {
+            emit(
+              state.copyWith(
+                status: ElectrumSettingsStatus.success,
+                electrumServers:
+                    state.electrumServers.map((s) {
+                      if (_isSameServer(s, server)) {
+                        return s.copyWith(status: serverStatus);
+                      }
+                      return s;
+                    }).toList(),
+              ),
             );
-            return matchingServer;
-          }).toList();
-
-      emit(
-        state.copyWith(
-          status: ElectrumSettingsStatus.success,
-          electrumServers: updatedElectrumServers,
-        ),
-      );
+          }
+        }
+      });
     } catch (e) {
       debugPrint('Error checking server status: $e');
       emit(
@@ -152,28 +160,6 @@ class ElectrumSettingsBloc
         ),
       );
     }
-  }
-
-  bool _isSameServer(ElectrumServer a, ElectrumServer b) {
-    if (a.network != b.network) return false;
-
-    if (a.electrumServerProvider is CustomElectrumServerProvider &&
-        b.electrumServerProvider is CustomElectrumServerProvider) {
-      return true;
-    }
-
-    if (a.electrumServerProvider is DefaultServerProvider &&
-        b.electrumServerProvider is DefaultServerProvider) {
-      final aProvider =
-          (a.electrumServerProvider as DefaultServerProvider)
-              .defaultServerProvider;
-      final bProvider =
-          (b.electrumServerProvider as DefaultServerProvider)
-              .defaultServerProvider;
-      return aProvider == bProvider;
-    }
-
-    return false;
   }
 
   void _onConfigureLiquidSettings(
@@ -202,34 +188,62 @@ class ElectrumSettingsBloc
     add(LoadServers());
   }
 
-  void _onElectrumServerProviderChanged(
-    ElectrumServerProviderChanged event,
-    Emitter<ElectrumSettingsState> emit,
-  ) {
-    emit(state.copyWith(selectedProvider: event.type));
-  }
-
   Future<void> _onToggleSelectedProvider(
     ToggleSelectedProvider event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
-    emit(state.copyWith(status: ElectrumSettingsStatus.loading));
-
     emit(
       state.copyWith(
-        selectedProvider: event.provider,
         status: ElectrumSettingsStatus.loading,
+        selectedProvider: event.provider,
+        statusError: '',
       ),
     );
+
+    final updatedElectrumServers = List<ElectrumServer>.from(
+      state.electrumServers,
+    );
+
+    final mainnetNetwork =
+        state.isSelectedNetworkLiquid
+            ? Network.liquidMainnet
+            : Network.bitcoinMainnet;
+
+    final mainnetServer = state.getServerForNetworkAndProvider(
+      mainnetNetwork,
+      event.provider,
+    );
+
+    if (mainnetServer != null && mainnetServer.url.isNotEmpty) {
+      try {
+        await Future.microtask(() async {
+          final status = await _checkElectrumServerStatus(mainnetServer);
+
+          final index = updatedElectrumServers.indexWhere(
+            (s) => _isSameServer(s, mainnetServer),
+          );
+
+          if (index >= 0 && !emit.isDone) {
+            updatedElectrumServers[index] = updatedElectrumServers[index]
+                .copyWith(status: status);
+
+            emit(
+              state.copyWith(
+                electrumServers: updatedElectrumServers,
+                status: ElectrumSettingsStatus.success,
+              ),
+            );
+          }
+        });
+      } catch (e) {
+        debugPrint('Error checking server connectivity: $e');
+      }
+    }
 
     if (event.provider is CustomElectrumServerProvider) {
       final List<ElectrumServer> updatedStagedServers =
           List<ElectrumServer>.from(state.stagedServers);
 
-      final mainnetNetwork =
-          state.isSelectedNetworkLiquid
-              ? Network.liquidMainnet
-              : Network.bitcoinMainnet;
       final hasMainnetServer =
           state.getServerForNetworkAndProvider(
             mainnetNetwork,
@@ -239,7 +253,8 @@ class ElectrumSettingsBloc
 
       if (!hasMainnetServer) {
         updatedStagedServers.add(
-          ElectrumServer.customServer(
+          ElectrumServer(
+            url: "",
             network: mainnetNetwork,
             validateDomain: false,
           ),
@@ -250,6 +265,7 @@ class ElectrumSettingsBloc
           state.isSelectedNetworkLiquid
               ? Network.liquidTestnet
               : Network.bitcoinTestnet;
+
       final hasTestnetServer =
           state.getServerForNetworkAndProvider(
             testnetNetwork,
@@ -259,7 +275,8 @@ class ElectrumSettingsBloc
 
       if (!hasTestnetServer) {
         updatedStagedServers.add(
-          ElectrumServer.customServer(
+          ElectrumServer(
+            url: "",
             network: testnetNetwork,
             validateDomain: false,
           ),
@@ -267,90 +284,165 @@ class ElectrumSettingsBloc
       }
 
       if (updatedStagedServers.length > state.stagedServers.length) {
-        emit(
-          state.copyWith(
-            stagedServers: updatedStagedServers,
-            status: ElectrumSettingsStatus.loading,
-          ),
-        );
+        emit(state.copyWith(stagedServers: updatedStagedServers));
       }
+    } else if (event.provider is DefaultServerProvider) {
+      final defaultProvider =
+          (event.provider as DefaultServerProvider).defaultServerProvider;
+
+      await Future.microtask(() async {
+        final serversToCheck =
+            state.electrumServers.where((s) {
+              final provider = s.electrumServerProvider;
+              if (provider is DefaultServerProvider) {
+                return provider.defaultServerProvider == defaultProvider &&
+                    _isSameNetworkType(s.network, state.selectedNetwork);
+              }
+              return false;
+            }).toList();
+
+        for (final server in serversToCheck) {
+          if (server.url.isEmpty) continue;
+
+          final status = await _checkElectrumServerStatus(server);
+
+          final index = updatedElectrumServers.indexWhere(
+            (s) => _isSameServer(s, server),
+          );
+
+          if (index >= 0 && !emit.isDone) {
+            updatedElectrumServers[index] = updatedElectrumServers[index]
+                .copyWith(status: status);
+
+            emit(state.copyWith(electrumServers: updatedElectrumServers));
+          }
+        }
+      });
     }
 
     if (!emit.isDone) {
-      emit(state.copyWith(status: ElectrumSettingsStatus.success));
+      emit(
+        state.copyWith(
+          status: ElectrumSettingsStatus.success,
+          electrumServers: updatedElectrumServers,
+        ),
+      );
     }
   }
 
-  void _onUpdateCustomServerMainnet(
+  Future<void> _onUpdateCustomServerMainnet(
     UpdateCustomServerMainnet event,
     Emitter<ElectrumSettingsState> emit,
-  ) {
+  ) async {
     if (state.selectedProvider is! CustomElectrumServerProvider) return;
+
+    if (state.status == ElectrumSettingsStatus.error) {
+      emit(
+        state.copyWith(status: ElectrumSettingsStatus.success, statusError: ''),
+      );
+    }
 
     final List<ElectrumServer> updatedStagedServers = List<ElectrumServer>.from(
       state.stagedServers,
     );
 
+    final customServer = event.customServer.trim();
     final network =
         state.isSelectedNetworkLiquid
             ? Network.liquidMainnet
             : Network.bitcoinMainnet;
 
+    // Only check for duplicate URL if non-empty
+    final urlExists = customServer.isNotEmpty && _isADefault(customServer);
+
+    if (urlExists) {
+      emit(
+        state.copyWith(
+          status: ElectrumSettingsStatus.error,
+          statusError: 'Mainnet: URL is already in use',
+        ),
+      );
+      return;
+    }
+
     final int stagedIndex = updatedStagedServers.indexWhere(
       (server) =>
-          server.network == network &&
+          (server.network.isLiquid == network.isLiquid &&
+              server.network.isMainnet) &&
           server.electrumServerProvider is CustomElectrumServerProvider,
     );
 
     if (stagedIndex >= 0) {
       updatedStagedServers[stagedIndex] = updatedStagedServers[stagedIndex]
-          .copyWith(
-            url: event.customServer,
-            isActive: event.customServer.isNotEmpty,
-          );
+          .copyWith(url: customServer, isActive: customServer.isNotEmpty);
     } else {
       final existingServer = state.getServerForNetworkAndProvider(
         network,
         const ElectrumServerProvider.customProvider(),
       );
+
       if (existingServer != null) {
         updatedStagedServers.add(
           existingServer.copyWith(
-            url: event.customServer,
-            isActive: event.customServer.isNotEmpty,
+            url: customServer,
+            isActive: customServer.isNotEmpty,
           ),
         );
       } else {
         updatedStagedServers.add(
-          ElectrumServer.customServer(
-            url: event.customServer,
+          ElectrumServer(
+            url: customServer,
             network: network,
             validateDomain: state.getValidateDomainForProvider(
               state.selectedProvider,
             ),
-            isActive: event.customServer.isNotEmpty,
+            isActive: customServer.isNotEmpty,
           ),
         );
       }
     }
 
-    emit(state.copyWith(stagedServers: updatedStagedServers));
+    emit(
+      state.copyWith(
+        stagedServers: updatedStagedServers,
+        status: ElectrumSettingsStatus.success,
+      ),
+    );
   }
 
-  void _onUpdateCustomServerTestnet(
+  Future<void> _onUpdateCustomServerTestnet(
     UpdateCustomServerTestnet event,
     Emitter<ElectrumSettingsState> emit,
-  ) {
+  ) async {
     if (state.selectedProvider is! CustomElectrumServerProvider) return;
+
+    if (state.status == ElectrumSettingsStatus.error) {
+      emit(
+        state.copyWith(status: ElectrumSettingsStatus.success, statusError: ''),
+      );
+    }
 
     final List<ElectrumServer> updatedStagedServers = List<ElectrumServer>.from(
       state.stagedServers,
     );
 
+    final customServer = event.customServer.trim();
     final network =
         state.isSelectedNetworkLiquid
             ? Network.liquidTestnet
             : Network.bitcoinTestnet;
+
+    // Only check for duplicate URL if non-empty
+    final urlExists = customServer.isNotEmpty && _isADefault(customServer);
+    if (urlExists) {
+      emit(
+        state.copyWith(
+          status: ElectrumSettingsStatus.error,
+          statusError: 'Testnet: URL is already in use',
+        ),
+      );
+      return;
+    }
 
     final int stagedIndex = updatedStagedServers.indexWhere(
       (server) =>
@@ -360,37 +452,40 @@ class ElectrumSettingsBloc
 
     if (stagedIndex >= 0) {
       updatedStagedServers[stagedIndex] = updatedStagedServers[stagedIndex]
-          .copyWith(
-            url: event.customServer,
-            isActive: event.customServer.isNotEmpty,
-          );
+          .copyWith(url: customServer, isActive: customServer.isNotEmpty);
     } else {
       final existingServer = state.getServerForNetworkAndProvider(
         network,
         const ElectrumServerProvider.customProvider(),
       );
+
       if (existingServer != null) {
         updatedStagedServers.add(
           existingServer.copyWith(
-            url: event.customServer,
-            isActive: event.customServer.isNotEmpty,
+            url: customServer,
+            isActive: customServer.isNotEmpty,
           ),
         );
       } else {
         updatedStagedServers.add(
-          ElectrumServer.customServer(
-            url: event.customServer,
+          ElectrumServer(
+            url: customServer,
             network: network,
             validateDomain: state.getValidateDomainForProvider(
               state.selectedProvider,
             ),
-            isActive: event.customServer.isNotEmpty,
+            isActive: customServer.isNotEmpty,
           ),
         );
       }
     }
 
-    emit(state.copyWith(stagedServers: updatedStagedServers));
+    emit(
+      state.copyWith(
+        stagedServers: updatedStagedServers,
+        status: ElectrumSettingsStatus.success,
+      ),
+    );
   }
 
   void _onUpdateElectrumAdvancedOptions(
@@ -472,7 +567,8 @@ class ElectrumSettingsBloc
       } else {
         if (state.selectedProvider is CustomElectrumServerProvider) {
           stagedServers.add(
-            ElectrumServer.customServer(
+            ElectrumServer(
+              url: "", // Empty URL for custom server
               network: network,
               validateDomain: state.getValidateDomainForProvider(
                 state.selectedProvider,
@@ -482,12 +578,17 @@ class ElectrumSettingsBloc
               timeout: timeout ?? 5,
             ),
           );
-        } else {
+        } else if (state.selectedProvider is DefaultServerProvider) {
+          final provider = state.selectedProvider as DefaultServerProvider;
+          final url =
+              provider.defaultServerProvider ==
+                      DefaultElectrumServerProvider.blockstream
+                  ? "blockstream.info"
+                  : "bull.bitcoin.com";
+
           stagedServers.add(
-            ElectrumServer.defaultServer(
-              provider:
-                  (state.selectedProvider as DefaultServerProvider)
-                      .defaultServerProvider,
+            ElectrumServer(
+              url: url,
               network: network,
               validateDomain: state.getValidateDomainForProvider(
                 state.selectedProvider,
@@ -499,32 +600,6 @@ class ElectrumSettingsBloc
           );
         }
       }
-    }
-  }
-
-  Future<void> _onSetupBlockchain(
-    SetupBlockchain event,
-    Emitter<ElectrumSettingsState> emit,
-  ) async {
-    try {
-      emit(state.copyWith(status: ElectrumSettingsStatus.loading));
-
-      await Future.delayed(const Duration(seconds: 1));
-
-      emit(
-        state.copyWith(
-          status: ElectrumSettingsStatus.success,
-          saveSuccessful: true,
-        ),
-      );
-    } catch (e) {
-      debugPrint('Error setting up blockchain: $e');
-      emit(
-        state.copyWith(
-          status: ElectrumSettingsStatus.error,
-          statusError: 'Failed to set up blockchain',
-        ),
-      );
     }
   }
 
@@ -581,42 +656,44 @@ class ElectrumSettingsBloc
           state.isSelectedNetworkLiquid
               ? Network.liquidMainnet
               : Network.bitcoinMainnet;
-      if (state.selectedProvider is CustomElectrumServerProvider) {
-        updatedStagedServers.add(
-          ElectrumServer.customServer(
-            network: mainnetNetwork,
-            validateDomain: newValidation,
-          ),
-        );
-      } else {
-        updatedStagedServers.add(
-          ElectrumServer.defaultServer(
-            provider:
-                (state.selectedProvider as DefaultServerProvider)
-                    .defaultServerProvider,
-            network: mainnetNetwork,
-            validateDomain: newValidation,
-          ),
-        );
-      }
-
       final testnetNetwork =
           state.isSelectedNetworkLiquid
               ? Network.liquidTestnet
               : Network.bitcoinTestnet;
+
       if (state.selectedProvider is CustomElectrumServerProvider) {
         updatedStagedServers.add(
-          ElectrumServer.customServer(
+          ElectrumServer(
+            url: "",
+            network: mainnetNetwork,
+            validateDomain: newValidation,
+          ),
+        );
+        updatedStagedServers.add(
+          ElectrumServer(
+            url: "",
             network: testnetNetwork,
             validateDomain: newValidation,
           ),
         );
-      } else {
+      } else if (state.selectedProvider is DefaultServerProvider) {
+        final provider = state.selectedProvider as DefaultServerProvider;
+        final url =
+            provider.defaultServerProvider ==
+                    DefaultElectrumServerProvider.blockstream
+                ? "blockstream.info"
+                : "bull.bitcoin.com";
+
         updatedStagedServers.add(
-          ElectrumServer.defaultServer(
-            provider:
-                (state.selectedProvider as DefaultServerProvider)
-                    .defaultServerProvider,
+          ElectrumServer(
+            url: url,
+            network: mainnetNetwork,
+            validateDomain: newValidation,
+          ),
+        );
+        updatedStagedServers.add(
+          ElectrumServer(
+            url: url,
             network: testnetNetwork,
             validateDomain: newValidation,
           ),
@@ -627,46 +704,64 @@ class ElectrumSettingsBloc
     emit(state.copyWith(stagedServers: updatedStagedServers));
   }
 
-  bool _isSameNetworkType(Network network1, Network network2) {
-    return network1.isBitcoin == network2.isBitcoin &&
-        network1.isLiquid == network2.isLiquid;
-  }
-
-  bool _areProvidersEqual(ElectrumServerProvider a, ElectrumServerProvider b) {
-    if (a is CustomElectrumServerProvider &&
-        b is CustomElectrumServerProvider) {
-      return true;
-    }
-    if (a is DefaultServerProvider && b is DefaultServerProvider) {
-      return a.defaultServerProvider == b.defaultServerProvider;
-    }
-    return false;
-  }
-
   Future<void> _onSaveElectrumServerChanges(
     SaveElectrumServerChanges event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
     try {
-      emit(state.copyWith(status: ElectrumSettingsStatus.loading));
+      emit(
+        state.copyWith(status: ElectrumSettingsStatus.loading, statusError: ''),
+      );
 
       final originalServers = List<ElectrumServer>.from(state.electrumServers);
       var stagedServers = List<ElectrumServer>.from(state.stagedServers);
 
+      stagedServers =
+          stagedServers.where((server) {
+            if (server.electrumServerProvider is CustomElectrumServerProvider) {
+              return server.url.isNotEmpty;
+            }
+            return true;
+          }).toList();
+
       stagedServers = _updateServerPriorities(stagedServers);
 
-      if (state.selectedProvider is CustomElectrumServerProvider) {
+      if (state.isCustomServerSelected) {
         for (final server in stagedServers.where(
-          (s) =>
-              s.electrumServerProvider is CustomElectrumServerProvider &&
-              s.isActive,
+          (s) => s.electrumServerProvider is CustomElectrumServerProvider,
         )) {
-          if (server.url.isEmpty || !server.url.contains(':')) {
+          if (server.url.isEmpty) {
+            emit(
+              state.copyWith(
+                status: ElectrumSettingsStatus.error,
+                statusError: 'URL cannot be empty for ${server.network.name}',
+              ),
+            );
+            return;
+          }
+
+          try {
+            final serverStatus = await _checkElectrumServerConnectivity.execute(
+              url: server.url,
+              timeout: server.timeout,
+            );
+
+            if (serverStatus == ElectrumServerStatus.offline) {
+              emit(
+                state.copyWith(
+                  status: ElectrumSettingsStatus.error,
+                  statusError:
+                      'Cannot connect to ${server.url}. Please check the URL.',
+                ),
+              );
+              return;
+            }
+          } catch (e) {
             emit(
               state.copyWith(
                 status: ElectrumSettingsStatus.error,
                 statusError:
-                    'Invalid server URL format for ${server.network.name}',
+                    'Cannot connect to ${server.url}. Please check the URL.',
               ),
             );
             return;
@@ -681,15 +776,15 @@ class ElectrumSettingsBloc
             stagedServer.electrumServerProvider is DefaultServerProvider ||
             (stagedServer.electrumServerProvider
                     is CustomElectrumServerProvider &&
-                (stagedServer.url.isNotEmpty || !stagedServer.isActive));
+                (stagedServer.url.isNotEmpty));
 
         if (shouldSave) {
           final success = await _updateElectrumServerSettings.execute(
             electrumServer: stagedServer,
           );
+
           if (!success) {
             allSaved = false;
-            debugPrint('Failed to save server: ${stagedServer.url}');
           }
           _updateInMemoryServer(originalServers, stagedServer);
         }
@@ -700,7 +795,6 @@ class ElectrumSettingsBloc
             stagedServers.map((s) => s.network).toSet().toList();
         for (final network in networksToCheck) {
           final updatedServers = await _getAllElectrumServers.execute(
-            checkStatus: true,
             network: network,
           );
           for (final updated in updatedServers) {
@@ -730,48 +824,25 @@ class ElectrumSettingsBloc
 
   List<ElectrumServer> _updateServerPriorities(List<ElectrumServer> servers) {
     final isSelectingDefault = state.selectedProvider is DefaultServerProvider;
-
     return servers.map((server) {
-      if (server.electrumServerProvider is DefaultServerProvider) {
-        final defaultProvider =
-            (server.electrumServerProvider as DefaultServerProvider)
-                .defaultServerProvider;
+      final provider = server.electrumServerProvider;
+      if (provider is DefaultServerProvider) {
+        final defaultProvider = provider.defaultServerProvider;
 
         return server.copyWith(
           priority: switch (defaultProvider) {
             DefaultElectrumServerProvider.bullBitcoin => 1,
             DefaultElectrumServerProvider.blockstream => 2,
           },
-          isActive: isSelectingDefault,
         );
-      } else if (server.electrumServerProvider
-          is CustomElectrumServerProvider) {
+      } else if (provider is CustomElectrumServerProvider) {
         if (isSelectingDefault) {
-          return server.copyWith(isActive: false, priority: 99);
+          return server.copyWith(isActive: false, priority: 0);
         }
-
-        // Only activate custom servers if they have a URL
-        return server.copyWith(
-          isActive: server.url.isNotEmpty,
-          priority: server.url.isNotEmpty ? 0 : 99,
-        );
+        return server.copyWith(isActive: server.url.isNotEmpty);
       }
       return server;
     }).toList();
-  }
-
-  void _updateInMemoryServer(
-    List<ElectrumServer> servers,
-    ElectrumServer updatedServer,
-  ) {
-    final index = servers.indexWhere(
-      (server) => _isSameServer(server, updatedServer),
-    );
-    if (index >= 0) {
-      servers[index] = updatedServer;
-    } else {
-      servers.add(updatedServer);
-    }
   }
 
   void _onToggleCustomServerActive(
@@ -804,7 +875,8 @@ class ElectrumSettingsBloc
         );
       } else {
         updatedStagedServers.add(
-          ElectrumServer.customServer(
+          ElectrumServer(
+            url: "",
             network: event.network,
             isActive: event.isActive,
           ),
@@ -815,8 +887,8 @@ class ElectrumSettingsBloc
     emit(state.copyWith(stagedServers: updatedStagedServers));
   }
 
-  void _onToggleDefaultServerPreset(
-    ToggleDefaultServerPreset event,
+  void _onToggleDefaultServerProvider(
+    ToggleDefaultServerProvider event,
     Emitter<ElectrumSettingsState> emit,
   ) {
     final provider = ElectrumServerProvider.defaultProvider(
@@ -837,17 +909,12 @@ class ElectrumSettingsBloc
             ? const ElectrumServerProvider.customProvider()
             : const ElectrumServerProvider.defaultProvider();
 
-    // Create a copy of the current stagedServers
     final stagedServersList = List<ElectrumServer>.from(state.stagedServers);
-
-    // Update electrumServers to mark custom servers inactive when switching to default
     final updatedElectrumServers = List<ElectrumServer>.from(
       state.electrumServers,
     );
 
-    // Only affect custom servers for the currently selected network (Bitcoin or Liquid)
     if (!event.isCustomSelected) {
-      // Find all the custom servers for the current network type only (Bitcoin or Liquid)
       final customServers =
           state.electrumServers
               .where(
@@ -858,16 +925,11 @@ class ElectrumSettingsBloc
               )
               .toList();
 
-      // When switching to default, mark the servers for current network type as inactive
       for (final server in customServers) {
         final index = updatedElectrumServers.indexOf(server);
         if (index >= 0) {
-          updatedElectrumServers[index] = server.copyWith(
-            isActive: false,
-            priority: 99,
-          );
+          updatedElectrumServers[index] = server.copyWith(isActive: false);
 
-          // Add to staged servers to ensure the change is saved
           final existingIndex = stagedServersList.indexWhere(
             (s) =>
                 s.network == server.network &&
@@ -876,16 +938,13 @@ class ElectrumSettingsBloc
 
           if (existingIndex >= 0) {
             stagedServersList[existingIndex] = stagedServersList[existingIndex]
-                .copyWith(isActive: false, priority: 99);
+                .copyWith(isActive: false);
           } else {
-            stagedServersList.add(
-              server.copyWith(isActive: false, priority: 99),
-            );
+            stagedServersList.add(server.copyWith(isActive: false));
           }
         }
       }
     } else {
-      // Find existing custom servers with URLs for the current selected network type only
       final existingCustomServers =
           state.electrumServers
               .where(
@@ -897,7 +956,6 @@ class ElectrumSettingsBloc
               )
               .toList();
 
-      // When switching to custom, activate the servers for current network type
       if (existingCustomServers.isNotEmpty) {
         for (final server in existingCustomServers) {
           final existingIndex = stagedServersList.indexWhere(
@@ -916,16 +974,13 @@ class ElectrumSettingsBloc
       }
     }
 
-    // If no staged changes but we're switching modes, add a marker to make save button active
     if (stagedServersList.isEmpty &&
         event.isCustomSelected != state.isCustomServerSelected) {
-      // Use the mainnet server of the currently selected network type
       final mainnetNetwork =
           state.isSelectedNetworkLiquid
               ? Network.liquidMainnet
               : Network.bitcoinMainnet;
 
-      // Find existing server for this network
       final existingServer = state.getServerForNetworkAndProvider(
         mainnetNetwork,
         event.isCustomSelected
@@ -941,15 +996,15 @@ class ElectrumSettingsBloc
         );
       } else if (!event.isCustomSelected) {
         stagedServersList.add(
-          ElectrumServer.defaultServer(
-            provider: DefaultElectrumServerProvider.bullBitcoin,
+          ElectrumServer(
+            url: "bull.bitcoin.com",
             network: mainnetNetwork,
+            isActive: true,
           ),
         );
       }
     }
 
-    // Apply updated priorities to the final list
     final prioritizedStagedServers = _updateServerPriorities(stagedServersList);
 
     emit(
@@ -961,5 +1016,87 @@ class ElectrumSettingsBloc
     );
 
     add(ToggleSelectedProvider(provider));
+  }
+
+  void _updateInMemoryServer(
+    List<ElectrumServer> servers,
+    ElectrumServer updatedServer,
+  ) {
+    final index = servers.indexWhere(
+      (server) => _isSameServer(server, updatedServer),
+    );
+    if (index >= 0) {
+      servers[index] = updatedServer;
+    } else {
+      servers.add(updatedServer);
+    }
+  }
+
+  Future<ElectrumServerStatus> _checkElectrumServerStatus(
+    ElectrumServer electrumServer,
+  ) async {
+    if (electrumServer.url.isNotEmpty) {
+      try {
+        return await _checkElectrumServerConnectivity.execute(
+          url: electrumServer.url,
+          timeout: electrumServer.timeout,
+        );
+      } catch (e) {
+        debugPrint('Error checking server status: $e');
+        return ElectrumServerStatus.offline;
+      }
+    }
+    return ElectrumServerStatus.offline;
+  }
+
+  bool _isADefault(String url) {
+    if (url.trim().isEmpty) return false;
+
+    // Normalize URL for comparison - trim and lower case
+    final normalizedUrl = url.trim().toLowerCase();
+
+    // For other URLs, check for exact match
+    for (final server in state.electrumServers) {
+      if (server.url.trim().toLowerCase() == normalizedUrl) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool _isSameNetworkType(Network network1, Network network2) {
+    return network1.isBitcoin == network2.isBitcoin &&
+        network1.isLiquid == network2.isLiquid;
+  }
+
+  bool _isSameServer(ElectrumServer a, ElectrumServer b) {
+    if (!_isSameNetworkType(a.network, b.network)) return false;
+
+    final aProvider = a.electrumServerProvider;
+    final bProvider = b.electrumServerProvider;
+
+    if (aProvider is CustomElectrumServerProvider &&
+        bProvider is CustomElectrumServerProvider) {
+      return a.url == b.url;
+    }
+
+    if (aProvider is DefaultServerProvider &&
+        bProvider is DefaultServerProvider) {
+      return aProvider.defaultServerProvider == bProvider.defaultServerProvider;
+    }
+
+    return false;
+  }
+
+  bool _areProvidersEqual(ElectrumServerProvider a, ElectrumServerProvider b) {
+    if (a is CustomElectrumServerProvider &&
+        b is CustomElectrumServerProvider) {
+      return true;
+    }
+    if (a is DefaultServerProvider && b is DefaultServerProvider) {
+      return a.defaultServerProvider == b.defaultServerProvider;
+    }
+    return false;
   }
 }
