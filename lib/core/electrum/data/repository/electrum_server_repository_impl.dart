@@ -14,9 +14,17 @@ class ElectrumServerRepository {
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   }) : _electrumServerStorage = electrumServerStorageDatasource;
 
-  Future<void> setElectrumServer(ElectrumServer server) async {
+  Future<void> storeElectrumServer({required ElectrumServer server}) async {
     final model = ElectrumServerModel.fromEntity(server);
     await _electrumServerStorage.store(model);
+  }
+
+  Future<void> updateElectrumServer({
+    required ElectrumServer server,
+    required String existingIndex,
+  }) async {
+    final model = ElectrumServerModel.fromEntity(server);
+    await _electrumServerStorage.update(model, existingIndex);
   }
 
   /// Checks if a server is reachable by attempting a socket connection
