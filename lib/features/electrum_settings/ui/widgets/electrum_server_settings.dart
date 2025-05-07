@@ -48,13 +48,24 @@ class _ElectrumServerSettingsContentState
           (previous, current) =>
               previous.selectedProvider != current.selectedProvider ||
               previous.electrumServers != current.electrumServers ||
-              previous.stagedServers != current.stagedServers,
-      listener: (context, state) {},
+              previous.stagedServers != current.stagedServers ||
+              previous.status != current.status,
+      listener: (context, state) {
+        if (state.saveSuccessful) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Server settings saved successfully'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      },
       buildWhen:
           (previous, current) =>
               previous.status != current.status ||
               previous.stagedServers != current.stagedServers ||
-              previous.selectedProvider != current.selectedProvider,
+              previous.selectedProvider != current.selectedProvider ||
+              previous.statusError != current.statusError,
       builder: (context, state) {
         return Container(
           constraints: BoxConstraints(
@@ -71,21 +82,24 @@ class _ElectrumServerSettingsContentState
               _Header(state: state),
               if (state.status == ElectrumSettingsStatus.loading) ...[
                 const LinearProgressIndicator(),
-                const Gap(150),
-              ] else ...[
-                Flexible(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      bottom: MediaQuery.of(context).viewInsets.bottom,
-                    ),
-                    child: SingleChildScrollView(
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+              ],
+
+              Flexible(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom,
+                  ),
+                  child: SingleChildScrollView(
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (state.status !=
+                              ElectrumSettingsStatus.loading) ...[
+                            const Gap(16),
                             ServerTypeSelector(state: state),
                             const Gap(24),
                             if (state.isCustomServerSelected)
@@ -99,14 +113,16 @@ class _ElectrumServerSettingsContentState
                             _AdvancedOptions(state: state),
                             const Gap(32),
                             _SaveButton(state: state),
-                            const Gap(24),
+                          ] else ...[
+                            const Gap(150),
                           ],
-                        ),
+                          const Gap(24),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ],
+              ),
             ],
           ),
         );
@@ -123,7 +139,8 @@ class _SaveButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool hasChanges = state.hasPendingChanges;
 
-    bool disableSave = false;
+    bool disableSave = state.status == ElectrumSettingsStatus.loading;
+
     if (state.isCustomServerSelected && hasChanges) {
       final mainnetNetwork =
           state.isSelectedNetworkLiquid
@@ -135,19 +152,25 @@ class _SaveButton extends StatelessWidget {
               ? Network.liquidTestnet
               : Network.bitcoinTestnet;
 
+      // Get both from effective servers to ensure we're seeing the latest state
+      const customProvider = ElectrumServerProvider.customProvider();
       final mainnetServer = state.getServerForNetworkAndProvider(
         mainnetNetwork,
-        state.selectedProvider,
+        customProvider,
       );
 
       final testnetServer = state.getServerForNetworkAndProvider(
         testnetNetwork,
-        state.selectedProvider,
+        customProvider,
       );
 
-      disableSave =
-          (mainnetServer?.url ?? '').isEmpty ||
-          (testnetServer?.url ?? '').isEmpty;
+      // Fixed validation logic - ensure URLs are truly empty, not just containing blockstream.info
+      final mainnetUrlEmpty =
+          mainnetServer == null || mainnetServer.url.trim().isEmpty;
+      final testnetUrlEmpty =
+          testnetServer == null || testnetServer.url.trim().isEmpty;
+
+      disableSave = disableSave || mainnetUrlEmpty || testnetUrlEmpty;
     }
 
     return BBButton.big(
@@ -167,6 +190,117 @@ class _SaveButton extends StatelessWidget {
               : context.colour.surfaceContainer,
       textStyle: context.font.headlineLarge,
       textColor: context.colour.onSecondary,
+    );
+  }
+}
+
+class _ServerField extends StatelessWidget {
+  const _ServerField({
+    required this.label,
+    required this.initialValue,
+    required this.onChanged,
+    required this.enabled,
+    this.errorText,
+  });
+
+  final String label;
+  final String? initialValue;
+  final Function(String) onChanged;
+  final bool enabled;
+  final String? errorText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        const Gap(8),
+        TextFormField(
+          initialValue: initialValue ?? '',
+          enabled: enabled,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 16,
+            ),
+            errorText: errorText,
+            errorStyle: TextStyle(color: Colors.red.shade700, fontSize: 12),
+          ),
+          onChanged: enabled ? onChanged : null,
+        ),
+      ],
+    );
+  }
+}
+
+class _ServerUrls extends StatelessWidget {
+  const _ServerUrls({required this.state});
+  final ElectrumSettingsState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final mainnetNetwork =
+        state.isSelectedNetworkLiquid
+            ? Network.liquidMainnet
+            : Network.bitcoinMainnet;
+    final testnetNetwork =
+        state.isSelectedNetworkLiquid
+            ? Network.liquidTestnet
+            : Network.bitcoinTestnet;
+
+    final mainnetServer = state.getServerForNetworkAndProvider(
+      mainnetNetwork,
+      const ElectrumServerProvider.customProvider(),
+    );
+
+    final testnetServer = state.getServerForNetworkAndProvider(
+      testnetNetwork,
+      const ElectrumServerProvider.customProvider(),
+    );
+
+    final String mainnetUrl = mainnetServer?.url ?? '';
+    final String testnetUrl = testnetServer?.url ?? '';
+
+    // Parse error messages
+    String? mainnetError;
+    String? testnetError;
+
+    if (state.status == ElectrumSettingsStatus.error) {
+      final errorMsg = state.statusError;
+      if (errorMsg.contains('Mainnet:')) {
+        mainnetError = errorMsg;
+      } else if (errorMsg.contains('Testnet:')) {
+        testnetError = errorMsg;
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _ServerField(
+          label: 'Mainnet',
+          initialValue: mainnetUrl,
+          enabled: state.isCustomServerSelected,
+          errorText: mainnetError,
+          onChanged: (value) {
+            final bloc = context.read<ElectrumSettingsBloc>();
+            bloc.add(UpdateCustomServerMainnet(customServer: value));
+          },
+        ),
+        const Gap(16),
+        _ServerField(
+          label: 'Testnet',
+          initialValue: testnetUrl,
+          enabled: state.isCustomServerSelected,
+          errorText: testnetError,
+          onChanged: (value) {
+            final bloc = context.read<ElectrumSettingsBloc>();
+            bloc.add(UpdateCustomServerTestnet(customServer: value));
+          },
+        ),
+      ],
     );
   }
 }
@@ -204,29 +338,25 @@ class _Header extends StatelessWidget {
         state.isSelectedNetworkLiquid
             ? Network.liquidMainnet
             : Network.bitcoinMainnet;
+
     Widget? statusIndicator;
-    if (state.isCustomServerSelected) {
-      final customServer = state.getServerForNetworkAndProvider(
-        mainnetNetwork,
-        const ElectrumServerProvider.customProvider(),
+    if (state.status == ElectrumSettingsStatus.loading) {
+      // Show loading indicator when checking server status
+      statusIndicator = Container(
+        margin: const EdgeInsets.only(left: 5),
+        width: 12,
+        height: 12,
+        child: const CircularProgressIndicator(strokeWidth: 2),
       );
-      if (customServer != null) {
-        final isConnected = customServer.status == ElectrumServerStatus.online;
-        final dotColor = isConnected ? Colors.green : Colors.red;
-        statusIndicator = Container(
-          margin: const EdgeInsets.only(left: 5),
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: dotColor),
-        );
-      }
     } else {
-      final defaultServer = state.getServerForNetworkAndProvider(
+      final selectedServer = state.getServerForNetworkAndProvider(
         mainnetNetwork,
         state.selectedProvider,
       );
-      if (defaultServer != null) {
-        final isConnected = defaultServer.status == ElectrumServerStatus.online;
+
+      if (selectedServer != null) {
+        final isConnected =
+            selectedServer.status == ElectrumServerStatus.online;
         final dotColor = isConnected ? Colors.green : Colors.red;
         statusIndicator = Container(
           margin: const EdgeInsets.only(left: 5),
@@ -236,6 +366,7 @@ class _Header extends StatelessWidget {
         );
       }
     }
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 24),
       child: Column(
@@ -311,98 +442,6 @@ class _ValidateDomainSwitch extends StatelessWidget {
             context.read<ElectrumSettingsBloc>().add(
               const ToggleValidateDomain(),
             );
-          },
-        ),
-      ],
-    );
-  }
-}
-
-class _ServerField extends StatelessWidget {
-  const _ServerField({
-    required this.label,
-    required this.initialValue,
-    required this.onChanged,
-    required this.enabled,
-  });
-
-  final String label;
-  final String? initialValue;
-  final Function(String) onChanged;
-  final bool enabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-        const Gap(8),
-        TextFormField(
-          initialValue: initialValue ?? '',
-          enabled: enabled,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 16,
-            ),
-          ),
-          onChanged: enabled ? onChanged : null,
-        ),
-      ],
-    );
-  }
-}
-
-class _ServerUrls extends StatelessWidget {
-  const _ServerUrls({required this.state});
-  final ElectrumSettingsState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final mainnetNetwork =
-        state.isSelectedNetworkLiquid
-            ? Network.liquidMainnet
-            : Network.bitcoinMainnet;
-    final testnetNetwork =
-        state.isSelectedNetworkLiquid
-            ? Network.liquidTestnet
-            : Network.bitcoinTestnet;
-
-    final mainnetServer = state.getServerForNetworkAndProvider(
-      mainnetNetwork,
-      const ElectrumServerProvider.customProvider(),
-    );
-
-    final testnetServer = state.getServerForNetworkAndProvider(
-      testnetNetwork,
-      const ElectrumServerProvider.customProvider(),
-    );
-
-    final String mainnetUrl = mainnetServer?.url ?? '';
-    final String testnetUrl = testnetServer?.url ?? '';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _ServerField(
-          label: 'Mainnet',
-          initialValue: mainnetUrl,
-          enabled: state.isCustomServerSelected,
-          onChanged: (value) {
-            final bloc = context.read<ElectrumSettingsBloc>();
-            bloc.add(UpdateCustomServerMainnet(customServer: value));
-          },
-        ),
-        const Gap(16),
-        _ServerField(
-          label: 'Testnet',
-          initialValue: testnetUrl,
-          enabled: state.isCustomServerSelected,
-          onChanged: (value) {
-            final bloc = context.read<ElectrumSettingsBloc>();
-            bloc.add(UpdateCustomServerTestnet(customServer: value));
           },
         ),
       ],
