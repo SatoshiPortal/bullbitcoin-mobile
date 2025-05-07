@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
-import 'package:bb_mobile/core/electrum/domain/usecases/check_electrum_server_connectivity_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
@@ -41,8 +40,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required GetPrioritizedServerUsecase getBestAvailableServerUsecase,
     required CheckPayjoinRelayHealthUsecase checkPayjoinRelayHealth,
     required GetSwapLimitsUsecase getSwapLimitsUsecase,
-    required CheckElectrumServerConnectivityUsecase
-    checkElectrumServerConnectivityUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -53,11 +50,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
            checkForTorInitializationOnStartupUsecase,
        _getApiKeyUsecase = getApiKeyUsecase,
        _getUserSummaryUsecase = getUserSummaryUseCase,
-       _getBestAvailableServerUsecase = getBestAvailableServerUsecase,
+       _getPrioritizedServerUsecase = getBestAvailableServerUsecase,
        _checkPayjoinRelayHealth = checkPayjoinRelayHealth,
        _getSwapLimitsUsecase = getSwapLimitsUsecase,
-       _checkElectrumServerConnectivityUsecase =
-           checkElectrumServerConnectivityUsecase,
+
        super(const HomeState()) {
     on<HomeStarted>(_onStarted);
     on<HomeRefreshed>(_onRefreshed);
@@ -80,9 +76,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   _checkForTorInitializationOnStartupUsecase;
   final GetApiKeyUsecase _getApiKeyUsecase;
   final GetUserSummaryUseCase _getUserSummaryUsecase;
-  final GetPrioritizedServerUsecase _getBestAvailableServerUsecase;
-  final CheckElectrumServerConnectivityUsecase
-  _checkElectrumServerConnectivityUsecase;
+  final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
+
   final CheckPayjoinRelayHealthUsecase _checkPayjoinRelayHealth;
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   StreamSubscription? _startedSyncsSubscription;
@@ -262,14 +257,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     await Future.wait(
       defaultWallets.map((wallet) async {
-        final electrumServer = await _getBestAvailableServerUsecase.execute(
+        final electrumServer = await _getPrioritizedServerUsecase.execute(
           network: wallet.network,
         );
-        final status = await _checkElectrumServerConnectivityUsecase.execute(
-          url: electrumServer.url,
-          timeout: 5,
-        );
-        if (status != ElectrumServerStatus.online) {
+
+        if (electrumServer.status != ElectrumServerStatus.online) {
           if (wallet.isLiquid) {
             liquidServerDown = true;
           } else {
