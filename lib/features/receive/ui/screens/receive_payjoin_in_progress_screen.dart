@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -11,9 +11,7 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceivePayjoinInProgressScreen extends StatelessWidget {
-  const ReceivePayjoinInProgressScreen({
-    super.key,
-  });
+  const ReceivePayjoinInProgressScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +20,7 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
 
-        context.go(AppRoute.home.path);
+        context.go(HomeRoute.home.path);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -32,7 +30,7 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
             title: 'Receive',
             actionIcon: Icons.close,
             onAction: () {
-              context.go(AppRoute.home.path);
+              context.go(HomeRoute.home.path);
             },
           ),
         ),
@@ -56,10 +54,7 @@ class PayjoinInProgressPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          BBText(
-            'Payjoin in progress',
-            style: context.font.headlineLarge,
-          ),
+          BBText('Payjoin in progress', style: context.font.headlineLarge),
           BBText(
             'Wait for the sender to finish the payjoin transaction',
             style: context.font.bodyMedium,
@@ -106,8 +101,8 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
             onPressed: () {
               debugPrint('Receive payment normally');
               context.read<ReceiveBloc>().add(
-                    const ReceivePayjoinOriginalTxBroadcasted(),
-                  );
+                const ReceivePayjoinOriginalTxBroadcasted(),
+              );
             },
             bgColor: context.colour.secondary,
             textColor: context.colour.onSecondary,

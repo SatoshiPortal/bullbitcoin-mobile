@@ -1,5 +1,5 @@
+import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -18,7 +18,7 @@ class ReceivePaymentInProgressScreen extends StatelessWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
 
-        context.go(AppRoute.home.path);
+        context.go(HomeRoute.home.path);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -28,7 +28,7 @@ class ReceivePaymentInProgressScreen extends StatelessWidget {
             title: 'Receive',
             actionIcon: Icons.close,
             onAction: () {
-              context.go(AppRoute.home.path);
+              context.go(HomeRoute.home.path);
             },
           ),
         ),
@@ -55,19 +55,13 @@ class PaymentInProgressPage extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          BBText(
-            'Payment in progress',
-            style: context.font.headlineLarge,
-          ),
+          BBText('Payment in progress', style: context.font.headlineLarge),
           BBText(
             'It will be confirmed in a few seconds',
             style: context.font.headlineMedium,
           ),
           const Gap(16),
-          BBText(
-            amountBitcoin,
-            style: context.font.headlineLarge,
-          ),
+          BBText(amountBitcoin, style: context.font.headlineLarge),
           const Gap(4),
           BBText(
             '~$amountFiat',

@@ -45,8 +45,9 @@ class WalletRepositoryImpl implements WalletRepository {
       .asyncMap((walletId) async => await getWallet(walletId));
 
   @override
-  bool get isAnyWalletSyncing =>
-      _bdkWallet.isAnyWalletSyncing || _lwkWallet.isAnyWalletSyncing;
+  bool isWalletSyncing({String? walletId}) =>
+      _bdkWallet.isWalletSyncing(walletId: walletId) ||
+      _lwkWallet.isWalletSyncing(walletId: walletId);
 
   @override
   Future<Wallet> createWallet({

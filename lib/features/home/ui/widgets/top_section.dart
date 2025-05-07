@@ -1,7 +1,7 @@
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/home/presentation/blocs/home_bloc.dart';
+import 'package:bb_mobile/features/home/ui/widgets/eye_toggle.dart';
+import 'package:bb_mobile/features/home/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/router.dart';
@@ -95,7 +95,7 @@ class _Amounts extends StatelessWidget {
             Gap(32),
             _BtcTotalAmt(),
             Gap(16),
-            _EyeToggle(),
+            EyeToggle(),
             Spacer(),
           ],
         ),
@@ -124,66 +124,16 @@ class _BtcTotalAmt extends StatelessWidget {
   }
 }
 
-class _EyeToggle extends StatelessWidget {
-  const _EyeToggle();
-
-  @override
-  Widget build(BuildContext context) {
-    final hide = context.select(
-      (SettingsCubit settingsCubit) => settingsCubit.state?.hideAmounts ?? true,
-    );
-    return GestureDetector(
-      onTap: () {
-        context.read<SettingsCubit>().toggleHideAmounts(!hide);
-      },
-      child: Container(
-        padding: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: context.colour.surfaceBright),
-          color: context.colour.scrim,
-        ),
-        child: Icon(
-          !hide ? Icons.visibility : Icons.visibility_off,
-          color: context.colour.onPrimary,
-          size: 20,
-        ),
-      ),
-    );
-  }
-}
-
 class _FiatAmt extends StatelessWidget {
   const _FiatAmt();
 
   @override
   Widget build(BuildContext context) {
-    final fiatPriceIsNull = context.select(
-      (BitcoinPriceBloc bitcoinPriceBloc) =>
-          bitcoinPriceBloc.state.bitcoinPrice == null,
-    );
-
-    if (fiatPriceIsNull) return const SizedBox.shrink();
-
     final totalBal = context.select(
       (HomeBloc bloc) => bloc.state.totalBalance(),
     );
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: context.colour.surfaceDim),
-        color: context.colour.surfaceDim,
-      ),
-      child: CurrencyText(
-        totalBal,
-        showFiat: true,
-        // '\$0.0 CAD',
-        style: context.font.bodyLarge,
-        color: context.colour.onPrimary,
-      ),
-    );
+    return HomeFiatBalance(balanceSat: totalBal);
   }
 }
 

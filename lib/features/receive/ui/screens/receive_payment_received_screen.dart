@@ -1,6 +1,6 @@
+import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -19,7 +19,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
-        context.go(AppRoute.home.path);
+        context.go(HomeRoute.home.path);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -29,7 +29,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
             title: 'Receive',
             actionIcon: Icons.close,
             onAction: () {
-              context.go(AppRoute.home.path);
+              context.go(HomeRoute.home.path);
             },
           ),
         ),
@@ -57,15 +57,9 @@ class PaymentReceivedPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           const Spacer(),
-          BBText(
-            'Payment received',
-            style: context.font.headlineLarge,
-          ),
+          BBText('Payment received', style: context.font.headlineLarge),
           const Gap(24),
-          BBText(
-            amountBitcoin,
-            style: context.font.displaySmall,
-          ),
+          BBText(amountBitcoin, style: context.font.displaySmall),
           const Gap(4),
           BBText(
             '~$amountFiat',

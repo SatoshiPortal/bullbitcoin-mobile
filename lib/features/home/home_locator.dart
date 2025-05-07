@@ -6,11 +6,11 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_any_wallet_syncing_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
+import 'package:bb_mobile/features/home/presentation/blocs/home_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 
 class HomeLocator {
@@ -19,7 +19,7 @@ class HomeLocator {
     locator.registerFactory<HomeBloc>(
       () => HomeBloc(
         getWalletsUsecase: locator<GetWalletsUsecase>(),
-        checkAnyWalletSyncingUsecase: locator<CheckAnyWalletSyncingUsecase>(),
+        checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
         watchStartedWalletSyncsUsecase:
             locator<WatchStartedWalletSyncsUsecase>(),
         watchFinishedWalletSyncsUsecase:

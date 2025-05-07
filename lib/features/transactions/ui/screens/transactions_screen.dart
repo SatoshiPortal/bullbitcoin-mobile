@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/transactions/bloc/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_filter_row.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/txs_syncing_indicator.dart';

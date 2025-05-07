@@ -12,7 +12,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecas
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_any_wallet_syncing_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -28,7 +28,7 @@ part 'home_state.dart';
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc({
     required GetWalletsUsecase getWalletsUsecase,
-    required CheckAnyWalletSyncingUsecase checkAnyWalletSyncingUsecase,
+    required CheckWalletSyncingUsecase checkWalletSyncingUsecase,
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
     required RestartSwapWatcherUsecase restartSwapWatcherUsecase,
@@ -41,7 +41,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required CheckPayjoinRelayHealthUsecase checkPayjoinRelayHealth,
     required GetSwapLimitsUsecase getSwapLimitsUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
-       _checkAnyWalletSyncingUsecase = checkAnyWalletSyncingUsecase,
+       _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
        _restartSwapWatcherUsecase = restartSwapWatcherUsecase,
@@ -66,7 +66,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
-  final CheckAnyWalletSyncingUsecase _checkAnyWalletSyncingUsecase;
+  final CheckWalletSyncingUsecase _checkWalletSyncingUsecase;
   final WatchStartedWalletSyncsUsecase _watchStartedWalletSyncsUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
   final RestartSwapWatcherUsecase _restartSwapWatcherUsecase;
@@ -100,7 +100,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       // Don't sync the wallets here so the wallet list is shown immediately
       // and the sync is done after that
       final wallets = await _getWalletsUsecase.execute();
-      final isSyncing = _checkAnyWalletSyncingUsecase.execute();
+      final isSyncing = _checkWalletSyncingUsecase.execute();
 
       emit(
         HomeState(
@@ -176,7 +176,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       //  with the updated balance as well as the other wallets which may or
       //  may not be synced as well.
       final wallets = await _getWalletsUsecase.execute();
-      final isAnyOtherWalletSyncing = _checkAnyWalletSyncingUsecase.execute();
+      final isAnyOtherWalletSyncing = _checkWalletSyncingUsecase.execute();
 
       emit(
         state.copyWith(

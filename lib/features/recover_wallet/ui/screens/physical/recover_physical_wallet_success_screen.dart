@@ -1,5 +1,5 @@
+import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -26,9 +26,7 @@ class RecoverPhysicalWalletSuccessScreen extends StatelessWidget {
                   height: 200,
                   width: 200,
                   child: Gif(
-                    image: AssetImage(
-                      Assets.images2.successTick.path,
-                    ),
+                    image: AssetImage(Assets.images2.successTick.path),
                     autostart: Autostart.once,
                     height: 200,
                     width: 200,
@@ -49,7 +47,7 @@ class RecoverPhysicalWalletSuccessScreen extends StatelessWidget {
                 bgColor: context.colour.secondary,
                 textColor: context.colour.onPrimary,
                 onPressed: () {
-                  context.goNamed(AppRoute.home.name);
+                  context.goNamed(HomeRoute.home.name);
                 },
               ),
             ),

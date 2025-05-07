@@ -1,15 +1,12 @@
+import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_network_selection.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ReceiveScaffold extends StatelessWidget {
-  const ReceiveScaffold({
-    super.key,
-    required this.child,
-  });
+  const ReceiveScaffold({super.key, required this.child});
 
   final Widget child;
 
@@ -31,7 +28,7 @@ class ReceiveScaffold extends StatelessWidget {
               if (context.canPop()) {
                 context.pop();
               } else {
-                context.goNamed(AppRoute.home.name);
+                context.goNamed(HomeRoute.home.name);
               }
             },
           ),

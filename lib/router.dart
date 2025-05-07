@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/features/buy/ui/buy_screen.dart';
-import 'package:bb_mobile/features/home/ui/home_screen.dart';
+import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/key_server/ui/key_server_flow.dart'
     show KeyServerFlow;
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
@@ -20,7 +20,6 @@ import 'package:go_router/go_router.dart';
 //  routes and so are reachable from anywhere in the app.
 enum AppRoute {
   onboarding('/onboarding'),
-  home('/'),
   appUnlock('/app-unlock'),
   //todo; move to settings router
   recoverWallet('/recover-wallet'),
@@ -62,28 +61,9 @@ class AppRouter {
 
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: AppRoute.home.path,
+    initialLocation: HomeRoute.home.path,
     routes: [
-      GoRoute(
-        name: AppRoute.home.name,
-        path: AppRoute.home.path,
-        // redirect: (context, state) {
-        //   // Check AppStartupState to skip onboarding if user has existing wallets
-        //   // final appStartupState = context.read<AppStartupBloc>().state;
-        //   // if (appStartupState is AppStartupSuccess &&
-        //   //     appStartupState.isPinCodeSet) {
-        //   //   return AppRoute.appUnlock.path;
-        //   // }
-
-        //   return null;
-        // },
-        builder: (context, state) {
-          return const HomeScreen();
-        },
-        // pageBuilder: (context, state) =>
-        // const NoTransitionPage(child: HomeScreen()),
-      ),
-
+      HomeRouter.route,
       // GoRoute(
       //   name: AppRoute.onboarding.name,
       //   path: AppRoute.onboarding.path,
@@ -157,7 +137,7 @@ class DevPages {
         (context, state) => DevPage(
           title: 'Dev',
           pages: [
-            DevPageData(route: AppRoute.home.name, title: 'Home', done: true),
+            DevPageData(route: HomeRoute.home.name, title: 'Home', done: true),
             DevPageData(
               route: AppRoute.recoverWallet.name,
               title: 'Recover',

@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/bloc/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/home/ui/home_router.dart';
+import 'package:bb_mobile/features/transactions/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_label_bottomsheet.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -47,7 +47,7 @@ class TransactionDetailsScreen extends StatelessWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
 
-        context.go(AppRoute.home.path);
+        context.go(HomeRoute.home.path);
       },
       child: Scaffold(
         appBar: AppBar(

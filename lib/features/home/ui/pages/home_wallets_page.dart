@@ -5,8 +5,8 @@ import 'package:bb_mobile/features/home/ui/widgets/wallet_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class HomeWalletsScreen extends StatelessWidget {
-  const HomeWalletsScreen({super.key});
+class HomeWalletsPage extends StatelessWidget {
+  const HomeWalletsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

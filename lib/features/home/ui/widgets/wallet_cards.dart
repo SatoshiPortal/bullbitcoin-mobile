@@ -1,10 +1,12 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
+import 'package:bb_mobile/features/home/presentation/blocs/home_bloc.dart';
+import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/ui/components/cards/wallet_card.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeWalletCards extends StatelessWidget {
   const HomeWalletCards({super.key});
@@ -40,7 +42,13 @@ class HomeWalletCards extends StatelessWidget {
               title: w.getLabel(),
               description: w.getWalletTypeString(),
               wallet: w,
-              onTap: () {},
+              onTap: () {
+                context.goNamed(
+                  HomeRoute.walletHome.name,
+                  pathParameters: {'walletId': w.id},
+                  extra: context.read<HomeBloc>(),
+                );
+              },
             ),
             const Gap(8),
           ],

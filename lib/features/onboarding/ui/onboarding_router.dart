@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/fetched_backup_info_screen.dart';
@@ -34,26 +35,29 @@ class OnboardingRouter {
 
   static final route = ShellRoute(
     navigatorKey: rootNavigatorKey,
-    builder: (context, state, child) => BlocProvider<OnboardingBloc>(
-      create: (_) => locator<OnboardingBloc>(),
-      child: child,
-    ),
+    builder:
+        (context, state, child) => BlocProvider<OnboardingBloc>(
+          create: (_) => locator<OnboardingBloc>(),
+          child: child,
+        ),
     routes: [
       ShellRoute(
         navigatorKey: OnboardingRouter.shellNavigatorKey,
-        builder: (context, state, child) => MultiBlocListener(
-          listeners: [
-            BlocListener<OnboardingBloc, OnboardingState>(
-              listenWhen: (previous, current) =>
-                  previous.createSuccess() != current.createSuccess() &&
-                  current.createSuccess(),
-              listener: (context, state) {
-                context.goNamed(AppRoute.home.name);
-              },
+        builder:
+            (context, state, child) => MultiBlocListener(
+              listeners: [
+                BlocListener<OnboardingBloc, OnboardingState>(
+                  listenWhen:
+                      (previous, current) =>
+                          previous.createSuccess() != current.createSuccess() &&
+                          current.createSuccess(),
+                  listener: (context, state) {
+                    context.goNamed(HomeRoute.home.name);
+                  },
+                ),
+              ],
+              child: child,
             ),
-          ],
-          child: child,
-        ),
         routes: [
           GoRoute(
             name: AppRoute.onboarding.name,
@@ -86,9 +90,7 @@ class OnboardingRouter {
                 path: OnboardingSubroute.retrievedBackupInfo.path,
                 builder: (context, state) {
                   final backupInfo = state.extra! as BackupInfo;
-                  return FetchedBackupInfoScreen(
-                    encryptedInfo: backupInfo,
-                  );
+                  return FetchedBackupInfoScreen(encryptedInfo: backupInfo);
                 },
               ),
               GoRoute(

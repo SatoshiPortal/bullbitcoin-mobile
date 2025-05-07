@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
+import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
@@ -24,7 +24,7 @@ class EnterScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          onBack: () => context.go(AppRoute.home.path),
+          onBack: () => context.go(HomeRoute.home.path),
           title:
               "Choose access ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'}",
         ),
@@ -60,11 +60,12 @@ class EnterScreen extends StatelessWidget {
               BBInputText(
                 value: state.password,
                 obscure: state.isPasswordObscured,
-                onRightTap: () =>
-                    context.read<KeyServerCubit>().toggleObscure(),
-                rightIcon: state.isPasswordObscured
-                    ? const Icon(Icons.visibility_off_outlined)
-                    : const Icon(Icons.visibility_outlined),
+                onRightTap:
+                    () => context.read<KeyServerCubit>().toggleObscure(),
+                rightIcon:
+                    state.isPasswordObscured
+                        ? const Icon(Icons.visibility_off_outlined)
+                        : const Icon(Icons.visibility_outlined),
                 onlyNumbers: state.authInputType == AuthInputType.pin,
                 onChanged: (String value) {
                   if (state.authInputType == AuthInputType.password) {
@@ -98,19 +99,19 @@ class EnterScreen extends StatelessWidget {
                 bgColor: Colors.transparent,
                 textColor: context.colour.inversePrimary,
                 textStyle: context.font.labelSmall,
-                onPressed: () =>
-                    context.read<KeyServerCubit>().toggleAuthInputType(
-                          state.authInputType == AuthInputType.pin
-                              ? AuthInputType.password
-                              : AuthInputType.pin,
-                        ),
+                onPressed:
+                    () => context.read<KeyServerCubit>().toggleAuthInputType(
+                      state.authInputType == AuthInputType.pin
+                          ? AuthInputType.password
+                          : AuthInputType.pin,
+                    ),
               ),
               if (state.authInputType == AuthInputType.pin)
                 DialPad(
-                  onNumberPressed: (e) =>
-                      context.read<KeyServerCubit>().enterKey(e),
-                  onBackspacePressed: () =>
-                      context.read<KeyServerCubit>().backspaceKey(),
+                  onNumberPressed:
+                      (e) => context.read<KeyServerCubit>().enterKey(e),
+                  onBackspacePressed:
+                      () => context.read<KeyServerCubit>().backspaceKey(),
                 )
               else
                 const SizedBox.shrink(),
@@ -135,9 +136,10 @@ class ConfirmButton extends StatelessWidget {
         label: 'Confirm',
         textStyle: context.font.headlineLarge,
         disabled: !state.canProceed,
-        bgColor: state.canProceed
-            ? context.colour.secondary
-            : context.colour.outline,
+        bgColor:
+            state.canProceed
+                ? context.colour.secondary
+                : context.colour.outline,
         onPressed: () {
           if (state.canProceed) {
             context.read<KeyServerCubit>().confirmKey();

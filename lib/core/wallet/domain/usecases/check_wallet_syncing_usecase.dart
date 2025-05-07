@@ -1,17 +1,18 @@
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
-class CheckAnyWalletSyncingUsecase {
+class CheckWalletSyncingUsecase {
   final WalletRepository _walletRepository;
 
-  CheckAnyWalletSyncingUsecase({
-    required WalletRepository walletRepository,
-  }) : _walletRepository = walletRepository;
+  CheckWalletSyncingUsecase({required WalletRepository walletRepository})
+    : _walletRepository = walletRepository;
 
-  bool execute() {
+  bool execute({String? walletId}) {
     try {
-      final isAnyWalletSyncing = _walletRepository.isAnyWalletSyncing;
+      final isWalletSyncing = _walletRepository.isWalletSyncing(
+        walletId: walletId,
+      );
 
-      return isAnyWalletSyncing;
+      return isWalletSyncing;
     } catch (e) {
       throw CheckAnyWalletSyncingException('$e');
     }

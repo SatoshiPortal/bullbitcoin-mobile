@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
+import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -60,9 +60,11 @@ class _RecoverWithBackupKeyScreenState
               forceMaterialTransparency: true,
               flexibleSpace: TopBar(
                 title: 'Enter backup key manually',
-                onBack: () => widget.fromOnboarding
-                    ? context.pop()
-                    : context.go(AppRoute.home.path),
+                onBack:
+                    () =>
+                        widget.fromOnboarding
+                            ? context.pop()
+                            : context.go(HomeRoute.home.path),
               ),
             ),
             body: SafeArea(
@@ -94,13 +96,14 @@ class _RecoverWithBackupKeyScreenState
                     const Gap(10),
                     BBInputText(
                       controller: _controller,
-                      onChanged: (e) =>
-                          context.read<KeyServerCubit>().enterKey(e),
+                      onChanged:
+                          (e) => context.read<KeyServerCubit>().enterKey(e),
                       rightIcon: Icon(
                         _justCopied ? Icons.check_rounded : Icons.copy_rounded,
-                        color: _justCopied
-                            ? context.colour.inverseSurface
-                            : context.colour.onInverseSurface,
+                        color:
+                            _justCopied
+                                ? context.colour.inverseSurface
+                                : context.colour.onInverseSurface,
                       ),
                       onRightTap: _copyWithFeedback,
                       value: state.backupKey,
@@ -123,8 +126,10 @@ class _RecoverWithBackupKeyScreenState
                     const Gap(20),
                     BBButton.big(
                       label: 'Decrypt vault',
-                      onPressed: () =>
-                          context.read<KeyServerCubit>().updateKeyServerState(
+                      onPressed:
+                          () => context
+                              .read<KeyServerCubit>()
+                              .updateKeyServerState(
                                 secretStatus: SecretStatus.recovered,
                               ),
                       bgColor: context.colour.secondary,

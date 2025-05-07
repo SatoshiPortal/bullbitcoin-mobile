@@ -5,7 +5,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 abstract class WalletRepository {
   Stream<Wallet> get walletSyncStartedStream;
   Stream<Wallet> get walletSyncFinishedStream;
-  bool get isAnyWalletSyncing;
+  bool isWalletSyncing({String? walletId});
   Future<Wallet> createWallet({
     required Seed seed,
     required Network network,
@@ -19,10 +19,7 @@ abstract class WalletRepository {
     required ScriptType scriptType,
     required String label,
   });
-  Future<Wallet> getWallet(
-    String walletId, {
-    bool sync = false,
-  });
+  Future<Wallet> getWallet(String walletId, {bool sync = false});
   // These should also sync the wallets before returning them
   Future<List<Wallet>> getWallets({
     Environment? environment,

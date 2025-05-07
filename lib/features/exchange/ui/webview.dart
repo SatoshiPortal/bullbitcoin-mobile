@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart
 import 'package:bb_mobile/core/exchange/domain/usecases/save_api_key_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
-import 'package:bb_mobile/features/home/presentation/bloc/home_bloc.dart';
+import 'package:bb_mobile/features/home/presentation/blocs/home_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -43,9 +43,10 @@ class _BullBitcoinWebViewPageState extends State<BullBitcoinWebViewPage> {
     return BlocProvider.value(
       value: _exchangeCubit,
       child: BlocListener<ExchangeCubit, ExchangeState>(
-        listenWhen: (prev, curr) =>
-            prev.showLoginSuccessDialog != curr.showLoginSuccessDialog &&
-            curr.showLoginSuccessDialog,
+        listenWhen:
+            (prev, curr) =>
+                prev.showLoginSuccessDialog != curr.showLoginSuccessDialog &&
+                curr.showLoginSuccessDialog,
         listener: (context, state) {
           context.read<HomeBloc>().add(const GetUserDetails());
           // if (state.showLoginSuccessDialog) {
@@ -95,16 +96,20 @@ class BullBitcoinWebView extends StatefulWidget {
 class _BullBitcoinWebViewState extends State<BullBitcoinWebView> {
   @override
   Widget build(BuildContext context) {
-    final hasError =
-        context.select((ExchangeCubit cubit) => cubit.state.hasError);
-    final errorMessage =
-        context.select((ExchangeCubit cubit) => cubit.state.errorMessage);
+    final hasError = context.select(
+      (ExchangeCubit cubit) => cubit.state.hasError,
+    );
+    final errorMessage = context.select(
+      (ExchangeCubit cubit) => cubit.state.errorMessage,
+    );
 
-    final isLoading =
-        context.select((ExchangeCubit cubit) => cubit.state.isLoading);
+    final isLoading = context.select(
+      (ExchangeCubit cubit) => cubit.state.isLoading,
+    );
 
-    final apiKeyGenerating =
-        context.select((ExchangeCubit cubit) => cubit.state.apiKeyGenerating);
+    final apiKeyGenerating = context.select(
+      (ExchangeCubit cubit) => cubit.state.apiKeyGenerating,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -153,10 +158,7 @@ class _ErrorView extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
 
-  const _ErrorView({
-    required this.message,
-    required this.onRetry,
-  });
+  const _ErrorView({required this.message, required this.onRetry});
 
   @override
   Widget build(BuildContext context) {

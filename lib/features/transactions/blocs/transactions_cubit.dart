@@ -3,7 +3,7 @@ import 'dart:collection';
 
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_any_wallet_syncing_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
@@ -15,36 +15,39 @@ part 'transactions_state.dart';
 
 class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
+    String? walletId,
     required GetWalletTransactionsUsecase getWalletTransactionsUsecase,
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
-    required CheckAnyWalletSyncingUsecase checkAnyWalletSyncingUsecase,
-  }) : _getWalletTransactionsUsecase = getWalletTransactionsUsecase,
+    required CheckWalletSyncingUsecase checkWalletSyncingUsecase,
+  }) : _walletId = walletId,
+       _getWalletTransactionsUsecase = getWalletTransactionsUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
-       _checkAnyWalletSyncingUsecase = checkAnyWalletSyncingUsecase,
+       _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        super(const TransactionsState()) {
-    _startedSyncsSubscription = _watchStartedWalletSyncsUsecase
-        .execute()
+    _startedSyncSubscription = _watchStartedWalletSyncsUsecase
+        .execute(walletId: _walletId)
         .listen((_) => emit(state.copyWith(isSyncing: true)));
-    _finishedSyncsSubscription = _watchFinishedWalletSyncsUsecase
-        .execute()
+    _finishedSyncSubscription = _watchFinishedWalletSyncsUsecase
+        .execute(walletId: _walletId)
         .listen((_) => loadTxs());
   }
 
+  final String? _walletId;
   final GetWalletTransactionsUsecase _getWalletTransactionsUsecase;
   final WatchStartedWalletSyncsUsecase _watchStartedWalletSyncsUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
-  final CheckAnyWalletSyncingUsecase _checkAnyWalletSyncingUsecase;
+  final CheckWalletSyncingUsecase _checkWalletSyncingUsecase;
 
-  StreamSubscription? _startedSyncsSubscription;
-  StreamSubscription? _finishedSyncsSubscription;
+  StreamSubscription? _startedSyncSubscription;
+  StreamSubscription? _finishedSyncSubscription;
 
   @override
   Future<void> close() async {
     await Future.wait([
-      _startedSyncsSubscription?.cancel() ?? Future.value(),
-      _finishedSyncsSubscription?.cancel() ?? Future.value(),
+      _startedSyncSubscription?.cancel() ?? Future.value(),
+      _finishedSyncSubscription?.cancel() ?? Future.value(),
     ]);
     return super.close();
   }
@@ -52,8 +55,10 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   Future<void> loadTxs() async {
     try {
       emit(state.copyWith(isSyncing: true));
-      final transactions = await _getWalletTransactionsUsecase.execute();
-      final isSyncing = _checkAnyWalletSyncingUsecase.execute();
+      final transactions = await _getWalletTransactionsUsecase.execute(
+        walletId: _walletId,
+      );
+      final isSyncing = _checkWalletSyncingUsecase.execute(walletId: _walletId);
 
       emit(
         state.copyWith(

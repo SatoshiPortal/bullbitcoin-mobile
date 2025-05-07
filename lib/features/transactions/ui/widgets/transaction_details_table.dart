@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/features/transactions/bloc/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/ui/components/tables/details_table.dart';
 import 'package:bb_mobile/ui/components/tables/details_table_item.dart';
 import 'package:flutter/material.dart';

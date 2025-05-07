@@ -32,7 +32,10 @@ class LwkWalletDatasource implements WalletDatasource {
   Stream<String> get walletSyncFinishedStream =>
       _walletSyncFinishedController.stream;
 
-  bool get isAnyWalletSyncing => _activeSyncs.isNotEmpty;
+  bool isWalletSyncing({String? walletId}) =>
+      walletId == null
+          ? _activeSyncs.isNotEmpty
+          : _activeSyncs.containsKey(walletId);
 
   Future<BalanceModel> getBalance({required WalletModel wallet}) async {
     final lwkWallet = await _createPublicWallet(wallet);
