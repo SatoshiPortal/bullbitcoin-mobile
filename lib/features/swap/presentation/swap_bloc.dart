@@ -131,6 +131,8 @@ class SwapCubit extends Cubit<SwapState> {
     final wallets = await _getWalletsUsecase.execute();
     final settings = await _getSettingsUsecase.execute();
     final bitcoinUnit = settings.bitcoinUnit;
+    final currencies = await _getAvailableCurrenciesUsecase.execute();
+    final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
 
     final liquidWallets = wallets.where((w) => w.isLiquid).toList();
     final bitcoinWallets = wallets.where((w) => !w.isLiquid).toList();
@@ -138,6 +140,7 @@ class SwapCubit extends Cubit<SwapState> {
       (w) => w.isDefault,
       orElse: () => bitcoinWallets.first,
     );
+
     emit(
       state.copyWith(
         fromWallets: bitcoinWallets,
@@ -146,6 +149,9 @@ class SwapCubit extends Cubit<SwapState> {
         toWalletId: liquidWallets.first.id,
         loadingWallets: false,
         bitcoinUnit: bitcoinUnit,
+        fiatCurrencyCodes: currencies,
+        exchangeRate: exchangeRate,
+        inputAmountCurrencyCode: bitcoinUnit.code,
       ),
     );
 
@@ -228,31 +234,59 @@ class SwapCubit extends Cubit<SwapState> {
 
       if (amount.isEmpty) {
         validatedAmount = amount;
-      } else if (state.bitcoinUnit == BitcoinUnit.btc) {
+      } else if (state.isInputAmountFiat) {
+        final amountFiat = double.tryParse(amount);
+        final isDecimalPoint = amount == '.';
+        validatedAmount =
+            amountFiat == null && !isDecimalPoint ? state.fromAmount : amount;
+      } else if (state.bitcoinUnit == BitcoinUnit.sats) {
+        final satoshis = BigInt.tryParse(amount);
+        final hasDecimals = amount.contains('.');
+        validatedAmount =
+            satoshis == null || hasDecimals ? state.fromAmount : amount;
+      } else {
         final amountBtc = double.tryParse(amount);
         final decimals =
             amount.contains('.') ? amount.split('.').last.length : 0;
         final isDecimalPoint = amount == '.';
-
         validatedAmount =
             (amountBtc == null && !isDecimalPoint) ||
                     decimals > BitcoinUnit.btc.decimals
                 ? state.fromAmount
                 : amount;
-      } else {
-        final satoshis = BigInt.tryParse(amount);
-        final hasDecimals = amount.contains('.');
-
-        if (satoshis != null && !hasDecimals) {
-          validatedAmount = satoshis.toString();
-        } else {
-          validatedAmount = state.fromAmount;
-        }
       }
+
       emit(state.copyWith(fromAmount: validatedAmount));
       emit(state.copyWith(toAmount: state.calculateToAmount));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
+    }
+  }
+
+  Future<void> onCurrencyChanged(String currencyCode) async {
+    if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(currencyCode)) {
+      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+        currencyCode: currencyCode,
+      );
+      emit(
+        state.copyWith(
+          inputAmountCurrencyCode: currencyCode,
+          fiatCurrencyCode: currencyCode,
+          exchangeRate: exchangeRate,
+          fromAmount: '',
+        ),
+      );
+    } else {
+      final settings = await _getSettingsUsecase.execute();
+      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
+      emit(
+        state.copyWith(
+          inputAmountCurrencyCode: currencyCode,
+          fiatCurrencyCode: settings.currencyCode,
+          exchangeRate: exchangeRate,
+          fromAmount: '',
+        ),
+      );
     }
   }
 

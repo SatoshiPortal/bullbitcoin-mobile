@@ -73,6 +73,10 @@ abstract class SwapState with _$SwapState {
     // swapLimits
     SwapLimits? swapLimits,
     SwapFees? swapFees,
+    @Default([]) List<String> fiatCurrencyCodes,
+    @Default('CAD') String fiatCurrencyCode,
+    @Default('') String inputAmountCurrencyCode,
+    @Default(0) double exchangeRate,
   }) = _SwapState;
   const SwapState._();
 
@@ -139,28 +143,68 @@ abstract class SwapState with _$SwapState {
   String formattedFromWalletBalance() {
     if (fromWallet == null) return '0';
 
-    if (bitcoinUnit == BitcoinUnit.btc) {
-      return FormatAmount.btc(ConvertAmount.satsToBtc(fromWalletBalance));
-    } else {
+    if (isInputAmountFiat) {
+      return FormatAmount.fiat(
+        ConvertAmount.satsToFiat(fromWalletBalance, exchangeRate),
+        inputAmountCurrencyCode,
+      );
+    } else if (bitcoinUnit == BitcoinUnit.sats) {
       return FormatAmount.sats(fromWalletBalance);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(fromWalletBalance));
     }
   }
 
+  List<String> get inputAmountCurrencyCodes {
+    return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
+  }
+
   bool get isInputAmountFiat =>
-      ![BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(bitcoinUnit.code);
+      ![
+        BitcoinUnit.btc.code,
+        BitcoinUnit.sats.code,
+      ].contains(inputAmountCurrencyCode);
+
+  String get displayCurrencyCode {
+    if (fromWallet?.isLiquid ?? false) {
+      return 'L-BTC';
+    }
+    return bitcoinUnit.code;
+  }
 
   int get fromAmountSat {
     int amountSat = 0;
     if (fromAmount.isNotEmpty) {
-      if (bitcoinUnit == BitcoinUnit.sats) {
+      if (isInputAmountFiat) {
+        final amountFiat = double.tryParse(fromAmount) ?? 0;
+        amountSat = ConvertAmount.fiatToSats(amountFiat, exchangeRate);
+      } else if (bitcoinUnit == BitcoinUnit.sats) {
         amountSat = int.tryParse(fromAmount) ?? 0;
       } else {
         final amountBtc = double.tryParse(fromAmount) ?? 0;
         amountSat = ConvertAmount.btcToSats(amountBtc);
       }
     }
-
     return amountSat;
+  }
+
+  double get fromAmountFiat {
+    return ConvertAmount.btcToFiat(fromAmountBtc, exchangeRate);
+  }
+
+  double get fromAmountBtc => ConvertAmount.satsToBtc(fromAmountSat);
+
+  String get formattedFromAmountEquivalent {
+    if (fromAmount.isEmpty) return '0';
+    if (isInputAmountFiat) {
+      if (bitcoinUnit == BitcoinUnit.sats) {
+        return FormatAmount.sats(fromAmountSat);
+      } else {
+        return FormatAmount.btc(fromAmountBtc);
+      }
+    } else {
+      return FormatAmount.fiat(fromAmountFiat, fiatCurrencyCode);
+    }
   }
 
   int get toAmountSat {
@@ -190,15 +234,6 @@ abstract class SwapState with _$SwapState {
       return FormatAmount.btc(ConvertAmount.satsToBtc(amountSat));
     } else {
       return amountSat.toString();
-    }
-  }
-
-  String get formattedFromAmountEquivalent {
-    if (fromAmount.isEmpty) return '0';
-    if (bitcoinUnit == BitcoinUnit.sats) {
-      return FormatAmount.btc(ConvertAmount.satsToBtc(fromAmountSat));
-    } else {
-      return FormatAmount.sats(fromAmountSat);
     }
   }
 
