@@ -41,12 +41,7 @@ class ReceiveQrPage extends StatelessWidget {
           if (isBitcoin)
             // The switch to only copy/scan the address is only for Bitcoin since
             // the other networks don't have payjoin bip21 uri's
-            const Column(
-              children: [
-                ReceiveCopyAddress(),
-                Gap(10),
-              ],
-            ),
+            const Column(children: [ReceiveCopyAddress(), Gap(10)]),
           if (!isLightning) const ReceiveNewAddressButton(),
           const Gap(40),
         ],
@@ -81,9 +76,10 @@ class ReceiveQRDetails extends StatelessWidget {
               color: context.colour.onPrimary,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: qrData.isNotEmpty
-                ? QrImageView(data: qrData)
-                : const LoadingBoxContent(size: 200),
+            child:
+                qrData.isNotEmpty
+                    ? QrImageView(data: qrData)
+                    : const LoadingBoxContent(size: 200),
           ),
         ),
         const Gap(20),
@@ -97,10 +93,7 @@ class ReceiveQRDetails extends StatelessWidget {
                 style: context.font.bodyMedium,
               ),
               const Gap(6),
-              CopyInput(
-                text: addressOrInvoiceOnly,
-                clipboardText: qrData,
-              ),
+              CopyInput(text: addressOrInvoiceOnly, clipboardText: qrData),
             ],
           ),
         ),
@@ -120,9 +113,7 @@ class ReceiveInfoDetails extends StatelessWidget {
     final amountEquivalent = context.select<ReceiveBloc, String>(
       (bloc) => bloc.state.formattedConfirmedAmountFiat,
     );
-    final note = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.note,
-    );
+    final note = context.select<ReceiveBloc, String>((bloc) => bloc.state.note);
 
     final isLn = context.select<ReceiveBloc, bool>(
       (bloc) => bloc.state.type == ReceiveType.lightning,
@@ -160,10 +151,7 @@ class ReceiveInfoDetails extends StatelessWidget {
                       const Gap(4),
                       Row(
                         children: [
-                          BBText(
-                            bitcoinAmount,
-                            style: context.font.bodyMedium,
-                          ),
+                          BBText(bitcoinAmount, style: context.font.bodyMedium),
                           const Gap(12),
                           BBText(
                             '~$amountEquivalent',
@@ -192,6 +180,8 @@ class ReceiveInfoDetails extends StatelessWidget {
                           context.push(
                             '${ReceiveRoute.receiveBitcoin.path}/${ReceiveRoute.amount.path}',
                           );
+                        case _:
+                          return;
                       }
                     },
                     visualDensity: VisualDensity.compact,
@@ -257,9 +247,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
     final amountEquivalent = context.select<ReceiveBloc, String>(
       (bloc) => bloc.state.formattedConfirmedAmountFiat,
     );
-    final note = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.note,
-    );
+    final note = context.select<ReceiveBloc, String>((bloc) => bloc.state.note);
 
     return AnimatedContainer(
       duration: 300.ms,
@@ -280,10 +268,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.only(
-              top: 24,
-              bottom: 10,
-            ),
+            padding: const EdgeInsets.only(top: 24, bottom: 10),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -296,10 +281,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    BBText(
-                      bitcoinAmount,
-                      style: context.font.bodyMedium,
-                    ),
+                    BBText(bitcoinAmount, style: context.font.bodyMedium),
                     BBText(
                       '~$amountEquivalent',
                       style: context.font.labelSmall,
@@ -313,10 +295,7 @@ class ReceiveLnInfoDetails extends StatelessWidget {
           if (note.isNotEmpty) ...[
             Container(color: context.colour.surface, height: 1),
             Padding(
-              padding: const EdgeInsets.only(
-                top: 10,
-                bottom: 12,
-              ),
+              padding: const EdgeInsets.only(top: 10, bottom: 12),
               child: Row(
                 children: [
                   BBText(
@@ -449,9 +428,10 @@ class ReceiveCopyAddress extends StatelessWidget {
                   bloc.state.type == ReceiveType.bitcoin &&
                   bloc.state.isAddressOnly,
             ),
-            onChanged: (addressOnly) => context
-                .read<ReceiveBloc>()
-                .add(ReceiveEvent.receiveAddressOnlyToggled(addressOnly)),
+            onChanged:
+                (addressOnly) => context.read<ReceiveBloc>().add(
+                  ReceiveEvent.receiveAddressOnlyToggled(addressOnly),
+                ),
           ),
         ],
       ),
@@ -470,8 +450,8 @@ class ReceiveNewAddressButton extends StatelessWidget {
         label: 'New address',
         onPressed: () {
           context.read<ReceiveBloc>().add(
-                const ReceiveEvent.receiveNewAddressGenerated(),
-              );
+            const ReceiveEvent.receiveNewAddressGenerated(),
+          );
         },
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,

@@ -46,9 +46,9 @@ class HomeWalletScreen extends StatelessWidget {
               const Gap(96),
             ],
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 13.0, vertical: 40),
-            child: HomeBottomButtons(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 13.0, vertical: 40),
+            child: HomeBottomButtons(wallet: wallet),
           ),
         ],
       ),

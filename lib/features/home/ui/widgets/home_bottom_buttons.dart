@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -7,7 +8,9 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeBottomButtons extends StatelessWidget {
-  const HomeBottomButtons({super.key});
+  const HomeBottomButtons({super.key, this.wallet});
+
+  final Wallet? wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +23,17 @@ class HomeBottomButtons extends StatelessWidget {
             label: 'Receive',
             iconFirst: true,
             onPressed: () {
-              // Lightning is the default receive method
-              context.pushNamed(ReceiveRoute.receiveLightning.name);
+              // Lightning is the default receive method if no specific wallet is selected
+              if (wallet == null) {
+                context.pushNamed(ReceiveRoute.receiveLightning.name);
+              } else {
+                context.pushNamed(
+                  wallet!.isLiquid
+                      ? ReceiveRoute.receiveLiquid.name
+                      : ReceiveRoute.receiveBitcoin.name,
+                  extra: wallet,
+                );
+              }
             },
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,
@@ -36,6 +48,9 @@ class HomeBottomButtons extends StatelessWidget {
             onPressed: () {
               context.pushNamed(AppRoute.send.name);
             },
+            disabled:
+                wallet !=
+                null, // TODO: just for now since send with preselected wallet is not implemented yet
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,
           ),

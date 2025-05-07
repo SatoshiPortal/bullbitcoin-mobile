@@ -39,24 +39,26 @@ class ReceiveRouter {
     builder: (context, state, child) {
       // Pass a preselected wallet to the receive bloc if one is set in the URI
       //  of the incoming route
-      final wallet = state.uri.queryParameters['wallet'] as Wallet?;
+      Wallet? wallet;
+      if (state.extra is Wallet) {
+        wallet = state.extra! as Wallet;
+      }
 
       // Make sure the ReceiveScaffold with the network selection is not rebuild
       //  when switching networks, so keep it outside of the BlocProvider.
       return ReceiveScaffold(
+        wallet: wallet,
         child: BlocProvider<ReceiveBloc>(
-          create: (_) => locator<ReceiveBloc>(param1: wallet)
-            ..add(
-              const ReceiveLightningStarted(),
-            ),
+          create: (_) => locator<ReceiveBloc>(param1: wallet),
           child: MultiBlocListener(
             listeners: [
               BlocListener<ReceiveBloc, ReceiveState>(
-                listenWhen: (previous, current) =>
-                    // makes sure it doesn't go from payment received to payment in progress again
-                    previous.isPaymentReceived != true &&
-                    previous.isPaymentInProgress != true &&
-                    current.isPaymentInProgress == true,
+                listenWhen:
+                    (previous, current) =>
+                        // makes sure it doesn't go from payment received to payment in progress again
+                        previous.isPaymentReceived != true &&
+                        previous.isPaymentInProgress != true &&
+                        current.isPaymentInProgress == true,
                 listener: (context, state) {
                   final bloc = context.read<ReceiveBloc>();
                   final matched = GoRouterState.of(context).matchedLocation;
@@ -82,9 +84,10 @@ class ReceiveRouter {
                 },
               ),
               BlocListener<ReceiveBloc, ReceiveState>(
-                listenWhen: (previous, current) =>
-                    previous.isPaymentReceived != true &&
-                    current.isPaymentReceived == true,
+                listenWhen:
+                    (previous, current) =>
+                        previous.isPaymentReceived != true &&
+                        current.isPaymentReceived == true,
                 listener: (context, state) {
                   final bloc = context.read<ReceiveBloc>();
                   final matched = GoRouterState.of(context).matchedLocation;
@@ -124,8 +127,9 @@ class ReceiveRouter {
         routes: [
           GoRoute(
             path: ReceiveRoute.amount.path,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ReceiveAmountScreen()),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
             path: ReceiveRoute.payjoinInProgress.path,
@@ -182,9 +186,11 @@ class ReceiveRouter {
           }
           return NoTransitionPage(
             child: ReceiveAmountScreen(
-              onContinueNavigation: () => context.push(
-                '${state.matchedLocation}/${ReceiveRoute.qr.path}',
-              ),
+              onContinueNavigation:
+                  () => context.push(
+                    '${state.matchedLocation}/${ReceiveRoute.qr.path}',
+                    extra: state.extra,
+                  ),
             ),
           );
         },
@@ -192,15 +198,14 @@ class ReceiveRouter {
           GoRoute(
             path: ReceiveRoute.qr.path,
             pageBuilder: (context, state) {
-              return const NoTransitionPage(
-                child: ReceiveQrPage(),
-              );
+              return const NoTransitionPage(child: ReceiveQrPage());
             },
           ),
           GoRoute(
             path: ReceiveRoute.amount.path,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ReceiveAmountScreen()),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
             path: ReceiveRoute.paymentInProgress.path,
@@ -262,8 +267,9 @@ class ReceiveRouter {
         routes: [
           GoRoute(
             path: ReceiveRoute.amount.path,
-            pageBuilder: (context, state) =>
-                const NoTransitionPage(child: ReceiveAmountScreen()),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
             path: ReceiveRoute.details.path,

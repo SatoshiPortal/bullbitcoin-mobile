@@ -5,7 +5,7 @@ enum ReceiveType { bitcoin, lightning, liquid }
 @freezed
 abstract class ReceiveState with _$ReceiveState {
   const factory ReceiveState({
-    @Default(ReceiveType.lightning) ReceiveType type,
+    ReceiveType? type,
     Wallet? wallet,
     BitcoinUnit? bitcoinUnit,
     @Default([]) List<String> fiatCurrencyCodes,
@@ -114,6 +114,8 @@ abstract class ReceiveState with _$ReceiveState {
           },
         );
         return bip21Uri.toString();
+      case _:
+        return '';
     }
   }
 
@@ -125,6 +127,8 @@ abstract class ReceiveState with _$ReceiveState {
         return lightningSwap?.invoice ?? '';
       case ReceiveType.liquid:
         return liquidAddress?.address ?? '';
+      case _:
+        return '';
     }
   }
 
@@ -176,6 +180,8 @@ abstract class ReceiveState with _$ReceiveState {
             lightningSwap!.status == SwapStatus.claimable;
       case ReceiveType.liquid:
         return false;
+      case _:
+        return false;
     }
   }
 
@@ -188,6 +194,8 @@ abstract class ReceiveState with _$ReceiveState {
             lightningSwap!.status == SwapStatus.completed;
       case ReceiveType.liquid:
         return tx != null;
+      case _:
+        return false;
     }
   }
 
@@ -234,6 +242,7 @@ abstract class ReceiveState with _$ReceiveState {
     ReceiveType.bitcoin => bitcoinAddress?.address ?? '',
     ReceiveType.lightning => lightningSwap?.receiveAddress ?? '',
     ReceiveType.liquid => liquidAddress?.address ?? '',
+    _ => '',
   };
 
   String get abbreviatedAddress => StringFormatting.truncateMiddle(address);

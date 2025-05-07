@@ -65,7 +65,6 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
        _createLabelUsecase = createLabelUsecase,
        _getSwapLimitsUsecase = getSwapLimitsUsecase,
        _wallet = wallet,
-       // Lightning is the default when pressing the receive button on the home screen
        super(const ReceiveState()) {
     on<ReceiveBitcoinStarted>(_onBitcoinStarted);
     on<ReceiveLightningStarted>(_onLightningStarted);
@@ -104,10 +103,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   StreamSubscription<Swap>? _swapSubscription;
 
   @override
-  Future<void> close() {
-    _payjoinSubscription?.cancel();
-    _walletTransactionSubscription?.cancel();
-    _swapSubscription?.cancel();
+  Future<void> close() async {
+    await Future.wait([
+      _payjoinSubscription?.cancel() ?? Future.value(),
+      _walletTransactionSubscription?.cancel() ?? Future.value(),
+      _swapSubscription?.cancel() ?? Future.value(),
+    ]);
     return super.close();
   }
 
@@ -513,9 +514,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         return;
       }
       emit(state.copyWith(lightningSwap: null, amountException: null));
+      final wallet = state.wallet!;
       swap = await _createReceiveSwapUsecase.execute(
-        walletId: state.wallet!.id,
-        type: SwapType.lightningToLiquid,
+        walletId: wallet.id,
+        type:
+            wallet.isLiquid
+                ? SwapType.lightningToLiquid
+                : SwapType.lightningToBitcoin,
         amountSat: confirmedAmountSat,
         description: state.note,
       );
