@@ -22,7 +22,6 @@ class PriceInput extends StatelessWidget {
   final Function(String) onCurrencyChanged;
   final Function(String) onNoteChanged;
   final String? error;
-
   Future<String?> _openPopup(BuildContext context, String selected) async {
     final c = await showModalBottomSheet<String?>(
       useRootNavigator: true,
@@ -30,61 +29,9 @@ class PriceInput extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: context.colour.secondaryFixedDim,
       builder: (context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Gap(16),
-            Row(
-              // crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                const Gap(16 * 3),
-                const Spacer(),
-                BBText('Currency', style: context.font.headlineMedium),
-                const Spacer(),
-                IconButton(
-                  iconSize: 20,
-                  onPressed: () => Navigator.pop(context),
-                  color: context.colour.secondary,
-                  icon: const Icon(Icons.close),
-                ),
-                const Gap(16),
-              ],
-            ),
-            const Gap(24),
-            for (final curr in availableCurrencies) ...[
-              InkWell(
-                onTap: () => Navigator.pop(context, curr),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 24,
-                    horizontal: 40,
-                  ),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 24,
-                        child: BBText(
-                          curr.currencyIcon,
-                          style: context.font.headlineSmall,
-                        ),
-                      ),
-                      const Gap(16),
-                      BBText(
-                        curr,
-                        style: context.font.headlineSmall,
-                        color:
-                            selected == curr
-                                ? context.colour.primary
-                                : context.colour.secondary,
-                        textAlign: TextAlign.start,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-            const Gap(24),
-          ],
+        return CurrencyBottomSheet(
+          availableCurrencies: availableCurrencies,
+          selectedValue: currency,
         );
       },
     );
@@ -184,6 +131,73 @@ class PriceInput extends StatelessWidget {
             ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class CurrencyBottomSheet extends StatelessWidget {
+  const CurrencyBottomSheet({
+    super.key,
+    required this.availableCurrencies,
+    required this.selectedValue,
+  });
+
+  final List<String> availableCurrencies;
+  final String selectedValue;
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Gap(16),
+        Row(
+          // crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            const Gap(16 * 3),
+            const Spacer(),
+            BBText('Currency', style: context.font.headlineMedium),
+            const Spacer(),
+            IconButton(
+              iconSize: 20,
+              onPressed: () => Navigator.pop(context),
+              color: context.colour.secondary,
+              icon: const Icon(Icons.close),
+            ),
+            const Gap(16),
+          ],
+        ),
+        const Gap(24),
+        for (final curr in availableCurrencies) ...[
+          InkWell(
+            onTap: () => Navigator.pop(context, curr),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 40),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 24,
+                    child: BBText(
+                      curr.currencyIcon,
+                      style: context.font.headlineSmall,
+                    ),
+                  ),
+                  const Gap(16),
+                  BBText(
+                    curr,
+                    style: context.font.headlineSmall,
+                    color:
+                        selectedValue == curr
+                            ? context.colour.primary
+                            : context.colour.secondary,
+                    textAlign: TextAlign.start,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+        const Gap(24),
       ],
     );
   }

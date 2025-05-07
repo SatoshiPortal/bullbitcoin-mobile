@@ -7,6 +7,7 @@ import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
+import 'package:bb_mobile/ui/components/price_input/price_input.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/screens/send_confirm_screen.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -138,7 +139,9 @@ class SwapCard extends StatelessWidget {
               ? cubit.state.selectedFromCurrencyCode
               : cubit.state.selectedToCurrencyCode,
     );
-
+    final availableCurrencies = context.select(
+      (SwapCubit cubit) => cubit.state.inputAmountCurrencyCodes,
+    );
     return Material(
       elevation: 2,
       child: Container(
@@ -179,8 +182,22 @@ class SwapCard extends StatelessWidget {
                   ),
                   const Gap(8),
                   InkWell(
-                    onTap: () {
-                      debugPrint('Currency tapped');
+                    onTap: () async {
+                      final c = await showModalBottomSheet<String?>(
+                        useRootNavigator: true,
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: context.colour.secondaryFixedDim,
+                        builder: (context) {
+                          return CurrencyBottomSheet(
+                            availableCurrencies: availableCurrencies,
+                            selectedValue: currency,
+                          );
+                        },
+                      );
+                      if (c == null) return;
+                      // ignore: unawaited_futures, use_build_context_synchronously
+                      context.read<SwapCubit>().onCurrencyChanged(c);
                     },
                     child: BBText(currency, style: context.font.displaySmall),
                   ),

@@ -227,6 +227,14 @@ class SwapCubit extends Cubit<SwapState> {
     }
   }
 
+  Future<void> getExchangeRate({String? currencyCode}) async {
+    final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+      currencyCode: currencyCode ?? state.fiatCurrencyCode,
+    );
+
+    emit(state.copyWith(exchangeRate: exchangeRate));
+  }
+
   void amountChanged(String amount) {
     try {
       clearAllExceptions();
@@ -288,6 +296,28 @@ class SwapCubit extends Cubit<SwapState> {
         ),
       );
     }
+  }
+
+  Future<void> currencyCodeChanged(String currencyCode) async {
+    if (currencyCode == BitcoinUnit.btc.code ||
+        currencyCode == BitcoinUnit.sats.code) {
+      emit(
+        state.copyWith(
+          bitcoinUnit: BitcoinUnit.fromCode(currencyCode),
+          inputAmountCurrencyCode: currencyCode,
+          fiatCurrencyCode: 'CAD',
+        ),
+      );
+      return;
+    }
+    await getExchangeRate(currencyCode: currencyCode);
+    emit(
+      state.copyWith(
+        fiatCurrencyCode: currencyCode,
+        inputAmountCurrencyCode: currencyCode,
+      ),
+    );
+    // await updateFiatApproximatedAmount();
   }
 
   Future<void> continueWithAmountsClicked() async {
