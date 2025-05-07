@@ -136,8 +136,8 @@ class SwapCard extends StatelessWidget {
     final currency = context.select(
       (SwapCubit cubit) =>
           type == _SwapCardType.pay
-              ? cubit.state.selectedFromCurrencyCode
-              : cubit.state.selectedToCurrencyCode,
+              ? cubit.state.displayFromCurrencyCode
+              : cubit.state.displayToCurrencyCode,
     );
     final availableCurrencies = context.select(
       (SwapCubit cubit) => cubit.state.inputAmountCurrencyCodes,
@@ -197,7 +197,7 @@ class SwapCard extends StatelessWidget {
                       );
                       if (c == null) return;
                       // ignore: unawaited_futures, use_build_context_synchronously
-                      context.read<SwapCubit>().onCurrencyChanged(c);
+                      context.read<SwapCubit>().currencyCodeChanged(c);
                     },
                     child: BBText(currency, style: context.font.displaySmall),
                   ),

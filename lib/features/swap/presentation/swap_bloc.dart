@@ -151,7 +151,8 @@ class SwapCubit extends Cubit<SwapState> {
         bitcoinUnit: bitcoinUnit,
         fiatCurrencyCodes: currencies,
         exchangeRate: exchangeRate,
-        inputAmountCurrencyCode: bitcoinUnit.code,
+        selectedFromCurrencyCode: bitcoinUnit.code,
+        selectedToCurrencyCode: bitcoinUnit.code,
       ),
     );
 
@@ -271,41 +272,17 @@ class SwapCubit extends Cubit<SwapState> {
     }
   }
 
-  Future<void> onCurrencyChanged(String currencyCode) async {
-    if (![BitcoinUnit.btc.code, BitcoinUnit.sats.code].contains(currencyCode)) {
-      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
-        currencyCode: currencyCode,
-      );
-      emit(
-        state.copyWith(
-          inputAmountCurrencyCode: currencyCode,
-          fiatCurrencyCode: currencyCode,
-          exchangeRate: exchangeRate,
-          fromAmount: '',
-        ),
-      );
-    } else {
-      final settings = await _getSettingsUsecase.execute();
-      final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
-      emit(
-        state.copyWith(
-          inputAmountCurrencyCode: currencyCode,
-          fiatCurrencyCode: settings.currencyCode,
-          exchangeRate: exchangeRate,
-          fromAmount: '',
-        ),
-      );
-    }
-  }
-
   Future<void> currencyCodeChanged(String currencyCode) async {
     if (currencyCode == BitcoinUnit.btc.code ||
         currencyCode == BitcoinUnit.sats.code) {
       emit(
         state.copyWith(
           bitcoinUnit: BitcoinUnit.fromCode(currencyCode),
-          inputAmountCurrencyCode: currencyCode,
+          selectedFromCurrencyCode: currencyCode,
+          selectedToCurrencyCode: currencyCode,
           fiatCurrencyCode: 'CAD',
+          toAmount: '',
+          fromAmount: '',
         ),
       );
       return;
@@ -314,7 +291,10 @@ class SwapCubit extends Cubit<SwapState> {
     emit(
       state.copyWith(
         fiatCurrencyCode: currencyCode,
-        inputAmountCurrencyCode: currencyCode,
+        selectedFromCurrencyCode: currencyCode,
+        selectedToCurrencyCode: currencyCode,
+        toAmount: '',
+        fromAmount: '',
       ),
     );
     // await updateFiatApproximatedAmount();
