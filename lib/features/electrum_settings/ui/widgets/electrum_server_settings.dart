@@ -214,7 +214,7 @@ class _ServerField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+        BBText(label, style: context.font.labelSmall),
         const Gap(8),
         TextFormField(
           initialValue: initialValue ?? '',
