@@ -195,13 +195,7 @@ class ElectrumSettingsBloc
     ToggleSelectedProvider event,
     Emitter<ElectrumSettingsState> emit,
   ) async {
-    emit(
-      state.copyWith(
-        status: ElectrumSettingsStatus.loading,
-        selectedProvider: event.provider,
-        statusError: '',
-      ),
-    );
+    emit(state.copyWith(selectedProvider: event.provider, statusError: ''));
 
     final updatedElectrumServers = List<ElectrumServer>.from(
       state.electrumServers,
@@ -219,25 +213,23 @@ class ElectrumSettingsBloc
 
     if (mainnetServer != null && mainnetServer.url.isNotEmpty) {
       try {
-        await Future.microtask(() async {
-          final status = await _checkElectrumServerStatus(mainnetServer);
+        final status = await _checkElectrumServerStatus(mainnetServer);
+        emit(state.copyWith(status: ElectrumSettingsStatus.loading));
+        final index = updatedElectrumServers.indexWhere(
+          (s) => _isSameServer(s, mainnetServer),
+        );
 
-          final index = updatedElectrumServers.indexWhere(
-            (s) => _isSameServer(s, mainnetServer),
+        if (index >= 0 && !emit.isDone) {
+          updatedElectrumServers[index] = updatedElectrumServers[index]
+              .copyWith(status: status);
+
+          emit(
+            state.copyWith(
+              electrumServers: updatedElectrumServers,
+              status: ElectrumSettingsStatus.success,
+            ),
           );
-
-          if (index >= 0 && !emit.isDone) {
-            updatedElectrumServers[index] = updatedElectrumServers[index]
-                .copyWith(status: status);
-
-            emit(
-              state.copyWith(
-                electrumServers: updatedElectrumServers,
-                status: ElectrumSettingsStatus.success,
-              ),
-            );
-          }
-        });
+        }
       } catch (e) {
         debugPrint('Error checking server connectivity: $e');
       }
@@ -774,34 +766,34 @@ class ElectrumSettingsBloc
             return;
           }
 
-          try {
-            final serverStatus = await _checkElectrumServerConnectivity.execute(
-              url: server.url,
-              timeout: server.timeout,
-            );
+          // try {
+          //   final serverStatus = await _checkElectrumServerConnectivity.execute(
+          //     url: server.url,
+          //     timeout: server.timeout,
+          //   );
 
-            if (serverStatus == ElectrumServerStatus.offline) {
-              debugPrint('Server is offline: ${server.url}');
-              emit(
-                state.copyWith(
-                  status: ElectrumSettingsStatus.error,
-                  statusError:
-                      'Cannot connect to ${server.url}. Please check the URL.',
-                ),
-              );
-              return;
-            }
-          } catch (e) {
-            debugPrint('Server is offline: ${server.url}');
-            emit(
-              state.copyWith(
-                status: ElectrumSettingsStatus.error,
-                statusError:
-                    'Cannot connect to ${server.url}. Please check the URL.',
-              ),
-            );
-            return;
-          }
+          //   if (serverStatus == ElectrumServerStatus.offline) {
+          //     debugPrint('Server is offline: ${server.url}');
+          //     emit(
+          //       state.copyWith(
+          //         status: ElectrumSettingsStatus.error,
+          //         statusError:
+          //             'Cannot connect to ${server.url}. Please check the URL.',
+          //       ),
+          //     );
+          //     return;
+          //   }
+          // } catch (e) {
+          //   debugPrint('Server is offline: ${server.url}');
+          //   emit(
+          //     state.copyWith(
+          //       status: ElectrumSettingsStatus.error,
+          //       statusError:
+          //           'Cannot connect to ${server.url}. Please check the URL.',
+          //     ),
+          //   );
+          //   return;
+          // }
         }
       }
 
@@ -1040,11 +1032,7 @@ class ElectrumSettingsBloc
         );
       } else if (!event.isCustomSelected) {
         stagedServersList.add(
-          ElectrumServer(
-            url: "bull.bitcoin.com",
-            network: mainnetNetwork,
-            isActive: true,
-          ),
+          ElectrumServer(url: "", network: mainnetNetwork, isActive: true),
         );
       }
     }
@@ -1085,7 +1073,7 @@ class ElectrumSettingsBloc
       try {
         return await _checkElectrumServerConnectivity.execute(
           url: electrumServer.url,
-          timeout: electrumServer.timeout,
+          timeout: 1,
         );
       } catch (e) {
         debugPrint('Error checking server status: $e');
