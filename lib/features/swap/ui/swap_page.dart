@@ -78,7 +78,7 @@ class SwapAmountPage extends StatelessWidget {
             SwapAvailableBalance(),
             Gap(16),
             SizedBox(
-              height: 135 * 2,
+              height: 128 * 2,
               child: Stack(
                 children: [
                   Align(
@@ -122,7 +122,7 @@ class SwapCard extends StatelessWidget {
       (SwapCubit cubit) =>
           type == _SwapCardType.pay
               ? cubit.state.fromAmount
-              : cubit.state.formattedToAmount,
+              : cubit.state.toAmount.split(' ')[0],
     );
 
     final conversionAmount = context.select(
@@ -132,10 +132,17 @@ class SwapCard extends StatelessWidget {
               : cubit.state.formattedToAmountEquivalent,
     );
 
+    final currency = context.select(
+      (SwapCubit cubit) =>
+          type == _SwapCardType.pay
+              ? cubit.state.selectedFromCurrencyCode
+              : cubit.state.selectedToCurrencyCode,
+    );
+
     return Material(
       elevation: 2,
       child: Container(
-        height: 130,
+        height: 124,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.colour.onPrimary,
@@ -150,17 +157,34 @@ class SwapCard extends StatelessWidget {
               style: context.font.labelLarge,
               color: context.colour.outline,
             ),
-            const Spacer(),
+            // const Spacer(),
             IgnorePointer(
               ignoring: type == _SwapCardType.receive,
-              child: BBInputText(
-                style: context.font.headlineMedium,
-                value: amount,
-                onChanged: (v) {
-                  if (type == _SwapCardType.pay) {
-                    context.read<SwapCubit>().amountChanged(v);
-                  }
-                },
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: BBInputText(
+                      style: context.font.displaySmall,
+                      value: amount,
+                      hideBorder: true,
+                      noFixedHeight: true,
+                      maxLines: 1,
+                      onChanged: (v) {
+                        if (type == _SwapCardType.pay) {
+                          context.read<SwapCubit>().amountChanged(v);
+                        }
+                      },
+                    ),
+                  ),
+                  const Gap(8),
+                  InkWell(
+                    onTap: () {
+                      debugPrint('Currency tapped');
+                    },
+                    child: BBText(currency, style: context.font.displaySmall),
+                  ),
+                ],
               ),
             ),
             const Gap(4),
@@ -180,20 +204,24 @@ class SwapChangeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 4,
-      borderRadius: BorderRadius.circular(32),
-      child: Container(
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
-        ),
-        child: IconButton(
-          icon: const Icon(Icons.swap_vert),
-          iconSize: 32,
-          onPressed: () {
-            context.read<SwapCubit>().switchFromAndToWallets();
-          },
+    return Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: Material(
+        elevation: 2,
+        shadowColor: context.colour.secondary,
+        borderRadius: BorderRadius.circular(32),
+        child: Container(
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.white,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.swap_vert),
+            iconSize: 32,
+            onPressed: () {
+              context.read<SwapCubit>().switchFromAndToWallets();
+            },
+          ),
         ),
       ),
     );

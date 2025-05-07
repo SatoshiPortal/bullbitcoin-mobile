@@ -2,24 +2,6 @@ import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class BBInputText extends StatefulWidget {
-  final Key? uiKey;
-
-  final TextEditingController? controller;
-  final Function(String) onChanged;
-
-  final String value;
-  final String? hint;
-  final Widget? rightIcon;
-  final Function? onRightTap;
-  final bool disabled;
-  final FocusNode? focusNode;
-  final Function? onEnter;
-  final Function(String)? onDone;
-  final int? maxLength;
-  final bool onlyNumbers;
-  final bool? obscure;
-  final TextStyle? style;
-  final bool hideBorder;
   const BBInputText({
     this.uiKey,
     this.controller,
@@ -37,7 +19,30 @@ class BBInputText extends StatefulWidget {
     this.obscure = false,
     this.style,
     this.hideBorder = false,
+    this.noFixedHeight = false,
+    this.maxLines,
   });
+
+  final Key? uiKey;
+
+  final TextEditingController? controller;
+  final Function(String) onChanged;
+
+  final String value;
+  final String? hint;
+  final Widget? rightIcon;
+  final Function? onRightTap;
+  final bool disabled;
+  final FocusNode? focusNode;
+  final Function? onEnter;
+  final Function(String)? onDone;
+  final int? maxLength;
+  final bool onlyNumbers;
+  final bool obscure;
+  final int? maxLines;
+  final TextStyle? style;
+  final bool hideBorder;
+  final bool noFixedHeight;
 
   @override
   State<BBInputText> createState() => _BBInputTextState();
@@ -75,24 +80,34 @@ class _BBInputTextState extends State<BBInputText> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 56,
+      height: !widget.noFixedHeight ? 56 : null,
+      constraints: BoxConstraints(maxHeight: !widget.noFixedHeight ? 56 : 62),
       decoration: BoxDecoration(
         color: context.colour.onPrimary,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: context.colour.secondaryFixedDim),
+        border: Border.all(
+          color:
+              widget.hideBorder
+                  ? Colors.transparent
+                  : context.colour.secondaryFixedDim,
+        ),
       ),
       child: TextField(
-        expands: !(widget.obscure ?? false),
-        maxLines: widget.obscure ?? false ? 1 : null,
+        expands: !widget.obscure && widget.maxLines == null,
+        maxLines: widget.maxLines ?? (widget.obscure ? 1 : null),
         focusNode: widget.focusNode,
         enabled: !widget.disabled,
         onChanged: widget.onChanged,
         controller: _controller,
         enableIMEPersonalizedLearning: false,
         keyboardType: widget.onlyNumbers ? null : TextInputType.text,
-        obscureText: widget.obscure ?? false,
+        obscureText: widget.obscure,
         obscuringCharacter: widget.onlyNumbers ? 'x' : '*',
         onTap: () => widget.onEnter?.call(),
+        textAlign: TextAlign.left,
+        textAlignVertical: TextAlignVertical.center,
+        maxLength: widget.maxLength,
+
         style:
             widget.style ??
             context.font.headlineSmall?.copyWith(
@@ -100,6 +115,7 @@ class _BBInputTextState extends State<BBInputText> {
             ),
         decoration: InputDecoration(
           hintText: widget.hint,
+
           hintStyle: TextStyle(
             color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
           ),
@@ -113,9 +129,11 @@ class _BBInputTextState extends State<BBInputText> {
                   : null,
           border: InputBorder.none,
           labelStyle: context.font.labelSmall,
-          contentPadding: const EdgeInsets.all(16),
+          contentPadding:
+              !widget.noFixedHeight
+                  ? const EdgeInsets.all(16)
+                  : EdgeInsets.zero,
         ),
-        maxLength: widget.maxLength,
       ),
     );
   }
