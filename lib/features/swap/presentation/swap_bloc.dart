@@ -360,6 +360,7 @@ class SwapCubit extends Cubit<SwapState> {
     try {
       final swap = state.swap;
       if (swap == null) return;
+      emit(state.copyWith(buildingTransaction: true));
 
       final settings = await _getSettingsUsecase.execute();
       final isTestnet = settings.environment == Environment.testnet;
@@ -379,10 +380,21 @@ class SwapCubit extends Cubit<SwapState> {
           amountSat: swap.paymentAmount,
           networkFee: state.feesList!.fastest,
         );
+        emit(
+          state.copyWith(buildingTransaction: false, signingTransaction: true),
+        );
+
         final signedPsbt = await _signBitcoinTxUsecase.execute(
           walletId: bitcoinWalletId,
           psbt: psbtAndTxSize.unsignedPsbt,
         );
+        emit(
+          state.copyWith(
+            signingTransaction: false,
+            broadcastingTransaction: true,
+          ),
+        );
+
         final txid = await _broadcastBitcoinTxUsecase.execute(signedPsbt);
         await _updatePaidChainSwapUsecase.execute(
           txid: txid,
@@ -393,15 +405,27 @@ class SwapCubit extends Cubit<SwapState> {
           ),
         );
       } else {
+        emit(state.copyWith(buildingTransaction: true));
+
         final psbt = await _prepareLiquidSendUsecase.execute(
           walletId: liquidWalletId!,
           address: swap.paymentAddress,
           amountSat: swap.paymentAmount,
           networkFee: state.feesList!.fastest,
         );
+        emit(
+          state.copyWith(buildingTransaction: false, signingTransaction: true),
+        );
+
         final signedPsbt = await _signLiquidTxUsecase.execute(
           walletId: liquidWalletId,
           psbt: psbt,
+        );
+        emit(
+          state.copyWith(
+            signingTransaction: false,
+            broadcastingTransaction: true,
+          ),
         );
         final txid = await _broadcastLiquidTxUsecase.execute(signedPsbt);
         await _updatePaidChainSwapUsecase.execute(
@@ -413,7 +437,12 @@ class SwapCubit extends Cubit<SwapState> {
           ),
         );
       }
-      emit(state.copyWith(step: SwapPageStep.progress));
+      emit(
+        state.copyWith(
+          step: SwapPageStep.progress,
+          broadcastingTransaction: false,
+        ),
+      );
     } catch (e) {
       if (e is PrepareBitcoinSendException) {
         emit(
@@ -430,6 +459,13 @@ class SwapCubit extends Cubit<SwapState> {
           confirmTransactionException: ConfirmTransactionException(
             e.toString(),
           ),
+        ),
+      );
+      emit(
+        state.copyWith(
+          buildingTransaction: false,
+          signingTransaction: false,
+          broadcastingTransaction: false,
         ),
       );
     }

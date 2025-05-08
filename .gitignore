@@ -36,10 +36,10 @@ untranslated-messages.txt
 # Dev preferences
 .idea
 .vscode
-
+.cursor
 # Security
 .env
-
+.cursorignore
 # Miscellaneous
 *.class
 *.log

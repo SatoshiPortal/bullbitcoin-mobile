@@ -363,4 +363,7 @@ abstract class SwapState with _$SwapState {
       fromWalletBalance < fromAmountSat ||
       creatingSwap ||
       amountConfirmedClicked;
+
+  bool get disableSendSwapButton =>
+      broadcastingTransaction || signingTransaction || buildingTransaction;
 }

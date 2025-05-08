@@ -484,6 +484,9 @@ class SwapConfirmPage extends StatelessWidget {
     final totalFees = context.select(
       (SwapCubit cubit) => cubit.state.estimatedFeesFormatted,
     );
+    final disableSendSwapButton = context.select(
+      (SwapCubit cubit) => cubit.state.disableSendSwapButton,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -529,7 +532,7 @@ class SwapConfirmPage extends StatelessWidget {
               onSendPressed: () {
                 context.read<SwapCubit>().confirmSwapClicked();
               },
-              disableSendButton: false,
+              disableSendButton: disableSendSwapButton,
             ),
           ],
         ),
