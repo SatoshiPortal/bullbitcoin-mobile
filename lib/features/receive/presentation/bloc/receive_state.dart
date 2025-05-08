@@ -216,14 +216,14 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get isLightning => type == ReceiveType.lightning;
 
-  bool get swapAmountBelowLimit {
+  bool get isInputAmountBelowLimit {
     if (isLightning && swapLimits != null) {
       return inputAmountSat < swapLimits!.min;
     }
     return false;
   }
 
-  bool get swapAmountAboveLimit {
+  bool get isInputAmountAboveLimit {
     if (isLightning && swapLimits != null) {
       return inputAmountSat > swapLimits!.max;
     }
@@ -254,11 +254,20 @@ abstract class ReceiveState with _$ReceiveState {
   String get abbreviatedTxId => StringFormatting.truncateMiddle(txId);
 }
 
-class AmountException implements Exception {
-  final String message;
+@freezed
+sealed class AmountException with _$AmountException implements Exception {
+  const factory AmountException.belowSwapLimit(int limitAmountSat) =
+      BelowSwapLimitAmountException;
+  const factory AmountException.aboveSwapLimit(int limitAmountSat) =
+      AboveSwapLimitAmountException;
+  const AmountException._();
 
-  AmountException(this.message);
-
-  @override
-  String toString() => message;
+  String get message {
+    switch (this) {
+      case BelowSwapLimitAmountException _:
+        return 'Amount below swap limit of ${FormatAmount.sats(limitAmountSat)}';
+      case AboveSwapLimitAmountException _:
+        return 'Amount above swap limit of ${FormatAmount.sats(limitAmountSat)}';
+    }
+  }
 }

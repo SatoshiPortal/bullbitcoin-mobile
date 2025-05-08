@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/ui/components/price_input/price_input.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +26,12 @@ class ReceiveAmountEntry extends StatelessWidget {
     final amountException = context.select<ReceiveBloc, AmountException?>(
       (bloc) => bloc.state.amountException,
     );
+    final bitcoinUnit = context.select(
+      (ReceiveBloc cubit) =>
+          cubit.state.isInputAmountFiat
+              ? cubit.state.bitcoinUnit
+              : BitcoinUnit.fromCode(cubit.state.inputAmountCurrencyCode),
+    );
 
     return PriceInput(
       amount: amount,
@@ -33,11 +42,18 @@ class ReceiveAmountEntry extends StatelessWidget {
         context.read<ReceiveBloc>().add(ReceiveNoteChanged(note));
       },
       onCurrencyChanged: (currencyCode) {
-        context
-            .read<ReceiveBloc>()
-            .add(ReceiveAmountCurrencyChanged(currencyCode));
+        context.read<ReceiveBloc>().add(
+          ReceiveAmountCurrencyChanged(currencyCode),
+        );
       },
-      error: amountException?.message,
+      error:
+          amountException != null
+              ? amountException is BelowSwapLimitAmountException
+                  ? 'Minimum swap amount is ${bitcoinUnit == BitcoinUnit.sats ? FormatAmount.sats(amountException.limitAmountSat) : FormatAmount.btc(ConvertAmount.satsToBtc(amountException.limitAmountSat))}'
+                  : amountException is AboveSwapLimitAmountException
+                  ? 'Maximum swap amount is ${bitcoinUnit == BitcoinUnit.sats ? FormatAmount.sats(amountException.limitAmountSat) : FormatAmount.btc(ConvertAmount.satsToBtc(amountException.limitAmountSat))}'
+                  : null
+              : null,
     );
   }
 }

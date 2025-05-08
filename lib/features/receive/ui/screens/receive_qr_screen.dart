@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
@@ -16,7 +17,9 @@ import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class ReceiveQrPage extends StatelessWidget {
-  const ReceiveQrPage({super.key});
+  const ReceiveQrPage({super.key, this.wallet});
+
+  final Wallet? wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +39,7 @@ class ReceiveQrPage extends StatelessWidget {
           const Gap(16),
           const ReceiveQRDetails(),
           const Gap(10),
-          const ReceiveInfoDetails(),
+          ReceiveInfoDetails(wallet: wallet),
           const Gap(16),
           if (isBitcoin)
             // The switch to only copy/scan the address is only for Bitcoin since
@@ -103,7 +106,9 @@ class ReceiveQRDetails extends StatelessWidget {
 }
 
 class ReceiveInfoDetails extends StatelessWidget {
-  const ReceiveInfoDetails({super.key});
+  const ReceiveInfoDetails({super.key, this.wallet});
+
+  final Wallet? wallet;
 
   @override
   Widget build(BuildContext context) {
@@ -171,14 +176,17 @@ class ReceiveInfoDetails extends StatelessWidget {
                         case ReceiveType.lightning:
                           context.push(
                             '${ReceiveRoute.receiveLightning.path}/${ReceiveRoute.amount.path}',
+                            extra: wallet,
                           );
                         case ReceiveType.liquid:
                           context.push(
                             '${ReceiveRoute.receiveLiquid.path}/${ReceiveRoute.amount.path}',
+                            extra: wallet,
                           );
                         case ReceiveType.bitcoin:
                           context.push(
                             '${ReceiveRoute.receiveBitcoin.path}/${ReceiveRoute.amount.path}',
+                            extra: wallet,
                           );
                         case _:
                           return;

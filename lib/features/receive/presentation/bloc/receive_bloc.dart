@@ -127,6 +127,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           inputAmount: '',
           confirmedAmountSat: null,
           note: '',
+          amountException: null,
+          error: null,
         ),
       );
 
@@ -318,6 +320,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           inputAmount: '',
           confirmedAmountSat: null,
           note: '',
+          amountException: null,
+          error: null,
         ),
       );
 
@@ -480,43 +484,43 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     Emitter<ReceiveState> emit,
   ) async {
     final confirmedAmountSat = state.inputAmountSat;
-    emit(state.copyWith(confirmedAmountSat: confirmedAmountSat));
-    if (state.wallet == null) {
-      emit(state.copyWith(error: Exception('No wallet found')));
-      return;
-    }
+
     if (state.type != ReceiveType.lightning) {
+      // No further checks on the amount are needed for normal
+      // bitcoin and liquid transactions, they don't have receive limits.
+      emit(state.copyWith(confirmedAmountSat: confirmedAmountSat));
       return;
     }
+    // For lightning, we need to check if the amount is within the limits
+    //  and create a swap if it is.
     emit(state.copyWith(creatingSwap: true));
+    if (state.isInputAmountBelowLimit || state.isInputAmountAboveLimit) {
+      emit(
+        state.copyWith(
+          amountException:
+              state.isInputAmountBelowLimit
+                  ? BelowSwapLimitAmountException(state.swapLimits!.min)
+                  : AboveSwapLimitAmountException(state.swapLimits!.max),
+          creatingSwap: false,
+        ),
+      );
+      return;
+    } else {
+      // If the amount is within the limits, we can confirm it and clear the exception.
+      // We also clear the swap since we can creaet a new one now.
+      emit(
+        state.copyWith(
+          confirmedAmountSat: confirmedAmountSat,
+          amountException: null,
+          lightningSwap: null,
+        ),
+      );
+    }
+
+    // Now that we know the amount is valid, we can create the swap
     LnReceiveSwap? swap;
     Object? error;
     try {
-      // TODO: These errors should be in sats/btc based on the users
-      //  bitcoin unit settings
-      if (state.swapAmountBelowLimit) {
-        emit(
-          state.copyWith(
-            amountException: AmountException(
-              'Minimum Swap Amount: ${state.swapLimits!.min} sats',
-            ),
-            creatingSwap: false,
-          ),
-        );
-        return;
-      }
-      if (state.swapAmountAboveLimit) {
-        emit(
-          state.copyWith(
-            amountException: AmountException(
-              'Maximum Swap Amount: ${state.swapLimits!.max} sats',
-            ),
-            creatingSwap: false,
-          ),
-        );
-        return;
-      }
-      emit(state.copyWith(lightningSwap: null, amountException: null));
       final wallet = state.wallet!;
       swap = await _createReceiveSwapUsecase.execute(
         walletId: wallet.id,
