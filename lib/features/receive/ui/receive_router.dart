@@ -122,7 +122,10 @@ class ReceiveRouter {
           if (bloc.state.type != ReceiveType.bitcoin) {
             bloc.add(const ReceiveBitcoinStarted());
           }
-          final wallet = state.extra as Wallet?;
+          Wallet? wallet;
+          if (state.extra is Wallet) {
+            wallet = state.extra! as Wallet;
+          }
           return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
         },
         routes: [
@@ -199,7 +202,10 @@ class ReceiveRouter {
           GoRoute(
             path: ReceiveRoute.qr.path,
             pageBuilder: (context, state) {
-              final wallet = state.extra as Wallet?;
+              Wallet? wallet;
+              if (state.extra is Wallet) {
+                wallet = state.extra! as Wallet;
+              }
               return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
             },
           ),
@@ -264,7 +270,10 @@ class ReceiveRouter {
           if (bloc.state.type != ReceiveType.liquid) {
             bloc.add(const ReceiveLiquidStarted());
           }
-          final wallet = state.extra as Wallet?;
+          Wallet? wallet;
+          if (state.extra is Wallet) {
+            wallet = state.extra! as Wallet;
+          }
           return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
         },
         routes: [
