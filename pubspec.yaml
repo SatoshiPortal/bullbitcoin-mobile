@@ -46,8 +46,6 @@ dependencies:
   carousel_slider: ^4.2.1
   qr_flutter: ^4.1.0
   flutter_translate: ^4.0.3
-  # flutter_localizations:
-  # sdk: flutter
   dio: ^5.2.1+1
   timeago: ^3.3.0
   pattern_formatter: ^3.0.0

@@ -3,7 +3,7 @@ import 'package:bb_mobile/_pkg/storage/storage.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
-class HiveStorage implements IStorage {
+class HiveStorage {
   HiveStorage();
 
   late Box<String>? _box;

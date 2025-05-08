@@ -8,6 +8,7 @@ import 'package:bb_mobile/currency/bloc/currency_cubit.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/home/listeners.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/z_migration/migrations.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:bb_mobile/network/listeners.dart';
 import 'package:bb_mobile/network_fees/bloc/networkfees_cubit.dart';
@@ -43,6 +44,8 @@ Future main({bool fromTest = false}) async {
     Bloc.observer = BBlocObserver();
     // await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
     await setupLocator(fromTest: fromTest);
+
+    await MigrateHiveToSqlite.migrateFromHiveToSqlite();
 
     runApp(const BullBitcoinWalletApp());
   }, (error, stack) {

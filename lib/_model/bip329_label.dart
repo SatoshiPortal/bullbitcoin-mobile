@@ -93,10 +93,14 @@ extension Bip329LabelHelpers on Bip329Label {
     if (labels.isEmpty) return Err('No Labels To Write.');
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/$fileName.export.bip329');
+
     final dataToEncrypt =
         labels.map((label) => jsonEncode(label.toJson())).join('\n');
     final encryptedData = _encrypt(dataToEncrypt, key);
     await file.writeAsString(encryptedData);
+
+    print(file);
+    print(dataToEncrypt);
     return null;
   }
 }

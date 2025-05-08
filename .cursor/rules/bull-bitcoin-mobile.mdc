@@ -1,0 +1,30 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# BullBitcoin-Mobile
+
+## Project Overview
+
+ - This is a flutter/dart project for a bitcoin and liquid wallet. Lightning features uses boltz for swaps. 
+ - Reference the README.md and ARCHITECTURE.md for more details
+
+## Flutter specific rules
+
+ - Follow the naming conventions used in the rest of the code
+ - Use `flutter analyze` when asked to check for errors in the project
+ - When debugging errors; use the entire context of the error as well as look at the code for potential typos or other wrong code usage first. Do not jump to solving the issue based on the line by line result of the `flutter analyze` command. Sometimes there is a deeper issue leading to the existing issues.
+ - When you add new code always debug and do not ever leave the dev with a broken codebase
+ - If you fail to fix issues after 3 attempts, stop and ask the dev for help
+ - You may need to run `make build-runner` incase you update *_state.dart files which will usually be found in the features/presentation folders
+
+## Handling Github
+
+- when a dev starts work he will say `sync to develop` which means you should run 
+- the main github repo for this project is https://github.com/SatoshiPortal/bullbitcoin-mobile
+- when asked to interact with git - always use the command line tool gh
+- if a users gh commands for reading issues fail try - `gh config set pager cat`
+- when we use the term `project` we are referring to the github project that issues are linked to - the current project is called `Wallet Feature Release` -  https://github.com/orgs/SatoshiPortal/projects/49
+- When asked to get most relavent issues prioritize those linked to your project, use `gh search issues --project SatoshiPortal/49` - add further filters like assignee to this command.
+- when aked to get a list of issues, always filter to show only open issues.

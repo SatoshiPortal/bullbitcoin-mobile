@@ -1,0 +1,2 @@
+/Users/azad/Repos/bull-app/android/app/.cxx/Debug/5xb4f5a6/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/azad/Repos/bull-app/android/app/.cxx/Debug/5xb4f5a6/armeabi-v7a/CMakeFiles/rebuild_cache.dir
