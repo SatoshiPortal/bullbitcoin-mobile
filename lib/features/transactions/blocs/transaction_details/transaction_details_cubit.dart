@@ -72,9 +72,9 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         }
       }
 
-      final swapId = tx.swapId;
-      if (swapId.isNotEmpty) {
+      if (tx.swap != null) {
         // Get swap by id
+        final swapId = tx.swap!.id;
         final swap = await _getSwapUsecase.execute(
           swapId,
           isTestnet: wallet.isTestnet,

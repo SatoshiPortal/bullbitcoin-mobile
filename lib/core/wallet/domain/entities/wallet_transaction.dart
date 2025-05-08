@@ -38,7 +38,7 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
     @Default(false) bool isToSelf,
     @Default([]) List<String> labels,
     @Default('') String payjoinId,
-    @Default('') String swapId,
+    Swap? swap,
     @Default('') String exchangeId,
   }) = BitcoinWalletTransaction;
   const factory WalletTransaction.liquid({
@@ -53,7 +53,7 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
     DateTime? confirmationTime,
     @Default(false) bool isToSelf,
     @Default([]) List<String> labels,
-    @Default('') String swapId,
+    Swap? swap,
     @Default('') String exchangeId,
   }) = LiquidWalletTransaction;
   const WalletTransaction._();
@@ -65,7 +65,9 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
   bool get isPayjoin =>
       this is BitcoinWalletTransaction &&
       (this as BitcoinWalletTransaction).payjoinId.isNotEmpty;
-  bool get isSwap => swapId.isNotEmpty;
+  bool get isSwap => swap != null;
+  bool get isLnSwap => isSwap && (swap!.isLnReceiveSwap || swap!.isLnSendSwap);
+  bool get isChainSwap => isSwap && swap!.isChainSwap;
   bool get isExchange => exchangeId.isNotEmpty;
 
   TransactionOutput get destinationOutput {

@@ -15,6 +15,7 @@ class TxListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final isSwap = tx.isSwap;
     final icon =
         tx.direction == WalletTransactionDirection.outgoing
             ? Icons.arrow_upward

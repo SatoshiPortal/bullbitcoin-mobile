@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart';
@@ -161,7 +162,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               payjoinId = null;
             }
 
-            String? swapId;
+            Swap? swap;
             try {
               final swapModel = swaps.firstWhere((swap) {
                 switch (swap) {
@@ -177,10 +178,10 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                     }
                 }
               });
-              swapId = swapModel.id;
+              swap = swapModel.toEntity();
             } catch (_) {
               // Transaction is not a swap
-              swapId = null;
+              swap = null;
             }
 
             return WalletTransactionMapper.toEntity(
@@ -190,7 +191,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               outputs: outputs,
               labels: labels.map((model) => model.label).toList(),
               payjoinId: payjoinId,
-              swapId: swapId,
+              swap: swap,
             );
           }).toList(),
         );

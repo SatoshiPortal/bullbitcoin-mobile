@@ -471,7 +471,6 @@ class SwapConfirmPage extends StatelessWidget {
       (SwapCubit cubit) => cubit.state.toWalletLabel,
     );
     final swap = context.select((SwapCubit cubit) => cubit.state.swap);
-
     final buildError = context.select(
       (SwapCubit cubit) => cubit.state.buildTransactionException,
     );
