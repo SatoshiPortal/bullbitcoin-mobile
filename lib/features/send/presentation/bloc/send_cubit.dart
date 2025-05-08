@@ -38,6 +38,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendCubit extends Cubit<SendState> {
   SendCubit({
+    Wallet? wallet,
     required SelectBestWalletUsecase bestWalletUsecase,
     required DetectBitcoinStringUsecase detectBitcoinStringUsecase,
     required GetSettingsUsecase getSettingsUsecase,
@@ -65,7 +66,8 @@ class SendCubit extends Cubit<SendState> {
     calculateBitcoinAbsoluteFeesUsecase,
     required CalculateLiquidAbsoluteFeesUsecase
     calculateLiquidAbsoluteFeesUsecase,
-  }) : _getSettingsUsecase = getSettingsUsecase,
+  }) : _wallet = wallet,
+       _getSettingsUsecase = getSettingsUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
        _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
        _bestWalletUsecase = bestWalletUsecase,
@@ -93,6 +95,7 @@ class SendCubit extends Cubit<SendState> {
        super(const SendState());
 
   // ignore: unused_field
+  final Wallet? _wallet;
   final SelectBestWalletUsecase _bestWalletUsecase;
   final DetectBitcoinStringUsecase _detectBitcoinStringUsecase;
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
@@ -199,11 +202,15 @@ class SendCubit extends Cubit<SendState> {
         return;
       }
 
-      final wallet = _bestWalletUsecase.execute(
-        wallets: state.wallets,
-        request: paymentRequest,
-        amountSat: state.inputAmountSat,
-      );
+      // Use the preselected wallet passed in the constructor if available,
+      //  otherwise use the best wallet for the payment request and amount
+      final wallet =
+          _wallet ??
+          _bestWalletUsecase.execute(
+            wallets: state.wallets,
+            request: paymentRequest,
+            amountSat: state.inputAmountSat,
+          );
       // Listen to the wallet syncing status to update the wallet balance and its utxos
       await _selectedWalletSyncingSubscription?.cancel();
       _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
@@ -292,24 +299,23 @@ class SendCubit extends Cubit<SendState> {
         paymentRequest.isBolt11 || paymentRequest.isLnAddress;
 
     if (loadSwapLimits) {
-      final (liquidSwapLimits, liquidSwapFees) = await _getSwapLimitsUsecase
-          .execute(
-            isTestnet: state.selectedWallet!.network.isTestnet,
-            type: SwapType.liquidToLightning,
-          );
+      final (
+        (liquidSwapLimits, liquidSwapFees),
+        (bitcoinSwapLimits, bitcoinSwapFees),
+      ) = await (
+            _getSwapLimitsUsecase.execute(
+              isTestnet: state.selectedWallet!.network.isTestnet,
+              type: SwapType.liquidToLightning,
+            ),
+            _getSwapLimitsUsecase.execute(
+              isTestnet: state.selectedWallet!.network.isTestnet,
+              type: SwapType.bitcoinToLightning,
+            ),
+          ).wait;
       emit(
         state.copyWith(
           liquidSwapLimits: liquidSwapLimits,
           liquidSwapFees: liquidSwapFees,
-        ),
-      );
-      final (bitcoinSwapLimits, bitcoinSwapFees) = await _getSwapLimitsUsecase
-          .execute(
-            isTestnet: state.selectedWallet!.network.isTestnet,
-            type: SwapType.bitcoinToLightning,
-          );
-      emit(
-        state.copyWith(
           bitcoinSwapLimits: bitcoinSwapLimits,
           bitcoinSwapFees: bitcoinSwapFees,
         ),
@@ -482,11 +488,15 @@ class SendCubit extends Cubit<SendState> {
 
       emit(state.copyWith(loadingBestWallet: true));
 
-      final wallet = _bestWalletUsecase.execute(
-        wallets: state.wallets,
-        request: state.paymentRequest!,
-        amountSat: state.inputAmountSat,
-      );
+      // Use the preselected wallet passed in the constructor if available,
+      //  otherwise use the best wallet for the payment request and amount
+      final wallet =
+          _wallet ??
+          _bestWalletUsecase.execute(
+            wallets: state.wallets,
+            request: state.paymentRequest!,
+            amountSat: state.inputAmountSat,
+          );
       emit(
         state.copyWith(
           selectedWallet: wallet,

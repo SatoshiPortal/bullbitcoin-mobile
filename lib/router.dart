@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/key_server/ui/key_server_flow.dart'
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/features/sell/ui/sell_screen.dart';
-import 'package:bb_mobile/features/send/ui/send_screen.dart';
+import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_page.dart';
@@ -27,7 +27,6 @@ enum AppRoute {
   keyServerFlow('/key-server-flow'),
   settings('/settings'),
 
-  send('/send'),
   sell('/sell'),
   buy('/buy'),
   swap('/swap'),
@@ -100,11 +99,7 @@ class AppRouter {
         builder: (context, state) => const SettingsScreen(),
         routes: SettingsRouter.routes,
       ),
-      GoRoute(
-        name: AppRoute.send.name,
-        path: AppRoute.send.path,
-        builder: (context, state) => const SendFlow(),
-      ),
+
       GoRoute(
         name: AppRoute.sell.name,
         path: AppRoute.sell.path,
@@ -122,6 +117,7 @@ class AppRouter {
       ),
       TransactionsRouter.route,
       ReceiveRouter.route,
+      SendRouter.route,
       DevPages.devStart,
       OnboardingRouter.route,
     ],

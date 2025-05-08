@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
-import 'package:bb_mobile/router.dart';
+import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -46,11 +46,8 @@ class HomeBottomButtons extends StatelessWidget {
             label: 'Send',
             iconFirst: true,
             onPressed: () {
-              context.pushNamed(AppRoute.send.name);
+              context.pushNamed(SendRoute.send.name, extra: wallet);
             },
-            disabled:
-                wallet !=
-                null, // TODO: just for now since send with preselected wallet is not implemented yet
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,
           ),

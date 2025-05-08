@@ -295,15 +295,18 @@ class BoltzDatasource {
   }) async {
     try {
       final fees = Fees(boltzUrl: _httpsUrl);
-      final submarineFees = await fees.submarine();
-      final btcLnSwap = await BtcLnSwap.newSubmarine(
-        mnemonic: mnemonic,
-        index: BigInt.from(index),
-        invoice: invoice,
-        network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
-        electrumUrl: electrumUrl,
-        boltzUrl: _httpsUrl,
-      );
+      final (submarineFees, btcLnSwap) =
+          await (
+            fees.submarine(),
+            BtcLnSwap.newSubmarine(
+              mnemonic: mnemonic,
+              index: BigInt.from(index),
+              invoice: invoice,
+              network: isTestnet ? Chain.bitcoinTestnet : Chain.bitcoin,
+              electrumUrl: electrumUrl,
+              boltzUrl: _httpsUrl,
+            ),
+          ).wait;
 
       await _boltzStore.storeBtcLnSwap(btcLnSwap);
 
