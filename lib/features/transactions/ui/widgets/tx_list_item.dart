@@ -16,15 +16,24 @@ class TxListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // final isSwap = tx.isSwap;
+    final isLnSwap = tx.isLnSwap;
+    final isChainSwap = tx.isChainSwap;
     final icon =
-        tx.direction == WalletTransactionDirection.outgoing
+        isChainSwap
+            ? Icons.swap_vert_rounded
+            : tx.direction == WalletTransactionDirection.outgoing
             ? Icons.arrow_upward
             : Icons.arrow_downward;
     final walletColor =
         tx is BitcoinWalletTransaction
             ? context.colour.onTertiary
             : context.colour.tertiary;
-    final walletType = tx is BitcoinWalletTransaction ? 'Bitcoin' : 'Liquid';
+    final networkLabel =
+        isLnSwap
+            ? 'Lightning'
+            : tx is BitcoinWalletTransaction
+            ? 'Bitcoin'
+            : 'Liquid';
     final label = tx.labels.isNotEmpty ? tx.labels.first : null;
     final date =
         tx.confirmationTime != null
@@ -87,7 +96,7 @@ class TxListItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2.0),
                   ),
                   child: BBText(
-                    walletType,
+                    networkLabel,
                     style: context.font.labelSmall?.copyWith(
                       color: context.colour.secondary,
                     ),
