@@ -39,10 +39,7 @@ class ReceiveRouter {
     builder: (context, state, child) {
       // Pass a preselected wallet to the receive bloc if one is set in the URI
       //  of the incoming route
-      Wallet? wallet;
-      if (state.extra is Wallet) {
-        wallet = state.extra! as Wallet;
-      }
+      final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
 
       // Make sure the ReceiveScaffold with the network selection is not rebuild
       //  when switching networks, so keep it outside of the BlocProvider.
@@ -122,10 +119,7 @@ class ReceiveRouter {
           if (bloc.state.type != ReceiveType.bitcoin) {
             bloc.add(const ReceiveBitcoinStarted());
           }
-          Wallet? wallet;
-          if (state.extra is Wallet) {
-            wallet = state.extra! as Wallet;
-          }
+          final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
           return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
         },
         routes: [
@@ -202,10 +196,8 @@ class ReceiveRouter {
           GoRoute(
             path: ReceiveRoute.qr.path,
             pageBuilder: (context, state) {
-              Wallet? wallet;
-              if (state.extra is Wallet) {
-                wallet = state.extra! as Wallet;
-              }
+              final wallet =
+                  state.extra is Wallet ? state.extra! as Wallet : null;
               return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
             },
           ),
@@ -270,10 +262,8 @@ class ReceiveRouter {
           if (bloc.state.type != ReceiveType.liquid) {
             bloc.add(const ReceiveLiquidStarted());
           }
-          Wallet? wallet;
-          if (state.extra is Wallet) {
-            wallet = state.extra! as Wallet;
-          }
+
+          final wallet = state.extra is Wallet ? state.extra! as Wallet : null;
           return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
         },
         routes: [
