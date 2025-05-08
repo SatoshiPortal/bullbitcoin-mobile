@@ -6,7 +6,7 @@ import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage_key
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet_labels.dart';
 
-Future<List<Bip329Label>> fetchLabels(HiveStorage hive) async {
+Future<List<Bip329Label>> fetchOldLabels(HiveStorage hive) async {
   final oldWalletsPayload = hive.getValue(StorageKeys.wallets.name) ?? '{}';
   final oldWallets = json.decode(oldWalletsPayload) as Map<String, dynamic>;
 
