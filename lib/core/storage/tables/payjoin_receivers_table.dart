@@ -13,7 +13,7 @@ class PayjoinReceivers extends Table {
   IntColumn get expireAfterSec => integer()();
   BlobColumn get originalTxBytes => blob().nullable()();
   TextColumn get originalTxId => text().nullable()();
-  Int64Column get amountSat => int64().nullable()();
+  IntColumn get amountSat => integer().nullable()();
   TextColumn get proposalPsbt => text().nullable()();
   TextColumn get txId => text().nullable()();
   BoolColumn get isExpired => boolean()();

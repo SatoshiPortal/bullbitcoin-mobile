@@ -85,7 +85,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   @override
   Future<List<Payjoin>> getPayjoins({bool onlyOngoing = false}) async {
     final models = await _localPayjoinDatasource.fetchAll(
-      onlyOngoing: onlyOngoing,
+      onlyUnfinished: onlyOngoing,
     );
 
     final payjoins = models.map((model) => model.toEntity()).toList();
@@ -114,7 +114,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   @override
   Future<List<({String txId, int vout})>>
   getUtxosFrozenByOngoingPayjoins() async {
-    final payjoins = await _localPayjoinDatasource.fetchAll(onlyOngoing: true);
+    final payjoins = await _localPayjoinDatasource.fetchAll(
+      onlyUnfinished: true,
+    );
 
     final inputs = await Future.wait(
       payjoins.map((payjoin) async {
@@ -180,6 +182,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required bool isTestnet,
     required String bip21,
     required String originalPsbt,
+    required int amountSat,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
   }) async {
@@ -190,6 +193,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       bip21: bip21,
       originalPsbt: originalPsbt,
       networkFeesSatPerVb: networkFeesSatPerVb,
+      amountSat: amountSat,
       expireAfterSec: expireAfterSec,
     );
 
@@ -314,7 +318,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   Future<void> _resumePayjoins() async {
-    final models = await _localPayjoinDatasource.fetchAll(onlyOngoing: true);
+    final models = await _localPayjoinDatasource.fetchAll(onlyUnfinished: true);
     for (final model in models) {
       if (model.isExpiryTimePassed) {
         // If the payjoin is expired, we should update the model and

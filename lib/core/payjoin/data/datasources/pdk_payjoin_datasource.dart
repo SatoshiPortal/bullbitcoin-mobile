@@ -125,6 +125,7 @@ class PdkPayjoinDatasource {
     required bool isTestnet,
     required String bip21,
     required String originalPsbt,
+    required int amountSat,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
   }) async {
@@ -161,6 +162,7 @@ class PdkPayjoinDatasource {
               originalTxId: await TransactionParsing.getTxIdFromPsbt(
                 originalPsbt,
               ),
+              amountSat: amountSat,
               createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
               expireAfterSec: expirySec,
             )

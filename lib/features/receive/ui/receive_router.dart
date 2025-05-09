@@ -61,6 +61,19 @@ class ReceiveRouter {
                   final matched = GoRouterState.of(context).matchedLocation;
                   final type = state.type;
 
+                  // Pop the current route if it's not one of the main receive routes
+                  // This is to prevent the user from going back to the previous screen
+                  // when they select a different network
+                  // and then pressing the back button.
+                  // TODO: this is a temporary fix, we should handle this better in the future
+                  // with proper stateful nested navigation.
+                  final location = GoRouter.of(context).state.matchedLocation;
+                  if (location != ReceiveRoute.receiveBitcoin.path &&
+                      location != ReceiveRoute.receiveLightning.path &&
+                      location != ReceiveRoute.receiveLiquid.path) {
+                    context.pop();
+                  }
+
                   // For a Payjoin or Lightning receive, show the payment in progress screen
                   //  when the payjoin is requested or swap is claimable.
                   // Since the payment in progress route is outside of the ShellRoute,
@@ -68,12 +81,12 @@ class ReceiveRouter {
                   //  in the context. We need to pass it as an extra parameter.
                   if (type == ReceiveType.bitcoin &&
                       state.payjoin?.status == PayjoinStatus.requested) {
-                    context.go(
+                    context.pushReplacement(
                       '$matched/${ReceiveRoute.payjoinInProgress.path}',
                       extra: bloc,
                     );
                   } else if (type == ReceiveType.lightning) {
-                    context.go(
+                    context.pushReplacement(
                       '$matched/${ReceiveRoute.paymentInProgress.path}',
                       extra: bloc,
                     );
@@ -92,11 +105,24 @@ class ReceiveRouter {
 
                   final path = switch (type) {
                     ReceiveType.lightning =>
-                      '$matched/${ReceiveRoute.paymentReceived.path}',
+                      '$matched/${ReceiveRoute.paymentInProgress.path}/${ReceiveRoute.paymentReceived.path}',
                     _ => '$matched/${ReceiveRoute.details.path}',
                   };
 
-                  context.go(path, extra: bloc);
+                  // Pop the current route if it's not one of the main receive routes
+                  // This is to prevent the user from going back to the previous screen
+                  // when they select a different network
+                  // and then pressing the back button.
+                  // TODO: this is a temporary fix, we should handle this better in the future
+                  // with proper stateful nested navigation.
+                  final location = GoRouter.of(context).state.matchedLocation;
+                  if (location != ReceiveRoute.receiveBitcoin.path &&
+                      location != ReceiveRoute.receiveLightning.path &&
+                      location != ReceiveRoute.receiveLiquid.path) {
+                    context.pop();
+                  }
+
+                  context.pushReplacement(path, extra: bloc);
                 },
               ),
             ],

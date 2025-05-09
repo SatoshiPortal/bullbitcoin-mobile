@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -19,7 +18,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
-        context.go(HomeRoute.home.path);
+        context.pop();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -28,9 +27,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
           flexibleSpace: TopBar(
             title: 'Receive',
             actionIcon: Icons.close,
-            onAction: () {
-              context.go(HomeRoute.home.path);
-            },
+            onAction: context.pop,
           ),
         ),
         body: const PaymentReceivedPage(),
@@ -87,7 +84,7 @@ class ReceiveDetailsButton extends StatelessWidget {
         onPressed: () {
           // We need to pass the bloc to the details screen since it is outside
           // of the Shellroute where the bloc is created.
-          context.go(
+          context.pushReplacement(
             '${GoRouterState.of(context).matchedLocation}/${ReceiveRoute.details.path}',
             extra: context.read<ReceiveBloc>(),
           );

@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_network_selection.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:flutter/material.dart';
@@ -24,16 +23,7 @@ class ReceiveScaffold extends StatelessWidget {
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
-          flexibleSpace: TopBar(
-            title: 'Receive',
-            onBack: () {
-              if (context.canPop()) {
-                context.pop();
-              } else {
-                context.goNamed(HomeRoute.home.name);
-              }
-            },
-          ),
+          flexibleSpace: TopBar(title: 'Receive', onBack: context.pop),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

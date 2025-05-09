@@ -13,8 +13,8 @@ class WatchWalletTransactionByAddressUsecase {
   const WatchWalletTransactionByAddressUsecase({
     required WalletTransactionRepository walletTransactionRepository,
     required WalletRepository walletRepository,
-  })  : _walletTransactionRepository = walletTransactionRepository,
-        _walletRepository = walletRepository;
+  }) : _walletTransactionRepository = walletTransactionRepository,
+       _walletRepository = walletRepository;
 
   Stream<WalletTransaction> execute({
     required String walletId,
@@ -22,40 +22,40 @@ class WatchWalletTransactionByAddressUsecase {
   }) {
     return _walletRepository.walletSyncFinishedStream
         .where((wallet) => wallet.id == walletId)
-        .asyncMap(
-      (wallet) async {
-        try {
-          debugPrint(
-            'Fetching transactions'
-            ' ${toAddress != null ? 'to address $toAddress' : ''}'
-            ' for wallet: $walletId',
-          );
-
-          final txs = await _walletTransactionRepository.getWalletTransactions(
-            walletId: walletId,
-            toAddress: toAddress,
-          );
-
-          debugPrint(
-            'Fetched ${txs.length} transactions'
-            ' ${toAddress != null ? 'to address $toAddress' : ''}'
-            ' for wallet: $walletId',
-          );
-
-          if (txs.isEmpty) {
+        .asyncMap((wallet) async {
+          try {
             debugPrint(
-              'No transactions found for wallet: $walletId'
-              ' ${toAddress != null ? 'and address $toAddress' : ''}',
+              'Fetching transactions'
+              ' ${toAddress != null ? 'to address $toAddress' : ''}'
+              ' for wallet: $walletId',
             );
+
+            final txs = await _walletTransactionRepository
+                .getBroadcastedWalletTransactions(
+                  walletId: walletId,
+                  toAddress: toAddress,
+                );
+
+            debugPrint(
+              'Fetched ${txs.length} transactions'
+              ' ${toAddress != null ? 'to address $toAddress' : ''}'
+              ' for wallet: $walletId',
+            );
+
+            if (txs.isEmpty) {
+              debugPrint(
+                'No transactions found for wallet: $walletId'
+                ' ${toAddress != null ? 'and address $toAddress' : ''}',
+              );
+              return null;
+            }
+
+            return txs.last;
+          } catch (e) {
+            debugPrint('WatchWalletTransactionByAddressUsecase exception: $e');
             return null;
           }
-
-          return txs.last;
-        } catch (e) {
-          debugPrint('WatchWalletTransactionByAddressUsecase exception: $e');
-          return null;
-        }
-      },
-    ).whereType<WalletTransaction>();
+        })
+        .whereType<WalletTransaction>();
   }
 }

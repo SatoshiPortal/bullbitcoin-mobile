@@ -46,11 +46,11 @@ class LocalPayjoinDatasource {
     return PayjoinModel.fromSenderTable(sender) as PayjoinSenderModel;
   }
 
-  Future<List<PayjoinModel>> fetchAll({bool onlyOngoing = false}) async {
+  Future<List<PayjoinModel>> fetchAll({bool onlyUnfinished = false}) async {
     List<PayjoinReceiverRow> receivers;
     List<PayjoinSenderRow> senders;
 
-    if (onlyOngoing) {
+    if (onlyUnfinished) {
       receivers =
           await _db.managers.payjoinReceivers
               .filter((f) => f.isExpired(false))

@@ -22,7 +22,7 @@ sealed class PayjoinModel with _$PayjoinModel {
     required int expireAfterSec,
     @Uint8ListJsonConverter() Uint8List? originalTxBytes,
     String? originalTxId,
-    BigInt? amountSat,
+    int? amountSat,
     String? proposalPsbt,
     String? txId,
     @Default(false) bool isExpired,
@@ -35,6 +35,7 @@ sealed class PayjoinModel with _$PayjoinModel {
     required String walletId,
     required String originalPsbt,
     required String originalTxId,
+    required int amountSat,
     required int createdAt,
     required int expireAfterSec,
     String? proposalPsbt,
@@ -73,6 +74,7 @@ sealed class PayjoinModel with _$PayjoinModel {
         walletId: table.walletId,
         originalPsbt: table.originalPsbt,
         originalTxId: table.originalTxId,
+        amountSat: table.amountSat,
         createdAt: table.createdAt,
         expireAfterSec: table.expireAfterSec,
         proposalPsbt: table.proposalPsbt,
@@ -89,20 +91,35 @@ sealed class PayjoinModel with _$PayjoinModel {
     PayjoinSenderModel(:final uri) => uri,
   };
 
+  PayjoinStatus get status => switch (this) {
+    PayjoinReceiverModel(:final originalTxBytes) =>
+      isCompleted
+          ? PayjoinStatus.completed
+          : isExpired
+          ? PayjoinStatus.expired
+          : proposalPsbt != null
+          ? PayjoinStatus.proposed
+          : originalTxBytes != null
+          ? PayjoinStatus.requested
+          : PayjoinStatus.started,
+    PayjoinSenderModel() =>
+      isCompleted
+          ? PayjoinStatus.completed
+          : isExpired
+          ? PayjoinStatus.expired
+          : proposalPsbt != null
+          ? PayjoinStatus.proposed
+          : PayjoinStatus.requested,
+  };
+
+  bool get isOngoing =>
+      status == PayjoinStatus.requested || status == PayjoinStatus.proposed;
+
   Payjoin toEntity() {
     switch (this) {
       case final PayjoinReceiverModel receiver:
         return Payjoin.receiver(
-          status:
-              isCompleted
-                  ? PayjoinStatus.completed
-                  : isExpired
-                  ? PayjoinStatus.expired
-                  : proposalPsbt != null
-                  ? PayjoinStatus.proposed
-                  : receiver.originalTxBytes != null
-                  ? PayjoinStatus.requested
-                  : PayjoinStatus.started,
+          status: status,
           id: id,
           isTestnet: receiver.isTestnet,
           pjUri: receiver.pjUri,
@@ -117,14 +134,7 @@ sealed class PayjoinModel with _$PayjoinModel {
         );
       case final PayjoinSenderModel sender:
         return Payjoin.sender(
-          status:
-              isCompleted
-                  ? PayjoinStatus.completed
-                  : isExpired
-                  ? PayjoinStatus.expired
-                  : proposalPsbt != null
-                  ? PayjoinStatus.proposed
-                  : PayjoinStatus.requested,
+          status: status,
           uri: sender.uri,
           isTestnet: sender.isTestnet,
           createdAt: DateTime.fromMillisecondsSinceEpoch(createdAt * 1000),
@@ -132,6 +142,7 @@ sealed class PayjoinModel with _$PayjoinModel {
           walletId: walletId,
           originalPsbt: sender.originalPsbt,
           originalTxId: sender.originalTxId,
+          amountSat: sender.amountSat,
           proposalPsbt: proposalPsbt,
           txId: txId,
         );
@@ -168,6 +179,7 @@ extension PayjoinSenderSqlite on PayjoinSenderModel {
     walletId: walletId,
     originalPsbt: originalPsbt,
     originalTxId: originalTxId,
+    amountSat: amountSat,
     createdAt: createdAt,
     expireAfterSec: expireAfterSec,
     proposalPsbt: proposalPsbt,

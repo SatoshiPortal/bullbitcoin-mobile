@@ -161,8 +161,9 @@ void main() {
         expect(pjUri.queryParameters['pjos'], '0');
 
         // Build the psbt with the sender wallet
+        const amountSat = 1000;
         const networkFeesSatPerVb = 1000.0;
-        final originalPsbt = await prepareBitcoinSendUsecase.execute(
+        final preparedBitcoinSend = await prepareBitcoinSendUsecase.execute(
           walletId: senderWallet.id,
           address: address.address,
           amountSat: 1000,
@@ -173,7 +174,8 @@ void main() {
           walletId: senderWallet.id,
           isTestnet: senderWallet.isTestnet,
           bip21: pjUri.toString(),
-          unsignedOriginalPsbt: originalPsbt,
+          unsignedOriginalPsbt: preparedBitcoinSend.unsignedPsbt,
+          amountSat: amountSat,
           networkFeesSatPerVb: networkFeesSatPerVb,
         );
         debugPrint('Payjoin sender created: ${payjoinSender.id}');
@@ -344,21 +346,24 @@ void main() {
               payjoinCompleters[payjoin.id] = Completer();
             }
 
+            const amountSat = 1000;
             // Set up multiple sender sessions
             for (int i = 0; i < numberOfPayjoins; i++) {
               // Build the psbt with the sender wallet
-              final originalPsbt = await prepareBitcoinSendUsecase.execute(
-                walletId: senderWallet.id,
-                address: receiverAddresses[i],
-                amountSat: 1000,
-                networkFee: const NetworkFee.relative(networkFeesSatPerVb),
-              );
+              final preparedBitcoinSend = await prepareBitcoinSendUsecase
+                  .execute(
+                    walletId: senderWallet.id,
+                    address: receiverAddresses[i],
+                    amountSat: amountSat,
+                    networkFee: const NetworkFee.relative(networkFeesSatPerVb),
+                  );
 
               final payjoinSender = await sendWithPayjoinUsecase.execute(
                 walletId: senderWallet.id,
                 isTestnet: senderWallet.isTestnet,
                 bip21: payjoinUris[i].toString(),
-                unsignedOriginalPsbt: originalPsbt,
+                unsignedOriginalPsbt: preparedBitcoinSend.unsignedPsbt,
+                amountSat: amountSat,
                 networkFeesSatPerVb: networkFeesSatPerVb,
               );
               debugPrint('Payjoin sender created: ${payjoinSender.id}');

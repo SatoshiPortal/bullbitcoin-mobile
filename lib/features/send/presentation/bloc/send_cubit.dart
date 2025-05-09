@@ -932,6 +932,7 @@ class SendCubit extends Cubit<SendState> {
             isTestnet: state.selectedWallet!.network.isTestnet,
             bip21: paymentRequest.uri,
             unsignedOriginalPsbt: state.unsignedPsbt!,
+            amountSat: state.confirmedAmountSat!,
             networkFeesSatPerVb:
                 state.selectedFee!.isRelative
                     ? state.selectedFee!.value as double

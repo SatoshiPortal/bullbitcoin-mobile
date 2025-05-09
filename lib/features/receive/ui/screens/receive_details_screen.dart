@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
-import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_transaction_details_table.dart';
 import 'package:bb_mobile/ui/components/badges/transaction_direction_badge.dart';
@@ -24,12 +23,13 @@ class ReceiveDetailsScreen extends StatelessWidget {
         context.select((ReceiveBloc bloc) => bloc.state.confirmedAmountSat) ??
         0;
 
+    // TODO: PopScope can be removed since we can do pop here now
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
 
-        context.go(HomeRoute.home.path);
+        context.pop();
       },
       child: Scaffold(
         appBar: AppBar(
@@ -38,9 +38,7 @@ class ReceiveDetailsScreen extends StatelessWidget {
           flexibleSpace: TopBar(
             title: 'Receive',
             actionIcon: Icons.close,
-            onAction: () {
-              context.go(HomeRoute.home.path);
-            },
+            onAction: context.pop,
           ),
         ),
         body: SafeArea(
@@ -74,9 +72,7 @@ class ReceiveDetailsScreen extends StatelessWidget {
                   const Gap(16),
                   BBButton.big(
                     label: 'Done',
-                    onPressed: () {
-                      context.go(HomeRoute.home.path);
-                    },
+                    onPressed: context.pop,
                     bgColor: theme.colorScheme.secondary,
                     textColor: theme.colorScheme.onPrimary,
                   ),

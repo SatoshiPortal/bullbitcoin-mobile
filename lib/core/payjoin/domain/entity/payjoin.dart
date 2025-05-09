@@ -18,7 +18,7 @@ sealed class Payjoin with _$Payjoin {
     required DateTime expiresAt,
     Uint8List? originalTxBytes,
     String? originalTxId,
-    BigInt? amountSat,
+    int? amountSat,
     String? proposalPsbt,
     String? txId,
   }) = PayjoinReceiver;
@@ -29,6 +29,7 @@ sealed class Payjoin with _$Payjoin {
     required String walletId,
     required String originalPsbt,
     required String originalTxId,
+    required int amountSat,
     required DateTime createdAt,
     required DateTime expiresAt,
     String? proposalPsbt,

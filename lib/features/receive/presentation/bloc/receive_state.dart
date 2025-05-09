@@ -223,8 +223,8 @@ abstract class ReceiveState with _$ReceiveState {
   }
 
   double get payjoinAmountFiat {
-    final payjoinAmountSat = payjoin?.amountSat ?? BigInt.zero;
-    final payjoinAmountBtc = ConvertAmount.satsToBtc(payjoinAmountSat.toInt());
+    final payjoinAmountSat = payjoin?.amountSat ?? 0;
+    final payjoinAmountBtc = ConvertAmount.satsToBtc(payjoinAmountSat);
     return ConvertAmount.btcToFiat(payjoinAmountBtc, exchangeRate);
   }
 

@@ -8,6 +8,7 @@ class PayjoinSenders extends Table {
   TextColumn get walletId => text()();
   TextColumn get originalPsbt => text()();
   TextColumn get originalTxId => text()();
+  IntColumn get amountSat => integer()();
   IntColumn get createdAt => integer()();
   IntColumn get expireAfterSec => integer()();
   TextColumn get proposalPsbt => text().nullable()();

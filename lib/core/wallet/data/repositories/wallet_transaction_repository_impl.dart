@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
@@ -45,13 +46,8 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
        _payjoinDatasource = payjoinDatasource,
        _swapDatasource = swapDatasource;
 
-  /*@override
-  // TODO: implement walletTransactions
-  Stream<List<WalletTransaction>> get walletTransactions =>
-      throw UnimplementedError();*/
-
   @override
-  Future<List<WalletTransaction>> getWalletTransactions({
+  Future<List<WalletTransaction>> getBroadcastedWalletTransactions({
     String? walletId,
     String? toAddress,
     Environment? environment,
@@ -68,6 +64,98 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
           _swapDatasource.fetchAll(),
         ).wait;
 
+    final walletTransactions = await _getBroadcastedWalletTransactions(
+      walletModels: walletModels,
+      payjoins: payjoins,
+      swaps: swaps,
+      toAddress: toAddress,
+    );
+
+    return walletTransactions;
+  }
+
+  @override
+  Future<List<WalletTransaction>> getOngoingPayjoinWalletTransactions({
+    String? walletId,
+    Environment? environment,
+    bool sync = false,
+  }) async {
+    final (walletModels, payjoins) =
+        await (
+          _getPublicWalletModels(
+            walletId: walletId,
+            environment: environment,
+            sync: sync,
+          ),
+          _payjoinDatasource.fetchAll(onlyUnfinished: true),
+        ).wait;
+
+    final walletIds = walletModels.map((wallet) => wallet.id).toList();
+
+    final walletTransactions = await Future.wait(
+      payjoins
+          .where((pj) => walletIds.contains(pj.walletId) && pj.isOngoing)
+          .map((pj) async {
+            final originalTxLabels =
+                pj.originalTxId != null
+                    ? await Future.value(
+                      <String>[],
+                    ) // TODO: we need a fetch labels by txId in label datasource
+                    : <String>[];
+            final proposalTxLabels =
+                pj.txId != null ? await Future.value(<String>[]) : <String>[];
+            return WalletTransaction.bitcoin(
+              walletId: pj.walletId,
+              direction:
+                  pj is PayjoinReceiverModel
+                      ? WalletTransactionDirection.incoming
+                      : WalletTransactionDirection.outgoing,
+              status: WalletTransactionStatus.pending,
+              txId: pj.txId ?? pj.originalTxId!,
+              amountSat: pj.amountSat ?? 0,
+              feeSat: 0,
+              inputs: [], // TODO: add inputs from original or proposal tx
+              outputs: [], // TODO: add outputs from original or proposal tx
+              payjoin: pj.toEntity(),
+              labels: [...originalTxLabels, ...proposalTxLabels],
+            );
+          }),
+    );
+
+    return walletTransactions.toList();
+  }
+
+  @override
+  Future<WalletTransaction> getWalletTransaction(
+    String txId, {
+    required String walletId,
+    bool sync = false,
+  }) async {
+    final (broadcastedTxs, ongoingPayjoinTxs) =
+        await (
+          getBroadcastedWalletTransactions(walletId: walletId, sync: sync),
+          getOngoingPayjoinWalletTransactions(walletId: walletId, sync: sync),
+        ).wait;
+
+    final transactions = [...broadcastedTxs, ...ongoingPayjoinTxs];
+
+    final transaction = transactions.firstWhere(
+      (transaction) =>
+          transaction.txId == txId ||
+          transaction is BitcoinWalletTransaction &&
+              transaction.payjoin?.originalTxId == txId,
+      orElse: () => throw Exception('Transaction not found'),
+    );
+
+    return transaction;
+  }
+
+  Future<List<WalletTransaction>> _getBroadcastedWalletTransactions({
+    required List<WalletModel> walletModels,
+    required List<PayjoinModel> payjoins,
+    required List<SwapModel> swaps,
+    String? toAddress,
+  }) async {
     final walletTransactionLists = await Future.wait(
       walletModels.map((walletModel) async {
         final walletTransactionDatasource =
@@ -195,25 +283,6 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     );
 
     return walletTransactionLists.expand((tx) => tx).toList();
-  }
-
-  @override
-  Future<WalletTransaction> getWalletTransaction(
-    String txId, {
-    required String walletId,
-    bool sync = false,
-  }) async {
-    final transactions = await getWalletTransactions(
-      walletId: walletId,
-      sync: sync,
-    );
-
-    final transaction = transactions.firstWhere(
-      (transaction) => transaction.txId == txId,
-      orElse: () => throw Exception('Transaction not found'),
-    );
-
-    return transaction;
   }
 
   Future<List<WalletModel>> _getPublicWalletModels({

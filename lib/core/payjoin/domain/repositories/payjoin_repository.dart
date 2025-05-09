@@ -21,6 +21,7 @@ abstract class PayjoinRepository {
     required bool isTestnet,
     required String bip21,
     required String originalPsbt,
+    required int amountSat,
     required double networkFeesSatPerVb,
     required int expireAfterSec,
   });

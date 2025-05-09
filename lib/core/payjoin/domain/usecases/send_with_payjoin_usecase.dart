@@ -18,6 +18,7 @@ class SendWithPayjoinUsecase {
     required bool isTestnet,
     required String bip21,
     required String unsignedOriginalPsbt,
+    required int amountSat,
     required double networkFeesSatPerVb,
     int? expireAfterSec,
   }) async {
@@ -32,6 +33,7 @@ class SendWithPayjoinUsecase {
         isTestnet: isTestnet,
         bip21: bip21,
         originalPsbt: signedOriginalPsbt,
+        amountSat: amountSat,
         networkFeesSatPerVb: networkFeesSatPerVb,
         expireAfterSec:
             expireAfterSec ?? PayjoinConstants.defaultExpireAfterSec,

@@ -19,12 +19,24 @@ class GetWalletTransactionsUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
-      final walletTransactions = await _walletTransactionRepository
-          .getWalletTransactions(
-            walletId: walletId,
-            sync: sync,
-            environment: environment,
-          );
+      final (broadcastedTransactions, ongoingPayjoinTransactions) =
+          await (
+            _walletTransactionRepository.getBroadcastedWalletTransactions(
+              walletId: walletId,
+              sync: sync,
+              environment: environment,
+            ),
+            _walletTransactionRepository.getOngoingPayjoinWalletTransactions(
+              walletId: walletId,
+              sync: sync,
+              environment: environment,
+            ),
+          ).wait;
+
+      final walletTransactions = [
+        ...broadcastedTransactions,
+        ...ongoingPayjoinTransactions,
+      ];
 
       return walletTransactions;
     } catch (e) {
