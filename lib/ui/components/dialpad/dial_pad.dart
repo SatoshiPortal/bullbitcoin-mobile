@@ -16,17 +16,13 @@ class DialPad extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: () => onNumberPressed(num),
-        child: Container(
+        child: SizedBox(
           height: 64,
-          decoration: const BoxDecoration(
-              // border: Border.all(
-              //   color: context.colour.surface,
-              // ),
-              ),
+
           child: Center(
             child: BBText(
               num,
-              style: context.font.headlineMedium!.copyWith(fontSize: 20),
+              style: context.font.headlineMedium?.copyWith(fontSize: 20),
               color: context.colour.surfaceContainerLow,
             ),
           ),
@@ -39,13 +35,9 @@ class DialPad extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: onBackspacePressed,
-        child: Container(
+        child: SizedBox(
           height: 64,
-          decoration: const BoxDecoration(
-              // border: Border.all(
-              //   color: context.colour.surface,
-              // ),
-              ),
+
           child: Center(
             child: Icon(
               Icons.backspace_outlined,

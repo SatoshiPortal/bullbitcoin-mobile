@@ -19,28 +19,24 @@ class PinCodeSettingFlow extends StatelessWidget {
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
           if (state.status == PinCodeSettingStatus.success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Pin Code Set Successfully'),
-              ),
-            );
+            debugPrint('Pin Code Set Successfully');
             context.pop();
           } else if (state.status == PinCodeSettingStatus.failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Pin Code Set Failed'),
-              ),
-            );
+            debugPrint('Pin Code Set Failed');
           }
         },
-        child: BlocSelector<PinCodeSettingBloc, PinCodeSettingState,
-            PinCodeSettingStatus>(
+        child: BlocSelector<
+          PinCodeSettingBloc,
+          PinCodeSettingState,
+          PinCodeSettingStatus
+        >(
           selector: (state) => state.status,
           builder: (context, status) {
             switch (status) {
               case PinCodeSettingStatus.unlock:
                 return PinCodeUnlockScreen(
-                  onSuccess: () => context.read<PinCodeSettingBloc>().add(
+                  onSuccess:
+                      () => context.read<PinCodeSettingBloc>().add(
                         const PinCodeSettingStarted(),
                       ),
                   canPop: true,
