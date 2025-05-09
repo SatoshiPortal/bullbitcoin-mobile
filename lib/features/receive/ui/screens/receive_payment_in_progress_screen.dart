@@ -51,15 +51,26 @@ class PaymentInProgressPage extends StatelessWidget {
     final amountFiat =
         context.read<ReceiveBloc>().state.formattedConfirmedAmountFiat;
 
+    final isBitcoin = context.select<ReceiveBloc, bool>(
+      (bloc) => bloc.state.isBitcoin,
+    );
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           BBText('Payment in progress', style: context.font.headlineLarge),
-          BBText(
-            'It will be confirmed in a few seconds',
-            style: context.font.headlineMedium,
-          ),
+          if (isBitcoin) ...[
+            BBText(
+              'Bitcoin transaction will take a while to confirm.',
+              style: context.font.headlineMedium,
+            ),
+          ] else ...[
+            BBText(
+              'It will be confirmed in a few seconds',
+              style: context.font.headlineMedium,
+            ),
+          ],
           const Gap(16),
           BBText(amountBitcoin, style: context.font.headlineLarge),
           const Gap(4),

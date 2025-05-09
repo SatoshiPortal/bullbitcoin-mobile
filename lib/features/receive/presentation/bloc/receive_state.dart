@@ -168,6 +168,20 @@ abstract class ReceiveState with _$ReceiveState {
     }
   }
 
+  bool get isBitcoin {
+    switch (type) {
+      case ReceiveType.bitcoin:
+        return true;
+      case ReceiveType.lightning:
+        return lightningSwap != null &&
+            lightningSwap!.type == SwapType.lightningToBitcoin;
+      case ReceiveType.liquid:
+        return false;
+      case _:
+        return false;
+    }
+  }
+
   bool get isPaymentInProgress {
     switch (type) {
       case ReceiveType.bitcoin:
@@ -177,7 +191,7 @@ abstract class ReceiveState with _$ReceiveState {
         return payjoin != null && payjoin!.status == PayjoinStatus.requested;
       case ReceiveType.lightning:
         return lightningSwap != null &&
-            lightningSwap!.status == SwapStatus.claimable;
+            lightningSwap!.status == SwapStatus.paid;
       case ReceiveType.liquid:
         return false;
       case _:
