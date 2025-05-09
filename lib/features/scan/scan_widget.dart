@@ -42,7 +42,7 @@ class _ScanWidgetState extends State<ScanWidget> {
 
       if (_cameras.isEmpty) {
         setState(() {
-        _error = 'No cameras available.';
+          _error = 'No cameras available.';
         });
         return;
       }
@@ -57,23 +57,27 @@ class _ScanWidgetState extends State<ScanWidget> {
       final resolution =
           Platform.isIOS ? ResolutionPreset.medium : ResolutionPreset.max;
 
-        _controller = CameraController(
+      _controller = CameraController(
         backCamera,
         resolution,
-          enableAudio: false,
-        );
+        enableAudio: false,
+        imageFormatGroup:
+            Platform.isIOS
+                ? ImageFormatGroup.bgra8888
+                : ImageFormatGroup.yuv420,
+      );
 
-        await _controller?.initialize();
+      await _controller?.initialize();
 
       if (mounted) {
         setState(() {
-        _cameraInitialized = true;
+          _cameraInitialized = true;
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-      _error = e.toString();
+          _error = e.toString();
         });
       }
     }
@@ -90,19 +94,19 @@ class _ScanWidgetState extends State<ScanWidget> {
     return ColoredBox(
       color: context.colour.secondaryFixedDim,
       child: SafeArea(
-            child: Column(
-              children: [
-                if (_controller != null && _cameraInitialized) ...[
-                  Expanded(
-                    child: Container(
+        child: Column(
+          children: [
+            if (_controller != null && _cameraInitialized) ...[
+              Expanded(
+                child: Container(
                   margin: const EdgeInsets.all(16),
-                      child: BlocProvider(
-                        create: (_) {
-                          final cubit = ScanCubit(controller: _controller!);
-                          // Start scanning automatically when camera preview is shown
-                          cubit.startScanning();
-                          return cubit;
-                        },
+                  child: BlocProvider(
+                    create: (_) {
+                      final cubit = ScanCubit(controller: _controller!);
+                      // Start scanning automatically when camera preview is shown
+                      cubit.startScanning();
+                      return cubit;
+                    },
                     child: BlocConsumer<ScanCubit, ScanState>(
                       listener: (context, state) {
                         // Auto-trigger callback when address is detected
@@ -110,90 +114,90 @@ class _ScanWidgetState extends State<ScanWidget> {
                           widget.onAddressDetected?.call(state.data);
                         }
                       },
-                          builder: (context, state) {
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  CameraPreview(_controller!),
-                                  if (state.data.isNotEmpty)
-                                    Positioned(
-                                      bottom: 60,
-                                      left: 0,
-                                      right: 0,
-                                      child: BBButton.big(
+                      builder: (context, state) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              CameraPreview(_controller!),
+                              if (state.data.isNotEmpty)
+                                Positioned(
+                                  bottom: 60,
+                                  left: 0,
+                                  right: 0,
+                                  child: BBButton.big(
                                     iconData: Icons.check_circle,
-                                        textStyle: context.font.labelSmall,
-                                        textColor: context.colour.onPrimary,
+                                    textStyle: context.font.labelSmall,
+                                    textColor: context.colour.onPrimary,
                                     onPressed: () {},
-                                        label:
-                                            state.data.length > 30
-                                                ? '${state.data.substring(0, 10)}…${state.data.substring(state.data.length - 10)}'
-                                                : state.data,
-                                        bgColor: Colors.transparent,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                                    label:
+                                        state.data.length > 30
+                                            ? '${state.data.substring(0, 10)}…${state.data.substring(state.data.length - 10)}'
+                                            : state.data,
+                                    bgColor: Colors.transparent,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
-                ] else ...[
+                ),
+              ),
+            ] else ...[
               // Add some top spacing
               const Gap(30),
               // QR placeholder with fixed dimensions
               Image.asset(Assets.qRPlaceholder.path, height: 221, width: 221),
               const Gap(24),
               // Instruction text with padding
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 48),
-                    child: BBText(
-                      'Scan any Bitcoin or Lightning QR code to pay with bitcoin.',
-                      style: context.font.bodyMedium,
-                      color: context.colour.outlineVariant,
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                    ),
-                  ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 48),
+                child: BBText(
+                  'Scan any Bitcoin or Lightning QR code to pay with bitcoin.',
+                  style: context.font.bodyMedium,
+                  color: context.colour.outlineVariant,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                ),
+              ),
               const Gap(24),
               // Error message if any
               if (_error.isNotEmpty) ...[
-                  Padding(
+                Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 48),
                   child: BBText(
-                            _error,
-                            color: context.colour.error,
-                            style: context.font.labelSmall,
-                            textAlign: TextAlign.center,
+                    _error,
+                    color: context.colour.error,
+                    style: context.font.labelSmall,
+                    textAlign: TextAlign.center,
                   ),
-                          ),
-                          const Gap(16),
-                        ],
+                ),
+                const Gap(16),
+              ],
               // Button to open camera
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 52),
                 child: BBButton.small(
-                          outlined: true,
+                  outlined: true,
                   onPressed: () {
                     if (!_cameraInitialized) {
                       _initCamera();
                     }
-                                  },
-                          label: 'Open the Camera',
-                          bgColor: Colors.transparent,
-                          borderColor: context.colour.surfaceContainer,
-                          textColor: context.colour.secondary,
-                        ),
-                    ),
+                  },
+                  label: 'Open the Camera',
+                  bgColor: Colors.transparent,
+                  borderColor: context.colour.surfaceContainer,
+                  textColor: context.colour.secondary,
+                ),
+              ),
               // Flexible space to push content up
-                  const Spacer(),
-                ],
-              ],
-            ),
+              const Spacer(),
+            ],
+          ],
+        ),
       ),
     );
   }
