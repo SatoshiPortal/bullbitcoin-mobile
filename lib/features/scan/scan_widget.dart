@@ -1,19 +1,24 @@
+import 'dart:io';
+
 import 'package:bb_mobile/features/scan/presentation/scan_cubit.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_state.dart';
-import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
+/// Callback for when an address is detected from a QR code
+typedef OnAddressDetectedCallback = void Function(String address);
+
 class ScanWidget extends StatefulWidget {
-  const ScanWidget({super.key});
+  /// Callback function that will be called when an address is detected
+  final OnAddressDetectedCallback? onAddressDetected;
+
+  const ScanWidget({super.key, this.onAddressDetected});
 
   @override
   State<ScanWidget> createState() => _ScanWidgetState();
@@ -25,25 +30,53 @@ class _ScanWidgetState extends State<ScanWidget> {
   String _error = '';
   bool _cameraInitialized = false;
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
   Future<void> _initCamera() async {
     try {
       WidgetsFlutterBinding.ensureInitialized();
       _cameras = await availableCameras();
+
       if (_cameras.isEmpty) {
+        setState(() {
         _error = 'No cameras available.';
-      } else {
+        });
+        return;
+      }
+
+      // Find the back camera
+      final backCamera = _cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.back,
+        orElse: () => _cameras.first,
+      );
+
+      //  medium resolution for better performance and focusing
+      final resolution =
+          Platform.isIOS ? ResolutionPreset.medium : ResolutionPreset.max;
+
         _controller = CameraController(
-          _cameras.first,
-          ResolutionPreset.max,
+        backCamera,
+        resolution,
           enableAudio: false,
         );
+
         await _controller?.initialize();
+
+      if (mounted) {
+        setState(() {
         _cameraInitialized = true;
+        });
       }
     } catch (e) {
+      if (mounted) {
+        setState(() {
       _error = e.toString();
+        });
+      }
     }
-    setState(() {});
   }
 
   @override
@@ -52,40 +85,17 @@ class _ScanWidgetState extends State<ScanWidget> {
     super.dispose();
   }
 
-  /// Handles clicking on a scanned address/invoice
-  /// Copies to clipboard, shows feedback, and returns data to previous screen
-  void onClickAddressOrInvoice(BuildContext context, String data) {
-    Clipboard.setData(ClipboardData(text: data));
-    locator<SendCubit>().onClickAddressOrInvoice(data);
-    // Show feedback toast
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Copied to clipboard'),
-        duration: Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
       color: context.colour.secondaryFixedDim,
-      child: Stack(
-        children: [
-          SafeArea(
+      child: SafeArea(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (_controller != null && _cameraInitialized) ...[
                   Expanded(
                     child: Container(
-                      margin: const EdgeInsets.only(
-                        left: 16,
-                        right: 16,
-                        top: 16,
-                        bottom: 16,
-                      ),
+                  margin: const EdgeInsets.all(16),
                       child: BlocProvider(
                         create: (_) {
                           final cubit = ScanCubit(controller: _controller!);
@@ -93,7 +103,13 @@ class _ScanWidgetState extends State<ScanWidget> {
                           cubit.startScanning();
                           return cubit;
                         },
-                        child: BlocBuilder<ScanCubit, ScanState>(
+                    child: BlocConsumer<ScanCubit, ScanState>(
+                      listener: (context, state) {
+                        // Auto-trigger callback when address is detected
+                        if (state.data.isNotEmpty) {
+                          widget.onAddressDetected?.call(state.data);
+                        }
+                      },
                           builder: (context, state) {
                             return ClipRRect(
                               borderRadius: BorderRadius.circular(8),
@@ -107,14 +123,10 @@ class _ScanWidgetState extends State<ScanWidget> {
                                       left: 0,
                                       right: 0,
                                       child: BBButton.big(
-                                        iconData: Icons.copy,
+                                    iconData: Icons.check_circle,
                                         textStyle: context.font.labelSmall,
                                         textColor: context.colour.onPrimary,
-                                        onPressed:
-                                            () => onClickAddressOrInvoice(
-                                              context,
-                                              state.data,
-                                            ),
+                                    onPressed: () {},
                                         label:
                                             state.data.length > 30
                                                 ? '${state.data.substring(0, 10)}…${state.data.substring(state.data.length - 10)}'
@@ -131,13 +143,12 @@ class _ScanWidgetState extends State<ScanWidget> {
                     ),
                   ),
                 ] else ...[
-                  const Gap(50),
-                  Image.asset(
-                    Assets.qRPlaceholder.path,
-                    height: 221,
-                    width: 221,
-                  ),
-                  const Gap(32),
+              // Add some top spacing
+              const Gap(30),
+              // QR placeholder with fixed dimensions
+              Image.asset(Assets.qRPlaceholder.path, height: 221, width: 221),
+              const Gap(24),
+              // Instruction text with padding
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 48),
                     child: BBText(
@@ -148,51 +159,41 @@ class _ScanWidgetState extends State<ScanWidget> {
                       maxLines: 2,
                     ),
                   ),
+              const Gap(24),
+              // Error message if any
+              if (_error.isNotEmpty) ...[
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 52,
-                      vertical: 32,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (_error.isNotEmpty) ...[
-                          BBText(
+                  padding: const EdgeInsets.symmetric(horizontal: 48),
+                  child: BBText(
                             _error,
                             color: context.colour.error,
                             style: context.font.labelSmall,
                             textAlign: TextAlign.center,
+                  ),
                           ),
                           const Gap(16),
                         ],
-                        BBButton.small(
+              // Button to open camera
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 52),
+                child: BBButton.small(
                           outlined: true,
-                          onPressed:
-                              _cameraInitialized
-                                  ? () {
-                                    if (_controller != null) {
-                                      _controller!.dispose();
-                                      _cameraInitialized = false;
-                                      setState(() {});
-                                    }
-                                  }
-                                  : () async {
-                                    await _initCamera();
+                  onPressed: () {
+                    if (!_cameraInitialized) {
+                      _initCamera();
+                    }
                                   },
                           label: 'Open the Camera',
                           bgColor: Colors.transparent,
                           borderColor: context.colour.surfaceContainer,
                           textColor: context.colour.secondary,
                         ),
-                      ],
                     ),
-                  ),
+              // Flexible space to push content up
                   const Spacer(),
                 ],
               ],
             ),
-          ),
-        ],
       ),
     );
   }

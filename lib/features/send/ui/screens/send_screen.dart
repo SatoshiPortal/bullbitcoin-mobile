@@ -64,7 +64,13 @@ class SendAddressScreen extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            const Expanded(child: ScanWidget()),
+            Expanded(
+              child: ScanWidget(
+                onAddressDetected:
+                    (address) =>
+                        context.read<SendCubit>().addressChanged(address),
+              ),
+            ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
