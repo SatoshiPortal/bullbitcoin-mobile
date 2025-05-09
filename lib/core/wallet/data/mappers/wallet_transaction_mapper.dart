@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_transaction_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
@@ -12,7 +13,7 @@ class WalletTransactionMapper {
     required List<TransactionOutput> outputs,
     List<String>? labels,
     Swap? swap,
-    String? payjoinId,
+    Payjoin? payjoin,
     String? exchangeId,
   }) {
     return switch (walletTransactionModel) {
@@ -37,7 +38,7 @@ class WalletTransactionMapper {
                 : null,
         isToSelf: walletTransactionModel.isToSelf,
         labels: labels ?? [],
-        payjoinId: payjoinId ?? '',
+        payjoin: payjoin,
         swap: swap,
         exchangeId: exchangeId ?? '',
         inputs: inputs,

@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 
 abstract class SwapRepository {
   // LIMITS
@@ -133,11 +131,6 @@ abstract class SwapRepository {
   Future<void> updatePaidSendSwap({
     required String swapId,
     required String txid,
-  });
-
-  Future<Transaction?> getSwapWalletTx({
-    required WalletTransaction baseWalletTx,
-    required Network network,
   });
 
   // STREAM

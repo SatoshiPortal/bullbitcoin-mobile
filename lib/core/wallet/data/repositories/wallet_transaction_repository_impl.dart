@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
-import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
@@ -147,19 +147,15 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                   ),
                 ).wait;
 
-            String? payjoinId;
+            Payjoin? payjoin;
             try {
               final payjoinModel = payjoins.firstWhere(
                 (payjoin) => payjoin.txId == walletTransactionModel.txId,
               );
-              if (payjoinModel is PayjoinReceiverModel) {
-                payjoinId = payjoinModel.id;
-              } else {
-                payjoinId = (payjoinModel as PayjoinSenderModel).uri;
-              }
+              payjoin = payjoinModel.toEntity();
             } catch (_) {
               // Transaction is not a payjoin
-              payjoinId = null;
+              payjoin = null;
             }
 
             Swap? swap;
@@ -190,7 +186,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
               inputs: inputs,
               outputs: outputs,
               labels: labels.map((model) => model.label).toList(),
-              payjoinId: payjoinId,
+              payjoin: payjoin,
               swap: swap,
             );
           }).toList(),

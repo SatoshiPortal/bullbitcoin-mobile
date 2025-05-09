@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/labels/domain/labelable.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_transaction.freezed.dart';
@@ -37,7 +37,7 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
     DateTime? confirmationTime,
     @Default(false) bool isToSelf,
     @Default([]) List<String> labels,
-    @Default('') String payjoinId,
+    Payjoin? payjoin,
     Swap? swap,
     @Default('') String exchangeId,
   }) = BitcoinWalletTransaction;
@@ -64,7 +64,7 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
   bool get isConfirmed => status == WalletTransactionStatus.confirmed;
   bool get isPayjoin =>
       this is BitcoinWalletTransaction &&
-      (this as BitcoinWalletTransaction).payjoinId.isNotEmpty;
+      (this as BitcoinWalletTransaction).payjoin != null;
   bool get isSwap => swap != null;
   bool get isLnSwap => isSwap && (swap!.isLnReceiveSwap || swap!.isLnSendSwap);
   bool get isChainSwap => isSwap && swap!.isChainSwap;
@@ -98,122 +98,4 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
 
   @override
   String get labelRef => txId;
-}
-
-// TODO: remove this Transaction class after Transaction details is implemented
-// fully without this extra Transaction class.
-// This is the final type that is translated from a WalletTransaction
-// It knows the specific details of the transaction like if its a swap, payjoin etc.
-@freezed
-sealed class Transaction with _$Transaction {
-  const Transaction._();
-  factory Transaction.onchain({
-    required String walletId,
-    required WalletTransactionDirection direction,
-    required String txId,
-    required int amountSat,
-    required int fees,
-    DateTime? confirmationTime,
-    required Network network,
-    List<String>? labels,
-  }) = OnchainTransaction;
-  factory Transaction.lnSwap({
-    required String walletId,
-    required WalletTransactionDirection direction,
-    required int amountSat,
-    DateTime? confirmationTime,
-    required Network network,
-    required Swap swap,
-    List<String>? labels,
-  }) = LnSwapTransaction;
-  factory Transaction.chainSwap({
-    required String walletId,
-    required WalletTransactionDirection direction,
-    required int amountSat,
-    DateTime? confirmationTime,
-    required Network network,
-    required Swap swap,
-    List<String>? labels,
-  }) = ChainSwapTransaction;
-  factory Transaction.self({
-    required String walletId,
-    required WalletTransactionDirection direction,
-    required String txId,
-    required int amountSat,
-    required int fees,
-    DateTime? confirmationTime,
-    required Network network,
-    List<String>? labels,
-  }) = SelfTransactionDetail;
-
-  TxType get type {
-    return switch (this) {
-      OnchainTransaction() => TxType.onchain,
-      SelfTransactionDetail() => TxType.self,
-      LnSwapTransaction() => TxType.lnSwap,
-      ChainSwapTransaction() => TxType.chainSwap,
-    };
-  }
-}
-
-extension OnchainTransactionFactory on OnchainTransaction {
-  static OnchainTransaction fromWalletTx(
-    WalletTransaction tx,
-    Network network,
-  ) {
-    return OnchainTransaction(
-      walletId: tx.walletId,
-      direction: tx.direction,
-      txId: tx.txId,
-      amountSat: tx.amountSat,
-      fees: tx.feeSat,
-      confirmationTime: tx.confirmationTime,
-      network: network,
-    );
-  }
-}
-
-extension LnSwapTransactionFactory on LnSwapTransaction {
-  static LnSwapTransaction fromWalletTx(
-    WalletTransaction tx,
-    Network network,
-    Swap swap,
-  ) {
-    return LnSwapTransaction(
-      walletId: tx.walletId,
-      direction: tx.direction,
-      amountSat: tx.amountSat,
-      confirmationTime: tx.confirmationTime,
-      network: network,
-      swap: swap,
-    );
-  }
-}
-
-extension ChainSwapTransactionFactory on ChainSwapTransaction {
-  static ChainSwapTransaction fromWalletTx(
-    WalletTransaction tx,
-    Network network,
-    Swap swap,
-  ) {
-    return ChainSwapTransaction(
-      walletId: tx.walletId,
-      direction: tx.direction,
-      amountSat: tx.amountSat,
-      confirmationTime: tx.confirmationTime,
-      network: network,
-      swap: swap,
-    );
-  }
-}
-
-enum TxType {
-  @JsonValue('onchain')
-  onchain,
-  @JsonValue('self')
-  self,
-  @JsonValue('ln_swap')
-  lnSwap,
-  @JsonValue('chain_swap')
-  chainSwap,
 }

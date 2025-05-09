@@ -60,16 +60,14 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       emit(state.copyWith(wallet: wallet));
 
       // Check if the transaction was a payjoin
-      if (tx is BitcoinWalletTransaction) {
-        final payjoinId = tx.payjoinId;
-        if (payjoinId.isNotEmpty) {
-          final payjoin = await _getPayjoinByIdUsecase.execute(payjoinId);
-          _payjoinSubscription = _watchPayjoinUsecase
-              .execute(ids: [payjoinId])
-              .listen((payjoin) => emit(state.copyWith(payjoin: payjoin)));
+      if (tx is BitcoinWalletTransaction && tx.payjoin != null) {
+        final payjoinId = tx.payjoin!.id;
+        final payjoin = await _getPayjoinByIdUsecase.execute(payjoinId);
+        _payjoinSubscription = _watchPayjoinUsecase
+            .execute(ids: [payjoinId])
+            .listen((payjoin) => emit(state.copyWith(payjoin: payjoin)));
 
-          emit(state.copyWith(payjoin: payjoin));
-        }
+        emit(state.copyWith(payjoin: payjoin));
       }
 
       if (tx.swap != null) {
