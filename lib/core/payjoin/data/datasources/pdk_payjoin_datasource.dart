@@ -368,6 +368,7 @@ class PdkPayjoinDatasource {
     final receivePort = ReceivePort();
     sendPort.send(receivePort.sendPort);
     final dio = Dio();
+    final requests = <String, Future<void>>{};
 
     // Listen for and register new receivers sent from the main isolate
     receivePort.listen((data) {
@@ -378,14 +379,21 @@ class PdkPayjoinDatasource {
       final receiver = Receiver.fromJson(receiverModel.receiver);
 
       // Start checking for a payjoin request from the sender periodically
-      Timer.periodic(
-        const Duration(seconds: PayjoinConstants.directoryPollingInterval),
-        (Timer timer) async {
-          log('[Receivers Isolate] Checking for request in receivers isolate');
-          try {
-            final request = await getRequest(receiver: receiver, dio: dio);
-            if (request != null) {
-              log('[Receivers Isolate] Request found in receivers isolate');
+      Timer.periodic(const Duration(seconds: PayjoinConstants.directoryPollingInterval), (
+        Timer timer,
+      ) async {
+        log(
+          '[Receivers Isolate] Checking for request in receivers isolate for '
+          '${receiver.id()}',
+        );
+        try {
+          final request = await getRequest(receiver: receiver, dio: dio);
+          if (request != null) {
+            requests.putIfAbsent(receiver.id(), () async {
+              log(
+                '[Receivers Isolate] Request found in receivers isolate for '
+                '${receiver.id()}',
+              );
               // The original tx bytes are needed in the main isolate for
               //  further processing so extract them here and pass them through
               //  the model
@@ -402,7 +410,8 @@ class PdkPayjoinDatasource {
                     isTestnet: receiverModel.isTestnet,
                   );
               log(
-                '[Receivers Isolate] Request original Tx ID: $originalTxId and amount: $amountSat',
+                '[Receivers Isolate] Request original Tx ID: $originalTxId and amount: $amountSat for '
+                '${receiver.id()}',
               );
               final updatedModel = receiverModel.copyWith(
                 receiver: receiver.toJson(),
@@ -415,20 +424,29 @@ class PdkPayjoinDatasource {
               sendPort.send(updatedModel.toJson());
 
               // Cancel the timer since the request has been received
+              log(
+                '[Receivers Isolate] cancelling timer in receivers isolate for ${receiver.id()}',
+              );
               timer.cancel();
-            }
-          } catch (e) {
-            log('[Receivers Isolate] periodic timer get request exception: $e');
-            if (e is PayjoinExpiredException) {
-              // If the request returns an expiry error, mark the receiver as
-              //  expired and notify the main isolate so it stops polling
-              final updatedModel = receiverModel.copyWith(isExpired: true);
-              sendPort.send(updatedModel.toJson());
-              timer.cancel();
-            }
+              log(
+                '[Receivers Isolate] timer cancelled in receivers isolate for ${receiver.id()}',
+              );
+            });
           }
-        },
-      );
+        } catch (e) {
+          log(
+            '[Receivers Isolate] periodic timer get request exception: $e for '
+            '${receiver.id()}',
+          );
+          if (e is PayjoinExpiredException) {
+            // If the request returns an expiry error, mark the receiver as
+            //  expired and notify the main isolate so it stops polling
+            final updatedModel = receiverModel.copyWith(isExpired: true);
+            sendPort.send(updatedModel.toJson());
+            timer.cancel();
+          }
+        }
+      });
     });
   }
 
