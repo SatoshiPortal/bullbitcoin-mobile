@@ -1014,8 +1014,13 @@ class SendCubit extends Cubit<SendState> {
       // await Future.delayed(const Duration(seconds: 3));
       // Start syncing the wallet now that the transaction is confirmed
       await _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
-      if (state.isLightningBitcoinSwap) {
-        emit(state.copyWith(broadcastingTransaction: false));
+      if (state.isLightningBitcoinSwap || state.requireChainSwap) {
+        emit(
+          state.copyWith(
+            broadcastingTransaction: false,
+            step: SendStep.success,
+          ),
+        );
       } else {
         emit(
           state.copyWith(

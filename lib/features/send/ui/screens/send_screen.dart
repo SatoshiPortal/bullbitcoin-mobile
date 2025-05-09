@@ -1153,7 +1153,12 @@ class SendSucessScreen extends StatelessWidget {
     final isLnSwap = context.select(
       (SendCubit cubit) => cubit.state.lightningSwap != null,
     );
-
+    final isBitcoin = context.select(
+      (SendCubit cubit) => !cubit.state.selectedWallet!.isLiquid,
+    );
+    final isChainSwap = context.select(
+      (SendCubit cubit) => cubit.state.chainSwap != null,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -1174,9 +1179,20 @@ class SendSucessScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const Gap(8),
-                  if (isLnSwap)
+                  if (isLnSwap && !isBitcoin)
                     BBText('Invoice Paid', style: context.font.headlineLarge)
-                  else
+                  else if (isLnSwap && isBitcoin)
+                    BBText(
+                      'Invoice Will Be Paid Shortly',
+                      style: context.font.headlineLarge,
+                    )
+                  else if (isChainSwap) ...[
+                    BBText('Swap Initiated', style: context.font.bodyLarge),
+                    BBText(
+                      'It will take a while to confirm',
+                      style: context.font.labelSmall,
+                    ),
+                  ] else
                     BBText('Successfully Sent', style: context.font.bodyLarge),
                   const Gap(8),
                   BBText(

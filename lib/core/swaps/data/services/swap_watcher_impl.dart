@@ -262,11 +262,17 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Future<void> _processChainLiquidToBitcoinClaim({
     required ChainSwap swap,
   }) async {
-    final claimAddress = await _walletAddressRepository.getNewAddress(
-      walletId: swap.receiveWalletId!,
-    );
-    if (!claimAddress.isBitcoin) {
-      throw Exception('Claim address is not a Bitcoin address');
+    String finalClaimAddress;
+    if (swap.receiveWalletId != null) {
+      final claimAddress = await _walletAddressRepository.getNewAddress(
+        walletId: swap.receiveWalletId!,
+      );
+      if (!claimAddress.isBitcoin) {
+        throw Exception('Claim address is not a Bitcoin address');
+      }
+      finalClaimAddress = claimAddress.address;
+    } else {
+      finalClaimAddress = swap.receiveAddress!;
     }
     final refundAddress = await _walletAddressRepository.getNewAddress(
       walletId: swap.sendWalletId,
@@ -278,13 +284,13 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     final claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
       swapId: swap.id,
       absoluteFees: swap.fees!.claimFee!,
-      bitcoinClaimAddress: swap.receiveAddress ?? claimAddress.address,
+      bitcoinClaimAddress: finalClaimAddress,
       liquidRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
     final updatedSwap = swap.copyWith(
       receiveTxid: claimTxid,
-      receiveAddress: swap.receiveAddress ?? claimAddress.address,
+      receiveAddress: finalClaimAddress,
       status: SwapStatus.completed,
       completionTime: DateTime.now(),
     );
@@ -333,12 +339,19 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   Future<void> _processChainBitcoinToLiquidClaim({
     required ChainSwap swap,
   }) async {
-    final claimAddress = await _walletAddressRepository.getNewAddress(
-      walletId: swap.receiveWalletId!,
-    );
-    if (!claimAddress.isLiquid) {
-      throw Exception('Claim address is not a Liquid address');
+    String finalClaimAddress;
+    if (swap.receiveWalletId != null) {
+      final claimAddress = await _walletAddressRepository.getNewAddress(
+        walletId: swap.receiveWalletId!,
+      );
+      if (!claimAddress.isLiquid) {
+        throw Exception('Claim address is not a Liquid address');
+      }
+      finalClaimAddress = claimAddress.address;
+    } else {
+      finalClaimAddress = swap.receiveAddress!;
     }
+
     final refundAddress = await _walletAddressRepository.getNewAddress(
       walletId: swap.sendWalletId,
     );
@@ -349,13 +362,13 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     final claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
       swapId: swap.id,
       absoluteFees: swap.fees!.claimFee!,
-      liquidClaimAddress: swap.receiveAddress ?? claimAddress.address,
+      liquidClaimAddress: finalClaimAddress,
       bitcoinRefundAddress: refundAddress.address,
     );
     // TODO: add label to txid
     final updatedSwap = swap.copyWith(
       receiveTxid: claimTxid,
-      receiveAddress: swap.receiveAddress ?? claimAddress.address,
+      receiveAddress: finalClaimAddress,
       status: SwapStatus.completed,
       completionTime: DateTime.now(),
     );
