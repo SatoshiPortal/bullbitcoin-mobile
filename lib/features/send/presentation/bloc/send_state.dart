@@ -85,6 +85,7 @@ abstract class SendState with _$SendState {
     String? signedBitcoinPsbt,
     String? signedLiquidTx,
     LnSendSwap? lightningSwap,
+    ChainSwap? chainSwap,
     // confirm
     String? txId,
     PayjoinSender? payjoinSender,
@@ -267,6 +268,10 @@ abstract class SendState with _$SendState {
       return selectedSwapLimits != null &&
           inputAmountSat < selectedSwapLimits!.min;
     }
+    if (requireChainSwap && inputAmountSat != 0) {
+      return selectedSwapLimits != null &&
+          inputAmountSat < selectedSwapLimits!.min;
+    }
     return false;
   }
 
@@ -279,11 +284,12 @@ abstract class SendState with _$SendState {
   }
 
   bool get isSwapAmountValid =>
-      isLightning &&
-      (selectedSwapLimits == null ||
-          inputAmountSat == 0 ||
-          swapAmountBelowLimit ||
-          swapAmountAboveLimit);
+      isLightning ||
+      requireChainSwap &&
+          (selectedSwapLimits == null ||
+              inputAmountSat == 0 ||
+              swapAmountBelowLimit ||
+              swapAmountAboveLimit);
 
   bool get isLnInvoicePaid {
     return lightningSwap != null && lightningSwap!.status == SwapStatus.canCoop;
@@ -296,6 +302,12 @@ abstract class SendState with _$SendState {
 
   bool get disableConfirmSend =>
       buildingTransaction || signingTransaction || broadcastingTransaction;
+
+  bool get requireChainSwap {
+    if (selectedWallet == null) return false;
+    return (selectedWallet!.network.isBitcoin && sendType == SendType.liquid) ||
+        (selectedWallet!.network.isLiquid && sendType == SendType.bitcoin);
+  }
 }
 
 class SwapCreationException implements Exception {

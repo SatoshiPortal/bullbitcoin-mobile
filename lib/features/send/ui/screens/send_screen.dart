@@ -387,6 +387,9 @@ class SendConfirmScreen extends StatelessWidget {
     final isLnSwap = context.select(
       (SendCubit cubit) => cubit.state.lightningSwap != null,
     );
+    final isChainSwap = context.select(
+      (SendCubit cubit) => cubit.state.chainSwap != null,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -407,7 +410,9 @@ class SendConfirmScreen extends StatelessWidget {
             const SendConfirmTopArea(),
             const Gap(40),
             if (isLnSwap)
-              const _SwapSendInfoSection()
+              const _LnSwapSendInfoSection()
+            else if (isChainSwap)
+              const _ChainSwapSendInfoSection()
             else
               const _OnchainSendInfoSection(),
             const Spacer(),
@@ -768,8 +773,8 @@ class _OnchainSendInfoSection extends StatelessWidget {
   }
 }
 
-class _SwapSendInfoSection extends StatelessWidget {
-  const _SwapSendInfoSection();
+class _LnSwapSendInfoSection extends StatelessWidget {
+  const _LnSwapSendInfoSection();
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.colour.secondaryFixedDim);
   }
@@ -789,6 +794,115 @@ class _SwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
     final swap = context.select((SendCubit cubit) => cubit.state.lightningSwap);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          InfoRow(
+            title: 'From',
+            details: BBText(
+              selectedWallet!.label,
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+          InfoRow(
+            title: 'Swap ID',
+            details: BBText(
+              swap!.id,
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+          InfoRow(
+            title: 'To',
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BBText(
+                  StringFormatting.truncateMiddle(addressOrInvoice),
+                  style: context.font.bodyLarge,
+                  textAlign: TextAlign.end,
+                ),
+                const Gap(4),
+                InkWell(
+                  child: Icon(
+                    Icons.copy,
+                    color: context.colour.primary,
+                    size: 16,
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: addressOrInvoice));
+                  },
+                ),
+              ],
+            ),
+            // const Gap(4),
+            // InkWell(
+            //   child: Icon(
+            //     Icons.copy,
+            //     color: context.colour.primary,
+            //     size: 16,
+            //   ),
+            // ),
+          ),
+          _divider(context),
+          InfoRow(
+            title: 'Amount',
+            details: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
+                BBText(
+                  '~$formattedFiatEquivalent',
+                  style: context.font.labelSmall,
+                  color: context.colour.surfaceContainer,
+                ),
+              ],
+            ),
+          ),
+          _divider(context),
+          InfoRow(
+            title: 'Total fees',
+            details: BBText(
+              "${swap.fees?.totalFees(null)} sats",
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChainSwapSendInfoSection extends StatelessWidget {
+  const _ChainSwapSendInfoSection();
+  Widget _divider(BuildContext context) {
+    return Container(height: 1, color: context.colour.secondaryFixedDim);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedWallet = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet,
+    );
+    final addressOrInvoice = context.select(
+      (SendCubit cubit) => cubit.state.addressOrInvoice,
+    );
+    final formattedBitcoinAmount = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
+    );
+    final formattedFiatEquivalent = context.select(
+      (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
+    );
+    final swap = context.select((SendCubit cubit) => cubit.state.chainSwap);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
