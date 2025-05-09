@@ -33,7 +33,13 @@ class ElectrumServerRepository {
       if (url.isEmpty) {
         return ElectrumServerStatus.unknown;
       }
-
+      // TODO: Remove this once lwk accepts ssl:// prefix
+      // TODO: Eventually we should properly handle ssl prefix
+      // If not specified, assume ssl
+      // If specified, use it (tcp or ssl)
+      if (!(url.startsWith('ssl://') || url.startsWith('tcp://'))) {
+        url = 'ssl://$url';
+      }
       final uri = Uri.parse(url);
       if (uri.host.isEmpty || uri.port == 0) {
         return ElectrumServerStatus.offline;

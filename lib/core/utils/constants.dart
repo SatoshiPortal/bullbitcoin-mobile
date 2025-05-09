@@ -64,7 +64,7 @@ class ApiServiceConstants {
   static const bbElectrumTestUrl = 'ssl://wes.bullbitcoin.com:60002';
   static const publicElectrumTestUrl = 'ssl://blockstream.info:993';
 
-  // Liquid Electrum servers
+  // Liquid Electrum servers - lwk does not accept ssl:// prefix
   static const bbLiquidElectrumUrlPath = 'les.bullbitcoin.com:995';
   static const bbLiquidElectrumTestUrlPath = 'les.bullbitcoin.com:465';
   static const publicLiquidElectrumUrlPath = 'blockstream.info:995';
