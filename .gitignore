@@ -88,3 +88,5 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+today.md
