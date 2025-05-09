@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/home/domain/entity/warning.dart';
 import 'package:bb_mobile/router.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -99,8 +100,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _onStarted(HomeStarted event, Emitter<HomeState> emit) async {
     try {
-      // Don't sync the wallets here so the wallet list is shown immediately
-      // and the sync is done after that
       final wallets = await _getWalletsUsecase.execute();
       final isSyncing = _checkWalletSyncingUsecase.execute();
 
@@ -114,7 +113,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const HomeRefreshed());
-      add(const CheckAllWarnings());
+
       // Now subscribe to syncs starts and finishes to update the UI with the syncing indicator
       await _startedSyncsSubscription
           ?.cancel(); // cancel any previous subscription
@@ -148,7 +147,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           error: null,
         ),
       );
-      add(const CheckAllWarnings());
+
       // After the wallets are synced we also restart the swap watcher.
       // We do it after the syncing of the wallets to not wait for the
       // swap watcher to be restarted before the wallets are synced.
@@ -225,12 +224,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     CheckAllWarnings event,
     Emitter<HomeState> emit,
   ) async {
+    debugPrint("Starting CheckAllWarnings event handler");
     final defaultWallets = await _getWalletsUsecase.execute(onlyDefaults: true);
     if (defaultWallets.isEmpty) {
+      debugPrint("No default wallets found, clearing warnings");
       emit(state.copyWith(warnings: const []));
       return;
     }
 
+    debugPrint(
+      "Found ${defaultWallets.length} default wallets, checking warnings",
+    );
     final warnings = <HomeWarning>[];
 
     // Run all checks in parallel
@@ -245,34 +249,52 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       _checkSwapServer(defaultWallets.first.isTestnet, warnings),
     ]);
 
-    emit(state.copyWith(warnings: warnings));
+    debugPrint("All checks completed. Found ${warnings.length} warnings");
+    for (final warning in warnings) {
+      debugPrint("Warning: ${warning.title}");
+    }
+
+    // Only emit if there's an actual change in warnings
+    if (state.warnings != warnings) {
+      debugPrint("Emitting updated warnings state");
+      emit(state.copyWith(warnings: warnings));
+    } else {
+      debugPrint("No change in warnings, skipping state update");
+    }
   }
 
   Future<void> _checkElectrumServers(
     List<Wallet> defaultWallets,
     List<HomeWarning> warnings,
   ) async {
+    debugPrint("Checking Electrum server connectivity...");
     bool bitcoinServerDown = false;
     bool liquidServerDown = false;
 
     await Future.wait(
       defaultWallets.map((wallet) async {
+        debugPrint("Checking server for wallet: ${wallet.network.name}");
         final electrumServer = await _getPrioritizedServerUsecase.execute(
           network: wallet.network,
         );
+        debugPrint(
+          "Prioritized electrum server: ${electrumServer.url}, status: ${electrumServer.status}",
+        );
 
         if (electrumServer.status != ElectrumServerStatus.online) {
+          debugPrint("Server is DOWN for ${wallet.network.name}");
           if (wallet.isLiquid) {
             liquidServerDown = true;
           } else {
             bitcoinServerDown = true;
           }
+        } else {
+          debugPrint("Server is ONLINE for ${wallet.network.name}");
         }
       }),
     );
 
     if (bitcoinServerDown || liquidServerDown) {
-      // ignore: unused_local_variable
       final title = switch ((bitcoinServerDown, liquidServerDown)) {
         (true, true) => 'Bitcoin & Liquid electrum server failure',
         (true, false) => 'Bitcoin electrum server failure',
@@ -280,6 +302,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         _ => '',
       };
 
+      debugPrint("Adding server warning: $title");
       warnings.add(
         HomeWarning(
           title: title,
@@ -288,6 +311,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           type: WarningType.error,
         ),
       );
+    } else {
+      debugPrint("All Electrum servers are online, no warnings needed");
     }
   }
 
