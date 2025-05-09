@@ -52,9 +52,9 @@ sealed class PaymentRequest with _$PaymentRequest {
     try {
       final String trimmed = data.trim();
 
-      if (trimmed.startsWith('bitcoin:') ||
-          trimmed.startsWith('liquidnetwork:') ||
-          trimmed.startsWith('liquidtestnet:')) {
+      if (trimmed.toLowerCase().startsWith('bitcoin:') ||
+          trimmed.toLowerCase().startsWith('liquidnetwork:') ||
+          trimmed.toLowerCase().startsWith('liquidtestnet:')) {
         final result = await _tryParseBip21(trimmed);
         if (result != null) return result;
       }
