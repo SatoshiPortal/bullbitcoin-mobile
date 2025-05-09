@@ -21,12 +21,33 @@ class ReceiveNetworkSelection extends StatelessWidget {
                 ? const {'Lightning', 'Liquid'}
                 : const {'Bitcoin', 'Lightning'},
         onSelected: (c) {
+          // Pop the current route if it's not one of the main receive routes
+          // This is to prevent the user from going back to the previous screen
+          // when they select a different network
+          // and then pressing the back button.
+          // TODO: this is a temporary fix, we should handle this better in the future
+          // with proper stateful nested navigation.
+          final location = GoRouter.of(context).state.matchedLocation;
+          if (location != ReceiveRoute.receiveBitcoin.path &&
+              location != ReceiveRoute.receiveLightning.path &&
+              location != ReceiveRoute.receiveLiquid.path) {
+            context.pop();
+          }
           if (c == 'Bitcoin') {
-            context.goNamed(ReceiveRoute.receiveBitcoin.name, extra: wallet);
+            context.pushReplacementNamed(
+              ReceiveRoute.receiveBitcoin.name,
+              extra: wallet,
+            );
           } else if (c == 'Lightning') {
-            context.goNamed(ReceiveRoute.receiveLightning.name, extra: wallet);
+            context.pushReplacementNamed(
+              ReceiveRoute.receiveLightning.name,
+              extra: wallet,
+            );
           } else if (c == 'Liquid') {
-            context.goNamed(ReceiveRoute.receiveLiquid.name, extra: wallet);
+            context.pushReplacementNamed(
+              ReceiveRoute.receiveLiquid.name,
+              extra: wallet,
+            );
           }
         },
         initialValue:

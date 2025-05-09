@@ -231,26 +231,25 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       return;
     }
 
-    final warnings = <HomeWarning>[];
-
     // Run all checks in parallel
-    await Future.wait([
-      // Check electrum servers
-      _checkElectrumServers(defaultWallets, warnings),
+    final (electrumWarnings, payjoinWarnings, swapWarnings) =
+        await (
+          _checkElectrumServers(defaultWallets),
+          _checkPayjoinHealth(),
+          _checkSwapServer(defaultWallets.first.isTestnet),
+        ).wait;
 
-      // Check payjoin health
-      _checkPayjoinHealth(warnings),
-
-      // Check swap server
-      _checkSwapServer(defaultWallets.first.isTestnet, warnings),
-    ]);
+    final warnings = [
+      if (electrumWarnings != null) electrumWarnings,
+      if (payjoinWarnings != null) payjoinWarnings,
+      if (swapWarnings != null) swapWarnings,
+    ];
 
     emit(state.copyWith(warnings: warnings));
   }
 
-  Future<void> _checkElectrumServers(
+  Future<HomeWarning?> _checkElectrumServers(
     List<Wallet> defaultWallets,
-    List<HomeWarning> warnings,
   ) async {
     bool bitcoinServerDown = false;
     bool liquidServerDown = false;
@@ -278,49 +277,44 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         (false, true) => 'Liquid electrum server failure',
         _ => '',
       };
-
-      warnings.add(
-        HomeWarning(
-          title: title,
-          description: 'Click to configure electrum server settings',
-          actionRoute: AppRoute.settings.name,
-          type: WarningType.error,
-        ),
+      return HomeWarning(
+        title: title,
+        description: 'Click to configure electrum server settings',
+        actionRoute: AppRoute.settings.name,
+        type: WarningType.error,
       );
     }
+    return null;
   }
 
-  Future<void> _checkPayjoinHealth(List<HomeWarning> warnings) async {
+  Future<HomeWarning?> _checkPayjoinHealth() async {
     final isHealthy = await _checkPayjoinRelayHealth.execute();
     if (!isHealthy) {
-      warnings.add(
-        HomeWarning(
-          title: 'Payjoin Service Unreachable',
-          description: 'Contact support for assistance',
-          actionRoute: AppRoute.settings.name,
-          type: WarningType.error,
-        ),
+      return HomeWarning(
+        title: 'Payjoin Service Unreachable',
+        description: 'Contact support for assistance',
+        actionRoute: AppRoute.settings.name,
+        type: WarningType.error,
       );
     }
+
+    return null;
   }
 
-  Future<void> _checkSwapServer(
-    bool isTestnet,
-    List<HomeWarning> warnings,
-  ) async {
+  Future<HomeWarning?> _checkSwapServer(bool isTestnet) async {
     try {
       await _getSwapLimitsUsecase.execute(
         type: SwapType.bitcoinToLiquid,
         isTestnet: isTestnet,
       );
+
+      return null;
     } catch (e) {
-      warnings.add(
-        HomeWarning(
-          title: 'Boltz Server Unreachable',
-          description: 'Contact support for assistance',
-          actionRoute: AppRoute.settings.name,
-          type: WarningType.error,
-        ),
+      return HomeWarning(
+        title: 'Boltz Server Unreachable',
+        description: 'Contact support for assistance',
+        actionRoute: AppRoute.settings.name,
+        type: WarningType.error,
       );
     }
   }

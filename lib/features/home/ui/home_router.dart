@@ -17,7 +17,6 @@ enum HomeRoute {
   final String path;
 }
 
-/// The router for the transactions feature.
 class HomeRouter {
   static final route = GoRoute(
     name: HomeRoute.home.name,
