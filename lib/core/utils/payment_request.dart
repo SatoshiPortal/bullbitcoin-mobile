@@ -128,19 +128,6 @@ sealed class PaymentRequest with _$PaymentRequest {
       );
     } catch (_) {}
 
-    if (tryTestnetFirst) {
-      try {
-        final address = await bdk.Address.fromString(
-          s: data,
-          network: bdk.Network.bitcoin,
-        );
-        return PaymentRequest.bitcoin(
-          address: address.asString(),
-          isTestnet: false,
-        );
-      } catch (_) {}
-    }
-
     return null;
   }
 
