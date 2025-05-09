@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
-import 'package:bb_mobile/core/utils/liquid_bip21.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:flutter/foundation.dart';
 
@@ -28,8 +27,7 @@ class DetectBitcoinStringUsecase {
         );
         if (invoice.magicBip21 != null) {
           // use the liquid bip21 decoder
-          final liquidBip21 = LiquidBip21.decode(invoice.magicBip21!);
-          return liquidBip21;
+          return await PaymentRequest.parse(invoice.magicBip21!);
         }
       }
       return await PaymentRequest.parse(data);

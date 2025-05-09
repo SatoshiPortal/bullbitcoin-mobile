@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/liquid_bip21.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:boltz/boltz.dart' as boltz;
@@ -127,7 +128,11 @@ sealed class PaymentRequest with _$PaymentRequest {
           pj: uri.options['pj'] as String? ?? '',
           pjos: uri.options['pjos'] as String? ?? '',
         );
-      } catch (_) {}
+      } catch (_) {
+        try {
+          return LiquidBip21.decode(data);
+        } catch (_) {}
+      }
 
       try {
         final network = await lwk.Address.validate(addressString: data);
