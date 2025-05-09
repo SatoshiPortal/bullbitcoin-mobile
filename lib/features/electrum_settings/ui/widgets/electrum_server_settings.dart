@@ -18,7 +18,7 @@ class ElectrumServerSettingsBottomSheet extends StatelessWidget {
   static Future<void> showBottomSheet(BuildContext context) {
     return BlurredBottomSheet.show(
       context: context,
-      child: BlocProvider(
+      child: BlocProvider<ElectrumSettingsBloc>(
         create: (_) => locator<ElectrumSettingsBloc>()..add(LoadServers()),
         child: const ElectrumServerSettingsBottomSheet(),
       ),

@@ -114,7 +114,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const HomeRefreshed());
-      add(const CheckAllWarnings());
+
       // Now subscribe to syncs starts and finishes to update the UI with the syncing indicator
       await _startedSyncsSubscription
           ?.cancel(); // cancel any previous subscription
@@ -272,7 +272,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
 
     if (bitcoinServerDown || liquidServerDown) {
-      // ignore: unused_local_variable
       final title = switch ((bitcoinServerDown, liquidServerDown)) {
         (true, true) => 'Bitcoin & Liquid electrum server failure',
         (true, false) => 'Bitcoin electrum server failure',

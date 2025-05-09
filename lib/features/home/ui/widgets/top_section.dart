@@ -146,7 +146,9 @@ class _TopNav extends StatelessWidget {
       children: [
         const Gap(8),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            context.read<HomeBloc>().add(const CheckAllWarnings());
+          },
           visualDensity: VisualDensity.compact,
           iconSize: 24,
           color: context.colour.onPrimary,
