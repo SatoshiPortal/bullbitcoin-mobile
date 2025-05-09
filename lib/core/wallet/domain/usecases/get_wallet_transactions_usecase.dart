@@ -33,15 +33,16 @@ class GetWalletTransactionsUsecase {
             ),
           ).wait;
 
-      final broadcastedPayjoinIds = broadcastedTransactions
+      final broadcastedBitcoinTxIds = broadcastedTransactions
           .whereType<BitcoinWalletTransaction>()
-          .where((tx) => tx.payjoin != null)
-          .map((tx) => tx.payjoin!.id);
+          .map((tx) => tx.txId);
 
       final walletTransactions = [
         ...broadcastedTransactions,
         ...ongoingPayjoinTransactions.where(
-          (tx) => !broadcastedPayjoinIds.contains(tx.payjoin!.id),
+          (tx) =>
+              !broadcastedBitcoinTxIds.contains(tx.payjoin!.txId) &&
+              !broadcastedBitcoinTxIds.contains(tx.payjoin!.originalTxId),
         ),
       ];
 
