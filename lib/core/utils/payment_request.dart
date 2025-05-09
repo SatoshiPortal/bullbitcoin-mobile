@@ -50,132 +50,251 @@ sealed class PaymentRequest with _$PaymentRequest {
 
   static Future<PaymentRequest> parse(String data) async {
     try {
-      try {
-        final address = await bdk.Address.fromString(
-          s: data,
-          network: bdk.Network.bitcoin,
-        );
+      final String trimmed = data.trim();
 
-        return PaymentRequest.bitcoin(
-          address: address.asString(),
-          isTestnet: false,
-        );
-      } catch (_) {}
+      if (trimmed.startsWith('bitcoin:') ||
+          trimmed.startsWith('liquidnetwork:') ||
+          trimmed.startsWith('liquidtestnet:')) {
+        final result = await _tryParseBip21(trimmed);
+        if (result != null) return result;
+      }
 
-      try {
-        final address = await bdk.Address.fromString(
-          s: data,
-          network: bdk.Network.testnet,
-        );
-
-        return PaymentRequest.bitcoin(
-          address: address.asString(),
-          isTestnet: true,
-        );
-      } catch (_) {}
-
-      try {
-        final uri = bip21.decode(data);
-        final address = uri.address;
-        Network network;
-        if (uri.urnScheme == 'bitcoin') {
-          try {
-            await bdk.Address.fromString(
-              s: address,
-              network: bdk.Network.bitcoin,
-            );
-            network = Network.bitcoinMainnet;
-          } catch (_) {
-            try {
-              await bdk.Address.fromString(
-                s: address,
-                network: bdk.Network.testnet,
-              );
-              network = Network.bitcoinTestnet;
-            } catch (e) {
-              rethrow;
-            }
-          }
-        } else if (uri.urnScheme == 'liquidnetwork') {
-          final networkValidation = await lwk.Address.validate(
-            addressString: address,
-          );
-          network = Network.liquidMainnet;
-          if (networkValidation != lwk.Network.mainnet) {
-            throw 'Invalid liquid mainnet address';
-          }
-        } else if (uri.urnScheme == 'liquidtestnet') {
-          final networkValidation = await lwk.Address.validate(
-            addressString: address,
-          );
-          network = Network.liquidTestnet;
-          if (networkValidation != lwk.Network.testnet) {
-            throw 'Invalid liquid testnet address';
-          }
-        } else {
-          throw 'unhandled network';
+      if (trimmed.toLowerCase().startsWith('lnbc') ||
+          trimmed.toLowerCase().startsWith('lntb') ||
+          trimmed.toLowerCase().startsWith('lightning:')) {
+        if (trimmed.toLowerCase().startsWith('lightning:')) {
+          final withoutPrefix = trimmed.replaceAll("lightning:", "");
+          final result = await _tryParseBolt11(withoutPrefix);
+          if (result != null) return result;
         }
-
-        final amount = uri.options['amount'] as double?;
-        return PaymentRequest.bip21(
-          network: network,
-          address: address,
-          uri: uri.toString(),
-          label: uri.options['label'] as String? ?? '',
-          message: uri.options['message'] as String? ?? '',
-          amountSat: amount != null ? ConvertAmount.btcToSats(amount) : null,
-          lightning: uri.options['lightning'] as String? ?? '',
-          pj: uri.options['pj'] as String? ?? '',
-          pjos: uri.options['pjos'] as String? ?? '',
-        );
-      } catch (_) {
-        try {
-          return LiquidBip21.decode(data);
-        } catch (_) {}
+        final result = await _tryParseBolt11(trimmed.toLowerCase());
+        if (result != null) return result;
       }
 
-      try {
-        final network = await lwk.Address.validate(addressString: data);
-        return PaymentRequest.liquid(
-          address: data,
-          isTestnet: network == lwk.Network.testnet,
-        );
-      } catch (e) {
-        debugPrint(e.toString());
+      if (trimmed.toLowerCase().startsWith('lnurl') || trimmed.contains('@')) {
+        final result = await _tryParseLnAddress(trimmed);
+        if (result != null) return result;
       }
 
-      try {
-        final invoice = await boltz.DecodedInvoice.fromString(s: data);
-        final sats = invoice.msats.toInt() ~/ 1000;
-
-        return PaymentRequest.bolt11(
-          invoice: data,
-          amountSat: sats,
-          paymentHash: invoice.preimageHash,
-          description: invoice.description,
-          expiresAt: invoice.expiresAt.toInt(),
-          isTestnet: invoice.network != 'bitcoin',
-        );
-      } catch (e) {
-        debugPrint(e.toString());
+      if (trimmed.startsWith('1') ||
+          trimmed.startsWith('3') ||
+          trimmed.toLowerCase().startsWith('bc1') ||
+          trimmed.startsWith('2') ||
+          trimmed.startsWith('m') ||
+          trimmed.startsWith('n') ||
+          trimmed.toLowerCase().startsWith('tb1')) {
+        final result = await _tryParseBitcoinAddress(trimmed);
+        if (result != null) return result;
       }
-      try {
-        final lnurl = boltz.Lnurl(value: data);
-        final valid = await lnurl.validate();
-        if (!valid) {
-          throw 'Invalid lnurl';
-        }
 
-        return PaymentRequest.lnAddress(address: data);
-      } catch (e) {
-        debugPrint(e.toString());
-      }
+      final result = await _tryParseLiquidAddress(trimmed);
+      if (result != null) return result;
 
       throw 'Invalid payment request';
     } catch (e) {
       debugPrint(e.toString());
       rethrow;
     }
+  }
+
+  static Future<PaymentRequest?> _tryParseBitcoinAddress(String data) async {
+    final bool tryTestnetFirst =
+        data.startsWith('2') ||
+        data.startsWith('m') ||
+        data.startsWith('n') ||
+        data.startsWith('tb1');
+
+    if (!tryTestnetFirst) {
+      try {
+        final address = await bdk.Address.fromString(
+          s: data,
+          network: bdk.Network.bitcoin,
+        );
+        return PaymentRequest.bitcoin(
+          address: address.asString(),
+          isTestnet: false,
+        );
+      } catch (_) {}
+    }
+
+    try {
+      final address = await bdk.Address.fromString(
+        s: data,
+        network: bdk.Network.testnet,
+      );
+      return PaymentRequest.bitcoin(
+        address: address.asString(),
+        isTestnet: true,
+      );
+    } catch (_) {}
+
+    if (tryTestnetFirst) {
+      try {
+        final address = await bdk.Address.fromString(
+          s: data,
+          network: bdk.Network.bitcoin,
+        );
+        return PaymentRequest.bitcoin(
+          address: address.asString(),
+          isTestnet: false,
+        );
+      } catch (_) {}
+    }
+
+    return null;
+  }
+
+  static Future<PaymentRequest?> _tryParseBip21(String data) async {
+    if (!data.startsWith('bitcoin:') &&
+        !data.startsWith('liquidnetwork:') &&
+        !data.startsWith('liquidtestnet:')) {
+      return null;
+    }
+
+    try {
+      final uri = bip21.decode(data);
+      final address = uri.address;
+      Network network;
+
+      if (uri.urnScheme == 'bitcoin') {
+        if (address.startsWith('1') ||
+            address.startsWith('3') ||
+            address.startsWith('bc1')) {
+          network = Network.bitcoinMainnet;
+          await bdk.Address.fromString(
+            s: address,
+            network: bdk.Network.bitcoin,
+          );
+        } else if (address.startsWith('2') ||
+            address.startsWith('m') ||
+            address.startsWith('n') ||
+            address.startsWith('tb1')) {
+          network = Network.bitcoinTestnet;
+          await bdk.Address.fromString(
+            s: address,
+            network: bdk.Network.testnet,
+          );
+        } else {
+          network = await _validateBitcoinAddress(address);
+        }
+      } else if (uri.urnScheme == 'liquidnetwork') {
+        network = Network.liquidMainnet;
+        final networkValidation = await lwk.Address.validate(
+          addressString: address,
+        );
+        if (networkValidation != lwk.Network.mainnet) {
+          throw 'Invalid liquid mainnet address';
+        }
+      } else if (uri.urnScheme == 'liquidtestnet') {
+        network = Network.liquidTestnet;
+        final networkValidation = await lwk.Address.validate(
+          addressString: address,
+        );
+        if (networkValidation != lwk.Network.testnet) {
+          throw 'Invalid liquid testnet address';
+        }
+      } else {
+        throw 'unhandled network';
+      }
+
+      final amount = uri.options['amount'] as double?;
+      return PaymentRequest.bip21(
+        network: network,
+        address: address,
+        uri: uri.toString(),
+        label: uri.options['label'] as String? ?? '',
+        message: uri.options['message'] as String? ?? '',
+        amountSat: amount != null ? ConvertAmount.btcToSats(amount) : null,
+        lightning: uri.options['lightning'] as String? ?? '',
+        pj: uri.options['pj'] as String? ?? '',
+        pjos: uri.options['pjos'] as String? ?? '',
+      );
+    } catch (_) {
+      if (data.startsWith('liquidnetwork:') ||
+          data.startsWith('liquidtestnet:')) {
+        try {
+          return LiquidBip21.decode(data);
+        } catch (_) {}
+      }
+    }
+
+    return null;
+  }
+
+  static Future<Network> _validateBitcoinAddress(String address) async {
+    try {
+      await bdk.Address.fromString(s: address, network: bdk.Network.bitcoin);
+      return Network.bitcoinMainnet;
+    } catch (_) {
+      try {
+        await bdk.Address.fromString(s: address, network: bdk.Network.testnet);
+        return Network.bitcoinTestnet;
+      } catch (e) {
+        throw 'Invalid bitcoin address';
+      }
+    }
+  }
+
+  static Future<PaymentRequest?> _tryParseLiquidAddress(String data) async {
+    try {
+      final network = await lwk.Address.validate(addressString: data);
+      return PaymentRequest.liquid(
+        address: data,
+        isTestnet: network == lwk.Network.testnet,
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+
+    return null;
+  }
+
+  static Future<PaymentRequest?> _tryParseBolt11(String data) async {
+    if (!data.toLowerCase().startsWith('lnbc') &&
+        !data.toLowerCase().startsWith('lntb')) {
+      return null;
+    }
+
+    try {
+      final invoice = await boltz.DecodedInvoice.fromString(s: data);
+      final sats = invoice.msats.toInt() ~/ 1000;
+
+      return PaymentRequest.bolt11(
+        invoice: data,
+        amountSat: sats,
+        paymentHash: invoice.preimageHash,
+        description: invoice.description,
+        expiresAt: invoice.expiresAt.toInt(),
+        isTestnet: invoice.network != 'bitcoin',
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+
+    return null;
+  }
+
+  static Future<PaymentRequest?> _tryParseLnAddress(String data) async {
+    final bool isEmailStyle = data.contains('@');
+    final bool isLnurlPrefix = data.toLowerCase().startsWith('lnurl');
+
+    if (!isEmailStyle && !isLnurlPrefix) {
+      return null;
+    }
+
+    try {
+      final lnurl = boltz.Lnurl(value: data);
+      final valid = await lnurl.validate();
+      if (!valid) {
+        throw 'Invalid lnurl';
+      }
+
+      return PaymentRequest.lnAddress(address: data);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+
+    return null;
   }
 
   bool get isBolt11 => this is Bolt11PaymentRequest;
