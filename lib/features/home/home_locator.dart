@@ -16,7 +16,7 @@ import 'package:bb_mobile/locator.dart';
 class HomeLocator {
   static void setup() {
     // Bloc
-    locator.registerFactory<HomeBloc>(
+    locator.registerLazySingleton<HomeBloc>(
       () => HomeBloc(
         getWalletsUsecase: locator<GetWalletsUsecase>(),
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
