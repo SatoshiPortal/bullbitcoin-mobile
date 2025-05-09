@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 0.5.5+42
+version: 0.5.6+43
 
 environment:
   sdk: ">=3.7.0 <4.0.0"
@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  bdk_flutter: 
+  bdk_flutter:
     git:
       url: https://github.com/LtbLightning/bdk-flutter
       ref: frb-upgrade
@@ -122,7 +122,7 @@ dependencies:
   webview_flutter_android: ^4.3.4
   webview_flutter_wkwebview: ^3.18.5
   async: ^2.11.0
-  drift: '^2.26.1'
+  drift: "^2.26.1"
   drift_flutter: ^0.2.4
 
 dev_dependencies:
