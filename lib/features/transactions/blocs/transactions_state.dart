@@ -5,18 +5,21 @@ enum TransactionsFilter { all, send, receive, swap, payjoin, sell, buy }
 @freezed
 abstract class TransactionsState with _$TransactionsState {
   const factory TransactionsState({
-    @Default([]) List<WalletTransaction> transactions,
+    List<WalletTransaction>? transactions,
     @Default(false) bool isSyncing,
     @Default(TransactionsFilter.all) TransactionsFilter filter,
-    @Default([]) List<Payjoin> ongoingPayjoins,
     Object? err,
   }) = _TransactionsState;
   const TransactionsState._();
 
-  Map<int, List<WalletTransaction>> get transactionsByDay {
+  Map<int, List<WalletTransaction>>? get transactionsByDay {
+    if (filteredTransactions == null) {
+      return null;
+    }
+
     final Map<int, List<WalletTransaction>> grouped = {};
 
-    for (final tx in filteredTransactions) {
+    for (final tx in filteredTransactions!) {
       int day;
       if (tx.confirmationTime == null) {
         // Pending transactions can't be assigned to a specific day yet, since
@@ -52,9 +55,9 @@ abstract class TransactionsState with _$TransactionsState {
     return LinkedHashMap<int, List<WalletTransaction>>.from(sorted);
   }
 
-  List<WalletTransaction> get filteredTransactions {
+  List<WalletTransaction>? get filteredTransactions {
     return transactions
-        .where((tx) {
+        ?.where((tx) {
           switch (filter) {
             case TransactionsFilter.all:
               return true;
@@ -73,5 +76,9 @@ abstract class TransactionsState with _$TransactionsState {
           }
         })
         .toList(growable: false);
+  }
+
+  bool get hasNoTransactions {
+    return transactions != null || transactions!.isEmpty;
   }
 }

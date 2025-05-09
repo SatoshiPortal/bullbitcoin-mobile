@@ -70,7 +70,10 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
   bool get isChainSwap => isSwap && swap!.isChainSwap;
   bool get isExchange => exchangeId.isNotEmpty;
 
-  TransactionOutput get destinationOutput {
+  TransactionOutput? get destinationOutput {
+    if (outputs.isEmpty) {
+      return null;
+    }
     if (isToSelf) {
       return outputs.first;
     } else if (direction == WalletTransactionDirection.incoming) {
@@ -80,7 +83,7 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
     }
   }
 
-  String get toAddress {
+  String? get toAddress {
     final output = destinationOutput;
 
     switch (output) {
@@ -88,12 +91,14 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
         return output.address;
       case LiquidTransactionOutput _:
         return output.confidentialAddress;
+      case null:
+        return null;
     }
   }
 
-  List<String> get toAddressLabels {
+  List<String>? get toAddressLabels {
     final output = destinationOutput;
-    return output.addressLabels;
+    return output?.addressLabels;
   }
 
   @override

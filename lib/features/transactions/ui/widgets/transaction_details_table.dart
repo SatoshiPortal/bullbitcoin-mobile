@@ -32,7 +32,7 @@ class TransactionDetailsTable extends StatelessWidget {
     final address = tx?.toAddress ?? '';
     final txId = tx?.txId ?? '';
     final abbreviatedAddress = StringFormatting.truncateMiddle(address);
-    final addressLabels = tx?.toAddressLabels.join(', ') ?? '';
+    final addressLabels = tx?.toAddressLabels?.join(', ') ?? '';
     final abbreviatedTxId = StringFormatting.truncateMiddle(txId);
 
     return DetailsTable(
@@ -76,11 +76,12 @@ class TransactionDetailsTable extends StatelessWidget {
               'MMM d, y, h:mm a',
             ).format(tx!.confirmationTime!),
           ),
-        DetailsTableItem(
-          label: 'Address',
-          displayValue: abbreviatedAddress,
-          copyValue: address,
-        ),
+        if (abbreviatedAddress.isNotEmpty)
+          DetailsTableItem(
+            label: 'Address',
+            displayValue: abbreviatedAddress,
+            copyValue: address,
+          ),
         if (addressLabels.isNotEmpty)
           DetailsTableItem(label: 'Address notes', displayValue: addressLabels),
         DetailsTableItem(
