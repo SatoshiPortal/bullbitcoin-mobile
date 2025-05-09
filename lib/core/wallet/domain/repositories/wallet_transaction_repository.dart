@@ -9,7 +9,7 @@ abstract class WalletTransactionRepository {
     Environment? environment,
     bool sync = false,
   });
-  Future<List<WalletTransaction>> getOngoingPayjoinWalletTransactions({
+  Future<List<BitcoinWalletTransaction>> getOngoingPayjoinWalletTransactions({
     String? walletId,
     Environment? environment,
     bool sync = false,

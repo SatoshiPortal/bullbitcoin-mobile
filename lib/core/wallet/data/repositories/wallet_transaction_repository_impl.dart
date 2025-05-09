@@ -75,7 +75,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   }
 
   @override
-  Future<List<WalletTransaction>> getOngoingPayjoinWalletTransactions({
+  Future<List<BitcoinWalletTransaction>> getOngoingPayjoinWalletTransactions({
     String? walletId,
     Environment? environment,
     bool sync = false,
@@ -122,7 +122,7 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
           }),
     );
 
-    return walletTransactions.toList();
+    return walletTransactions.whereType<BitcoinWalletTransaction>().toList();
   }
 
   @override

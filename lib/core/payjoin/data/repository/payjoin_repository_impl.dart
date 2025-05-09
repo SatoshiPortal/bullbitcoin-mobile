@@ -225,6 +225,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         payjoin.originalTxBytes!,
         electrumServer: electrumServer,
       );
+      debugPrint(
+        'Original transaction broadcasted: ${payjoin.id} with txId: ${payjoin.txId}',
+      );
 
       // Update the local database with the completed payjoin
       final model = await _localPayjoinDatasource.fetchReceiver(payjoin.id);
@@ -289,6 +292,9 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
             payjoinModel.isTestnet
                 ? Network.bitcoinTestnet
                 : Network.bitcoinMainnet,
+      );
+      debugPrint(
+        'Payjoin proposal broadcasted: ${payjoin.id} with txId: ${result.txId}',
       );
     } catch (e) {
       debugPrint('Error broadcasting payjoin proposal: $e');
