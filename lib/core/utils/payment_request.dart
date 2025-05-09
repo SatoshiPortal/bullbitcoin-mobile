@@ -95,21 +95,22 @@ sealed class PaymentRequest with _$PaymentRequest {
               rethrow;
             }
           }
-
-          // TODO: add signet and regtest to Network entity
-          // try {
-          //   await bdk.Address.fromString(s: data, network: bdk.Network.signet);
-          //   network = Network.signet;
-          // } catch (_) {}
-
-          // try {
-          //   await bdk.Address.fromString(s: data, network: bdk.Network.regtest);
-          //   network = Network.regtest;
-          // } catch (_) {}
         } else if (uri.urnScheme == 'liquidnetwork') {
+          final networkValidation = await lwk.Address.validate(
+            addressString: address,
+          );
           network = Network.liquidMainnet;
+          if (networkValidation != lwk.Network.mainnet) {
+            throw 'Invalid liquid mainnet address';
+          }
         } else if (uri.urnScheme == 'liquidtestnet') {
+          final networkValidation = await lwk.Address.validate(
+            addressString: address,
+          );
           network = Network.liquidTestnet;
+          if (networkValidation != lwk.Network.testnet) {
+            throw 'Invalid liquid testnet address';
+          }
         } else {
           throw 'unhandled network';
         }

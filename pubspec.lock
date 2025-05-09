@@ -21,10 +21,10 @@ packages:
     dependency: transitive
     description:
       name: analyzer
-      sha256: "13c1e6c6fd460522ea840abec3f677cc226f5fec7872c04ad7b425517ccf54f7"
+      sha256: "904ae5bb474d32c38fb9482e2d925d5454cda04ddd0e55d2e6826bc72f6ba8c0"
       url: "https://pub.dev"
     source: hosted
-    version: "7.4.4"
+    version: "7.4.5"
   animated_svg:
     dependency: "direct main"
     description:
@@ -257,10 +257,10 @@ packages:
     dependency: transitive
     description:
       name: camera_android_camerax
-      sha256: f0dcbce91623f75030840609de9b64d0d73f86df279c6e9588c1501245a05eb2
+      sha256: ea7e40bd63afb8f55058e48ec529ce96562be9d08393f79631a06f781161fd0d
       url: "https://pub.dev"
     source: hosted
-    version: "0.6.15+2"
+    version: "0.6.16"
   camera_avfoundation:
     dependency: transitive
     description:

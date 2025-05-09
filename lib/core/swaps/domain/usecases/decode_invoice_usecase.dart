@@ -8,8 +8,8 @@ class DecodeInvoiceUsecase {
   DecodeInvoiceUsecase({
     required SwapRepository mainnetSwapRepository,
     required SwapRepository testnetSwapRepository,
-  })  : _mainnetSwapRepository = mainnetSwapRepository,
-        _testnetSwapRepository = testnetSwapRepository;
+  }) : _mainnetSwapRepository = mainnetSwapRepository,
+       _testnetSwapRepository = testnetSwapRepository;
 
   Future<Invoice> execute({
     required String invoice,

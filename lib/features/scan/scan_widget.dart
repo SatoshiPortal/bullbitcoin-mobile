@@ -69,9 +69,9 @@ class _ScanWidgetState extends State<ScanWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.colour.secondaryFixedDim,
-      body: Stack(
+    return ColoredBox(
+      color: context.colour.secondaryFixedDim,
+      child: Stack(
         children: [
           SafeArea(
             child: Column(

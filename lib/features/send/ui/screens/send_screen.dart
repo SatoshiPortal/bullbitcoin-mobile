@@ -81,7 +81,7 @@ class SendAddressScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Gap(42),
+                    const Gap(32),
                     BBText(
                       "Recipient's address",
                       style: context.font.bodyMedium,
@@ -166,7 +166,6 @@ class AddressErrorSection extends StatelessWidget {
           balanceError.message,
           style: context.font.bodyMedium,
           color: context.colour.error,
-          maxLines: 2,
           textAlign: TextAlign.center,
         ),
       );
@@ -176,7 +175,6 @@ class AddressErrorSection extends StatelessWidget {
         swapError.message,
         style: context.font.bodyMedium,
         color: context.colour.error,
-        maxLines: 2,
         textAlign: TextAlign.center,
       );
     }
@@ -185,11 +183,10 @@ class AddressErrorSection extends StatelessWidget {
         invalidAddress.toString(),
         style: context.font.bodyMedium,
         color: context.colour.error,
-        maxLines: 2,
         textAlign: TextAlign.center,
       );
     }
-    return const SizedBox.shrink();
+    return const SizedBox(height: 21);
   }
 }
 
