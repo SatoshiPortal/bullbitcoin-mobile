@@ -1,8 +1,7 @@
 import 'dart:ui';
 
 import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
-import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart'
-    show HowToDecideSheetBackupOption;
+import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/cards/tag_card.dart';
@@ -62,12 +61,13 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                       description:
                           'Anonymous backup with strong encryption using your cloud.',
                       tag: 'Easy and simple (1 minute)',
-                      onTap: () => {
-                        context.read<KeyServerCubit>().checkConnection(),
-                        context.pushNamed(
-                          BackupWalletSubroute.chooseBackupProvider.name,
-                        ),
-                      },
+                      onTap:
+                          () => {
+                            context.read<KeyServerCubit>().checkConnection(),
+                            context.pushNamed(
+                              BackupWalletSubroute.chooseBackupProvider.name,
+                            ),
+                          },
                     ),
                     const Gap(16),
                     BackupOptionCard(
@@ -81,9 +81,10 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                       description:
                           'Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.',
                       tag: 'Trustless (take your time)',
-                      onTap: () => context.pushNamed(
-                        BackupWalletSubroute.physicalCheckList.name,
-                      ),
+                      onTap:
+                          () => context.pushNamed(
+                            BackupWalletSubroute.physicalCheckList.name,
+                          ),
                     ),
                     const Gap(16),
                     GestureDetector(
@@ -106,14 +107,13 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                                       ),
                                       child: Container(
                                         width: double.infinity,
-                                        height: MediaQuery.of(context)
-                                                .size
-                                                .height *
+                                        height:
+                                            MediaQuery.of(context).size.height *
                                             0.25, // Blur only 40% of the screen
-                                        color:
-                                            context.colour.secondary.withAlpha(
-                                          25,
-                                        ), // 0.10 opacity ≈ alpha 25
+                                        color: context.colour.secondary
+                                            .withAlpha(
+                                              25,
+                                            ), // 0.10 opacity ≈ alpha 25
                                       ),
                                     ),
                                   ),
@@ -122,7 +122,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                                 // Bottom Sheet Content (Covers only 60% of the screen)
                                 const Align(
                                   alignment: Alignment.bottomCenter,
-                                  child: HowToDecideSheetBackupOption(),
+                                  child: HowToDecideBackupOption(),
                                 ),
                               ],
                             );
@@ -187,20 +187,13 @@ class BackupOptionCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: 36,
-                    height: 45,
-                    child: icon,
-                  ),
+                  SizedBox(width: 36, height: 45, child: icon),
                   const Gap(12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        BBText(
-                          title,
-                          style: context.font.headlineMedium,
-                        ),
+                        BBText(title, style: context.font.headlineMedium),
                         const Gap(10),
                         BBText(
                           description,
