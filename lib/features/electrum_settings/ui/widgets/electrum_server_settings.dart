@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/electrum_settings/presentation/bloc/electrum_settings_bloc.dart';
+import 'package:bb_mobile/features/electrum_settings/ui/widgets/privacy_notice.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/bottom_sheet/x.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -11,6 +12,7 @@ import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class ElectrumServerSettingsBottomSheet extends StatelessWidget {
   const ElectrumServerSettingsBottomSheet({super.key});
@@ -128,6 +130,27 @@ class _SaveButton extends StatelessWidget {
   const _SaveButton({required this.state});
   final ElectrumSettingsState state;
 
+  void _handleSave(BuildContext context) {
+    // Get the bloc before any async operations
+    final bloc = context.read<ElectrumSettingsBloc>();
+
+    if (state.isCustomServerSelected) {
+      if (context.mounted) {
+        context.pop();
+      }
+      // Show privacy notice and handle everything within the dialog callback
+      PrivacyNoticeBottomSheet.show(context).then((result) {
+        if (result == true) {
+          bloc.add(const SaveElectrumServerChanges());
+        }
+      });
+    } else {
+      // For default servers, no privacy notice needed
+      bloc.add(const SaveElectrumServerChanges());
+      context.pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool hasChanges = state.hasPendingChanges;
@@ -169,14 +192,7 @@ class _SaveButton extends StatelessWidget {
     return BBButton.big(
       label: 'Save',
       onPressed:
-          hasChanges && !disableSave
-              ? () {
-                context.read<ElectrumSettingsBloc>().add(
-                  const SaveElectrumServerChanges(),
-                );
-                Navigator.of(context).pop();
-              }
-              : () {},
+          hasChanges && !disableSave ? () => _handleSave(context) : () {},
       bgColor:
           (hasChanges && !disableSave)
               ? context.colour.secondary
