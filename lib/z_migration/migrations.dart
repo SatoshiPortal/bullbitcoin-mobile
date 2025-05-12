@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:bb_mobile/z_migration/migrate_labels.dart';
 import 'package:bb_mobile/z_migration/migrate_settings.dart';
 import 'package:bb_mobile/z_migration/migrate_wallet_metadatas.dart';
+import 'package:bb_mobile/z_migration/old_wallet_sensitive_storage_repository.dart'
+    show WalletSensitiveStorageRepository;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -91,6 +93,16 @@ class MigrateHiveToSqlite {
 
       final metadatas = fetchWalletMetadatas(hive);
       print('metadatas: $metadatas');
+
+      for (final w in metadatas) {
+        print('w: ${w.mnemonicFingerprint}');
+        print('w: ${w.sourceFingerprint}');
+
+        final mnemonic =
+            await WalletSensitiveStorageRepository(secureStorage: secure)
+                .getMnemonic(fingerprintIndex: w.mnemonicFingerprint);
+        print('mnemonic: $mnemonic');
+      }
     } catch (e) {
       debugPrint('Error during migrations: $e');
     }
