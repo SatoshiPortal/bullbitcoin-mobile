@@ -1,10 +1,21 @@
+import 'package:bb_mobile/core/seed/domain/entity/seed.dart' show Seed;
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_labels.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_settings.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_utils.dart'
+    show getNetworkFromOldWallet;
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_wallets_metadatas.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_bip329.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart'
+    show Wallet;
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet_sensitive_storage_repository.dart'
+    show WalletSensitiveStorageRepository;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
+import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart'
+    show ScriptType;
+import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:flutter/foundation.dart';
 
 extension MigrateHiveToSqlite on SqliteDatabase {
@@ -13,12 +24,9 @@ extension MigrateHiveToSqlite on SqliteDatabase {
       final settings = await managers.settings.get();
       if (settings.isNotEmpty) return;
 
-      final (secure, hive) = await setupStorage();
+      final (oldSecureStorage, oldHive) = await setupStorage();
 
-      final oldSettings = fetchOldSettings(hive);
-      debugPrint(
-        'settings: ${oldSettings.unitInSats} | ${oldSettings.currencyCode} | ${oldSettings.hideAmount}',
-      );
+      final oldSettings = fetchOldSettings(oldHive);
 
       await _storeNewSettings(
         unitInSats: oldSettings.unitInSats,
@@ -27,13 +35,22 @@ extension MigrateHiveToSqlite on SqliteDatabase {
         isTestnet: oldSettings.isTestnet,
       );
 
-      final labels = await fetchOldLabels(hive);
-      debugPrint('labels: $labels');
+      debugPrint(
+        'migration: ${oldSettings.unitInSats} | ${oldSettings.currencyCode} | ${oldSettings.hideAmount}',
+      );
 
-      _storeNewLabels(labels);
+      final oldLabels = await fetchOldLabels(oldHive);
+      final newLabels = await _storeNewLabels(oldLabels);
+      debugPrint('migration: ${newLabels.length}/${oldLabels.length} labels');
 
-      final metadatas = fetchOldWalletMetadatas(hive);
-      debugPrint('metadatas: $metadatas');
+      final oldWallets = fetchOldWalletMetadatas(oldHive);
+      final newMetadatas = await _storeNewWalletMetadatas(
+        oldWallets,
+        oldSecureStorage,
+      );
+      debugPrint(
+        'migration: ${newMetadatas.length}/${oldWallets.length} wallet metadatas',
+      );
     } catch (e) {
       debugPrint('Error during migrations: $e');
     }
@@ -59,7 +76,9 @@ extension MigrateFromHive on SqliteDatabase {
     );
   }
 
-  void _storeNewLabels(List<Bip329Label> oldLabels) {
+  Future<List<LabelRow>> _storeNewLabels(List<Bip329Label> oldLabels) async {
+    final rows = <LabelRow>[];
+
     for (final label in oldLabels) {
       if (label.label == null) continue;
 
@@ -70,7 +89,7 @@ extension MigrateFromHive on SqliteDatabase {
         continue;
       }
 
-      into(labels).insert(
+      rows.add(
         LabelRow(
           label: label.label!,
           ref: label.ref,
@@ -81,5 +100,48 @@ extension MigrateFromHive on SqliteDatabase {
         ),
       );
     }
+
+    for (final row in rows) {
+      await into(labels).insert(row);
+    }
+
+    return rows;
+  }
+
+  Future<List<WalletMetadataRow>> _storeNewWalletMetadatas(
+    List<Wallet> oldWallets,
+    SecureStorage oldSecureStorage,
+  ) async {
+    final rows = <WalletMetadataRow>[];
+
+    for (final wallet in oldWallets) {
+      try {
+        final network = getNetworkFromOldWallet(wallet);
+        final scriptType = ScriptType.fromName(wallet.scriptType.name);
+
+        final mnemonic = await WalletSensitiveStorageRepository(
+          secureStorage: oldSecureStorage,
+        ).getMnemonic(fingerprintIndex: wallet.mnemonicFingerprint);
+        final seed = Seed.mnemonic(mnemonicWords: mnemonic);
+
+        final walletMetadata = await WalletMetadataService.deriveFromSeed(
+          seed: seed,
+          network: network,
+          scriptType: scriptType,
+          label: wallet.name ?? wallet.creationName(),
+          isDefault: wallet.isMain(),
+        );
+
+        rows.add(walletMetadata.toSqlite());
+      } catch (e) {
+        debugPrint('SKIP: $e');
+        continue;
+      }
+    }
+
+    for (final row in rows) {
+      await into(walletMetadatas).insert(row);
+    }
+    return rows;
   }
 }
