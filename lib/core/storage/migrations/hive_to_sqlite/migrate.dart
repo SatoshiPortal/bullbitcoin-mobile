@@ -19,22 +19,27 @@ import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:flutter/foundation.dart';
 
 extension MigrateHiveToSqlite on SqliteDatabase {
-  Future<void> migrateFromHiveToSqlite() async {
+  Future<bool> migrateFromHiveToSqlite() async {
     try {
       final settings = await managers.settings.get();
-      if (settings.isNotEmpty) return;
+      if (settings.isNotEmpty) {
+        debugPrint('skipping migration: sqlite settings already exists');
+        return false;
+      }
 
       final (oldSecureStorage, oldHive) = await setupStorage();
+      if (oldSecureStorage == null || oldHive == null) {
+        debugPrint('skipping migration: hive does not exist');
+        return false;
+      }
 
       final oldSettings = fetchOldSettings(oldHive);
-
       await _storeNewSettings(
         unitInSats: oldSettings.unitInSats,
         currencyCode: oldSettings.currencyCode,
         hideAmount: oldSettings.hideAmount,
         isTestnet: oldSettings.isTestnet,
       );
-
       debugPrint(
         'migration: ${oldSettings.unitInSats} | ${oldSettings.currencyCode} | ${oldSettings.hideAmount}',
       );
@@ -51,8 +56,11 @@ extension MigrateHiveToSqlite on SqliteDatabase {
       debugPrint(
         'migration: ${newMetadatas.length}/${oldWallets.length} wallet metadatas',
       );
+
+      return true;
     } catch (e) {
-      debugPrint('Error during migrations: $e');
+      debugPrint('migration failed: $e');
+      return false;
     }
   }
 }

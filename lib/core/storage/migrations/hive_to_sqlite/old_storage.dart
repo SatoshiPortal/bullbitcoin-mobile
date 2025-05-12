@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage_keys.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:hive/hive.dart';
@@ -37,16 +36,15 @@ class OldHiveStorage {
   }
 }
 
-Future<(OldSecureStorage, OldHiveStorage)> setupStorage() async {
+Future<(OldSecureStorage?, OldHiveStorage?)> setupStorage() async {
   final secureStorage = OldSecureStorage();
   final hiveStorage = OldHiveStorage();
 
   final password = await secureStorage.getValue(
     OldStorageKeys.hiveEncryption.name,
   );
-  if (password == null) debugPrint('migration not needed');
+  if (password == null) return (null, null);
 
-  debugPrint('migration maybe needed but also maybe already migrated');
-  await hiveStorage.init(password: base64Url.decode(password!));
+  await hiveStorage.init(password: base64Url.decode(password));
   return (secureStorage, hiveStorage);
 }
