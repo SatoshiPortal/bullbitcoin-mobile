@@ -75,6 +75,7 @@ extension MigrateFromHive on SqliteDatabase {
           label: label.label!,
           ref: label.ref,
           type: type,
+          // `label.origin` in v0.4.4 is bugged but fixed in `fetchOldLabels`
           origin: label.origin,
           spendable: label.spendable,
         ),
