@@ -6,6 +6,14 @@ import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart'
     show WalletMetadataService;
 
 String computeOriginFromOldWallet(Wallet wallet) {
+  return WalletMetadataService.encodeOrigin(
+    fingerprint: wallet.sourceFingerprint,
+    network: getNetworkFromOldWallet(wallet),
+    scriptType: ScriptType.fromName(wallet.scriptType.name),
+  );
+}
+
+Network getNetworkFromOldWallet(Wallet wallet) {
   final bbNetwork = wallet.network;
   final bbWalletType = wallet.baseWalletType;
 
@@ -27,9 +35,5 @@ String computeOriginFromOldWallet(Wallet wallet) {
     throw Exception(msg);
   }
 
-  return WalletMetadataService.encodeOrigin(
-    fingerprint: wallet.sourceFingerprint,
-    network: network,
-    scriptType: ScriptType.fromName(wallet.scriptType.name),
-  );
+  return network;
 }
