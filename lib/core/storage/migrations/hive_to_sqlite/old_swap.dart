@@ -9,28 +9,28 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'old_swap.freezed.dart';
 part 'old_swap.g.dart';
 
-class BBNetworkConverter implements JsonConverter<BBNetwork, String> {
-  const BBNetworkConverter();
+class OldBBNetworkConverter implements JsonConverter<OldBBNetwork, String> {
+  const OldBBNetworkConverter();
 
   @override
-  BBNetwork fromJson(String json) => BBNetwork.values.firstWhere(
-    (e) => e.toString() == 'BBNetwork.$json',
-    orElse: () => BBNetwork.Mainnet,
+  OldBBNetwork fromJson(String json) => OldBBNetwork.values.firstWhere(
+    (e) => e.toString() == 'OldBBNetwork.$json',
+    orElse: () => OldBBNetwork.Mainnet,
   );
 
   @override
-  String toJson(BBNetwork object) => object.toString().split('.').last;
+  String toJson(OldBBNetwork object) => object.toString().split('.').last;
 }
 
-enum OnChainSwapType { selfSwap, receiveSwap, sendSwap }
+enum OldOnChainSwapType { selfSwap, receiveSwap, sendSwap }
 
-enum SwapTxType { lockup, claim }
+enum OldSwapTxType { lockup, claim }
 
 @freezed
-abstract class ChainSwapDetails with _$ChainSwapDetails {
-  const factory ChainSwapDetails({
+abstract class OldChainSwapDetails with _$OldChainSwapDetails {
+  const factory OldChainSwapDetails({
     required ChainSwapDirection direction,
-    required OnChainSwapType onChainType,
+    required OldOnChainSwapType onChainType,
     required int refundKeyIndex,
     required String refundSecretKey,
     required String refundPublicKey,
@@ -49,16 +49,16 @@ abstract class ChainSwapDetails with _$ChainSwapDetails {
     required String lbtcScriptSenderPublicKey,
     required String lbtcScriptReceiverPublicKey,
     required String toWalletId,
-  }) = _ChainSwapDetails;
+  }) = _OldChainSwapDetails;
 
-  const ChainSwapDetails._();
-  factory ChainSwapDetails.fromJson(Map<String, dynamic> json) =>
-      _$ChainSwapDetailsFromJson(json);
+  const OldChainSwapDetails._();
+  factory OldChainSwapDetails.fromJson(Map<String, dynamic> json) =>
+      _$OldChainSwapDetailsFromJson(json);
 }
 
 @freezed
-abstract class LnSwapDetails with _$LnSwapDetails {
-  const factory LnSwapDetails({
+abstract class OldLnSwapDetails with _$OldLnSwapDetails {
+  const factory OldLnSwapDetails({
     required SwapType swapType,
     required String invoice,
     required String boltzPubKey,
@@ -69,24 +69,24 @@ abstract class LnSwapDetails with _$LnSwapDetails {
     required int locktime,
     String? hash160,
     String? blindingKey, // sensitive
-  }) = _LnSwapDetails;
+  }) = _OldLnSwapDetails;
 
-  const LnSwapDetails._();
-  factory LnSwapDetails.fromJson(Map<String, dynamic> json) =>
-      _$LnSwapDetailsFromJson(json);
+  const OldLnSwapDetails._();
+  factory OldLnSwapDetails.fromJson(Map<String, dynamic> json) =>
+      _$OldLnSwapDetailsFromJson(json);
 }
 
 @freezed
-abstract class SwapTx with _$SwapTx {
-  const factory SwapTx({
+abstract class OldSwapTx with _$OldSwapTx {
+  const factory OldSwapTx({
     required String id,
-    @BBNetworkConverter() required BBNetwork network,
-    required BaseWalletType walletType,
+    @OldBBNetworkConverter() required OldBBNetwork network,
+    required OldBaseWalletType walletType,
     required int outAmount,
     required String scriptAddress,
     required String boltzUrl,
-    ChainSwapDetails? chainSwapDetails,
-    LnSwapDetails? lnSwapDetails,
+    OldChainSwapDetails? chainSwapDetails,
+    OldLnSwapDetails? lnSwapDetails,
     String? claimTxid, // reverse + chain.self
     String? lockupTxid, // submarine + chain.sendSwap + chain.sendSwap
     String? label,
@@ -99,9 +99,10 @@ abstract class SwapTx with _$SwapTx {
     DateTime? creationTime,
     DateTime? completionTime,
   }) = _SwapTx;
-  factory SwapTx.fromJson(Map<String, dynamic> json) => _$SwapTxFromJson(json);
+  factory OldSwapTx.fromJson(Map<String, dynamic> json) =>
+      _$OldSwapTxFromJson(json);
 
-  const SwapTx._();
+  const OldSwapTx._();
 
   String? getDuration() {
     if (completionTime == null) {
@@ -153,30 +154,30 @@ abstract class SwapTx with _$SwapTx {
   }
 
   // return the swapTxType that needs to be updated for liquid swap tx broadcast
-  SwapTxType getSwapTxTypeForParent() {
+  OldSwapTxType getSwapTxTypeForParent() {
     if (isSubmarine()) {
-      return SwapTxType.lockup;
+      return OldSwapTxType.lockup;
     }
     if (isReverse()) {
-      return SwapTxType.claim;
+      return OldSwapTxType.claim;
     }
     if (isChainSelf()) {
-      return SwapTxType.lockup;
+      return OldSwapTxType.lockup;
     }
     if (isChainReceive()) {
-      return SwapTxType.claim;
+      return OldSwapTxType.claim;
     }
     if (isChainSend()) {
-      return SwapTxType.lockup;
+      return OldSwapTxType.lockup;
     } else {
-      return SwapTxType.lockup; // should never reach
+      return OldSwapTxType.lockup; // should never reach
     }
   }
 
-  bool isTestnet() => network == BBNetwork.Testnet;
+  bool isTestnet() => network == OldBBNetwork.Testnet;
 
-  bool isLiquid() => walletType == BaseWalletType.Liquid;
-  bool isBitcoin() => walletType == BaseWalletType.Bitcoin;
+  bool isLiquid() => walletType == OldBaseWalletType.Liquid;
+  bool isBitcoin() => walletType == OldBaseWalletType.Bitcoin;
 
   int? totalFees() {
     if (boltzFees == null || lockupFees == null || claimFees == null) {
@@ -198,13 +199,13 @@ abstract class SwapTx with _$SwapTx {
   bool isReverse() => isLnSwap() && lnSwapDetails!.swapType == SwapType.reverse;
   bool isChainSelf() =>
       isChainSwap() &&
-      chainSwapDetails!.onChainType == OnChainSwapType.selfSwap;
+      chainSwapDetails!.onChainType == OldOnChainSwapType.selfSwap;
   bool isChainSend() =>
       isChainSwap() &&
-      chainSwapDetails!.onChainType == OnChainSwapType.sendSwap;
+      chainSwapDetails!.onChainType == OldOnChainSwapType.sendSwap;
   bool isChainReceive() =>
       isChainSwap() &&
-      chainSwapDetails!.onChainType == OnChainSwapType.receiveSwap;
+      chainSwapDetails!.onChainType == OldOnChainSwapType.receiveSwap;
 
   bool paidSubmarine() =>
       isSubmarine() &&
@@ -462,7 +463,7 @@ abstract class SwapTx with _$SwapTx {
     return false;
   }
 
-  bb.Transaction toNewTransaction() {
+  bb.OldTransaction toNewTransaction() {
     final txId =
         isLnSwap()
             ? (lnSwapDetails!.swapType == SwapType.submarine
@@ -473,7 +474,7 @@ abstract class SwapTx with _$SwapTx {
             : isChainReceive()
             ? claimTxid
             : lockupTxid;
-    final newTx = bb.Transaction(
+    final newTx = bb.OldTransaction(
       txid: txId ?? id,
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       swapTx: this,
@@ -510,8 +511,8 @@ enum ChainSwapActions {
 }
 
 @freezed
-abstract class LnSwapTxSensitive with _$LnSwapTxSensitive {
-  const factory LnSwapTxSensitive({
+abstract class OldLnSwapTxSensitive with _$OldLnSwapTxSensitive {
+  const factory OldLnSwapTxSensitive({
     required String id,
     required String secretKey,
     required String publicKey,
@@ -524,9 +525,9 @@ abstract class LnSwapTxSensitive with _$LnSwapTxSensitive {
     int? locktime,
     String? blindingKey,
   }) = _LnSwapTxSensitive;
-  const LnSwapTxSensitive._();
+  const OldLnSwapTxSensitive._();
 
-  factory LnSwapTxSensitive.fromJson(Map<String, dynamic> json) =>
+  factory OldLnSwapTxSensitive.fromJson(Map<String, dynamic> json) =>
       _$LnSwapTxSensitiveFromJson(json);
 }
 
@@ -547,8 +548,8 @@ abstract class ChainSwapTxSensitive with _$ChainSwapTxSensitive {
 }
 
 @freezed
-abstract class Invoice with _$Invoice {
-  const factory Invoice({
+abstract class OldInvoice with _$OldInvoice {
+  const factory OldInvoice({
     required int msats,
     required int expiry,
     required int expiresIn,
@@ -559,16 +560,16 @@ abstract class Invoice with _$Invoice {
     required String invoice,
     String? bip21,
   }) = _Invoice;
-  const Invoice._();
+  const OldInvoice._();
 
-  factory Invoice.fromJson(Map<String, dynamic> json) =>
+  factory OldInvoice.fromJson(Map<String, dynamic> json) =>
       _$InvoiceFromJson(json);
 
-  factory Invoice.fromDecodedInvoice(
+  factory OldInvoice.fromDecodedInvoice(
     DecodedInvoice decodedInvoice,
     String invoice,
   ) {
-    return Invoice(
+    return OldInvoice(
       invoice: invoice,
       msats: decodedInvoice.msats.toInt(),
       expiry: decodedInvoice.expiry.toInt(),
@@ -590,10 +591,10 @@ abstract class Invoice with _$Invoice {
   }
 }
 
-enum PaymentNetwork { bitcoin, liquid, lightning }
+enum OldPaymentNetwork { bitcoin, liquid, lightning }
 
-extension X on SwapStatus? {
-  (String, String)? getOnChainStr(OnChainSwapType type) {
+extension OldX on SwapStatus? {
+  (String, String)? getOnChainStr(OldOnChainSwapType type) {
     (String, String) status = ('', '');
     switch (this) {
       case SwapStatus.swapCreated:
@@ -608,8 +609,8 @@ extension X on SwapStatus? {
       case SwapStatus.swapError:
         status = ('Error', 'Swap was unsuccessful');
       case SwapStatus.txnMempool:
-        if (type == OnChainSwapType.selfSwap ||
-            type == OnChainSwapType.sendSwap) {
+        if (type == OldOnChainSwapType.selfSwap ||
+            type == OldOnChainSwapType.sendSwap) {
           status = (
             'Mempool',
             'You have paid the swap lockup transaction. Waiting for block confirmation',
@@ -630,8 +631,8 @@ extension X on SwapStatus? {
       case SwapStatus.txnClaimed:
         status = ('Claimed', 'The swap is completed.');
       case SwapStatus.txnConfirmed:
-        if (type == OnChainSwapType.selfSwap ||
-            type == OnChainSwapType.sendSwap) {
+        if (type == OldOnChainSwapType.selfSwap ||
+            type == OldOnChainSwapType.sendSwap) {
           status = (
             'Confirmed',
             'Your lockup transaction is confirmed. Waiting for Boltz lockup',
@@ -645,24 +646,24 @@ extension X on SwapStatus? {
       case SwapStatus.txnRefunded:
         status = ('Refunded', 'The swap has been successfully refunded.');
       case SwapStatus.txnFailed:
-        status = ('Transaction Failed', 'The swap will be refunded.');
+        status = ('OldTransaction Failed', 'The swap will be refunded.');
       case SwapStatus.txnLockupFailed:
-        status = ('Transaction Lockup Failed', 'The swap will be refunded.');
+        status = ('OldTransaction Lockup Failed', 'The swap will be refunded.');
 
       /// TODO: This happens with onchain swap?
       case SwapStatus.invoiceSet:
-        status = ('Invoice Set', 'The invoice for the swap has been set.');
+        status = ('OldInvoice Set', 'The invoice for the swap has been set.');
 
       /// TODO: This happens with onchain swap?
       case SwapStatus.invoicePending:
         status = (
-          'Invoice Pending',
+          'OldInvoice Pending',
           'Onchain transaction confirmed. Payment of the invoice is in progress.',
         );
 
       /// TODO: This happens with onchain swap?
       case SwapStatus.invoicePaid:
-        status = ('Invoice Paid', 'The invoice has been successfully paid.');
+        status = ('OldInvoice Paid', 'The invoice has been successfully paid.');
 
       /// TODO: This happens with onchain swap?
       case SwapStatus.invoiceFailedToPay:
@@ -674,14 +675,14 @@ extension X on SwapStatus? {
       /// TODO: This happens with onchain swap?
       case SwapStatus.invoiceSettled:
         status = (
-          'Invoice Settled',
+          'OldInvoice Settled',
           'The invoice has settled and the swap is completed.',
         );
 
       /// TODO: This happens with onchain swap?
       case SwapStatus.invoiceExpired:
         status = (
-          'Invoice Expired',
+          'OldInvoice Expired',
           'The invoice has expirted. Swap will be deleted.',
         );
 
@@ -743,23 +744,23 @@ extension X on SwapStatus? {
         status = ('Refunded', 'The swap has been successfully refunded.');
       case SwapStatus.txnFailed:
         status = (
-          'Transaction Failed',
+          'OldTransaction Failed',
           'If a payment was made, it will be refunded.',
         );
       case SwapStatus.txnLockupFailed:
-        status = ('Transaction Lockup Failed', 'The swap will be refunded.');
+        status = ('OldTransaction Lockup Failed', 'The swap will be refunded.');
       case SwapStatus.invoiceSet:
         status = (
-          'Invoice Set',
+          'OldInvoice Set',
           'The invoice for the swap has been set. Waiting for an onchain payment to be made. Swap will expire if an onchain payment is not made.',
         );
       case SwapStatus.invoicePending:
         status = (
-          'Invoice Pending',
+          'OldInvoice Pending',
           'Onchain transaction confirmed. Payment of the invoice is in progress.',
         );
       case SwapStatus.invoicePaid:
-        status = ('Invoice Paid', 'The invoice has been successfully paid.');
+        status = ('OldInvoice Paid', 'The invoice has been successfully paid.');
       case SwapStatus.invoiceFailedToPay:
         status = (
           'Failed to pay invoice',
@@ -767,12 +768,12 @@ extension X on SwapStatus? {
         );
       case SwapStatus.invoiceSettled:
         status = (
-          'Invoice Settled',
+          'OldInvoice Settled',
           'The invoice has settled and the swap is completed.',
         );
       case SwapStatus.invoiceExpired:
         status = (
-          'Invoice Expired',
+          'OldInvoice Expired',
           'The invoice has expirted. Swap will be deleted.',
         );
       case SwapStatus.minerfeePaid:

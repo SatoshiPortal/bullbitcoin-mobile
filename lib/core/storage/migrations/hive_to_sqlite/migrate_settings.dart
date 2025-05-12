@@ -4,10 +4,12 @@ import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage.dar
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage_keys.dart';
 
 ({bool? unitInSats, String? currencyCode, bool? hideAmount, bool? isTestnet})
-fetchOldSettings(HiveStorage hive) {
-  final oldSettingsPayload = hive.getValue(StorageKeys.settings.name) ?? '{}';
-  final oldCurrencyPayload = hive.getValue(StorageKeys.currency.name) ?? '{}';
-  final oldNetworkPayload = hive.getValue(StorageKeys.network.name) ?? '{}';
+fetchOldSettings(OldHiveStorage hive) {
+  final oldSettingsPayload =
+      hive.getValue(OldStorageKeys.settings.name) ?? '{}';
+  final oldCurrencyPayload =
+      hive.getValue(OldStorageKeys.currency.name) ?? '{}';
+  final oldNetworkPayload = hive.getValue(OldStorageKeys.network.name) ?? '{}';
   final oldSettings = json.decode(oldSettingsPayload) as Map<String, dynamic>;
   final oldCurrency = json.decode(oldCurrencyPayload) as Map<String, dynamic>;
   final oldNetwork = json.decode(oldNetworkPayload) as Map<String, dynamic>;

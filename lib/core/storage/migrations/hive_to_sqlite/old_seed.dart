@@ -1,22 +1,23 @@
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart'
-    show BBNetwork;
+    show OldBBNetwork;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'old_seed.freezed.dart';
 part 'old_seed.g.dart';
 
 @freezed
-abstract class Seed with _$Seed {
-  const factory Seed({
+abstract class OldSeed with _$OldSeed {
+  const factory OldSeed({
     @Default('') String mnemonic,
     @Default('') String mnemonicFingerprint,
-    required BBNetwork network,
-    required List<Passphrase> passphrases,
+    required OldBBNetwork network,
+    required List<OldPassphrase> passphrases,
   }) = _Seed;
 
-  const Seed._();
+  const OldSeed._();
 
-  factory Seed.fromJson(Map<String, dynamic> json) => _$SeedFromJson(json);
+  factory OldSeed.fromJson(Map<String, dynamic> json) =>
+      _$OldSeedFromJson(json);
 
   String getSeedStorageString() {
     return mnemonicFingerprint;
@@ -26,22 +27,22 @@ abstract class Seed with _$Seed {
     return mnemonic.split(' ');
   }
 
-  Passphrase getPassphraseFromIndex(String sourceFingerprint) {
+  OldPassphrase getPassphraseFromIndex(String sourceFingerprint) {
     return passphrases.firstWhere(
       (element) => element.sourceFingerprint == sourceFingerprint,
-      orElse: () => Passphrase(sourceFingerprint: mnemonicFingerprint),
+      orElse: () => OldPassphrase(sourceFingerprint: mnemonicFingerprint),
     );
   }
 }
 
 @freezed
-abstract class Passphrase with _$Passphrase {
-  const factory Passphrase({
+abstract class OldPassphrase with _$OldPassphrase {
+  const factory OldPassphrase({
     @Default('') String passphrase,
     required String sourceFingerprint,
-  }) = _Passphrase;
-  const Passphrase._();
+  }) = _OldPassphrase;
+  const OldPassphrase._();
 
-  factory Passphrase.fromJson(Map<String, dynamic> json) =>
-      _$PassphraseFromJson(json);
+  factory OldPassphrase.fromJson(Map<String, dynamic> json) =>
+      _$OldPassphraseFromJson(json);
 }

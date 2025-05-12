@@ -5,24 +5,24 @@ import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_bip329.dart
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage_keys.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart'
-    show Wallet;
+    show OldWallet;
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet_labels.dart';
 import 'package:flutter/foundation.dart';
 
-Future<List<Bip329Label>> fetchOldLabels(HiveStorage hive) async {
-  final oldWalletsPayload = hive.getValue(StorageKeys.wallets.name) ?? '{}';
+Future<List<OldBip329Label>> fetchOldLabels(OldHiveStorage hive) async {
+  final oldWalletsPayload = hive.getValue(OldStorageKeys.wallets.name) ?? '{}';
   final oldWallets = json.decode(oldWalletsPayload) as Map<String, dynamic>;
 
   final walletIds = oldWallets['wallets'] as List? ?? [];
 
-  final allLabels = <Bip329Label>[];
+  final allLabels = <OldBip329Label>[];
   for (final id in walletIds) {
     if (id is String) {
       final v = hive.getValue(id);
       if (v == null) continue;
 
       final obj = json.decode(v) as Map<String, dynamic>;
-      final wallet = Wallet.fromJson(obj);
+      final wallet = OldWallet.fromJson(obj);
 
       final txsLabels = await WalletLabels.txsToBip329(
         wallet.transactions,

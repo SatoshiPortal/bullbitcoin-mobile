@@ -7,9 +7,9 @@ import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_wallets
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_bip329.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart'
-    show Wallet;
+    show OldWallet;
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet_sensitive_storage_repository.dart'
-    show WalletSensitiveStorageRepository;
+    show OldWalletSensitiveStorageRepository;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -76,7 +76,7 @@ extension MigrateFromHive on SqliteDatabase {
     );
   }
 
-  Future<List<LabelRow>> _storeNewLabels(List<Bip329Label> oldLabels) async {
+  Future<List<LabelRow>> _storeNewLabels(List<OldBip329Label> oldLabels) async {
     final rows = <LabelRow>[];
 
     for (final label in oldLabels) {
@@ -109,8 +109,8 @@ extension MigrateFromHive on SqliteDatabase {
   }
 
   Future<List<WalletMetadataRow>> _storeNewWalletMetadatas(
-    List<Wallet> oldWallets,
-    SecureStorage oldSecureStorage,
+    List<OldWallet> oldWallets,
+    OldSecureStorage oldSecureStorage,
   ) async {
     final rows = <WalletMetadataRow>[];
 
@@ -119,7 +119,7 @@ extension MigrateFromHive on SqliteDatabase {
         final network = getNetworkFromOldWallet(wallet);
         final scriptType = ScriptType.fromName(wallet.scriptType.name);
 
-        final mnemonic = await WalletSensitiveStorageRepository(
+        final mnemonic = await OldWalletSensitiveStorageRepository(
           secureStorage: oldSecureStorage,
         ).getMnemonic(fingerprintIndex: wallet.mnemonicFingerprint);
         final seed = Seed.mnemonic(mnemonicWords: mnemonic);

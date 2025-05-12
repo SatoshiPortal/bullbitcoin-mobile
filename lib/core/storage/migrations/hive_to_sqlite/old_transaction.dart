@@ -11,8 +11,8 @@ part 'old_transaction.freezed.dart';
 part 'old_transaction.g.dart';
 
 @freezed
-abstract class Transaction with _$Transaction {
-  const factory Transaction({
+abstract class OldTransaction with _$OldTransaction {
+  const factory OldTransaction({
     required int timestamp,
     // lockup submarine + claim reverse + lockup chain.send + lockup chain.self
     required String txid,
@@ -29,30 +29,30 @@ abstract class Transaction with _$Transaction {
     // @Default(false) bool oldTx,
     int? broadcastTime,
     // String? serializedTx,
-    @Default([]) List<Address> outAddrs,
-    @Default([]) List<TxIn> inputs,
+    @Default([]) List<OldAddress> outAddrs,
+    @Default([]) List<OldTxIn> inputs,
     @JsonKey(includeFromJson: false, includeToJson: false)
     bdk.TransactionDetails? bdkTx,
     // Wallet? wallet,
     @Default(false) bool isSwap,
-    SwapTx? swapTx,
+    OldSwapTx? swapTx,
     @Default(false) bool isLiquid,
     @Default('') String unblindedUrl,
     @Default([]) List<String> rbfTxIds,
     String? walletId,
   }) = _Transaction;
 
-  factory Transaction.fromSwapTx(SwapTx swapTx) {
-    return Transaction(
+  factory OldTransaction.fromSwapTx(OldSwapTx swapTx) {
+    return OldTransaction(
       timestamp: DateTime.now().millisecondsSinceEpoch,
       txid: swapTx.id,
       swapTx: swapTx,
       isSwap: true,
     );
   }
-  const Transaction._();
+  const OldTransaction._();
 
-  factory Transaction.fromJson(Map<String, dynamic> json) =>
+  factory OldTransaction.fromJson(Map<String, dynamic> json) =>
       _$TransactionFromJson(json);
 
   bool swapIdisTxid() => swapTx != null && swapTx!.id == txid;
@@ -60,10 +60,10 @@ abstract class Transaction with _$Transaction {
   Uint8List? get psbtAsBytes =>
       psbt == null ? null : Uint8List.fromList(psbt!.codeUnits);
 
-  Address? mapOutValueToAddress(int value) {
+  OldAddress? mapOutValueToAddress(int value) {
     if (outAddrs.isEmpty) return null;
     try {
-      final Address address = outAddrs.firstWhere(
+      final OldAddress address = outAddrs.firstWhere(
         (element) => element.highestPreviousBalance == value,
       );
       return address;
@@ -72,8 +72,8 @@ abstract class Transaction with _$Transaction {
     }
   }
 
-  List<Address> createOutAddrsFromTx() {
-    final List<Address> outAddrs = [];
+  List<OldAddress> createOutAddrsFromTx() {
+    final List<OldAddress> outAddrs = [];
     return outAddrs;
   }
 
@@ -86,7 +86,7 @@ abstract class Transaction with _$Transaction {
   bool isToSelf() {
     if (!isReceived()) {
       final index = outAddrs.indexWhere(
-        (element) => element.kind == AddressKind.deposit,
+        (element) => element.kind == OldAddressKind.deposit,
       );
       if (index == -1) {
         return false;
@@ -182,35 +182,35 @@ class SerializedTx {
       lockTime: json['lock_time'] as int?,
       input:
           (json['input'] as List?)
-              ?.map((e) => Input.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => OldInput.fromJson(e as Map<String, dynamic>))
               .toList(),
       output:
           (json['output'] as List?)
-              ?.map((e) => Output.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => OldOutput.fromJson(e as Map<String, dynamic>))
               .toList(),
     );
   }
   int? version;
   int? lockTime;
-  List<Input>? input;
-  List<Output>? output;
+  List<OldInput>? input;
+  List<OldOutput>? output;
 }
 
 @freezed
-abstract class TxIn with _$TxIn {
-  const factory TxIn({
+abstract class OldTxIn with _$OldTxIn {
+  const factory OldTxIn({
     required String prevOut, // as txid:index
   }) = _TxIn;
-  const TxIn._();
+  const OldTxIn._();
 
-  factory TxIn.fromJson(Map<String, dynamic> json) => _$TxInFromJson(json);
+  factory OldTxIn.fromJson(Map<String, dynamic> json) => _$TxInFromJson(json);
 }
 
-class Input {
-  Input({this.previousOutput, this.scriptSig, this.sequence, this.witness});
+class OldInput {
+  OldInput({this.previousOutput, this.scriptSig, this.sequence, this.witness});
 
-  factory Input.fromJson(Map<String, dynamic> json) {
-    return Input(
+  factory OldInput.fromJson(Map<String, dynamic> json) {
+    return OldInput(
       previousOutput: json['previous_output'] as String?,
       scriptSig: json['script_sig'] as String?,
       sequence: json['sequence'] as int?,
@@ -223,11 +223,11 @@ class Input {
   List<String>? witness;
 }
 
-class Output {
-  Output({this.value, this.scriptPubkey});
+class OldOutput {
+  OldOutput({this.value, this.scriptPubkey});
 
-  factory Output.fromJson(Map<String, dynamic> json) {
-    return Output(
+  factory OldOutput.fromJson(Map<String, dynamic> json) {
+    return OldOutput(
       value: json['value'] as int?,
       scriptPubkey: json['script_pubkey'] as String?,
     );

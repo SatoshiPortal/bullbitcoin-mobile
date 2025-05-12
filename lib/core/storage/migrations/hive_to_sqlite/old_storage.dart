@@ -7,7 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
 
-class SecureStorage {
+class OldSecureStorage {
   final storage = const FlutterSecureStorage();
 
   Future<String?> getValue(String key) async {
@@ -15,8 +15,8 @@ class SecureStorage {
   }
 }
 
-class HiveStorage {
-  HiveStorage();
+class OldHiveStorage {
+  OldHiveStorage();
   late Box<String> _box;
 
   Future init({required List<int> password}) async {
@@ -37,12 +37,12 @@ class HiveStorage {
   }
 }
 
-Future<(SecureStorage, HiveStorage)> setupStorage() async {
-  final secureStorage = SecureStorage();
-  final hiveStorage = HiveStorage();
+Future<(OldSecureStorage, OldHiveStorage)> setupStorage() async {
+  final secureStorage = OldSecureStorage();
+  final hiveStorage = OldHiveStorage();
 
   final password = await secureStorage.getValue(
-    StorageKeys.hiveEncryption.name,
+    OldStorageKeys.hiveEncryption.name,
   );
   if (password == null) debugPrint('migration not needed');
 

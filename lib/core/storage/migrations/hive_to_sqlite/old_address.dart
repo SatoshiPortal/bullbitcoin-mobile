@@ -6,20 +6,20 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'old_address.freezed.dart';
 part 'old_address.g.dart';
 
-enum AddressKind { deposit, change, external }
+enum OldAddressKind { deposit, change, external }
 
-enum AddressStatus { unused, active, used, copied }
+enum OldAddressStatus { unused, active, used, copied }
 
 @freezed
-abstract class Address with _$Address {
-  factory Address({
+abstract class OldAddress with _$OldAddress {
+  factory OldAddress({
     required String address,
     // for btc, this holds regular address; for liquid, this hold confidential address
     // String? confidential, // For liquid // not used now // remove this
     String? standard, // For liquid
     int? index,
-    required AddressKind kind,
-    required AddressStatus state,
+    required OldAddressKind kind,
+    required OldAddressStatus state,
     String? label,
     String? spentTxId,
     @Default(true) bool spendable,
@@ -27,14 +27,14 @@ abstract class Address with _$Address {
     @Default(0) int balance,
     @Default(false) bool isLiquid,
   }) = _Address;
-  const Address._();
+  const OldAddress._();
 
-  factory Address.fromJson(Map<String, dynamic> json) =>
-      _$AddressFromJson(json);
+  factory OldAddress.fromJson(Map<String, dynamic> json) =>
+      _$OldAddressFromJson(json);
 
-  // TODO: UTXO
-  // Updated with UTXO change
-  List<bdk.OutPoint> getUnspentUtxosOutpoints(List<UTXO> utxos) {
+  // TODO: OldUTXO
+  // Updated with OldUTXO change
+  List<bdk.OutPoint> getUnspentUtxosOutpoints(List<OldUTXO> utxos) {
     return utxos
         .where((ut) => ut.address.address == address)
         .map((e) => bdk.OutPoint(txid: e.txid, vout: e.txIndex))
@@ -56,30 +56,30 @@ abstract class Address with _$Address {
 
   String getKindString() {
     switch (kind) {
-      case AddressKind.deposit:
+      case OldAddressKind.deposit:
         return 'Receive';
-      case AddressKind.change:
+      case OldAddressKind.change:
         return 'Change';
-      case AddressKind.external:
+      case OldAddressKind.external:
         return 'External';
     }
   }
 }
 
 @freezed
-abstract class UTXO with _$UTXO {
-  factory UTXO({
+abstract class OldUTXO with _$OldUTXO {
+  factory OldUTXO({
     required String txid,
     required int txIndex,
     required bool isSpent,
     required int value,
     required String label,
-    required Address address,
+    required OldAddress address,
     required bool spendable,
   }) = _UTXO;
-  const UTXO._();
+  const OldUTXO._();
 
-  factory UTXO.fromJson(Map<String, dynamic> json) => _$UTXOFromJson(json);
+  factory OldUTXO.fromJson(Map<String, dynamic> json) => _$UTXOFromJson(json);
 
   @override
   String toString() {
@@ -91,10 +91,10 @@ abstract class UTXO with _$UTXO {
   }
 }
 
-extension Y on List<UTXO> {
-  bool containsUtxo(UTXO utxo) =>
+extension OldY on List<OldUTXO> {
+  bool containsUtxo(OldUTXO utxo) =>
       where((utx) => utx.toString() == utxo.toString()).isNotEmpty;
 
-  List<UTXO> removeUtxo(UTXO utxo) =>
+  List<OldUTXO> removeUtxo(OldUTXO utxo) =>
       where((utx) => utx.toString() != utxo.toString()).toList();
 }

@@ -11,37 +11,37 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'old_wallet.freezed.dart';
 part 'old_wallet.g.dart';
 
-enum BBNetwork { Testnet, Mainnet }
+enum OldBBNetwork { Testnet, Mainnet }
 
-enum BBWalletType { main, xpub, descriptors, words, coldcard }
+enum OldBBWalletType { main, xpub, descriptors, words, coldcard }
 
-enum ScriptType { bip84, bip49, bip44 }
+enum OldScriptType { bip84, bip49, bip44 }
 
-enum BaseWalletType { Bitcoin, Liquid }
+enum OldBaseWalletType { Bitcoin, Liquid }
 
-extension BaseWalletTypeExtension on BaseWalletType {
+extension BaseWalletTypeExtension on OldBaseWalletType {
   String get getImage {
     switch (this) {
-      case BaseWalletType.Bitcoin:
+      case OldBaseWalletType.Bitcoin:
         return 'assets/images/icon_btc.png';
-      case BaseWalletType.Liquid:
+      case OldBaseWalletType.Liquid:
         return 'assets/images/icon_lbtc.png';
     }
   }
 }
 
 @freezed
-abstract class Wallet with _$Wallet {
-  const factory Wallet({
+abstract class OldWallet with _$OldWallet {
+  const factory OldWallet({
     @Default('') String id,
     @Default('') String externalPublicDescriptor,
     @Default('') String internalPublicDescriptor,
     // public
     @Default('') String mnemonicFingerprint,
     @Default('') String sourceFingerprint,
-    required BBNetwork network,
-    required BBWalletType type,
-    required ScriptType scriptType,
+    required OldBBNetwork network,
+    required OldBBWalletType type,
+    required OldScriptType scriptType,
     String? name,
     String? path,
     int? balance,
@@ -50,39 +50,40 @@ abstract class Wallet with _$Wallet {
     DateTime? lastBackupTested,
     @Default(false) bool hide,
     @Default(false) bool mainWallet,
-    required BaseWalletType baseWalletType,
+    required OldBaseWalletType baseWalletType,
     // -------------------
-    Address? lastGeneratedAddress,
-    @Default([]) List<Address> myAddressBook, // address we receive into
-    List<Address>? externalAddressBook, // address that we send to
+    OldAddress? lastGeneratedAddress,
+    @Default([]) List<OldAddress> myAddressBook, // address we receive into
+    List<OldAddress>? externalAddressBook, // address that we send to
     @Default([]) List<dynamic> utxos,
-    @Default([]) List<Transaction> transactions,
-    @Default([]) List<Transaction> unsignedTxs, // related to hardware
-    @Default([]) List<SwapTx> swaps,
+    @Default([]) List<OldTransaction> transactions,
+    @Default([]) List<OldTransaction> unsignedTxs, // related to hardware
+    @Default([]) List<OldSwapTx> swaps,
     @Default(0) int revKeyIndex,
     @Default(0) int subKeyIndex,
     // List<String>? labelTags,
     // List<Bip329Label>? bip329Labels,
-  }) = _Wallet;
-  const Wallet._();
+  }) = _OldWallet;
+  const OldWallet._();
 
-  factory Wallet.fromJson(Map<String, dynamic> json) => _$WalletFromJson(json);
+  factory OldWallet.fromJson(Map<String, dynamic> json) =>
+      _$OldWalletFromJson(json);
 
-  // Address? getLastAddress() =>
-  //     baseWalletType == BaseWalletType.Bitcoin ? lastGeneratedAddress : lastGeneratedLiqAddress;
+  // OldAddress? getLastAddress() =>
+  //     baseWalletType == OldBaseWalletType.Bitcoin ? lastGeneratedAddress : lastGeneratedLiqAddress;
 
-  bool isTestnet() => network == BBNetwork.Testnet;
-  bool isMainnet() => network == BBNetwork.Mainnet;
+  bool isTestnet() => network == OldBBNetwork.Testnet;
+  bool isMainnet() => network == OldBBNetwork.Mainnet;
 
-  bool isMain() => type == BBWalletType.main;
-  bool isLiquid() => baseWalletType == BaseWalletType.Liquid;
-  bool isBitcoin() => baseWalletType == BaseWalletType.Bitcoin;
+  bool isMain() => type == OldBBWalletType.main;
+  bool isLiquid() => baseWalletType == OldBaseWalletType.Liquid;
+  bool isBitcoin() => baseWalletType == OldBaseWalletType.Bitcoin;
 
-  Wallet setLastAddress(Address address) {
+  OldWallet setLastAddress(OldAddress address) {
     return copyWith(lastGeneratedAddress: address);
   }
 
-  Address? getAddressFromWallet(String address) {
+  OldAddress? getAddressFromWallet(String address) {
     for (final addr in myAddressBook) {
       if (addr.address == address) return addr;
     }
@@ -93,7 +94,7 @@ abstract class Wallet with _$Wallet {
     return swaps.any((swap) => swap.id == id);
   }
 
-  SwapTx? getOngoingSwap(String id) {
+  OldSwapTx? getOngoingSwap(String id) {
     if (hasOngoingSwap(id)) {
       return swaps.firstWhere((element) => element.id == id);
     }
@@ -105,14 +106,14 @@ abstract class Wallet with _$Wallet {
   }
 
   int addressGap() {
-    final List<Address> sortedAddresses = List.from(myAddressBook)
+    final List<OldAddress> sortedAddresses = List.from(myAddressBook)
       ..sort((a, b) => (a.index ?? 0).compareTo(b.index ?? 0));
 
     final int lastUsedIndex = sortedAddresses.lastIndexWhere(
-      (address) => address.state == AddressStatus.used,
+      (address) => address.state == OldAddressStatus.used,
     );
     final int lastActiveIndex = sortedAddresses.lastIndexWhere(
-      (address) => address.state == AddressStatus.active,
+      (address) => address.state == OldAddressStatus.active,
     );
 
     final lastIndexForGap =
@@ -126,15 +127,15 @@ abstract class Wallet with _$Wallet {
   }
 
   String purposePathString() {
-    return scriptType == ScriptType.bip84
+    return scriptType == OldScriptType.bip84
         ? '84h'
-        : scriptType == ScriptType.bip49
+        : scriptType == OldScriptType.bip49
         ? '49h'
         : '44h';
   }
 
   String networkPathString() {
-    return network == BBNetwork.Mainnet ? '0h' : '1h';
+    return network == OldBBNetwork.Mainnet ? '0h' : '1h';
   }
 
   String accountPathString() {
@@ -144,11 +145,11 @@ abstract class Wallet with _$Wallet {
   }
 
   String derivationPathString() {
-    if (baseWalletType == BaseWalletType.Bitcoin) {
+    if (baseWalletType == OldBaseWalletType.Bitcoin) {
       return 'm/${purposePathString()}/${networkPathString()}/${accountPathString()}'
           .replaceAll('h', "'");
     } else {
-      if (network == BBNetwork.Testnet) {
+      if (network == OldBBNetwork.Testnet) {
         return 'm/${purposePathString()}/${networkPathString()}/${accountPathString()}'
             .replaceAll('h', "'");
       } else {
@@ -183,7 +184,7 @@ abstract class Wallet with _$Wallet {
   // storage key
   String getRelatedSeedStorageString() {
     // TODO: Sai: Uncomment this (or) add :testnet while saving testnet seed (later)
-    // final istestnet = network == BBNetwork.Testnet ? ':testnet' : '';
+    // final istestnet = network == OldBBNetwork.Testnet ? ':testnet' : '';
     // return mnemonicFingerprint + istestnet;
     return mnemonicFingerprint;
   }
@@ -214,7 +215,7 @@ abstract class Wallet with _$Wallet {
 
   String getAddressFromTxid(String txid) {
     for (final utxo in utxos) {
-      if (utxo is UTXO && utxo.txid == txid) return utxo.address.address;
+      if (utxo is OldUTXO && utxo.txid == txid) return utxo.address.address;
     }
     for (final tx in transactions) {
       for (final addrs in tx.outAddrs) {
@@ -224,7 +225,7 @@ abstract class Wallet with _$Wallet {
     return '';
   }
 
-  Address? findAddressInWallet(String address) {
+  OldAddress? findAddressInWallet(String address) {
     final completeAddressBook = [
       ...externalAddressBook ?? [],
       ...myAddressBook,
@@ -235,13 +236,13 @@ abstract class Wallet with _$Wallet {
     return null;
   }
 
-  Address? getAddressFromAddresses(
+  OldAddress? getAddressFromAddresses(
     String txid, {
     bool isSend = false,
-    AddressKind? kind,
+    OldAddressKind? kind,
   }) {
     for (final address
-        in (isSend ? externalAddressBook : myAddressBook) ?? <Address>[]) {
+        in (isSend ? externalAddressBook : myAddressBook) ?? <OldAddress>[]) {
       if (isSend) {
         if (address.spentTxId == txid) {
           if (kind == null) {
@@ -251,7 +252,7 @@ abstract class Wallet with _$Wallet {
           }
         }
       } else {
-        // TODO: UTXO
+        // TODO: OldUTXO
         for (final utxo in utxos) {
           if (utxo.address.address == address.address && utxo.txid == txid) {
             if (kind == null) {
@@ -286,11 +287,11 @@ abstract class Wallet with _$Wallet {
     String str = '';
 
     switch (type) {
-      case BBWalletType.main:
-        if (baseWalletType == BaseWalletType.Bitcoin) {
-          str = 'Bull Bitcoin Wallet';
+      case OldBBWalletType.main:
+        if (baseWalletType == OldBaseWalletType.Bitcoin) {
+          str = 'Bull Bitcoin OldWallet';
         } else {
-          str = 'Instant Payments Wallet';
+          str = 'Instant Payments OldWallet';
         }
         if (hasPassphrase()) {
           str += '\n(Passphrase Protected)';
@@ -298,19 +299,19 @@ abstract class Wallet with _$Wallet {
           str += '\n(No Passphrase)';
         }
 
-      case BBWalletType.xpub:
+      case OldBBWalletType.xpub:
         str = 'Imported Xpub';
-      case BBWalletType.words:
+      case OldBBWalletType.words:
         str = 'Imported Mnemonic';
         if (hasPassphrase()) {
           str += '\n(Passphrase Protected)';
         } else {
           str += '\n(No Passphrase)';
         }
-      case BBWalletType.coldcard:
+      case OldBBWalletType.coldcard:
         str = 'Imported Coldcard';
 
-      case BBWalletType.descriptors:
+      case OldBBWalletType.descriptors:
         str = 'Imported Descriptors';
     }
 
@@ -321,19 +322,19 @@ abstract class Wallet with _$Wallet {
     String str = '';
 
     switch (type) {
-      case BBWalletType.main:
-        if (baseWalletType == BaseWalletType.Bitcoin) {
+      case OldBBWalletType.main:
+        if (baseWalletType == OldBaseWalletType.Bitcoin) {
           str = 'Secure:${id.substring(0, 5)}';
         } else {
           str = 'Instant:${id.substring(0, 5)}';
         }
-      case BBWalletType.xpub:
+      case OldBBWalletType.xpub:
         str = 'Xpub:${id.substring(0, 5)}';
-      case BBWalletType.words:
+      case OldBBWalletType.words:
         str = 'Imported:${id.substring(0, 5)}';
-      case BBWalletType.coldcard:
+      case OldBBWalletType.coldcard:
         str = 'Coldcard:${id.substring(0, 5)}';
-      case BBWalletType.descriptors:
+      case OldBBWalletType.descriptors:
         str = 'Imported Descriptor:${id.substring(0, 5)}';
     }
 
@@ -344,18 +345,18 @@ abstract class Wallet with _$Wallet {
     String str = '';
 
     switch (type) {
-      case BBWalletType.words:
-      case BBWalletType.main:
-        if (baseWalletType == BaseWalletType.Bitcoin) {
-          str = 'Secure Bitcoin Wallet';
+      case OldBBWalletType.words:
+      case OldBBWalletType.main:
+        if (baseWalletType == OldBaseWalletType.Bitcoin) {
+          str = 'Secure Bitcoin OldWallet';
         } else {
-          str = 'Instant Payments Wallet';
+          str = 'Instant Payments OldWallet';
         }
-      case BBWalletType.xpub:
+      case OldBBWalletType.xpub:
         str = 'Xpub:${id.substring(0, 5)}';
-      case BBWalletType.coldcard:
+      case OldBBWalletType.coldcard:
         str = 'Coldcard:${id.substring(0, 5)}';
-      case BBWalletType.descriptors:
+      case OldBBWalletType.descriptors:
         str = 'Imported Descriptor:${id.substring(0, 5)}';
     }
 
@@ -363,31 +364,31 @@ abstract class Wallet with _$Wallet {
   }
 
   String getWalletTypeStr({bool shorten = false}) {
-    final isTestnet = network == BBNetwork.Testnet;
+    final isTestnet = network == OldBBNetwork.Testnet;
     final networkStr = isTestnet ? 'Testnet ' : '';
 
     switch (type) {
-      case BBWalletType.main:
-        if (baseWalletType == BaseWalletType.Bitcoin) {
+      case OldBBWalletType.main:
+        if (baseWalletType == OldBaseWalletType.Bitcoin) {
           return 'Bitcoin ${networkStr}Network';
         } else {
           return 'Liquid ${networkStr}Network';
         }
 
-      case BBWalletType.words:
+      case OldBBWalletType.words:
         return 'Bitcoin ${networkStr}Network';
       // return shorten
       //     ? 'Bitcoin $networkStr on-chain'
       //     : 'Regular on-chain $networkStr Network';
-      case BBWalletType.xpub:
-      case BBWalletType.coldcard:
-      case BBWalletType.descriptors:
+      case OldBBWalletType.xpub:
+      case OldBBWalletType.coldcard:
+      case OldBBWalletType.descriptors:
         return 'Watch Only';
       // return shorten ? 'Liquid $networkStr' : 'Liquid $networkStr Network';
     }
   }
 
-  List<Transaction> getPendingTxs() {
+  List<OldTransaction> getPendingTxs() {
     return transactions
         // .map(
         //   (e) => e,//.copyWith(wallet: this),
@@ -395,82 +396,86 @@ abstract class Wallet with _$Wallet {
         .where(
           (tx) =>
               tx.timestamp == 0 &&
-              ((baseWalletType == BaseWalletType.Bitcoin && !tx.isLiquid) ||
-                  (baseWalletType == BaseWalletType.Liquid && tx.isLiquid)),
+              ((baseWalletType == OldBaseWalletType.Bitcoin && !tx.isLiquid) ||
+                  (baseWalletType == OldBaseWalletType.Liquid && tx.isLiquid)),
         )
         .toList()
         .reversed
         .toList();
   }
 
-  List<Transaction> getConfirmedTxs() {
+  List<OldTransaction> getConfirmedTxs() {
     final txs =
         transactions
             // .map((e) => e.copyWith(wallet: this))
             .where(
               (tx) =>
                   tx.timestamp != 0 &&
-                  ((baseWalletType == BaseWalletType.Bitcoin && !tx.isLiquid) ||
-                      (baseWalletType == BaseWalletType.Liquid && tx.isLiquid)),
+                  ((baseWalletType == OldBaseWalletType.Bitcoin &&
+                          !tx.isLiquid) ||
+                      (baseWalletType == OldBaseWalletType.Liquid &&
+                          tx.isLiquid)),
             )
             .toList();
     txs.sort((a, b) => b.timestamp.compareTo(a.timestamp));
     return txs;
   }
 
-  Transaction? getTxWithId(String id) {
+  OldTransaction? getTxWithId(String id) {
     final txs = transactions.where((tx) => tx.txid == id).toList();
     return txs.isNotEmpty ? txs[0] : null;
   }
 
   bool watchOnly() =>
-      type == BBWalletType.xpub ||
-      type == BBWalletType.coldcard ||
-      type == BBWalletType.descriptors;
+      type == OldBBWalletType.xpub ||
+      type == OldBBWalletType.coldcard ||
+      type == OldBBWalletType.descriptors;
 
   bdk.Network? getBdkNetwork() {
     switch (network) {
-      case BBNetwork.Testnet:
+      case OldBBNetwork.Testnet:
         return bdk.Network.testnet;
-      case BBNetwork.Mainnet:
+      case OldBBNetwork.Mainnet:
         return bdk.Network.bitcoin;
 
-      // case BBNetwork.LTestnet:
-      // case BBNetwork.LMainnet:
+      // case OldBBNetwork.LTestnet:
+      // case OldBBNetwork.LMainnet:
       //   return null;
     }
     // return null;
   }
 
   bool isInstant() =>
-      type == BBWalletType.main && baseWalletType == BaseWalletType.Liquid;
+      type == OldBBWalletType.main &&
+      baseWalletType == OldBaseWalletType.Liquid;
 
   bool isSecure() =>
-      type == BBWalletType.main && baseWalletType == BaseWalletType.Bitcoin;
+      type == OldBBWalletType.main &&
+      baseWalletType == OldBaseWalletType.Bitcoin;
 
   bool isSameNetwork(bool isTestnet) {
-    return (isTestnet && network == BBNetwork.Testnet) ||
-        (!isTestnet && network == BBNetwork.Mainnet);
+    return (isTestnet && network == OldBBNetwork.Testnet) ||
+        (!isTestnet && network == OldBBNetwork.Mainnet);
   }
 
-  List<Address> allFreezedAddresses() {
-    final all = <Address>[];
+  List<OldAddress> allFreezedAddresses() {
+    final all = <OldAddress>[];
     all.addAll(myAddressBook);
-    all.addAll(externalAddressBook ?? <Address>[]);
+    all.addAll(externalAddressBook ?? <OldAddress>[]);
     return all.where((addr) => !addr.spendable).toList();
   }
 
-  List<UTXO> allFreezedUtxos() {
+  List<OldUTXO> allFreezedUtxos() {
     return utxos
-        .where((utxo) => utxo is UTXO && utxo.spendable == false)
-        .cast<UTXO>()
+        .where((utxo) => utxo is OldUTXO && utxo.spendable == false)
+        .cast<OldUTXO>()
         .toList();
   }
 
-  List<UTXO> spendableUtxos() {
+  List<OldUTXO> spendableUtxos() {
     return utxos
-        .where((utxo) => utxo is UTXO && utxo.spendable == true)
-        .cast<UTXO>()
+        .where((utxo) => utxo is OldUTXO && utxo.spendable == true)
+        .cast<OldUTXO>()
         .toList();
   }
 
@@ -489,19 +494,20 @@ abstract class Wallet with _$Wallet {
     return transactions.where((tx) => tx.isReceived()).toList().length;
   }
 
-  Transaction? getTxWithSwap(SwapTx swap) {
+  OldTransaction? getTxWithSwap(OldSwapTx swap) {
     final idx = transactions.indexWhere((tx) => tx.swapTx?.id == swap.id);
     if (idx == -1) return null;
     return transactions[idx];
   }
 
   int frozenUTXOTotal() {
-    final addresses = <Address>[...myAddressBook];
+    final addresses = <OldAddress>[...myAddressBook];
     final unspendable =
         addresses
             .where(
               (address) =>
-                  !address.spendable && (address.state == AddressStatus.active),
+                  !address.spendable &&
+                  (address.state == OldAddressStatus.active),
             )
             .toList();
     final totalFrozen = unspendable.fold<int>(
@@ -514,7 +520,7 @@ abstract class Wallet with _$Wallet {
   int balanceWithoutFrozenUTXOs() =>
       (balance ?? 0) == 0 ? 0 : balance! - frozenUTXOTotal();
 
-  List<SwapTx> swapsToProcess() {
+  List<OldSwapTx> swapsToProcess() {
     return swaps.where((swap) => swap.proceesTx() && !swap.failed()).toList();
   }
 }
@@ -535,27 +541,27 @@ abstract class Balance with _$Balance {
       _$BalanceFromJson(json);
 }
 
-String scriptTypeString(ScriptType scriptType) {
+String scriptTypeString(OldScriptType scriptType) {
   var name = '';
   switch (scriptType) {
-    case ScriptType.bip84:
+    case OldScriptType.bip84:
       name = 'Segwit';
-    case ScriptType.bip49:
+    case OldScriptType.bip49:
       name = 'Legacy Script';
-    case ScriptType.bip44:
+    case OldScriptType.bip44:
       name = 'Legacy Pubkey';
   }
   return name;
 }
 
-extension W on ScriptType {
+extension W on OldScriptType {
   String pathsString() {
     switch (this) {
-      case ScriptType.bip84:
+      case OldScriptType.bip84:
         return '84';
-      case ScriptType.bip49:
+      case OldScriptType.bip49:
         return '49';
-      case ScriptType.bip44:
+      case OldScriptType.bip44:
         return '44';
     }
   }
@@ -563,11 +569,11 @@ extension W on ScriptType {
   String getScriptString() {
     var name = '';
     switch (this) {
-      case ScriptType.bip84:
+      case OldScriptType.bip84:
         name = 'Segwit';
-      case ScriptType.bip49:
+      case OldScriptType.bip49:
         name = 'Legacy Script';
-      case ScriptType.bip44:
+      case OldScriptType.bip44:
         name = 'Legacy Pubkey';
     }
     return name;
@@ -580,22 +586,22 @@ List<String> backupInstructions(bool hasPassphrase) {
       'Your backup is protected by passphrase.',
       'Without a backup, if you lose or break your phone, or if you uninstall the Bull Bitcoin app, your bitcoins will be lost forever.',
       'Anybody with access to both your 12 word backup and your passphrase can steal your bitcoins. Hide them separately.',
-      'If you lose your 12 word backup or your passphrase, you will not be able to recover access to the Bitcoin Wallet. Both the 12 words and the passphrase are required.',
+      'If you lose your 12 word backup or your passphrase, you will not be able to recover access to the Bitcoin OldWallet. Both the 12 words and the passphrase are required.',
       'Do not make digital copies of your backup and passprhase. Write them down separately on a piece of paper, or engraved in metal.',
       // (passphrase)
       // Your backup is protected by passphrase.
       // Without a backup, if you lose or break your phone, or if you uninstall the Bull Bitcoin app, your bitcoins will be lost forever.
       // Anybody with access to both your 12 word backup and your passphrase can steal your bitcoins. Hide them separately.
-      // If you lose your 12 word backup or your passphrase, you will not be able to recover access to the Bitcoin Wallet. Both the 12 words and the passphrase are required.
+      // If you lose your 12 word backup or your passphrase, you will not be able to recover access to the Bitcoin OldWallet. Both the 12 words and the passphrase are required.
       // Do not make digital copies of your backup and passprhase. Write them down separately on a piece of paper, or engraved in metal.
     ] else ...[
-      'If you lose your 12 word backup, you will not be able to recover access to the Bitcoin Wallet.',
+      'If you lose your 12 word backup, you will not be able to recover access to the Bitcoin OldWallet.',
       'Without a backup, if you lose or break your phone, or if you uninstall the Bull Bitcoin app, your bitcoins will be lost forever.',
       'Anybody with access to your 12 word backup can steal your bitcoins. Hide it well.',
       'Do not make digital copies of your backup. Write it down on a piece of paper, or engraved in metal.',
       'Your backup is not protected by passphrase. Add a passphrase to your backup later by creating a new wallet.',
       // (No passphrase)
-      // If you lose your 12 word backup, you will not be able to recover access to the Bitcoin Wallet.
+      // If you lose your 12 word backup, you will not be able to recover access to the Bitcoin OldWallet.
       // Without a backup, if you lose or break your phone, or if you uninstall the Bull Bitcoin app, your bitcoins will be lost forever.
       // Anybody with access to your 12 word backup can steal your bitcoins. Hide it well.
       // Do not make digital copies of your backup. Write it down on a piece of paper, or engraved in metal.
@@ -608,4 +614,4 @@ List<String> backupInstructions(bool hasPassphrase) {
 // compatible -> BIP49 -> m/49'/0'/0'/0-1/* -> sh-wpkh
 // legacy -> BIP44 -> m/44'/0'/0'/0-1/* -> pkh
 
-extension type LiqWallet(Wallet wallet) {}
+extension type LiqWallet(OldWallet wallet) {}

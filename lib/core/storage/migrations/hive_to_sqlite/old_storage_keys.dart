@@ -1,4 +1,4 @@
-enum StorageKeys {
+enum OldStorageKeys {
   securityKey('securityKey'),
   seeds('seeds'),
   wallets('wallets'),
@@ -13,5 +13,5 @@ enum StorageKeys {
   payjoin('payjoin');
 
   final String name;
-  const StorageKeys(this.name);
+  const OldStorageKeys(this.name);
 }

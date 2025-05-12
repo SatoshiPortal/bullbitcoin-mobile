@@ -3,41 +3,41 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'old_bip329.freezed.dart';
 part 'old_bip329.g.dart';
 
-enum BIP329Type { tx, address, pubkey, input, output, xpub }
+enum OldBIP329Type { tx, address, pubkey, input, output, xpub }
 
-extension LabelTypeExtension on BIP329Type {
+extension OldLabelTypeExtension on OldBIP329Type {
   String get value {
     switch (this) {
-      case BIP329Type.tx:
+      case OldBIP329Type.tx:
         return 'tx';
-      case BIP329Type.address:
+      case OldBIP329Type.address:
         return 'address';
-      case BIP329Type.pubkey:
+      case OldBIP329Type.pubkey:
         return 'pubkey';
-      case BIP329Type.input:
+      case OldBIP329Type.input:
         return 'input';
-      case BIP329Type.output:
+      case OldBIP329Type.output:
         return 'output';
-      case BIP329Type.xpub:
+      case OldBIP329Type.xpub:
         return 'xpub';
     }
   }
 
-  set fromString(String value) => BIP329Type.values.byName(value);
+  set fromString(String value) => OldBIP329Type.values.byName(value);
 }
 
 @freezed
-abstract class Bip329Label with _$Bip329Label {
-  const factory Bip329Label({
-    required BIP329Type type,
+abstract class OldBip329Label with _$OldBip329Label {
+  const factory OldBip329Label({
+    required OldBIP329Type type,
     required String ref,
     String? label,
     String? origin,
     bool? spendable,
   }) = _Bip329Label;
-  const Bip329Label._();
+  const OldBip329Label._();
 
-  factory Bip329Label.fromJson(Map<String, dynamic> json) =>
+  factory OldBip329Label.fromJson(Map<String, dynamic> json) =>
       _$Bip329LabelFromJson(json);
 
   ///  TAG LIKE LABELLING SYSTEM

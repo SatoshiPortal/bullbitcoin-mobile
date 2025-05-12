@@ -4,12 +4,12 @@ import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage.dar
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage_keys.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart';
 
-List<Wallet> fetchOldWalletMetadatas(HiveStorage hive) {
-  final oldWalletPayload = hive.getValue(StorageKeys.wallets.name);
+List<OldWallet> fetchOldWalletMetadatas(OldHiveStorage hive) {
+  final oldWalletPayload = hive.getValue(OldStorageKeys.wallets.name);
   final oldWallets = json.decode(oldWalletPayload!) as Map<String, dynamic>;
   final walletsIds = oldWallets['wallets'] as List<dynamic>;
 
-  final walletMetadatas = <Wallet>[];
+  final walletMetadatas = <OldWallet>[];
   for (final walletId in walletsIds) {
     if (walletId is! String) continue;
 
@@ -18,7 +18,7 @@ List<Wallet> fetchOldWalletMetadatas(HiveStorage hive) {
 
     final walletMetadataJson =
         json.decode(walletMetadata) as Map<String, dynamic>;
-    final walletObj = Wallet.fromJson(walletMetadataJson);
+    final walletObj = OldWallet.fromJson(walletMetadataJson);
     walletMetadatas.add(walletObj);
   }
 
