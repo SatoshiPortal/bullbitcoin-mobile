@@ -8,13 +8,6 @@ Future<void> doMigration(
   OldSecureStorage secureStorage,
   OldHiveStorage hiveStorage,
 ) async {
-  // print('fromVersion $fromVersion; toVersion $toVersion');
-
-  // await doMigration0_1to0_2(
-  //   secureStorage,
-  //   hiveStorage,
-  // );
-
   if (toVersion.startsWith('0.2') && fromVersion.startsWith('0.1')) {
     await doMigration0_1to0_2(secureStorage, hiveStorage);
   } else if (toVersion.startsWith('0.3')) {

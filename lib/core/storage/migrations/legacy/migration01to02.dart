@@ -54,6 +54,9 @@ Future<void> doMigration0_1to0_2(
     wallets.add(w);
   }
 
+  if (liquidMainnetSeed == null) {
+    throw 'Could not create liquid mainnet wallet. Abort.';
+  }
   // Change 4: create a new Liquid wallet, based on the Bitcoin wallet
   final liqWallets = await createLiquidWallet(
     liquidMainnetSeed,
@@ -205,6 +208,7 @@ Future<List<OldWallet>> createLiquidWallet(
 ) async {
   // create liquid wallet from lwk
   final List<OldWallet> oldWallets = [];
+
   if (liquidMainnetSeed != null) {
     final mnemonic = liquidMainnetSeed.mnemonic;
     final descriptor = lwk.Descriptor.newConfidential(
