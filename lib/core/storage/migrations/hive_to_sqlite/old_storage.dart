@@ -12,6 +12,10 @@ class OldSecureStorage {
   Future<String?> getValue(String key) async {
     return await storage.read(key: key);
   }
+
+  Future<void> saveValue({required String key, required String value}) async {
+    await storage.write(key: key, value: value);
+  }
 }
 
 class OldHiveStorage {
@@ -33,6 +37,10 @@ class OldHiveStorage {
       data[key as String] = value;
     });
     return data;
+  }
+
+  Future<void> saveValue({required String key, required String value}) async {
+    await _box.put(key, value);
   }
 }
 
