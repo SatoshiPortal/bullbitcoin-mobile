@@ -19,8 +19,9 @@ class TestPhysicalBackupFlow extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(
-          value: locator<TestWalletBackupBloc>()
-            ..add(const LoadSeedForVerification()),
+          value:
+              locator<TestWalletBackupBloc>()
+                ..add(const LoadSeedForVerification()),
         ),
       ],
       child: BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
@@ -28,9 +29,7 @@ class TestPhysicalBackupFlow extends StatelessWidget {
           if (state.status == TestWalletBackupStatus.error) {
           } else if (state.status == TestWalletBackupStatus.success &&
               state.testMnemonicOrder.isNotEmpty) {
-            context.goNamed(
-              TestWalletBackupSubroute.backupTestSuccess.name,
-            );
+            context.goNamed(TestWalletBackupSubroute.backupTestSuccess.name);
           }
         },
         child: Builder(
@@ -52,9 +51,10 @@ class TestPhysicalBackupFlow extends StatelessWidget {
               ),
               body: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
-                child: !isVerifying
-                    ? const TestPhysicalBackupScreen()
-                    : const ShuffledMnemonicScreen(),
+                child:
+                    !isVerifying
+                        ? const TestPhysicalBackupScreen()
+                        : const ShuffledMnemonicScreen(),
               ),
             );
           },
@@ -108,11 +108,8 @@ class TestPhysicalBackupScreen extends StatelessWidget {
                     for (var i = 0; i < 6; i++)
                       Row(
                         children: [
-                          for (var j = 0; j < 2; j++)
-                            RecoveryPhraseWord(
-                              index: i * 2 + j,
-                              number: i * 2 + j + 1,
-                            ),
+                          RecoveryPhraseWord(index: i, number: i + 1),
+                          RecoveryPhraseWord(index: i + 6, number: i + 7),
                         ],
                       ),
                   ],
@@ -190,9 +187,9 @@ class TestPhysicalBackupScreen extends StatelessWidget {
             BBButton.big(
               label: "Next",
               onPressed: () {
-                context
-                    .read<TestWalletBackupBloc>()
-                    .add(const StartPhysicalBackupVerification());
+                context.read<TestWalletBackupBloc>().add(
+                  const StartPhysicalBackupVerification(),
+                );
               },
               bgColor: context.colour.secondary,
               textColor: context.colour.onSecondary,
@@ -254,9 +251,10 @@ class ShuffledMnemonicScreen extends StatelessWidget {
                 final testMnemonicOrder = context.select(
                   (TestWalletBackupBloc bloc) => bloc.state.testMnemonicOrder,
                 );
-                final nextWordNumber = testMnemonicOrder.isEmpty
-                    ? 1
-                    : testMnemonicOrder.length + 1;
+                final nextWordNumber =
+                    testMnemonicOrder.isEmpty
+                        ? 1
+                        : testMnemonicOrder.length + 1;
                 final showPrompt = testMnemonicOrder.length < 12;
 
                 if (showPrompt) {
@@ -323,10 +321,7 @@ class ShuffledMnemonicGrid extends StatelessWidget {
 }
 
 class ShuffledWordItem extends StatelessWidget {
-  const ShuffledWordItem({
-    super.key,
-    required this.index,
-  });
+  const ShuffledWordItem({super.key, required this.index});
 
   final int index;
 
@@ -342,13 +337,14 @@ class ShuffledWordItem extends StatelessWidget {
           word: word,
           isSelected: isSelected,
           actualIdx: actualIdx,
-          onTap: isSelected
-              ? null
-              : () {
-                  context
-                      .read<TestWalletBackupBloc>()
-                      .add(OnWordsSelected(shuffledIdx: index));
-                },
+          onTap:
+              isSelected
+                  ? null
+                  : () {
+                    context.read<TestWalletBackupBloc>().add(
+                      OnWordsSelected(shuffledIdx: index),
+                    );
+                  },
         );
       },
     );
@@ -367,16 +363,18 @@ class VerifyButton extends StatelessWidget {
 
         return BBButton.big(
           label: "Verify",
-          onPressed: allWordsSelected
-              ? () {
-                  context
-                      .read<TestWalletBackupBloc>()
-                      .add(const VerifyPhysicalBackup());
-                }
-              : () {},
-          bgColor: allWordsSelected
-              ? context.colour.secondary
-              : context.colour.surface,
+          onPressed:
+              allWordsSelected
+                  ? () {
+                    context.read<TestWalletBackupBloc>().add(
+                      const VerifyPhysicalBackup(),
+                    );
+                  }
+                  : () {},
+          bgColor:
+              allWordsSelected
+                  ? context.colour.secondary
+                  : context.colour.surface,
           textColor: context.colour.onSecondary,
         );
       },
@@ -409,10 +407,7 @@ class VerificationWordItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(2.76),
-          border: Border.all(
-            color: context.colour.surface,
-            width: 0.69,
-          ),
+          border: Border.all(color: context.colour.surface, width: 0.69),
           boxShadow: [
             BoxShadow(
               color: context.colour.surface,
@@ -431,10 +426,7 @@ class VerificationWordItem extends StatelessWidget {
                 transitionBuilder: (Widget child, Animation<double> animation) {
                   return FadeTransition(
                     opacity: animation,
-                    child: ScaleTransition(
-                      scale: animation,
-                      child: child,
-                    ),
+                    child: ScaleTransition(scale: animation, child: child),
                   );
                 },
                 child: Container(
@@ -442,13 +434,15 @@ class VerificationWordItem extends StatelessWidget {
                   width: 34.48,
                   height: 34.48,
                   decoration: BoxDecoration(
-                    color: isSelected
-                        ? const Color(0xFFE53935)
-                        : const Color(0xFFA9A9A9),
+                    color:
+                        isSelected
+                            ? const Color(0xFFE53935)
+                            : const Color(0xFFA9A9A9),
                     border: Border.all(
-                      color: isSelected
-                          ? const Color(0xFFE53935)
-                          : const Color(0xFFA9A9A9),
+                      color:
+                          isSelected
+                              ? const Color(0xFFE53935)
+                              : const Color(0xFFA9A9A9),
                       width: 0.82,
                     ),
                     borderRadius: BorderRadius.circular(2.46),
@@ -513,10 +507,7 @@ class RecoveryPhraseWord extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(2.76),
-          border: Border.all(
-            color: context.colour.surface,
-            width: 0.69,
-          ),
+          border: Border.all(color: context.colour.surface, width: 0.69),
           boxShadow: [
             BoxShadow(
               color: context.colour.surface,
