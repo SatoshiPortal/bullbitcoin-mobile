@@ -1333,11 +1333,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "release/v0.23.0-dev.1"
-      resolved-ref: ee7418e85af103317493365f956de92b6a98dee8
-      url: "https://github.com/LtbLightning/payjoin-flutter"
+      ref: deps-for-bb
+      resolved-ref: "322b61b9074be2c0170e44e589f6552917e58a2e"
+      url: "https://github.com/DanGould/payjoin-flutter"
     source: git
-    version: "0.23.0-dev.1"
+    version: "0.23.0"
   permission_handler:
     dependency: "direct main"
     description:
@@ -1732,10 +1732,10 @@ packages:
     dependency: "direct main"
     description:
       name: timeago
-      sha256: "054cedf68706bb142839ba0ae6b135f6b68039f0b8301cbe8784ae653d5ff8de"
+      sha256: b05159406a97e1cbb2b9ee4faa9fb096fe0e2dfcd8b08fcd2a00553450d3422e
       url: "https://pub.dev"
     source: hosted
-    version: "3.7.0"
+    version: "3.7.1"
   timing:
     dependency: transitive
     description:
@@ -1982,10 +1982,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: dc6ecaa00a7c708e5b4d10ee7bec8c270e9276dfcab1783f57e9962d7884305f
+      sha256: "329edf97fdd893e0f1e3b9e88d6a0e627128cc17cc316a8d67fda8f1451178ba"
       url: "https://pub.dev"
     source: hosted
-    version: "5.12.0"
+    version: "5.13.0"
   xdg_directories:
     dependency: transitive
     description:

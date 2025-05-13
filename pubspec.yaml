@@ -34,8 +34,8 @@ dependencies:
   path_provider: ^2.0.15
   payjoin_flutter:
     git:
-      url: https://github.com/LtbLightning/payjoin-flutter
-      ref: release/v0.23.0-dev.1
+      url: https://github.com/DanGould/payjoin-flutter
+      ref: deps-for-bb
   carousel_slider: ^4.2.1
   qr_flutter: ^4.1.0
   flutter_translate: ^4.0.3
@@ -191,3 +191,4 @@ flutter_launcher_icons:
   min_sdk_android: 21 # android min sdk min:16, default 21
   adaptive_icon_background: "#FBFBFB"
   adaptive_icon_foreground: "assets/iconnew-red.png"
+
