@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart' show Seed;
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_labels.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_old_seed.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_settings.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_utils.dart'
     show getNetworkFromOldWallet;
@@ -8,8 +9,6 @@ import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_bip329.dart
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart'
     show OldWallet;
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet_sensitive_storage_repository.dart'
-    show OldWalletSensitiveStorageRepository;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -127,10 +126,11 @@ extension MigrateFromHive on SqliteDatabase {
         final network = getNetworkFromOldWallet(wallet);
         final scriptType = ScriptType.fromName(wallet.scriptType.name);
 
-        final mnemonic = await OldWalletSensitiveStorageRepository(
+        final mnemonic = await fetchOldSeed(
           secureStorage: oldSecureStorage,
-        ).getMnemonic(fingerprintIndex: wallet.mnemonicFingerprint);
-        final seed = Seed.mnemonic(mnemonicWords: mnemonic);
+          fingerprintIndex: wallet.mnemonicFingerprint,
+        );
+        final seed = Seed.mnemonic(mnemonicWords: mnemonic.mnemonicList());
 
         final walletMetadata = await WalletMetadataService.deriveFromSeed(
           seed: seed,
