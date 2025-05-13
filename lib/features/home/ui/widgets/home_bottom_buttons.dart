@@ -25,12 +25,12 @@ class HomeBottomButtons extends StatelessWidget {
             onPressed: () {
               // Lightning is the default receive method if no specific wallet is selected
               if (wallet == null) {
-                context.pushNamed(ReceiveRoute.receiveLightning.name);
+                context.push(ReceiveRoute.receiveLightning.path);
               } else {
-                context.pushNamed(
+                context.push(
                   wallet!.isLiquid
-                      ? ReceiveRoute.receiveLiquid.name
-                      : ReceiveRoute.receiveBitcoin.name,
+                      ? ReceiveRoute.receiveLiquid.path
+                      : ReceiveRoute.receiveBitcoin.path,
                   extra: wallet,
                 );
               }
@@ -46,7 +46,7 @@ class HomeBottomButtons extends StatelessWidget {
             label: 'Send',
             iconFirst: true,
             onPressed: () {
-              context.pushNamed(SendRoute.send.name, extra: wallet);
+              context.push(SendRoute.send.path, extra: wallet);
             },
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,

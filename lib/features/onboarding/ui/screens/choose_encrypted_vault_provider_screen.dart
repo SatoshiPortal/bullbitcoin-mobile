@@ -13,9 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart'
 import 'package:go_router/go_router.dart';
 
 class ChooseVaultProviderScreen extends StatefulWidget {
-  const ChooseVaultProviderScreen({
-    super.key,
-  });
+  const ChooseVaultProviderScreen({super.key});
 
   @override
   State<ChooseVaultProviderScreen> createState() =>
@@ -53,8 +51,9 @@ class _ScreenState extends State<_Screen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<OnboardingBloc, OnboardingState>(
-      listenWhen: (previous, current) =>
-          current.onboardingStepStatus != previous.onboardingStepStatus,
+      listenWhen:
+          (previous, current) =>
+              current.onboardingStepStatus != previous.onboardingStepStatus,
       listener: (context, state) {
         if (state.onboardingStepStatus == OnboardingStepStatus.success &&
             !state.backupInfo.isCorrupted) {
@@ -66,21 +65,22 @@ class _ScreenState extends State<_Screen> {
 
           context
               .pushNamed(
-            OnboardingSubroute.retrievedBackupInfo.name,
-            extra: state.backupInfo,
-          )
+                OnboardingRoute.retrievedBackupInfo.name,
+                extra: state.backupInfo,
+              )
               .then((_) {
-            // When we return from the route, end the navigation state
-            if (mounted) {
-              bloc.add(const EndTransitioning());
-            }
-          });
+                // When we return from the route, end the navigation state
+                if (mounted) {
+                  bloc.add(const EndTransitioning());
+                }
+              });
         }
       },
       child: BlocBuilder<OnboardingBloc, OnboardingState>(
-        buildWhen: (previous, current) =>
-            current.onboardingStepStatus != previous.onboardingStepStatus ||
-            current.transitioning != previous.transitioning,
+        buildWhen:
+            (previous, current) =>
+                current.onboardingStepStatus != previous.onboardingStepStatus ||
+                current.transitioning != previous.transitioning,
         builder: (context, state) {
           // Show loading screen during loading OR navigation to avoid flickers
           if (state.onboardingStepStatus == OnboardingStepStatus.loading ||
@@ -88,48 +88,51 @@ class _ScreenState extends State<_Screen> {
             return Scaffold(
               backgroundColor: context.colour.onSecondary,
               body: ProgressScreen(
-                title: (state.vaultProvider is GoogleDrive)
-                    ? "You will need to sign-in to Google Drive"
-                    : "Fetching from your device.",
-                description: (state.vaultProvider is GoogleDrive)
-                    ? "Google will ask you to share personal information with this app."
-                    : "",
+                title:
+                    (state.vaultProvider is GoogleDrive)
+                        ? "You will need to sign-in to Google Drive"
+                        : "Fetching from your device.",
+                description:
+                    (state.vaultProvider is GoogleDrive)
+                        ? "Google will ask you to share personal information with this app."
+                        : "",
                 isLoading: true,
-                extras: (state.vaultProvider is GoogleDrive)
-                    ? [
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "This information ",
-                                style: context.font.headlineMedium,
-                              ),
-                              TextSpan(
-                                text: "will not ",
-                                style: context.font.headlineLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                extras:
+                    (state.vaultProvider is GoogleDrive)
+                        ? [
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "This information ",
+                                  style: context.font.headlineMedium,
                                 ),
-                              ),
-                              TextSpan(
-                                text: "leave your phone and is ",
-                                style: context.font.headlineMedium,
-                              ),
-                              TextSpan(
-                                text: "never ",
-                                style: context.font.headlineLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                                TextSpan(
+                                  text: "will not ",
+                                  style: context.font.headlineLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              TextSpan(
-                                text: "shared with Bull Bitcoin.",
-                                style: context.font.headlineMedium,
-                              ),
-                            ],
+                                TextSpan(
+                                  text: "leave your phone and is ",
+                                  style: context.font.headlineMedium,
+                                ),
+                                TextSpan(
+                                  text: "never ",
+                                  style: context.font.headlineLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: "shared with Bull Bitcoin.",
+                                  style: context.font.headlineMedium,
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ]
-                    : [],
+                        ]
+                        : [],
               ),
             );
           }
@@ -153,8 +156,8 @@ class _ScreenState extends State<_Screen> {
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: VaultLocations(
-          onProviderSelected: (provider) =>
-              _handleProviderTap(context, provider),
+          onProviderSelected:
+              (provider) => _handleProviderTap(context, provider),
         ),
       ),
     );

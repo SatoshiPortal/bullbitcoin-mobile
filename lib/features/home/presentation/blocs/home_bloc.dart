@@ -17,7 +17,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/home/domain/entity/warning.dart';
-import 'package:bb_mobile/router.dart';
+import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -280,7 +280,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       return HomeWarning(
         title: title,
         description: 'Click to configure electrum server settings',
-        actionRoute: AppRoute.settings.name,
+        actionRoute: SettingsRoute.settings.name,
         type: WarningType.error,
       );
     }
@@ -293,7 +293,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       return HomeWarning(
         title: 'Payjoin Service Unreachable',
         description: 'Contact support for assistance',
-        actionRoute: AppRoute.settings.name,
+        actionRoute: SettingsRoute.settings.name,
         type: WarningType.error,
       );
     }
@@ -313,7 +313,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       return HomeWarning(
         title: 'Boltz Server Unreachable',
         description: 'Contact support for assistance',
-        actionRoute: AppRoute.settings.name,
+        actionRoute: SettingsRoute.settings.name,
         type: WarningType.error,
       );
     }

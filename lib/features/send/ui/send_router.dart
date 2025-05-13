@@ -15,7 +15,6 @@ enum SendRoute {
 
 class SendRouter {
   static final route = GoRoute(
-    name: SendRoute.send.name,
     path: SendRoute.send.path,
     builder: (context, state) {
       // Pass a preselected wallet to the send bloc if one is set in the URI

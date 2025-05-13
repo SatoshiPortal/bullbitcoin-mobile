@@ -1,5 +1,5 @@
+import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +78,7 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.swap.path,
               label: 'Swap',
               onPressed: () {
-                context.pushNamed(AppRoute.swap.name);
+                context.pushNamed(SwapRoute.swap.name);
               },
               position: _ButtonPosition.last,
               disabled: false,

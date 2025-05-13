@@ -59,14 +59,16 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                       description:
                           'Anonymous backup with strong encryption using your cloud.',
                       tag: 'Easy and simple (1 minute)',
-                      onTap: () => {
-                        context.read<KeyServerCubit>().checkConnection(),
-                        context.pushNamed(
-                          OnboardingSubroute.chooseRecoverProvider
-                              .name, // ChooseVaultProviderScreen
-                          extra: true,
-                        ),
-                      },
+                      onTap:
+                          () => {
+                            context.read<KeyServerCubit>().checkConnection(),
+                            context.pushNamed(
+                              OnboardingRoute
+                                  .chooseRecoverProvider
+                                  .name, // ChooseVaultProviderScreen
+                              extra: true,
+                            ),
+                          },
                     ),
                     const Gap(16),
                     BackupOptionCard(
@@ -80,9 +82,10 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                       description:
                           'Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.',
                       tag: 'Trustless (take your time)',
-                      onTap: () => context.pushNamed(
-                        OnboardingSubroute.recoverFromPhysical.name,
-                      ),
+                      onTap:
+                          () => context.pushNamed(
+                            OnboardingRoute.recoverFromPhysical.name,
+                          ),
                     ),
                   ],
                 ),
@@ -135,20 +138,13 @@ class BackupOptionCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: 36,
-                    height: 45,
-                    child: icon,
-                  ),
+                  SizedBox(width: 36, height: 45, child: icon),
                   const Gap(12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        BBText(
-                          title,
-                          style: context.font.headlineMedium,
-                        ),
+                        BBText(title, style: context.font.headlineMedium),
                         const Gap(10),
                         BBText(
                           description,

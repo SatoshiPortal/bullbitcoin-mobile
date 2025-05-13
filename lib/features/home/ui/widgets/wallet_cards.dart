@@ -46,7 +46,6 @@ class HomeWalletCards extends StatelessWidget {
                 context.goNamed(
                   HomeRoute.walletHome.name,
                   pathParameters: {'walletId': w.id},
-                  extra: context.read<HomeBloc>(),
                 );
               },
             ),

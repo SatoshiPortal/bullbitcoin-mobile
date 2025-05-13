@@ -22,7 +22,7 @@ class OnboardingPhysicalRecovery extends StatelessWidget {
       listener: (context, state) {
         if (state.step == OnboardingStep.recover &&
             state.onboardingStepStatus == OnboardingStepStatus.success) {
-          context.goNamed(OnboardingSubroute.recoverSuccess.name);
+          context.goNamed(OnboardingRoute.recoverSuccess.name);
         }
       },
       child: const Scaffold(

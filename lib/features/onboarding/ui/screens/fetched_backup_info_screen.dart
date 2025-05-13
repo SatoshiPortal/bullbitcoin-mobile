@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
-import 'package:bb_mobile/router.dart';
+import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -12,10 +12,7 @@ import 'package:intl/intl.dart';
 
 class FetchedBackupInfoScreen extends StatelessWidget {
   final BackupInfo encryptedInfo;
-  const FetchedBackupInfoScreen({
-    super.key,
-    required this.encryptedInfo,
-  });
+  const FetchedBackupInfoScreen({super.key, required this.encryptedInfo});
 
   @override
   Widget build(BuildContext context) {
@@ -48,15 +45,13 @@ class FetchedBackupInfoScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _KeyValueRow(
-                    label: 'Backup ID:',
-                    value: encryptedInfo.id,
-                  ),
+                  _KeyValueRow(label: 'Backup ID:', value: encryptedInfo.id),
                   const Gap(8),
                   _KeyValueRow(
                     label: 'Created at:',
-                    value: DateFormat("yyyy-MMM-dd, HH:mm:ss")
-                        .format(encryptedInfo.createdAt.toLocal()),
+                    value: DateFormat(
+                      "yyyy-MMM-dd, HH:mm:ss",
+                    ).format(encryptedInfo.createdAt.toLocal()),
                   ),
                 ],
               ),
@@ -65,14 +60,15 @@ class FetchedBackupInfoScreen extends StatelessWidget {
             Center(
               child: BBButton.big(
                 label: 'Enter Backup key manually >>',
-                onPressed: () => context.pushNamed(
-                  AppRoute.keyServerFlow.name,
-                  extra: (
-                    encryptedInfo.backupFile,
-                    CurrentKeyServerFlow.recoveryWithBackupKey.name,
-                    true
-                  ),
-                ),
+                onPressed:
+                    () => context.push(
+                      KeyServerRoute.keyServerFlow.path,
+                      extra: (
+                        encryptedInfo.backupFile,
+                        CurrentKeyServerFlow.recoveryWithBackupKey.name,
+                        true,
+                      ),
+                    ),
                 bgColor: Colors.transparent,
                 textStyle: context.font.bodySmall,
                 textColor: context.colour.inversePrimary,
@@ -81,14 +77,15 @@ class FetchedBackupInfoScreen extends StatelessWidget {
             const Gap(16),
             BBButton.big(
               label: 'Decrypt vault',
-              onPressed: () => context.pushNamed(
-                AppRoute.keyServerFlow.name,
-                extra: (
-                  encryptedInfo.backupFile,
-                  CurrentKeyServerFlow.recovery.name,
-                  true
-                ),
-              ),
+              onPressed:
+                  () => context.push(
+                    KeyServerRoute.keyServerFlow.path,
+                    extra: (
+                      encryptedInfo.backupFile,
+                      CurrentKeyServerFlow.recovery.name,
+                      true,
+                    ),
+                  ),
               bgColor: context.colour.secondary,
               textColor: context.colour.onSecondary,
             ),
@@ -110,17 +107,10 @@ class _KeyValueRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBText(
-          label,
-          style: context.font.bodyMedium,
-        ),
+        BBText(label, style: context.font.bodyMedium),
         const SizedBox(width: 8),
         Expanded(
-          child: BBText(
-            value,
-            style: context.font.bodyLarge,
-            maxLines: 3,
-          ),
+          child: BBText(value, style: context.font.bodyLarge, maxLines: 3),
         ),
       ],
     );

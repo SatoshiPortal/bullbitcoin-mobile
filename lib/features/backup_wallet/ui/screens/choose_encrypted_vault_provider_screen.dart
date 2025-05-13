@@ -6,8 +6,8 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
     show CurrentKeyServerFlow;
 import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
+import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/locator.dart';
-import 'package:bb_mobile/router.dart' show AppRoute;
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -59,8 +59,8 @@ class _Screen extends StatelessWidget {
           context.read<BackupWalletBloc>().add(const StartTransitioning());
           final bloc = context.read<BackupWalletBloc>();
           context
-              .pushNamed(
-                AppRoute.keyServerFlow.name,
+              .push(
+                KeyServerRoute.keyServerFlow.path,
                 extra: (
                   state.backupFile,
                   CurrentKeyServerFlow.enter.toString(),
