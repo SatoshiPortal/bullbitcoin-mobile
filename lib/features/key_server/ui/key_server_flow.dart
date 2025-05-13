@@ -240,7 +240,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     OnboardingState state,
   ) {
     if (state.onboardingStepStatus == OnboardingStepStatus.success) {
-      context.goNamed(OnboardingSubroute.recoverSuccess.name);
+      context.goNamed(OnboardingRoute.recoverSuccess.name);
     }
   }
 

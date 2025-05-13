@@ -29,7 +29,7 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 title: Text(context.loc.backupSettingsLabel),
                 onTap: () {
-                  context.pushNamed(SettingsSubroute.backupSettings.name);
+                  context.pushNamed(SettingsRoute.backupSettings.name);
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),
@@ -43,7 +43,7 @@ class SettingsScreen extends StatelessWidget {
               ListTile(
                 title: Text(context.loc.pinCodeSettingsLabel),
                 onTap: () {
-                  context.pushNamed(SettingsSubroute.pinCode.name);
+                  context.pushNamed(SettingsRoute.pinCode.name);
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),

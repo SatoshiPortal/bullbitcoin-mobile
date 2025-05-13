@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class RecoverWalletButton extends StatelessWidget {
-  const RecoverWalletButton({
-    super.key,
-  });
+  const RecoverWalletButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +16,7 @@ class RecoverWalletButton extends StatelessWidget {
       iconData: Icons.history_edu,
       outlined: true,
       onPressed: () {
-        context.goNamed(OnboardingSubroute.recoverOptions.name);
+        context.goNamed(OnboardingRoute.recoverOptions.name);
       },
     );
   }

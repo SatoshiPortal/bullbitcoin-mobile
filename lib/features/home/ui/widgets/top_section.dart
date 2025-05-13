@@ -2,9 +2,9 @@ import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/home/presentation/blocs/home_bloc.dart';
 import 'package:bb_mobile/features/home/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/home/ui/widgets/home_fiat_balance.dart';
+import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
-import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/components/cards/action_card.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -171,7 +171,7 @@ class _TopNav extends StatelessWidget {
         const Gap(8),
 
         InkWell(
-          onTap: () => context.pushNamed(AppRoute.settings.name),
+          onTap: () => context.pushNamed(SettingsRoute.settings.name),
           child: Image.asset(
             Assets.icons.settingsLine.path,
             width: 24,

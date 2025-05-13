@@ -1,4 +1,6 @@
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
+import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
+import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
@@ -24,9 +26,7 @@ class _AppStartupWidgetState extends State<AppStartupWidget> {
             if (state is AppStartupInitial) {
               return const OnboardingSplash(loading: true);
             } else if (state is AppStartupLoadingInProgress) {
-              return const OnboardingSplash(
-                loading: true,
-              );
+              return const OnboardingSplash(loading: true);
             } else if (state is AppStartupSuccess) {
               // if (!state.hasDefaultWallets) return const OnboardingScreen();
               // if (state.isPinCodeSet) return const PinCodeUnlockScreen();
@@ -56,15 +56,16 @@ class AppStartupListener extends StatelessWidget {
     return MultiBlocListener(
       listeners: [
         BlocListener<AppStartupBloc, AppStartupState>(
-          listenWhen: (previous, current) =>
-              current is AppStartupSuccess && previous != current,
+          listenWhen:
+              (previous, current) =>
+                  current is AppStartupSuccess && previous != current,
           listener: (context, state) {
             if (state is AppStartupSuccess && state.isPinCodeSet) {
-              AppRouter.router.go(AppRoute.appUnlock.path);
+              AppRouter.router.go(AppUnlockRoute.appUnlock.path);
             }
 
             if (state is AppStartupSuccess && !state.hasDefaultWallets) {
-              AppRouter.router.go(AppRoute.onboarding.path);
+              AppRouter.router.go(OnboardingRoute.onboarding.path);
             }
           },
         ),
