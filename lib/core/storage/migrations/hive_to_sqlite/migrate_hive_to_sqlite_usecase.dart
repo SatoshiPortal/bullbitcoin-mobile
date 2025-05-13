@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new_seed_entity.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new_seed_repository.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_seed_repository.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/new_seed_entity.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/new_seed_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_seed_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:flutter/foundation.dart';
 

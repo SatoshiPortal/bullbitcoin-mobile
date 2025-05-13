@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migration_secure_storage_datasource.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new_seed_entity.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new_seed_model.dart'
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/new_seed_entity.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/new_seed_model.dart'
     show NewSeedModel;
 
 class NewSecureStorageKeyPrefixConstants {

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new_seed_entity.dart'
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/new_seed_entity.dart'
     show NewBytesSeed, NewMnemonicSeed, NewSeedEntity;
 import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

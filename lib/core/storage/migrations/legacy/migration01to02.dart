@@ -7,15 +7,15 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migration_secure_storage_datasource.dart'
     show MigrationSecureStorageDatasource;
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_hive_datasource.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_seed.dart'
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_hive_datasource.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_seed.dart'
     show OldSeed;
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_seed_repository.dart'
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_seed_repository.dart'
     show OldSeedRepository;
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage_keys.dart'
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_storage_keys.dart'
     show OldStorageKeys;
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:crypto/crypto.dart';
 import 'package:lwk/lwk.dart' as lwk;
 

@@ -1,8 +1,8 @@
 // ignore_for_file: invalid_annotation_target
 
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_transaction.dart'
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_transaction.dart'
     as bb;
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet.dart';
 import 'package:boltz/boltz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 

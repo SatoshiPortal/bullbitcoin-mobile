@@ -3,12 +3,12 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migration_secure_storage_datasource.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_hive_datasource.dart'
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_hive_datasource.dart'
     show OldHiveDatasource;
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage_keys.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_swap.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet_repository.dart'
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_storage_keys.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_swap.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet_repository.dart'
     show OldWalletRepository;
 import 'package:boltz/boltz.dart';
 
