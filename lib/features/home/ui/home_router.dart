@@ -22,12 +22,11 @@ class HomeRouter {
     name: HomeRoute.home.name,
     path: HomeRoute.home.path,
     builder: (context, state) {
-      return BlocProvider<HomeBloc>(
-        create:
-            (context) =>
-                locator<HomeBloc>()
-                  ..add(const CheckAllWarnings())
-                  ..add(const HomeStarted()),
+      return BlocProvider.value(
+        value:
+            locator<HomeBloc>()
+              ..add(const CheckAllWarnings())
+              ..add(const HomeStarted()),
         child: BlocListener<SettingsCubit, SettingsEntity?>(
           listenWhen:
               (previous, current) =>
