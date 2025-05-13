@@ -2,24 +2,28 @@
 
 import 'dart:convert';
 
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_wallets_metadatas.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migration_secure_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_hive_datasource.dart'
+    show OldHiveDatasource;
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage_keys.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_swap.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet_repository.dart'
+    show OldWalletRepository;
 import 'package:boltz/boltz.dart';
 
-Future<void> doMigration0_2to0_3(
-  OldSecureStorage secureStorage,
-  OldHiveStorage hiveStorage,
-) async {
-  final oldWallets = fetchOldWalletMetadatas(hiveStorage);
+Future<void> doMigration0_2to0_3() async {
+  final secureStorageDatasource = MigrationSecureStorageDatasource();
+  final hiveDatasource = await OldHiveDatasource.init();
+  final oldWalletRepository = OldWalletRepository(hiveDatasource);
+
+  final oldWallets = await oldWalletRepository.fetch();
   final walletIds = oldWallets.map((w) => w.id).toList();
 
   final List<OldWallet> wallets = [];
 
   for (final walletId in walletIds) {
-    final jsn = hiveStorage.getValue(walletId);
+    final jsn = hiveDatasource.getValue(walletId);
     if (jsn == null) throw 'Abort';
 
     final Map<String, dynamic> walletObj =
@@ -36,18 +40,18 @@ Future<void> doMigration0_2to0_3(
   for (final w in walletObjs) {
     final id = w['id'] as String;
     ids.add(id);
-    final _ = await hiveStorage.saveValue(key: id, value: jsonEncode(w));
+    final _ = await hiveDatasource.saveValue(key: id, value: jsonEncode(w));
   }
 
   final idsJsn = jsonEncode({
     'wallets': [...ids],
   });
-  final _ = await hiveStorage.saveValue(
+  final _ = await hiveDatasource.saveValue(
     key: OldStorageKeys.wallets.name,
     value: idsJsn,
   );
 
-  await secureStorage.saveValue(
+  await secureStorageDatasource.store(
     key: OldStorageKeys.version.name,
     value: '0.3.0',
   );

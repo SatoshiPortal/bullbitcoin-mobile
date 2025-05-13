@@ -26,4 +26,8 @@ class OldHiveDatasource {
   }
 
   String? getValue(String key) => box.get(key) as String?;
+
+  Future<void> saveValue({required String key, required String value}) async {
+    await box.put(key, value);
+  }
 }

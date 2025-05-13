@@ -5,23 +5,31 @@
 // Change 5: create a new Liquid wallet, based on the Bitcoin wallet
 import 'dart:convert';
 
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_old_seed.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate_wallets_metadatas.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_seed.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage_keys.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migration_secure_storage_datasource.dart'
+    show MigrationSecureStorageDatasource;
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_hive_datasource.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_seed.dart'
+    show OldSeed;
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_seed_repository.dart'
+    show OldSeedRepository;
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_storage_keys.dart'
+    show OldStorageKeys;
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old_wallet_repository.dart';
 import 'package:crypto/crypto.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
 // int mainWalletIndex = 0;
 // int testWalletIndex = 0;
 
-Future<void> doMigration0_1to0_2(
-  OldSecureStorage secureStorage,
-  OldHiveStorage hiveStorage,
-) async {
-  final oldWallets = fetchOldWalletMetadatas(hiveStorage);
+Future<void> doMigration0_1to0_2() async {
+  final secureStorageDatasource = MigrationSecureStorageDatasource();
+  final hiveDatasource = await OldHiveDatasource.init();
+
+  final oldSeedRepository = OldSeedRepository(secureStorageDatasource);
+  final oldWalletRepository = OldWalletRepository(hiveDatasource);
+
+  final oldWallets = await oldWalletRepository.fetch();
   final walletIds = oldWallets.map((w) => w.id).toList();
 
   final List<OldWallet> wallets = [];
@@ -30,7 +38,7 @@ Future<void> doMigration0_1to0_2(
   OldSeed? liquidTestnetSeed;
 
   for (final walletId in walletIds) {
-    final jsn = hiveStorage.getValue(walletId);
+    final jsn = hiveDatasource.getValue(walletId);
     if (jsn == null) throw 'Abort';
 
     Map<String, dynamic> walletObj = jsonDecode(jsn) as Map<String, dynamic>;
@@ -38,9 +46,9 @@ Future<void> doMigration0_1to0_2(
     // Change 1: for each wallet with type as newSeed, change it to secure
     // Change 2: add BaseWalletType as Bitcoin
     final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
-    final seed = await fetchOldSeed(
-      secureStorage: secureStorage,
-      fingerprintIndex: mnemonicFingerprint,
+
+    final seed = await oldSeedRepository.fetch(
+      fingerprint: mnemonicFingerprint,
     );
     final res = await updateWalletObj(walletObj, seed);
     liquidMainnetSeed ??= res.liquidMainnetSeed;
@@ -61,7 +69,6 @@ Future<void> doMigration0_1to0_2(
   final liqWallets = await createLiquidWallet(
     liquidMainnetSeed,
     liquidTestnetSeed,
-    hiveStorage,
   );
 
   wallets.addAll(liqWallets);
@@ -90,19 +97,19 @@ Future<void> doMigration0_1to0_2(
   for (final w in walletObjs) {
     final id = w['id'] as String;
     ids.add(id);
-    final _ = await hiveStorage.saveValue(key: id, value: jsonEncode(w));
+    final _ = await hiveDatasource.saveValue(key: id, value: jsonEncode(w));
   }
 
   final idsJsn = jsonEncode({
     'wallets': [...ids],
   });
-  final _ = await hiveStorage.saveValue(
+  final _ = await hiveDatasource.saveValue(
     key: OldStorageKeys.wallets.name,
     value: idsJsn,
   );
 
   // why arent we using toVersion and hardcoding 0.2 here?
-  await secureStorage.saveValue(
+  await secureStorageDatasource.store(
     key: OldStorageKeys.version.name,
     value: '0.2.0',
   );
@@ -204,7 +211,6 @@ Future<Map<String, dynamic>> addIsLiquid(Map<String, dynamic> walletObj) async {
 Future<List<OldWallet>> createLiquidWallet(
   OldSeed? liquidMainnetSeed,
   OldSeed? liquidTestnetSeed,
-  OldHiveStorage hiveStorage,
 ) async {
   // create liquid wallet from lwk
   final List<OldWallet> oldWallets = [];
