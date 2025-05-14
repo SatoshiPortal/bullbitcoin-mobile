@@ -1,7 +1,5 @@
-import 'dart:convert';
-
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migration_secure_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_seed.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/secure_storage_datasource.dart';
 
 class OldSeedRepository {
   final MigrationSecureStorageDatasource storageDatasource;
@@ -9,11 +7,7 @@ class OldSeedRepository {
   OldSeedRepository(this.storageDatasource);
 
   Future<OldSeed> fetch({required String fingerprint}) async {
-    final jsn = await storageDatasource.fetch(key: fingerprint);
-    if (jsn == null) throw Exception('No seed found');
-    final obj = json.decode(jsn) as Map<String, dynamic>;
-    final seed = OldSeed.fromJson(obj);
-    seed.mnemonicFingerprint;
+    final seed = await storageDatasource.oldSeedFetch(fingerprint);
     return seed;
   }
 }

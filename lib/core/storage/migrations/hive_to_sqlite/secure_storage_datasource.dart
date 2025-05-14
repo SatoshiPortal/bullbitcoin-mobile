@@ -16,7 +16,7 @@ class MigrationSecureStorageDatasource {
     return await _storage.read(key: key);
   }
 
-  Future<OldSeed> oldSeedFetch({required String fingerprint}) async {
+  Future<OldSeed> oldSeedFetch(String fingerprint) async {
     final jsn = await _storage.read(key: fingerprint);
     if (jsn == null) throw Exception('No seed found');
     final obj = json.decode(jsn) as Map<String, dynamic>;

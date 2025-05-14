@@ -49,7 +49,8 @@ class MigrateHiveToSqliteUsecase {
       debugPrint('oldFingerprints: ${oldFingerprints.length}');
       final seedsImported = await _storeNewSeeds(oldFingerprints);
       debugPrint('migration: $seedsImported/${oldFingerprints.length} seeds');
-
+      await _storeMainWallets(mainWallets);
+      await _storeExternalWallet(externalWallets);
       return true;
     } catch (e) {
       debugPrint('migration failed: $e');
@@ -67,6 +68,20 @@ class MigrateHiveToSqliteUsecase {
         final oldSeed = await _oldSeedRepository.fetch(
           fingerprint: oldFingerprint,
         );
+        final hasPassphrase = oldSeed.passphrases.isNotEmpty;
+        if (hasPassphrase) {
+          for (final passphrase in oldSeed.passphrases) {
+            final seed = NewSeedEntity.mnemonic(
+              mnemonicWords: oldSeed.mnemonicList(),
+              passphrase: passphrase.passphrase,
+            );
+            await _newSeedRepository.store(
+              fingerprint: seed.masterFingerprint,
+              seed: seed,
+            );
+            seeds.add(seed);
+          }
+        }
         final seed = NewSeedEntity.mnemonic(
           mnemonicWords: oldSeed.mnemonicList(),
         );
@@ -77,17 +92,17 @@ class MigrateHiveToSqliteUsecase {
         seeds.add(seed);
       } catch (e) {
         debugPrint('SKIP: $e');
-        continue;
       }
     }
     return seeds;
   }
 
-  // ignore: unused_element
-  Future<void> _storeMainWallets(
-    List<OldWallet> oldMainWallets,
-    NewSeedEntity mainWalletSeed,
-  ) async {
+  Future<void> _storeMainWallets(List<OldWallet> oldMainWallets) async {
+    // fetch main wallet seed by fingerprint
+    final mainWalletSeed = await _newSeedRepository.fetch(
+      fingerprint: oldMainWallets.first.mnemonicFingerprint,
+    );
+
     for (final oldWallet in oldMainWallets) {
       final network =
           oldWallet.baseWalletType == OldBaseWalletType.Bitcoin
@@ -145,10 +160,72 @@ class MigrateHiveToSqliteUsecase {
     }
   }
 
-  // ignore: unused_element
-  Future<void> _storeExternalWallets(
-    List<OldWallet> oldExternalWallets,
-  ) async {}
+  // TODO: Handle passphrase wallets
+  Future<void> _storeExternalWallet(List<OldWallet> oldExternalWallets) async {
+    for (final oldExternalWallet in oldExternalWallets) {
+      final newExternalSeed = await _newSeedRepository.fetch(
+        fingerprint: oldExternalWallet.mnemonicFingerprint,
+      );
+      final network =
+          oldExternalWallet.baseWalletType == OldBaseWalletType.Bitcoin
+              ? (oldExternalWallet.isTestnet()
+                  ? NewNetwork.bitcoinTestnet
+                  : NewNetwork.bitcoinMainnet)
+              : (oldExternalWallet.isTestnet()
+                  ? NewNetwork.liquidTestnet
+                  : NewNetwork.liquidMainnet);
+
+      final scriptType = switch (oldExternalWallet.scriptType) {
+        OldScriptType.bip84 => NewScriptType.bip84,
+        OldScriptType.bip49 => NewScriptType.bip49,
+        OldScriptType.bip44 => NewScriptType.bip44,
+      };
+
+      final origin = newEncodeOrigin(
+        fingerprint: oldExternalWallet.sourceFingerprint,
+        network: network,
+        scriptType: scriptType,
+      );
+      final label = switch (network) {
+        NewNetwork.bitcoinMainnet => 'Secure Bitcoin',
+        NewNetwork.bitcoinTestnet => 'Secure Bitcoin Test',
+        NewNetwork.liquidMainnet => 'Instant Paymnets',
+        NewNetwork.liquidTestnet => 'Instant Payments Test',
+      };
+
+      final root = BIP32.fromSeed(newExternalSeed.bytes);
+      final derivationPath = "m/${scriptType.purpose}'/${network.coinType}'/0'";
+      final derivedAccountKey = root.derivePath(derivationPath);
+      final xpub = derivedAccountKey.neutered();
+      final xpubString = xpub.convert(scriptType.getXpubType(network));
+      final xpubFingerprint = xpub.fingerprintHex;
+      final source = switch (oldExternalWallet.type) {
+        OldBBWalletType.main => NewWalletSource.mnemonic,
+        OldBBWalletType.coldcard => NewWalletSource.coldcard,
+        OldBBWalletType.xpub => NewWalletSource.xpub,
+        OldBBWalletType.words => NewWalletSource.mnemonic,
+        OldBBWalletType.descriptors => NewWalletSource.descriptors,
+      };
+      // ignore: unused_local_variable
+      final newWallet = NewWallet(
+        origin: origin,
+        label: label,
+        network: network,
+        isDefault: oldExternalWallet.mainWallet,
+        masterFingerprint: oldExternalWallet.mnemonicFingerprint,
+        xpubFingerprint: xpubFingerprint,
+        scriptType: scriptType,
+        xpub: xpubString,
+        externalPublicDescriptor: oldExternalWallet.externalPublicDescriptor,
+        internalPublicDescriptor: oldExternalWallet.internalPublicDescriptor,
+        source: source,
+        balanceSat: BigInt.from(oldExternalWallet.balance ?? 0),
+        isPhysicalBackupTested: oldExternalWallet.backupTested,
+        latestPhysicalBackup: oldExternalWallet.lastBackupTested,
+      );
+    }
+    // TODO: Store newWallet in the new database
+  }
 }
 
 extension ScriptTypeX on NewScriptType {
