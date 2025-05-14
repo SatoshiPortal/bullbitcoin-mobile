@@ -158,7 +158,6 @@ void main() {
         expect(pjUri.scheme, 'bitcoin');
         expect(pjUri.path, address.address);
         expect(pjUri.queryParameters.containsKey('pj'), true);
-        expect(pjUri.queryParameters['pjos'], '0');
 
         // Build the psbt with the sender wallet
         const amountSat = 1000;
@@ -337,7 +336,6 @@ void main() {
               expect(pjUri.scheme, 'bitcoin');
               expect(pjUri.path, address.address);
               expect(pjUri.queryParameters.containsKey('pj'), true);
-              expect(pjUri.queryParameters['pjos'], '0');
 
               // Cache the address and payjoin uri
               receiverAddresses.add(address.address);

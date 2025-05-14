@@ -93,13 +93,11 @@ class PdkPayjoinDatasource {
         expireAfter: BigInt.from(expireAfterSec),
       );
 
-      final completer = Completer<ReceiverToken>();
       final imp = InMemoryReceiverPersister();
       final noOpPersister = DartReceiverPersister(
         save: (receiver) async {
           debugPrint('SAVING RECEIVER');
           final token = await imp.save(receiver: receiver);
-          completer.complete(token);
           return token;
         },
         load: (token) async {
@@ -551,10 +549,22 @@ class PdkPayjoinDatasource {
     required Dio dio,
   }) async {
     try {
-      final (req, context) = await receiver.extractReq(
-        // TODO get working relay URL from fetch
-        ohttpRelay: PayjoinConstants.ohttpRelayUrls.first,
-      );
+      (Request, ClientResponse)? request;
+      for (final ohttpRelay in PayjoinConstants.ohttpRelayUrls) {
+        try {
+          request = await receiver.extractReq(ohttpRelay: ohttpRelay);
+          break;
+        } catch (e) {
+          log('receiver extractReq exception: $e with relay $ohttpRelay');
+          continue;
+        }
+      }
+
+      if (request == null) {
+        throw PayjoinNotFoundException('No payjoin request found');
+      }
+
+      final (req, context) = request;
       final ohttpResponse = await dio.post(
         req.url.asString(),
         data: req.body,
@@ -581,10 +591,21 @@ class PdkPayjoinDatasource {
   }
 
   Future<void> _sendPayjoinProposal(PayjoinProposal proposal) async {
-    final (req, ohttpCtx) = await proposal.extractReq(
-      // TODO get working relay URL from fetch
-      ohttpRelay: PayjoinConstants.ohttpRelayUrls.first,
-    );
+    (Request, ClientResponse)? request;
+    for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
+      try {
+        request = await proposal.extractReq(ohttpRelay: ohttpRelayUrl);
+        break;
+      } catch (e) {
+        log('proposal extractReq exception: $e with relay $ohttpRelayUrl');
+        continue;
+      }
+    }
+    if (request == null) {
+      throw PayjoinNotFoundException('No payjoin proposal found');
+    }
+
+    final (req, ohttpCtx) = request;
     final res = await _dio.post(
       req.url.asString(),
       data: req.body,
@@ -651,7 +672,7 @@ class PdkPayjoinDatasource {
           result = await context.extractReq(ohttpRelay: ohttpRelay);
           break;
         } catch (e) {
-          log('extract request exception: $e');
+          log('context extract request exception: $e with relay $ohttpRelay');
           continue;
         }
       }
@@ -756,4 +777,10 @@ class PayjoinExpiredException implements Exception {
   final String message;
 
   PayjoinExpiredException(this.message);
+}
+
+class OhttpRelaysUnavailableException implements Exception {
+  final String message;
+
+  OhttpRelaysUnavailableException(this.message);
 }
