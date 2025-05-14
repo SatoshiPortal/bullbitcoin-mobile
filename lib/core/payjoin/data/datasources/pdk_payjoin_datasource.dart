@@ -548,19 +548,28 @@ class PdkPayjoinDatasource {
     required Receiver receiver,
     required Dio dio,
   }) async {
+    // The use of ffiError here is a hack, we should change it once payjoin-flutter
+    //  exposes different exceptions for specific errors
+    Object? ffiError;
     try {
       (Request, ClientResponse)? request;
       for (final ohttpRelay in PayjoinConstants.ohttpRelayUrls) {
         try {
           request = await receiver.extractReq(ohttpRelay: ohttpRelay);
+          ffiError = null;
+          log('receiver extractReq success: $request with relay $ohttpRelay');
           break;
         } catch (e) {
           log('receiver extractReq exception: $e with relay $ohttpRelay');
+          ffiError = e;
           continue;
         }
       }
 
       if (request == null) {
+        if (ffiError != null) {
+          throw ffiError;
+        }
         throw PayjoinNotFoundException('No payjoin request found');
       }
 
@@ -581,7 +590,9 @@ class PdkPayjoinDatasource {
       return proposal;
     } catch (e) {
       log('getRequest exception: $e');
-      if (e.toString().contains('expired')) {
+      if (e == ffiError) {
+        // TODO: Check for the correct error.
+        //  We just assume the error is an expired error for now.
         throw PayjoinExpiredException(
           'Payjoin receiver $receiver.id() expired',
         );
@@ -664,20 +675,30 @@ class PdkPayjoinDatasource {
     required V2GetContext context,
     required Dio dio,
   }) async {
+    // The use of ffiError here is a hack, we should change it once payjoin-flutter
+    //  exposes different exceptions for specific errors
+    Object? ffiError;
     try {
       (Request, ClientResponse)? result;
-
       for (final ohttpRelay in PayjoinConstants.ohttpRelayUrls) {
         try {
           result = await context.extractReq(ohttpRelay: ohttpRelay);
+          ffiError = null;
+          log(
+            'context extract request success: $result with relay $ohttpRelay',
+          );
           break;
         } catch (e) {
           log('context extract request exception: $e with relay $ohttpRelay');
+          ffiError = e;
           continue;
         }
       }
 
       if (result == null) {
+        if (ffiError != null) {
+          throw ffiError;
+        }
         throw Exception('All OHTTP relays failed');
       }
 
@@ -700,7 +721,9 @@ class PdkPayjoinDatasource {
       return proposalPsbt;
     } catch (e) {
       log('getProposalPsbt exception: $e');
-      if (e.toString().contains('expired')) {
+      if (e == ffiError) {
+        // TODO: Check for the correct error.
+        //  We just assume the error is an expired error for now.
         throw PayjoinExpiredException('Payjoin sender expired');
       }
       return null;

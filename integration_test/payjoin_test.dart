@@ -160,13 +160,14 @@ void main() {
         expect(pjUri.queryParameters.containsKey('pj'), true);
 
         // Build the psbt with the sender wallet
-        const amountSat = 1000;
+        const amountSat = 1000000;
         const networkFeesSatPerVb = 1000.0;
         final preparedBitcoinSend = await prepareBitcoinSendUsecase.execute(
           walletId: senderWallet.id,
           address: address.address,
-          amountSat: 1000,
+          amountSat: 1000000,
           networkFee: const NetworkFee.relative(networkFeesSatPerVb),
+          ignoreUnspendableInputs: false,
         );
 
         final payjoinSender = await sendWithPayjoinUsecase.execute(
@@ -255,7 +256,7 @@ void main() {
 
     group('with multiple ongoing payjoins', () {
       const numberOfPayjoins = 2;
-      const networkFeesSatPerVb = 250.0;
+      const networkFeesSatPerVb = 1000.0;
       final List<String> receiverAddresses = [];
       final List<Uri> payjoinUris = [];
       final Map<String, Completer<bool>> payjoinCompleters = {};
@@ -344,7 +345,7 @@ void main() {
               payjoinCompleters[payjoin.id] = Completer();
             }
 
-            const amountSat = 1000;
+            const amountSat = 1000000;
             // Set up multiple sender sessions
             for (int i = 0; i < numberOfPayjoins; i++) {
               // Build the psbt with the sender wallet
@@ -354,6 +355,7 @@ void main() {
                     address: receiverAddresses[i],
                     amountSat: amountSat,
                     networkFee: const NetworkFee.relative(networkFeesSatPerVb),
+                    ignoreUnspendableInputs: false,
                   );
 
               final payjoinSender = await sendWithPayjoinUsecase.execute(
