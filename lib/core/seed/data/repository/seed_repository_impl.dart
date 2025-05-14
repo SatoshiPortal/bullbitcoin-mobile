@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
@@ -9,9 +11,24 @@ class SeedRepositoryImpl implements SeedRepository {
   const SeedRepositoryImpl({required SeedDatasource source}) : _source = source;
 
   @override
-  Future<void> store({required String fingerprint, required Seed seed}) {
-    final model = SeedModel.fromEntity(seed);
-    return _source.store(fingerprint: fingerprint, seed: model);
+  Future<MnemonicSeed> createFromMnemonic({
+    required List<String> mnemonicWords,
+    String? passphrase,
+  }) async {
+    final model = SeedModel.mnemonic(
+      mnemonicWords: mnemonicWords,
+      passphrase: passphrase,
+    );
+    await _source.store(fingerprint: model.masterFingerprint, seed: model);
+    return model.toEntity() as MnemonicSeed;
+  }
+
+  @override
+  Future<Seed> createFromBytes({required Uint8List bytes}) async {
+    final model = SeedModel.bytes(bytes: bytes);
+    await _source.store(fingerprint: model.masterFingerprint, seed: model);
+
+    return model.toEntity();
   }
 
   @override
