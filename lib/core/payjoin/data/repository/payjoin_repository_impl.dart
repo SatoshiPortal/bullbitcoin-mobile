@@ -3,13 +3,15 @@ import 'dart:async';
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
-import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/datasources/local_pdk_session_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/datasources/remote_pdk_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/storage/tables/pdk_sessions_table.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
@@ -23,7 +25,8 @@ import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
   final LocalPayjoinDatasource _localPayjoinDatasource;
-  final PdkPayjoinDatasource _pdkPayjoinDatasource;
+  final LocalPdkSessionDatasource _localPdkSessionDatasource;
+  final RemotePdkPayjoinDatasource _remotePdkPayjoinDatasource;
   final WalletMetadataDatasource _walletMetadataDatasource;
   final SeedDatasource _seed;
   final BdkWalletDatasource _bdkWallet;
@@ -36,14 +39,16 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   PayjoinRepositoryImpl({
     required LocalPayjoinDatasource localPayjoinDatasource,
-    required PdkPayjoinDatasource pdkPayjoinDatasource,
+    required LocalPdkSessionDatasource localPdkSessionDatasource,
+    required RemotePdkPayjoinDatasource remotePdkPayjoinDatasource,
     required WalletMetadataDatasource walletMetadataDatasource,
     required SeedDatasource seedDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   }) : _localPayjoinDatasource = localPayjoinDatasource,
-       _pdkPayjoinDatasource = pdkPayjoinDatasource,
+       _localPdkSessionDatasource = localPdkSessionDatasource,
+       _remotePdkPayjoinDatasource = remotePdkPayjoinDatasource,
        _walletMetadataDatasource = walletMetadataDatasource,
        _seed = seedDatasource,
        _bdkWallet = bdkWalletDatasource,
@@ -51,12 +56,34 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
        _electrumServerStorage = electrumServerStorageDatasource,
        _lock = Lock(),
        _payjoinStreamController = StreamController<Payjoin>.broadcast() {
-    // Listen to payjoin events from the datasource and process them
-    _pdkPayjoinDatasource.requestsForReceivers.listen(_processPayjoinRequest);
-    _pdkPayjoinDatasource.proposalsForSenders.listen(_processPayjoinProposal);
-    _pdkPayjoinDatasource.expiredPayjoins.listen(_processExpiredPayjoin);
+    // Setup the pdk persisters
+    _remotePdkPayjoinDatasource.initPersisters(
+      save: ({
+        required String token,
+        required PdkSessionType type,
+        required String session,
+      }) async {
+        await _localPdkSessionDatasource.store(
+          token: token,
+          type: type,
+          session: session,
+        );
+      },
+      load: (String token) async {
+        return await _localPdkSessionDatasource.load(token);
+      },
+    );
 
-    // Now that the listeners are set up, we can resume processing of possible
+    // Listen to payjoin events from the datasource and process them
+    _remotePdkPayjoinDatasource.requestsForReceivers.listen(
+      _processPayjoinRequest,
+    );
+    _remotePdkPayjoinDatasource.proposalsForSenders.listen(
+      _processPayjoinProposal,
+    );
+    _remotePdkPayjoinDatasource.expiredPayjoins.listen(_processExpiredPayjoin);
+
+    // Now that the PDK persisters and listeners are set up, we can resume processing of possible
     //  ongoing payjoins.
     _resumePayjoins();
   }
@@ -103,7 +130,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Future<bool> checkOhttpRelayHealth() async {
-    final (ohttpKeys, ohttpRelay) = await _pdkPayjoinDatasource
+    final (ohttpKeys, ohttpRelay) = await _remotePdkPayjoinDatasource
         .fetchOhttpKeyAndRelay(payjoinDirectory: PayjoinConstants.directoryUrl);
     return ohttpKeys != null && ohttpRelay != null;
   }
@@ -158,7 +185,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     required BigInt maxFeeRateSatPerVb,
     required int expireAfterSec,
   }) async {
-    final model = await _pdkPayjoinDatasource.createReceiver(
+    final model = await _remotePdkPayjoinDatasource.createReceiver(
       walletId: walletId,
       address: address,
       isTestnet: isTestnet,
@@ -185,7 +212,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
     int? expireAfterSec,
   }) async {
     // Create the payjoin sender session
-    final model = await _pdkPayjoinDatasource.createSender(
+    final model = await _remotePdkPayjoinDatasource.createSender(
       walletId: walletId,
       isTestnet: isTestnet,
       bip21: bip21,
@@ -335,7 +362,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (model.originalTxBytes == null) {
           // If the original tx bytes are not present, it means the receiver
           //  needs to listen for a payjoin request from the sender.
-          await _pdkPayjoinDatasource.startListeningForRequest(model);
+          await _remotePdkPayjoinDatasource.startListeningForRequest(model);
         } else if (model.proposalPsbt == null) {
           // If the original tx bytes are present but the proposal psbt is not,
           //  it means the receiver has already received a payjoin request and
@@ -348,7 +375,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         if (model.proposalPsbt == null) {
           // If the proposal psbt is not present, it means the sender needs to
           //  listen for a payjoin proposal from the receiver.
-          await _pdkPayjoinDatasource.startListeningForProposal(model);
+          await _remotePdkPayjoinDatasource.startListeningForProposal(model);
         } else {
           // If the proposal psbt is present, it means a payjoin proposal was
           //  already received  and it should be processed.
@@ -396,7 +423,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       );
       if (freshModel == null) throw Exception('Payjoin receiver not found');
 
-      final updatedModel = await _pdkPayjoinDatasource.proposePayjoin(
+      final updatedModel = await _remotePdkPayjoinDatasource.proposePayjoin(
         receiverModel: freshModel,
         hasOwnedInputs: (script) => _bdkWallet.isMine(script, wallet: wallet),
         hasReceiverOutput:

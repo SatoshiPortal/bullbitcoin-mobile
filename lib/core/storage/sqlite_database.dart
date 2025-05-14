@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_senders_table.dart';
+import 'package:bb_mobile/core/storage/tables/pdk_sessions_table.dart';
 import 'package:bb_mobile/core/storage/tables/settings_table.dart';
 import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
@@ -19,6 +20,7 @@ part 'sqlite_database.g.dart';
     Settings,
     PayjoinSenders,
     PayjoinReceivers,
+    PdkSessions,
     ElectrumServers,
     Swaps,
   ],

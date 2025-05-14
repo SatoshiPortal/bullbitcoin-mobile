@@ -4,6 +4,7 @@ import 'dart:isolate';
 
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
+import 'package:bb_mobile/core/storage/tables/pdk_sessions_table.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:dio/dio.dart';
@@ -14,7 +15,7 @@ import 'package:payjoin_flutter/receive.dart';
 import 'package:payjoin_flutter/send.dart';
 import 'package:payjoin_flutter/uri.dart';
 
-class PdkPayjoinDatasource {
+class RemotePdkPayjoinDatasource {
   final String _payjoinDirectoryUrl;
   final Dio _dio;
   final StreamController<PayjoinReceiverModel> _payjoinRequestedController;
@@ -29,7 +30,11 @@ class PdkPayjoinDatasource {
   final Completer _receiversIsolateReady;
   final Completer _sendersIsolateReady;
 
-  PdkPayjoinDatasource({
+  // PDK persistence
+  late DartReceiverPersister _receiverPersister;
+  late DartSenderPersister _senderPersister;
+
+  RemotePdkPayjoinDatasource({
     String payjoinDirectoryUrl = PayjoinConstants.directoryUrl,
     required Dio dio,
   }) : _payjoinDirectoryUrl = payjoinDirectoryUrl,
@@ -55,18 +60,75 @@ class PdkPayjoinDatasource {
     OhttpKeys? ohttpKeys;
     for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
       try {
-        final relay = await Url.fromStr(ohttpRelayUrl);
-        ohttpKeys = await fetchOhttpKeys(
-          ohttpRelay: ohttpRelayUrl,
-          payjoinDirectory: payjoinDirectory,
-        );
-        ohttpRelay = relay;
+        (ohttpRelay, ohttpKeys) =
+            await (
+              Url.fromStr(ohttpRelayUrl),
+              fetchOhttpKeys(
+                ohttpRelay: ohttpRelayUrl,
+                payjoinDirectory: payjoinDirectory,
+              ),
+            ).wait;
         break;
       } catch (e) {
         continue;
       }
     }
     return (ohttpKeys, ohttpRelay);
+  }
+
+  void initPersisters({
+    required Future<void> Function({
+      required String token,
+      required PdkSessionType type,
+      required String session,
+    })
+    save,
+    required Future<String?> Function(String token) load,
+  }) {
+    _receiverPersister = DartReceiverPersister(
+      save: (receiver) async {
+        debugPrint('SAVING RECEIVER: ${receiver.toJson()}');
+        final token = receiver.key();
+        await save(
+          token: token.toBytes().toString(),
+          type: PdkSessionType.receiver,
+          session: receiver.toJson(),
+        );
+        debugPrint('SAVED RECEIVER with token: ${token.toBytes()}');
+        return token;
+      },
+      load: (token) async {
+        debugPrint('LOADING RECEIVER by token: ${token.toBytes()}');
+        final receiver = await load(token.toBytes().toString());
+        if (receiver == null) {
+          throw Exception('Receiver not found for the provided token.');
+        }
+        debugPrint('LOADED RECEIVER: $receiver');
+        return Receiver.fromJson(json: receiver);
+      },
+    );
+    _senderPersister = DartSenderPersister(
+      save: (sender) async {
+        debugPrint('SAVING SENDER: ${sender.toJson()}');
+        final token = sender.key();
+        await save(
+          token: token.toBytes().toString(),
+          type: PdkSessionType.sender,
+          session: sender.toJson(),
+        );
+        debugPrint('SAVED SENDER with token: ${token.toBytes()}');
+        return token;
+      },
+      load: (token) async {
+        debugPrint('LOADING SENDER by token: ${token.toBytes()}');
+        final sender = await load(token.toBytes().toString());
+        if (sender == null) {
+          throw Exception('Sender not found for the provided token.');
+        }
+        debugPrint('LOADED SENDER: $sender');
+        return Sender.fromJson(json: sender);
+      },
+    );
   }
 
   Future<PayjoinReceiverModel> createReceiver({
@@ -93,25 +155,11 @@ class PdkPayjoinDatasource {
         expireAfter: BigInt.from(expireAfterSec),
       );
 
-      final completer = Completer<ReceiverToken>();
-      final imp = InMemoryReceiverPersister();
-      final noOpPersister = DartReceiverPersister(
-        save: (receiver) async {
-          debugPrint('SAVING RECEIVER');
-          final token = await imp.save(receiver: receiver);
-          completer.complete(token);
-          return token;
-        },
-        load: (token) async {
-          final receiver = await imp.load(token: token);
-          return receiver;
-        },
-      );
-      final token = await newReceiver.persist(persister: noOpPersister);
+      final token = await newReceiver.persist(persister: _receiverPersister);
 
       final receiver = await Receiver.load(
         token: token,
-        persister: noOpPersister,
+        persister: _receiverPersister,
       );
 
       // Create and store the model to keep track of the payjoin session
@@ -120,7 +168,7 @@ class PdkPayjoinDatasource {
                 id: receiver.id(),
                 address: address,
                 isTestnet: isTestnet,
-                receiver: receiver.toJson(),
+                sessionToken: token.toBytes().toString(),
                 walletId: walletId,
                 pjUri: (await receiver.pjUri()).asString(),
                 maxFeeRateSatPerVb: maxFeeRateSatPerVb,
@@ -165,18 +213,8 @@ class PdkPayjoinDatasource {
     final newSender = await senderBuilder.buildRecommended(
       minFeeRate: minFeeRateSatPerKwu,
     );
-    final imp = InMemorySenderPersister();
-    final persister = DartSenderPersister(
-      save: (sender) async {
-        return await imp.save(sender: sender);
-      },
-      load: (token) async {
-        return await imp.load(token: token);
-      },
-    );
-    final token = await newSender.persist(persister: persister);
-    final sender = await Sender.load(token: token, persister: persister);
-    final senderJson = sender.toJson();
+
+    final token = await newSender.persist(persister: _senderPersister);
 
     // Create and store the model with the data needed to keep track of the
     //  payjoin session
@@ -184,7 +222,7 @@ class PdkPayjoinDatasource {
         PayjoinModel.sender(
               uri: uri.asString(),
               isTestnet: isTestnet,
-              sender: senderJson,
+              sessionToken: token.toBytes().toString(),
               walletId: walletId,
               originalPsbt: originalPsbt,
               originalTxId: await TransactionParsing.getTxIdFromPsbt(
@@ -209,7 +247,10 @@ class PdkPayjoinDatasource {
     required List<PayjoinInputPairModel> inputPairs,
     required FutureOr<String> Function(String) processPsbt,
   }) async {
-    final receiver = Receiver.fromJson(json: receiverModel.receiver);
+    final receiver = await Receiver.load(
+      token: receiverModel.sessionToken,
+      persister: _receiverPersister,
+    );
     final request = await getRequest(receiver: receiver, dio: _dio);
 
     if (request == null) {
@@ -292,7 +333,6 @@ class PdkPayjoinDatasource {
     final proposalPsbt = await proposal.psbt();
 
     final updatedModel = receiverModel.copyWith(
-      receiver: receiver.toJson(),
       proposalPsbt: proposalPsbt,
       txId: await TransactionParsing.getTxIdFromPsbt(proposalPsbt),
     );
@@ -399,12 +439,15 @@ class PdkPayjoinDatasource {
     final requests = <String, Future<void>>{};
 
     // Listen for and register new receivers sent from the main isolate
-    receivePort.listen((data) {
+    receivePort.listen((data) async {
       log('[Receivers Isolate] Received data in receivers isolate: $data');
       final receiverModel = PayjoinReceiverModel.fromJson(
         data as Map<String, dynamic>,
       );
-      final receiver = Receiver.fromJson(json: receiverModel.receiver);
+      final receiver = await Receiver.load(
+        token: receiverModel.sessionToken,
+        persister: _receiverPersister,
+      );
 
       // Start checking for a payjoin request from the sender periodically
       Timer.periodic(const Duration(seconds: PayjoinConstants.directoryPollingInterval), (
@@ -685,53 +728,6 @@ class PdkPayjoinDatasource {
       return null;
     }
   }
-}
-
-class InMemoryReceiverPersister {
-  final Map<String, Receiver> _store = {};
-
-  Future<ReceiverToken> save({required Receiver receiver}) async {
-    final token = receiver.key();
-    _store[token.toBytes().toString()] = receiver;
-    return token;
-  }
-
-  Future<Receiver> load({required ReceiverToken token}) async {
-    debugPrint('LOADING RECEIVER ${token.toBytes()}');
-    final receiver = _store[token.toBytes().toString()];
-    if (receiver == null) {
-      throw Exception('Receiver not found for the provided token.');
-    }
-    return receiver;
-  }
-}
-
-class InMemorySenderPersister implements DartSenderPersister {
-  final Map<String, Sender> _store = {};
-
-  Future<SenderToken> save({required Sender sender}) async {
-    final token = sender.key();
-    debugPrint('TOKEN SAVE: ${token.toBytes()}');
-    _store[token.toBytes().toString()] = sender;
-    return token;
-  }
-
-  Future<Sender> load({required SenderToken token}) async {
-    debugPrint('TOKEN LOAD: ${token.toBytes()}');
-    final sender = _store[token.toBytes().toString()];
-    if (sender == null) {
-      throw Exception('Sender not found for the provided token.');
-    }
-    return sender;
-  }
-
-  @override
-  void dispose() {
-    _store.clear();
-  }
-
-  @override
-  bool get isDisposed => _store.isEmpty;
 }
 
 class PayjoinNotFoundException implements Exception {

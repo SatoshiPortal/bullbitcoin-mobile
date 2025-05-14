@@ -1,7 +1,8 @@
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
-import 'package:bb_mobile/core/payjoin/data/datasources/pdk_payjoin_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/datasources/local_pdk_session_datasource.dart';
+import 'package:bb_mobile/core/payjoin/data/datasources/remote_pdk_payjoin_datasource.dart';
 import 'package:bb_mobile/core/payjoin/data/repository/payjoin_repository_impl.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
@@ -25,8 +26,12 @@ class PayjoinLocator {
       () => LocalPayjoinDatasource(db: locator<SqliteDatabase>()),
     );
 
-    locator.registerLazySingleton<PdkPayjoinDatasource>(
-      () => PdkPayjoinDatasource(dio: Dio()),
+    locator.registerLazySingleton<LocalPdkSessionDatasource>(
+      () => LocalPdkSessionDatasource(db: locator<SqliteDatabase>()),
+    );
+
+    locator.registerLazySingleton<RemotePdkPayjoinDatasource>(
+      () => RemotePdkPayjoinDatasource(dio: Dio()),
     );
   }
 
@@ -34,7 +39,8 @@ class PayjoinLocator {
     locator.registerLazySingleton<PayjoinRepository>(
       () => PayjoinRepositoryImpl(
         localPayjoinDatasource: locator<LocalPayjoinDatasource>(),
-        pdkPayjoinDatasource: locator<PdkPayjoinDatasource>(),
+        localPdkSessionDatasource: locator<LocalPdkSessionDatasource>(),
+        remotePdkPayjoinDatasource: locator<RemotePdkPayjoinDatasource>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),
         bdkWalletDatasource: locator<BdkWalletDatasource>(),
         seedDatasource: locator<SeedDatasource>(),

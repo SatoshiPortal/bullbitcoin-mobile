@@ -4,7 +4,7 @@ import 'package:drift/drift.dart';
 class PayjoinSenders extends Table {
   TextColumn get uri => text()();
   BoolColumn get isTestnet => boolean()();
-  TextColumn get sender => text()();
+  TextColumn get sessionToken => text()();
   TextColumn get walletId => text()();
   TextColumn get originalPsbt => text()();
   TextColumn get originalTxId => text()();

@@ -5,7 +5,7 @@ class PayjoinReceivers extends Table {
   TextColumn get id => text()();
   TextColumn get address => text()();
   BoolColumn get isTestnet => boolean()();
-  TextColumn get receiver => text()();
+  TextColumn get sessionToken => text()();
   TextColumn get walletId => text()();
   TextColumn get pjUri => text()();
   Int64Column get maxFeeRateSatPerVb => int64()();
