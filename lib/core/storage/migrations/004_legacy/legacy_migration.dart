@@ -15,7 +15,7 @@ Future<bool> legacyMigrateToV4(String fromVersion) async {
     await doMigration0_3to0_4();
     return true;
   } else if (fromVersion.startsWith('0.4')) {
-    return false;
+    return true;
   }
   return false;
 }
