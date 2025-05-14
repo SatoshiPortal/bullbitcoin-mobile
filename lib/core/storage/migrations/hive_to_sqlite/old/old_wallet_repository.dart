@@ -1,8 +1,8 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_storage_keys.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_wallet.dart';
 import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_hive_datasource.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_storage_keys.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet.dart';
 
 class OldWalletRepository {
   final OldHiveDatasource hiveDatasource;

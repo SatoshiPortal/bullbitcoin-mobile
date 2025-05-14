@@ -1,7 +1,6 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_seed.dart'
-    show OldSeed;
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_seed.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class MigrationSecureStorageDatasource {

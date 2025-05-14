@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet.dart'
-    show OldBBNetwork;
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'old_seed.freezed.dart';

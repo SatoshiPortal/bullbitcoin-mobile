@@ -1,9 +1,9 @@
 // ignore_for_file: constant_identifier_names
 import 'dart:convert';
 
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_address.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_swap.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_transaction.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_address.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_swap.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_transaction.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:crypto/crypto.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';

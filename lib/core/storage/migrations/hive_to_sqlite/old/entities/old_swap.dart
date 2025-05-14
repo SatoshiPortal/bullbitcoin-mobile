@@ -1,8 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_transaction.dart'
-    as bb;
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_transaction.dart';
+import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_wallet.dart';
 import 'package:boltz/boltz.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -463,7 +462,7 @@ abstract class OldSwapTx with _$OldSwapTx {
     return false;
   }
 
-  bb.OldTransaction toNewTransaction() {
+  OldTransaction toNewTransaction() {
     final txId =
         isLnSwap()
             ? (lnSwapDetails!.swapType == SwapType.submarine
@@ -474,7 +473,7 @@ abstract class OldSwapTx with _$OldSwapTx {
             : isChainReceive()
             ? claimTxid
             : lockupTxid;
-    final newTx = bb.OldTransaction(
+    final newTx = OldTransaction(
       txid: txId ?? id,
       timestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       swapTx: this,
