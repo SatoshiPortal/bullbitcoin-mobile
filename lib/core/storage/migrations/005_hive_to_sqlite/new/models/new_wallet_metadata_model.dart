@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/entities/new_wallet_metadata_entity.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/entities/new_wallet_metadata_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'new_wallet_metadata_model.freezed.dart';

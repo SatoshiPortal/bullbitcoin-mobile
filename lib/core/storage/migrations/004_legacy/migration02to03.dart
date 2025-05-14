@@ -2,12 +2,12 @@
 
 import 'dart:convert';
 
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_storage_keys.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_swap.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_wallet.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_hive_datasource.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet_repository.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_storage_keys.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_swap.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_wallet.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hive_datasource.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
 import 'package:boltz/boltz.dart';
 
 Future<void> doMigration0_2to0_3() async {

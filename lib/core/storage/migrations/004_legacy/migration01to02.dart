@@ -5,14 +5,14 @@
 // Change 5: create a new Liquid wallet, based on the Bitcoin wallet
 import 'dart:convert';
 
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_seed.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_storage_keys.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_wallet.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_hive_datasource.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_seed_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_seed.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_storage_keys.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_wallet.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hive_datasource.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet_repository.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
 import 'package:crypto/crypto.dart';
 import 'package:lwk/lwk.dart' as lwk;
 

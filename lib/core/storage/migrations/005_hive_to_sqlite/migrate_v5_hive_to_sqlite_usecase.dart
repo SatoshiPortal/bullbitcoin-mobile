@@ -1,39 +1,37 @@
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/entities/new_seed_entity.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/entities/new_wallet_metadata_entity.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/new_seed_repository.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/tables/new_wallet_metadata_table.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_wallet.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_seed_repository.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/old_wallet_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/entities/new_seed_entity.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/entities/new_wallet_metadata_entity.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/new_seed_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/tables/new_wallet_metadata_table.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_wallet.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bip32/bip32.dart';
 import 'package:flutter/foundation.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
-class MigrateHiveToSqliteUsecase {
-  final SqliteDatabase _sqliteDatabase;
+class MigrateToV5HiveToSqliteToUsecase {
   final NewSeedRepository _newSeedRepository;
   final OldSeedRepository _oldSeedRepository;
   final OldWalletRepository _oldWalletRepository;
 
-  MigrateHiveToSqliteUsecase({
-    required SqliteDatabase sqliteDatabase,
+  MigrateToV5HiveToSqliteToUsecase({
     required NewSeedRepository newSeedRepository,
     required OldSeedRepository oldSeedRepository,
     required OldWalletRepository oldWalletRepository,
-  }) : _sqliteDatabase = sqliteDatabase,
-       _newSeedRepository = newSeedRepository,
+  }) : _newSeedRepository = newSeedRepository,
        _oldSeedRepository = oldSeedRepository,
        _oldWalletRepository = oldWalletRepository;
 
   Future<bool> execute() async {
     try {
-      final settings = await _sqliteDatabase.managers.settings.get();
-      if (settings.isNotEmpty) {
-        debugPrint('skipping migration: sqlite settings already exists');
-        return false;
-      }
+      final packageInfo = await PackageInfo.fromPlatform();
+      final version = packageInfo.version;
+      final versionParts = version.split('.');
+      if (versionParts.length < 2) return false;
+      final minor = int.tryParse(versionParts[1]) ?? 0;
+      if (minor == 4) return false;
 
       final oldWallets = await _oldWalletRepository.fetch();
       final mainWallets =

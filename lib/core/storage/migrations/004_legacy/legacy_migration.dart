@@ -1,7 +1,7 @@
-import 'package:bb_mobile/core/storage/migrations/legacy/migration01to02.dart';
-import 'package:bb_mobile/core/storage/migrations/legacy/migration02to03.dart';
+import 'package:bb_mobile/core/storage/migrations/004_legacy/migration01to02.dart';
+import 'package:bb_mobile/core/storage/migrations/004_legacy/migration02to03.dart';
 
-Future<void> doMigration(String fromVersion, String toVersion) async {
+Future<void> legacyMigrateToV4(String fromVersion, String toVersion) async {
   if (toVersion.startsWith('0.2') && fromVersion.startsWith('0.1')) {
     await doMigration0_1to0_2();
   } else if (toVersion.startsWith('0.3')) {

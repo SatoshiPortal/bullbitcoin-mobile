@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/entities/new_seed_entity.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/new/models/new_seed_model.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/entities/new_seed_entity.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/models/new_seed_model.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
 
 class NewSecureStorageKeyPrefixConstants {
   static const seed = 'seed_';

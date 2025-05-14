@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/migrate.dart';
 import 'package:bb_mobile/core/storage/seed/sqlite_seed.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
@@ -40,11 +39,8 @@ Future main() async {
       //  so it's important to call it after the initialization
       await AppLocator.setup();
 
-      // Migrate from v0.4.4 (hive) to v0.5.0 (sqlite)
-      final sqlite = locator<SqliteDatabase>();
-      final isMigrated = await sqlite.migrateFromHiveToSqlite();
       // If the migration failed, we still need to populate the database with needed data
-      if (!isMigrated) await sqlite.seedTables();
+      await locator<SqliteDatabase>().seedTables();
 
       Bloc.observer = AppBlocObserver();
 

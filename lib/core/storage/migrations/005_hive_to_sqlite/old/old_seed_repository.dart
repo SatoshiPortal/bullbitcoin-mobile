@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/old/entities/old_seed.dart';
-import 'package:bb_mobile/core/storage/migrations/hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_seed.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
 
 class OldSeedRepository {
   final MigrationSecureStorageDatasource storageDatasource;
