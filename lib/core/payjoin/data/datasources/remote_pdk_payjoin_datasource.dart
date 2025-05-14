@@ -485,7 +485,6 @@ class RemotePdkPayjoinDatasource {
                 '${receiver.id()}',
               );
               final updatedModel = receiverModel.copyWith(
-                receiver: receiver.toJson(),
                 originalTxBytes: originalTxBytes,
                 originalTxId: originalTxId,
                 amountSat: amountSat,
@@ -536,9 +535,12 @@ class RemotePdkPayjoinDatasource {
       final senderModel = PayjoinSenderModel.fromJson(
         data as Map<String, dynamic>,
       );
-      final sender = Sender.fromJson(json: senderModel.sender);
+      final sender = await Sender.load(
+        token: senderModel.sessionToken,
+        persister: _senderPersister,
+      );
       log('[Senders Isolate] Requesting payjoin...');
-      final context = await PdkPayjoinDatasource.request(
+      final context = await RemotePdkPayjoinDatasource.request(
         sender: sender,
         dio: dio,
       );
@@ -550,10 +552,11 @@ class RemotePdkPayjoinDatasource {
         (Timer timer) async {
           log('[Senders Isolate]Checking for proposal in senders isolate');
           try {
-            final proposalPsbt = await PdkPayjoinDatasource.getProposalPsbt(
-              context: context,
-              dio: dio,
-            );
+            final proposalPsbt =
+                await RemotePdkPayjoinDatasource.getProposalPsbt(
+                  context: context,
+                  dio: dio,
+                );
 
             if (proposalPsbt != null) {
               log('[Senders Isolate] Proposal found in senders isolate');
