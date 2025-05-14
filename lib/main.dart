@@ -37,10 +37,11 @@ Future main() async {
 
       // The Locator setup might depend on the initialization of the libraries above
       //  so it's important to call it after the initialization
+
       await AppLocator.setup();
+      await locator<SqliteDatabase>().seedTables();
 
       // If the migration failed, we still need to populate the database with needed data
-      await locator<SqliteDatabase>().seedTables();
 
       Bloc.observer = AppBlocObserver();
 
@@ -115,35 +116,40 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: locator<SettingsCubit>()..init()),
-        BlocProvider.value(
-          value: locator<AppStartupBloc>()..add(const AppStartupStarted()),
-        ),
-        BlocProvider.value(
-          value: locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
-        ),
-      ],
-      child: BlocSelector<SettingsCubit, SettingsEntity?, Language?>(
-        selector: (settings) => settings?.language,
-        builder:
-            (context, language) => MaterialApp.router(
-              title: 'BullBitcoin Wallet',
-              debugShowCheckedModeBanner: false,
-              routerConfig: AppRouter.router,
-              // routeInformationParser: router.routeInformationParser,
-              // routeInformationProvider: router.routeInformationProvider,
-              // routerDelegate: router.routerDelegate,
-              theme: AppTheme.themeData(AppThemeType.light),
-              locale: language?.locale,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              builder: (_, child) {
-                return AppStartupWidget(app: child!);
-              },
+    return FutureBuilder<AppStartupBloc>(
+      future: locator.getAsync<AppStartupBloc>(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const SizedBox.shrink();
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(value: locator<SettingsCubit>()..init()),
+            BlocProvider.value(
+              value: snapshot.data!..add(const AppStartupStarted()),
             ),
-      ),
+            BlocProvider.value(
+              value:
+                  locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
+            ),
+          ],
+          child: BlocSelector<SettingsCubit, SettingsEntity?, Language?>(
+            selector: (settings) => settings?.language,
+            builder:
+                (context, language) => MaterialApp.router(
+                  title: 'BullBitcoin Wallet',
+                  debugShowCheckedModeBanner: false,
+                  routerConfig: AppRouter.router,
+                  theme: AppTheme.themeData(AppThemeType.light),
+                  locale: language?.locale,
+                  localizationsDelegates:
+                      AppLocalizations.localizationsDelegates,
+                  supportedLocales: AppLocalizations.supportedLocales,
+                  builder: (_, child) {
+                    return AppStartupWidget(app: child!);
+                  },
+                ),
+          ),
+        );
+      },
     );
   }
 }

@@ -23,7 +23,7 @@ class WalletMetadatas extends Table {
   TextColumn get xpub => text()();
   TextColumn get externalPublicDescriptor => text()();
   TextColumn get internalPublicDescriptor => text()();
-  TextColumn get source => textEnum<WalletSource>()();
+  TextColumn get source => text()();
   BoolColumn get isDefault => boolean()();
   TextColumn get label => text()();
   DateTimeColumn get syncedAt => dateTime().nullable()();

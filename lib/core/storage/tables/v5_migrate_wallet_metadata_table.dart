@@ -11,8 +11,8 @@ enum NewWalletSource {
   }
 }
 
-@DataClassName('NewWalletMetadataRow')
-class NewWalletMetadatas extends Table {
+@DataClassName('V5MigrateWalletMetadataRow')
+class V5MigrateWalletMetadatas extends Table {
   TextColumn get id => text()();
   TextColumn get masterFingerprint => text()();
   TextColumn get xpubFingerprint => text()();

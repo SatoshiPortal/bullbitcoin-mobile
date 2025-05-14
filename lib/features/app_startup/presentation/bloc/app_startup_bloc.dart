@@ -37,8 +37,12 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
 
   Future<void> _migrateLegacyToV5() async {
-    await _migrateToV4LegacyUsecase.execute();
-    await _migrateToV5HiveToSqliteUsecase.execute();
+    final isV4 = await _migrateToV4LegacyUsecase.execute();
+    if (isV4) {
+      debugPrint('Legacy migration executed');
+      final isV5 = await _migrateToV5HiveToSqliteUsecase.execute();
+      if (isV5) debugPrint('V5 migration executed');
+    }
   }
 
   Future<void> _onAppStartupStarted(
@@ -48,7 +52,9 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     emit(const AppStartupState.loadingInProgress());
     try {
       // Run Tor initialization in background
+      // SQL Migrations
       await _migrateLegacyToV5();
+
       // all here future migration calls
       final doDefaultWalletsExist =
           await _checkForExistingDefaultWalletsUsecase.execute();

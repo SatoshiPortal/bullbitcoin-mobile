@@ -9,15 +9,14 @@ class MigrateToV4LegacyUsecase {
 
   Future<bool> execute() async {
     try {
-      final version = await _secureStorageDatasource.fetch(
+      final fromVersion = await _secureStorageDatasource.fetch(
         key: OldStorageKeys.version.name,
       );
-      if (version == null) {
+      if (fromVersion == null) {
         return false;
       }
-      await legacyMigrateToV4(version, '0.4');
-      debugPrint('legacy migration executed');
-      return true;
+      final isV4 = await legacyMigrateToV4(fromVersion);
+      return isV4;
     } catch (e) {
       debugPrint('legacy migration failed: $e');
       return false;
