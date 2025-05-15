@@ -16,8 +16,10 @@ targets:
           ignore_unannotated: false
           include_if_null: true
       flutter_gen_runner: # or flutter_gen
-        options: 
+        options:
           output: lib/generated/flutter_gen
       drift_dev:
         options:
           store_date_time_values_as_text: true
+          databases:
+            sqlite_database: lib/core/storage/sqlite_database.dart
