@@ -23,11 +23,37 @@ class SeedWordsGrid extends StatefulWidget {
 
 class _SeedWordsGridState extends State<SeedWordsGrid> {
   late final List<FocusNode> focusNodes;
+  late final List<int> displayOrder;
 
   @override
   void initState() {
     super.initState();
     focusNodes = List.generate(widget.wordCount, (_) => FocusNode());
+    displayOrder = _createDisplayOrder();
+  }
+
+  List<int> _createDisplayOrder() {
+    const int columns = 2;
+    final int rows = widget.wordCount ~/ columns;
+    final List<int> order = List<int>.filled(widget.wordCount, 0);
+    for (
+      int displayIndex = 0;
+      displayIndex < widget.wordCount;
+      displayIndex++
+    ) {
+      final int displayCol = displayIndex % columns;
+      final int displayRow = displayIndex ~/ columns;
+
+      // Convert column-major display index to logical index (row-major)
+      if (displayCol == 0) {
+        // Left column shows 0, 1, 2, 3, 4, 5
+        order[displayIndex] = displayRow;
+      } else {
+        // Right column shows 6, 7, 8, 9, 10, 11
+        order[displayIndex] = rows + displayRow;
+      }
+    }
+    return order;
   }
 
   @override
@@ -51,17 +77,23 @@ class _SeedWordsGridState extends State<SeedWordsGrid> {
         crossAxisSpacing: 32,
         childAspectRatio: 3.5,
       ),
-      itemBuilder: (context, index) {
-        final int rows = (widget.wordCount / 2).ceil();
-        final int col = index % 2;
-        final int row = index ~/ 2;
-        final int wordIndex = row + col * rows;
+      itemBuilder: (context, displayIndex) {
+        final logicalIndex = displayOrder[displayIndex];
+
         return SeedWord(
-          wordIndex: wordIndex,
+          wordIndex: logicalIndex,
+          displayNumber:
+              logicalIndex + 1, // Show 01, 02, etc. based on logical index
           validWords: widget.validWords,
           hintWords: widget.hintWords,
           onWordChanged: widget.onWordChanged,
           focusNodes: focusNodes,
+          onComplete: () {
+            final int nextIndex = logicalIndex + 1;
+            if (nextIndex < widget.wordCount) {
+              FocusScope.of(context).requestFocus(focusNodes[nextIndex]);
+            }
+          },
         );
       },
     );
@@ -70,17 +102,21 @@ class _SeedWordsGridState extends State<SeedWordsGrid> {
 
 class SeedWord extends StatefulWidget {
   final int wordIndex;
+  final int displayNumber;
   final Map<int, String> validWords;
   final Map<int, List<String>> hintWords;
   final Function(({int index, String word})) onWordChanged;
   final List<FocusNode> focusNodes;
+  final VoidCallback onComplete;
 
   const SeedWord({
     required this.wordIndex,
+    required this.displayNumber,
     required this.validWords,
     required this.hintWords,
     required this.onWordChanged,
     required this.focusNodes,
+    required this.onComplete,
   });
 
   @override
@@ -179,7 +215,7 @@ class SeedWordState extends State<SeedWord> {
                           onTap: () {
                             _controller.text = hint;
                             _removeOverlay();
-                            widget.focusNodes[widget.wordIndex].nextFocus();
+                            widget.onComplete();
                           },
                         );
                       }).toList(),
@@ -247,7 +283,7 @@ class SeedWordState extends State<SeedWord> {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: BBText(
-                  _index(widget.wordIndex + 1),
+                  _index(widget.displayNumber),
                   style: context.font.headlineMedium,
                   color: context.colour.onPrimary,
                   textAlign: TextAlign.right,
@@ -262,13 +298,7 @@ class SeedWordState extends State<SeedWord> {
                   clipBehavior: Clip.antiAliasWithSaveLayer,
                   onEditingComplete: () {
                     _removeOverlay();
-                    final wordCount = widget.focusNodes.length;
-                    final int nextWordIndex = widget.wordIndex + 1;
-                    if (nextWordIndex < wordCount) {
-                      FocusScope.of(
-                        context,
-                      ).requestFocus(widget.focusNodes[nextWordIndex]);
-                    }
+                    widget.onComplete();
                   },
                   enableSuggestions: false,
                   decoration: const InputDecoration(
