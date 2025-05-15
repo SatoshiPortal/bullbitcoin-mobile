@@ -112,12 +112,15 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: locator<SettingsCubit>()..init()),
-        BlocProvider.value(
-          value: locator<AppStartupBloc>()..add(const AppStartupStarted()),
+        BlocProvider(create: (_) => locator<SettingsCubit>()..init()),
+        BlocProvider(
+          create:
+              (_) => locator<AppStartupBloc>()..add(const AppStartupStarted()),
         ),
-        BlocProvider.value(
-          value: locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
+        BlocProvider(
+          create:
+              (_) =>
+                  locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
         ),
       ],
       child: BlocSelector<SettingsCubit, SettingsEntity?, Language?>(
