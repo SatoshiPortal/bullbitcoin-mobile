@@ -34,7 +34,7 @@ class OnboardingPhysicalRecovery extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [Gap(40), _WordGrid(), Gap(80)],
+                  children: [Gap(40), _WordGrid(), Gap(120)],
                 ),
               ),
               Column(
