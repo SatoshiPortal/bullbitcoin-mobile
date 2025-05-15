@@ -23,35 +23,24 @@ class SeedWordsGrid extends StatefulWidget {
 
 class _SeedWordsGridState extends State<SeedWordsGrid> {
   late final List<FocusNode> focusNodes;
-  late final List<int> displayOrder;
+  late final List<int> indexOrder;
 
   @override
   void initState() {
     super.initState();
     focusNodes = List.generate(widget.wordCount, (_) => FocusNode());
-    displayOrder = _createDisplayOrder();
+    indexOrder = _createIndexOrder();
   }
 
-  List<int> _createDisplayOrder() {
+  List<int> _createIndexOrder() {
     const int columns = 2;
     final int rows = widget.wordCount ~/ columns;
     final List<int> order = List<int>.filled(widget.wordCount, 0);
-    for (
-      int displayIndex = 0;
-      displayIndex < widget.wordCount;
-      displayIndex++
-    ) {
-      final int displayCol = displayIndex % columns;
-      final int displayRow = displayIndex ~/ columns;
 
-      // Convert column-major display index to logical index (row-major)
-      if (displayCol == 0) {
-        // Left column shows 0, 1, 2, 3, 4, 5
-        order[displayIndex] = displayRow;
-      } else {
-        // Right column shows 6, 7, 8, 9, 10, 11
-        order[displayIndex] = rows + displayRow;
-      }
+    for (int i = 0; i < widget.wordCount; i++) {
+      final int col = i % columns;
+      final int row = i ~/ columns;
+      order[i] = col == 0 ? row : rows + row;
     }
     return order;
   }
@@ -78,12 +67,10 @@ class _SeedWordsGridState extends State<SeedWordsGrid> {
         childAspectRatio: 3.5,
       ),
       itemBuilder: (context, displayIndex) {
-        final logicalIndex = displayOrder[displayIndex];
-
+        final logicalIndex = indexOrder[displayIndex];
         return SeedWord(
           wordIndex: logicalIndex,
-          displayNumber:
-              logicalIndex + 1, // Show 01, 02, etc. based on logical index
+          displayNumber: logicalIndex + 1,
           validWords: widget.validWords,
           hintWords: widget.hintWords,
           onWordChanged: widget.onWordChanged,
@@ -143,7 +130,6 @@ class SeedWordState extends State<SeedWord> {
     _attachFocusListener();
 
     final wordAtIdx = widget.validWords[widget.wordIndex];
-
     if (wordAtIdx != null) {
       _controller.text = wordAtIdx;
     }
@@ -176,7 +162,6 @@ class SeedWordState extends State<SeedWord> {
     if (_overlayEntry != null) {
       _overlayEntry!.remove();
     }
-
     _overlayEntry = _createOverlayEntry();
     Overlay.of(context).insert(_overlayEntry!);
   }
@@ -192,7 +177,6 @@ class SeedWordState extends State<SeedWord> {
     final renderBox =
         _textFieldKey.currentContext?.findRenderObject() as RenderBox?;
     final size = renderBox?.size ?? Size.zero;
-
     final hintWords = widget.hintWords[widget.wordIndex] ?? [];
 
     return OverlayEntry(
@@ -234,9 +218,7 @@ class SeedWordState extends State<SeedWord> {
     super.dispose();
   }
 
-  String _index(int idx) {
-    return idx < 10 ? '0$idx' : '$idx';
-  }
+  String _index(int idx) => idx < 10 ? '0$idx' : '$idx';
 
   @override
   void didUpdateWidget(covariant SeedWord oldWidget) {
@@ -249,14 +231,13 @@ class SeedWordState extends State<SeedWord> {
       final hintWords = widget.hintWords[widget.wordIndex] ?? [];
       if (widget.focusNodes[widget.wordIndex].hasFocus &&
           hintWords.isNotEmpty) {
-        Future.delayed(const Duration(milliseconds: 200)).then((value) {
-          _showOverlay();
-        });
+        Future.delayed(
+          const Duration(milliseconds: 200),
+        ).then((_) => _showOverlay());
       } else {
         _removeOverlay();
       }
     }
-
     super.didUpdateWidget(oldWidget);
   }
 
