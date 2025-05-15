@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_see
 
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:crypto/crypto.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
@@ -21,7 +22,7 @@ import 'package:lwk/lwk.dart' as lwk;
 
 Future<void> doMigration0_1to0_2() async {
   final secureStorageDatasource = MigrationSecureStorageDatasource();
-  final hiveDatasource = await OldHiveDatasource.init();
+  final hiveDatasource = locator<OldHiveDatasource>();
 
   final oldSeedRepository = OldSeedRepository(secureStorageDatasource);
   final oldWalletRepository = OldWalletRepository(hiveDatasource);

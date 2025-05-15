@@ -8,11 +8,12 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entitie
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hive_datasource.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:boltz/boltz.dart';
 
 Future<void> doMigration0_2to0_3() async {
   final secureStorageDatasource = MigrationSecureStorageDatasource();
-  final hiveDatasource = await OldHiveDatasource.init();
+  final hiveDatasource = locator<OldHiveDatasource>();
   final oldWalletRepository = OldWalletRepository(hiveDatasource);
 
   final oldWallets = await oldWalletRepository.fetch();

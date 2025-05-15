@@ -11,18 +11,18 @@ class OldHiveDatasource {
 
   OldHiveDatasource(this.box);
 
-  static Future<OldHiveDatasource> init() async {
+  static Future<Box> getBox() async {
+    final dir = await getApplicationDocumentsDirectory();
+    Hive.init(dir.path);
     final password = await const FlutterSecureStorage().read(
       key: OldStorageKeys.hiveEncryption.name,
     );
 
-    if (password == null) throw Exception('hive was not initialized');
+    if (password == null) return await Hive.openBox('store');
 
-    final dir = await getApplicationDocumentsDirectory();
-    Hive.init(dir.path);
     final cipher = HiveAesCipher(base64Url.decode(password));
     final box = await Hive.openBox('store', encryptionCipher: cipher);
-    return OldHiveDatasource(box);
+    return box;
   }
 
   String? getValue(String key) => box.get(key) as String?;

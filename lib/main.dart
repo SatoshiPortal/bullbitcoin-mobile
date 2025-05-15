@@ -116,40 +116,35 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<AppStartupBloc>(
-      future: locator.getAsync<AppStartupBloc>(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return const SizedBox.shrink();
-        return MultiBlocProvider(
-          providers: [
-            BlocProvider.value(value: locator<SettingsCubit>()..init()),
-            BlocProvider.value(
-              value: snapshot.data!..add(const AppStartupStarted()),
-            ),
-            BlocProvider.value(
-              value:
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => locator<SettingsCubit>()..init()),
+        BlocProvider(
+          create:
+              (_) => locator<AppStartupBloc>()..add(const AppStartupStarted()),
+        ),
+        BlocProvider(
+          create:
+              (_) =>
                   locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
+        ),
+      ],
+      child: BlocSelector<SettingsCubit, SettingsEntity?, Language?>(
+        selector: (settings) => settings?.language,
+        builder:
+            (context, language) => MaterialApp.router(
+              title: 'BullBitcoin Wallet',
+              debugShowCheckedModeBanner: false,
+              routerConfig: AppRouter.router,
+              theme: AppTheme.themeData(AppThemeType.light),
+              locale: language?.locale,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              builder: (_, child) {
+                return AppStartupWidget(app: child!);
+              },
             ),
-          ],
-          child: BlocSelector<SettingsCubit, SettingsEntity?, Language?>(
-            selector: (settings) => settings?.language,
-            builder:
-                (context, language) => MaterialApp.router(
-                  title: 'BullBitcoin Wallet',
-                  debugShowCheckedModeBanner: false,
-                  routerConfig: AppRouter.router,
-                  theme: AppTheme.themeData(AppThemeType.light),
-                  locale: language?.locale,
-                  localizationsDelegates:
-                      AppLocalizations.localizationsDelegates,
-                  supportedLocales: AppLocalizations.supportedLocales,
-                  builder: (_, child) {
-                    return AppStartupWidget(app: child!);
-                  },
-                ),
-          ),
-        );
-      },
+      ),
     );
   }
 }
