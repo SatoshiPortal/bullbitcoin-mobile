@@ -3,7 +3,7 @@ import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class SeedWordsGrid extends StatelessWidget {
+class SeedWordsGrid extends StatefulWidget {
   const SeedWordsGrid({
     super.key,
     required this.wordCount,
@@ -18,28 +18,50 @@ class SeedWordsGrid extends StatelessWidget {
   final Function(({int index, String word})) onWordChanged;
 
   @override
+  State<SeedWordsGrid> createState() => _SeedWordsGridState();
+}
+
+class _SeedWordsGridState extends State<SeedWordsGrid> {
+  late final List<FocusNode> focusNodes;
+
+  @override
+  void initState() {
+    super.initState();
+    focusNodes = List.generate(widget.wordCount, (_) => FocusNode());
+  }
+
+  @override
+  void dispose() {
+    for (final node in focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 24,
-      ),
-      physics:
-          const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling
-      shrinkWrap: true, // Allow GridView to take the height it needs
-      itemCount: wordCount,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: widget.wordCount,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         mainAxisSpacing: 16,
         crossAxisSpacing: 32,
         childAspectRatio: 3.5,
       ),
-
       itemBuilder: (context, index) {
+        final int rows = (widget.wordCount / 2).ceil();
+        final int col = index % 2;
+        final int row = index ~/ 2;
+        final int wordIndex = row + col * rows;
         return SeedWord(
-          wordIndex: index,
-          validWords: validWords,
-          hintWords: hintWords,
-          onWordChanged: onWordChanged,
+          wordIndex: wordIndex,
+          validWords: widget.validWords,
+          hintWords: widget.hintWords,
+          onWordChanged: widget.onWordChanged,
+          focusNodes: focusNodes,
         );
       },
     );
@@ -51,12 +73,14 @@ class SeedWord extends StatefulWidget {
   final Map<int, String> validWords;
   final Map<int, List<String>> hintWords;
   final Function(({int index, String word})) onWordChanged;
+  final List<FocusNode> focusNodes;
 
   const SeedWord({
     required this.wordIndex,
     required this.validWords,
     required this.hintWords,
     required this.onWordChanged,
+    required this.focusNodes,
   });
 
   @override
@@ -65,42 +89,50 @@ class SeedWord extends StatefulWidget {
 
 class SeedWordState extends State<SeedWord> {
   final TextEditingController _controller = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
   OverlayEntry? _overlayEntry;
   final LayerLink _layerLink = LayerLink();
+  final GlobalKey _textFieldKey = GlobalKey();
+  bool _listenerAttached = false;
 
   @override
   void initState() {
     super.initState();
 
-    _controller.addListener(
-      () {
-        final word = widget.validWords[widget.wordIndex] ?? '';
-        if (word != _controller.text) {
-          widget.onWordChanged(
-            (
-              index: widget.wordIndex,
-              word: _controller.text,
-            ),
-          );
-        }
-      },
-    );
-    _focusNode.addListener(
-      () {
-        final hintWords = widget.hintWords[widget.wordIndex];
-        if (_focusNode.hasFocus && hintWords != null && hintWords.isNotEmpty) {
-          _showOverlay();
-        } else {
-          _removeOverlay();
-        }
-      },
-    );
+    _controller.addListener(() {
+      final word = widget.validWords[widget.wordIndex] ?? '';
+      if (word != _controller.text) {
+        widget.onWordChanged((index: widget.wordIndex, word: _controller.text));
+      }
+    });
+    _attachFocusListener();
 
     final wordAtIdx = widget.validWords[widget.wordIndex];
 
     if (wordAtIdx != null) {
       _controller.text = wordAtIdx;
+    }
+  }
+
+  void _attachFocusListener() {
+    if (_listenerAttached) return;
+    widget.focusNodes[widget.wordIndex].addListener(_focusListener);
+    _listenerAttached = true;
+  }
+
+  void _removeFocusListener() {
+    if (!_listenerAttached) return;
+    widget.focusNodes[widget.wordIndex].removeListener(_focusListener);
+    _listenerAttached = false;
+  }
+
+  void _focusListener() {
+    final hintWords = widget.hintWords[widget.wordIndex];
+    if (widget.focusNodes[widget.wordIndex].hasFocus &&
+        hintWords != null &&
+        hintWords.isNotEmpty) {
+      _showOverlay();
+    } else {
+      _removeOverlay();
     }
   }
 
@@ -121,44 +153,46 @@ class SeedWordState extends State<SeedWord> {
   }
 
   OverlayEntry _createOverlayEntry() {
-    final renderBox = context.findRenderObject()! as RenderBox;
-    final size = renderBox.size;
-    // final offset = renderBox.localToGlobal(Offset.zero);
+    final renderBox =
+        _textFieldKey.currentContext?.findRenderObject() as RenderBox?;
+    final size = renderBox?.size ?? Size.zero;
 
     final hintWords = widget.hintWords[widget.wordIndex] ?? [];
 
     return OverlayEntry(
-      builder: (context) => Positioned(
-        width: size.width - 24,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          offset: Offset(24, size.height),
-          child: Material(
-            elevation: 2,
-            child: ListView(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              children: hintWords.map((hint) {
-                return ListTile(
-                  title: Text(hint),
-                  onTap: () {
-                    _controller.text = hint;
-                    _removeOverlay();
-                    _focusNode.nextFocus();
-                  },
-                );
-              }).toList(),
+      builder:
+          (context) => Positioned(
+            width: size.width,
+            child: CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              offset: Offset(0, size.height),
+              child: Material(
+                elevation: 2,
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  children:
+                      hintWords.map((hint) {
+                        return ListTile(
+                          title: BBText(hint, style: context.font.labelMedium),
+                          onTap: () {
+                            _controller.text = hint;
+                            _removeOverlay();
+                            widget.focusNodes[widget.wordIndex].nextFocus();
+                          },
+                        );
+                      }).toList(),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
     );
   }
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    _removeFocusListener();
     _controller.dispose();
     _removeOverlay();
     super.dispose();
@@ -170,9 +204,15 @@ class SeedWordState extends State<SeedWord> {
 
   @override
   void didUpdateWidget(covariant SeedWord oldWidget) {
+    if (oldWidget.focusNodes != widget.focusNodes ||
+        oldWidget.wordIndex != widget.wordIndex) {
+      _removeFocusListener();
+      _attachFocusListener();
+    }
     if (oldWidget.hintWords != widget.hintWords) {
       final hintWords = widget.hintWords[widget.wordIndex] ?? [];
-      if (_focusNode.hasFocus && hintWords.isNotEmpty) {
+      if (widget.focusNodes[widget.wordIndex].hasFocus &&
+          hintWords.isNotEmpty) {
         Future.delayed(const Duration(milliseconds: 200)).then((value) {
           _showOverlay();
         });
@@ -193,9 +233,7 @@ class SeedWordState extends State<SeedWord> {
           padding: const EdgeInsets.all(3),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
-            border: Border.all(
-              color: context.colour.secondary,
-            ),
+            border: Border.all(color: context.colour.secondary),
           ),
           height: 41,
           child: Row(
@@ -204,10 +242,6 @@ class SeedWordState extends State<SeedWord> {
                 height: 34,
                 width: 34,
                 alignment: Alignment.center,
-                // padding: const EdgeInsets.symmetric(
-                //   vertical: 8,
-                //   horizontal: 8,
-                // ),
                 decoration: BoxDecoration(
                   color: context.colour.secondary,
                   borderRadius: BorderRadius.circular(4),
@@ -222,39 +256,31 @@ class SeedWordState extends State<SeedWord> {
               const Gap(4),
               Expanded(
                 child: TextField(
+                  key: _textFieldKey,
                   controller: _controller,
-                  focusNode: _focusNode,
+                  focusNode: widget.focusNodes[widget.wordIndex],
                   clipBehavior: Clip.antiAliasWithSaveLayer,
-                  onEditingComplete: _removeOverlay,
+                  onEditingComplete: () {
+                    _removeOverlay();
+                    final wordCount = widget.focusNodes.length;
+                    final int nextWordIndex = widget.wordIndex + 1;
+                    if (nextWordIndex < wordCount) {
+                      FocusScope.of(
+                        context,
+                      ).requestFocus(widget.focusNodes[nextWordIndex]);
+                    }
+                  },
                   enableSuggestions: false,
                   decoration: const InputDecoration(
-                    // fillColor: context.colour.onPrimary,
-                    // filled: true,
-                    contentPadding: EdgeInsets.only(
-                      right: 8,
-                      // vertical: 12,
-                      // horizontal: 10,
-                    ),
+                    contentPadding: EdgeInsets.only(right: 8),
                     border: OutlineInputBorder(
-                      // borderRadius: BorderRadius.circular(4),
-                      borderSide: BorderSide(
-                        color: Colors.transparent,
-                        // color: context.colour.secondary,
-                      ),
+                      borderSide: BorderSide(color: Colors.transparent),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      // borderRadius: BorderRadius.circular(4),
-                      borderSide: BorderSide(
-                        color: Colors.transparent,
-                        // color: context.colour.secondary,
-                      ),
+                      borderSide: BorderSide(color: Colors.transparent),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      // borderRadius: BorderRadius.circular(4),
-                      borderSide: BorderSide(
-                        color: Colors.transparent,
-                        // color: context.colour.secondary,
-                      ),
+                      borderSide: BorderSide(color: Colors.transparent),
                     ),
                   ),
                 ),
