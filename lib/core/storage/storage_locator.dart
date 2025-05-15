@@ -52,12 +52,11 @@ class StorageLocator {
   }
 
   static void registerUsecases() {
-    locator.registerFactory<MigrateToV5HiveToSqliteToUsecase>(
-      () => MigrateToV5HiveToSqliteToUsecase(
+    locator.registerFactory<MigrateSeedToV5AndGetHiveToSqliteWalletsUsecase>(
+      () => MigrateSeedToV5AndGetHiveToSqliteWalletsUsecase(
         newSeedRepository: locator<NewSeedRepository>(),
         oldSeedRepository: locator<OldSeedRepository>(),
         oldWalletRepository: locator<OldWalletRepository>(),
-        newWalletRepository: locator<NewWalletRepository>(),
       ),
     );
     locator.registerFactory<MigrateToV4LegacyUsecase>(

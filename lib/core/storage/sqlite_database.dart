@@ -1,3 +1,10 @@
+import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/new_seed_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hive_datasource.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.steps.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
@@ -35,10 +42,33 @@ class SqliteDatabase extends _$SqliteDatabase {
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
-      // onCreate: (m, schema) async {
-      //   // 0.4 to 0.5 migration
-
-      // },
+      onCreate: (Migrator m) async {
+        // 0.4 to 0.5 migration
+        await m.createAll();
+        // create an instance of MigrateToV5HiveToSqliteToUsecase
+        final oldHiveBox = await OldHiveDatasource.getBox();
+        final legacyMigrationUsecase = MigrateToV4LegacyUsecase(
+          MigrationSecureStorageDatasource(),
+        );
+        final isLegacy = await legacyMigrationUsecase.execute();
+        if (isLegacy) {
+          final migrateSeedToV5AndGetHiveToSqliteWalletsUsecase =
+              MigrateSeedToV5AndGetHiveToSqliteWalletsUsecase(
+                newSeedRepository: NewSeedRepository(
+                  MigrationSecureStorageDatasource(),
+                ),
+                oldSeedRepository: OldSeedRepository(
+                  MigrationSecureStorageDatasource(),
+                ),
+                oldWalletRepository: OldWalletRepository(
+                  OldHiveDatasource(oldHiveBox),
+                ),
+              );
+          // ignore: unused_local_variable
+          final oldWallets =
+              await migrateSeedToV5AndGetHiveToSqliteWalletsUsecase.execute();
+        }
+      },
       onUpgrade: stepByStep(
         from1To2: (m, schema) async {
           await m.createTable(schema.walletMetadatas);
