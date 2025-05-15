@@ -18,6 +18,7 @@ import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImportWalletCubit extends Cubit<ImportState> {
@@ -162,23 +163,30 @@ class ImportWalletCubit extends Cubit<ImportState> {
     );
   }
 
-  Future<void> scanQRClicked() async {
+  Future<void> scanQRFromUI(Future<String?> Function() openScanner) async {
     emit(state.copyWith(loadingFile: true));
-    final (res, err) = await _barcode.scan();
-    if (err != null) {
+    if (!await Barcode().hasCameraPermission()) {
       emit(
         state.copyWith(
-          errImporting: err.toString(),
+          errImporting: 'Camera permission denied',
           loadingFile: false,
         ),
       );
       return;
     }
-
-    if (state.importStep == ImportSteps.importXpub) {
-      emit(state.copyWith(xpub: res!));
+    final res = await openScanner();
+    if (res == null) {
+      emit(
+        state.copyWith(
+          errImporting: 'Did not scan anything',
+          loadingFile: false,
+        ),
+      );
+      return;
     }
-
+    if (state.importStep == ImportSteps.importXpub) {
+      emit(state.copyWith(xpub: res));
+    }
     emit(state.copyWith(loadingFile: false));
   }
 

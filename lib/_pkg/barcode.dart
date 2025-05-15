@@ -1,6 +1,6 @@
-import 'package:bb_mobile/_pkg/error.dart';
-import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class Barcode {
   Future<bool> hasCameraPermission() async {
@@ -11,30 +11,49 @@ class Barcode {
     return result.isGranted;
   }
 
-  Future<(String?, Err?)> scan() async {
-    if (!await hasCameraPermission()) {
-      return (null, Err('Camera permission denied'));
-    }
+  static Future<String?> showScanner(BuildContext context) async {
+    return await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => QRViewExample(),
+      ),
+    );
+  }
+}
 
-    try {
-      final res = await FlutterBarcodeScanner.scanBarcode(
-        '#ff6666',
-        'Cancel',
-        true,
-        ScanMode.QR,
-      );
-      if (res == '-1') {
-        return (
-          null,
-          Err(
-            'Did not scan anything',
-          )
-        );
-      } else {
-        return (res, null);
+class QRViewExample extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _QRViewExampleState();
+}
+
+class _QRViewExampleState extends State<QRViewExample> {
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  QRViewController? controller;
+  bool scanned = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: QRView(
+        key: qrKey,
+        onQRViewCreated: _onQRViewCreated,
+      ),
+    );
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
+    this.controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      if (!scanned) {
+        scanned = true;
+        controller.pauseCamera();
+        Navigator.of(context).pop(scanData.code);
       }
-    } catch (e) {
-      return (null, Err(e.toString()));
-    }
+    });
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
   }
 }

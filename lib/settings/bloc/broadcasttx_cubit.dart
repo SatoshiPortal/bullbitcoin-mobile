@@ -65,17 +65,29 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     emit(state.copyWith(tx: tx));
   }
 
-  Future<void> scanQRClicked() async {
+  Future<void> scanQRFromUI(Future<String?> Function() openScanner) async {
     await clearErrors();
     emit(state.copyWith(loadingFile: true, errLoadingFile: ''));
-    final (file, err) = await _barcode.scan();
-    if (err != null) {
-      emit(state.copyWith(loadingFile: false, errLoadingFile: err.toString()));
+    if (!await Barcode().hasCameraPermission()) {
+      emit(
+        state.copyWith(
+          loadingFile: false,
+          errLoadingFile: 'Camera permission denied',
+        ),
+      );
       return;
     }
-
-    final tx = file!;
-    emit(state.copyWith(loadingFile: false, tx: tx));
+    final file = await openScanner();
+    if (file == null) {
+      emit(
+        state.copyWith(
+          loadingFile: false,
+          errLoadingFile: 'Did not scan anything',
+        ),
+      );
+      return;
+    }
+    emit(state.copyWith(loadingFile: false, tx: file));
   }
 
   Future<void> uploadFileClicked() async {

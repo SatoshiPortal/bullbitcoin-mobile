@@ -105,11 +105,10 @@ packages:
   boltz:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: d38ee3ebedea390ab2036178f7e7ad78e08ad8a5
-      url: "https://github.com/SatoshiPortal/boltz-dart.git"
-    source: git
+      name: boltz
+      sha256: "00d5bfb6d099142b97860c7fa7ed69a85756a8463a2fc709ee790948299ab307"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.9"
   boolean_selector:
     dependency: transitive
@@ -420,14 +419,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.5.2"
-  flutter_barcode_scanner:
-    dependency: "direct main"
-    description:
-      name: flutter_barcode_scanner
-      sha256: a4ba37daf9933f451a5e812c753ddd045d6354e4a3280342d895b07fecaab3fa
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   flutter_bloc:
     dependency: "direct main"
     description:
@@ -880,11 +871,10 @@ packages:
   lwk:
     dependency: "direct main"
     description:
-      path: "."
-      ref: main
-      resolved-ref: "8a70a6aa1447761f8744811062edb094a6319491"
-      url: "https://github.com/SatoshiPortal/lwk-dart.git"
-    source: git
+      name: lwk
+      sha256: "22fa0f9b1eeee59a8c8f25c3bba87e3ae02e1e507e48c78aecb6da6027d10631"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.7"
   macros:
     dependency: transitive
@@ -1207,6 +1197,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  qr_code_scanner:
+    dependency: "direct main"
+    description:
+      name: qr_code_scanner
+      sha256: f23b68d893505a424f0bd2e324ebea71ed88465d572d26bb8d2e78a4749591fd
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   qr_flutter:
     dependency: "direct main"
     description:

@@ -155,7 +155,9 @@ class _Screen extends StatelessWidget {
                   Center(
                     child: GestureDetector(
                       onTap: () {
-                        context.read<BroadcastTxCubit>().scanQRClicked();
+                        context
+                            .read<BroadcastTxCubit>()
+                            .scanQRFromUI(() => Barcode.showScanner(context));
                       },
                       child: SizedBox(
                         height: MediaQuery.of(context).size.width * 0.7,

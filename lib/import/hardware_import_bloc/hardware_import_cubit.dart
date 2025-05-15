@@ -48,14 +48,17 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
     _processInput();
   }
 
-  Future<void> scanQRClicked() async {
-    final (res, err) = await _barcode.scan();
-    if (err != null) {
-      emit(state.copyWith(errScanningInput: err.toString()));
+  Future<void> scanQRFromUI(Future<String?> Function() openScanner) async {
+    if (!await Barcode().hasCameraPermission()) {
+      emit(state.copyWith(errScanningInput: 'Camera permission denied'));
       return;
     }
-
-    emit(state.copyWith(inputText: res!));
+    final res = await openScanner();
+    if (res == null) {
+      emit(state.copyWith(errScanningInput: 'Did not scan anything'));
+      return;
+    }
+    emit(state.copyWith(inputText: res));
     _processInput();
   }
 

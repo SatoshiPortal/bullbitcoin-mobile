@@ -63,7 +63,6 @@ class SendCubit extends Cubit<SendState> {
       ),
     );
 
-    if (openScanner) scanAddress();
     if (walletBloc != null) selectWallets(fromStart: true);
 
     // Subscribe to payjoin events to update the send state
@@ -87,6 +86,11 @@ class SendCubit extends Cubit<SendState> {
         );
       }
     });
+
+    if (openScanner) {
+      // scanAddress(context); // context is not available in constructor
+      // The caller should invoke scanAddress(context) after cubit creation if needed
+    }
   }
 
   late StreamSubscription<PayjoinEvent> _pjEventSubscription;
@@ -563,25 +567,29 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
-  Future<void> scanAddress() async {
+  Future<void> scanAddressFromUI(Future<String?> Function() openScanner) async {
     emit(state.copyWith(scanningAddress: true));
-    final (address, err) = await _barcode.scan();
-    if (err != null) {
+    if (!await Barcode().hasCameraPermission()) {
       emit(
         state.copyWith(
-          errScanningAddress: err.toString(),
+          errScanningAddress: 'Camera permission denied',
           scanningAddress: false,
         ),
       );
       return;
     }
-
+    final address = await openScanner();
+    if (address == null) {
+      emit(
+        state.copyWith(
+          errScanningAddress: 'Did not scan anything',
+          scanningAddress: false,
+        ),
+      );
+      return;
+    }
     updateAddress(address);
-    emit(
-      state.copyWith(
-        scanningAddress: false,
-      ),
-    );
+    emit(state.copyWith(scanningAddress: false));
   }
 
   void updateAddressError(String err) =>
