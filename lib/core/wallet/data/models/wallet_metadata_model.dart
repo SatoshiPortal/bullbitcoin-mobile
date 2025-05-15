@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 
@@ -22,7 +21,7 @@ abstract class WalletMetadataModel with _$WalletMetadataModel {
     required String internalPublicDescriptor,
     required WalletSource source,
     required bool isDefault,
-    required String label,
+    String? label,
     DateTime? syncedAt,
   }) = _WalletMetadataModel;
 

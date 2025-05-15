@@ -11,13 +11,13 @@ class SeedDatasource {
   }) : _secureStorage = secureStorage;
 
   Future<void> store({required String fingerprint, required SeedModel seed}) {
-    final key = _seedKey(fingerprint);
+    final key = composeSeedStorageKey(fingerprint);
     final value = jsonEncode(seed.toJson());
     return _secureStorage.saveValue(key: key, value: value);
   }
 
   Future<SeedModel> get(String fingerprint) async {
-    final key = _seedKey(fingerprint);
+    final key = composeSeedStorageKey(fingerprint);
     final value = await _secureStorage.getValue(key);
     if (value == null) {
       throw SeedNotFoundException(
@@ -32,16 +32,16 @@ class SeedDatasource {
   }
 
   Future<bool> exists(String fingerprint) {
-    final key = _seedKey(fingerprint);
+    final key = composeSeedStorageKey(fingerprint);
     return _secureStorage.hasValue(key);
   }
 
   Future<void> delete(String fingerprint) {
-    final key = _seedKey(fingerprint);
+    final key = composeSeedStorageKey(fingerprint);
     return _secureStorage.deleteValue(key);
   }
 
-  String _seedKey(String fingerprint) =>
+  static String composeSeedStorageKey(String fingerprint) =>
       '${SecureStorageKeyPrefixConstants.seed}$fingerprint';
 }
 

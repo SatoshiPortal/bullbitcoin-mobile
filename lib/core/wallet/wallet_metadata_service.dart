@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
@@ -101,7 +100,7 @@ class WalletMetadataService {
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
-    required String label,
+    String? label,
     required bool isDefault,
   }) async {
     final xpub = await Bip32Derivation.getAccountXpub(

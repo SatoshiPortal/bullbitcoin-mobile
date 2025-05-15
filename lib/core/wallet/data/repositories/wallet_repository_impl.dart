@@ -54,26 +54,16 @@ class WalletRepositoryImpl implements WalletRepository {
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
-    String label = '',
+    String? label,
     bool isDefault = false,
     bool sync = false,
   }) async {
     // Derive and store the wallet metadata
-    final walletLabel =
-        isDefault &&
-                (network == Network.bitcoinMainnet ||
-                    network == Network.bitcoinTestnet)
-            ? 'Secure Bitcoin'
-            : isDefault &&
-                (network == Network.liquidMainnet ||
-                    network == Network.liquidTestnet)
-            ? 'Instant Payments'
-            : label;
     final metadata = await WalletMetadataService.deriveFromSeed(
       seed: seed,
       network: network,
       scriptType: scriptType,
-      label: walletLabel,
+      label: label,
       isDefault: isDefault,
     );
     await _walletMetadataDatasource.store(metadata);
