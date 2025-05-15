@@ -38,8 +38,10 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
 
   Future<void> _migrateLegacyToV5() async {
     final isV4 = await _migrateToV4LegacyUsecase.execute();
+
     if (isV4) {
       debugPrint('Legacy migration executed');
+
       final isV5 = await _migrateToV5HiveToSqliteUsecase.execute();
       if (isV5) debugPrint('V5 migration executed');
     }

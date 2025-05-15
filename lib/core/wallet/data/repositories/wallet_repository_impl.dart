@@ -59,6 +59,7 @@ class WalletRepositoryImpl implements WalletRepository {
     bool sync = false,
   }) async {
     // Derive and store the wallet metadata
+
     final walletLabel =
         isDefault &&
                 (network == Network.bitcoinMainnet ||
@@ -76,12 +77,15 @@ class WalletRepositoryImpl implements WalletRepository {
       label: walletLabel,
       isDefault: isDefault,
     );
-    await _walletMetadataDatasource.store(metadata);
 
-    // Get the balance
+    try {
+      await getWallet(metadata.id);
+      throw Exception('Wallet already exists');
+    } catch (_) {}
+
+    await _walletMetadataDatasource.store(metadata);
     final balance = await _getBalance(metadata, sync: sync);
 
-    // Return the created wallet entity
     return Wallet(
       origin: metadata.id,
       label: metadata.label,

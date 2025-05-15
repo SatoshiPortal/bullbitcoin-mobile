@@ -35,6 +35,10 @@ class SqliteDatabase extends _$SqliteDatabase {
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
+      // onCreate: (m, schema) async {
+      //   // 0.4 to 0.5 migration
+
+      // },
       onUpgrade: stepByStep(
         from1To2: (m, schema) async {
           await m.createTable(schema.walletMetadatas);
