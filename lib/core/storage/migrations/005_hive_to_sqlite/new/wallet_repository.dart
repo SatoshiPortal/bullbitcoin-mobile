@@ -12,7 +12,7 @@ class NewWalletRepository {
     required NewWalletMetadataDatasource walletMetadataDatasource,
   }) : _walletMetadataDatasource = walletMetadataDatasource;
 
-  Future<void> createWalletMetadata({
+  Future<String> createWalletMetadata({
     required NewSeedEntity seed,
     required NewNetwork network,
     required NewScriptType scriptType,
@@ -38,6 +38,7 @@ class NewWalletRepository {
       isDefault: isDefault,
     );
     await _walletMetadataDatasource.store(metadata);
+    return metadata.id;
   }
 
   Future<void> importWatchOnlyWalletMetadata({

@@ -98,7 +98,7 @@ class MigrateToV5HiveToSqliteToUsecase {
     final mainWalletSeed = await _newSeedRepository.fetch(
       fingerprint: oldMainWallets.first.mnemonicFingerprint,
     );
-
+    int count = 0;
     for (final oldWallet in oldMainWallets) {
       final network =
           oldWallet.baseWalletType == OldBaseWalletType.Bitcoin
@@ -114,19 +114,23 @@ class MigrateToV5HiveToSqliteToUsecase {
         OldScriptType.bip49 => NewScriptType.bip49,
         OldScriptType.bip44 => NewScriptType.bip44,
       };
-
-      await _newWalletRepository.createWalletMetadata(
+      final id = await _newWalletRepository.createWalletMetadata(
         seed: mainWalletSeed,
         scriptType: scriptType,
         network: network,
         isDefault: true,
       );
+      count++;
+      debugPrint('Created Default Wallet: $id');
       // TODO: Store newWallet in the new database
     }
+    debugPrint('Recovered $count/${oldMainWallets.length} main wallets');
   }
 
   // TODO: Handle passphrase wallets
   Future<void> _storeExternalWallet(List<OldWallet> oldExternalWallets) async {
+    int count = 0;
+
     for (final oldExternalWallet in oldExternalWallets) {
       final newExternalSeed = await _newSeedRepository.fetch(
         fingerprint: oldExternalWallet.mnemonicFingerprint,
@@ -156,14 +160,20 @@ class MigrateToV5HiveToSqliteToUsecase {
 
       // ignore: unused_local_variable
       if (source == NewWalletSource.mnemonic) {
-        await _newWalletRepository.createWalletMetadata(
+        final id = await _newWalletRepository.createWalletMetadata(
           seed: newExternalSeed,
           scriptType: scriptType,
           network: network,
           label: oldExternalWallet.name ?? oldExternalWallet.sourceFingerprint,
         );
+        count++;
+        debugPrint('Created External Mnemonic Wallet: $id');
       }
     }
+    debugPrint(
+      'Recovered $count/ ${oldExternalWallets.length} external wallets',
+    );
+
     // TODO: Store newWallet in the new database
   }
 }
