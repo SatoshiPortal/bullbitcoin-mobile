@@ -4,12 +4,12 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_stor
 import 'package:flutter/foundation.dart';
 
 class MigrateToV4LegacyUsecase {
-  final MigrationSecureStorageDatasource _secureStorageDatasource;
-  MigrateToV4LegacyUsecase(this._secureStorageDatasource);
+  final MigrationSecureStorageDatasource _migrationSecureStorageDatasource;
+  MigrateToV4LegacyUsecase(this._migrationSecureStorageDatasource);
 
   Future<bool> execute() async {
     try {
-      final fromVersion = await _secureStorageDatasource.fetch(
+      final fromVersion = await _migrationSecureStorageDatasource.fetch(
         key: OldStorageKeys.version.name,
       );
       if (fromVersion == null) {
