@@ -28,21 +28,23 @@ class OnboardingPhysicalRecovery extends StatelessWidget {
       child: const Scaffold(
         appBar: OnboardingAppBar(),
         body: SafeArea(
-          child: Stack(
-            children: [
-              SingleChildScrollView(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [Gap(40), _WordGrid(), Gap(120)],
-                ),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 16),
+            child: SingleChildScrollView(
+              reverse: true,
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [_Button(), SizedBox(height: 20)],
+                children: [
+                  Gap(40),
+                  _WordGrid(),
+                  Gap(8),
+                  HintsList(),
+                  Gap(8),
+                  _Button(),
+                  Gap(20),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

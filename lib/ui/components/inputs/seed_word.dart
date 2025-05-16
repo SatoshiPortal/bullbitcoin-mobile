@@ -38,21 +38,21 @@ class _SeedWordsGridState extends State<SeedWordsGrid> {
 
   void _handleFocusChange() {
     final focusedIndex = focusNodes.indexWhere((node) => node.hasFocus);
-    setState(
-      () => _focusedDisplayIndex = focusedIndex != -1 ? focusedIndex : null,
-    );
+    if (_focusedDisplayIndex != focusedIndex) {
+      setState(
+        () => _focusedDisplayIndex = focusedIndex != -1 ? focusedIndex : null,
+      );
+    }
   }
 
   List<int> _createIndexOrder() {
     const int columns = 2;
     final int rows = widget.wordCount ~/ columns;
-    final List<int> order = List<int>.filled(widget.wordCount, 0);
-    for (int i = 0; i < widget.wordCount; i++) {
+    return List.generate(widget.wordCount, (i) {
       final int col = i % columns;
       final int row = i ~/ columns;
-      order[i] = col == 0 ? row : rows + row;
-    }
-    return order;
+      return col == 0 ? row : rows + row;
+    });
   }
 
   @override
@@ -101,18 +101,25 @@ class _SeedWordsGridState extends State<SeedWordsGrid> {
           },
         ),
         const Gap(24),
-        if (_focusedDisplayIndex != null) _buildHintsList(),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          child:
+              (_focusedDisplayIndex != null)
+                  ? _buildHintsList(key: ValueKey(_focusedDisplayIndex))
+                  : const SizedBox.shrink(),
+        ),
       ],
     );
   }
 
-  Widget _buildHintsList() {
+  Widget _buildHintsList({Key? key}) {
     final displayIndex = _focusedDisplayIndex ?? -1;
+    if (displayIndex < 0) return const SizedBox.shrink();
     final logicalIndex = indexOrder[displayIndex];
     final hints = widget.hintWords[logicalIndex] ?? [];
     if (hints.isEmpty) return const SizedBox.shrink();
-
     return Container(
+      key: key,
       height: 50,
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: ListView.separated(
@@ -160,20 +167,12 @@ class SeedWordState extends State<SeedWord> {
   @override
   void initState() {
     super.initState();
-    _setupControllerListener();
-    _initializeText();
-  }
-
-  void _setupControllerListener() {
     _controller.addListener(() {
       final word = widget.validWords[widget.wordIndex] ?? '';
       if (word != _controller.text) {
         widget.onWordChanged((index: widget.wordIndex, word: _controller.text));
       }
     });
-  }
-
-  void _initializeText() {
     final wordAtIdx = widget.validWords[widget.wordIndex];
     if (wordAtIdx != null) {
       _controller.text = wordAtIdx;
@@ -277,5 +276,16 @@ class _HintChip extends StatelessWidget {
         child: Center(child: BBText(word, style: context.font.bodyLarge)),
       ),
     );
+  }
+}
+
+class HintsList extends StatelessWidget {
+  const HintsList();
+
+  @override
+  Widget build(BuildContext context) {
+    final gridState = context.findAncestorStateOfType<_SeedWordsGridState>();
+    if (gridState == null) return const SizedBox.shrink();
+    return gridState._buildHintsList();
   }
 }
