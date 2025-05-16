@@ -46,6 +46,9 @@ sealed class PaymentRequest with _$PaymentRequest {
     @Default('') String pjos,
   }) = Bip21PaymentRequest;
 
+  const factory PaymentRequest.psbt({required String psbt}) =
+      PsbtPaymentRequest;
+
   const PaymentRequest._();
 
   int? get amountSat => switch (this) {
@@ -95,8 +98,11 @@ sealed class PaymentRequest with _$PaymentRequest {
         if (result != null) return result;
       }
 
-      final result = await _tryParseLiquidAddress(trimmed);
-      if (result != null) return result;
+      final liquid = await _tryParseLiquidAddress(trimmed);
+      if (liquid != null) return liquid;
+
+      final psbt = await _tryParsePsbt(data);
+      if (psbt != null) return psbt;
 
       throw 'Invalid payment request';
     } catch (e) {
@@ -292,11 +298,22 @@ sealed class PaymentRequest with _$PaymentRequest {
     return null;
   }
 
+  static Future<PaymentRequest?> _tryParsePsbt(String psbtBase64) async {
+    try {
+      final psbt = await bdk.PartiallySignedTransaction.fromString(psbtBase64);
+      return PaymentRequest.psbt(psbt: psbt.toString());
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return null;
+  }
+
   bool get isBolt11 => this is Bolt11PaymentRequest;
   bool get isLnAddress => this is LnAddressPaymentRequest;
   bool get isBip21 => this is Bip21PaymentRequest;
   bool get isBitcoinAddress => this is BitcoinPaymentRequest;
   bool get isLiquidAddress => this is LiquidPaymentRequest;
+  bool get isPsbt => this is PsbtPaymentRequest;
 
   bool get isTestnet => switch (this) {
     BitcoinPaymentRequest(isTestnet: final isTestnet) => isTestnet,
@@ -312,5 +329,6 @@ sealed class PaymentRequest with _$PaymentRequest {
     LnAddressPaymentRequest() => 'Lightning Address',
     Bolt11PaymentRequest() => 'Bolt11',
     Bip21PaymentRequest() => 'BIP21',
+    PsbtPaymentRequest() => 'PSBT',
   };
 }
