@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/home/presentation/blocs/home_bloc.dart';
 import 'package:bb_mobile/features/home/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/home/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/settings/ui/widgets/superuser_tap_unlocker.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/cards/action_card.dart';
@@ -142,6 +143,7 @@ class _TopNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
       children: [
         const Gap(8),
@@ -156,7 +158,10 @@ class _TopNav extends StatelessWidget {
         ),
         const Gap(24 + 42),
         const Spacer(),
-        const _BullLogo(),
+        SuperuserTapUnlocker(
+          tapsReachedMessageBackgroundColor: theme.colorScheme.primary,
+          child: const _BullLogo(),
+        ),
         const Spacer(),
         const Gap(20),
         IconButton(

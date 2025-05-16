@@ -17,6 +17,7 @@ class SettingsDatasource {
         currency: model.currency,
         language: model.language.name,
         hideAmounts: model.hideAmounts,
+        isSuperuser: model.isSuperuser,
       ),
     );
   }
@@ -31,6 +32,7 @@ class SettingsDatasource {
       language: Language.fromName(row.language),
       currency: row.currency,
       hideAmounts: row.hideAmounts,
+      isSuperuser: row.isSuperuser,
     );
   }
 
@@ -61,6 +63,12 @@ class SettingsDatasource {
   Future<void> setHideAmounts(bool hide) async {
     await _sqlite.managers.settings.update(
       (f) => f(id: const Value(1), hideAmounts: Value(hide)),
+    );
+  }
+
+  Future<void> setIsSuperuser(bool isSuperuser) async {
+    await _sqlite.managers.settings.update(
+      (f) => f(id: const Value(1), isSuperuser: Value(isSuperuser)),
     );
   }
 }

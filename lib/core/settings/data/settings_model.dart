@@ -7,6 +7,7 @@ class SettingsModel {
   final Language language;
   final String currency;
   final bool hideAmounts;
+  final bool isSuperuser;
 
   const SettingsModel({
     required this.id,
@@ -15,5 +16,6 @@ class SettingsModel {
     required this.language,
     required this.currency,
     required this.hideAmounts,
+    required this.isSuperuser,
   });
 }

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/cards/tag_card.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -21,6 +22,9 @@ class OnboardingRecoverOptions extends StatefulWidget {
 class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
   @override
   Widget build(BuildContext context) {
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state?.isSuperuser ?? false,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -48,29 +52,31 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                       style: context.font.bodyLarge,
                     ),
                     const Gap(16),
-                    BackupOptionCard(
-                      icon: Image.asset(
-                        'assets/encrypted_vault.png',
-                        width: 36,
-                        height: 45,
-                        fit: BoxFit.cover,
+                    if (isSuperuser) ...[
+                      BackupOptionCard(
+                        icon: Image.asset(
+                          'assets/encrypted_vault.png',
+                          width: 36,
+                          height: 45,
+                          fit: BoxFit.cover,
+                        ),
+                        title: 'Encrypted vault',
+                        description:
+                            'Anonymous backup with strong encryption using your cloud.',
+                        tag: 'Easy and simple (1 minute)',
+                        onTap:
+                            () => {
+                              context.read<KeyServerCubit>().checkConnection(),
+                              context.pushNamed(
+                                OnboardingRoute
+                                    .chooseRecoverProvider
+                                    .name, // ChooseVaultProviderScreen
+                                extra: true,
+                              ),
+                            },
                       ),
-                      title: 'Encrypted vault',
-                      description:
-                          'Anonymous backup with strong encryption using your cloud.',
-                      tag: 'Easy and simple (1 minute)',
-                      onTap:
-                          () => {
-                            context.read<KeyServerCubit>().checkConnection(),
-                            context.pushNamed(
-                              OnboardingRoute
-                                  .chooseRecoverProvider
-                                  .name, // ChooseVaultProviderScreen
-                              extra: true,
-                            ),
-                          },
-                    ),
-                    const Gap(16),
+                      const Gap(16),
+                    ],
                     BackupOptionCard(
                       icon: Image.asset(
                         'assets/physical_backup.png',

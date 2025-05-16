@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/cards/tag_card.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -23,6 +24,9 @@ class BackupOptionsScreen extends StatefulWidget {
 class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
   @override
   Widget build(BuildContext context) {
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state?.isSuperuser ?? false,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -50,26 +54,28 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                       style: context.font.bodyLarge,
                     ),
                     const Gap(16),
-                    BackupOptionCard(
-                      icon: Image.asset(
-                        'assets/encrypted_vault.png',
-                        width: 36,
-                        height: 45,
-                        fit: BoxFit.cover,
+                    if (isSuperuser) ...[
+                      BackupOptionCard(
+                        icon: Image.asset(
+                          'assets/encrypted_vault.png',
+                          width: 36,
+                          height: 45,
+                          fit: BoxFit.cover,
+                        ),
+                        title: 'Encrypted vault',
+                        description:
+                            'Anonymous backup with strong encryption using your cloud.',
+                        tag: 'Easy and simple (1 minute)',
+                        onTap:
+                            () => {
+                              context.read<KeyServerCubit>().checkConnection(),
+                              context.pushNamed(
+                                BackupWalletSubroute.chooseBackupProvider.name,
+                              ),
+                            },
                       ),
-                      title: 'Encrypted vault',
-                      description:
-                          'Anonymous backup with strong encryption using your cloud.',
-                      tag: 'Easy and simple (1 minute)',
-                      onTap:
-                          () => {
-                            context.read<KeyServerCubit>().checkConnection(),
-                            context.pushNamed(
-                              BackupWalletSubroute.chooseBackupProvider.name,
-                            ),
-                          },
-                    ),
-                    const Gap(16),
+                      const Gap(16),
+                    ],
                     BackupOptionCard(
                       icon: Image.asset(
                         'assets/physical_backup.png',

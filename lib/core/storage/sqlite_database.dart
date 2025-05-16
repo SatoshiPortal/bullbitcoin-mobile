@@ -72,6 +72,7 @@ class SqliteDatabase extends _$SqliteDatabase {
         language: Language.unitedStatesEnglish.name,
         currency: 'USD',
         hideAmounts: false,
+        isSuperuser: false,
       ),
     );
   }
