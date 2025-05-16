@@ -8,9 +8,7 @@ class ScanService {
   static bool _isProcessing = false;
 
   static String decode(List<int> bytes, int width, int height) {
-    if (_isProcessing) {
-      return '';
-    }
+    if (_isProcessing) return '';
 
     _isProcessing = true;
     try {
