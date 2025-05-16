@@ -9,6 +9,8 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
+  - bbqr (0.0.1):
+    - Flutter
   - bdk_flutter (0.31.3):
     - Flutter
   - bip85 (0.0.1):
@@ -136,6 +138,7 @@ PODS:
     - FlutterMacOS
 
 DEPENDENCIES:
+  - bbqr (from `.symlinks/plugins/bbqr/ios`)
   - bdk_flutter (from `.symlinks/plugins/bdk_flutter/ios`)
   - bip85 (from `.symlinks/plugins/bip85/ios`)
   - boltz (from `.symlinks/plugins/boltz/ios`)
@@ -175,6 +178,8 @@ SPEC REPOS:
     - SwiftyGif
 
 EXTERNAL SOURCES:
+  bbqr:
+    :path: ".symlinks/plugins/bbqr/ios"
   bdk_flutter:
     :path: ".symlinks/plugins/bdk_flutter/ios"
   bip85:

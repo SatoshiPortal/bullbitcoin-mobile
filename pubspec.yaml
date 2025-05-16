@@ -90,7 +90,11 @@ dependencies:
   share_plus: ^11.0.0
   font_awesome_flutter: ^10.8.0
   bolt11_decoder: ^1.0.2
-  
+  bbqr:
+    git:
+      url: https://github.com/ethicnology/dart-bbqr.git
+      ref: main
+
 dev_dependencies:
   build_runner: ^2.4.15
   lint: ^2.0.1
