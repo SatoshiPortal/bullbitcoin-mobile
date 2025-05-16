@@ -79,7 +79,7 @@ class WalletRepositoryImpl implements WalletRepository {
     );
 
     if (isDefault) {
-      final allWallets = await getWallets();
+      final allWallets = await getWallets(onlyDefaults: true);
       for (final wallet in allWallets) {
         if (wallet.isDefault && wallet.network == metadata.network) {
           throw Exception('Default wallet already exists');

@@ -31,10 +31,12 @@ class MigrateToV5HiveToSqliteToUsecase {
       final oldWallets = await _oldWalletRepository.fetch();
       if (oldWallets.isEmpty) return false;
 
-      final newMainnetWallets = await _newWalletRepository.getWallets(
+      final newMainnetDefaultWallets = await _newWalletRepository.getWallets(
+        onlyDefaults: true,
         environment: Environment.mainnet,
       );
-      if (newMainnetWallets.length >= 2) return false;
+      if (newMainnetDefaultWallets.length == 2) return false;
+
       final oldMainnetDefaultWallets =
           oldWallets
               .where(
@@ -191,7 +193,6 @@ class MigrateToV5HiveToSqliteToUsecase {
           seed: newExternalSeed,
           scriptType: scriptType,
           network: network,
-          isDefault: true,
         );
       }
       count++;
