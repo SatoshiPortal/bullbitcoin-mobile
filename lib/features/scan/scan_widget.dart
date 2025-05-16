@@ -32,20 +32,13 @@ class _ScanWidgetState extends State<ScanWidget> {
   String _error = '';
   bool _cameraInitialized = false;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Future<void> _initCamera() async {
     try {
       WidgetsFlutterBinding.ensureInitialized();
       _cameras = await availableCameras();
 
       if (_cameras.isEmpty) {
-        setState(() {
-          _error = 'No cameras available.';
-        });
+        setState(() => _error = 'No cameras available.');
         return;
       }
 
@@ -71,17 +64,9 @@ class _ScanWidgetState extends State<ScanWidget> {
 
       await _controller?.initialize();
 
-      if (mounted) {
-        setState(() {
-          _cameraInitialized = true;
-        });
-      }
+      if (mounted) setState(() => _cameraInitialized = true);
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-        });
-      }
+      if (mounted) setState(() => _error = e.toString());
     }
   }
 
@@ -140,6 +125,53 @@ class _ScanWidgetState extends State<ScanWidget> {
                                     bgColor: Colors.transparent,
                                   ),
                                 ),
+                              if (state.isCollectingBbqr &&
+                                  state.bbqrOptions != null)
+                                Positioned(
+                                  top: 60,
+                                  left: 0,
+                                  right: 0,
+                                  child: Center(
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          'BBQR ${state.bbqr.keys.length}/${state.bbqrOptions!.total}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        CircularProgressIndicator(
+                                          value:
+                                              state.bbqr.keys.length /
+                                              state.bbqrOptions!.total,
+                                          strokeWidth: 6,
+                                          backgroundColor: Colors.grey.shade300,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                left: 0,
+                                child: BBButton.big(
+                                  iconData:
+                                      state.isCollectingBbqr
+                                          ? Icons.cancel
+                                          : Icons.check_circle,
+                                  textStyle: context.font.labelSmall,
+                                  textColor:
+                                      state.isCollectingBbqr
+                                          ? Colors.red
+                                          : Colors.green,
+                                  onPressed:
+                                      context.read<ScanCubit>().switchBbqr,
+                                  label: 'BBQR',
+                                  bgColor: Colors.transparent,
+                                ),
+                              ),
                             ],
                           ),
                         );
