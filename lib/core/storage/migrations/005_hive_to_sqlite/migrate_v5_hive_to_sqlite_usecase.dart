@@ -11,9 +11,10 @@ import 'package:flutter/foundation.dart';
 
 class MigrateToV5HiveToSqliteToUsecase {
   final SeedRepository _newSeedRepository;
+  final WalletRepository _newWalletRepository;
+
   final OldSeedRepository _oldSeedRepository;
   final OldWalletRepository _oldWalletRepository;
-  final WalletRepository _newWalletRepository;
   MigrateToV5HiveToSqliteToUsecase({
     required SeedRepository newSeedRepository,
     required OldSeedRepository oldSeedRepository,
@@ -193,6 +194,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           seed: newExternalSeed,
           scriptType: scriptType,
           network: network,
+          label: oldExternalWallet.name ?? oldExternalWallet.sourceFingerprint,
         );
       }
       count++;
