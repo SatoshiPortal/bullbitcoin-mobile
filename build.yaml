@@ -22,4 +22,10 @@ targets:
         options:
           store_date_time_values_as_text: true
           databases:
-            sqlite_database: lib/core/storage/sqlite_database.dart
+            bull_database: lib/core/storage/sqlite_database.dart
+          schema_dir: lib/core/storage/tables/
+        generate_for:
+          exclude:
+            - "lib/core/storage/migrations/hive_to_sqlite/**"
+        
+

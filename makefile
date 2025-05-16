@@ -35,4 +35,6 @@ hooks:
 		git config --local core.hooksPath .git_hooks/; \
 	fi
 
-
+drift-migrate:
+	@echo "🔄 Strating SQLiteMigration"
+	dart run drift_dev make-migrations

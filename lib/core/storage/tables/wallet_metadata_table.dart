@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:drift/drift.dart';
 
 @DataClassName('WalletMetadataRow')
@@ -13,7 +12,7 @@ class WalletMetadatas extends Table {
   TextColumn get xpub => text()();
   TextColumn get externalPublicDescriptor => text()();
   TextColumn get internalPublicDescriptor => text()();
-  TextColumn get source => textEnum<WalletSource>()();
+  TextColumn get source => text()();
   BoolColumn get isDefault => boolean()();
   TextColumn get label => text().nullable()();
   DateTimeColumn get syncedAt => dateTime().nullable()();

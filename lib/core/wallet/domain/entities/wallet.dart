@@ -127,10 +127,8 @@ abstract class Wallet with _$Wallet {
     if (!isDefault) return label;
 
     return switch (network) {
-      Network.bitcoinMainnet ||
-      Network.bitcoinTestnet => 'Secure Bitcoin wallet',
-      Network.liquidMainnet ||
-      Network.liquidTestnet => 'Instant payments wallet',
+      Network.bitcoinMainnet || Network.bitcoinTestnet => 'Secure Bitcoin',
+      Network.liquidMainnet || Network.liquidTestnet => 'Instant payments',
     };
   }
 

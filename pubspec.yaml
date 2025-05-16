@@ -124,6 +124,7 @@ dependencies:
   async: ^2.11.0
   drift: "^2.26.1"
   drift_flutter: ^0.2.4
+  package_info_plus: ^8.3.0
 
 dev_dependencies:
   build_runner: ^2.4.15

@@ -54,9 +54,9 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
     xpub: xpub,
     externalPublicDescriptor: externalPublicDescriptor,
     internalPublicDescriptor: internalPublicDescriptor,
-    source: source,
+    source: source.name,
     isDefault: isDefault,
-    label: label,
+    label: label ?? '',
     syncedAt: syncedAt,
   );
 
@@ -72,7 +72,7 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
         xpub: row.xpub,
         externalPublicDescriptor: row.externalPublicDescriptor,
         internalPublicDescriptor: row.internalPublicDescriptor,
-        source: row.source,
+        source: WalletSource.fromName(row.source),
         isDefault: row.isDefault,
         label: row.label,
         syncedAt: row.syncedAt,

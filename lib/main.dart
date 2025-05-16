@@ -35,6 +35,7 @@ Future main() async {
 
       // The Locator setup might depend on the initialization of the libraries above
       //  so it's important to call it after the initialization
+
       await AppLocator.setup();
 
       Bloc.observer = AppBlocObserver();
@@ -130,9 +131,6 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
               title: 'BullBitcoin Wallet',
               debugShowCheckedModeBanner: false,
               routerConfig: AppRouter.router,
-              // routeInformationParser: router.routeInformationParser,
-              // routeInformationProvider: router.routeInformationProvider,
-              // routerDelegate: router.routerDelegate,
               theme: AppTheme.themeData(AppThemeType.light),
               locale: language?.locale,
               localizationsDelegates: AppLocalizations.localizationsDelegates,

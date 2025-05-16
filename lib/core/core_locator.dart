@@ -28,7 +28,7 @@ class CoreLocator {
     await PayjoinLocator.registerDatasources();
     await RecoverbullLocator.registerDatasources();
     SeedLocator.registerDatasources();
-    StorageLocator.registerDatasources();
+    await StorageLocator.registerDatasources();
     await SwapsLocator.registerDatasources();
     await WalletLocator.registerDatasourceres();
     LabelsLocator.registerDatasources();
@@ -45,6 +45,7 @@ class CoreLocator {
     PayjoinLocator.registerRepositories();
     await RecoverbullLocator.registerRepositories();
     SeedLocator.registerRepositories();
+    StorageLocator.registerRepositories();
     await SettingsLocator.registerRepositories();
     ElectrumLocator.registerUsecases();
     SwapsLocator.registerRepositories();
@@ -64,6 +65,7 @@ class CoreLocator {
     PayjoinLocator.registerUsecases();
     RecoverbullLocator.registerUsecases();
     SeedLocator.registerUsecases();
+    StorageLocator.registerUsecases();
     SettingsLocator.registerUsecases();
     SwapsLocator.registerUsecases();
     TorLocator.registerUsecases();

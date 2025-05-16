@@ -59,19 +59,37 @@ class WalletRepositoryImpl implements WalletRepository {
     bool sync = false,
   }) async {
     // Derive and store the wallet metadata
+    final walletLabel =
+        isDefault &&
+                (network == Network.bitcoinMainnet ||
+                    network == Network.bitcoinTestnet)
+            ? 'Secure Bitcoin'
+            : isDefault &&
+                (network == Network.liquidMainnet ||
+                    network == Network.liquidTestnet)
+            ? 'Instant Payments'
+            : label;
+
     final metadata = await WalletMetadataService.deriveFromSeed(
       seed: seed,
       network: network,
       scriptType: scriptType,
-      label: label,
+      label: walletLabel,
       isDefault: isDefault,
     );
-    await _walletMetadataDatasource.store(metadata);
 
-    // Get the balance
+    if (isDefault) {
+      final allWallets = await getWallets(onlyDefaults: true);
+      for (final wallet in allWallets) {
+        if (wallet.isDefault && wallet.network == metadata.network) {
+          throw Exception('Default wallet already exists');
+        }
+      }
+    }
+
+    await _walletMetadataDatasource.store(metadata);
     final balance = await _getBalance(metadata, sync: sync);
 
-    // Return the created wallet entity
     return Wallet(
       origin: metadata.id,
       label: metadata.label,
@@ -308,9 +326,8 @@ class WalletRepositoryImpl implements WalletRepository {
 
   Future<void> _startAutoSyncing() async {
     // TODO: get from constants
-    const autoSyncInterval = Duration(
-      seconds: SettingsConstants.autoSyncIntervalSeconds,
-    );
+    // TODO(azad): shouldn't we store `autoSyncIntervalSeconds` in sqlite settings?
+    const autoSyncInterval = Duration(seconds: autoSyncIntervalSeconds);
 
     Timer.periodic(autoSyncInterval, (timer) async {
       final metadatas = await _walletMetadataDatasource.fetchAll();

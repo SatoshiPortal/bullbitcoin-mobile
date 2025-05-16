@@ -8,8 +8,8 @@ class CheckForExistingDefaultWalletsUsecase {
   CheckForExistingDefaultWalletsUsecase({
     required SettingsRepository settingsRepository,
     required WalletRepository walletRepository,
-  })  : _settingsRepository = settingsRepository,
-        _walletRepository = walletRepository;
+  }) : _settingsRepository = settingsRepository,
+       _walletRepository = walletRepository;
 
   Future<bool> execute() async {
     // Check if wallets exist for the selected environment
