@@ -56,7 +56,7 @@ extension WalletMetadataModelMapper on WalletMetadataModel {
     internalPublicDescriptor: internalPublicDescriptor,
     source: source.name,
     isDefault: isDefault,
-    label: label,
+    label: label ?? '',
     syncedAt: syncedAt,
   );
 

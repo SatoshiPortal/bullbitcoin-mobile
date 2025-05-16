@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:drift/drift.dart';
 
 @DataClassName('WalletMetadataRow')
