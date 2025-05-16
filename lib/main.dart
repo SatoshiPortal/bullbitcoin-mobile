@@ -3,8 +3,6 @@ import 'dart:developer';
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/seed/sqlite_seed.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
@@ -39,9 +37,6 @@ Future main() async {
       //  so it's important to call it after the initialization
 
       await AppLocator.setup();
-      await locator<SqliteDatabase>().seedTables();
-
-      // If the migration failed, we still need to populate the database with needed data
 
       Bloc.observer = AppBlocObserver();
 

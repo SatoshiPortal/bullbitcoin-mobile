@@ -24,7 +24,7 @@ class HomeWalletScreen extends StatelessWidget {
                 ? // TODO: use labels from translations for hardcoded names here
                 "Instant wallet"
                 : "Secure Bitcoin wallet"
-            : wallet.label;
+            : wallet.getLabel() ?? '';
 
     return Scaffold(
       appBar: AppBar(

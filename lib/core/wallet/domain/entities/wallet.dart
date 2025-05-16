@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet.freezed.dart';
@@ -77,11 +76,22 @@ enum ScriptType {
   }
 }
 
+enum WalletSource {
+  mnemonic,
+  xpub,
+  descriptors,
+  coldcard;
+
+  static WalletSource fromName(String name) {
+    return WalletSource.values.firstWhere((source) => source.name == name);
+  }
+}
+
 @freezed
 abstract class Wallet with _$Wallet {
   const factory Wallet({
     required String origin,
-    @Default('') String label,
+    String? label,
     required Network network,
     @Default(false) bool isDefault,
     // The fingerprint of the BIP32 root/master key (if a seed was used to derive the wallet)
@@ -113,7 +123,7 @@ abstract class Wallet with _$Wallet {
     };
   }
 
-  String getLabel() {
+  String? getLabel() {
     if (!isDefault) return label;
 
     return switch (network) {

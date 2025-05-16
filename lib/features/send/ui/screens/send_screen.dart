@@ -614,7 +614,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'From',
             details: BBText(
-              selectedWallet!.label,
+              selectedWallet!.getLabel() ?? '',
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -806,7 +806,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'From',
             details: BBText(
-              selectedWallet!.label,
+              selectedWallet!.getLabel() ?? '',
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -915,7 +915,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'From',
             details: BBText(
-              selectedWallet!.label,
+              selectedWallet!.getLabel() ?? '',
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),

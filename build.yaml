@@ -16,7 +16,7 @@ targets:
           ignore_unannotated: false
           include_if_null: true
       flutter_gen_runner: # or flutter_gen
-        options: 
+        options:
           output: lib/generated/flutter_gen
       drift_dev:
         options:
@@ -28,3 +28,4 @@ targets:
           exclude:
             - "lib/core/storage/migrations/hive_to_sqlite/**"
         
+
