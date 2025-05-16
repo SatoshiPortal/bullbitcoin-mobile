@@ -1,13 +1,10 @@
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/entities/new_wallet_metadata_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_wallet.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
-
-import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:flutter/foundation.dart';
@@ -32,14 +29,13 @@ class MigrateToV5HiveToSqliteToUsecase {
   Future<bool> execute() async {
     try {
       final oldWallets = await _oldWalletRepository.fetch();
-      final oldMainnetWallets =
-          oldWallets.where((e) => e.network == OldBBNetwork.Mainnet).toList();
+      if (oldWallets.isEmpty) return false;
+
       final newMainnetWallets = await _newWalletRepository.getWallets(
         environment: Environment.mainnet,
       );
-      if (oldMainnetWallets.length == newMainnetWallets.length) return false;
-
-      final mainWallets =
+      if (newMainnetWallets.length >= 2) return false;
+      final oldMainnetDefaultWallets =
           oldWallets
               .where(
                 (e) =>
@@ -47,32 +43,33 @@ class MigrateToV5HiveToSqliteToUsecase {
                     e.network == OldBBNetwork.Mainnet,
               )
               .toList();
-      debugPrint('mainWallets: ${mainWallets.length}');
-      final externalWallets =
+      debugPrint('defaultOldSignerWallets: ${oldMainnetDefaultWallets.length}');
+      final oldMainnetExternalSignerWallets =
           oldWallets
               .where(
                 (e) =>
-                    e.type != OldBBWalletType.main &&
+                    e.type == OldBBWalletType.words &&
                     e.network == OldBBNetwork.Mainnet,
               )
               .toList();
-      debugPrint('externalWallets: ${externalWallets.length}');
-      // toSet().toList() removes duplicates
-      // main wallets share the same seed/fingerprint
-      final oldFingerprints =
-          oldWallets.map((e) => e.mnemonicFingerprint).toSet().toList();
-      debugPrint('oldFingerprints: ${oldFingerprints.length}');
-      if (oldFingerprints.isEmpty) return false;
-      final seedsImported = await _storeNewSeeds(oldFingerprints);
       debugPrint(
-        'migration: ${seedsImported.length}/${oldFingerprints.length} seeds',
+        'externalOldSignerWallets: ${oldMainnetExternalSignerWallets.length}',
       );
 
-      final mainCount = await _storeMainWallets(mainWallets);
-      final finalExternalCount = await _storeExternalWallet(externalWallets);
+      final oldMainnetSignerWallets =
+          oldMainnetDefaultWallets + oldMainnetExternalSignerWallets;
 
+      final seedsImported = await _storeNewSeeds(oldMainnetSignerWallets);
       debugPrint(
-        'migration: $mainCount/${mainWallets.length} main wallets and $finalExternalCount/${externalWallets.length} external wallets',
+        'migration: ${seedsImported.length}/${oldMainnetSignerWallets.length} seeds',
+      );
+      if (seedsImported.isEmpty) return false;
+      final mainCount = await _storeMainWallets(oldMainnetDefaultWallets);
+      final finalExternalCount = await _storeExternalWallet(
+        oldMainnetExternalSignerWallets,
+      );
+      debugPrint(
+        'migration completed: ${seedsImported.length} seeds, $mainCount/${oldMainnetDefaultWallets.length} default wallets and $finalExternalCount/${oldMainnetExternalSignerWallets.length} external wallets; Successfully migrated ${seedsImported.length + mainCount + finalExternalCount} wallets; Successfully migrated.',
       );
       return true;
     } catch (e) {
@@ -81,35 +78,42 @@ class MigrateToV5HiveToSqliteToUsecase {
     }
   }
 
-  Future<List<MnemonicSeed>> _storeNewSeeds(
-    List<String> oldFingerprints,
-  ) async {
-    final List<MnemonicSeed> seeds = [];
+  Future<List<MnemonicSeed>> _storeNewSeeds(List<OldWallet> oldWallets) async {
+    try {
+      // mnemonic fingerprints are seed indexes
+      // source fingerprints are passphrase indexes
+      // mnemonic == source fingerprint for wallets without passphrases
 
-    for (final oldFingerprint in oldFingerprints) {
-      try {
+      final List<MnemonicSeed> seeds = [];
+      for (final oldWallet in oldWallets) {
         final oldSeed = await _oldSeedRepository.fetch(
-          fingerprint: oldFingerprint,
+          fingerprint: oldWallet.mnemonicFingerprint,
         );
-        final hasPassphrase = oldSeed.passphrases.isNotEmpty;
-        if (hasPassphrase) {
-          for (final passphrase in oldSeed.passphrases) {
-            final seed = await _newSeedRepository.createFromMnemonic(
-              mnemonicWords: oldSeed.mnemonicList(),
-              passphrase: passphrase.passphrase,
-            );
-            seeds.add(seed);
-          }
+        if (oldWallet.hasPassphrase()) {
+          final oldPassphrase = oldSeed.getPassphraseFromIndex(
+            oldWallet.sourceFingerprint,
+          );
+          final seed = await _newSeedRepository.createFromMnemonic(
+            mnemonicWords: oldSeed.mnemonicList(),
+            passphrase: oldPassphrase.passphrase,
+          );
+          seeds.add(seed);
+          debugPrint(
+            'Imported seed w/passphrase: ${oldWallet.sourceFingerprint}',
+          );
+        } else {
+          final seed = await _newSeedRepository.createFromMnemonic(
+            mnemonicWords: oldSeed.mnemonicList(),
+          );
+          seeds.add(seed);
+          debugPrint('Imported seed: ${oldWallet.sourceFingerprint}');
         }
-        final seed = await _newSeedRepository.createFromMnemonic(
-          mnemonicWords: oldSeed.mnemonicList(),
-        );
-        seeds.add(seed);
-      } catch (e) {
-        debugPrint('SKIP: $e');
       }
+      return seeds;
+    } catch (e) {
+      debugPrint('SKIP: $e');
+      return [];
     }
-    return seeds;
   }
 
   Future<int> _storeMainWallets(List<OldWallet> oldMainWallets) async {
@@ -194,29 +198,5 @@ class MigrateToV5HiveToSqliteToUsecase {
     }
     return count;
     // TODO: Store newWallet in the new database
-  }
-}
-
-extension ScriptTypeX on NewScriptType {
-  XpubType getXpubType(NewNetwork network) {
-    if (network.isMainnet) {
-      switch (this) {
-        case NewScriptType.bip44:
-          return XpubType.xpub;
-        case NewScriptType.bip49:
-          return XpubType.ypub;
-        case NewScriptType.bip84:
-          return XpubType.zpub;
-      }
-    } else {
-      switch (this) {
-        case NewScriptType.bip44:
-          return XpubType.tpub;
-        case NewScriptType.bip49:
-          return XpubType.upub;
-        case NewScriptType.bip84:
-          return XpubType.vpub;
-      }
-    }
   }
 }

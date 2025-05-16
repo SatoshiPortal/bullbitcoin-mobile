@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/impl/s
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/new_seed_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hive_datasource.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
@@ -29,9 +28,6 @@ class StorageLocator {
   }
 
   static void registerRepositories() {
-    locator.registerLazySingleton<NewSeedRepository>(
-      () => NewSeedRepository(locator<MigrationSecureStorageDatasource>()),
-    );
     locator.registerLazySingleton<OldSeedRepository>(
       () => OldSeedRepository(locator<MigrationSecureStorageDatasource>()),
     );
