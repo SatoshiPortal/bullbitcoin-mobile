@@ -1,6 +1,10 @@
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/entities/new_seed_entity.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/entities/new_wallet_metadata_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/new_seed_repository.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/new/new_wallet_metadata_service.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_seed.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_wallet.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hive_datasource.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
@@ -17,6 +21,7 @@ import 'package:bb_mobile/core/storage/tables/v5_migrate_wallet_metadata_table.d
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:flutter/foundation.dart';
 part 'sqlite_database.g.dart';
 
 @DriftDatabase(
@@ -45,28 +50,140 @@ class SqliteDatabase extends _$SqliteDatabase {
       onCreate: (Migrator m) async {
         // 0.4 to 0.5 migration
         await m.createAll();
+        final newSeedRepository = NewSeedRepository(
+          MigrationSecureStorageDatasource(),
+        );
+        final oldSeedRepository = OldSeedRepository(
+          MigrationSecureStorageDatasource(),
+        );
         // create an instance of MigrateToV5HiveToSqliteToUsecase
         final oldHiveBox = await OldHiveDatasource.getBox();
+        final oldWalletRepository = OldWalletRepository(
+          OldHiveDatasource(oldHiveBox),
+        );
         final legacyMigrationUsecase = MigrateToV4LegacyUsecase(
           MigrationSecureStorageDatasource(),
         );
         final isLegacy = await legacyMigrationUsecase.execute();
         if (isLegacy) {
-          final migrateSeedToV5AndGetHiveToSqliteWalletsUsecase =
-              MigrateSeedToV5AndGetHiveToSqliteWalletsUsecase(
-                newSeedRepository: NewSeedRepository(
-                  MigrationSecureStorageDatasource(),
-                ),
-                oldSeedRepository: OldSeedRepository(
-                  MigrationSecureStorageDatasource(),
-                ),
-                oldWalletRepository: OldWalletRepository(
-                  OldHiveDatasource(oldHiveBox),
+          final oldWallets = await oldWalletRepository.fetch();
+          if (oldWallets.isEmpty) return;
+          final oldFingerprints =
+              oldWallets.map((e) => e.mnemonicFingerprint).toSet().toList();
+          debugPrint('oldFingerprints: ${oldFingerprints.length}');
+          final mainWallets =
+              oldWallets.where((e) => e.type == OldBBWalletType.main).toList();
+          debugPrint('mainWallets: ${mainWallets.length}');
+          // ignore: unused_local_variable
+          final externalWallets =
+              oldWallets.where((e) => e.type != OldBBWalletType.main).toList();
+          // ignore: unnecessary_null_comparison
+          if (oldWallets == null) return;
+
+          for (final oldWallet in oldWallets) {
+            // Derive and store the wallet metadata
+            OldSeed oldSeed;
+            try {
+              oldSeed = await oldSeedRepository.fetch(
+                fingerprint: oldWallet.mnemonicFingerprint,
+              );
+            } catch (e) {
+              debugPrint('Could not find seed. Likely a watch only wallet: $e');
+              return;
+            }
+
+            final hasPassphrase = oldSeed.passphrases.isNotEmpty;
+            if (hasPassphrase) {
+              for (final passphrase in oldSeed.passphrases) {
+                final seed = NewSeedEntity.mnemonic(
+                  mnemonicWords: oldSeed.mnemonicList(),
+                  passphrase: passphrase.passphrase,
+                );
+                await newSeedRepository.store(
+                  fingerprint: seed.masterFingerprint,
+                  seed: seed,
+                );
+              }
+            }
+            final seed = NewSeedEntity.mnemonic(
+              mnemonicWords: oldSeed.mnemonicList(),
+            );
+            await newSeedRepository.store(
+              fingerprint: seed.masterFingerprint,
+              seed: seed,
+            );
+            final network =
+                oldWallet.baseWalletType == OldBaseWalletType.Bitcoin
+                    ? (oldWallet.isTestnet()
+                        ? NewNetwork.bitcoinTestnet
+                        : NewNetwork.bitcoinMainnet)
+                    : (oldWallet.isTestnet()
+                        ? NewNetwork.liquidTestnet
+                        : NewNetwork.liquidMainnet);
+
+            final scriptType = switch (oldWallet.scriptType) {
+              OldScriptType.bip84 => NewScriptType.bip84,
+              OldScriptType.bip49 => NewScriptType.bip49,
+              OldScriptType.bip44 => NewScriptType.bip44,
+            };
+
+            if (oldWallet.type == OldBBWalletType.main) {
+              final metadata = await NewWalletMetadataService.deriveFromSeed(
+                seed: seed,
+                network: network,
+                scriptType: scriptType,
+                isDefault: true,
+                label:
+                    oldWallet.baseWalletType == OldBaseWalletType.Bitcoin
+                        ? 'Secure Bitcoin'
+                        : 'Instant Payments',
+              );
+              await managers.walletMetadatas.create(
+                (f) => f(
+                  id: metadata.id,
+                  label: metadata.label,
+                  isDefault: metadata.isDefault,
+                  isPhysicalBackupTested: metadata.isPhysicalBackupTested,
+                  isEncryptedVaultTested: metadata.isEncryptedVaultTested,
+                  externalPublicDescriptor: metadata.externalPublicDescriptor,
+                  internalPublicDescriptor: metadata.internalPublicDescriptor,
+                  masterFingerprint: metadata.masterFingerprint,
+                  source: metadata.source.name,
+                  xpub: metadata.xpub,
+                  xpubFingerprint: metadata.xpubFingerprint,
+                  syncedAt: Value(metadata.syncedAt),
+                  latestEncryptedBackup: Value(metadata.latestEncryptedBackup),
+                  latestPhysicalBackup: Value(metadata.latestPhysicalBackup),
                 ),
               );
-          // ignore: unused_local_variable
-          final oldWallets =
-              await migrateSeedToV5AndGetHiveToSqliteWalletsUsecase.execute();
+            } else {
+              final metadata = await NewWalletMetadataService.deriveFromSeed(
+                seed: seed,
+                network: network,
+                scriptType: scriptType,
+                isDefault: false,
+                label: oldWallet.name ?? oldWallet.sourceFingerprint,
+              );
+              await managers.walletMetadatas.create(
+                (f) => f(
+                  id: metadata.id,
+                  label: metadata.label,
+                  isDefault: metadata.isDefault,
+                  isPhysicalBackupTested: metadata.isPhysicalBackupTested,
+                  isEncryptedVaultTested: metadata.isEncryptedVaultTested,
+                  externalPublicDescriptor: metadata.externalPublicDescriptor,
+                  internalPublicDescriptor: metadata.internalPublicDescriptor,
+                  masterFingerprint: metadata.masterFingerprint,
+                  source: metadata.source.name,
+                  xpub: metadata.xpub,
+                  xpubFingerprint: metadata.xpubFingerprint,
+                  syncedAt: Value(metadata.syncedAt),
+                  latestEncryptedBackup: Value(metadata.latestEncryptedBackup),
+                  latestPhysicalBackup: Value(metadata.latestPhysicalBackup),
+                ),
+              );
+            }
+          }
         }
       },
       onUpgrade: stepByStep(
