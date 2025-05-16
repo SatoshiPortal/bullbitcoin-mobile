@@ -1,12 +1,12 @@
 import 'dart:async';
 
+import 'package:app_links/app_links.dart';
 import 'package:bb_mobile/_model/wallet.dart';
 import 'package:bb_mobile/_pkg/bip21.dart';
 import 'package:bb_mobile/_pkg/error.dart';
 import 'package:bb_mobile/home/bloc/home_cubit.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:uni_links/uni_links.dart';
 
 class DeepLink {
   StreamSubscription? _sub;
@@ -17,9 +17,9 @@ class DeepLink {
   }) async {
     try {
       if (_sub != null) return null;
-      _sub = linkStream.listen(
-        (String? uri) {
-          if (uri != null) link(uri);
+      _sub = AppLinks().uriLinkStream.listen(
+        (Uri? uri) {
+          if (uri != null) link(uri.toString());
         },
         onError: (err) {
           err(err.toString());

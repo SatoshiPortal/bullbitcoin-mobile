@@ -26,7 +26,7 @@ _$CurrencyStateImpl _$$CurrencyStateImplFromJson(Map<String, dynamic> json) =>
       loadingCurrency: json['loadingCurrency'] as bool? ?? false,
       errLoadingCurrency: json['errLoadingCurrency'] as String? ?? '',
       fiatAmt: (json['fiatAmt'] as num?)?.toDouble() ?? 0,
-      amount: json['amount'] as int? ?? 0,
+      amount: (json['amount'] as num?)?.toInt() ?? 0,
       tempAmount: json['tempAmount'] as String?,
       errAmount: json['errAmount'] as String? ?? '',
     );

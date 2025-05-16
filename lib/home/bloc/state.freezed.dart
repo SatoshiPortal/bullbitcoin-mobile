@@ -12,7 +12,7 @@ part of 'state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$HomeState {
@@ -27,7 +27,9 @@ mixin _$HomeState {
   String get errDeepLinking => throw _privateConstructorUsedError;
   int? get moveToIdx => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $HomeStateCopyWith<HomeState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -59,6 +61,8 @@ class _$HomeStateCopyWithImpl<$Res, $Val extends HomeState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -141,6 +145,8 @@ class __$$HomeStateImplCopyWithImpl<$Res>
       _$HomeStateImpl _value, $Res Function(_$HomeStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -257,7 +263,7 @@ class _$HomeStateImpl extends _HomeState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$HomeStateImpl &&
@@ -293,7 +299,9 @@ class _$HomeStateImpl extends _HomeState {
       errDeepLinking,
       moveToIdx);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$HomeStateImplCopyWith<_$HomeStateImpl> get copyWith =>
@@ -320,8 +328,8 @@ abstract class _HomeState extends HomeState {
   @override
   bool get loadingWallets;
   @override
-  String get errLoadingWallets;
-  @override // Wallet? selectedWallet,
+  String get errLoadingWallets; // Wallet? selectedWallet,
+  @override
   WalletBloc? get selectedWalletCubit;
   @override
   int? get lastTestnetWalletIdx;
@@ -331,8 +339,11 @@ abstract class _HomeState extends HomeState {
   String get errDeepLinking;
   @override
   int? get moveToIdx;
+
+  /// Create a copy of HomeState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$HomeStateImplCopyWith<_$HomeStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -12,7 +12,7 @@ part of 'state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$CreateWalletState {
@@ -36,7 +36,9 @@ mixin _$CreateWalletState {
   String? get walletLabel => throw _privateConstructorUsedError;
   Wallet? get savedWallet => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of CreateWalletState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $CreateWalletStateCopyWith<CreateWalletState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -71,6 +73,8 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of CreateWalletState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -124,6 +128,8 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
     ) as $Val);
   }
 
+  /// Create a copy of CreateWalletState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $WalletCopyWith<$Res>? get savedWallet {
@@ -168,6 +174,8 @@ class __$$CreateWalletStateImplCopyWithImpl<$Res>
       $Res Function(_$CreateWalletStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of CreateWalletState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -292,7 +300,7 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CreateWalletStateImpl &&
@@ -326,7 +334,9 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
       walletLabel,
       savedWallet);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of CreateWalletState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$CreateWalletStateImplCopyWith<_$CreateWalletStateImpl> get copyWith =>
@@ -347,21 +357,21 @@ abstract class _CreateWalletState extends CreateWalletState {
       final Wallet? savedWallet}) = _$CreateWalletStateImpl;
   const _CreateWalletState._() : super._();
 
-  @override
-  /**
+/**
      * 
      * SENSITIVE
      * 
      */
+  @override
   List<String>? get mnemonic;
   @override
   String get passPhrase;
-  @override
   /**
      * 
      * SENSITIVE
      * 
      */
+  @override
   bool get creatingNmemonic;
   @override
   String get errCreatingNmemonic;
@@ -375,8 +385,11 @@ abstract class _CreateWalletState extends CreateWalletState {
   String? get walletLabel;
   @override
   Wallet? get savedWallet;
+
+  /// Create a copy of CreateWalletState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CreateWalletStateImplCopyWith<_$CreateWalletStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -12,7 +12,7 @@ part of 'electrum.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 ElectrumNetwork _$ElectrumNetworkFromJson(Map<String, dynamic> json) {
   switch (json['runtimeType']) {
@@ -122,8 +122,13 @@ mixin _$ElectrumNetwork {
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
+
+  /// Serializes this ElectrumNetwork to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ElectrumNetwork
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ElectrumNetworkCopyWith<ElectrumNetwork> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -155,6 +160,8 @@ class _$ElectrumNetworkCopyWithImpl<$Res, $Val extends ElectrumNetwork>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ElectrumNetwork
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -234,6 +241,8 @@ class __$$BullbitcoinElectrumNetworkImplCopyWithImpl<$Res>
       $Res Function(_$BullbitcoinElectrumNetworkImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ElectrumNetwork
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -337,7 +346,7 @@ class _$BullbitcoinElectrumNetworkImpl extends _BullbitcoinElectrumNetwork {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$BullbitcoinElectrumNetworkImpl &&
@@ -352,12 +361,14 @@ class _$BullbitcoinElectrumNetworkImpl extends _BullbitcoinElectrumNetwork {
             (identical(other.type, type) || other.type == type));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, mainnet, testnet, stopGap,
       timeout, retry, validateDomain, name, type);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ElectrumNetwork
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$BullbitcoinElectrumNetworkImplCopyWith<_$BullbitcoinElectrumNetworkImpl>
@@ -513,8 +524,11 @@ abstract class _BullbitcoinElectrumNetwork extends ElectrumNetwork {
   String get name;
   @override
   ElectrumTypes get type;
+
+  /// Create a copy of ElectrumNetwork
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$BullbitcoinElectrumNetworkImplCopyWith<_$BullbitcoinElectrumNetworkImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -548,6 +562,8 @@ class __$$DefaultElectrumNetworkImplCopyWithImpl<$Res>
       $Res Function(_$DefaultElectrumNetworkImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ElectrumNetwork
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -650,7 +666,7 @@ class _$DefaultElectrumNetworkImpl extends _DefaultElectrumNetwork {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$DefaultElectrumNetworkImpl &&
@@ -665,12 +681,14 @@ class _$DefaultElectrumNetworkImpl extends _DefaultElectrumNetwork {
             (identical(other.type, type) || other.type == type));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, mainnet, testnet, stopGap,
       timeout, retry, validateDomain, name, type);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ElectrumNetwork
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$DefaultElectrumNetworkImplCopyWith<_$DefaultElectrumNetworkImpl>
@@ -826,8 +844,11 @@ abstract class _DefaultElectrumNetwork extends ElectrumNetwork {
   String get name;
   @override
   ElectrumTypes get type;
+
+  /// Create a copy of ElectrumNetwork
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$DefaultElectrumNetworkImplCopyWith<_$DefaultElectrumNetworkImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -860,6 +881,8 @@ class __$$CustomElectrumNetworkImplCopyWithImpl<$Res>
       $Res Function(_$CustomElectrumNetworkImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ElectrumNetwork
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -960,7 +983,7 @@ class _$CustomElectrumNetworkImpl extends _CustomElectrumNetwork {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CustomElectrumNetworkImpl &&
@@ -975,12 +998,14 @@ class _$CustomElectrumNetworkImpl extends _CustomElectrumNetwork {
             (identical(other.type, type) || other.type == type));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, mainnet, testnet, stopGap,
       timeout, retry, validateDomain, name, type);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ElectrumNetwork
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$CustomElectrumNetworkImplCopyWith<_$CustomElectrumNetworkImpl>
@@ -1136,8 +1161,11 @@ abstract class _CustomElectrumNetwork extends ElectrumNetwork {
   String get name;
   @override
   ElectrumTypes get type;
+
+  /// Create a copy of ElectrumNetwork
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CustomElectrumNetworkImplCopyWith<_$CustomElectrumNetworkImpl>
       get copyWith => throw _privateConstructorUsedError;
 }

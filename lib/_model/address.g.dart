@@ -9,7 +9,7 @@ part of 'address.dart';
 _$AddressImpl _$$AddressImplFromJson(Map<String, dynamic> json) =>
     _$AddressImpl(
       address: json['address'] as String,
-      index: json['index'] as int?,
+      index: (json['index'] as num?)?.toInt(),
       kind: $enumDecode(_$AddressKindEnumMap, json['kind']),
       state: $enumDecode(_$AddressStatusEnumMap, json['state']),
       label: json['label'] as String?,
@@ -17,7 +17,8 @@ _$AddressImpl _$$AddressImplFromJson(Map<String, dynamic> json) =>
       spendable: json['spendable'] as bool? ?? true,
       saving: json['saving'] as bool? ?? false,
       errSaving: json['errSaving'] as String? ?? '',
-      highestPreviousBalance: json['highestPreviousBalance'] as int? ?? 0,
+      highestPreviousBalance:
+          (json['highestPreviousBalance'] as num?)?.toInt() ?? 0,
       localUtxos: (json['localUtxos'] as List<dynamic>?)
           ?.map((e) => UTXO.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -54,7 +55,7 @@ const _$AddressStatusEnumMap = {
 _$UTXOImpl _$$UTXOImplFromJson(Map<String, dynamic> json) => _$UTXOImpl(
       txid: json['txid'] as String,
       isSpent: json['isSpent'] as bool,
-      value: json['value'] as int,
+      value: (json['value'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$UTXOImplToJson(_$UTXOImpl instance) =>

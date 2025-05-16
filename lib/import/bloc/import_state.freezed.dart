@@ -12,7 +12,7 @@ part of 'import_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$ImportState {
@@ -55,7 +55,9 @@ mixin _$ImportState {
   Wallet? get savedWallet => throw _privateConstructorUsedError;
   ColdCard? get coldCard => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ImportStateCopyWith<ImportState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -106,6 +108,8 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -234,6 +238,8 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
     ) as $Val);
   }
 
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $WalletCopyWith<$Res>? get savedWallet {
@@ -246,6 +252,8 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
     });
   }
 
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ColdCardCopyWith<$Res>? get coldCard {
@@ -307,6 +315,8 @@ class __$$ImportStateImplCopyWithImpl<$Res>
       _$ImportStateImpl _value, $Res Function(_$ImportStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -576,7 +586,7 @@ class _$ImportStateImpl extends _ImportState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ImportStateImpl &&
@@ -660,7 +670,9 @@ class _$ImportStateImpl extends _ImportState {
         coldCard
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ImportStateImplCopyWith<_$ImportStateImpl> get copyWith =>
@@ -695,23 +707,23 @@ abstract class _ImportState extends ImportState {
       final ColdCard? coldCard}) = _$ImportStateImpl;
   const _ImportState._() : super._();
 
-  @override
-  /**
+/**
      * 
      * SENSITIVE
      * 
      */
+  @override
   List<({bool tapped, String word})> get words12;
   @override
   List<({bool tapped, String word})> get words24;
   @override
   String get passPhrase;
-  @override
   /**
      * 
      * SENSITIVE
      * 
      */
+  @override
   String get xpub;
   @override
   String get tempXpub;
@@ -753,8 +765,11 @@ abstract class _ImportState extends ImportState {
   Wallet? get savedWallet;
   @override
   ColdCard? get coldCard;
+
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ImportStateImplCopyWith<_$ImportStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -120,7 +120,7 @@ class _BBTextInputState extends State<BBTextInput> {
           enableIMEPersonalizedLearning: false,
           keyboardType: TextInputType.multiline,
           maxLines: 5,
-          style: context.font.bodySmall!.copyWith(color: context.colour.onBackground),
+          style: context.font.bodySmall!.copyWith(color: context.colour.onSurface),
           decoration: InputDecoration(
             suffixIcon: widget.rightIcon,
             hintText: widget.hint,
@@ -130,13 +130,13 @@ class _BBTextInputState extends State<BBTextInput> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24.0),
               borderSide: BorderSide(
-                color: context.colour.onBackground.withOpacity(0.2),
+                color: context.colour.onSurface.withOpacity(0.2),
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(24.0),
               borderSide: BorderSide(
-                color: context.colour.onBackground,
+                color: context.colour.onSurface,
               ),
             ),
           ),
@@ -160,19 +160,19 @@ class _BBTextInputState extends State<BBTextInput> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(80.0),
               borderSide: BorderSide(
-                color: context.colour.onBackground.withOpacity(0.2),
+                color: context.colour.onSurface.withOpacity(0.2),
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(80.0),
               borderSide: BorderSide(
-                color: context.colour.onBackground,
+                color: context.colour.onSurface,
               ),
             ),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(80.0),
               borderSide: BorderSide(
-                color: context.colour.onBackground.withOpacity(0.2),
+                color: context.colour.onSurface.withOpacity(0.2),
               ),
             ),
             labelStyle: context.font.labelSmall,
@@ -202,13 +202,13 @@ class _BBTextInputState extends State<BBTextInput> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(80.0),
               borderSide: BorderSide(
-                color: context.colour.onBackground.withOpacity(0.2),
+                color: context.colour.onSurface.withOpacity(0.2),
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(80.0),
               borderSide: BorderSide(
-                color: context.colour.onBackground,
+                color: context.colour.onSurface,
               ),
             ),
             labelStyle: context.font.labelSmall,
@@ -238,13 +238,13 @@ class _BBTextInputState extends State<BBTextInput> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(80.0),
                 borderSide: BorderSide(
-                  color: context.colour.onBackground.withOpacity(0.2),
+                  color: context.colour.onSurface.withOpacity(0.2),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(80.0),
                 borderSide: BorderSide(
-                  color: context.colour.onBackground,
+                  color: context.colour.onSurface,
                 ),
               ),
               labelStyle: context.font.labelSmall,
@@ -302,7 +302,7 @@ class _BBAmountInputState extends State<BBAmountInput> {
       _editingController.text = widget.value!;
 
     final borderColor =
-        widget.selected ? context.colour.primary : context.colour.onBackground.withOpacity(0.2);
+        widget.selected ? context.colour.primary : context.colour.onSurface.withOpacity(0.2);
 
     return TextField(
       enabled: !widget.disabled,
@@ -321,10 +321,10 @@ class _BBAmountInputState extends State<BBAmountInput> {
         //   )
         // else
         if (widget.isSats)
-          CurrencyTextInputFormatter(
+          CurrencyTextInputFormatter.currency(
             decimalDigits: 0,
-            enableNegative: false,
             symbol: '',
+            enableNegative: false,
           ),
         // else
         //   CurrencyTextInputFormatter(

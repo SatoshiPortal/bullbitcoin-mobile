@@ -8,18 +8,18 @@ part of 'transaction.dart';
 
 _$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
     _$TransactionImpl(
-      timestamp: json['timestamp'] as int,
+      timestamp: (json['timestamp'] as num).toInt(),
       txid: json['txid'] as String,
-      received: json['received'] as int?,
-      sent: json['sent'] as int?,
-      fee: json['fee'] as int?,
-      height: json['height'] as int?,
+      received: (json['received'] as num?)?.toInt(),
+      sent: (json['sent'] as num?)?.toInt(),
+      fee: (json['fee'] as num?)?.toInt(),
+      height: (json['height'] as num?)?.toInt(),
       label: json['label'] as String?,
       toAddress: json['toAddress'] as String?,
       psbt: json['psbt'] as String?,
       rbfEnabled: json['rbfEnabled'] as bool? ?? true,
       oldTx: json['oldTx'] as bool? ?? false,
-      broadcastTime: json['broadcastTime'] as int?,
+      broadcastTime: (json['broadcastTime'] as num?)?.toInt(),
       outAddrs: (json['outAddrs'] as List<dynamic>?)
               ?.map((e) => Address.fromJson(e as Map<String, dynamic>))
               .toList() ??

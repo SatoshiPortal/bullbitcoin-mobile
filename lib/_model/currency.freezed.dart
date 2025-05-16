@@ -12,7 +12,7 @@ part of 'currency.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 Currency _$CurrencyFromJson(Map<String, dynamic> json) {
   return _Currency.fromJson(json);
@@ -24,8 +24,12 @@ mixin _$Currency {
   double? get price => throw _privateConstructorUsedError;
   String get shortName => throw _privateConstructorUsedError;
 
+  /// Serializes this Currency to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Currency
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $CurrencyCopyWith<Currency> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -48,6 +52,8 @@ class _$CurrencyCopyWithImpl<$Res, $Val extends Currency>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Currency
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -91,6 +97,8 @@ class __$$CurrencyImplCopyWithImpl<$Res>
       _$CurrencyImpl _value, $Res Function(_$CurrencyImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Currency
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -138,7 +146,7 @@ class _$CurrencyImpl extends _Currency {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CurrencyImpl &&
@@ -148,11 +156,13 @@ class _$CurrencyImpl extends _Currency {
                 other.shortName == shortName));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, name, price, shortName);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Currency
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$CurrencyImplCopyWith<_$CurrencyImpl> get copyWith =>
@@ -182,8 +192,11 @@ abstract class _Currency extends Currency {
   double? get price;
   @override
   String get shortName;
+
+  /// Create a copy of Currency
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CurrencyImplCopyWith<_$CurrencyImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

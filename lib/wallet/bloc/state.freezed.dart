@@ -12,7 +12,7 @@ part of 'state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$WalletState {
@@ -37,7 +37,9 @@ mixin _$WalletState {
       throw _privateConstructorUsedError; // Address? newAddress,
   Address? get firstAddress => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $WalletStateCopyWith<WalletState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -81,6 +83,8 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -174,6 +178,8 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
     ) as $Val);
   }
 
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $WalletCopyWith<$Res>? get wallet {
@@ -186,6 +192,8 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
     });
   }
 
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $AddressCopyWith<$Res>? get firstAddress {
@@ -240,6 +248,8 @@ class __$$WalletStateImplCopyWithImpl<$Res>
       _$WalletStateImpl _value, $Res Function(_$WalletStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -415,7 +425,7 @@ class _$WalletStateImpl extends _WalletState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$WalletStateImpl &&
@@ -473,7 +483,9 @@ class _$WalletStateImpl extends _WalletState {
       syncErrCount,
       firstAddress);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$WalletStateImplCopyWith<_$WalletStateImpl> get copyWith =>
@@ -504,9 +516,9 @@ abstract class _WalletState extends WalletState {
   @override
   Wallet? get wallet;
   @override
-  bdk.Wallet? get bdkWallet;
-  @override // List<Transaction>? txs,
+  bdk.Wallet? get bdkWallet; // List<Transaction>? txs,
 // Balance? balance,
+  @override
   String get name;
   @override
   bool get loadingWallet;
@@ -533,11 +545,14 @@ abstract class _WalletState extends WalletState {
   @override
   String get errSavingName;
   @override
-  int get syncErrCount;
-  @override // Address? newAddress,
-  Address? get firstAddress;
+  int get syncErrCount; // Address? newAddress,
   @override
-  @JsonKey(ignore: true)
+  Address? get firstAddress;
+
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$WalletStateImplCopyWith<_$WalletStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

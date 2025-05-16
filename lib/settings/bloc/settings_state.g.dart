@@ -10,7 +10,7 @@ _$SettingsStateImpl _$$SettingsStateImplFromJson(Map<String, dynamic> json) =>
     _$SettingsStateImpl(
       notifications: json['notifications'] as bool? ?? false,
       privacyView: json['privacyView'] as bool? ?? false,
-      reloadWalletTimer: json['reloadWalletTimer'] as int? ?? 20,
+      reloadWalletTimer: (json['reloadWalletTimer'] as num?)?.toInt() ?? 20,
       language: json['language'] as String?,
       languageList: (json['languageList'] as List<dynamic>?)
           ?.map((e) => e as String)

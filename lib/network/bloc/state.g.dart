@@ -9,7 +9,7 @@ part of 'state.dart';
 _$NetworkStateImpl _$$NetworkStateImplFromJson(Map<String, dynamic> json) =>
     _$NetworkStateImpl(
       testnet: json['testnet'] as bool? ?? false,
-      reloadWalletTimer: json['reloadWalletTimer'] as int? ?? 20,
+      reloadWalletTimer: (json['reloadWalletTimer'] as num?)?.toInt() ?? 20,
       networks: (json['networks'] as List<dynamic>?)
               ?.map((e) => ElectrumNetwork.fromJson(e as Map<String, dynamic>))
               .toList() ??

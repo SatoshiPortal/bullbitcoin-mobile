@@ -12,7 +12,7 @@ part of 'state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$SendState {
@@ -37,7 +37,9 @@ mixin _$SendState {
   String? get psbtSigned => throw _privateConstructorUsedError;
   int? get psbtSignedFeeAmount => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SendStateCopyWith<SendState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -82,6 +84,8 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -190,6 +194,8 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     ) as $Val);
   }
 
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $TransactionCopyWith<$Res>? get tx {
@@ -245,6 +251,8 @@ class __$$SendStateImplCopyWithImpl<$Res>
       _$SendStateImpl _value, $Res Function(_$SendStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -452,7 +460,7 @@ class _$SendStateImpl extends _SendState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SendStateImpl &&
@@ -516,7 +524,9 @@ class _$SendStateImpl extends _SendState {
         psbtSignedFeeAmount
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>
@@ -587,8 +597,11 @@ abstract class _SendState extends SendState {
   String? get psbtSigned;
   @override
   int? get psbtSignedFeeAmount;
+
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -12,7 +12,7 @@ part of 'settings_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 SettingsState _$SettingsStateFromJson(Map<String, dynamic> json) {
   return _SettingsState.fromJson(json);
@@ -29,8 +29,12 @@ mixin _$SettingsState {
   String get errLoadingLanguage => throw _privateConstructorUsedError;
   bool get defaultRBF => throw _privateConstructorUsedError;
 
+  /// Serializes this SettingsState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of SettingsState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SettingsStateCopyWith<SettingsState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -62,6 +66,8 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SettingsState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -138,6 +144,8 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
       _$SettingsStateImpl _value, $Res Function(_$SettingsStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SettingsState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -242,7 +250,7 @@ class _$SettingsStateImpl extends _SettingsState {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SettingsStateImpl &&
@@ -264,7 +272,7 @@ class _$SettingsStateImpl extends _SettingsState {
                 other.defaultRBF == defaultRBF));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -277,7 +285,9 @@ class _$SettingsStateImpl extends _SettingsState {
       errLoadingLanguage,
       defaultRBF);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SettingsState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SettingsStateImplCopyWith<_$SettingsStateImpl> get copyWith =>
@@ -322,8 +332,11 @@ abstract class _SettingsState extends SettingsState {
   String get errLoadingLanguage;
   @override
   bool get defaultRBF;
+
+  /// Create a copy of SettingsState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SettingsStateImplCopyWith<_$SettingsStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

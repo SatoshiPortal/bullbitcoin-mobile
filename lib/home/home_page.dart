@@ -24,7 +24,7 @@ import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/wallet/wallet_card.dart';
 import 'package:bb_mobile/wallet/wallet_txs.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide CarouselController;
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -210,7 +210,7 @@ class HomeHeaderCards extends StatefulWidget {
 }
 
 class _HomeHeaderCardsState extends State<HomeHeaderCards> {
-  final CarouselController _carouselController = CarouselController();
+  final CarouselSliderController _carouselController = CarouselSliderController();
 
   @override
   Widget build(BuildContext context) {
@@ -324,7 +324,7 @@ class HomeTopBar extends StatelessWidget {
         const Spacer(),
         IconButton(
           key: UIKeys.homeImportButton,
-          color: pageIdx == 0 ? context.colour.onBackground : context.colour.onPrimary,
+          color: pageIdx == 0 ? context.colour.onSurface : context.colour.onPrimary,
           icon: const Icon(
             FontAwesomeIcons.circlePlus,
             shadows: [],
@@ -335,7 +335,7 @@ class HomeTopBar extends StatelessWidget {
         ),
         IconButton(
           key: UIKeys.homeSettingsButton,
-          color: pageIdx == 0 ? context.colour.onBackground : context.colour.onPrimary,
+          color: pageIdx == 0 ? context.colour.onSurface : context.colour.onPrimary,
           icon: const Icon(
             FontAwesomeIcons.gear,
             shadows: [],
@@ -346,7 +346,7 @@ class HomeTopBar extends StatelessWidget {
         ),
         IconButton(
           // key: UIKeys.homeSettingsButton,
-          color: pageIdx == 0 ? context.colour.onBackground : context.colour.onPrimary,
+          color: pageIdx == 0 ? context.colour.onSurface : context.colour.onPrimary,
           icon: const Icon(
             FontAwesomeIcons.userLarge,
             shadows: [],
