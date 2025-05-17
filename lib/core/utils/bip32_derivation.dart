@@ -20,12 +20,13 @@ class Bip32Derivation {
   }
 
   static String getXprvFromSeed(Uint8List seedBytes, Network network) {
-    final nw = network == Network.bitcoinTestnet
-        ? bip32.NetworkType(
-            wif: 0x80,
-            bip32: bip32.Bip32Type(public: 0x043587CF, private: 0x04358394),
-          )
-        : null;
+    final nw =
+        network == Network.bitcoinTestnet
+            ? bip32.NetworkType(
+              wif: 0x80,
+              bip32: bip32.Bip32Type(public: 0x043587CF, private: 0x04358394),
+            )
+            : null;
     final root = bip32.BIP32.fromSeed(seedBytes, nw);
     return root.toBase58();
   }
@@ -34,8 +35,10 @@ class Bip32Derivation {
     final decoded = base58.decode(xpub);
     final keyBytes = decoded.sublist(4); // Remove xpub version bytes
     // Add xpub version bytes, since the bip32 library expects them like that
-    final xpubBytes =
-        Uint8List.fromList([...XpubType.xpub.versionBytes, ...keyBytes]);
+    final xpubBytes = Uint8List.fromList([
+      ...XpubType.xpub.versionBytes,
+      ...keyBytes,
+    ]);
     return bip32.BIP32.fromBase58(base58.encode(xpubBytes));
   }
 }
@@ -90,8 +93,10 @@ extension Bip32X on bip32.BIP32 {
     final decoded = base58.decode(xpub);
     final versionBytes = Uint8List.fromList(targetType.versionBytes);
     final keyBytes = decoded.sublist(4); // Remove existing xpub version bytes
-    final newBytes =
-        Uint8List.fromList([...versionBytes, ...keyBytes]); // Apply new prefix
+    final newBytes = Uint8List.fromList([
+      ...versionBytes,
+      ...keyBytes,
+    ]); // Apply new prefix
     return base58.encode(newBytes);
   }
 }

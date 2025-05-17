@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/tables/bip85_mappings_table.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
@@ -26,6 +27,7 @@ part 'sqlite_database.g.dart';
     PayjoinReceivers,
     ElectrumServers,
     Swaps,
+    Bip85Mappings,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {

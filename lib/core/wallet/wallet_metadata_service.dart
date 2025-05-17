@@ -103,8 +103,9 @@ class WalletMetadataService {
     String? label,
     required bool isDefault,
   }) async {
+    final seedBytes = seed.bytes;
     final xpub = await Bip32Derivation.getAccountXpub(
-      seedBytes: seed.bytes,
+      seedBytes: seedBytes,
       network: network,
       scriptType: scriptType,
     );
@@ -112,7 +113,7 @@ class WalletMetadataService {
     String descriptor;
     String changeDescriptor;
     if (network.isBitcoin) {
-      final xprv = Bip32Derivation.getXprvFromSeed(seed.bytes, network);
+      final xprv = Bip32Derivation.getXprvFromSeed(seedBytes, network);
       descriptor =
           await DescriptorDerivation.derivePublicBitcoinDescriptorFromXpriv(
             xprv,

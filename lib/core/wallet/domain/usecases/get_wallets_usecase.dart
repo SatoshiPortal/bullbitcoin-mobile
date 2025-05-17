@@ -9,8 +9,8 @@ class GetWalletsUsecase {
   GetWalletsUsecase({
     required WalletRepository walletRepository,
     required SettingsRepository settingsRepository,
-  })  : _wallet = walletRepository,
-        _settingsRepository = settingsRepository;
+  }) : _wallet = walletRepository,
+       _settingsRepository = settingsRepository;
 
   Future<List<Wallet>> execute({
     bool? onlyDefaults,

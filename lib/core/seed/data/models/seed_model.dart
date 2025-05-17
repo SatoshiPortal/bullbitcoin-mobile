@@ -49,11 +49,12 @@ sealed class SeedModel with _$SeedModel {
     };
   }
 
-  Seed toEntity() {
+  Seed toEntity({String? bip85MasterSeedFingerprint}) {
     return switch (this) {
       BytesSeedModel(:final bytes) => Seed.bytes(
         bytes: Uint8List.fromList(bytes),
         masterFingerprint: masterFingerprint,
+        bip85MasterSeedFingerprint: bip85MasterSeedFingerprint,
       ),
       MnemonicSeedModel(:final mnemonicWords, :final passphrase) =>
         Seed.mnemonic(
@@ -61,6 +62,7 @@ sealed class SeedModel with _$SeedModel {
           passphrase: passphrase,
           bytes: Uint8List.fromList(bytes),
           masterFingerprint: masterFingerprint,
+          bip85MasterSeedFingerprint: bip85MasterSeedFingerprint,
         ),
     };
   }
