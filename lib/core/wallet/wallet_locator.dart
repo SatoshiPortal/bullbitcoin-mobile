@@ -24,6 +24,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_utxo_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/create_bip85_derived_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_used_receive_addresses_usecase.dart';
@@ -171,6 +172,13 @@ class WalletLocator {
       () => WatchWalletTransactionByAddressUsecase(
         walletTransactionRepository: locator<WalletTransactionRepository>(),
         walletRepository: locator<WalletRepository>(),
+      ),
+    );
+    locator.registerFactory<CreateBip85DerivedWalletUseCase>(
+      () => CreateBip85DerivedWalletUseCase(
+        walletRepository: locator<WalletRepository>(),
+        seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }

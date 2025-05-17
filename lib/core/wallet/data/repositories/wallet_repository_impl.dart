@@ -201,6 +201,8 @@ class WalletRepositoryImpl implements WalletRepository {
     final metadatas = await _walletMetadataDatasource.fetchAll();
     if (metadatas.isEmpty) return [];
 
+    // TODO: We should move this filtering to the datasource level to take advantage
+    // of the sqlite query filtering which is more efficient.
     final filteredWallets =
         metadatas
             .where(

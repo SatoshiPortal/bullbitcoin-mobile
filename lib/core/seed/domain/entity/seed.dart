@@ -12,6 +12,7 @@ sealed class Seed with _$Seed {
   const factory Seed.bytes({
     required Uint8List bytes,
     required String masterFingerprint,
+    String? bip85MasterSeedFingerprint,
   }) = BytesSeed;
 
   /// Mnemonic-based seed
@@ -20,7 +21,11 @@ sealed class Seed with _$Seed {
     String? passphrase,
     required Uint8List bytes,
     required String masterFingerprint,
+    String? bip85MasterSeedFingerprint,
   }) = MnemonicSeed;
 
   String get hex => bytes.toHexString();
+  bool get isBip85Derived =>
+      bip85MasterSeedFingerprint != null &&
+      bip85MasterSeedFingerprint!.isNotEmpty;
 }
