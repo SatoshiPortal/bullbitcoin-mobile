@@ -86,8 +86,15 @@ class SeedRepositoryImpl implements SeedRepository {
 
   @override
   Future<Seed> get(String fingerprint) async {
-    final model = await _seedDatasource.get(fingerprint);
-    return model.toEntity();
+    final (seed, bip85Mapping) =
+        await (
+          _seedDatasource.get(fingerprint),
+          _bip85MappingDatasource.fetch(fingerprint),
+        ).wait;
+
+    return seed.toEntity(
+      bip85MasterSeedFingerprint: bip85Mapping?.masterSeedFingerprint,
+    );
   }
 
   @override
