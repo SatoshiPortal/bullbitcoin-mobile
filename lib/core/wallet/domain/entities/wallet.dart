@@ -116,11 +116,15 @@ abstract class Wallet with _$Wallet {
   String get id => origin;
 
   String getWalletTypeString() {
-    return switch (network) {
+    String name = switch (network) {
       Network.bitcoinMainnet || Network.bitcoinTestnet => 'Bitcoin network',
       Network.liquidMainnet ||
       Network.liquidTestnet => 'Liquid and Lightning network',
     };
+    if (source == WalletSource.xpub || source == WalletSource.coldcard) {
+      name = 'Watch-only';
+    }
+    return name;
   }
 
   String? getLabel() {

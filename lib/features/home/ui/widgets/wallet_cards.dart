@@ -16,7 +16,7 @@ class HomeWalletCards extends StatelessWidget {
     final isLiquid = wallet.isLiquid;
     final isWatchOnly = wallet.isWatchOnly;
 
-    final watchonlyColor = context.colour.onPrimaryContainer;
+    final watchonlyColor = context.colour.secondary;
 
     if (isWatchOnly && !isTestnet) return watchonlyColor;
     if (isWatchOnly && isTestnet) return watchonlyColor;

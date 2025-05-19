@@ -50,6 +50,9 @@ class HomeBottomButtons extends StatelessWidget {
             },
             bgColor: context.colour.secondary,
             textColor: context.colour.onPrimary,
+            disabled:
+                wallet?.source == WalletSource.xpub ||
+                wallet?.source == WalletSource.coldcard,
           ),
         ),
       ],

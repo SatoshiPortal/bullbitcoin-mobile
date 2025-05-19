@@ -91,6 +91,7 @@ class SelectBestWalletUsecase {
     for (final w in wallets) {
       if (w.isDefault &&
           w.network == network &&
+          w.source == WalletSource.mnemonic &&
           w.balanceSat.toInt() >= satoshis &&
           w.balanceSat.toInt() != 0) {
         return w;
