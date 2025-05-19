@@ -135,7 +135,8 @@ class SwapCubit extends Cubit<SwapState> {
     final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
 
     final liquidWallets = wallets.where((w) => w.isLiquid).toList();
-    final bitcoinWallets = wallets.where((w) => !w.isLiquid).toList();
+    final bitcoinWallets =
+        wallets.where((w) => !w.isLiquid && !w.isWatchOnly).toList();
     final defaultBitcoinWallet = bitcoinWallets.firstWhere(
       (w) => w.isDefault,
       orElse: () => bitcoinWallets.first,

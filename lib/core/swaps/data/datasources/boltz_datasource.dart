@@ -490,7 +490,6 @@ class BoltzDatasource {
       );
 
       await _boltzStore.storeChainSwap(chainSwap);
-
       final swapModel = SwapModel.chain(
         id: chainSwap.id,
         status: swap_entity.SwapStatus.pending.name,
@@ -1177,5 +1176,110 @@ class BoltzDatasource {
       }
       rethrow;
     }
+  }
+
+  Future<void> fromBtcLnSwapObject(
+    BtcLnSwap swap,
+    String receiveWalletId,
+    String sendWalletId,
+  ) async {
+    final swapType =
+        swap.kind == SwapType.reverse
+            ? swap_entity.SwapType.lightningToBitcoin
+            : swap_entity.SwapType.bitcoinToLightning;
+    if (swapType == swap_entity.SwapType.lightningToBitcoin) {
+      final swapModel = SwapModel.lnReceive(
+        id: swap.id,
+        status: swap_entity.SwapStatus.pending.name,
+        type: swapType.name,
+        keyIndex: swap.keyIndex.toInt(),
+        receiveWalletId: receiveWalletId,
+        invoice: swap.invoice,
+        creationTime: DateTime.now().millisecondsSinceEpoch,
+      );
+      await _boltzStore.storeBtcLnSwap(swap);
+      await _boltzStore.store(swapModel);
+    }
+    if (swapType == swap_entity.SwapType.bitcoinToLightning) {
+      final swapModel = SwapModel.lnSend(
+        id: swap.id,
+        status: swap_entity.SwapStatus.pending.name,
+        type: swapType.name,
+        keyIndex: swap.keyIndex.toInt(),
+        sendWalletId: sendWalletId,
+        invoice: swap.invoice,
+        creationTime: DateTime.now().millisecondsSinceEpoch,
+        paymentAddress: swap.scriptAddress,
+        paymentAmount: swap.outAmount.toInt(),
+      );
+      await _boltzStore.storeBtcLnSwap(swap);
+      await _boltzStore.store(swapModel);
+    }
+  }
+
+  Future<void> fromLbtcLnSwapObject(
+    LbtcLnSwap swap,
+    String receiveWalletId,
+    String sendWalletId,
+  ) async {
+    final swapType =
+        swap.kind == SwapType.reverse
+            ? swap_entity.SwapType.lightningToLiquid
+            : swap_entity.SwapType.liquidToLightning;
+    if (swapType == swap_entity.SwapType.lightningToLiquid) {
+      final swapModel = SwapModel.lnReceive(
+        id: swap.id,
+        status: swap_entity.SwapStatus.pending.name,
+        type: swapType.name,
+        keyIndex: swap.keyIndex.toInt(),
+        receiveWalletId: receiveWalletId,
+        invoice: swap.invoice,
+        creationTime: DateTime.now().millisecondsSinceEpoch,
+      );
+      await _boltzStore.storeLbtcLnSwap(swap);
+      await _boltzStore.store(swapModel);
+    }
+    if (swapType == swap_entity.SwapType.liquidToLightning) {
+      final swapModel = SwapModel.lnSend(
+        id: swap.id,
+        status: swap_entity.SwapStatus.pending.name,
+        type: swapType.name,
+        keyIndex: swap.keyIndex.toInt(),
+        sendWalletId: sendWalletId,
+        invoice: swap.invoice,
+        creationTime: DateTime.now().millisecondsSinceEpoch,
+        paymentAddress: swap.scriptAddress,
+        paymentAmount: swap.outAmount.toInt(),
+      );
+      await _boltzStore.storeLbtcLnSwap(swap);
+      await _boltzStore.store(swapModel);
+    }
+  }
+
+  Future<void> fromChainSwapObject(
+    ChainSwap swap,
+    String sendWalletId,
+    String? receiveWalletId,
+    String? externalAddress,
+  ) async {
+    final swapType =
+        swap.direction == ChainSwapDirection.lbtcToBtc
+            ? swap_entity.SwapType.liquidToBitcoin
+            : swap_entity.SwapType.bitcoinToLiquid;
+
+    final swapModel = SwapModel.chain(
+      id: swap.id,
+      status: swap_entity.SwapStatus.pending.name,
+      type: swapType.name,
+      keyIndex: swap.claimIndex.toInt(),
+      creationTime: DateTime.now().millisecondsSinceEpoch,
+      sendWalletId: sendWalletId,
+      paymentAddress: swap.scriptAddress,
+      paymentAmount: swap.outAmount.toInt(),
+      receiveWalletId: receiveWalletId,
+      receiveAddress: externalAddress,
+    );
+    await _boltzStore.storeChainSwap(swap);
+    await _boltzStore.store(swapModel);
   }
 }

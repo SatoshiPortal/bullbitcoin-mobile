@@ -7,6 +7,8 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hiv
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
+import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/locator.dart';
@@ -43,6 +45,14 @@ class StorageLocator {
         oldSeedRepository: locator<OldSeedRepository>(),
         oldWalletRepository: locator<OldWalletRepository>(),
         newWalletRepository: locator<WalletRepository>(),
+        secureStorage: locator<MigrationSecureStorageDatasource>(),
+        mainnetSwapRepository:
+            locator<SwapRepository>(
+                  instanceName:
+                      LocatorInstanceNameConstants
+                          .boltzSwapRepositoryInstanceName,
+                )
+                as BoltzSwapRepositoryImpl,
       ),
     );
     locator.registerFactory<MigrateToV4LegacyUsecase>(
