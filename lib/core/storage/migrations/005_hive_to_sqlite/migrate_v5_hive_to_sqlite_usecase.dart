@@ -54,6 +54,17 @@ class MigrateToV5HiveToSqliteToUsecase {
                     e.network == OldBBNetwork.Mainnet,
               )
               .toList();
+
+      final oldMainnetWatchOnlyWallets =
+          oldWallets
+              .where(
+                (e) =>
+                    ((e.type == OldBBWalletType.xpub) ||
+                        (e.type == OldBBWalletType.coldcard)) &&
+                    e.network == OldBBNetwork.Mainnet,
+              )
+              .toList();
+
       debugPrint(
         'externalOldSignerWallets: ${oldMainnetExternalSignerWallets.length}',
       );
@@ -70,8 +81,11 @@ class MigrateToV5HiveToSqliteToUsecase {
       final finalExternalCount = await _storeExternalWallet(
         oldMainnetExternalSignerWallets,
       );
+      final finalWatchOnlyCount = await _storeWatchOnlyWallet(
+        oldMainnetWatchOnlyWallets,
+      );
       debugPrint(
-        'migration completed: ${seedsImported.length} seeds, $mainCount/${oldMainnetDefaultWallets.length} default wallets and $finalExternalCount/${oldMainnetExternalSignerWallets.length} external wallets; Successfully migrated ${seedsImported.length + mainCount + finalExternalCount} wallets; Successfully migrated.',
+        'migration completed: ${seedsImported.length} seeds, $mainCount/${oldMainnetDefaultWallets.length} default wallets\n$finalExternalCount/${oldMainnetExternalSignerWallets.length} external wallets\n$finalWatchOnlyCount/${oldMainnetWatchOnlyWallets.length} watch only wallets;\nSuccessfully migrated ${mainCount + finalExternalCount + finalWatchOnlyCount} wallets',
       );
       return true;
     } catch (e) {
@@ -201,4 +215,63 @@ class MigrateToV5HiveToSqliteToUsecase {
     return count;
     // TODO: Store newWallet in the new database
   }
+
+  Future<int> _storeWatchOnlyWallet(List<OldWallet> oldWatchOnlyWallets) async {
+    int count = 0;
+    for (final oldWatchOnlyWallet in oldWatchOnlyWallets) {
+      final network =
+          oldWatchOnlyWallet.baseWalletType == OldBaseWalletType.Bitcoin
+              ? (oldWatchOnlyWallet.isTestnet()
+                  ? Network.bitcoinTestnet
+                  : Network.bitcoinMainnet)
+              : (oldWatchOnlyWallet.isTestnet()
+                  ? Network.liquidTestnet
+                  : Network.liquidMainnet);
+
+      final scriptType = switch (oldWatchOnlyWallet.scriptType) {
+        OldScriptType.bip84 => ScriptType.bip84,
+        OldScriptType.bip49 => ScriptType.bip49,
+        OldScriptType.bip44 => ScriptType.bip44,
+      };
+
+      final source = switch (oldWatchOnlyWallet.type) {
+        OldBBWalletType.main => WalletSource.mnemonic,
+        OldBBWalletType.coldcard => WalletSource.coldcard,
+        OldBBWalletType.xpub => WalletSource.xpub,
+        OldBBWalletType.words => WalletSource.mnemonic,
+        OldBBWalletType.descriptors => WalletSource.descriptors,
+      };
+      final xpubFromDescriptor = fullKeyFromDescriptor(
+        oldWatchOnlyWallet.internalPublicDescriptor,
+      );
+      if (source == WalletSource.coldcard || source == WalletSource.xpub) {
+        await _newWalletRepository.importWatchOnlyWallet(
+          xpub: xpubFromDescriptor,
+          scriptType: scriptType,
+          network: network,
+          label:
+              oldWatchOnlyWallet.name ?? oldWatchOnlyWallet.sourceFingerprint,
+        );
+      }
+      count++;
+    }
+    return count;
+  }
+}
+
+String fullKeyFromDescriptor(String descriptor) {
+  final descriptorStripped = removeChecksumFromDesc(descriptor);
+  final startIndex = descriptorStripped.indexOf('(');
+  final cut1 = descriptorStripped.substring(startIndex + 1);
+  final endIndex = cut1.indexOf(')');
+  return cut1.substring(
+    0,
+    endIndex - 4,
+  ); // eg externalDesc: wpkh([fingerprint/hdpath]xpub/0/*); hence -4 from )
+}
+
+String removeChecksumFromDesc(String descriptor) {
+  final endIndex = descriptor.indexOf('#');
+  if (endIndex == -1) return descriptor;
+  return descriptor.substring(0, endIndex);
 }
