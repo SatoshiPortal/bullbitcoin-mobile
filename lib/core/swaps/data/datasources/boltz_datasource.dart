@@ -1096,6 +1096,9 @@ class BoltzDatasource {
                 // Handle server-side transaction states
                 if (swapModel is ChainSwapModel) {
                   final type = swapModel.type;
+                  updatedSwapModel = swapModel.copyWith(
+                    status: swap_entity.SwapStatus.paid.name,
+                  );
                   // For liquid swaps, mempool is enough, BTC needs confirmation
                   final isLiquid =
                       type == swap_entity.SwapType.bitcoinToLiquid.name;
@@ -1191,7 +1194,7 @@ class BoltzDatasource {
     }
   }
 
-  Future<void> fromBtcLnSwapObject(
+  Future<void> fromBtcLnSwapObjectMigration(
     BtcLnSwap swap,
     String? receiveWalletId,
     String? sendWalletId,
@@ -1253,7 +1256,7 @@ class BoltzDatasource {
     }
   }
 
-  Future<void> fromLbtcLnSwapObject(
+  Future<void> fromLbtcLnSwapObjectMigration(
     LbtcLnSwap swap,
     String? receiveWalletId,
     String? sendWalletId,
@@ -1315,7 +1318,7 @@ class BoltzDatasource {
     }
   }
 
-  Future<void> fromChainSwapObject(
+  Future<void> fromChainSwapObjectMigration(
     ChainSwap swap,
     String sendWalletId,
     String receiveWalletId,

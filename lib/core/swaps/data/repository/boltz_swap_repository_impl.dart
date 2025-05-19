@@ -650,7 +650,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     switch (swapType) {
       case SwapType.lightningToBitcoin:
         final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
-        await _boltz.fromBtcLnSwapObject(
+        await _boltz.fromBtcLnSwapObjectMigration(
           swapObject,
           primaryWalletId,
           null,
@@ -659,7 +659,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         );
       case SwapType.bitcoinToLightning:
         final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
-        await _boltz.fromBtcLnSwapObject(
+        await _boltz.fromBtcLnSwapObjectMigration(
           swapObject,
           null,
           primaryWalletId,
@@ -668,7 +668,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         );
       case SwapType.lightningToLiquid:
         final swapObject = await _boltz.storage.fetchLbtcLnSwap(swapId);
-        await _boltz.fromLbtcLnSwapObject(
+        await _boltz.fromLbtcLnSwapObjectMigration(
           swapObject,
           primaryWalletId,
           null,
@@ -677,7 +677,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         );
       case SwapType.liquidToLightning:
         final swapObject = await _boltz.storage.fetchLbtcLnSwap(swapId);
-        await _boltz.fromLbtcLnSwapObject(
+        await _boltz.fromLbtcLnSwapObjectMigration(
           swapObject,
           null,
           primaryWalletId,
@@ -691,7 +691,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
             'Counter wallet ID and isCounterWalletExternal must be provided for chain swaps',
           );
         }
-        await _boltz.fromChainSwapObject(
+        await _boltz.fromChainSwapObjectMigration(
           swapObject,
           primaryWalletId,
           counterWalletId,
@@ -706,7 +706,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
           );
         }
         final swapObject = await _boltz.storage.fetchChainSwap(swapId);
-        await _boltz.fromChainSwapObject(
+        await _boltz.fromChainSwapObjectMigration(
           swapObject,
           primaryWalletId,
           counterWalletId,
