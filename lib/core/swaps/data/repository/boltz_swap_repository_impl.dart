@@ -639,22 +639,43 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String primaryWalletId,
     required String swapId,
     required SwapType swapType,
+    required String? lockupTxid,
     required String? counterWalletId,
     required bool? isCounterWalletExternal,
   }) async {
     switch (swapType) {
       case SwapType.lightningToBitcoin:
         final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
-        await _boltz.fromBtcLnSwapObject(swapObject, primaryWalletId, null);
+        await _boltz.fromBtcLnSwapObject(
+          swapObject,
+          primaryWalletId,
+          null,
+          lockupTxid,
+        );
       case SwapType.bitcoinToLightning:
         final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
-        await _boltz.fromBtcLnSwapObject(swapObject, null, primaryWalletId);
+        await _boltz.fromBtcLnSwapObject(
+          swapObject,
+          null,
+          primaryWalletId,
+          lockupTxid,
+        );
       case SwapType.lightningToLiquid:
         final swapObject = await _boltz.storage.fetchLbtcLnSwap(swapId);
-        await _boltz.fromLbtcLnSwapObject(swapObject, primaryWalletId, null);
+        await _boltz.fromLbtcLnSwapObject(
+          swapObject,
+          primaryWalletId,
+          null,
+          lockupTxid,
+        );
       case SwapType.liquidToLightning:
         final swapObject = await _boltz.storage.fetchLbtcLnSwap(swapId);
-        await _boltz.fromLbtcLnSwapObject(swapObject, null, primaryWalletId);
+        await _boltz.fromLbtcLnSwapObject(
+          swapObject,
+          null,
+          primaryWalletId,
+          lockupTxid,
+        );
       case SwapType.liquidToBitcoin:
         final swapObject = await _boltz.storage.fetchChainSwap(swapId);
         if (counterWalletId == null || isCounterWalletExternal == null) {
@@ -667,6 +688,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
           primaryWalletId,
           counterWalletId,
           isCounterWalletExternal,
+          lockupTxid,
         );
 
       case SwapType.bitcoinToLiquid:
@@ -681,6 +703,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
           primaryWalletId,
           counterWalletId,
           isCounterWalletExternal,
+          lockupTxid,
         );
     }
   }

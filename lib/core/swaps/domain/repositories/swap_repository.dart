@@ -124,6 +124,7 @@ abstract class SwapRepository {
     required String primaryWalletId,
     required String swapId,
     required SwapType swapType,
+    required String? lockupTxid,
     required String? counterWalletId,
     required bool? isCounterWalletExternal,
   });

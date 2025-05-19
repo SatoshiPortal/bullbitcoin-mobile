@@ -372,6 +372,7 @@ class MigrateToV5HiveToSqliteToUsecase {
                 swap.isReverse()
                     ? SwapType.lightningToLiquid
                     : SwapType.liquidToLightning,
+            lockupTxid: swap.lockupTxid,
             counterWalletId: null,
             isCounterWalletExternal: null,
           );
@@ -392,6 +393,7 @@ class MigrateToV5HiveToSqliteToUsecase {
                 swap.isReverse()
                     ? SwapType.lightningToBitcoin
                     : SwapType.bitcoinToLightning,
+            lockupTxid: swap.lockupTxid,
             counterWalletId: null,
             isCounterWalletExternal: null,
           );
@@ -426,6 +428,7 @@ class MigrateToV5HiveToSqliteToUsecase {
                         boltz.ChainSwapDirection.lbtcToBtc
                     ? SwapType.liquidToBitcoin
                     : SwapType.bitcoinToLiquid,
+            lockupTxid: swap.lockupTxid,
             counterWalletId: counterWalletIdMapping.newWalletId,
             isCounterWalletExternal:
                 counterWalletIdMapping.oldWalletIdIsExternal,

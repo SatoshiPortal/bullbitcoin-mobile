@@ -1182,7 +1182,11 @@ class BoltzDatasource {
     BtcLnSwap swap,
     String? receiveWalletId,
     String? sendWalletId,
+    String? lockupTxid,
   ) async {
+    final fees = Fees(boltzUrl: _httpsUrl);
+    final reverseFees = await fees.reverse();
+    final submarineFees = await fees.submarine();
     final swapType =
         swap.kind == SwapType.reverse
             ? swap_entity.SwapType.lightningToBitcoin
@@ -1199,6 +1203,11 @@ class BoltzDatasource {
         receiveWalletId: receiveWalletId,
         invoice: swap.invoice,
         creationTime: DateTime.now().millisecondsSinceEpoch,
+        boltzFees:
+            (reverseFees.btcFees.percentage * swap.outAmount.toInt() / 100)
+                .ceil(),
+        lockupFees: reverseFees.btcFees.minerFees.lockup.toInt(),
+        claimFees: reverseFees.btcFees.minerFees.claim.toInt(),
       );
       await _boltzStore.storeBtcLnSwap(swap);
       await _boltzStore.store(swapModel);
@@ -1217,6 +1226,12 @@ class BoltzDatasource {
         creationTime: DateTime.now().millisecondsSinceEpoch,
         paymentAddress: swap.scriptAddress,
         paymentAmount: swap.outAmount.toInt(),
+        sendTxid: lockupTxid,
+        boltzFees:
+            (submarineFees.btcFees.percentage * (swap.outAmount.toInt()) / 100)
+                .ceil(),
+        lockupFees: submarineFees.btcFees.minerFees.toInt(),
+        claimFees: submarineFees.btcFees.minerFees.toInt(),
       );
       await _boltzStore.storeBtcLnSwap(swap);
       await _boltzStore.store(swapModel);
@@ -1227,7 +1242,11 @@ class BoltzDatasource {
     LbtcLnSwap swap,
     String? receiveWalletId,
     String? sendWalletId,
+    String? lockupTxid,
   ) async {
+    final fees = Fees(boltzUrl: _httpsUrl);
+    final reverseFees = await fees.reverse();
+    final submarineFees = await fees.submarine();
     final swapType =
         swap.kind == SwapType.reverse
             ? swap_entity.SwapType.lightningToLiquid
@@ -1244,6 +1263,11 @@ class BoltzDatasource {
         receiveWalletId: receiveWalletId,
         invoice: swap.invoice,
         creationTime: DateTime.now().millisecondsSinceEpoch,
+        boltzFees:
+            (reverseFees.lbtcFees.percentage * swap.outAmount.toInt() / 100)
+                .ceil(),
+        lockupFees: reverseFees.lbtcFees.minerFees.lockup.toInt(),
+        claimFees: reverseFees.lbtcFees.minerFees.claim.toInt(),
       );
       await _boltzStore.storeLbtcLnSwap(swap);
       await _boltzStore.store(swapModel);
@@ -1262,6 +1286,12 @@ class BoltzDatasource {
         creationTime: DateTime.now().millisecondsSinceEpoch,
         paymentAddress: swap.scriptAddress,
         paymentAmount: swap.outAmount.toInt(),
+        sendTxid: lockupTxid,
+        boltzFees:
+            (submarineFees.lbtcFees.percentage * (swap.outAmount.toInt()) / 100)
+                .ceil(),
+        lockupFees: submarineFees.lbtcFees.minerFees.toInt(),
+        claimFees: submarineFees.lbtcFees.minerFees.toInt(),
       );
       await _boltzStore.storeLbtcLnSwap(swap);
       await _boltzStore.store(swapModel);
@@ -1273,26 +1303,69 @@ class BoltzDatasource {
     String sendWalletId,
     String receiveWalletId,
     bool isReceiveWalletExternal,
+    String? lockupTxid,
   ) async {
+    final fees = Fees(boltzUrl: _httpsUrl);
+    final chainFees = await fees.chain();
     final swapType =
         swap.direction == ChainSwapDirection.lbtcToBtc
             ? swap_entity.SwapType.liquidToBitcoin
             : swap_entity.SwapType.bitcoinToLiquid;
-
-    final swapModel = SwapModel.chain(
-      id: swap.id,
-      status: swap_entity.SwapStatus.pending.name,
-      type: swapType.name,
-      keyIndex: swap.claimIndex.toInt(),
-      creationTime: DateTime.now().millisecondsSinceEpoch,
-      sendWalletId: sendWalletId,
-      paymentAddress: swap.scriptAddress,
-      paymentAmount: swap.outAmount.toInt(),
-      receiveWalletId:
-          isReceiveWalletExternal == false ? receiveWalletId : null,
-      receiveAddress: isReceiveWalletExternal == true ? receiveWalletId : null,
-    );
-    await _boltzStore.storeChainSwap(swap);
-    await _boltzStore.store(swapModel);
+    switch (swapType) {
+      case swap_entity.SwapType.liquidToBitcoin:
+        final swapModel = SwapModel.chain(
+          id: swap.id,
+          status: swap_entity.SwapStatus.pending.name,
+          type: swapType.name,
+          keyIndex: swap.claimIndex.toInt(),
+          creationTime: DateTime.now().millisecondsSinceEpoch,
+          sendWalletId: sendWalletId,
+          paymentAddress: swap.scriptAddress,
+          paymentAmount: swap.outAmount.toInt(),
+          sendTxid: lockupTxid,
+          receiveWalletId:
+              isReceiveWalletExternal == false ? receiveWalletId : null,
+          receiveAddress:
+              isReceiveWalletExternal == true ? receiveWalletId : null,
+          boltzFees:
+              (chainFees.btcFees.percentage * swap.outAmount.toInt() / 100)
+                  .ceil(),
+          lockupFees:
+              chainFees.lbtcFees.userLockup.toInt() +
+              chainFees.lbtcFees.server.toInt() +
+              chainFees.btcFees.server.toInt(),
+          claimFees: chainFees.btcFees.userClaim.toInt(),
+        );
+        await _boltzStore.storeChainSwap(swap);
+        await _boltzStore.store(swapModel);
+      case swap_entity.SwapType.bitcoinToLiquid:
+        final swapModel = SwapModel.chain(
+          id: swap.id,
+          status: swap_entity.SwapStatus.pending.name,
+          type: swapType.name,
+          keyIndex: swap.claimIndex.toInt(),
+          creationTime: DateTime.now().millisecondsSinceEpoch,
+          sendWalletId: sendWalletId,
+          paymentAddress: swap.scriptAddress,
+          paymentAmount: swap.outAmount.toInt(),
+          sendTxid: lockupTxid,
+          receiveWalletId:
+              isReceiveWalletExternal == false ? receiveWalletId : null,
+          receiveAddress:
+              isReceiveWalletExternal == true ? receiveWalletId : null,
+          boltzFees:
+              (chainFees.btcFees.percentage * swap.outAmount.toInt() / 100)
+                  .ceil(),
+          lockupFees:
+              chainFees.btcFees.userLockup.toInt() +
+              chainFees.btcFees.server.toInt() +
+              chainFees.lbtcFees.server.toInt(),
+          claimFees: chainFees.lbtcFees.userClaim.toInt(),
+        );
+        await _boltzStore.storeChainSwap(swap);
+        await _boltzStore.store(swapModel);
+      default:
+        throw Exception('Invalid swap type');
+    }
   }
 }
