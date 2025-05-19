@@ -98,18 +98,22 @@ class MigrateToV5HiveToSqliteToUsecase {
       final externalWalletsWithSwaps = await _storeExternalWallet(
         oldMainnetExternalSignerWallets,
       );
-      final allWalletIdMappings = [
-        ...mainWalletWithSwaps.map((e) => e.walletId),
-        ...externalWalletsWithSwaps.map((e) => e.walletId),
-      ];
+
       final finalWatchOnlyCount = await _storeWatchOnlyWallet(
         oldMainnetWatchOnlyWallets,
       );
       debugPrint(
         'wallet migration completed: ${seedsImported.length} seeds, ${mainWalletWithSwaps.length}/${oldMainnetDefaultWallets.length} default wallets\n${externalWalletsWithSwaps.length}/${oldMainnetExternalSignerWallets.length} external wallets\n$finalWatchOnlyCount/${oldMainnetWatchOnlyWallets.length} watch only wallets;\nSuccessfully migrated ${mainWalletWithSwaps.length + externalWalletsWithSwaps.length + finalWatchOnlyCount} wallets',
       );
-      final totalSwaps = [...mainWalletWithSwaps, ...externalWalletsWithSwaps];
-      final totalSwapsLength = totalSwaps.fold(
+      final allWalletsWithSwaps = [
+        ...mainWalletWithSwaps,
+        ...externalWalletsWithSwaps,
+      ];
+      final allWalletIdMappings = [
+        ...mainWalletWithSwaps.map((e) => e.walletId),
+        ...externalWalletsWithSwaps.map((e) => e.walletId),
+      ];
+      final totalSwapsLength = allWalletsWithSwaps.fold(
         0,
         (sum, wallet) => sum + wallet.oldOngoingSwaps!.length,
       );
@@ -118,7 +122,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         return true;
       }
       final recoveredSwaps = await _recoverOldOngoingSwaps(
-        mainWalletWithSwaps + externalWalletsWithSwaps,
+        allWalletsWithSwaps,
         allWalletIdMappings,
       );
       // debug print the number of swaps receoverd receoverSwaps/(total swaps = [mainWalletWithSwaps + externalWalletsWithSwaps].map through all the ongoingSwaps list and get their length summed)
@@ -195,7 +199,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           OldScriptType.bip44 => ScriptType.bip44,
         };
 
-        final wallet = await _newWalletRepository.createWallet(
+        final newWallet = await _newWalletRepository.createWallet(
           seed: mainWalletSeed,
           scriptType: scriptType,
           network: network,
@@ -205,7 +209,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         final walletWithSwaps = WalletWithOngoingSwaps(
           walletId: WalletIdMapping(
             oldWalletId: oldWallet.id,
-            newWalletId: wallet.id,
+            newWalletId: newWallet.id,
           ),
           oldOngoingSwaps: ongoingSwaps.toList(),
         );
@@ -253,7 +257,7 @@ class MigrateToV5HiveToSqliteToUsecase {
 
       // ignore: unused_local_variable
       if (source == WalletSource.mnemonic) {
-        final wallet = await _newWalletRepository.createWallet(
+        final newWallet = await _newWalletRepository.createWallet(
           seed: newExternalSeed,
           scriptType: scriptType,
           network: network,
@@ -263,7 +267,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         final walletWithSwaps = WalletWithOngoingSwaps(
           walletId: WalletIdMapping(
             oldWalletId: oldExternalWallet.id,
-            newWalletId: wallet.id,
+            newWalletId: newWallet.id,
           ),
           oldOngoingSwaps: ongoingSwaps.toList(),
         );
@@ -343,8 +347,6 @@ class MigrateToV5HiveToSqliteToUsecase {
     return ongoingSwaps;
   }
 
-  static const swapTxSensitive = 'swapTxSensitive';
-
   Future<int> _recoverOldOngoingSwaps(
     List<WalletWithOngoingSwaps> walletWithOngoingSwaps,
     List<WalletIdMapping> allWalletIdMappings,
@@ -354,7 +356,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       // final newWalletId = item.walletId;
       for (final swap in item.oldOngoingSwaps!) {
         final swapSensitive = await _secureStorage.fetch(
-          key: '${OldStorageKeys.swapTxSensitive}_${swap.id}',
+          key: '${OldStorageKeys.swapTxSensitive.name}_${swap.id}',
         );
 
         if (swap.isLiquid() && swap.isLnSwap()) {
@@ -365,6 +367,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
           final jsonSwap = await sdkSwapClass.toJson();
           await _secureStorage.store(key: key, value: jsonSwap);
+          final receiveAddress = swap.claimAddress;
           await _mainnetSwapRepository.migrateOldSwap(
             primaryWalletId: item.walletId.newWalletId,
             swapId: swap.id,
@@ -375,6 +378,7 @@ class MigrateToV5HiveToSqliteToUsecase {
             lockupTxid: swap.lockupTxid,
             counterWalletId: null,
             isCounterWalletExternal: null,
+            claimAddress: receiveAddress,
           );
           count++;
         }
@@ -386,6 +390,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
           final jsonSwap = await sdkSwapClass.toJson();
           await _secureStorage.store(key: key, value: jsonSwap);
+          final receiveAddress = swap.claimAddress;
           await _mainnetSwapRepository.migrateOldSwap(
             primaryWalletId: item.walletId.newWalletId,
             swapId: swap.id,
@@ -396,12 +401,12 @@ class MigrateToV5HiveToSqliteToUsecase {
             lockupTxid: swap.lockupTxid,
             counterWalletId: null,
             isCounterWalletExternal: null,
+            claimAddress: receiveAddress,
           );
           count++;
         }
         if (swap.isChainSwap()) {
           final toWalletIdOld = swap.chainSwapDetails?.toWalletId ?? '';
-          //find the mapping for the toWalletIdOld to newWalletId
 
           final counterWalletIdMapping = allWalletIdMappings.firstWhere(
             (e) => e.oldWalletId == toWalletIdOld,
@@ -432,6 +437,7 @@ class MigrateToV5HiveToSqliteToUsecase {
             counterWalletId: counterWalletIdMapping.newWalletId,
             isCounterWalletExternal:
                 counterWalletIdMapping.oldWalletIdIsExternal,
+            claimAddress: null,
           );
 
           count++;

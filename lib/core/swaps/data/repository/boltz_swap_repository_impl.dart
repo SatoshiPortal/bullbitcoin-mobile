@@ -523,6 +523,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<List<Swap>> getOngoingSwaps() async {
     final allSwapModels = await _boltz.storage.fetchAll();
+    // final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
+
+    // debugPrint('allSwapModels: ${allSwapModels.first.toEntity()}');
     final allSwaps =
         allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
     return allSwaps
@@ -642,6 +645,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String? lockupTxid,
     required String? counterWalletId,
     required bool? isCounterWalletExternal,
+    required String? claimAddress,
   }) async {
     switch (swapType) {
       case SwapType.lightningToBitcoin:
@@ -651,6 +655,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
           primaryWalletId,
           null,
           lockupTxid,
+          claimAddress,
         );
       case SwapType.bitcoinToLightning:
         final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
@@ -659,6 +664,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
           null,
           primaryWalletId,
           lockupTxid,
+          null,
         );
       case SwapType.lightningToLiquid:
         final swapObject = await _boltz.storage.fetchLbtcLnSwap(swapId);
@@ -667,6 +673,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
           primaryWalletId,
           null,
           lockupTxid,
+          claimAddress,
         );
       case SwapType.liquidToLightning:
         final swapObject = await _boltz.storage.fetchLbtcLnSwap(swapId);
@@ -675,6 +682,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
           null,
           primaryWalletId,
           lockupTxid,
+          null,
         );
       case SwapType.liquidToBitcoin:
         final swapObject = await _boltz.storage.fetchChainSwap(swapId);

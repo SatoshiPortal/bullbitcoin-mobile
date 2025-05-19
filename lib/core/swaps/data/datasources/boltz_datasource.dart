@@ -1183,6 +1183,7 @@ class BoltzDatasource {
     String? receiveWalletId,
     String? sendWalletId,
     String? lockupTxid,
+    String? claimAddress,
   ) async {
     final fees = Fees(boltzUrl: _httpsUrl);
     final reverseFees = await fees.reverse();
@@ -1208,6 +1209,7 @@ class BoltzDatasource {
                 .ceil(),
         lockupFees: reverseFees.btcFees.minerFees.lockup.toInt(),
         claimFees: reverseFees.btcFees.minerFees.claim.toInt(),
+        receiveAddress: claimAddress,
       );
       await _boltzStore.storeBtcLnSwap(swap);
       await _boltzStore.store(swapModel);
@@ -1243,6 +1245,7 @@ class BoltzDatasource {
     String? receiveWalletId,
     String? sendWalletId,
     String? lockupTxid,
+    String? claimAddress,
   ) async {
     final fees = Fees(boltzUrl: _httpsUrl);
     final reverseFees = await fees.reverse();
@@ -1268,6 +1271,7 @@ class BoltzDatasource {
                 .ceil(),
         lockupFees: reverseFees.lbtcFees.minerFees.lockup.toInt(),
         claimFees: reverseFees.lbtcFees.minerFees.claim.toInt(),
+        receiveAddress: claimAddress,
       );
       await _boltzStore.storeLbtcLnSwap(swap);
       await _boltzStore.store(swapModel);

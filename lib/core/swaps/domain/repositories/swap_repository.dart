@@ -127,6 +127,7 @@ abstract class SwapRepository {
     required String? lockupTxid,
     required String? counterWalletId,
     required bool? isCounterWalletExternal,
+    required String? claimAddress,
   });
   // SWAP STORAGE UTILITY
   Future<Swap> getSwap({required String swapId});
