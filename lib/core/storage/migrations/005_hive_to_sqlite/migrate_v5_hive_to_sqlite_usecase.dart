@@ -115,7 +115,6 @@ class MigrateToV5HiveToSqliteToUsecase {
         mainWalletWithSwaps + externalWalletsWithSwaps,
       );
       // debug print the number of swaps receoverd receoverSwaps/(total swaps = [mainWalletWithSwaps + externalWalletsWithSwaps].map through all the ongoingSwaps list and get their length summed)
-
       debugPrint(
         'swap migration completed: recoveredSwaps: $recoveredSwaps/$totalSwapsLength',
       );
@@ -291,15 +290,20 @@ class MigrateToV5HiveToSqliteToUsecase {
         oldWatchOnlyWallet.internalPublicDescriptor,
       );
       if (source == WalletSource.coldcard || source == WalletSource.xpub) {
-        await _newWalletRepository.importWatchOnlyWallet(
-          xpub: xpubFromDescriptor,
-          scriptType: scriptType,
-          network: network,
-          label:
-              oldWatchOnlyWallet.name ?? oldWatchOnlyWallet.sourceFingerprint,
-        );
+        try {
+          await _newWalletRepository.importWatchOnlyWallet(
+            xpub: xpubFromDescriptor,
+            scriptType: scriptType,
+            network: network,
+            label:
+                oldWatchOnlyWallet.name ?? oldWatchOnlyWallet.sourceFingerprint,
+          );
+          count++;
+        } catch (e) {
+          debugPrint('Failed to create watch only wallet: $e');
+          continue;
+        }
       }
-      count++;
     }
     return count;
   }

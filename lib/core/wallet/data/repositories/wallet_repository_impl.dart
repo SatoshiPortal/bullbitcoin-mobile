@@ -126,6 +126,13 @@ class WalletRepositoryImpl implements WalletRepository {
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
 
+    final allWallets = await getWallets(onlyDefaults: true);
+    for (final wallet in allWallets) {
+      if (wallet.id == metadata.id) {
+        throw Exception('Wallet already exists');
+      }
+    }
+
     // Return the created wallet entity
     return Wallet(
       origin: metadata.id,
