@@ -930,12 +930,25 @@ class BoltzDatasource {
                     );
                   }
                 }
+                if (swapModel is ChainSwapModel) {
+                  updatedSwapModel = swapModel.copyWith(
+                    status: swap_entity.SwapStatus.paid.name,
+                  );
+                } else {
+                  updatedSwapModel = swapModel.copyWith(
+                    status: swap_entity.SwapStatus.paid.name,
+                  );
+                }
 
               case SwapStatus.txnConfirmed:
                 // For reverse swaps on Bitcoin or chain swaps
                 if (swapModel is LnReceiveSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.claimable.name,
+                  );
+                } else {
+                  updatedSwapModel = swapModel.copyWith(
+                    status: swap_entity.SwapStatus.paid.name,
                   );
                 }
 
