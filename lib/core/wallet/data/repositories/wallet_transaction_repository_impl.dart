@@ -211,9 +211,14 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
                             ...confidentialAddressLabels,
                           ];
                         case BitcoinTransactionOutputModel _:
-                          addressLabels = await _labelDatasource.fetchByEntity(
-                            entity: AddressOnly(payload: outputModel.address),
-                          );
+                          addressLabels =
+                              outputModel.address != null
+                                  ? await _labelDatasource.fetchByEntity(
+                                    entity: AddressOnly(
+                                      payload: outputModel.address!,
+                                    ),
+                                  )
+                                  : [];
                       }
                       return TransactionOutputMapper.toEntity(
                         outputModel,

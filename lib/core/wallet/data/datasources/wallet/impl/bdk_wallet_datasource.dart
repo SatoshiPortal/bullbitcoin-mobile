@@ -257,21 +257,24 @@ class BdkWalletDatasource implements WalletDatasource {
     final bdkWallet = await _createWallet(wallet);
     final unspent = bdkWallet.listUnspent();
     final utxos = await Future.wait(
-      unspent.map(
-        (unspent) async => WalletUtxoModel.bitcoin(
+      unspent.map((unspent) async {
+        final address =
+            await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+              unspent.txout.scriptPubkey.bytes,
+              isTestnet: wallet.isTestnet,
+            );
+        return WalletUtxoModel.bitcoin(
           txId: unspent.outpoint.txid,
           vout: unspent.outpoint.vout,
           amountSat: unspent.txout.value,
           scriptPubkey: unspent.txout.scriptPubkey.bytes,
-          address:
-              await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
-                unspent.txout.scriptPubkey.bytes,
-                isTestnet: wallet.isTestnet,
-              ),
+          // Since it's a BDK utxo, the address should not be null
+          // but we return an empty string in case it is for some reason
+          address: address ?? '',
           isExternalKeyChain:
               unspent.keychain == bdk.KeychainKind.externalChain,
-        ),
-      ),
+        );
+      }),
     );
     return utxos;
   }
@@ -282,7 +285,6 @@ class BdkWalletDatasource implements WalletDatasource {
     String? toAddress,
   }) async {
     final bdkWallet = await _createWallet(wallet);
-    final network = bdkWallet.network();
     final transactions = bdkWallet.listTransactions(includeRaw: true);
     final allTransactionOutputs = await _getAllOutputsOfTransactions(
       transactions,
@@ -302,11 +304,13 @@ class BdkWalletDatasource implements WalletDatasource {
           // and then removing null values from the list with whereType at the end of the method
           final matches = await Future.any(
             outputs.map((output) async {
-              final address = await bdk.Address.fromScript(
-                script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
-                network: network,
-              );
-              return address.toString() == toAddress;
+              final address =
+                  await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+                    output.scriptPubkey.bytes,
+                    isTestnet: wallet.isTestnet,
+                  );
+              if (address == null) return false;
+              return address == toAddress;
             }),
           ).catchError((_) => false);
 
@@ -485,12 +489,13 @@ class BdkWalletDatasource implements WalletDatasource {
       final txOutputs = tx.transaction?.output();
       if (txOutputs != null) {
         for (final output in txOutputs) {
-          final generatedAddress = await bdk.Address.fromScript(
-            script: bdk.ScriptBuf(bytes: output.scriptPubkey.bytes),
-            network: bdkWallet.network(),
-          );
-
-          if (generatedAddress.asString() == address) {
+          final generatedAddress =
+              await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+                output.scriptPubkey.bytes,
+                isTestnet: wallet.isTestnet,
+              );
+          if (generatedAddress == null) continue;
+          if (generatedAddress == address) {
             return true;
           }
         }
@@ -510,12 +515,14 @@ class BdkWalletDatasource implements WalletDatasource {
     BigInt balance = BigInt.zero;
 
     for (final utxo in utxos) {
-      final utxoAddress = await bdk.Address.fromScript(
-        script: bdk.ScriptBuf(bytes: utxo.txout.scriptPubkey.bytes),
-        network: bdkWallet.network(),
-      );
+      final utxoAddress =
+          await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+            utxo.txout.scriptPubkey.bytes,
+            isTestnet: wallet.isTestnet,
+          );
+      if (utxoAddress == null) continue;
 
-      if (utxoAddress.asString() == address) {
+      if (utxoAddress == address) {
         balance += utxo.txout.value;
       }
     }
@@ -535,17 +542,19 @@ class BdkWalletDatasource implements WalletDatasource {
             final vout = outputEntry.key;
             final output = outputEntry.value;
             final scriptPubkeyBytes = output.scriptPubkey.bytes;
+            final address =
+                await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
+                  output.scriptPubkey.bytes,
+                  isTestnet: wallet.isTestnet,
+                );
+
             return TransactionOutputModel.bitcoin(
               txId: tx.txid,
               vout: vout,
               isOwn: await isMine(scriptPubkeyBytes, wallet: wallet),
               value: output.value,
               scriptPubkey: scriptPubkeyBytes,
-              address:
-                  await AddressScriptConversions.bitcoinAddressFromScriptPubkey(
-                    output.scriptPubkey.bytes,
-                    isTestnet: wallet.isTestnet,
-                  ),
+              address: address,
             );
           }),
         );
