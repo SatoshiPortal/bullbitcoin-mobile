@@ -102,15 +102,20 @@ class MigrateToV5HiveToSqliteToUsecase {
       debugPrint(
         'wallet migration completed: ${seedsImported.length} seeds, ${mainWalletWithSwaps.length}/${oldMainnetDefaultWallets.length} default wallets\n${externalWalletsWithSwaps.length}/${oldMainnetExternalSignerWallets.length} external wallets\n$finalWatchOnlyCount/${oldMainnetWatchOnlyWallets.length} watch only wallets;\nSuccessfully migrated ${mainWalletWithSwaps.length + externalWalletsWithSwaps.length + finalWatchOnlyCount} wallets',
       );
-      final recoveredSwaps = await _recoverOldOngoingSwaps(
-        mainWalletWithSwaps + externalWalletsWithSwaps,
-      );
-      // debug print the number of swaps receoverd receoverSwaps/(total swaps = [mainWalletWithSwaps + externalWalletsWithSwaps].map through all the ongoingSwaps list and get their length summed)
       final totalSwaps = [...mainWalletWithSwaps, ...externalWalletsWithSwaps];
       final totalSwapsLength = totalSwaps.fold(
         0,
         (sum, wallet) => sum + wallet.oldOngoingSwaps!.length,
       );
+      if (totalSwapsLength == 0) {
+        debugPrint('swap migration completed: No swaps to migrate');
+        return true;
+      }
+      final recoveredSwaps = await _recoverOldOngoingSwaps(
+        mainWalletWithSwaps + externalWalletsWithSwaps,
+      );
+      // debug print the number of swaps receoverd receoverSwaps/(total swaps = [mainWalletWithSwaps + externalWalletsWithSwaps].map through all the ongoingSwaps list and get their length summed)
+
       debugPrint(
         'swap migration completed: recoveredSwaps: $recoveredSwaps/$totalSwapsLength',
       );
