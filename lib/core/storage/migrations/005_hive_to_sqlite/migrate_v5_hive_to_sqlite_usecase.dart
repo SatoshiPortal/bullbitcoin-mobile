@@ -9,10 +9,12 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entitie
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:boltz/boltz.dart' as boltz;
 import 'package:flutter/foundation.dart';
 
 class MigrateToV5HiveToSqliteToUsecase {
@@ -96,6 +98,10 @@ class MigrateToV5HiveToSqliteToUsecase {
       final externalWalletsWithSwaps = await _storeExternalWallet(
         oldMainnetExternalSignerWallets,
       );
+      final allWalletIdMappings = [
+        ...mainWalletWithSwaps.map((e) => e.walletId),
+        ...externalWalletsWithSwaps.map((e) => e.walletId),
+      ];
       final finalWatchOnlyCount = await _storeWatchOnlyWallet(
         oldMainnetWatchOnlyWallets,
       );
@@ -113,6 +119,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       }
       final recoveredSwaps = await _recoverOldOngoingSwaps(
         mainWalletWithSwaps + externalWalletsWithSwaps,
+        allWalletIdMappings,
       );
       // debug print the number of swaps receoverd receoverSwaps/(total swaps = [mainWalletWithSwaps + externalWalletsWithSwaps].map through all the ongoingSwaps list and get their length summed)
       debugPrint(
@@ -196,7 +203,10 @@ class MigrateToV5HiveToSqliteToUsecase {
         );
         final ongoingSwaps = await _getOldOngoingSwaps(oldWallet);
         final walletWithSwaps = WalletWithOngoingSwaps(
-          walletId: wallet.id,
+          walletId: WalletIdMapping(
+            oldWalletId: oldWallet.id,
+            newWalletId: wallet.id,
+          ),
           oldOngoingSwaps: ongoingSwaps.toList(),
         );
         recovered.add(walletWithSwaps);
@@ -251,7 +261,10 @@ class MigrateToV5HiveToSqliteToUsecase {
         );
         final ongoingSwaps = await _getOldOngoingSwaps(oldExternalWallet);
         final walletWithSwaps = WalletWithOngoingSwaps(
-          walletId: wallet.id,
+          walletId: WalletIdMapping(
+            oldWalletId: oldExternalWallet.id,
+            newWalletId: wallet.id,
+          ),
           oldOngoingSwaps: ongoingSwaps.toList(),
         );
         recovered.add(walletWithSwaps);
@@ -331,8 +344,10 @@ class MigrateToV5HiveToSqliteToUsecase {
   }
 
   static const swapTxSensitive = 'swapTxSensitive';
+
   Future<int> _recoverOldOngoingSwaps(
     List<WalletWithOngoingSwaps> walletWithOngoingSwaps,
+    List<WalletIdMapping> allWalletIdMappings,
   ) async {
     int count = 0;
     for (final item in walletWithOngoingSwaps) {
@@ -350,6 +365,16 @@ class MigrateToV5HiveToSqliteToUsecase {
           final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
           final jsonSwap = await sdkSwapClass.toJson();
           await _secureStorage.store(key: key, value: jsonSwap);
+          await _mainnetSwapRepository.migrateOldSwap(
+            primaryWalletId: item.walletId.newWalletId,
+            swapId: swap.id,
+            swapType:
+                swap.isReverse()
+                    ? SwapType.lightningToLiquid
+                    : SwapType.liquidToLightning,
+            counterWalletId: null,
+            isCounterWalletExternal: null,
+          );
           count++;
         }
         if (swap.isBitcoin() && swap.isLnSwap()) {
@@ -360,9 +385,32 @@ class MigrateToV5HiveToSqliteToUsecase {
           final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
           final jsonSwap = await sdkSwapClass.toJson();
           await _secureStorage.store(key: key, value: jsonSwap);
+          await _mainnetSwapRepository.migrateOldSwap(
+            primaryWalletId: item.walletId.newWalletId,
+            swapId: swap.id,
+            swapType:
+                swap.isReverse()
+                    ? SwapType.lightningToBitcoin
+                    : SwapType.bitcoinToLightning,
+            counterWalletId: null,
+            isCounterWalletExternal: null,
+          );
           count++;
         }
         if (swap.isChainSwap()) {
+          final toWalletIdOld = swap.chainSwapDetails?.toWalletId ?? '';
+          //find the mapping for the toWalletIdOld to newWalletId
+
+          final counterWalletIdMapping = allWalletIdMappings.firstWhere(
+            (e) => e.oldWalletId == toWalletIdOld,
+            orElse:
+                () => WalletIdMapping(
+                  oldWalletId: toWalletIdOld,
+                  newWalletId: toWalletIdOld,
+                  oldWalletIdIsExternal: true,
+                ), // this is likely an address (swap to external)
+          );
+
           final swapSensitiveConcrete = OldChainSwapTxSensitive.fromJson(
             jsonDecode(swapSensitive!) as Map<String, dynamic>,
           );
@@ -370,6 +418,19 @@ class MigrateToV5HiveToSqliteToUsecase {
           final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
           final jsonSwap = await sdkSwapClass.toJson();
           await _secureStorage.store(key: key, value: jsonSwap);
+          await _mainnetSwapRepository.migrateOldSwap(
+            primaryWalletId: item.walletId.newWalletId,
+            swapId: swap.id,
+            swapType:
+                swap.chainSwapDetails?.direction ==
+                        boltz.ChainSwapDirection.lbtcToBtc
+                    ? SwapType.liquidToBitcoin
+                    : SwapType.bitcoinToLiquid,
+            counterWalletId: counterWalletIdMapping.newWalletId,
+            isCounterWalletExternal:
+                counterWalletIdMapping.oldWalletIdIsExternal,
+          );
+
           count++;
         }
       }
@@ -397,11 +458,22 @@ String removeChecksumFromDesc(String descriptor) {
 }
 
 class WalletWithOngoingSwaps {
-  final String walletId;
+  final WalletIdMapping walletId;
   final List<OldSwapTx>? oldOngoingSwaps;
 
   WalletWithOngoingSwaps({
     required this.walletId,
     required this.oldOngoingSwaps,
+  });
+}
+
+class WalletIdMapping {
+  final String oldWalletId;
+  final String newWalletId;
+  final bool oldWalletIdIsExternal;
+  WalletIdMapping({
+    required this.oldWalletId,
+    required this.newWalletId,
+    this.oldWalletIdIsExternal = false,
   });
 }

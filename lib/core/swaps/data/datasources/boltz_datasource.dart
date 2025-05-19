@@ -1180,14 +1180,17 @@ class BoltzDatasource {
 
   Future<void> fromBtcLnSwapObject(
     BtcLnSwap swap,
-    String receiveWalletId,
-    String sendWalletId,
+    String? receiveWalletId,
+    String? sendWalletId,
   ) async {
     final swapType =
         swap.kind == SwapType.reverse
             ? swap_entity.SwapType.lightningToBitcoin
             : swap_entity.SwapType.bitcoinToLightning;
     if (swapType == swap_entity.SwapType.lightningToBitcoin) {
+      if (receiveWalletId == null) {
+        throw 'Receive wallet ID is required for lightning to bitcoin swaps';
+      }
       final swapModel = SwapModel.lnReceive(
         id: swap.id,
         status: swap_entity.SwapStatus.pending.name,
@@ -1201,6 +1204,9 @@ class BoltzDatasource {
       await _boltzStore.store(swapModel);
     }
     if (swapType == swap_entity.SwapType.bitcoinToLightning) {
+      if (sendWalletId == null) {
+        throw 'Send wallet ID is required for lightning to bitcoin swaps';
+      }
       final swapModel = SwapModel.lnSend(
         id: swap.id,
         status: swap_entity.SwapStatus.pending.name,
@@ -1219,14 +1225,17 @@ class BoltzDatasource {
 
   Future<void> fromLbtcLnSwapObject(
     LbtcLnSwap swap,
-    String receiveWalletId,
-    String sendWalletId,
+    String? receiveWalletId,
+    String? sendWalletId,
   ) async {
     final swapType =
         swap.kind == SwapType.reverse
             ? swap_entity.SwapType.lightningToLiquid
             : swap_entity.SwapType.liquidToLightning;
     if (swapType == swap_entity.SwapType.lightningToLiquid) {
+      if (receiveWalletId == null) {
+        throw 'Receive wallet ID is required for lightning to liquid swaps';
+      }
       final swapModel = SwapModel.lnReceive(
         id: swap.id,
         status: swap_entity.SwapStatus.pending.name,
@@ -1240,6 +1249,9 @@ class BoltzDatasource {
       await _boltzStore.store(swapModel);
     }
     if (swapType == swap_entity.SwapType.liquidToLightning) {
+      if (sendWalletId == null) {
+        throw 'Send wallet ID is required for lightning to liquid swaps';
+      }
       final swapModel = SwapModel.lnSend(
         id: swap.id,
         status: swap_entity.SwapStatus.pending.name,
@@ -1259,8 +1271,8 @@ class BoltzDatasource {
   Future<void> fromChainSwapObject(
     ChainSwap swap,
     String sendWalletId,
-    String? receiveWalletId,
-    String? externalAddress,
+    String receiveWalletId,
+    bool isReceiveWalletExternal,
   ) async {
     final swapType =
         swap.direction == ChainSwapDirection.lbtcToBtc
@@ -1276,8 +1288,9 @@ class BoltzDatasource {
       sendWalletId: sendWalletId,
       paymentAddress: swap.scriptAddress,
       paymentAmount: swap.outAmount.toInt(),
-      receiveWalletId: receiveWalletId,
-      receiveAddress: externalAddress,
+      receiveWalletId:
+          isReceiveWalletExternal == false ? receiveWalletId : null,
+      receiveAddress: isReceiveWalletExternal == true ? receiveWalletId : null,
     );
     await _boltzStore.storeChainSwap(swap);
     await _boltzStore.store(swapModel);

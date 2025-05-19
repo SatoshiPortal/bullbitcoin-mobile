@@ -120,6 +120,13 @@ abstract class SwapRepository {
     bool isCooperative = true,
     String? refundAddressForChainSwaps,
   });
+  Future<void> migrateOldSwap({
+    required String primaryWalletId,
+    required String swapId,
+    required SwapType swapType,
+    required String? counterWalletId,
+    required bool? isCounterWalletExternal,
+  });
   // SWAP STORAGE UTILITY
   Future<Swap> getSwap({required String swapId});
   Future<LnSendSwap?> getSendSwapByInvoice({required String invoice});
