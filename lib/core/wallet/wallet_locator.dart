@@ -34,6 +34,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/locator.dart';
 
 class WalletLocator {
@@ -169,6 +170,12 @@ class WalletLocator {
     );
     locator.registerFactory<WatchWalletTransactionByAddressUsecase>(
       () => WatchWalletTransactionByAddressUsecase(
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
+        walletRepository: locator<WalletRepository>(),
+      ),
+    );
+    locator.registerFactory<WatchWalletTransactionByTxIdUsecase>(
+      () => WatchWalletTransactionByTxIdUsecase(
         walletTransactionRepository: locator<WalletTransactionRepository>(),
         walletRepository: locator<WalletRepository>(),
       ),

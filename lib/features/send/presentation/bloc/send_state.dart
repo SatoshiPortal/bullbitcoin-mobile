@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -89,6 +90,7 @@ abstract class SendState with _$SendState {
     // confirm
     String? txId,
     PayjoinSender? payjoinSender,
+    WalletTransaction? transaction,
     Object? error,
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,

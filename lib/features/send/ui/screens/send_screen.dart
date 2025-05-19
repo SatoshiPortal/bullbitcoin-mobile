@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/scan/scan_widget.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -1162,6 +1163,10 @@ class SendSucessScreen extends StatelessWidget {
     final isChainSwap = context.select(
       (SendCubit cubit) => cubit.state.chainSwap != null,
     );
+    final transaction = context.select(
+      (SendCubit cubit) => cubit.state.transaction,
+    );
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -1175,6 +1180,8 @@ class SendSucessScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Spacer(),
             Padding(
@@ -1216,12 +1223,18 @@ class SendSucessScreen extends StatelessWidget {
               ),
             ),
             const Spacer(flex: 2),
-            BBButton.big(
-              label: 'View Details',
-              onPressed: () {},
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
-            ),
+            if (transaction != null)
+              BBButton.big(
+                label: 'View Details',
+                onPressed: () {
+                  context.push(
+                    '/send/${SendRoute.sendTransactionDetails.path}',
+                    extra: transaction,
+                  );
+                },
+                bgColor: context.colour.secondary,
+                textColor: context.colour.onSecondary,
+              ),
             const Gap(32),
           ],
         ),

@@ -6,11 +6,11 @@ import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_rep
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
-class WatchWalletTransactionByAddressUsecase {
+class WatchWalletTransactionByTxIdUsecase {
   final WalletTransactionRepository _walletTransactionRepository;
   final WalletRepository _walletRepository;
 
-  const WatchWalletTransactionByAddressUsecase({
+  const WatchWalletTransactionByTxIdUsecase({
     required WalletTransactionRepository walletTransactionRepository,
     required WalletRepository walletRepository,
   }) : _walletTransactionRepository = walletTransactionRepository,
@@ -18,38 +18,28 @@ class WatchWalletTransactionByAddressUsecase {
 
   Stream<WalletTransaction> execute({
     required String walletId,
-    required String toAddress,
+    required String txId,
   }) {
     return _walletRepository.walletSyncFinishedStream
         .where((wallet) => wallet.id == walletId)
         .asyncMap((wallet) async {
+          debugPrint(
+            'Fetching transaction with txId $txId'
+            ' for wallet: $walletId',
+          );
+
           try {
-            debugPrint(
-              'Fetching transactions to address $toAddress'
-              ' for wallet: $walletId',
+            final tx = await _walletTransactionRepository.getWalletTransaction(
+              txId,
+              walletId: walletId,
             );
 
-            final txs = await _walletTransactionRepository
-                .getBroadcastedWalletTransactions(
-                  walletId: walletId,
-                  toAddress: toAddress,
-                );
-
             debugPrint(
-              'Fetched ${txs.length} transactions to address $toAddress'
-              ' for wallet: $walletId',
+              'Fetched transaction with txId $txId for wallet: $walletId',
             );
-
-            if (txs.isEmpty) {
-              debugPrint(
-                'No transactions found for wallet: $walletId and address $toAddress',
-              );
-              return null;
-            }
-
-            return txs.last;
+            return tx;
           } catch (e) {
-            debugPrint('WatchWalletTransactionByAddressUsecase exception: $e');
+            debugPrint('WatchWalletTransactionByTxIdUsecase exception: $e');
             return null;
           }
         })
