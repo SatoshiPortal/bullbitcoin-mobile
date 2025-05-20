@@ -125,6 +125,10 @@ dependencies:
   drift: "^2.26.1"
   drift_flutter: ^0.2.4
   package_info_plus: ^8.3.0
+  bbqr:
+    git:
+      url: https://github.com/ethicnology/dart-bbqr.git
+      ref: main
 
 dev_dependencies:
   build_runner: ^2.4.15
