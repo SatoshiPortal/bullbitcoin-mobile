@@ -348,9 +348,9 @@ abstract class OldWallet with _$OldWallet {
       case OldBBWalletType.words:
       case OldBBWalletType.main:
         if (baseWalletType == OldBaseWalletType.Bitcoin) {
-          str = 'Secure Bitcoin OldWallet';
+          str = 'Secure Bitcoin Wallet';
         } else {
-          str = 'Instant Payments OldWallet';
+          str = 'Instant Payments Wallet';
         }
       case OldBBWalletType.xpub:
         str = 'Xpub:${id.substring(0, 5)}';

@@ -11,7 +11,6 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entitie
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hive_datasource.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 
-import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:crypto/crypto.dart';
@@ -25,10 +24,13 @@ Future<void> doMigration0_1to0_2() async {
   final hiveDatasource = locator<OldHiveDatasource>();
 
   final oldSeedRepository = OldSeedRepository(secureStorageDatasource);
-  final oldWalletRepository = OldWalletRepository(hiveDatasource);
+  // final oldWalletRepository = OldWalletRepository(hiveDatasource);
 
-  final oldWallets = await oldWalletRepository.fetch();
-  final walletIds = oldWallets.map((w) => w.id).toList();
+  final walletIdsRaw = hiveDatasource.getValue(OldStorageKeys.wallets.name);
+  if (walletIdsRaw == null) throw 'No Wallets found';
+
+  final walletIds = jsonDecode(walletIdsRaw)['wallets'] as List<dynamic>;
+  if (walletIds.isEmpty) throw 'No Wallets found';
 
   final List<OldWallet> wallets = [];
 
@@ -36,7 +38,7 @@ Future<void> doMigration0_1to0_2() async {
   OldSeed? liquidTestnetSeed;
 
   for (final walletId in walletIds) {
-    final jsn = hiveDatasource.getValue(walletId);
+    final jsn = hiveDatasource.getValue(walletId as String);
     if (jsn == null) throw 'Abort';
 
     Map<String, dynamic> walletObj = jsonDecode(jsn) as Map<String, dynamic>;
@@ -233,7 +235,7 @@ Future<List<OldWallet>> createLiquidWallet(
       'mnemonicFingerprint': liquidMainnetSeed.mnemonicFingerprint,
       'sourceFingerprint': liquidMainnetSeed.mnemonicFingerprint,
       'baseWalletType': 'Liquid',
-      'scriptType': OldScriptType.bip84.toString(),
+      'scriptType': OldScriptType.bip84.name,
       'externalDescriptor': descriptor,
       'internalDescriptor': descriptor,
       'mainWallet': true,
