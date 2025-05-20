@@ -334,7 +334,12 @@ class WalletRepositoryImpl implements WalletRepository {
   Future<void> _startAutoSyncing() async {
     // TODO: get from constants
     // TODO(azad): shouldn't we store `autoSyncIntervalSeconds` in sqlite settings?
-    const autoSyncInterval = Duration(seconds: autoSyncIntervalSeconds);
+    // @azad Yes we should, but for now it is not an option in the UI yet,
+    //  so OK as a constant for now. When we add the option to the UI, we can
+    //  move it to the settings table.
+    const autoSyncInterval = Duration(
+      seconds: SettingsConstants.autoSyncIntervalSeconds,
+    );
 
     Timer.periodic(autoSyncInterval, (timer) async {
       final metadatas = await _walletMetadataDatasource.fetchAll();

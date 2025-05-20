@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_sc
 import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/settings/ui/screens/language_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +13,8 @@ enum SettingsRoute {
   pinCode('pin-code'),
   language('language'),
   currency('currency'),
-  backupSettings('backup-settings');
+  backupSettings('backup-settings'),
+  logs('logs');
 
   final String path;
 
@@ -44,6 +46,11 @@ class SettingsRouter {
           ...BackupWalletRouter.routes,
           ...TestWalletBackupRouter.routes,
         ],
+      ),
+      GoRoute(
+        path: SettingsRoute.logs.path,
+        name: SettingsRoute.logs.name,
+        builder: (context, state) => const LogSettingsScreen(),
       ),
 
       /** TODO: Implement CurrencySettingsScreen

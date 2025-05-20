@@ -1,8 +1,12 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-// Added `autoSyncIntervalSeconds` to `SettingsConstants` since we could make
-//  this configurable in the future if desired.
-const autoSyncIntervalSeconds = 5;
+class SettingsConstants {
+  // `SettingsConstants` are constants that in the future potentially can become
+  //  a configurable setting, in which case they should be added to the Settings
+  //  table in sqlite and not be defined here as constants anymore.
+  static const autoSyncIntervalSeconds = 5;
+  static const logFileName = 'bb_mobile.log';
+}
 
 class ConversionConstants {
   static final satsAmountOfOneBitcoin = BigInt.from(100000000);

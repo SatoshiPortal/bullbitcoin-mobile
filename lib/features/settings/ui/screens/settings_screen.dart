@@ -69,6 +69,13 @@ class SettingsScreen extends StatelessWidget {
                   },
                   trailing: const Icon(Icons.chevron_right),
                 ),
+              ListTile(
+                title: const Text('Logs'),
+                onTap: () {
+                  context.pushNamed(SettingsRoute.logs.name);
+                },
+                trailing: const Icon(Icons.chevron_right),
+              ),
             ],
           ),
         ),

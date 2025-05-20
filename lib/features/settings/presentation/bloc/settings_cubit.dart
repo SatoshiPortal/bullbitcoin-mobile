@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/logging/domain/entities/log.dart';
+import 'package:bb_mobile/core/logging/domain/usecases/add_log_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -17,6 +19,7 @@ class SettingsCubit extends Cubit<SettingsEntity?> {
     required SetCurrencyUsecase setCurrencyUsecase,
     required SetHideAmountsUsecase setHideAmountsUsecase,
     required SetIsSuperuserUsecase setIsSuperuserUsecase,
+    required AddLogUsecase addLogUsecase,
   }) : _setEnvironmentUsecase = setEnvironmentUsecase,
        _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
        _getSettingsUsecase = getSettingsUsecase,
@@ -24,6 +27,7 @@ class SettingsCubit extends Cubit<SettingsEntity?> {
        _setCurrencyUsecase = setCurrencyUsecase,
        _setHideAmountsUsecase = setHideAmountsUsecase,
        _setIsSuperuserUsecase = setIsSuperuserUsecase,
+       _addLogUsecase = addLogUsecase,
        super(null);
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -33,6 +37,7 @@ class SettingsCubit extends Cubit<SettingsEntity?> {
   final SetCurrencyUsecase _setCurrencyUsecase;
   final SetHideAmountsUsecase _setHideAmountsUsecase;
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
+  final AddLogUsecase _addLogUsecase;
 
   Future<void> init() async {
     final settings = await _getSettingsUsecase.execute();
@@ -41,12 +46,30 @@ class SettingsCubit extends Cubit<SettingsEntity?> {
   }
 
   Future<void> toggleTestnetMode(bool active) async {
+    // Log the action
+    await _addLogUsecase.execute(
+      NewLog(
+        level: LogLevel.info,
+        message: 'Testnet mode toggled: $active',
+        logger: 'SettingsCubit',
+        context: {'currentEnvironment': state?.environment.name},
+      ),
+    );
     final environment = active ? Environment.testnet : Environment.mainnet;
     await _setEnvironmentUsecase.execute(environment);
     emit(state?.copyWith(environment: environment));
   }
 
   Future<void> toggleSatsUnit(bool active) async {
+    // Log the action
+    await _addLogUsecase.execute(
+      NewLog(
+        level: LogLevel.info,
+        message: 'Bitcoin unit toggled: $active',
+        logger: 'SettingsCubit',
+        context: {'currentBitcoinUnit': state?.bitcoinUnit.name},
+      ),
+    );
     final unit = active ? BitcoinUnit.sats : BitcoinUnit.btc;
     await _setBitcoinUnitUsecase.execute(unit);
     emit(state?.copyWith(bitcoinUnit: unit));

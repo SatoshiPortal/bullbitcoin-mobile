@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/electrum/electrum_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';
 import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/core/labels/labels_locator.dart';
+import 'package:bb_mobile/core/logging/log_locator.dart';
 import 'package:bb_mobile/core/payjoin/payjoin_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
@@ -11,7 +12,6 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
 import 'package:bb_mobile/core/tor/tor_locator.dart';
-import 'package:bb_mobile/core/utils/util_locators.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -21,7 +21,7 @@ class CoreLocator {
   }
 
   static Future<void> registerDatasources() async {
-    await UtilsLocator.registerLogger();
+    LogLocator.registerDatasources();
     await TorLocator.registerDatasources();
     BlockchainLocator.registerDatasources();
     await ElectrumLocator.registerDatasources();
@@ -38,6 +38,7 @@ class CoreLocator {
   }
 
   static Future<void> registerRepositories() async {
+    LogLocator.registerRepositories();
     await TorLocator.registerRepositories();
     BlockchainLocator.registerRepositories();
     ElectrumLocator.registerRepositories();
@@ -49,7 +50,6 @@ class CoreLocator {
     SeedLocator.registerRepositories();
     StorageLocator.registerRepositories();
     await SettingsLocator.registerRepositories();
-    ElectrumLocator.registerUsecases();
     SwapsLocator.registerRepositories();
     WalletLocator.registerRepositories();
   }
@@ -60,6 +60,8 @@ class CoreLocator {
   }
 
   static void registerUsecases() {
+    LogLocator.registerUsecases();
+    ElectrumLocator.registerUsecases();
     BlockchainLocator.registerUsecases();
     ExchangeLocator.registerUseCases();
     FeesLocator.registerUseCases();

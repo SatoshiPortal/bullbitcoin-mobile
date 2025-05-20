@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/logging/domain/usecases/add_log_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
@@ -51,6 +52,7 @@ class SettingsLocator {
         setCurrencyUsecase: locator<SetCurrencyUsecase>(),
         setHideAmountsUsecase: locator<SetHideAmountsUsecase>(),
         setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
+        addLogUsecase: locator<AddLogUsecase>(),
       ),
     );
   }
