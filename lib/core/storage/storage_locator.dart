@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hiv
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -59,6 +60,12 @@ class StorageLocator {
     );
     locator.registerFactory<MigrateToV4LegacyUsecase>(
       () => MigrateToV4LegacyUsecase(MigrationSecureStorageDatasource()),
+    );
+    locator.registerFactory<RequiresMigrationUsecase>(
+      () => RequiresMigrationUsecase(
+        locator<MigrationSecureStorageDatasource>(),
+        locator<WalletRepository>(),
+      ),
     );
   }
 }

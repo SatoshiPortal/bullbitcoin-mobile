@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/storage/migrations/004_legacy/migrate_v4_legacy_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/migrate_v5_hive_to_sqlite_usecase.dart';
+import 'package:bb_mobile/core/storage/requires_migration_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/check_for_existing_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/app_startup/domain/usecases/reset_app_data_usecase.dart';
 import 'package:bb_mobile/features/app_unlock/domain/usecases/check_pin_code_exists_usecase.dart';
@@ -19,12 +20,14 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     checkForExistingDefaultWalletsUsecase,
     required MigrateToV5HiveToSqliteToUsecase migrateHiveToSqliteUsecase,
     required MigrateToV4LegacyUsecase migrateLegacyToV04Usecase,
+    required RequiresMigrationUsecase requiresMigrationUsecase,
   }) : _resetAppDataUsecase = resetAppDataUsecase,
        _checkPinCodeExistsUsecase = checkPinCodeExistsUsecase,
        _checkForExistingDefaultWalletsUsecase =
            checkForExistingDefaultWalletsUsecase,
        _migrateToV5HiveToSqliteUsecase = migrateHiveToSqliteUsecase,
        _migrateToV4LegacyUsecase = migrateLegacyToV04Usecase,
+       _requiresMigrationUsecase = requiresMigrationUsecase,
        super(const AppStartupState.initial()) {
     on<AppStartupStarted>(_onAppStartupStarted);
   }
@@ -35,16 +38,7 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
   _checkForExistingDefaultWalletsUsecase;
   final MigrateToV5HiveToSqliteToUsecase _migrateToV5HiveToSqliteUsecase;
   final MigrateToV4LegacyUsecase _migrateToV4LegacyUsecase;
-
-  Future<void> _migrateLegacyToV5() async {
-    final isV4 = await _migrateToV4LegacyUsecase.execute();
-    if (isV4) {
-      debugPrint('Legacy migration executed');
-
-      final isV5 = await _migrateToV5HiveToSqliteUsecase.execute();
-      if (isV5) debugPrint('V5 migration executed');
-    }
-  }
+  final RequiresMigrationUsecase _requiresMigrationUsecase;
 
   Future<void> _onAppStartupStarted(
     AppStartupStarted event,
@@ -54,7 +48,46 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     try {
       // Run Tor initialization in background
       // SQL Migrations
-      await _migrateLegacyToV5();
+      final migrationRequired = await _requiresMigrationUsecase.execute();
+      if (migrationRequired == null) {
+        emit(const AppStartupState.loadingInProgress());
+      } else {
+        emit(const AppStartupState.loadingInProgress(requiresMigration: true));
+
+        switch (migrationRequired) {
+          case MigrationRequired.v4:
+            await _migrateToV4LegacyUsecase.execute();
+            emit(
+              const AppStartupState.loadingInProgress(
+                requiresMigration: true,
+                v4MigrationComplete: true,
+              ),
+            );
+            await _migrateToV5HiveToSqliteUsecase.execute();
+            emit(
+              const AppStartupState.loadingInProgress(
+                requiresMigration: true,
+                v4MigrationComplete: true,
+                v5MigrationComplete: true,
+              ),
+            );
+          case MigrationRequired.v5:
+            emit(
+              const AppStartupState.loadingInProgress(
+                requiresMigration: true,
+                v4MigrationComplete: true,
+              ),
+            );
+            await _migrateToV5HiveToSqliteUsecase.execute();
+            emit(
+              const AppStartupState.loadingInProgress(
+                requiresMigration: true,
+                v4MigrationComplete: true,
+                v5MigrationComplete: true,
+              ),
+            );
+        }
+      }
 
       // all here future migration calls
       final doDefaultWalletsExist =
