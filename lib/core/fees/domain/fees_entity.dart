@@ -122,7 +122,7 @@ extension FeeOptionsDisplay on FeeOptions {
   }
 }
 
-enum FeeSelection { fastest, economic, slow }
+enum FeeSelection { fastest, economic, slow, custom }
 
 extension FeeSelectionName on FeeSelection {
   String title() {
@@ -133,6 +133,8 @@ extension FeeSelectionName on FeeSelection {
         return 'Economic';
       case FeeSelection.slow:
         return 'Slow';
+      case FeeSelection.custom:
+        return 'Custom Fee';
     }
   }
 
@@ -144,6 +146,8 @@ extension FeeSelectionName on FeeSelection {
         return FeeSelection.economic;
       case 'Slow':
         return FeeSelection.slow;
+      case 'Custom Fee':
+        return FeeSelection.custom;
       default:
         throw Exception('Unknown fee selection: $value');
     }
