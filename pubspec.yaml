@@ -64,7 +64,7 @@ dependencies:
   # currency_text_input_formatter: ^2.1.10
   pointycastle: ^3.7.3
   auto_size_text: ^3.0.0
-  no_screenshot: ^0.0.1+6
+  no_screenshot: ^0.3.1
   flutter_svg: ^2.0.10+1
   oktoast: ^3.4.0
   lottie: ^3.1.0
