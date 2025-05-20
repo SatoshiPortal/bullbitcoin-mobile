@@ -11,6 +11,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/storage/storage_locator.dart';
 import 'package:bb_mobile/core/swaps/swaps_locator.dart';
 import 'package:bb_mobile/core/tor/tor_locator.dart';
+import 'package:bb_mobile/core/utils/util_locators.dart';
 import 'package:bb_mobile/core/wallet/wallet_locator.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -20,6 +21,7 @@ class CoreLocator {
   }
 
   static Future<void> registerDatasources() async {
+    await UtilsLocator.registerLogger();
     await TorLocator.registerDatasources();
     BlockchainLocator.registerDatasources();
     await ElectrumLocator.registerDatasources();

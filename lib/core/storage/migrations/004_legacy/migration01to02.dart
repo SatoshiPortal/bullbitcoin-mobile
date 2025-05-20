@@ -16,15 +16,11 @@ import 'package:bb_mobile/locator.dart';
 import 'package:crypto/crypto.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
-// int mainWalletIndex = 0;
-// int testWalletIndex = 0;
-
 Future<void> doMigration0_1to0_2() async {
   final secureStorageDatasource = MigrationSecureStorageDatasource();
   final hiveDatasource = locator<OldHiveDatasource>();
 
   final oldSeedRepository = OldSeedRepository(secureStorageDatasource);
-  // final oldWalletRepository = OldWalletRepository(hiveDatasource);
 
   final walletIdsRaw = hiveDatasource.getValue(OldStorageKeys.wallets.name);
   if (walletIdsRaw == null) throw 'No Wallets found';
@@ -54,7 +50,6 @@ Future<void> doMigration0_1to0_2() async {
       isDefault = false;
     }
 
-    // Change 3: add isLiquid to all Txns, Addresses
     walletObj = await addIsLiquid(walletObj);
 
     final w = OldWallet.fromJson(walletObj);
@@ -64,7 +59,6 @@ Future<void> doMigration0_1to0_2() async {
   if (liquidMainnetSeed == null) {
     throw 'Could not create liquid mainnet wallet. Abort.';
   }
-  // Change 4: create a new Liquid wallet, based on the Bitcoin wallet
   final liqWallet = await createLiquidWallet(liquidMainnetSeed);
 
   wallets.addAll([liqWallet]);
@@ -104,11 +98,10 @@ Future<void> doMigration0_1to0_2() async {
     value: idsJsn,
   );
 
-  // why arent we using toVersion and hardcoding 0.2 here?
   await secureStorageDatasource.store(
     key: OldStorageKeys.version.name,
     value: '0.2.0',
-  );
+  ); // gets overwritten by the exact 0.2.* version later
 }
 
 Future<({OldSeed? liquidMainnetSeed, Map<String, dynamic> walletObj})>
@@ -121,13 +114,13 @@ updateWalletObj(
 
   // TODO: Test this assumption
   // Assuming first wallet is to be changed to secure and further wallets to words
-  // `newSeed` --> Auto created by wallet
+  // `newSeed` -->  Created by wallet
   // `words` --> Wallet recovered by user
   if (walletObj['type'] == 'newSeed' || walletObj['type'] == 'words') {
     if (walletObj['network'] == 'Mainnet') {
       if (isDefault) {
         walletObj['type'] = 'main';
-        walletObj['name'] = 'Secure Bitcoin Wallet';
+        walletObj['name'] = 'Secure Bitcoin';
         walletObj['mainWallet'] = true;
 
         liquidMainnetSeed = seed;
@@ -178,22 +171,18 @@ Future<Map<String, dynamic>> addIsLiquid(Map<String, dynamic> walletObj) async {
 }
 
 Future<OldWallet> createLiquidWallet(OldSeed liquidMainnetSeed) async {
-  // create liquid wallet from lwk
-
   final mnemonic = liquidMainnetSeed.mnemonic;
   final descriptor = await lwk.Descriptor.newConfidential(
     mnemonic: mnemonic,
     network: lwk.Network.mainnet,
   );
-  // Generate wallet ID
   final walletId = createDescriptorHashId(
     descriptor.ctDescriptor,
     OldBBNetwork.Mainnet,
   );
-  // Create wallet object
   final walletObj = <String, dynamic>{
     'id': walletId,
-    'name': 'Instant Payment Wallet',
+    'name': 'Instant Payments',
     'type': 'main',
     'network': OldBBNetwork.Mainnet.name,
     'mnemonicFingerprint': liquidMainnetSeed.mnemonicFingerprint,

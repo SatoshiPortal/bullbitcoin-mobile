@@ -12,10 +12,10 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_stor
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:boltz/boltz.dart' as boltz;
-import 'package:flutter/foundation.dart';
 
 class MigrateToV5HiveToSqliteToUsecase {
   final SeedRepository _newSeedRepository;
@@ -23,8 +23,8 @@ class MigrateToV5HiveToSqliteToUsecase {
   final OldSeedRepository _oldSeedRepository;
   final OldWalletRepository _oldWalletRepository;
   final MigrationSecureStorageDatasource _secureStorage;
-  // ignore: unused_field
   final SwapRepository _mainnetSwapRepository;
+  final Logger _print;
   MigrateToV5HiveToSqliteToUsecase({
     required SeedRepository newSeedRepository,
     required OldSeedRepository oldSeedRepository,
@@ -32,12 +32,14 @@ class MigrateToV5HiveToSqliteToUsecase {
     required WalletRepository newWalletRepository,
     required MigrationSecureStorageDatasource secureStorage,
     required SwapRepository mainnetSwapRepository,
+    required Logger logger,
   }) : _newSeedRepository = newSeedRepository,
        _oldSeedRepository = oldSeedRepository,
        _oldWalletRepository = oldWalletRepository,
        _newWalletRepository = newWalletRepository,
        _secureStorage = secureStorage,
-       _mainnetSwapRepository = mainnetSwapRepository;
+       _mainnetSwapRepository = mainnetSwapRepository,
+       _print = logger;
   // true : successful migration
   // false: migration was not required / success
   // throw: errors
@@ -51,7 +53,13 @@ class MigrateToV5HiveToSqliteToUsecase {
         environment: Environment.mainnet,
       );
       // check if we are already on v5
-      if (newMainnetDefaultWallets.length == 2) return false;
+      if (newMainnetDefaultWallets.length == 2) {
+        _print.log(
+          'DEBUG: Migration Not Required: 2 Default Wallets Exist.',
+          toConsole: true,
+        );
+        return false;
+      }
 
       final oldMainnetDefaultWallets =
           oldWallets
@@ -61,7 +69,9 @@ class MigrateToV5HiveToSqliteToUsecase {
                     e.network == OldBBNetwork.Mainnet,
               )
               .toList();
-      debugPrint('defaultOldSignerWallets: ${oldMainnetDefaultWallets.length}');
+      await _print.logToFile(
+        'PROGRESS: Found  ${oldMainnetDefaultWallets.length} defaultOldSignerWallets',
+      );
       final oldMainnetExternalSignerWallets =
           oldWallets
               .where(
@@ -81,16 +91,16 @@ class MigrateToV5HiveToSqliteToUsecase {
               )
               .toList();
 
-      debugPrint(
-        'externalOldSignerWallets: ${oldMainnetExternalSignerWallets.length}',
+      await _print.logToFile(
+        'PROGRESS: Found ${oldMainnetExternalSignerWallets.length} externalOldSignerWallets',
       );
 
       final oldMainnetSignerWallets =
           oldMainnetDefaultWallets + oldMainnetExternalSignerWallets;
 
       final seedsImported = await _storeNewSeeds(oldMainnetSignerWallets);
-      debugPrint(
-        'migration: ${seedsImported.length}/${oldMainnetSignerWallets.length} seeds',
+      await _print.logToFile(
+        'PROGRESS: Migrated ${seedsImported.length}/${oldMainnetSignerWallets.length} seeds',
       );
       if (seedsImported.isEmpty) return false;
       final mainWalletWithSwaps = await _storeMainWallets(
@@ -116,21 +126,21 @@ class MigrateToV5HiveToSqliteToUsecase {
           allWalletsWithSwaps,
         );
         // debug print the number of swaps receoverd receoverSwaps/(total swaps = [mainWalletWithSwaps + externalWalletsWithSwaps].map through all the ongoingSwaps list and get their length summed)
-        debugPrint(
-          'swap migration completed: recoveredSwaps: $recoveredSwaps/$totalSwapsLength',
+        _print.log(
+          'PROGRESS: Migrated $recoveredSwaps/$totalSwapsLength ongoing swaps',
         );
       }
 
       final finalWatchOnlyCount = await _storeWatchOnlyWallet(
         oldMainnetWatchOnlyWallets,
       );
-      debugPrint(
-        'wallet migration completed: ${seedsImported.length} seeds, ${mainWalletWithSwaps.length}/${oldMainnetDefaultWallets.length} default wallets\n${externalWalletsWithSwaps.length}/${oldMainnetExternalSignerWallets.length} external wallets\n$finalWatchOnlyCount/${oldMainnetWatchOnlyWallets.length} watch only wallets;\nSuccessfully migrated ${mainWalletWithSwaps.length + externalWalletsWithSwaps.length + finalWatchOnlyCount} wallets',
+      await _print.logToFile(
+        'SUCCESS: Migrated ${seedsImported.length} seeds, ${mainWalletWithSwaps.length}/${oldMainnetDefaultWallets.length} default wallets\n${externalWalletsWithSwaps.length}/${oldMainnetExternalSignerWallets.length} external wallets\n$finalWatchOnlyCount/${oldMainnetWatchOnlyWallets.length} watch only wallets;\nSuccessfully migrated ${mainWalletWithSwaps.length + externalWalletsWithSwaps.length + finalWatchOnlyCount} wallets',
       );
 
       return true;
     } catch (e) {
-      debugPrint('migration failed: $e');
+      await _print.logToFile('SEVERE: Migration failed: $e');
       return false;
     }
   }
@@ -155,20 +165,16 @@ class MigrateToV5HiveToSqliteToUsecase {
             passphrase: oldPassphrase.passphrase,
           );
           seeds.add(seed);
-          debugPrint(
-            'Imported seed w/passphrase: ${oldWallet.sourceFingerprint}',
-          );
         } else {
           final seed = await _newSeedRepository.createFromMnemonic(
             mnemonicWords: oldSeed.mnemonicList(),
           );
           seeds.add(seed);
-          debugPrint('Imported seed: ${oldWallet.sourceFingerprint}');
         }
       }
       return seeds;
     } catch (e) {
-      debugPrint('SKIP: $e');
+      await _print.logToFile('SEVERE: Errored during seed migration: $e');
       return [];
     }
   }
@@ -217,7 +223,9 @@ class MigrateToV5HiveToSqliteToUsecase {
       }
       return recovered;
     } catch (e) {
-      debugPrint('migration failed: $e');
+      await _print.logToFile(
+        'SEVERE: Errored during default wallet migration: $e',
+      );
       return [];
     }
   }
@@ -227,105 +235,123 @@ class MigrateToV5HiveToSqliteToUsecase {
     List<OldWallet> oldExternalWallets,
   ) async {
     final List<WalletWithOngoingSwaps> recovered = [];
-    for (final oldExternalWallet in oldExternalWallets) {
-      final newExternalSeed = await _newSeedRepository.get(
-        oldExternalWallet.sourceFingerprint,
-      );
-      final network =
-          oldExternalWallet.baseWalletType == OldBaseWalletType.Bitcoin
-              ? (oldExternalWallet.isTestnet()
-                  ? Network.bitcoinTestnet
-                  : Network.bitcoinMainnet)
-              : (oldExternalWallet.isTestnet()
-                  ? Network.liquidTestnet
-                  : Network.liquidMainnet);
 
-      final scriptType = switch (oldExternalWallet.scriptType) {
-        OldScriptType.bip84 => ScriptType.bip84,
-        OldScriptType.bip49 => ScriptType.bip49,
-        OldScriptType.bip44 => ScriptType.bip44,
-      };
-
-      final source = switch (oldExternalWallet.type) {
-        OldBBWalletType.main => WalletSource.mnemonic,
-        OldBBWalletType.coldcard => WalletSource.coldcard,
-        OldBBWalletType.xpub => WalletSource.xpub,
-        OldBBWalletType.words => WalletSource.mnemonic,
-        OldBBWalletType.descriptors => WalletSource.descriptors,
-      };
-
-      // ignore: unused_local_variable
-      if (source == WalletSource.mnemonic) {
-        final newWallet = await _newWalletRepository.createWallet(
-          seed: newExternalSeed,
-          scriptType: scriptType,
-          network: network,
-          label: oldExternalWallet.name ?? oldExternalWallet.sourceFingerprint,
+    try {
+      for (final oldExternalWallet in oldExternalWallets) {
+        final newExternalSeed = await _newSeedRepository.get(
+          oldExternalWallet.sourceFingerprint,
         );
-        final ongoingSwaps = await _getOldOngoingSwaps(oldExternalWallet);
-        final walletWithSwaps = WalletWithOngoingSwaps(
-          walletIdMapping: WalletIdMapping(
-            oldWalletId: oldExternalWallet.id,
-            newWalletId: newWallet.id,
-          ),
-          oldOngoingSwaps: ongoingSwaps.toList(),
-        );
-        recovered.add(walletWithSwaps);
+        final network =
+            oldExternalWallet.baseWalletType == OldBaseWalletType.Bitcoin
+                ? (oldExternalWallet.isTestnet()
+                    ? Network.bitcoinTestnet
+                    : Network.bitcoinMainnet)
+                : (oldExternalWallet.isTestnet()
+                    ? Network.liquidTestnet
+                    : Network.liquidMainnet);
+
+        final scriptType = switch (oldExternalWallet.scriptType) {
+          OldScriptType.bip84 => ScriptType.bip84,
+          OldScriptType.bip49 => ScriptType.bip49,
+          OldScriptType.bip44 => ScriptType.bip44,
+        };
+
+        final source = switch (oldExternalWallet.type) {
+          OldBBWalletType.main => WalletSource.mnemonic,
+          OldBBWalletType.coldcard => WalletSource.coldcard,
+          OldBBWalletType.xpub => WalletSource.xpub,
+          OldBBWalletType.words => WalletSource.mnemonic,
+          OldBBWalletType.descriptors => WalletSource.descriptors,
+        };
+
+        // ignore: unused_local_variable
+        if (source == WalletSource.mnemonic) {
+          final newWallet = await _newWalletRepository.createWallet(
+            seed: newExternalSeed,
+            scriptType: scriptType,
+            network: network,
+            label:
+                oldExternalWallet.name ?? oldExternalWallet.sourceFingerprint,
+          );
+          final ongoingSwaps = await _getOldOngoingSwaps(oldExternalWallet);
+          final walletWithSwaps = WalletWithOngoingSwaps(
+            walletIdMapping: WalletIdMapping(
+              oldWalletId: oldExternalWallet.id,
+              newWalletId: newWallet.id,
+            ),
+            oldOngoingSwaps: ongoingSwaps.toList(),
+          );
+          recovered.add(walletWithSwaps);
+        }
       }
+      return recovered;
+    } catch (e) {
+      await _print.logToFile(
+        'SEVERE: Errored during external wallet migration: $e',
+      );
+      return [];
     }
-    return recovered;
     // TODO: Store newWallet in the new database
   }
 
   Future<int> _storeWatchOnlyWallet(List<OldWallet> oldWatchOnlyWallets) async {
-    int count = 0;
-    for (final oldWatchOnlyWallet in oldWatchOnlyWallets) {
-      final network =
-          oldWatchOnlyWallet.baseWalletType == OldBaseWalletType.Bitcoin
-              ? (oldWatchOnlyWallet.isTestnet()
-                  ? Network.bitcoinTestnet
-                  : Network.bitcoinMainnet)
-              : (oldWatchOnlyWallet.isTestnet()
-                  ? Network.liquidTestnet
-                  : Network.liquidMainnet);
+    try {
+      int count = 0;
+      for (final oldWatchOnlyWallet in oldWatchOnlyWallets) {
+        final network =
+            oldWatchOnlyWallet.baseWalletType == OldBaseWalletType.Bitcoin
+                ? (oldWatchOnlyWallet.isTestnet()
+                    ? Network.bitcoinTestnet
+                    : Network.bitcoinMainnet)
+                : (oldWatchOnlyWallet.isTestnet()
+                    ? Network.liquidTestnet
+                    : Network.liquidMainnet);
 
-      final scriptType = switch (oldWatchOnlyWallet.scriptType) {
-        OldScriptType.bip84 => ScriptType.bip84,
-        OldScriptType.bip49 => ScriptType.bip49,
-        OldScriptType.bip44 => ScriptType.bip44,
-      };
+        final scriptType = switch (oldWatchOnlyWallet.scriptType) {
+          OldScriptType.bip84 => ScriptType.bip84,
+          OldScriptType.bip49 => ScriptType.bip49,
+          OldScriptType.bip44 => ScriptType.bip44,
+        };
 
-      final source = switch (oldWatchOnlyWallet.type) {
-        OldBBWalletType.main => WalletSource.mnemonic,
-        OldBBWalletType.coldcard => WalletSource.coldcard,
-        OldBBWalletType.xpub => WalletSource.xpub,
-        OldBBWalletType.words => WalletSource.mnemonic,
-        OldBBWalletType.descriptors => WalletSource.descriptors,
-      };
-      final xpubFromDescriptor = fullKeyFromDescriptor(
-        oldWatchOnlyWallet.internalPublicDescriptor,
-      );
-      if (source == WalletSource.coldcard || source == WalletSource.xpub) {
-        try {
-          await _newWalletRepository.importWatchOnlyWallet(
-            xpub: xpubFromDescriptor,
-            scriptType: scriptType,
-            network: network,
-            label:
-                oldWatchOnlyWallet.name ?? oldWatchOnlyWallet.sourceFingerprint,
-          );
-          count++;
-        } catch (e) {
-          debugPrint('Failed to create watch only wallet: $e');
-          continue;
+        final source = switch (oldWatchOnlyWallet.type) {
+          OldBBWalletType.main => WalletSource.mnemonic,
+          OldBBWalletType.coldcard => WalletSource.coldcard,
+          OldBBWalletType.xpub => WalletSource.xpub,
+          OldBBWalletType.words => WalletSource.mnemonic,
+          OldBBWalletType.descriptors => WalletSource.descriptors,
+        };
+        final xpubFromDescriptor = fullKeyFromDescriptor(
+          oldWatchOnlyWallet.internalPublicDescriptor,
+        );
+        if (source == WalletSource.coldcard || source == WalletSource.xpub) {
+          try {
+            await _newWalletRepository.importWatchOnlyWallet(
+              xpub: xpubFromDescriptor,
+              scriptType: scriptType,
+              network: network,
+              label:
+                  oldWatchOnlyWallet.name ??
+                  oldWatchOnlyWallet.sourceFingerprint,
+            );
+            count++;
+          } catch (e) {
+            _print.log('Failed to create watch only wallet: $e');
+            continue;
+          }
         }
       }
+      return count;
+    } catch (e) {
+      await _print.logToFile(
+        'FAILED: Errored during watch-only wallet migration: $e',
+      );
+      return 0;
     }
-    return count;
   }
 
   Future<List<OldSwapTx>> _getOldOngoingSwaps(OldWallet oldWallet) async {
-    final List<OldSwapTx> ongoingSwaps = [];
+    final ongoingSwaps = <OldSwapTx>[];
+
     final swaps = oldWallet.swaps;
     if (swaps.isNotEmpty) {
       for (final swap in swaps) {
@@ -349,106 +375,113 @@ class MigrateToV5HiveToSqliteToUsecase {
   Future<int> _recoverOldOngoingSwaps(
     List<WalletWithOngoingSwaps> walletWithOngoingSwaps,
   ) async {
-    int count = 0;
-    final allWalletIdMappings = [
-      ...walletWithOngoingSwaps.map((e) => e.walletIdMapping),
-    ];
-    if (allWalletIdMappings.isEmpty) return 0;
-    for (final item in walletWithOngoingSwaps) {
-      // final newWalletId = item.walletId;
-      for (final swap in item.oldOngoingSwaps) {
-        final swapSensitive = await _secureStorage.fetch(
-          key: '${OldStorageKeys.swapTxSensitive.name}_${swap.id}',
-        );
-
-        if (swap.isLiquid() && swap.isLnSwap()) {
-          final swapSensitiveConcrete = OldLnSwapTxSensitive.fromJson(
-            jsonDecode(swapSensitive!) as Map<String, dynamic>,
-          );
-          final sdkSwapClass = swap.toLbtcLnSwap(swapSensitiveConcrete);
-          final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
-          final jsonSwap = await sdkSwapClass.toJson();
-          await _secureStorage.store(key: key, value: jsonSwap);
-          // SwapModel
-          final receiveAddress = swap.claimAddress;
-          await _mainnetSwapRepository.migrateOldSwap(
-            primaryWalletId: item.walletIdMapping.newWalletId,
-            swapId: swap.id,
-            swapType:
-                swap.isReverse()
-                    ? SwapType.lightningToLiquid
-                    : SwapType.liquidToLightning,
-            lockupTxid: swap.lockupTxid,
-            counterWalletId: null,
-            isCounterWalletExternal: null,
-            claimAddress: receiveAddress,
-          );
-          count++;
-        }
-        if (swap.isBitcoin() && swap.isLnSwap()) {
-          final swapSensitiveConcrete = OldLnSwapTxSensitive.fromJson(
-            jsonDecode(swapSensitive!) as Map<String, dynamic>,
-          );
-          final sdkSwapClass = swap.toBtcLnSwap(swapSensitiveConcrete);
-          final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
-          final jsonSwap = await sdkSwapClass.toJson();
-          await _secureStorage.store(key: key, value: jsonSwap);
-          final receiveAddress = swap.claimAddress;
-          await _mainnetSwapRepository.migrateOldSwap(
-            primaryWalletId: item.walletIdMapping.newWalletId,
-            swapId: swap.id,
-            swapType:
-                swap.isReverse()
-                    ? SwapType.lightningToBitcoin
-                    : SwapType.bitcoinToLightning,
-            lockupTxid: swap.lockupTxid,
-            counterWalletId: null,
-            isCounterWalletExternal: null,
-            claimAddress: receiveAddress,
-          );
-          count++;
-        }
-        if (swap.isChainSwap()) {
-          final toWalletIdOld = swap.chainSwapDetails?.toWalletId ?? '';
-
-          final counterWalletIdMapping = allWalletIdMappings.firstWhere(
-            (e) => e.oldWalletId == toWalletIdOld,
-            orElse:
-                () => WalletIdMapping(
-                  oldWalletId: toWalletIdOld,
-                  newWalletId: toWalletIdOld, // we dont' care about this
-                  oldWalletIdIsExternal: true,
-                ), // this is likely an address (swap to external)
+    try {
+      int count = 0;
+      final allWalletIdMappings = [
+        ...walletWithOngoingSwaps.map((e) => e.walletIdMapping),
+      ];
+      if (allWalletIdMappings.isEmpty) return 0;
+      for (final item in walletWithOngoingSwaps) {
+        // final newWalletId = item.walletId;
+        for (final swap in item.oldOngoingSwaps) {
+          final swapSensitive = await _secureStorage.fetch(
+            key: '${OldStorageKeys.swapTxSensitive.name}_${swap.id}',
           );
 
-          final swapSensitiveConcrete = OldChainSwapTxSensitive.fromJson(
-            jsonDecode(swapSensitive!) as Map<String, dynamic>,
-          );
-          final sdkSwapClass = swap.toChainSwap(swapSensitiveConcrete);
-          final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
-          final jsonSwap = await sdkSwapClass.toJson();
-          await _secureStorage.store(key: key, value: jsonSwap);
-          await _mainnetSwapRepository.migrateOldSwap(
-            primaryWalletId: item.walletIdMapping.newWalletId,
-            swapId: swap.id,
-            swapType:
-                swap.chainSwapDetails?.direction ==
-                        boltz.ChainSwapDirection.lbtcToBtc
-                    ? SwapType.liquidToBitcoin
-                    : SwapType.bitcoinToLiquid,
-            lockupTxid: swap.lockupTxid,
-            counterWalletId: counterWalletIdMapping.oldWalletId,
-            isCounterWalletExternal:
-                counterWalletIdMapping.oldWalletIdIsExternal,
-            claimAddress: null,
-          );
+          if (swap.isLiquid() && swap.isLnSwap()) {
+            final swapSensitiveConcrete = OldLnSwapTxSensitive.fromJson(
+              jsonDecode(swapSensitive!) as Map<String, dynamic>,
+            );
+            final sdkSwapClass = swap.toLbtcLnSwap(swapSensitiveConcrete);
+            final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
+            final jsonSwap = await sdkSwapClass.toJson();
+            await _secureStorage.store(key: key, value: jsonSwap);
+            // SwapModel
+            final receiveAddress = swap.claimAddress;
+            await _mainnetSwapRepository.migrateOldSwap(
+              primaryWalletId: item.walletIdMapping.newWalletId,
+              swapId: swap.id,
+              swapType:
+                  swap.isReverse()
+                      ? SwapType.lightningToLiquid
+                      : SwapType.liquidToLightning,
+              lockupTxid: swap.lockupTxid,
+              counterWalletId: null,
+              isCounterWalletExternal: null,
+              claimAddress: receiveAddress,
+            );
+            count++;
+          }
+          if (swap.isBitcoin() && swap.isLnSwap()) {
+            final swapSensitiveConcrete = OldLnSwapTxSensitive.fromJson(
+              jsonDecode(swapSensitive!) as Map<String, dynamic>,
+            );
+            final sdkSwapClass = swap.toBtcLnSwap(swapSensitiveConcrete);
+            final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
+            final jsonSwap = await sdkSwapClass.toJson();
+            await _secureStorage.store(key: key, value: jsonSwap);
+            final receiveAddress = swap.claimAddress;
+            await _mainnetSwapRepository.migrateOldSwap(
+              primaryWalletId: item.walletIdMapping.newWalletId,
+              swapId: swap.id,
+              swapType:
+                  swap.isReverse()
+                      ? SwapType.lightningToBitcoin
+                      : SwapType.bitcoinToLightning,
+              lockupTxid: swap.lockupTxid,
+              counterWalletId: null,
+              isCounterWalletExternal: null,
+              claimAddress: receiveAddress,
+            );
+            count++;
+          }
+          if (swap.isChainSwap()) {
+            final toWalletIdOld = swap.chainSwapDetails?.toWalletId ?? '';
 
-          count++;
+            final counterWalletIdMapping = allWalletIdMappings.firstWhere(
+              (e) => e.oldWalletId == toWalletIdOld,
+              orElse:
+                  () => WalletIdMapping(
+                    oldWalletId: toWalletIdOld,
+                    newWalletId: toWalletIdOld, // we dont' care about this
+                    oldWalletIdIsExternal: true,
+                  ), // this is likely an address (swap to external)
+            );
+
+            final swapSensitiveConcrete = OldChainSwapTxSensitive.fromJson(
+              jsonDecode(swapSensitive!) as Map<String, dynamic>,
+            );
+            final sdkSwapClass = swap.toChainSwap(swapSensitiveConcrete);
+            final key = '${SecureStorageKeyPrefixConstants.swap}${swap.id}';
+            final jsonSwap = await sdkSwapClass.toJson();
+            await _secureStorage.store(key: key, value: jsonSwap);
+            await _mainnetSwapRepository.migrateOldSwap(
+              primaryWalletId: item.walletIdMapping.newWalletId,
+              swapId: swap.id,
+              swapType:
+                  swap.chainSwapDetails?.direction ==
+                          boltz.ChainSwapDirection.lbtcToBtc
+                      ? SwapType.liquidToBitcoin
+                      : SwapType.bitcoinToLiquid,
+              lockupTxid: swap.lockupTxid,
+              counterWalletId: counterWalletIdMapping.oldWalletId,
+              isCounterWalletExternal:
+                  counterWalletIdMapping.oldWalletIdIsExternal,
+              claimAddress: null,
+            );
+
+            count++;
+          }
         }
       }
-    }
 
-    return count;
+      return count;
+    } catch (e) {
+      await _print.logToFile(
+        'FAILED: Errored during ongoing swap migration: $e',
+      );
+      return 0;
+    }
   }
 }
 
