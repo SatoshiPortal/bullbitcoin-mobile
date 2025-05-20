@@ -35,25 +35,24 @@ Future<void> doMigration0_1to0_2() async {
   final List<OldWallet> wallets = [];
 
   OldSeed? liquidMainnetSeed;
-  OldSeed? liquidTestnetSeed;
-
+  bool isDefault = true;
   for (final walletId in walletIds) {
     final jsn = hiveDatasource.getValue(walletId as String);
     if (jsn == null) throw 'Abort';
 
     Map<String, dynamic> walletObj = jsonDecode(jsn) as Map<String, dynamic>;
 
-    // Change 1: for each wallet with type as newSeed, change it to secure
-    // Change 2: add BaseWalletType as Bitcoin
     final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
 
     final seed = await oldSeedRepository.fetch(
       fingerprint: mnemonicFingerprint,
     );
-    final res = await updateWalletObj(walletObj, seed);
+    final res = await updateWalletObj(walletObj, seed, isDefault);
     liquidMainnetSeed ??= res.liquidMainnetSeed;
-    liquidTestnetSeed ??= res.liquidTestnetSeed;
     walletObj = res.walletObj;
+    if (liquidMainnetSeed != null) {
+      isDefault = false;
+    }
 
     // Change 3: add isLiquid to all Txns, Addresses
     walletObj = await addIsLiquid(walletObj);
@@ -66,12 +65,9 @@ Future<void> doMigration0_1to0_2() async {
     throw 'Could not create liquid mainnet wallet. Abort.';
   }
   // Change 4: create a new Liquid wallet, based on the Bitcoin wallet
-  final liqWallets = await createLiquidWallet(
-    liquidMainnetSeed,
-    liquidTestnetSeed,
-  );
+  final liqWallet = await createLiquidWallet(liquidMainnetSeed);
 
-  wallets.addAll(liqWallets);
+  wallets.addAll([liqWallet]);
 
   final mainWalletIdx = wallets.indexWhere(
     (w) => !w.isTestnet() && w.isSecure(),
@@ -115,19 +111,13 @@ Future<void> doMigration0_1to0_2() async {
   );
 }
 
-Future<
-  ({
-    OldSeed? liquidMainnetSeed,
-    OldSeed? liquidTestnetSeed,
-    Map<String, dynamic> walletObj,
-  })
->
-updateWalletObj(Map<String, dynamic> walletObj, OldSeed seed) async {
+Future<({OldSeed? liquidMainnetSeed, Map<String, dynamic> walletObj})>
+updateWalletObj(
+  Map<String, dynamic> walletObj,
+  OldSeed seed,
+  bool isDefault,
+) async {
   OldSeed? liquidMainnetSeed;
-  OldSeed? liquidTestnetSeed;
-
-  int mainWalletIndex = 0;
-  int testWalletIndex = 0;
 
   // TODO: Test this assumption
   // Assuming first wallet is to be changed to secure and further wallets to words
@@ -135,30 +125,15 @@ updateWalletObj(Map<String, dynamic> walletObj, OldSeed seed) async {
   // `words` --> Wallet recovered by user
   if (walletObj['type'] == 'newSeed' || walletObj['type'] == 'words') {
     if (walletObj['network'] == 'Mainnet') {
-      if (mainWalletIndex == 0) {
+      if (isDefault) {
         walletObj['type'] = 'main';
         walletObj['name'] = 'Secure Bitcoin Wallet';
         walletObj['mainWallet'] = true;
-        mainWalletIndex++;
 
         liquidMainnetSeed = seed;
-        mainWalletIndex++;
       } else if (walletObj['type'] == 'newSeed') {
         walletObj['type'] = 'words';
-        mainWalletIndex++;
-      }
-    } else if (walletObj['network'] == 'Testnet') {
-      if (testWalletIndex == 0) {
-        walletObj['type'] = 'main';
-        walletObj['name'] = 'Secure Bitcoin Wallet';
-        walletObj['mainWallet'] = true;
-        testWalletIndex++;
-
-        liquidTestnetSeed = seed;
-        testWalletIndex++;
-      } else if (walletObj['type'] == 'newSeed') {
-        walletObj['type'] = 'words';
-        testWalletIndex++;
+        walletObj['mainWallet'] = false;
       }
     }
 
@@ -168,14 +143,8 @@ updateWalletObj(Map<String, dynamic> walletObj, OldSeed seed) async {
   }
   walletObj.addAll({'baseWalletType': 'Bitcoin'});
 
-  final ({
-    OldSeed? liquidMainnetSeed,
-    OldSeed? liquidTestnetSeed,
-    Map<String, dynamic> walletObj,
-  })
-  res = (
+  final ({OldSeed? liquidMainnetSeed, Map<String, dynamic> walletObj}) res = (
     liquidMainnetSeed: liquidMainnetSeed,
-    liquidTestnetSeed: liquidTestnetSeed,
     walletObj: walletObj,
   );
 
@@ -208,81 +177,40 @@ Future<Map<String, dynamic>> addIsLiquid(Map<String, dynamic> walletObj) async {
   return walletObj;
 }
 
-Future<List<OldWallet>> createLiquidWallet(
-  OldSeed? liquidMainnetSeed,
-  OldSeed? liquidTestnetSeed,
-) async {
+Future<OldWallet> createLiquidWallet(OldSeed liquidMainnetSeed) async {
   // create liquid wallet from lwk
-  final List<OldWallet> oldWallets = [];
 
-  if (liquidMainnetSeed != null) {
-    final mnemonic = liquidMainnetSeed.mnemonic;
-    final descriptor = lwk.Descriptor.newConfidential(
-      mnemonic: mnemonic,
-      network: lwk.Network.mainnet,
-    );
-    // Generate wallet ID
-    final walletId = createDescriptorHashId(
-      descriptor.toString(),
-      OldBBNetwork.Mainnet,
-    );
-    // Create wallet object
-    final walletObj = <String, dynamic>{
-      'id': walletId,
-      'name': 'Instant Payment Wallet',
-      'type': 'main',
-      'network': 'Mainnet',
-      'mnemonicFingerprint': liquidMainnetSeed.mnemonicFingerprint,
-      'sourceFingerprint': liquidMainnetSeed.mnemonicFingerprint,
-      'baseWalletType': 'Liquid',
-      'scriptType': OldScriptType.bip84.name,
-      'externalDescriptor': descriptor,
-      'internalDescriptor': descriptor,
-      'mainWallet': true,
-      'transactions': [],
-      'myAddressBook': [],
-      'externalAddressBook': [],
-      'changeAddressIndex': 0,
-      'receiveAddressIndex': 0,
-    };
+  final mnemonic = liquidMainnetSeed.mnemonic;
+  final descriptor = await lwk.Descriptor.newConfidential(
+    mnemonic: mnemonic,
+    network: lwk.Network.mainnet,
+  );
+  // Generate wallet ID
+  final walletId = createDescriptorHashId(
+    descriptor.ctDescriptor,
+    OldBBNetwork.Mainnet,
+  );
+  // Create wallet object
+  final walletObj = <String, dynamic>{
+    'id': walletId,
+    'name': 'Instant Payment Wallet',
+    'type': 'main',
+    'network': OldBBNetwork.Mainnet.name,
+    'mnemonicFingerprint': liquidMainnetSeed.mnemonicFingerprint,
+    'sourceFingerprint': liquidMainnetSeed.mnemonicFingerprint,
+    'baseWalletType': 'Liquid',
+    'scriptType': OldScriptType.bip84.name,
+    'externalDescriptor': descriptor.ctDescriptor,
+    'internalDescriptor': descriptor.ctDescriptor,
+    'mainWallet': true,
+    'transactions': [],
+    'myAddressBook': [],
+    'externalAddressBook': [],
+    'changeAddressIndex': 0,
+    'receiveAddressIndex': 0,
+  };
 
-    oldWallets.add(OldWallet.fromJson(walletObj));
-  }
-  if (liquidTestnetSeed != null) {
-    final mnemonic = liquidTestnetSeed.mnemonic;
-    final descriptor = lwk.Descriptor.newConfidential(
-      mnemonic: mnemonic,
-      network: lwk.Network.testnet,
-    );
-    // Generate wallet ID
-    final walletId = createDescriptorHashId(
-      descriptor.toString(),
-      OldBBNetwork.Testnet,
-    );
-    // Create wallet object
-    final walletObj = <String, dynamic>{
-      'id': walletId,
-      'name': 'Instant Payment Wallet',
-      'type': 'main',
-      'network': 'Testnet',
-      'mnemonicFingerprint': liquidTestnetSeed.mnemonicFingerprint,
-      'sourceFingerprint': liquidTestnetSeed.mnemonicFingerprint,
-      'baseWalletType': 'Liquid',
-      'scriptType': OldScriptType.bip84.toString(),
-      'externalDescriptor': descriptor,
-      'internalDescriptor': descriptor,
-      'mainWallet': true,
-      'transactions': [],
-      'myAddressBook': [],
-      'externalAddressBook': [],
-      'changeAddressIndex': 0,
-      'receiveAddressIndex': 0,
-    };
-
-    oldWallets.add(OldWallet.fromJson(walletObj));
-  }
-
-  return oldWallets;
+  return OldWallet.fromJson(walletObj);
 }
 
 String createDescriptorHashId(String descriptor, OldBBNetwork network) {
