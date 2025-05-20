@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/features/recover_wallet/presentation/bloc/recover_wallet_bloc.dart';
 import 'package:bb_mobile/features/recover_wallet/ui/widgets/mnemonic_word_input_field.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -8,23 +11,42 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class RecoverPhysicalWalletInputScreen extends StatelessWidget {
+class RecoverPhysicalWalletInputScreen extends StatefulWidget {
   const RecoverPhysicalWalletInputScreen({super.key});
 
   @override
+  State<RecoverPhysicalWalletInputScreen> createState() =>
+      _RecoverPhysicalWalletInputScreenState();
+}
+
+class _RecoverPhysicalWalletInputScreenState
+    extends State<RecoverPhysicalWalletInputScreen>
+    with PrivacyScreen {
+  @override
+  void dispose() {
+    unawaited(disableScreenPrivacy());
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: TopBar(
-          title: 'Recover Wallet',
-          onBack: () {
-            context.pop();
-          },
-        ),
-        automaticallyImplyLeading: false,
-        forceMaterialTransparency: true,
-      ),
-      body: const _Screen(),
+    return FutureBuilder(
+      future: enableScreenPrivacy(),
+      builder: (context, snapshot) {
+        return Scaffold(
+          appBar: AppBar(
+            flexibleSpace: TopBar(
+              title: 'Recover Wallet',
+              onBack: () {
+                context.pop();
+              },
+            ),
+            automaticallyImplyLeading: false,
+            forceMaterialTransparency: true,
+          ),
+          body: const _Screen(),
+        );
+      },
     );
   }
 }

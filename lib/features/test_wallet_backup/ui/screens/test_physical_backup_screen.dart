@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/mixins/privacy_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -11,55 +14,74 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class TestPhysicalBackupFlow extends StatelessWidget {
+class TestPhysicalBackupFlow extends StatefulWidget {
   const TestPhysicalBackupFlow();
 
   @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(
-          value:
-              locator<TestWalletBackupBloc>()
-                ..add(const LoadSeedForVerification()),
-        ),
-      ],
-      child: BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
-        listener: (context, state) {
-          if (state.status == TestWalletBackupStatus.error) {
-          } else if (state.status == TestWalletBackupStatus.success &&
-              state.testMnemonicOrder.isNotEmpty) {
-            context.goNamed(TestWalletBackupSubroute.backupTestSuccess.name);
-          }
-        },
-        child: Builder(
-          builder: (context) {
-            final isVerifying = context.select(
-              (TestWalletBackupBloc bloc) =>
-                  bloc.state.status == TestWalletBackupStatus.verifying,
-            );
+  State<TestPhysicalBackupFlow> createState() => _TestPhysicalBackupFlowState();
+}
 
-            return Scaffold(
-              backgroundColor: context.colour.onSecondary,
-              appBar: AppBar(
-                forceMaterialTransparency: true,
-                automaticallyImplyLeading: false,
-                flexibleSpace: TopBar(
-                  onBack: () => context.pop(),
-                  title: 'Test Backup',
-                ),
-              ),
-              body: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child:
-                    !isVerifying
-                        ? const TestPhysicalBackupScreen()
-                        : const ShuffledMnemonicScreen(),
-              ),
-            );
-          },
-        ),
-      ),
+class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
+    with PrivacyScreen {
+  @override
+  void dispose() {
+    unawaited(disableScreenPrivacy());
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: enableScreenPrivacy(),
+      builder: (context, snapshot) {
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider.value(
+              value:
+                  locator<TestWalletBackupBloc>()
+                    ..add(const LoadSeedForVerification()),
+            ),
+          ],
+          child: BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
+            listener: (context, state) {
+              if (state.status == TestWalletBackupStatus.error) {
+              } else if (state.status == TestWalletBackupStatus.success &&
+                  state.testMnemonicOrder.isNotEmpty) {
+                context.goNamed(
+                  TestWalletBackupSubroute.backupTestSuccess.name,
+                );
+              }
+            },
+            child: Builder(
+              builder: (context) {
+                final isVerifying = context.select(
+                  (TestWalletBackupBloc bloc) =>
+                      bloc.state.status == TestWalletBackupStatus.verifying,
+                );
+
+                return Scaffold(
+                  backgroundColor: context.colour.onSecondary,
+                  appBar: AppBar(
+                    forceMaterialTransparency: true,
+                    automaticallyImplyLeading: false,
+                    flexibleSpace: TopBar(
+                      onBack: () => context.pop(),
+                      title: 'Test Backup',
+                    ),
+                  ),
+                  body: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child:
+                        !isVerifying
+                            ? const TestPhysicalBackupScreen()
+                            : const ShuffledMnemonicScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }
