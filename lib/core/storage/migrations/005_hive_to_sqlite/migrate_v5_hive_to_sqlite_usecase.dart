@@ -156,6 +156,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         final oldSeed = await _oldSeedRepository.fetch(
           fingerprint: oldWallet.mnemonicFingerprint,
         );
+        if (oldSeed == null) continue;
         if (oldWallet.hasPassphrase()) {
           final oldPassphrase = oldSeed.getPassphraseFromIndex(
             oldWallet.sourceFingerprint,

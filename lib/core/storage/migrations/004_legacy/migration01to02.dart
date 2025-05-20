@@ -12,102 +12,108 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_hiv
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/secure_storage_datasource.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:crypto/crypto.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
 Future<void> doMigration0_1to0_2() async {
-  final secureStorageDatasource = MigrationSecureStorageDatasource();
-  final hiveDatasource = locator<OldHiveDatasource>();
+  final print = locator<Logger>();
 
-  final oldSeedRepository = OldSeedRepository(secureStorageDatasource);
+  try {
+    final secureStorageDatasource = MigrationSecureStorageDatasource();
+    final hiveDatasource = locator<OldHiveDatasource>();
+    final oldSeedRepository = OldSeedRepository(secureStorageDatasource);
 
-  final walletIdsRaw = hiveDatasource.getValue(OldStorageKeys.wallets.name);
-  if (walletIdsRaw == null) throw 'No Wallets found';
+    final walletIdsRaw = hiveDatasource.getValue(OldStorageKeys.wallets.name);
+    if (walletIdsRaw == null) throw 'No Wallets found';
 
-  final walletIds = jsonDecode(walletIdsRaw)['wallets'] as List<dynamic>;
-  if (walletIds.isEmpty) throw 'No Wallets found';
+    final walletIds = jsonDecode(walletIdsRaw)['wallets'] as List<dynamic>;
+    if (walletIds.isEmpty) throw 'No Wallets found';
 
-  final List<OldWallet> wallets = [];
+    final List<OldWallet> wallets = [];
 
-  OldSeed? liquidMainnetSeed;
-  bool isDefault = true;
-  for (final walletId in walletIds) {
-    final jsn = hiveDatasource.getValue(walletId as String);
-    if (jsn == null) throw 'Abort';
+    OldSeed? liquidMainnetSeed;
+    bool isDefault = true;
+    for (final walletId in walletIds) {
+      final jsn = hiveDatasource.getValue(walletId as String);
+      if (jsn == null) throw 'Abort';
 
-    Map<String, dynamic> walletObj = jsonDecode(jsn) as Map<String, dynamic>;
+      Map<String, dynamic> walletObj = jsonDecode(jsn) as Map<String, dynamic>;
 
-    final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
+      final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
 
-    final seed = await oldSeedRepository.fetch(
-      fingerprint: mnemonicFingerprint,
+      final seed = await oldSeedRepository.fetch(
+        fingerprint: mnemonicFingerprint,
+      );
+      final res = await updateWalletObj(walletObj, seed, isDefault);
+      liquidMainnetSeed ??= res.liquidMainnetSeed;
+      walletObj = res.walletObj;
+      if (liquidMainnetSeed != null) {
+        isDefault = false;
+      }
+
+      walletObj = await addIsLiquid(walletObj);
+
+      final w = OldWallet.fromJson(walletObj);
+      wallets.add(w);
+    }
+
+    if (liquidMainnetSeed == null) {
+      throw 'Could not create liquid mainnet wallet. Abort.';
+    }
+    final liqWallet = await createLiquidWallet(liquidMainnetSeed);
+
+    wallets.addAll([liqWallet]);
+
+    final mainWalletIdx = wallets.indexWhere(
+      (w) => !w.isTestnet() && w.isSecure(),
     );
-    final res = await updateWalletObj(walletObj, seed, isDefault);
-    liquidMainnetSeed ??= res.liquidMainnetSeed;
-    walletObj = res.walletObj;
-    if (liquidMainnetSeed != null) {
-      isDefault = false;
+
+    final liqMainnetIdx = wallets.indexWhere(
+      (w) => !w.isTestnet() && w.isInstant(),
+    );
+
+    if (mainWalletIdx != -1 && liqMainnetIdx != -1) {
+      if (wallets.length > 2) {
+        final tempMain = wallets[mainWalletIdx];
+        final tempLiq = wallets[liqMainnetIdx];
+        wallets.removeAt(mainWalletIdx);
+        wallets.removeAt(liqMainnetIdx - 1);
+        wallets.insert(0, tempLiq);
+        wallets.insert(1, tempMain);
+      }
     }
 
-    walletObj = await addIsLiquid(walletObj);
-
-    final w = OldWallet.fromJson(walletObj);
-    wallets.add(w);
-  }
-
-  if (liquidMainnetSeed == null) {
-    throw 'Could not create liquid mainnet wallet. Abort.';
-  }
-  final liqWallet = await createLiquidWallet(liquidMainnetSeed);
-
-  wallets.addAll([liqWallet]);
-
-  final mainWalletIdx = wallets.indexWhere(
-    (w) => !w.isTestnet() && w.isSecure(),
-  );
-
-  final liqMainnetIdx = wallets.indexWhere(
-    (w) => !w.isTestnet() && w.isInstant(),
-  );
-
-  if (mainWalletIdx != -1 && liqMainnetIdx != -1) {
-    if (wallets.length > 2) {
-      final tempMain = wallets[mainWalletIdx];
-      final tempLiq = wallets[liqMainnetIdx];
-      wallets.removeAt(mainWalletIdx);
-      wallets.removeAt(liqMainnetIdx - 1);
-      wallets.insert(0, tempLiq);
-      wallets.insert(1, tempMain);
+    final walletObjs = wallets.map((w) => w.toJson()).toList();
+    final List<String> ids = [];
+    for (final w in walletObjs) {
+      final id = w['id'] as String;
+      ids.add(id);
+      final _ = await hiveDatasource.saveValue(key: id, value: jsonEncode(w));
     }
+
+    final idsJsn = jsonEncode({
+      'wallets': [...ids],
+    });
+    final _ = await hiveDatasource.saveValue(
+      key: OldStorageKeys.wallets.name,
+      value: idsJsn,
+    );
+
+    await secureStorageDatasource.store(
+      key: OldStorageKeys.version.name,
+      value: '0.2.0',
+    ); // gets overwritten by the exact 0.2.* version later}
+  } catch (e) {
+    print.log('Legacy Migration Failed: $e');
   }
-
-  final walletObjs = wallets.map((w) => w.toJson()).toList();
-  final List<String> ids = [];
-  for (final w in walletObjs) {
-    final id = w['id'] as String;
-    ids.add(id);
-    final _ = await hiveDatasource.saveValue(key: id, value: jsonEncode(w));
-  }
-
-  final idsJsn = jsonEncode({
-    'wallets': [...ids],
-  });
-  final _ = await hiveDatasource.saveValue(
-    key: OldStorageKeys.wallets.name,
-    value: idsJsn,
-  );
-
-  await secureStorageDatasource.store(
-    key: OldStorageKeys.version.name,
-    value: '0.2.0',
-  ); // gets overwritten by the exact 0.2.* version later
 }
 
 Future<({OldSeed? liquidMainnetSeed, Map<String, dynamic> walletObj})>
 updateWalletObj(
   Map<String, dynamic> walletObj,
-  OldSeed seed,
+  OldSeed? seed,
   bool isDefault,
 ) async {
   OldSeed? liquidMainnetSeed;
