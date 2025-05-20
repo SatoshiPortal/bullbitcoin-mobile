@@ -14,6 +14,7 @@ import 'package:bb_mobile/settings/bloc/broadcasttx_state.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:convert/convert.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -69,17 +70,30 @@ class BroadcastTxCubit extends Cubit<BroadcastTxState> {
     emit(state.copyWith(tx: tx));
   }
 
-  void scanQRClicked() async {
+  Future<void> scanQR(BuildContext context) async {
     await clearErrors();
-    emit(state.copyWith(loadingFile: true, errLoadingFile: ''));
-    final (file, err) = await _barcode.scan();
+    emit(state.copyWith(
+      loadingFile: true,
+      errLoadingFile: '',
+    ));
+
+    final (file, err) = await _barcode.scan(context);
     if (err != null) {
-      emit(state.copyWith(loadingFile: false, errLoadingFile: err.toString()));
+      emit(state.copyWith(
+        loadingFile: false,
+        errLoadingFile: err.toString(),
+      ));
+      return;
+    }
+    if (file == null) {
+      emit(state.copyWith(loadingFile: false));
       return;
     }
 
-    final tx = file!;
-    emit(state.copyWith(loadingFile: false, tx: tx));
+    emit(state.copyWith(
+      loadingFile: false,
+      tx: file,
+    ));
   }
 
   void uploadFileClicked() async {

@@ -49,7 +49,9 @@ mixin _$SendState {
   bool get onChainSweep => throw _privateConstructorUsedError;
   bool get oneWallet => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SendStateCopyWith<SendState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -104,6 +106,8 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -257,6 +261,8 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     ) as $Val);
   }
 
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $InvoiceCopyWith<$Res>? get invoice {
@@ -269,6 +275,8 @@ class _$SendStateCopyWithImpl<$Res, $Val extends SendState>
     });
   }
 
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $TransactionCopyWith<$Res>? get tx {
@@ -335,6 +343,8 @@ class __$$SendStateImplCopyWithImpl<$Res>
       _$SendStateImpl _value, $Res Function(_$SendStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -716,7 +726,9 @@ class _$SendStateImpl extends _SendState {
         oneWallet
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>
@@ -777,8 +789,8 @@ abstract class _SendState extends SendState {
   @override
   bool get scanningAddress;
   @override
-  String get errScanningAddress;
-  @override // @Default(false) bool showDropdown,
+  String get errScanningAddress; // @Default(false) bool showDropdown,
+  @override
   bool get sending;
   @override
   String get errSending;
@@ -787,9 +799,9 @@ abstract class _SendState extends SendState {
   @override
   String get psbt;
   @override
-  Transaction? get tx;
-  @override // @Default(false) bool txSettled,
+  Transaction? get tx; // @Default(false) bool txSettled,
 // @Default(false) bool txPaid,
+  @override
   bool get downloadingFile;
   @override
   String get errDownloadingFile;
@@ -815,8 +827,11 @@ abstract class _SendState extends SendState {
   bool get onChainSweep;
   @override
   bool get oneWallet;
+
+  /// Create a copy of SendState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SendStateImplCopyWith<_$SendStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

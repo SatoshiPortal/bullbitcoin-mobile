@@ -49,8 +49,12 @@ mixin _$Wallet {
   bool get mainWallet => throw _privateConstructorUsedError;
   BaseWalletType get baseWalletType => throw _privateConstructorUsedError;
 
+  /// Serializes this Wallet to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Wallet
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $WalletCopyWith<Wallet> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -101,6 +105,8 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Wallet
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -239,6 +245,8 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     ) as $Val);
   }
 
+  /// Create a copy of Wallet
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $BalanceCopyWith<$Res>? get fullBalance {
@@ -251,6 +259,8 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
     });
   }
 
+  /// Create a copy of Wallet
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $AddressCopyWith<$Res>? get lastGeneratedAddress {
@@ -313,6 +323,8 @@ class __$$WalletImplCopyWithImpl<$Res>
       _$WalletImpl _value, $Res Function(_$WalletImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Wallet
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -659,7 +671,7 @@ class _$WalletImpl extends _Wallet {
                 other.baseWalletType == baseWalletType));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
@@ -691,7 +703,9 @@ class _$WalletImpl extends _Wallet {
         baseWalletType
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Wallet
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$WalletImplCopyWith<_$WalletImpl> get copyWith =>
@@ -778,9 +792,9 @@ abstract class _Wallet extends Wallet {
   @override
   int get revKeyIndex;
   @override
-  int get subKeyIndex;
-  @override // List<String>? labelTags,
+  int get subKeyIndex; // List<String>? labelTags,
 // List<Bip329Label>? bip329Labels,
+  @override
   bool get backupTested;
   @override
   DateTime? get lastBackupTested;
@@ -790,8 +804,11 @@ abstract class _Wallet extends Wallet {
   bool get mainWallet;
   @override
   BaseWalletType get baseWalletType;
+
+  /// Create a copy of Wallet
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$WalletImplCopyWith<_$WalletImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -809,8 +826,12 @@ mixin _$Balance {
   int get spendable => throw _privateConstructorUsedError;
   int get total => throw _privateConstructorUsedError;
 
+  /// Serializes this Balance to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Balance
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $BalanceCopyWith<Balance> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -838,6 +859,8 @@ class _$BalanceCopyWithImpl<$Res, $Val extends Balance>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Balance
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -901,6 +924,8 @@ class __$$BalanceImplCopyWithImpl<$Res>
       _$BalanceImpl _value, $Res Function(_$BalanceImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Balance
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -991,12 +1016,14 @@ class _$BalanceImpl extends _Balance {
             (identical(other.total, total) || other.total == total));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, immature, trustedPending,
       untrustedPending, confirmed, spendable, total);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Balance
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$BalanceImplCopyWith<_$BalanceImpl> get copyWith =>
@@ -1034,8 +1061,11 @@ abstract class _Balance extends Balance {
   int get spendable;
   @override
   int get total;
+
+  /// Create a copy of Balance
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$BalanceImplCopyWith<_$BalanceImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

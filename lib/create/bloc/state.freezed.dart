@@ -38,7 +38,9 @@ mixin _$CreateWalletState {
   List<Wallet>? get savedWallets => throw _privateConstructorUsedError;
   bool get mainWallet => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of CreateWalletState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $CreateWalletStateCopyWith<CreateWalletState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -73,6 +75,8 @@ class _$CreateWalletStateCopyWithImpl<$Res, $Val extends CreateWalletState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of CreateWalletState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -167,6 +171,8 @@ class __$$CreateWalletStateImplCopyWithImpl<$Res>
       $Res Function(_$CreateWalletStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of CreateWalletState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -358,7 +364,9 @@ class _$CreateWalletStateImpl extends _CreateWalletState {
       const DeepCollectionEquality().hash(_savedWallets),
       mainWallet);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of CreateWalletState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$CreateWalletStateImplCopyWith<_$CreateWalletStateImpl> get copyWith =>
@@ -381,21 +389,21 @@ abstract class _CreateWalletState extends CreateWalletState {
       final bool mainWallet}) = _$CreateWalletStateImpl;
   const _CreateWalletState._() : super._();
 
-  @override
-  /**
+/**
      * 
      * SENSITIVE
      * 
      */
+  @override
   List<String>? get mnemonic;
   @override
   String get passPhrase;
-  @override
   /**
      * 
      * SENSITIVE
      * 
      */
+  @override
   bool get isInstant;
   @override
   bool get creatingNmemonic;
@@ -413,8 +421,11 @@ abstract class _CreateWalletState extends CreateWalletState {
   List<Wallet>? get savedWallets;
   @override
   bool get mainWallet;
+
+  /// Create a copy of CreateWalletState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CreateWalletStateImplCopyWith<_$CreateWalletStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

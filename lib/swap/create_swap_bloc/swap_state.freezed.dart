@@ -30,7 +30,9 @@ mixin _$SwapState {
   ReverseFeesAndLimits? get reverseFees => throw _privateConstructorUsedError;
   String? get errAllFees => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SwapState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SwapStateCopyWith<SwapState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -67,6 +69,8 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SwapState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -120,6 +124,8 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
     ) as $Val);
   }
 
+  /// Create a copy of SwapState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $SwapTxCopyWith<$Res>? get swapTx {
@@ -132,6 +138,8 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
     });
   }
 
+  /// Create a copy of SwapState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $FeesCopyWith<$Res>? get allFees {
@@ -144,6 +152,8 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
     });
   }
 
+  /// Create a copy of SwapState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $SubmarineFeesAndLimitsCopyWith<$Res>? get submarineFees {
@@ -157,6 +167,8 @@ class _$SwapStateCopyWithImpl<$Res, $Val extends SwapState>
     });
   }
 
+  /// Create a copy of SwapState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ReverseFeesAndLimitsCopyWith<$Res>? get reverseFees {
@@ -207,6 +219,8 @@ class __$$SwapStateImplCopyWithImpl<$Res>
       _$SwapStateImpl _value, $Res Function(_$SwapStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SwapState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -344,7 +358,9 @@ class _$SwapStateImpl extends _SwapState {
       reverseFees,
       errAllFees);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SwapState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SwapStateImplCopyWith<_$SwapStateImpl> get copyWith =>
@@ -364,27 +380,31 @@ abstract class _SwapState extends SwapState {
       final String? errAllFees}) = _$SwapStateImpl;
   const _SwapState._() : super._();
 
-  @override // @Default(false) bool creatingInvoice,
+// @Default(false) bool creatingInvoice,
 // @Default('') String errCreatingInvoice,
+  @override
   String get errCreatingSwapInv;
   @override
   bool get generatingSwapInv;
   @override
-  SwapTx? get swapTx;
-  @override // Invoice? invoice,
+  SwapTx? get swapTx; // Invoice? invoice,
+  @override
   bool get errSmallAmt;
   @override
-  double? get errHighFees;
-  @override // Wallet? updatedWallet,
-  Fees? get allFees;
-  @override // TODO: Obsolete
+  double? get errHighFees; // Wallet? updatedWallet,
+  @override
+  Fees? get allFees; // TODO: Obsolete
+  @override
   SubmarineFeesAndLimits? get submarineFees;
   @override
   ReverseFeesAndLimits? get reverseFees;
   @override
   String? get errAllFees;
+
+  /// Create a copy of SwapState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SwapStateImplCopyWith<_$SwapStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

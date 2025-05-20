@@ -336,7 +336,9 @@ class _AddressFieldState extends State<AddressField> {
                 icon: const FaIcon(FontAwesomeIcons.paste),
               ),
               IconButton(
-                onPressed: context.read<SendCubit>().scanAddress,
+                onPressed: () {
+                  context.read<SendCubit>().scanAddress(context);
+                },
                 icon: FaIcon(
                   FontAwesomeIcons.barcode,
                   color: context.colour.onPrimaryContainer,

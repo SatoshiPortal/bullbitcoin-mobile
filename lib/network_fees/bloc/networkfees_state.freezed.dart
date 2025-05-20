@@ -30,8 +30,12 @@ mixin _$NetworkFeesState {
   bool get showOnlyFastest => throw _privateConstructorUsedError;
   String get errLoadingFees => throw _privateConstructorUsedError;
 
+  /// Serializes this NetworkFeesState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of NetworkFeesState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $NetworkFeesStateCopyWith<NetworkFeesState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -64,6 +68,8 @@ class _$NetworkFeesStateCopyWithImpl<$Res, $Val extends NetworkFeesState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of NetworkFeesState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -146,6 +152,8 @@ class __$$NetworkFeesStateImplCopyWithImpl<$Res>
       $Res Function(_$NetworkFeesStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of NetworkFeesState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -279,7 +287,7 @@ class _$NetworkFeesStateImpl extends _NetworkFeesState {
                 other.errLoadingFees == errLoadingFees));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -293,7 +301,9 @@ class _$NetworkFeesStateImpl extends _NetworkFeesState {
       showOnlyFastest,
       errLoadingFees);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of NetworkFeesState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$NetworkFeesStateImplCopyWith<_$NetworkFeesStateImpl> get copyWith =>
@@ -342,8 +352,11 @@ abstract class _NetworkFeesState extends NetworkFeesState {
   bool get showOnlyFastest;
   @override
   String get errLoadingFees;
+
+  /// Create a copy of NetworkFeesState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$NetworkFeesStateImplCopyWith<_$NetworkFeesStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

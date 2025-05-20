@@ -30,7 +30,9 @@ mixin _$TransactionState {
   String get errSendingTx => throw _privateConstructorUsedError;
   bool get sentTx => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of TransactionState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $TransactionStateCopyWith<TransactionState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -69,6 +71,8 @@ class _$TransactionStateCopyWithImpl<$Res, $Val extends TransactionState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of TransactionState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -137,6 +141,8 @@ class _$TransactionStateCopyWithImpl<$Res, $Val extends TransactionState>
     ) as $Val);
   }
 
+  /// Create a copy of TransactionState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $TransactionCopyWith<$Res> get tx {
@@ -145,6 +151,8 @@ class _$TransactionStateCopyWithImpl<$Res, $Val extends TransactionState>
     });
   }
 
+  /// Create a copy of TransactionState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $TransactionCopyWith<$Res>? get updatedTx {
@@ -194,6 +202,8 @@ class __$$TransactionStateImplCopyWithImpl<$Res>
       $Res Function(_$TransactionStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of TransactionState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -367,7 +377,9 @@ class _$TransactionStateImpl extends _TransactionState {
       errSendingTx,
       sentTx);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of TransactionState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$TransactionStateImplCopyWith<_$TransactionStateImpl> get copyWith =>
@@ -402,10 +414,10 @@ abstract class _TransactionState extends TransactionState {
   @override
   bool get savingLabel;
   @override
-  String get errSavingLabel;
-  @override //
-  Transaction? get updatedTx;
-  @override // int? feeRate,
+  String get errSavingLabel; //
+  @override
+  Transaction? get updatedTx; // int? feeRate,
+  @override
   bool get buildingTx;
   @override
   String get errBuildingTx;
@@ -415,8 +427,11 @@ abstract class _TransactionState extends TransactionState {
   String get errSendingTx;
   @override
   bool get sentTx;
+
+  /// Create a copy of TransactionState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$TransactionStateImplCopyWith<_$TransactionStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -25,8 +25,12 @@ mixin _$Seed {
   BBNetwork get network => throw _privateConstructorUsedError;
   List<Passphrase> get passphrases => throw _privateConstructorUsedError;
 
+  /// Serializes this Seed to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Seed
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SeedCopyWith<Seed> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -52,6 +56,8 @@ class _$SeedCopyWithImpl<$Res, $Val extends Seed>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Seed
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -102,6 +108,8 @@ class __$$SeedImplCopyWithImpl<$Res>
   __$$SeedImplCopyWithImpl(_$SeedImpl _value, $Res Function(_$SeedImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Seed
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -180,12 +188,14 @@ class _$SeedImpl extends _Seed {
                 .equals(other._passphrases, _passphrases));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, mnemonic, mnemonicFingerprint,
       network, const DeepCollectionEquality().hash(_passphrases));
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Seed
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SeedImplCopyWith<_$SeedImpl> get copyWith =>
@@ -217,8 +227,11 @@ abstract class _Seed extends Seed {
   BBNetwork get network;
   @override
   List<Passphrase> get passphrases;
+
+  /// Create a copy of Seed
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SeedImplCopyWith<_$SeedImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -232,8 +245,12 @@ mixin _$Passphrase {
   String get passphrase => throw _privateConstructorUsedError;
   String get sourceFingerprint => throw _privateConstructorUsedError;
 
+  /// Serializes this Passphrase to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Passphrase
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $PassphraseCopyWith<Passphrase> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -257,6 +274,8 @@ class _$PassphraseCopyWithImpl<$Res, $Val extends Passphrase>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Passphrase
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -295,6 +314,8 @@ class __$$PassphraseImplCopyWithImpl<$Res>
       _$PassphraseImpl _value, $Res Function(_$PassphraseImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Passphrase
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -346,11 +367,13 @@ class _$PassphraseImpl extends _Passphrase {
                 other.sourceFingerprint == sourceFingerprint));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, passphrase, sourceFingerprint);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Passphrase
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$PassphraseImplCopyWith<_$PassphraseImpl> get copyWith =>
@@ -377,8 +400,11 @@ abstract class _Passphrase extends Passphrase {
   String get passphrase;
   @override
   String get sourceFingerprint;
+
+  /// Create a copy of Passphrase
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$PassphraseImplCopyWith<_$PassphraseImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

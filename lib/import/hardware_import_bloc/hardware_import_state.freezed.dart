@@ -30,7 +30,9 @@ mixin _$HardwareImportState {
   String get errLabel => throw _privateConstructorUsedError;
   bool get savedWallet => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of HardwareImportState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $HardwareImportStateCopyWith<HardwareImportState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -70,6 +72,8 @@ class _$HardwareImportStateCopyWithImpl<$Res, $Val extends HardwareImportState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of HardwareImportState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -143,6 +147,8 @@ class _$HardwareImportStateCopyWithImpl<$Res, $Val extends HardwareImportState>
     ) as $Val);
   }
 
+  /// Create a copy of HardwareImportState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $WalletCopyWith<$Res>? get tempWallet {
@@ -155,6 +161,8 @@ class _$HardwareImportStateCopyWithImpl<$Res, $Val extends HardwareImportState>
     });
   }
 
+  /// Create a copy of HardwareImportState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ColdCardCopyWith<$Res>? get tempColdCard {
@@ -205,6 +213,8 @@ class __$$HardwareImportStateImplCopyWithImpl<$Res>
       $Res Function(_$HardwareImportStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of HardwareImportState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -399,7 +409,9 @@ class _$HardwareImportStateImpl extends _HardwareImportState {
       errLabel,
       savedWallet);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of HardwareImportState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$HardwareImportStateImplCopyWith<_$HardwareImportStateImpl> get copyWith =>
@@ -435,8 +447,8 @@ abstract class _HardwareImportState extends HardwareImportState {
   @override
   List<Wallet>? get walletDetails;
   @override
-  ColdCard? get tempColdCard;
-  @override //
+  ColdCard? get tempColdCard; //
+  @override
   bool get scanningInput;
   @override
   String get errScanningInput;
@@ -450,8 +462,11 @@ abstract class _HardwareImportState extends HardwareImportState {
   String get errLabel;
   @override
   bool get savedWallet;
+
+  /// Create a copy of HardwareImportState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$HardwareImportStateImplCopyWith<_$HardwareImportStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

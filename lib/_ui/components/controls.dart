@@ -1,75 +1,51 @@
 import 'package:bb_mobile/_ui/components/text.dart';
 import 'package:bb_mobile/settings/bloc/lighting_cubit.dart';
 import 'package:bb_mobile/styles.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class BBSwitcher<T> extends StatelessWidget {
+class BBSwitcher<T extends Object> extends StatelessWidget {
   const BBSwitcher({
     super.key,
+    required this.value,
     required this.items,
     required this.onChanged,
-    required this.value,
   });
 
+  final T value;
   final Map<T, String> items;
   final void Function(T) onChanged;
-  final T value;
-
-  Widget _buildItem(String title, {bool darkMode = false}) {
-    return SizedBox(
-      height: 40,
-      width: 120,
-      child: Center(
-        child: BBText.bodySmall(
-          title,
-          isBold: true,
-          onSurface: darkMode,
-          fontSize: 14,
-        ),
-      ),
-    );
-  }
-
-  Map<T, Widget> _buildItems(bool darkMode) {
-    final map = <T, Widget>{};
-    for (final key in items.keys) {
-      map[key] = _buildItem(items[key]!, darkMode: darkMode);
-    }
-    return map;
-  }
 
   @override
   Widget build(BuildContext context) {
-    final darkMode = context.select(
-      (Lighting x) => x.state.currentTheme(context) == ThemeMode.dark,
-    );
-
-    final colour =
-        darkMode ? context.colour.primaryContainer : context.colour.surface;
-
-    final borderColour =
-        darkMode ? context.colour.onPrimaryContainer : context.colour.onSurface;
-
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(
-          Radius.circular(8.0),
-        ),
-        border: Border.all(color: borderColour),
-      ),
-      child: CupertinoSlidingSegmentedControl(
-        groupValue: value,
-        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 4),
-        children: _buildItems(darkMode),
-        backgroundColor: colour,
-        onValueChanged: (v) {
-          if (v == null) return;
-          onChanged.call(v);
-        },
-      ),
+    return Row(
+      children: [
+        for (final item in items.entries)
+          Expanded(
+            child: GestureDetector(
+              onTap: () => onChanged(item.key),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: value == item.key
+                      ? context.colour.primary
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  item.value,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: value == item.key
+                        ? context.colour.onPrimary
+                        : context.colour.onBackground,
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

@@ -68,7 +68,7 @@ class ImportXpubScreen extends StatelessWidget {
             label: 'Scan QR code',
             center: true,
             onPressed: () {
-              context.read<ImportWalletCubit>().scanQRClicked();
+              context.read<ImportWalletCubit>().scanQR(context);
             },
           ),
           // const Gap(300),
@@ -341,7 +341,7 @@ class AdvancedOptions extends StatelessWidget {
                 color: context.colour.onPrimaryContainer,
               ),
               onPressed: () {
-                context.read<ImportWalletCubit>().scanQRClicked();
+                context.read<ImportWalletCubit>().scanQR(context);
               },
             ),
             hint: 'Paste or scan xpub',
@@ -461,12 +461,12 @@ class ColdCardLogo extends StatelessWidget {
 const steps = '''
 1. Unlock device
 2. Select menu on top-left corner
-3. Select “Multisig Wallet"
+3. Select "Multisig Wallet"
 4. Select ellipsis on top-right corner
-5. Select “Import from QR Code"
+5. Select "Import from QR Code"
 6. Use Bull Bitcoin to scan QR code
 ''';
 
-const desc = 'Import a hardware wallet or any external Bitcoin wallet.'; 
-    
-    // You will be able to monitor your balance and transactions, receive Bitcoin and create unsigned Bitcoin transactions (PSBT).';
+const desc = 'Import a hardware wallet or any external Bitcoin wallet.';
+
+// You will be able to monitor your balance and transactions, receive Bitcoin and create unsigned Bitcoin transactions (PSBT).';

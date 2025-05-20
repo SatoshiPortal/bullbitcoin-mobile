@@ -356,7 +356,7 @@ class ScanButton extends StatelessWidget {
       label: 'Scan QR code',
       center: true,
       onPressed: () {
-        context.read<HardwareImportCubit>().scanQRClicked();
+        context.read<HardwareImportCubit>().scanQR(context);
       },
     );
   }

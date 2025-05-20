@@ -28,7 +28,9 @@ mixin _$WatchTxsState {
   List<String> get refundingSwapTxIds => throw _privateConstructorUsedError;
   SwapTx? get updatedSwapTx => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of WatchTxsState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $WatchTxsStateCopyWith<WatchTxsState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -65,6 +67,8 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of WatchTxsState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -128,6 +132,8 @@ class _$WatchTxsStateCopyWithImpl<$Res, $Val extends WatchTxsState>
     ) as $Val);
   }
 
+  /// Create a copy of WatchTxsState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $SwapTxCopyWith<$Res>? get updatedSwapTx {
@@ -174,6 +180,8 @@ class __$$WatchTxsStateImplCopyWithImpl<$Res>
       _$WatchTxsStateImpl _value, $Res Function(_$WatchTxsStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of WatchTxsState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -374,7 +382,9 @@ class _$WatchTxsStateImpl extends _WatchTxsState {
       const DeepCollectionEquality().hash(_refundingSwapTxIds),
       updatedSwapTx);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of WatchTxsState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$WatchTxsStateImplCopyWith<_$WatchTxsStateImpl> get copyWith =>
@@ -418,8 +428,11 @@ abstract class _WatchTxsState extends WatchTxsState {
   List<String> get refundingSwapTxIds;
   @override
   SwapTx? get updatedSwapTx;
+
+  /// Create a copy of WatchTxsState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$WatchTxsStateImplCopyWith<_$WatchTxsStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

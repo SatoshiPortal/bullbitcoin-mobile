@@ -24,8 +24,12 @@ mixin _$Currency {
   double? get price => throw _privateConstructorUsedError;
   String get shortName => throw _privateConstructorUsedError;
 
+  /// Serializes this Currency to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Currency
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $CurrencyCopyWith<Currency> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -48,6 +52,8 @@ class _$CurrencyCopyWithImpl<$Res, $Val extends Currency>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Currency
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -91,6 +97,8 @@ class __$$CurrencyImplCopyWithImpl<$Res>
       _$CurrencyImpl _value, $Res Function(_$CurrencyImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Currency
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -148,11 +156,13 @@ class _$CurrencyImpl extends _Currency {
                 other.shortName == shortName));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, name, price, shortName);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Currency
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$CurrencyImplCopyWith<_$CurrencyImpl> get copyWith =>
@@ -182,8 +192,11 @@ abstract class _Currency extends Currency {
   double? get price;
   @override
   String get shortName;
+
+  /// Create a copy of Currency
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CurrencyImplCopyWith<_$CurrencyImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

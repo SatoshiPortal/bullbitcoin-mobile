@@ -26,8 +26,12 @@ mixin _$Bip329Label {
   String? get origin => throw _privateConstructorUsedError;
   bool? get spendable => throw _privateConstructorUsedError;
 
+  /// Serializes this Bip329Label to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Bip329Label
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $Bip329LabelCopyWith<Bip329Label> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -56,6 +60,8 @@ class _$Bip329LabelCopyWithImpl<$Res, $Val extends Bip329Label>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Bip329Label
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -114,6 +120,8 @@ class __$$Bip329LabelImplCopyWithImpl<$Res>
       _$Bip329LabelImpl _value, $Res Function(_$Bip329LabelImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Bip329Label
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -191,12 +199,14 @@ class _$Bip329LabelImpl extends _Bip329Label {
                 other.spendable == spendable));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, type, ref, label, origin, spendable);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Bip329Label
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$Bip329LabelImplCopyWith<_$Bip329LabelImpl> get copyWith =>
@@ -232,8 +242,11 @@ abstract class _Bip329Label extends Bip329Label {
   String? get origin;
   @override
   bool? get spendable;
+
+  /// Create a copy of Bip329Label
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$Bip329LabelImplCopyWith<_$Bip329LabelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

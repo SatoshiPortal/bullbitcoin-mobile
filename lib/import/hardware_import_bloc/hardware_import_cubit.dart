@@ -10,6 +10,7 @@ import 'package:bb_mobile/_pkg/wallet/repository/storage.dart';
 import 'package:bb_mobile/_pkg/wallet/testable_wallets.dart';
 import 'package:bb_mobile/import/hardware_import_bloc/hardware_import_state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HardwareImportCubit extends Cubit<HardwareImportState> {
@@ -48,14 +49,19 @@ class HardwareImportCubit extends Cubit<HardwareImportState> {
     _processInput();
   }
 
-  void scanQRClicked() async {
-    final (res, err) = await _barcode.scan();
+  Future<void> scanQR(BuildContext context) async {
+    emit(state.copyWith(
+      errScanningInput: '',
+    ));
+
+    final (res, err) = await _barcode.scan(context);
     if (err != null) {
       emit(state.copyWith(errScanningInput: err.toString()));
       return;
     }
+    if (res == null) return;
 
-    emit(state.copyWith(inputText: res!));
+    emit(state.copyWith(inputText: res));
     _processInput();
   }
 

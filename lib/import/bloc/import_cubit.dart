@@ -18,6 +18,7 @@ import 'package:bb_mobile/_pkg/wallet/utils.dart';
 import 'package:bb_mobile/import/bloc/import_state.dart';
 import 'package:bb_mobile/network/bloc/network_cubit.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ImportWalletCubit extends Cubit<ImportState> {
@@ -161,23 +162,31 @@ class ImportWalletCubit extends Cubit<ImportState> {
     );
   }
 
-  void scanQRClicked() async {
-    emit(state.copyWith(loadingFile: true));
-    final (res, err) = await _barcode.scan();
+  Future<void> scanQR(BuildContext context) async {
+    emit(state.copyWith(
+      loadingFile: true,
+      errImporting: '',
+    ));
+
+    final (res, err) = await _barcode.scan(context);
     if (err != null) {
-      emit(
-        state.copyWith(
-          errImporting: err.toString(),
-          loadingFile: false,
-        ),
-      );
+      emit(state.copyWith(
+        errImporting: err.toString(),
+        loadingFile: false,
+      ));
+      return;
+    }
+    if (res == null) {
+      emit(state.copyWith(loadingFile: false));
       return;
     }
 
-    if (state.importStep == ImportSteps.importXpub)
-      emit(state.copyWith(xpub: res!));
-
-    emit(state.copyWith(loadingFile: false));
+    if (state.importStep == ImportSteps.importXpub) {
+      emit(state.copyWith(
+        xpub: res,
+        loadingFile: false,
+      ));
+    }
   }
 
   void wordChanged(int idx, String text, bool tapped) {

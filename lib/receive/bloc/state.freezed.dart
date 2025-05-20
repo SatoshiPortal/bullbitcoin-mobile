@@ -37,7 +37,9 @@ mixin _$ReceiveState {
   bool get receiveFormSubmitted => throw _privateConstructorUsedError;
   bool get oneWallet => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ReceiveStateCopyWith<ReceiveState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -83,6 +85,8 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -186,6 +190,8 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     ) as $Val);
   }
 
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $AddressCopyWith<$Res>? get defaultAddress {
@@ -198,6 +204,8 @@ class _$ReceiveStateCopyWithImpl<$Res, $Val extends ReceiveState>
     });
   }
 
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $AddressCopyWith<$Res>? get defaultLiquidAddress {
@@ -254,6 +262,8 @@ class __$$ReceiveStateImplCopyWithImpl<$Res>
       _$ReceiveStateImpl _value, $Res Function(_$ReceiveStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -512,7 +522,9 @@ class _$ReceiveStateImpl extends _ReceiveState {
         oneWallet
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>
@@ -549,8 +561,8 @@ abstract class _ReceiveState extends ReceiveState {
   @override
   Address? get defaultAddress;
   @override
-  Address? get defaultLiquidAddress;
-  @override // @Default('') String privateLabel,
+  Address? get defaultLiquidAddress; // @Default('') String privateLabel,
+  @override
   bool get savingLabel;
   @override
   String get errSavingLabel;
@@ -580,8 +592,11 @@ abstract class _ReceiveState extends ReceiveState {
   bool get receiveFormSubmitted;
   @override
   bool get oneWallet;
+
+  /// Create a copy of ReceiveState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ReceiveStateImplCopyWith<_$ReceiveStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

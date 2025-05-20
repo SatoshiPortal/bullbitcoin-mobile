@@ -22,7 +22,9 @@ mixin _$SwapHistoryState {
   String get errRefreshing => throw _privateConstructorUsedError;
   bool get updateSwaps => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SwapHistoryState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SwapHistoryStateCopyWith<SwapHistoryState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -51,6 +53,8 @@ class _$SwapHistoryStateCopyWithImpl<$Res, $Val extends SwapHistoryState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SwapHistoryState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -109,6 +113,8 @@ class __$$SwapHistoryStateImplCopyWithImpl<$Res>
       $Res Function(_$SwapHistoryStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SwapHistoryState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -221,7 +227,9 @@ class _$SwapHistoryStateImpl extends _SwapHistoryState {
       errRefreshing,
       updateSwaps);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SwapHistoryState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SwapHistoryStateImplCopyWith<_$SwapHistoryStateImpl> get copyWith =>
@@ -248,8 +256,11 @@ abstract class _SwapHistoryState extends SwapHistoryState {
   String get errRefreshing;
   @override
   bool get updateSwaps;
+
+  /// Create a copy of SwapHistoryState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SwapHistoryStateImplCopyWith<_$SwapHistoryStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

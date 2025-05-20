@@ -20,17 +20,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
+@immutable
 class SwapConfirmationPage extends StatefulWidget {
-  SwapConfirmationPage({
+  const SwapConfirmationPage({
     super.key,
-    this.fromWalletId,
+    String? fromWalletId,
     required this.send,
     required this.swap,
-  });
+  }) : fromWalletId = fromWalletId ?? '';
 
-  String? fromWalletId;
-  SendCubit send;
-  CreateSwapCubit swap;
+  final String fromWalletId;
+  final SendCubit send;
+  final CreateSwapCubit swap;
 
   @override
   State<SwapConfirmationPage> createState() => _SwapConfirmationPageState();
@@ -81,10 +82,13 @@ class _SwapConfirmationPageState extends State<SwapConfirmationPage> {
   }
 }
 
+@immutable
 class _Screen extends StatelessWidget {
-  _Screen({this.fromWalletId});
-
-  String? fromWalletId;
+  const _Screen({
+    super.key,
+    required this.fromWalletId,
+  });
+  final String fromWalletId;
 
   @override
   Widget build(BuildContext context) {

@@ -56,7 +56,9 @@ mixin _$ImportState {
   ColdCard? get coldCard => throw _privateConstructorUsedError;
   bool get mainWallet => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ImportStateCopyWith<ImportState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -107,6 +109,8 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -240,6 +244,8 @@ class _$ImportStateCopyWithImpl<$Res, $Val extends ImportState>
     ) as $Val);
   }
 
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ColdCardCopyWith<$Res>? get coldCard {
@@ -300,6 +306,8 @@ class __$$ImportStateImplCopyWithImpl<$Res>
       _$ImportStateImpl _value, $Res Function(_$ImportStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -666,7 +674,9 @@ class _$ImportStateImpl extends _ImportState {
         mainWallet
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ImportStateImplCopyWith<_$ImportStateImpl> get copyWith =>
@@ -702,23 +712,23 @@ abstract class _ImportState extends ImportState {
       final bool mainWallet}) = _$ImportStateImpl;
   const _ImportState._() : super._();
 
-  @override
-  /**
+/**
      * 
      * SENSITIVE
      * 
      */
+  @override
   List<({bool tapped, String word})> get words12;
   @override
   List<({bool tapped, String word})> get words24;
   @override
   String get passPhrase;
-  @override
   /**
      * 
      * SENSITIVE
      * 
      */
+  @override
   String get xpub;
   @override
   String get tempXpub;
@@ -762,8 +772,11 @@ abstract class _ImportState extends ImportState {
   ColdCard? get coldCard;
   @override
   bool get mainWallet;
+
+  /// Create a copy of ImportState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ImportStateImplCopyWith<_$ImportStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

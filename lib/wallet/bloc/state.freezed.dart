@@ -37,7 +37,9 @@ mixin _$WalletState {
       throw _privateConstructorUsedError; // Address? newAddress,
   Address? get firstAddress => throw _privateConstructorUsedError;
 
-  @JsonKey(ignore: true)
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $WalletStateCopyWith<WalletState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -80,6 +82,8 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -168,6 +172,8 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
     ) as $Val);
   }
 
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $WalletCopyWith<$Res>? get wallet {
@@ -180,6 +186,8 @@ class _$WalletStateCopyWithImpl<$Res, $Val extends WalletState>
     });
   }
 
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $AddressCopyWith<$Res>? get firstAddress {
@@ -233,6 +241,8 @@ class __$$WalletStateImplCopyWithImpl<$Res>
       _$WalletStateImpl _value, $Res Function(_$WalletStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -456,7 +466,9 @@ class _$WalletStateImpl extends _WalletState {
       syncErrCount,
       firstAddress);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$WalletStateImplCopyWith<_$WalletStateImpl> get copyWith =>
@@ -484,10 +496,10 @@ abstract class _WalletState extends WalletState {
   const _WalletState._() : super._();
 
   @override
-  Wallet? get wallet;
-  @override // bdk.Wallet? bdkWallet,
+  Wallet? get wallet; // bdk.Wallet? bdkWallet,
 // List<Transaction>? txs,
 // Balance? balance,
+  @override
   String get name;
   @override
   bool get loadingWallet;
@@ -514,11 +526,14 @@ abstract class _WalletState extends WalletState {
   @override
   String get errSavingName;
   @override
-  int get syncErrCount;
-  @override // Address? newAddress,
-  Address? get firstAddress;
+  int get syncErrCount; // Address? newAddress,
   @override
-  @JsonKey(ignore: true)
+  Address? get firstAddress;
+
+  /// Create a copy of WalletState
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$WalletStateImplCopyWith<_$WalletStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

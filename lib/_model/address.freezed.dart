@@ -34,8 +34,12 @@ mixin _$Address {
   int get balance => throw _privateConstructorUsedError;
   bool get isLiquid => throw _privateConstructorUsedError;
 
+  /// Serializes this Address to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Address
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $AddressCopyWith<Address> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -68,6 +72,8 @@ class _$AddressCopyWithImpl<$Res, $Val extends Address>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Address
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -161,6 +167,8 @@ class __$$AddressImplCopyWithImpl<$Res>
       _$AddressImpl _value, $Res Function(_$AddressImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Address
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -303,7 +311,7 @@ class _$AddressImpl extends _Address {
                 other.isLiquid == isLiquid));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -319,7 +327,9 @@ class _$AddressImpl extends _Address {
       balance,
       isLiquid);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Address
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$AddressImplCopyWith<_$AddressImpl> get copyWith =>
@@ -351,11 +361,12 @@ abstract class _Address extends Address {
   factory _Address.fromJson(Map<String, dynamic> json) = _$AddressImpl.fromJson;
 
   @override
-  String get address;
-  @override // for btc, this holds regular address; for liquid, this hold confidential address
+  String
+      get address; // for btc, this holds regular address; for liquid, this hold confidential address
 // String? confidential, // For liquid // not used now // remove this
-  String? get standard;
-  @override // For liquid
+  @override
+  String? get standard; // For liquid
+  @override
   int? get index;
   @override
   AddressKind get kind;
@@ -373,8 +384,11 @@ abstract class _Address extends Address {
   int get balance;
   @override
   bool get isLiquid;
+
+  /// Create a copy of Address
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AddressImplCopyWith<_$AddressImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -393,8 +407,12 @@ mixin _$UTXO {
   Address get address => throw _privateConstructorUsedError;
   bool get spendable => throw _privateConstructorUsedError;
 
+  /// Serializes this UTXO to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of UTXO
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $UTXOCopyWith<UTXO> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -425,6 +443,8 @@ class _$UTXOCopyWithImpl<$Res, $Val extends UTXO>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of UTXO
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -468,6 +488,8 @@ class _$UTXOCopyWithImpl<$Res, $Val extends UTXO>
     ) as $Val);
   }
 
+  /// Create a copy of UTXO
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $AddressCopyWith<$Res> get address {
@@ -504,6 +526,8 @@ class __$$UTXOImplCopyWithImpl<$Res>
   __$$UTXOImplCopyWithImpl(_$UTXOImpl _value, $Res Function(_$UTXOImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of UTXO
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -594,12 +618,14 @@ class _$UTXOImpl extends _UTXO {
                 other.spendable == spendable));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType, txid, txIndex, isSpent, value, label, address, spendable);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of UTXO
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$UTXOImplCopyWith<_$UTXOImpl> get copyWith =>
@@ -640,8 +666,11 @@ abstract class _UTXO extends UTXO {
   Address get address;
   @override
   bool get spendable;
+
+  /// Create a copy of UTXO
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$UTXOImplCopyWith<_$UTXOImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

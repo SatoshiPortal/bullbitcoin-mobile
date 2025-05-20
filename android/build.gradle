@@ -1,38 +1,45 @@
-buildscript {
-    ext.kotlin_version = '1.7.10'
-    repositories {
-        google()
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
 rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
 subprojects {
     afterEvaluate { project ->
         if (project.plugins.hasPlugin("com.android.application") ||
-                project.plugins.hasPlugin("com.android.library")) {
+            project.plugins.hasPlugin("com.android.library")) {
             project.android {
-                compileSdkVersion 34
+                compileSdk = 34
                 buildToolsVersion "34.0.0"
             }
         }
+        if (project.hasProperty('android')) {
+            project.android {
+                // Required for subprojects that have not adapted to requiring a namespace
+                if (namespace == null) {
+                    namespace project.group
+                }
+            }
+        }
     }
-}                   
+}
+
+// Force subprojects to compile Java/Kotlin to Java 21:
+subprojects {
+    afterEvaluate { project ->
+        project.plugins.withId("org.jetbrains.kotlin.android") {
+            project.android {
+                compileOptions {
+                    sourceCompatibility JavaVersion.VERSION_21
+                    targetCompatibility JavaVersion.VERSION_21
+                }
+                kotlinOptions {
+                    jvmTarget = "21"
+                }
+            }
+        }
+    }
+}
+
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

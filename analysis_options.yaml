@@ -25,12 +25,18 @@ linter:
     avoid_dynamic_calls: false
     non_constant_identifier_names: false
     no_wildcard_variable_uses: false
+    constant_identifier_names: false
+    unnecessary_async: false
+    unused_local_variable: false
+    dead_null_aware_expression: false
     
 
 
 analyzer:
   errors:
     deprecated_member_use: ignore
+    unused_element: ignore
+    unused_field: ignore
   # enable-experiment:
       # - inline-class
   #   - records

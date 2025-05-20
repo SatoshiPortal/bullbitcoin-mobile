@@ -25,3 +25,21 @@ doc/api/
 
 op/config/.env
 op/builds
+
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+coverage/
+*.log
+*.iml
+*.iws
+.idea/
+.vscode/
+*.class
+*.pyc
+*.swp
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/

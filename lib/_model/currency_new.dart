@@ -21,6 +21,10 @@ class CurrencyNew with _$CurrencyNew {
 
   factory CurrencyNew.fromJson(Map<String, dynamic> json) =>
       _$CurrencyNewFromJson(json);
+
+  String get displayName => name;
+
+  String get symbol => code;
 }
 
 int calcualteSats(double price, CurrencyNew currency) {

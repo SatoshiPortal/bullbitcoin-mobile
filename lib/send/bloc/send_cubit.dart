@@ -19,6 +19,7 @@ import 'package:bb_mobile/swap/create_swap_bloc/swap_cubit.dart';
 import 'package:bb_mobile/wallet/bloc/event.dart';
 import 'package:bb_mobile/wallet/bloc/wallet_bloc.dart';
 import 'package:boltz_dart/boltz_dart.dart' as boltz;
+import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -55,11 +56,9 @@ class SendCubit extends Cubit<SendState> {
     emit(
       state.copyWith(
         disableRBF: !defaultRBF,
-        // selectedWalletBloc: walletBloc,
       ),
     );
 
-    if (openScanner) scanAddress();
     if (walletBloc != null) selectWallets(fromStart: true);
   }
 
@@ -499,25 +498,22 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
-  void scanAddress() async {
-    emit(state.copyWith(scanningAddress: true));
-    final (address, err) = await _barcode.scan();
+  Future<void> scanAddress(BuildContext context) async {
+    emit(state.copyWith(
+      scanningAddress: true,
+      errScanningAddress: '',
+    ));
+
+    final (address, err) = await _barcode.scan(context);
     if (err != null) {
-      emit(
-        state.copyWith(
-          errScanningAddress: err.toString(),
-          scanningAddress: false,
-        ),
-      );
+      emit(state.copyWith(
+        errScanningAddress: err.toString(),
+        scanningAddress: false,
+      ));
       return;
     }
 
     updateAddress(address);
-    emit(
-      state.copyWith(
-        scanningAddress: false,
-      ),
-    );
   }
 
   void updateAddressError(String err) =>

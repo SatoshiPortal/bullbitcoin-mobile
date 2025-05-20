@@ -41,8 +41,12 @@ mixin _$NetworkState {
       throw _privateConstructorUsedError;
   bool get goToSettings => throw _privateConstructorUsedError;
 
+  /// Serializes this NetworkState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of NetworkState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $NetworkStateCopyWith<NetworkState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -84,6 +88,8 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of NetworkState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -167,6 +173,8 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
     ) as $Val);
   }
 
+  /// Create a copy of NetworkState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ElectrumNetworkCopyWith<$Res>? get tempNetworkDetails {
@@ -179,6 +187,8 @@ class _$NetworkStateCopyWithImpl<$Res, $Val extends NetworkState>
     });
   }
 
+  /// Create a copy of NetworkState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $LiquidElectrumNetworkCopyWith<$Res>? get tempLiquidNetworkDetails {
@@ -232,6 +242,8 @@ class __$$NetworkStateImplCopyWithImpl<$Res>
       _$NetworkStateImpl _value, $Res Function(_$NetworkStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of NetworkState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -438,7 +450,7 @@ class _$NetworkStateImpl extends _NetworkState {
                 other.goToSettings == goToSettings));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -458,7 +470,9 @@ class _$NetworkStateImpl extends _NetworkState {
       tempLiquidNetworkDetails,
       goToSettings);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of NetworkState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$NetworkStateImplCopyWith<_$NetworkStateImpl> get copyWith =>
@@ -513,8 +527,8 @@ abstract class _NetworkState extends NetworkState {
   @override
   bool get networkConnected;
   @override
-  bool get networkErrorOpened;
-  @override // @Default(20) int stopGap,
+  bool get networkErrorOpened; // @Default(20) int stopGap,
+  @override
   ElectrumTypes? get tempNetwork;
   @override
   ElectrumNetwork? get tempNetworkDetails;
@@ -524,8 +538,11 @@ abstract class _NetworkState extends NetworkState {
   LiquidElectrumNetwork? get tempLiquidNetworkDetails;
   @override
   bool get goToSettings;
+
+  /// Create a copy of NetworkState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$NetworkStateImplCopyWith<_$NetworkStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

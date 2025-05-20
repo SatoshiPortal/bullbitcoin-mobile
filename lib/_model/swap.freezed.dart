@@ -42,8 +42,12 @@ mixin _$ChainSwapDetails {
   String get lbtcScriptReceiverPublicKey => throw _privateConstructorUsedError;
   String get toWalletId => throw _privateConstructorUsedError;
 
+  /// Serializes this ChainSwapDetails to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ChainSwapDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ChainSwapDetailsCopyWith<ChainSwapDetails> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -87,6 +91,8 @@ class _$ChainSwapDetailsCopyWithImpl<$Res, $Val extends ChainSwapDetails>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ChainSwapDetails
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -235,6 +241,8 @@ class __$$ChainSwapDetailsImplCopyWithImpl<$Res>
       $Res Function(_$ChainSwapDetailsImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ChainSwapDetails
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -505,7 +513,7 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
                 other.toWalletId == toWalletId));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
@@ -531,7 +539,9 @@ class _$ChainSwapDetailsImpl extends _ChainSwapDetails
         toWalletId
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChainSwapDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ChainSwapDetailsImplCopyWith<_$ChainSwapDetailsImpl> get copyWith =>
@@ -598,8 +608,8 @@ abstract class _ChainSwapDetails extends ChainSwapDetails {
   @override
   String get lbtcElectrumUrl;
   @override
-  String get blindingKey;
-  @override //TODO:onchain sensitive
+  String get blindingKey; //TODO:onchain sensitive
+  @override
   String get btcFundingAddress;
   @override
   String get btcScriptSenderPublicKey;
@@ -613,8 +623,11 @@ abstract class _ChainSwapDetails extends ChainSwapDetails {
   String get lbtcScriptReceiverPublicKey;
   @override
   String get toWalletId;
+
+  /// Create a copy of ChainSwapDetails
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ChainSwapDetailsImplCopyWith<_$ChainSwapDetailsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -636,8 +649,12 @@ mixin _$LnSwapDetails {
   String? get hash160 => throw _privateConstructorUsedError;
   String? get blindingKey => throw _privateConstructorUsedError;
 
+  /// Serializes this LnSwapDetails to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of LnSwapDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $LnSwapDetailsCopyWith<LnSwapDetails> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -671,6 +688,8 @@ class _$LnSwapDetailsCopyWithImpl<$Res, $Val extends LnSwapDetails>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of LnSwapDetails
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -759,6 +778,8 @@ class __$$LnSwapDetailsImplCopyWithImpl<$Res>
       _$LnSwapDetailsImpl _value, $Res Function(_$LnSwapDetailsImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of LnSwapDetails
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -904,7 +925,7 @@ class _$LnSwapDetailsImpl extends _LnSwapDetails with DiagnosticableTreeMixin {
                 other.blindingKey == blindingKey));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -919,7 +940,9 @@ class _$LnSwapDetailsImpl extends _LnSwapDetails with DiagnosticableTreeMixin {
       hash160,
       blindingKey);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of LnSwapDetails
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$LnSwapDetailsImplCopyWith<_$LnSwapDetailsImpl> get copyWith =>
@@ -970,8 +993,11 @@ abstract class _LnSwapDetails extends LnSwapDetails {
   String? get hash160;
   @override
   String? get blindingKey;
+
+  /// Create a copy of LnSwapDetails
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$LnSwapDetailsImplCopyWith<_$LnSwapDetailsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1005,8 +1031,12 @@ mixin _$SwapTx {
   DateTime? get creationTime => throw _privateConstructorUsedError;
   DateTime? get completionTime => throw _privateConstructorUsedError;
 
+  /// Serializes this SwapTx to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of SwapTx
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $SwapTxCopyWith<SwapTx> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -1051,6 +1081,8 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of SwapTx
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1154,6 +1186,8 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     ) as $Val);
   }
 
+  /// Create a copy of SwapTx
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ChainSwapDetailsCopyWith<$Res>? get chainSwapDetails {
@@ -1166,6 +1200,8 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     });
   }
 
+  /// Create a copy of SwapTx
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $LnSwapDetailsCopyWith<$Res>? get lnSwapDetails {
@@ -1178,6 +1214,8 @@ class _$SwapTxCopyWithImpl<$Res, $Val extends SwapTx>
     });
   }
 
+  /// Create a copy of SwapTx
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $SwapStreamStatusCopyWith<$Res>? get status {
@@ -1235,6 +1273,8 @@ class __$$SwapTxImplCopyWithImpl<$Res>
       _$SwapTxImpl _value, $Res Function(_$SwapTxImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of SwapTx
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1481,7 +1521,7 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
                 other.completionTime == completionTime));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
@@ -1506,7 +1546,9 @@ class _$SwapTxImpl extends _SwapTx with DiagnosticableTreeMixin {
         completionTime
       ]);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of SwapTx
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$SwapTxImplCopyWith<_$SwapTxImpl> get copyWith =>
@@ -1562,14 +1604,14 @@ abstract class _SwapTx extends SwapTx {
   @override
   LnSwapDetails? get lnSwapDetails;
   @override
-  String? get claimTxid;
-  @override // reverse + chain.self
-  String? get lockupTxid;
-  @override // submarine + chain.sendSwap + chain.sendSwap
+  String? get claimTxid; // reverse + chain.self
+  @override
+  String? get lockupTxid; // submarine + chain.sendSwap + chain.sendSwap
+  @override
   String? get label;
   @override
-  SwapStreamStatus? get status;
-  @override // should this be SwapStaus?
+  SwapStreamStatus? get status; // should this be SwapStaus?
+  @override
   int? get boltzFees;
   @override
   int? get lockupFees;
@@ -1583,8 +1625,11 @@ abstract class _SwapTx extends SwapTx {
   DateTime? get creationTime;
   @override
   DateTime? get completionTime;
+
+  /// Create a copy of SwapTx
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SwapTxImplCopyWith<_$SwapTxImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1607,8 +1652,12 @@ mixin _$LnSwapTxSensitive {
   int? get locktime => throw _privateConstructorUsedError;
   String? get blindingKey => throw _privateConstructorUsedError;
 
+  /// Serializes this LnSwapTxSensitive to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of LnSwapTxSensitive
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $LnSwapTxSensitiveCopyWith<LnSwapTxSensitive> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1643,6 +1692,8 @@ class _$LnSwapTxSensitiveCopyWithImpl<$Res, $Val extends LnSwapTxSensitive>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of LnSwapTxSensitive
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1737,6 +1788,8 @@ class __$$LnSwapTxSensitiveImplCopyWithImpl<$Res>
       $Res Function(_$LnSwapTxSensitiveImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of LnSwapTxSensitive
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -1894,7 +1947,7 @@ class _$LnSwapTxSensitiveImpl extends _LnSwapTxSensitive
                 other.blindingKey == blindingKey));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -1910,7 +1963,9 @@ class _$LnSwapTxSensitiveImpl extends _LnSwapTxSensitive
       locktime,
       blindingKey);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of LnSwapTxSensitive
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$LnSwapTxSensitiveImplCopyWith<_$LnSwapTxSensitiveImpl> get copyWith =>
@@ -1965,8 +2020,11 @@ abstract class _LnSwapTxSensitive extends LnSwapTxSensitive {
   int? get locktime;
   @override
   String? get blindingKey;
+
+  /// Create a copy of LnSwapTxSensitive
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$LnSwapTxSensitiveImplCopyWith<_$LnSwapTxSensitiveImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -1985,8 +2043,12 @@ mixin _$ChainSwapTxSensitive {
   String get hash160 => throw _privateConstructorUsedError;
   String get blindingKey => throw _privateConstructorUsedError;
 
+  /// Serializes this ChainSwapTxSensitive to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ChainSwapTxSensitive
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ChainSwapTxSensitiveCopyWith<ChainSwapTxSensitive> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -2018,6 +2080,8 @@ class _$ChainSwapTxSensitiveCopyWithImpl<$Res,
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ChainSwapTxSensitive
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -2088,6 +2152,8 @@ class __$$ChainSwapTxSensitiveImplCopyWithImpl<$Res>
       $Res Function(_$ChainSwapTxSensitiveImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ChainSwapTxSensitive
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -2201,12 +2267,14 @@ class _$ChainSwapTxSensitiveImpl
                 other.blindingKey == blindingKey));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, id, refundKeySecret,
       claimKeySecret, preimage, sha256, hash160, blindingKey);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ChainSwapTxSensitive
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ChainSwapTxSensitiveImplCopyWith<_$ChainSwapTxSensitiveImpl>
@@ -2249,8 +2317,11 @@ abstract class _ChainSwapTxSensitive implements ChainSwapTxSensitive {
   String get hash160;
   @override
   String get blindingKey;
+
+  /// Create a copy of ChainSwapTxSensitive
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ChainSwapTxSensitiveImplCopyWith<_$ChainSwapTxSensitiveImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
@@ -2271,8 +2342,12 @@ mixin _$Invoice {
   String get invoice => throw _privateConstructorUsedError;
   String? get bip21 => throw _privateConstructorUsedError;
 
+  /// Serializes this Invoice to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of Invoice
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $InvoiceCopyWith<Invoice> get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -2303,6 +2378,8 @@ class _$InvoiceCopyWithImpl<$Res, $Val extends Invoice>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of Invoice
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -2384,6 +2461,8 @@ class __$$InvoiceImplCopyWithImpl<$Res>
       _$InvoiceImpl _value, $Res Function(_$InvoiceImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of Invoice
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -2516,12 +2595,14 @@ class _$InvoiceImpl extends _Invoice with DiagnosticableTreeMixin {
             (identical(other.bip21, bip21) || other.bip21 == bip21));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, msats, expiry, expiresIn,
       expiresAt, isExpired, network, cltvExpDelta, invoice, bip21);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of Invoice
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$InvoiceImplCopyWith<_$InvoiceImpl> get copyWith =>
@@ -2568,8 +2649,11 @@ abstract class _Invoice extends Invoice {
   String get invoice;
   @override
   String? get bip21;
+
+  /// Create a copy of Invoice
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$InvoiceImplCopyWith<_$InvoiceImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

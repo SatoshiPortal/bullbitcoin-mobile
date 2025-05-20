@@ -16,7 +16,10 @@ class BBClipboard {
     try {
       await Clipboard.setData(ClipboardData(text: data));
       HapticFeedback.mediumImpact();
-    } catch (e) {}
+    } catch (e) {
+      if (locator.isRegistered<Logger>())
+        locator<Logger>().log('Failed to copy to clipboard: $e');
+    }
   }
 }
 

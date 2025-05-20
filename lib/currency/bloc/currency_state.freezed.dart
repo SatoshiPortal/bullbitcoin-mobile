@@ -33,8 +33,12 @@ mixin _$CurrencyState {
   String? get tempAmount => throw _privateConstructorUsedError;
   String get errAmount => throw _privateConstructorUsedError;
 
+  /// Serializes this CurrencyState to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of CurrencyState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $CurrencyStateCopyWith<CurrencyState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -73,6 +77,8 @@ class _$CurrencyStateCopyWithImpl<$Res, $Val extends CurrencyState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of CurrencyState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -141,6 +147,8 @@ class _$CurrencyStateCopyWithImpl<$Res, $Val extends CurrencyState>
     ) as $Val);
   }
 
+  /// Create a copy of CurrencyState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $CurrencyCopyWith<$Res>? get currency {
@@ -153,6 +161,8 @@ class _$CurrencyStateCopyWithImpl<$Res, $Val extends CurrencyState>
     });
   }
 
+  /// Create a copy of CurrencyState
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $CurrencyCopyWith<$Res>? get defaultFiatCurrency {
@@ -202,6 +212,8 @@ class __$$CurrencyStateImplCopyWithImpl<$Res>
       _$CurrencyStateImpl _value, $Res Function(_$CurrencyStateImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of CurrencyState
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -367,7 +379,7 @@ class _$CurrencyStateImpl extends _CurrencyState {
                 other.errAmount == errAmount));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType,
@@ -384,7 +396,9 @@ class _$CurrencyStateImpl extends _CurrencyState {
       tempAmount,
       errAmount);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of CurrencyState
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$CurrencyStateImplCopyWith<_$CurrencyStateImpl> get copyWith =>
@@ -441,8 +455,11 @@ abstract class _CurrencyState extends CurrencyState {
   String? get tempAmount;
   @override
   String get errAmount;
+
+  /// Create a copy of CurrencyState
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$CurrencyStateImplCopyWith<_$CurrencyStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

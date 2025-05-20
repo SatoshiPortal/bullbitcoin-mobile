@@ -28,8 +28,12 @@ mixin _$ColdCard {
   ColdWallet? get bip44 => throw _privateConstructorUsedError;
   ColdWallet? get bip84 => throw _privateConstructorUsedError;
 
+  /// Serializes this ColdCard to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ColdCard
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ColdCardCopyWith<ColdCard> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -63,6 +67,8 @@ class _$ColdCardCopyWithImpl<$Res, $Val extends ColdCard>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ColdCard
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -106,6 +112,8 @@ class _$ColdCardCopyWithImpl<$Res, $Val extends ColdCard>
     ) as $Val);
   }
 
+  /// Create a copy of ColdCard
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ColdWalletCopyWith<$Res>? get bip49 {
@@ -118,6 +126,8 @@ class _$ColdCardCopyWithImpl<$Res, $Val extends ColdCard>
     });
   }
 
+  /// Create a copy of ColdCard
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ColdWalletCopyWith<$Res>? get bip44 {
@@ -130,6 +140,8 @@ class _$ColdCardCopyWithImpl<$Res, $Val extends ColdCard>
     });
   }
 
+  /// Create a copy of ColdCard
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ColdWalletCopyWith<$Res>? get bip84 {
@@ -176,6 +188,8 @@ class __$$ColdCardImplCopyWithImpl<$Res>
       _$ColdCardImpl _value, $Res Function(_$ColdCardImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ColdCard
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -270,12 +284,14 @@ class _$ColdCardImpl extends _ColdCard {
             (identical(other.bip84, bip84) || other.bip84 == bip84));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, chain, xpub, xfp, account, bip49, bip44, bip84);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ColdCard
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ColdCardImplCopyWith<_$ColdCardImpl> get copyWith =>
@@ -317,8 +333,11 @@ abstract class _ColdCard extends ColdCard {
   ColdWallet? get bip44;
   @override
   ColdWallet? get bip84;
+
+  /// Create a copy of ColdCard
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ColdCardImplCopyWith<_$ColdCardImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -337,8 +356,12 @@ mixin _$ColdWallet {
   @JsonKey(name: '_pub')
   String? get sPub => throw _privateConstructorUsedError;
 
+  /// Serializes this ColdWallet to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of ColdWallet
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $ColdWalletCopyWith<ColdWallet> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -368,6 +391,8 @@ class _$ColdWalletCopyWithImpl<$Res, $Val extends ColdWallet>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of ColdWallet
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -432,6 +457,8 @@ class __$$ColdWalletImplCopyWithImpl<$Res>
       _$ColdWalletImpl _value, $Res Function(_$ColdWalletImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of ColdWallet
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -518,12 +545,14 @@ class _$ColdWalletImpl extends _ColdWallet {
             (identical(other.sPub, sPub) || other.sPub == sPub));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, xpub, first, deriv, xfp, name, sPub);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of ColdWallet
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$ColdWalletImplCopyWith<_$ColdWalletImpl> get copyWith =>
@@ -563,8 +592,11 @@ abstract class _ColdWallet extends ColdWallet {
   @override
   @JsonKey(name: '_pub')
   String? get sPub;
+
+  /// Create a copy of ColdWallet
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ColdWalletImplCopyWith<_$ColdWalletImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

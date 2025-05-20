@@ -35,8 +35,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
-  widgetbook: ^3.8.0
-  widgetbook_annotation: ^3.1.0
+  widgetbook: ^3.14.0
+  widgetbook_annotation: ^3.5.0
   bb_mobile:
     path: ../
 
