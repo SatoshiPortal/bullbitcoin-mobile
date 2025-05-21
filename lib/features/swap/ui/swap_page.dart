@@ -254,7 +254,7 @@ class SwapAvailableBalance extends StatelessWidget {
     final balance = context.select(
       (SwapCubit cubit) => cubit.state.formattedFromWalletBalance(),
     );
-    const maxSelected = false;
+    // const maxSelected = false;
 
     return Row(
       children: [
@@ -266,26 +266,6 @@ class SwapAvailableBalance extends StatelessWidget {
         const Gap(4),
         BBText(balance, style: context.font.labelLarge),
         const Spacer(),
-        BBButton.small(
-          label: 'MAX',
-          height: 40,
-          width: 88,
-          onPressed: () {},
-          bgColor:
-              maxSelected
-                  ? context.colour.secondary
-                  : context.colour.onSecondary,
-          textColor:
-              maxSelected
-                  ? context.colour.onSecondary
-                  : context.colour.secondary,
-          outlined: true,
-          borderColor:
-              maxSelected
-                  ? context.colour.onSecondary
-                  : context.colour.secondary,
-          disabled: true,
-        ),
       ],
     );
   }
