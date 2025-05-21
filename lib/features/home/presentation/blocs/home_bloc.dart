@@ -6,8 +6,6 @@ import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/check_payjoin_relay_health_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
@@ -39,7 +37,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required GetUserSummaryUseCase getUserSummaryUseCase,
     required GetPrioritizedServerUsecase getBestAvailableServerUsecase,
     required CheckPayjoinRelayHealthUsecase checkPayjoinRelayHealth,
-    required GetSwapLimitsUsecase getSwapLimitsUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -52,7 +49,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
        _getUserSummaryUsecase = getUserSummaryUseCase,
        _getPrioritizedServerUsecase = getBestAvailableServerUsecase,
        _checkPayjoinRelayHealth = checkPayjoinRelayHealth,
-       _getSwapLimitsUsecase = getSwapLimitsUsecase,
 
        super(const HomeState()) {
     on<HomeStarted>(_onStarted);
@@ -79,7 +75,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
 
   final CheckPayjoinRelayHealthUsecase _checkPayjoinRelayHealth;
-  final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
 
@@ -232,17 +227,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
 
     // Run all checks in parallel
-    final (electrumWarnings, payjoinWarnings, swapWarnings) =
+    final (electrumWarnings, payjoinWarnings) =
         await (
           _checkElectrumServers(defaultWallets),
           _checkPayjoinHealth(),
-          _checkSwapServer(defaultWallets.first.isTestnet),
         ).wait;
 
     final warnings = [
       if (electrumWarnings != null) electrumWarnings,
       if (payjoinWarnings != null) payjoinWarnings,
-      if (swapWarnings != null) swapWarnings,
     ];
 
     emit(state.copyWith(warnings: warnings));
@@ -299,23 +292,5 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
 
     return null;
-  }
-
-  Future<HomeWarning?> _checkSwapServer(bool isTestnet) async {
-    try {
-      await _getSwapLimitsUsecase.execute(
-        type: SwapType.bitcoinToLiquid,
-        isTestnet: isTestnet,
-      );
-
-      return null;
-    } catch (e) {
-      return HomeWarning(
-        title: 'Boltz Server Unreachable',
-        description: 'Contact support for assistance',
-        actionRoute: SettingsRoute.settings.name,
-        type: WarningType.error,
-      );
-    }
   }
 }
