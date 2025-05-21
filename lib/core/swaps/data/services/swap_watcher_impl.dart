@@ -39,8 +39,14 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   void startWatching() {
     _swapStreamSubscription = _boltzRepo.swapUpdatesStream.listen(
       (swap) async {
-        debugPrint(
-          'SwapWatcher received swap update: ${swap.id}:${swap.status}',
+        await _logRepository.logInfo(
+          message: 'Received Swap Update',
+          logger: 'SwapWatcherService',
+          context: {
+            'swapId': swap.id,
+            'status': swap.status,
+            'function': 'startWatching',
+          },
         );
         // Notify the rest of the app about the swap update before processing it
         // which changes the status of the swap again
@@ -65,6 +71,14 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
 
     final swaps = await _boltzRepo.getOngoingSwaps();
     final swapIdsToWatch = swaps.map((swap) => swap.id).toList();
+    await _logRepository.logInfo(
+      message: 'Watching Swaps',
+      logger: 'SwapWatcherService',
+      context: {
+        'swapIds': swapIdsToWatch.join(', '),
+        'function': 'restartWatcherWithOngoingSwaps',
+      },
+    );
     debugPrint('Watching Swaps: ${swapIdsToWatch.join(', ')}');
     await _boltzRepo.reinitializeStreamWithSwaps(swapIds: swapIdsToWatch);
     startWatching();
