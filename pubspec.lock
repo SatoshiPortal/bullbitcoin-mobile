@@ -85,7 +85,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: ac8d102240a4242e319e71492d3698828177e97b
       resolved-ref: ac8d102240a4242e319e71492d3698828177e97b
       url: "https://github.com/LtbLightning/bdk-flutter"
     source: git
@@ -109,19 +109,18 @@ packages:
   bip85:
     dependency: "direct main"
     description:
-      path: "bindings/dart-bip85"
-      ref: master
-      resolved-ref: "4e1eb36568526414df8b7400da62e1ffe60b22a7"
-      url: "https://github.com/ethicnology/rust-bip85.git"
-    source: git
-    version: "1.0.3"
+      name: bip85
+      sha256: "23bc20b70f67a803bd70a4f37d78938cf576d1cd02a94393d8b52785f188f15e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   bitcoin_utils:
     dependency: "direct main"
     description:
       path: "."
-      ref: deps-upgrade
-      resolved-ref: "771535a90b3274ca3b46cf03ee418c8ab95e313c"
-      url: "https://github.com/i5hi/bitcoin-utils-flutter"
+      ref: afbcbfae4addb833f46bf8b3c3899085e66941e0
+      resolved-ref: afbcbfae4addb833f46bf8b3c3899085e66941e0
+      url: "https://github.com/LtbLightning/bitcoin-utils-flutter"
     source: git
     version: "0.0.1"
   bloc:
@@ -151,12 +150,11 @@ packages:
   boltz:
     dependency: "direct main"
     description:
-      path: "."
-      ref: develop
-      resolved-ref: ee66a8128cc5d39c15613e883e8fb6b9394f4135
-      url: "https://github.com/SatoshiPortal/boltz-dart.git"
-    source: git
-    version: "0.1.10"
+      name: boltz
+      sha256: "81623fb949236ee25104806dc7255ff4f891b273a2ae49540128c4315e30b0bb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -441,10 +439,10 @@ packages:
     dependency: transitive
     description:
       name: dart_style
-      sha256: "27eb0ae77836989a3bc541ce55595e8ceee0992807f14511552a898ddd0d88ac"
+      sha256: "5b236382b47ee411741447c1f1e111459c941ea1b3f2b540dde54c210a3662af"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.1"
+    version: "3.1.0"
   dartx:
     dependency: transitive
     description:
@@ -1163,12 +1161,11 @@ packages:
   lwk:
     dependency: "direct main"
     description:
-      path: "."
-      ref: develop
-      resolved-ref: "6935cbc3087ba49b934e87086ed5f6493826cc41"
-      url: "https://github.com/SatoshiPortal/lwk-dart.git"
-    source: git
-    version: "0.1.7"
+      name: lwk
+      sha256: "355e2f8e3ecd39fa42dc242118f6d4e6a83abb52fb20a947be89d3d8f330e75a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   matcher:
     dependency: transitive
     description:
@@ -1518,7 +1515,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
+      ref: "334b5402d8b7b80b4736663861f7952020312831"
       resolved-ref: "334b5402d8b7b80b4736663861f7952020312831"
       url: "https://github.com/SatoshiPortal/recoverbull-client-dart.git"
     source: git
@@ -1982,10 +1979,10 @@ packages:
     dependency: "direct main"
     description:
       name: webview_flutter
-      sha256: "62d763c27ce7f6cef04b3bec01c85a28d60149bffd155884aa4b8fd4941ea2e4"
+      sha256: c3e4fe614b1c814950ad07186007eff2f2e5dd2935eba7b9a9a1af8e5885f1ba
       url: "https://pub.dev"
     source: hosted
-    version: "4.12.0"
+    version: "4.13.0"
   webview_flutter_android:
     dependency: "direct main"
     description:

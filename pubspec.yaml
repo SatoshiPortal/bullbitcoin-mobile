@@ -13,7 +13,7 @@ dependencies:
   bdk_flutter:
     git:
       url: https://github.com/LtbLightning/bdk-flutter
-      ref: main
+      ref: ac8d102240a4242e319e71492d3698828177e97b
   cupertino_icons: ^1.0.2
   flutter_bloc: ^8.1.6
   freezed: ^3.0.0
@@ -47,8 +47,8 @@ dependencies:
   loading_animation_widget: ^1.2.0+4
   bitcoin_utils:
     git:
-      url: https://github.com/i5hi/bitcoin-utils-flutter
-      ref: deps-upgrade
+      url: https://github.com/LtbLightning/bitcoin-utils-flutter
+      ref: afbcbfae4addb833f46bf8b3c3899085e66941e0
   # permission_handler: ^11.0.1
   # widgetbook: ^3.0.0-beta.14
   # widgetbook_annotation: ^3.0.0-beta.7
@@ -77,16 +77,8 @@ dependencies:
   decimal: ^2.3.3
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  boltz:
-    # 0.1.10
-    git:
-      url: https://github.com/SatoshiPortal/boltz-dart.git
-      ref: develop
-  lwk:
-    # 0.1.7
-    git:
-      url: https://github.com/SatoshiPortal/lwk-dart.git
-      ref: develop
+  boltz: ^0.2.0
+  lwk: ^0.2.0
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter
@@ -106,12 +98,8 @@ dependencies:
   recoverbull:
     git:
       url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
-      ref: main
-  bip85:
-    git:
-      url: https://github.com/ethicnology/rust-bip85.git
-      ref: master
-      path: bindings/dart-bip85
+      ref: 334b5402d8b7b80b4736663861f7952020312831
+  bip85: ^2.0.0
   camera: ^0.11.1
   zxing2: ^0.2.3
   webview_cookie_manager:
