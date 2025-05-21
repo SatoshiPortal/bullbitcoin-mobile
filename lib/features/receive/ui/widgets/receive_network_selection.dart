@@ -18,7 +18,11 @@ class ReceiveNetworkSelection extends StatelessWidget {
             wallet == null
                 ? const {'Bitcoin', 'Lightning', 'Liquid'}
                 : wallet!.isLiquid
-                ? const {'Lightning', 'Liquid'}
+                ? wallet!.isWatchOnly
+                    ? const {'Liquid'}
+                    : const {'Lightning', 'Liquid'}
+                : wallet!.isWatchOnly
+                ? const {'Bitcoin'}
                 : const {'Bitcoin', 'Lightning'},
         onSelected: (c) {
           if (c == 'Bitcoin') {
