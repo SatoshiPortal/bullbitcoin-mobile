@@ -61,7 +61,9 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                   (TestWalletBackupBloc bloc) => bloc.state.selectedWallet,
                 );
                 final mnemonicWallets =
-                    wallets.where((w) => w.source.name == 'mnemonic').toList();
+                    wallets
+                        .where((w) => w.source == WalletSource.mnemonic)
+                        .toList();
                 final showDropdown = mnemonicWallets.length > 1;
                 final isLoading = context.select(
                   (TestWalletBackupBloc bloc) =>
