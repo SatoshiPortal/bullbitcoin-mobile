@@ -44,7 +44,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
           logger: 'SwapWatcherService',
           context: {
             'swapId': swap.id,
-            'status': swap.status,
+            'status': swap.status.name,
             'function': 'startWatching',
           },
         );
