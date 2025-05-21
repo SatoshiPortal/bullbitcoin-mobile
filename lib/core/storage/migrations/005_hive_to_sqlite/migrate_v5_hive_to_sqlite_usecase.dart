@@ -271,6 +271,16 @@ class MigrateToV5HiveToSqliteToUsecase {
           network: network,
           isDefault: true,
         );
+        final isBackupTested = oldWallet.backupTested;
+        final lastBackupTested = oldWallet.lastBackupTested ?? DateTime.now();
+
+        await _newWalletRepository.updateBackupInfo(
+          walletId: newWallet.id,
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: isBackupTested,
+          latestEncryptedBackup: null,
+          latestPhysicalBackup: lastBackupTested,
+        );
         final ongoingSwaps = await _getOldOngoingSwaps(oldWallet);
         final walletWithSwaps = WalletWithOngoingSwaps(
           walletIdMapping: WalletIdMapping(
@@ -339,6 +349,17 @@ class MigrateToV5HiveToSqliteToUsecase {
             network: network,
             label:
                 oldExternalWallet.name ?? oldExternalWallet.sourceFingerprint,
+          );
+          final isBackupTested = oldExternalWallet.backupTested;
+          final lastBackupTested =
+              oldExternalWallet.lastBackupTested ?? DateTime.now();
+
+          await _newWalletRepository.updateBackupInfo(
+            walletId: newWallet.id,
+            isEncryptedVaultTested: false,
+            isPhysicalBackupTested: isBackupTested,
+            latestEncryptedBackup: null,
+            latestPhysicalBackup: lastBackupTested,
           );
           final ongoingSwaps = await _getOldOngoingSwaps(oldExternalWallet);
           final walletWithSwaps = WalletWithOngoingSwaps(
