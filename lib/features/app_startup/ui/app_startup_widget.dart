@@ -60,6 +60,10 @@ class AppStartupListener extends StatelessWidget {
               (previous, current) =>
                   current is AppStartupSuccess && previous != current,
           listener: (context, state) {
+            if (state is AppStartupLoadingInProgress &&
+                state.requiresMigration == true) {
+              // show migration progress
+            }
             if (state is AppStartupSuccess && state.isPinCodeSet) {
               AppRouter.router.go(AppUnlockRoute.appUnlock.path);
             }

@@ -529,9 +529,9 @@ class MigrateToV5HiveToSqliteToUsecase {
               (e) => e.oldWalletId == toWalletIdOld,
               orElse:
                   () => WalletIdMapping(
-                    oldWalletId: toWalletIdOld,
-                    newWalletId: toWalletIdOld, // we dont' care about this
-                    oldWalletIdIsExternal: true,
+                    oldWalletId: toWalletIdOld, // this is an address
+                    newWalletId: toWalletIdOld, // this is an address
+                    walletIdIsExternal: true,
                   ), // this is likely an address (swap to external)
             );
 
@@ -551,9 +551,9 @@ class MigrateToV5HiveToSqliteToUsecase {
                       ? SwapType.liquidToBitcoin
                       : SwapType.bitcoinToLiquid,
               lockupTxid: swap.lockupTxid,
-              counterWalletId: counterWalletIdMapping.oldWalletId,
+              counterWalletId: counterWalletIdMapping.newWalletId,
               isCounterWalletExternal:
-                  counterWalletIdMapping.oldWalletIdIsExternal,
+                  counterWalletIdMapping.walletIdIsExternal,
               claimAddress: null,
             );
 
@@ -608,10 +608,10 @@ class WalletWithOngoingSwaps {
 class WalletIdMapping {
   final String oldWalletId;
   final String newWalletId;
-  final bool oldWalletIdIsExternal; // only for chain swaps
+  final bool walletIdIsExternal; // only for chain swaps
   WalletIdMapping({
     required this.oldWalletId,
     required this.newWalletId,
-    this.oldWalletIdIsExternal = false,
+    this.walletIdIsExternal = false,
   });
 }

@@ -85,8 +85,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: frb-upgrade
-      resolved-ref: "6643ec15b491876652d723ec3e530d743c7e6ad6"
+      ref: main
+      resolved-ref: ac8d102240a4242e319e71492d3698828177e97b
       url: "https://github.com/LtbLightning/bdk-flutter"
     source: git
     version: "0.31.3"
