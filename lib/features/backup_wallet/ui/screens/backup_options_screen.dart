@@ -92,56 +92,60 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                             BackupWalletSubroute.physicalCheckList.name,
                           ),
                     ),
-                    const Gap(16),
-                    GestureDetector(
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) {
-                            return Stack(
-                              children: [
-                                // Blurred Background ONLY on the Top
-                                Positioned.fill(
-                                  child: Align(
-                                    alignment: Alignment.topCenter,
-                                    child: BackdropFilter(
-                                      filter: ImageFilter.blur(
-                                        sigmaX: 6,
-                                        sigmaY: 6,
-                                      ),
-                                      child: Container(
-                                        width: double.infinity,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                            0.25, // Blur only 40% of the screen
-                                        color: context.colour.secondary
-                                            .withAlpha(
-                                              25,
-                                            ), // 0.10 opacity ≈ alpha 25
+                    if (isSuperuser) ...[
+                      const Gap(16),
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) {
+                              return Stack(
+                                children: [
+                                  // Blurred Background ONLY on the Top
+                                  Positioned.fill(
+                                    child: Align(
+                                      alignment: Alignment.topCenter,
+                                      child: BackdropFilter(
+                                        filter: ImageFilter.blur(
+                                          sigmaX: 6,
+                                          sigmaY: 6,
+                                        ),
+                                        child: Container(
+                                          width: double.infinity,
+                                          height:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.height *
+                                              0.25, // Blur only 40% of the screen
+                                          color: context.colour.secondary
+                                              .withAlpha(
+                                                25,
+                                              ), // 0.10 opacity ≈ alpha 25
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
 
-                                // Bottom Sheet Content (Covers only 60% of the screen)
-                                const Align(
-                                  alignment: Alignment.bottomCenter,
-                                  child: HowToDecideBackupOption(),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                      child: BBText(
-                        "How to decide?",
-                        style: context.font.headlineLarge?.copyWith(
-                          color: context.colour.primary,
+                                  // Bottom Sheet Content (Covers only 60% of the screen)
+                                  const Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: HowToDecideBackupOption(),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        child: BBText(
+                          "How to decide?",
+                          style: context.font.headlineLarge?.copyWith(
+                            color: context.colour.primary,
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),
