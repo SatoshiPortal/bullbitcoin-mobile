@@ -33,7 +33,7 @@ sealed class LogModel with _$LogModel {
     required String logger,
     String? appVersion,
     Map<String, dynamic>? context,
-    required Object exception,
+    required String exception,
     String? stackTrace,
   }) = ErrorLogModel;
   const LogModel._();

@@ -76,7 +76,7 @@ class LogRepositoryImpl implements LogRepository {
       message: message,
       timestamp: DateTime.now().toUtc(),
       logger: logger,
-      exception: exception,
+      exception: exception.toString(),
       stackTrace: stackTrace?.toString(),
       appVersion: await _appVersion,
       context: context,

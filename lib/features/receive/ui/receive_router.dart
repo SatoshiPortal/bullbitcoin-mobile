@@ -92,7 +92,7 @@ class ReceiveRouter {
 
                   final path = switch (type) {
                     ReceiveType.lightning =>
-                      '$matched/${ReceiveRoute.paymentInProgress.path}/${ReceiveRoute.paymentReceived.path}',
+                      '$matched/${ReceiveRoute.paymentReceived.path}',
                     _ => '$matched/${ReceiveRoute.details.path}',
                   };
 
