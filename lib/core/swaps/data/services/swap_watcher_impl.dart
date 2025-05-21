@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
-import 'package:bb_mobile/core/logging/domain/entities/log.dart';
-import 'package:bb_mobile/core/logging/domain/usecases/add_log_usecase.dart';
+import 'package:bb_mobile/core/logging/domain/repositories/log_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -16,7 +15,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   final WalletAddressRepository _walletAddressRepository;
   final FeesRepository _feesRepository;
   final SettingsRepository _settingsRepository;
-  final AddLogUsecase _addLog;
+  final LogRepository _logRepository;
 
   final StreamController<Swap> _swapStreamController =
       StreamController<Swap>.broadcast();
@@ -26,12 +25,12 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     required WalletAddressRepository walletAddressRepository,
     required FeesRepository feesRepository,
     required SettingsRepository settingsRepository,
-    required AddLogUsecase addLogUsecase,
+    required LogRepository logRepository,
   }) : _boltzRepo = boltzRepo,
        _walletAddressRepository = walletAddressRepository,
        _feesRepository = feesRepository,
        _settingsRepository = settingsRepository,
-       _addLog = addLogUsecase {
+       _logRepository = logRepository {
     startWatching();
   }
   @override
@@ -141,18 +140,15 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      await _addLog.execute(
-        NewLog(
-          level: LogLevel.error,
-          message: e.toString(),
-          logger: 'SwapWatcherService',
-          context: {
-            'swapId': swap.id,
-            'function': '_processReceiveLnToBitcoinClaim',
-          },
-          exception: e,
-          stackTrace: st,
-        ),
+      await _logRepository.logError(
+        message: e.toString(),
+        logger: 'SwapWatcherService',
+        exception: e,
+        stackTrace: st,
+        context: {
+          'swapId': swap.id,
+          'function': '_processReceiveLnToBitcoinClaim',
+        },
       );
       rethrow;
     }
@@ -191,18 +187,15 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      await _addLog.execute(
-        NewLog(
-          level: LogLevel.error,
-          message: e.toString(),
-          logger: 'SwapWatcherService',
-          context: {
-            'swapId': swap.id,
-            'function': '_processSendBitcoinToLnRefund',
-          },
-          exception: e,
-          stackTrace: st,
-        ),
+      await _logRepository.logError(
+        message: e.toString(),
+        logger: 'SwapWatcherService',
+        exception: e,
+        stackTrace: st,
+        context: {
+          'swapId': swap.id,
+          'function': '_processSendBitcoinToLnRefund',
+        },
       );
       rethrow;
     }
@@ -229,18 +222,15 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      await _addLog.execute(
-        NewLog(
-          level: LogLevel.error,
-          message: e.toString(),
-          logger: 'SwapWatcherService',
-          context: {
-            'swapId': swap.id,
-            'function': '_processReceiveLnToLiquidClaim',
-          },
-          exception: e,
-          stackTrace: st,
-        ),
+      await _logRepository.logError(
+        message: e.toString(),
+        logger: 'SwapWatcherService',
+        exception: e,
+        stackTrace: st,
+        context: {
+          'swapId': swap.id,
+          'function': '_processReceiveLnToLiquidClaim',
+        },
       );
       rethrow;
     }
@@ -279,18 +269,15 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      await _addLog.execute(
-        NewLog(
-          level: LogLevel.error,
-          message: e.toString(),
-          logger: 'SwapWatcherService',
-          context: {
-            'swapId': swap.id,
-            'function': '_processSendLiquidToLnRefund',
-          },
-          exception: e,
-          stackTrace: st,
-        ),
+      await _logRepository.logError(
+        message: e.toString(),
+        logger: 'SwapWatcherService',
+        exception: e,
+        stackTrace: st,
+        context: {
+          'swapId': swap.id,
+          'function': '_processSendLiquidToLnRefund',
+        },
       );
       rethrow;
     }
@@ -302,18 +289,15 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     try {
       await _boltzRepo.coopSignBitcoinToLightningSwap(swapId: swap.id);
     } catch (e, st) {
-      await _addLog.execute(
-        NewLog(
-          level: LogLevel.error,
-          message: e.toString(),
-          logger: 'SwapWatcherService',
-          context: {
-            'swapId': swap.id,
-            'function': '_processSendBitcoinToLnCoopSign',
-          },
-          exception: e,
-          stackTrace: st,
-        ),
+      await _logRepository.logError(
+        message: e.toString(),
+        logger: 'SwapWatcherService',
+        exception: e,
+        stackTrace: st,
+        context: {
+          'swapId': swap.id,
+          'function': '_processSendBitcoinToLnCoopSign',
+        },
       );
       rethrow;
     }
@@ -334,18 +318,15 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         await _boltzRepo.coopSignLiquidToLightningSwap(swapId: swap.id);
       }
     } catch (e, st) {
-      await _addLog.execute(
-        NewLog(
-          level: LogLevel.error,
-          message: e.toString(),
-          logger: 'SwapWatcherService',
-          context: {
-            'swapId': swap.id,
-            'function': '_processSendLiquidToLnCoopSign',
-          },
-          exception: e,
-          stackTrace: st,
-        ),
+      await _logRepository.logError(
+        message: e.toString(),
+        logger: 'SwapWatcherService',
+        exception: e,
+        stackTrace: st,
+        context: {
+          'swapId': swap.id,
+          'function': '_processSendLiquidToLnCoopSign',
+        },
       );
       rethrow;
     }
@@ -387,18 +368,15 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      await _addLog.execute(
-        NewLog(
-          level: LogLevel.error,
-          message: e.toString(),
-          logger: 'SwapWatcherService',
-          context: {
-            'swapId': swap.id,
-            'function': '_processChainLiquidToBitcoinClaim',
-          },
-          exception: e,
-          stackTrace: st,
-        ),
+      await _logRepository.logError(
+        message: e.toString(),
+        logger: 'SwapWatcherService',
+        exception: e,
+        stackTrace: st,
+        context: {
+          'swapId': swap.id,
+          'function': '_processChainLiquidToBitcoinClaim',
+        },
       );
       rethrow;
     }
@@ -440,18 +418,15 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      await _addLog.execute(
-        NewLog(
-          level: LogLevel.error,
-          message: e.toString(),
-          logger: 'SwapWatcherService',
-          context: {
-            'swapId': swap.id,
-            'function': '_processChainBitcoinToLiquidRefund',
-          },
-          exception: e,
-          stackTrace: st,
-        ),
+      await _logRepository.logError(
+        message: e.toString(),
+        logger: 'SwapWatcherService',
+        exception: e,
+        stackTrace: st,
+        context: {
+          'swapId': swap.id,
+          'function': '_processChainBitcoinToLiquidRefund',
+        },
       );
       rethrow;
     }
@@ -493,18 +468,15 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      await _addLog.execute(
-        NewLog(
-          level: LogLevel.error,
-          message: e.toString(),
-          logger: 'SwapWatcherService',
-          context: {
-            'swapId': swap.id,
-            'function': '_processChainBitcoinToLiquidClaim',
-          },
-          exception: e,
-          stackTrace: st,
-        ),
+      await _logRepository.logError(
+        message: e.toString(),
+        logger: 'SwapWatcherService',
+        exception: e,
+        stackTrace: st,
+        context: {
+          'swapId': swap.id,
+          'function': '_processChainBitcoinToLiquidClaim',
+        },
       );
       rethrow;
     }
@@ -546,18 +518,15 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       );
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
-      await _addLog.execute(
-        NewLog(
-          level: LogLevel.error,
-          message: e.toString(),
-          logger: 'SwapWatcherService',
-          context: {
-            'swapId': swap.id,
-            'function': '_processChainLiquidToBitcoinRefund',
-          },
-          exception: e,
-          stackTrace: st,
-        ),
+      await _logRepository.logError(
+        message: e.toString(),
+        logger: 'SwapWatcherService',
+        exception: e,
+        stackTrace: st,
+        context: {
+          'swapId': swap.id,
+          'function': '_processChainLiquidToBitcoinRefund',
+        },
       );
       rethrow;
     }
