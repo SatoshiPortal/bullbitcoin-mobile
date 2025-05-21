@@ -48,6 +48,8 @@ class AppStartupBloc extends Bloc<AppStartupEvent, AppStartupState> {
     try {
       // Run Tor initialization in background
       // SQL Migrations
+      // emit(const AppStartupState.failure(null));
+      // return;
       final migrationRequired = await _requiresMigrationUsecase.execute();
       if (migrationRequired == null) {
         emit(const AppStartupState.loadingInProgress());
