@@ -36,6 +36,16 @@ class ReceiveTransactionDetailsTable extends StatelessWidget {
           label: 'Amount received',
           displayValue: FormatAmount.sats(amountSat).toUpperCase(),
         ),
+        if (swap != null && swap.fees != null)
+          DetailsTableItem(
+            label: 'Total Swap fees',
+            displayValue:
+                FormatAmount.sats(
+                  (swap.fees!.claimFee ?? 0) +
+                      (swap.fees!.boltzFee ?? 0) +
+                      (swap.fees!.lockupFee ?? 0),
+                ).toUpperCase(),
+          ),
         if (receiveType == ReceiveType.lightning) ...[
           DetailsTableItem(
             label: 'Wallet',
