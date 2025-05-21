@@ -36,15 +36,14 @@ class BlurredBottomSheet extends StatelessWidget {
     bool isScrollControlled = true, // Default to true for better UX
     double blurSigma = 8.0,
     required Widget child,
+    bool isDismissible = false,
   }) {
     return showModalBottomSheet<T>(
       context: context,
       isScrollControlled: isScrollControlled,
+      isDismissible: isDismissible,
       backgroundColor: Colors.transparent,
-      builder: (_) => BlurredBottomSheet(
-        blurSigma: blurSigma,
-        child: child,
-      ),
+      builder: (_) => BlurredBottomSheet(blurSigma: blurSigma, child: child),
     );
   }
 
@@ -57,17 +56,12 @@ class BlurredBottomSheet extends StatelessWidget {
         Positioned.fill(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
-            child: Container(
-              color: context.colour.secondary.withAlpha(25),
-            ),
+            child: Container(color: context.colour.secondary.withAlpha(25)),
           ),
         ),
 
         // Content
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: child,
-        ),
+        Align(alignment: Alignment.bottomCenter, child: child),
       ],
     );
   }
