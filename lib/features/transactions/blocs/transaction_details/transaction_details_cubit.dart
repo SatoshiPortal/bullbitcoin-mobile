@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -24,12 +25,16 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required GetPayjoinByIdUsecase getPayjoinByIdUsecase,
     required WatchPayjoinUsecase watchPayjoinUsecase,
     required CreateLabelUsecase createLabelUsecase,
+    required BroadcastOriginalTransactionUsecase
+    broadcastOriginalTransactionUsecase,
   }) : _getWalletUsecase = getWalletUsecase,
        _getSwapUsecase = getSwapUsecase,
        _watchSwapUsecase = watchSwapUsecase,
        _getPayjoinByIdUsecase = getPayjoinByIdUsecase,
        _watchPayjoinUsecase = watchPayjoinUsecase,
        _createLabelUsecase = createLabelUsecase,
+       _broadcastOriginalTransactionUsecase =
+           broadcastOriginalTransactionUsecase,
        super(const TransactionDetailsState());
 
   final GetWalletUsecase _getWalletUsecase;
@@ -38,6 +43,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   final GetPayjoinByIdUsecase _getPayjoinByIdUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final CreateLabelUsecase _createLabelUsecase;
+  final BroadcastOriginalTransactionUsecase
+  _broadcastOriginalTransactionUsecase;
 
   StreamSubscription? _payjoinSubscription;
   StreamSubscription? _swapSubscription;
@@ -124,5 +131,23 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       labels: [...transaction.labels, note],
     );
     emit(state.copyWith(transaction: updatedTransaction));
+  }
+
+  Future<void> broadcastPayjoinOriginalTx() async {
+    try {
+      if (state.payjoin == null) return;
+      emit(state.copyWith(isBroadcastingPayjoinOriginalTx: true));
+      final payjoin = await _broadcastOriginalTransactionUsecase.execute(
+        state.payjoin!,
+      );
+      emit(
+        state.copyWith(
+          payjoin: payjoin,
+          isBroadcastingPayjoinOriginalTx: false,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(err: e, isBroadcastingPayjoinOriginalTx: false));
+    }
   }
 }

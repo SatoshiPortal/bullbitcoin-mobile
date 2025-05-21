@@ -460,7 +460,7 @@ class PdkPayjoinDatasource {
             });
           } else {
             log(
-              '[Receivers Isolate] No request found in receivers isolate for '
+              '[Receivers Isolate] No valid request found in receivers isolate for '
               '${receiver.id()}',
             );
           }
