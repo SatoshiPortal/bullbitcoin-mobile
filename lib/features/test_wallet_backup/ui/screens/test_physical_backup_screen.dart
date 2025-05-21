@@ -69,6 +69,16 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                   (TestWalletBackupBloc bloc) =>
                       bloc.state.status == TestWalletBackupStatus.loading,
                 );
+
+                String walletLabel = '';
+                if (selectedWallet != null) {
+                  walletLabel =
+                      selectedWallet.isDefault
+                          ? 'Default Wallets'
+                          : selectedWallet.getLabel() ?? '';
+                }
+                final title = 'Test $walletLabel';
+
                 return Scaffold(
                   backgroundColor: context.colour.onSecondary,
                   appBar: AppBar(
@@ -76,8 +86,7 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                     flexibleSpace: TopBar(
                       color: context.colour.onSecondary,
                       onBack: () => context.pop(),
-
-                      title: 'Test ${selectedWallet?.getLabel() ?? 'Backup'}',
+                      title: title,
                       actionIcon:
                           showDropdown ? CupertinoIcons.chevron_down : null,
                       onAction:
@@ -167,7 +176,9 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                   for (final wallet in wallets)
                     Center(
                       child: BBText(
-                        wallet.getLabel() ?? wallet.label ?? '',
+                        wallet.isDefault
+                            ? 'Default Wallets'
+                            : wallet.getLabel() ?? '',
                         style: context.font.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                           fontSize: 18,
