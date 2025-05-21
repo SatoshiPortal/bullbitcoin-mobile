@@ -183,7 +183,10 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         emit(state.copyWith(bitcoinAddress: bitcoinAddress));
       }
 
-      if (state.payjoin == null) {
+      // If the payjoin receiver is not set yet, we need to create it, but only
+      //  if the wallet is not watch only. If the wallet is watch only, we shouldn't
+      //  create a payjoin receiver since we can't sign proposals non-interactively.
+      if (state.payjoin == null && !wallet.isWatchOnly) {
         PayjoinReceiver? payjoin;
         Object? error;
         try {
@@ -199,6 +202,12 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         }
 
         emit(state.copyWith(payjoin: payjoin, error: error));
+      } else if (state.payjoin != null && wallet.isWatchOnly) {
+        // If the wallet is watch only, we need to clear the payjoin receiver
+        //  since we can't sign proposals non-interactively.
+        emit(state.copyWith(payjoin: null));
+        // cancel the payjoin subscription as well if it exists
+        await _payjoinSubscription?.cancel();
       }
 
       if (state.exchangeRate == 0) {
@@ -616,19 +625,22 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
 
       switch (state.type) {
         case ReceiveType.bitcoin:
-          // If a new address is generated, we need to update the payjoin receiver as well
           PayjoinReceiver? payjoin;
           Object? error;
-          try {
-            payjoin = await _receiveWithPayjoinUsecase.execute(
-              walletId: walletId,
-              address: address.address,
-            );
-            // The payjoin receiver is created, now we can watch it for updates
-            _watchPayjoin(payjoin.id);
-          } catch (e) {
-            debugPrint('Payjoin receiver creation failed: $e');
-            error = e;
+          // If a new address is generated, we need to update the payjoin receiver as well,
+          // but only if the wallet is not watch only.
+          if (!state.wallet!.isWatchOnly) {
+            try {
+              payjoin = await _receiveWithPayjoinUsecase.execute(
+                walletId: walletId,
+                address: address.address,
+              );
+              // The payjoin receiver is created, now we can watch it for updates
+              _watchPayjoin(payjoin.id);
+            } catch (e) {
+              debugPrint('Payjoin receiver creation failed: $e');
+              error = e;
+            }
           }
 
           emit(
