@@ -28,7 +28,7 @@ dependencies:
   payjoin_flutter:
     git:
       url: https://github.com/DanGould/payjoin-flutter
-      ref: deps-for-bb
+      ref: 322b61b9074be2c0170e44e589f6552917e58a2e
   qr_flutter: ^4.1.0
   dio: ^5.2.1+1
   timeago: ^3.3.0

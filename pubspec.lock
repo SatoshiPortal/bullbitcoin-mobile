@@ -1154,7 +1154,7 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: deps-for-bb
+      ref: "322b61b9074be2c0170e44e589f6552917e58a2e"
       resolved-ref: "322b61b9074be2c0170e44e589f6552917e58a2e"
       url: "https://github.com/DanGould/payjoin-flutter"
     source: git
