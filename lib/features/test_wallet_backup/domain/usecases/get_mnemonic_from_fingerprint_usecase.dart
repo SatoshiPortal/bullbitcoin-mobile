@@ -8,17 +8,20 @@ class GetMnemonicFromFingerprintUsecase {
   GetMnemonicFromFingerprintUsecase({required SeedRepository seedRepository})
     : _seedRepository = seedRepository;
 
-  Future<List<String>> execute(String fingerprint) async {
+  Future<(List<String>, String?)> execute(String fingerprint) async {
     try {
       final seed = await _seedRepository.get(fingerprint);
       final defaultSeedModel = SeedModel.fromEntity(seed);
 
-      final mnemonicWords = switch (defaultSeedModel) {
-        MnemonicSeedModel(:final mnemonicWords) => mnemonicWords,
+      final (mnemonicWords, passphrase) = switch (defaultSeedModel) {
+        MnemonicSeedModel(:final mnemonicWords, :final passphrase) => (
+          mnemonicWords,
+          passphrase,
+        ),
         _ => throw Exception('selected seed is not a mnemonic seed'),
       };
 
-      return mnemonicWords;
+      return (mnemonicWords, passphrase);
     } catch (e) {
       debugPrint('GetMnemonicFromFingerprintUsecase: $e');
       rethrow;

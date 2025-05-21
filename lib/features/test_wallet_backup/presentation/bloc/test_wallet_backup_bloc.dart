@@ -50,7 +50,7 @@ class TestWalletBackupBloc
            completePhysicalBackupVerificationUsecase,
        _loadWalletsForNetworkUsecase = loadWalletsForNetworkUsecase,
        _getMnemonicFromFingerprintUsecase = getMnemonicFromFingerprintUsecase,
-       super(TestWalletBackupState()) {
+       super(const TestWalletBackupState()) {
     on<SelectGoogleDriveBackupTest>(_onSelectGoogleDriveBackupTest);
     on<SelectFileSystemBackupTes>(_onSelectFileSystemBackupTest);
     on<StartVaultBackupTesting>(_onStartVaultBackupTesting);
@@ -334,14 +334,18 @@ class TestWalletBackupBloc
     try {
       emit(state.copyWith(status: TestWalletBackupStatus.loading));
       final wallet = state.wallets.firstWhere((w) => w.id == event.walletId);
-      final mnemonic = await _getMnemonicFromFingerprintUsecase.execute(
+      final (
+        mnemonicWords,
+        passphrase,
+      ) = await _getMnemonicFromFingerprintUsecase.execute(
         wallet.masterFingerprint,
       );
       emit(
         state.copyWith(
           selectedWallet: wallet,
-          mnemonic: mnemonic,
-          shuffledMnemonic: mnemonic.toList()..shuffle(),
+          mnemonic: mnemonicWords,
+          passphrase: passphrase ?? '',
+          shuffledMnemonic: mnemonicWords.toList()..shuffle(),
           testMnemonicOrder: [],
           status: TestWalletBackupStatus.success,
         ),

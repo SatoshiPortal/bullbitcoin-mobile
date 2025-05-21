@@ -51,21 +51,20 @@ class TestWalletBackupStateMethods {
 
 @freezed
 abstract class TestWalletBackupState with _$TestWalletBackupState {
-  // Add this line
-
-  factory TestWalletBackupState({
+  const factory TestWalletBackupState({
+    @Default([]) List<Wallet> wallets,
+    Wallet? selectedWallet,
     @Default([]) List<String> mnemonic,
     @Default([]) List<String> shuffledMnemonic,
     @Default([])
     List<({String word, int shuffleIdx, int selectedActualIdx})>
     testMnemonicOrder,
+    @Default('') String passphrase,
     @Default(TestWalletBackupStatus.none) TestWalletBackupStatus status,
+    @Default('') String statusError,
     @Default(VaultProvider.googleDrive()) VaultProvider vaultProvider,
     @Default(BackupInfo.empty()) BackupInfo backupInfo,
     @Default(false) bool transitioning,
-    @Default('') String statusError,
-    @Default([]) List<Wallet> wallets,
-    Wallet? selectedWallet,
   }) = _TestWalletBackupState;
   const TestWalletBackupState._();
 
