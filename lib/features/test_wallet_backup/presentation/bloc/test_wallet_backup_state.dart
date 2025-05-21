@@ -64,6 +64,8 @@ abstract class TestWalletBackupState with _$TestWalletBackupState {
     @Default(BackupInfo.empty()) BackupInfo backupInfo,
     @Default(false) bool transitioning,
     @Default('') String statusError,
+    @Default([]) List<Wallet> wallets,
+    Wallet? selectedWallet,
   }) = _TestWalletBackupState;
   const TestWalletBackupState._();
 
