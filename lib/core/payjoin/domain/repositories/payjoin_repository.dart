@@ -25,7 +25,5 @@ abstract class PayjoinRepository {
     required double networkFeesSatPerVb,
     required int expireAfterSec,
   });
-  Future<PayjoinReceiver?> tryBroadcastOriginalTransaction(
-    PayjoinReceiver payjoinReceiver,
-  );
+  Future<Payjoin?> tryBroadcastOriginalTransaction(Payjoin payjoin);
 }

@@ -90,7 +90,7 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
         children: [
           BBText(
             "No time to wait or did the payjoin fail on the sender's side?",
-            style: context.font.titleMedium,
+            style: context.font.titleSmall,
             textAlign: TextAlign.center,
             maxLines: 2,
           ),

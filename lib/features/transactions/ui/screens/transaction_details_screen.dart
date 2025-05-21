@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/transactions/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_label_bottomsheet.dart';
 import 'package:bb_mobile/ui/components/badges/transaction_direction_badge.dart';
@@ -42,6 +43,11 @@ class TransactionDetailsScreen extends StatelessWidget {
     );
     final amountSat = tx?.amountSat ?? 0;
     final isIncoming = tx?.direction == WalletTransactionDirection.incoming;
+    final isOngoingSenderPayjoin =
+        context.select(
+          (TransactionDetailsCubit bloc) => bloc.state.isOngoingPayjoin,
+        ) &&
+        !isIncoming;
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +70,11 @@ class TransactionDetailsScreen extends StatelessWidget {
                 TransactionDirectionBadge(isIncoming: isIncoming),
                 const Gap(24),
                 BBText(
-                  isIncoming ? 'Payment received' : 'Payment sent',
+                  isOngoingSenderPayjoin
+                      ? 'Payjoin requested'
+                      : isIncoming
+                      ? 'Payment received'
+                      : 'Payment sent',
                   style: context.font.headlineLarge,
                 ),
                 const Gap(8),
@@ -77,7 +87,13 @@ class TransactionDetailsScreen extends StatelessWidget {
                 ),
                 const Gap(24),
                 const TransactionDetailsTable(),
-                const Gap(62),
+                if (isOngoingSenderPayjoin) ...[
+                  const Gap(24),
+                  const SenderBroadcastPayjoinOriginalTxButton(),
+                  const Gap(24),
+                ] else ...[
+                  const Gap(64),
+                ],
                 if (tx != null)
                   BBButton.big(
                     label: 'Add note',

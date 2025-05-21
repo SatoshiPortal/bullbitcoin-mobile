@@ -205,9 +205,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   @override
-  Future<PayjoinReceiver?> tryBroadcastOriginalTransaction(
-    PayjoinReceiver payjoin,
-  ) async {
+  Future<Payjoin?> tryBroadcastOriginalTransaction(Payjoin payjoin) async {
     try {
       // TODO: Should we get all the electrum servers and try another one if the
       //  first one fails?
@@ -219,23 +217,34 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
                     : Network.bitcoinMainnet,
           );
 
-      await _blockchain.broadcastTransaction(
-        payjoin.originalTxBytes!,
-        electrumServer: electrumServer,
-      );
+      PayjoinModel? model;
+      if (payjoin is PayjoinReceiver) {
+        await _blockchain.broadcastTransaction(
+          payjoin.originalTxBytes!,
+          electrumServer: electrumServer,
+        );
+        model = await _localPayjoinDatasource.fetchReceiver(payjoin.id);
+      } else {
+        payjoin as PayjoinSender;
+        await _blockchain.broadcastPsbt(
+          payjoin.originalPsbt,
+          electrumServer: electrumServer,
+        );
+        model = await _localPayjoinDatasource.fetchSender(payjoin.id);
+      }
       debugPrint(
-        'Original transaction broadcasted: ${payjoin.id} with txId: ${payjoin.txId}',
+        'Original transaction broadcasted: ${payjoin.id} with txId: ${payjoin.originalTxId}',
       );
 
       // Update the local database with the completed payjoin
-      final model = await _localPayjoinDatasource.fetchReceiver(payjoin.id);
+
       if (model == null) {
-        throw Exception('Payjoin receiver not found');
+        throw Exception('Payjoin not found locally');
       }
       final completedModel = model.copyWith(isCompleted: true);
       await _localPayjoinDatasource.update(completedModel);
 
-      return model.toEntity() as PayjoinReceiver;
+      return completedModel.toEntity();
     } catch (e) {
       debugPrint('Error broadcasting original transaction: $e');
       return null;
@@ -260,7 +269,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       result = await _proposePayjoin(model, wallet, unspentUtxos);
     } catch (e) {
       debugPrint('Error processing payjoin request: $e');
-      result = await tryBroadcastOriginalTransaction(payjoin);
+      result =
+          (await tryBroadcastOriginalTransaction(payjoin)) as PayjoinReceiver?;
     }
 
     if (result != null) {

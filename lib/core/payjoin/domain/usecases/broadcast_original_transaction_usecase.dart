@@ -8,13 +8,15 @@ class BroadcastOriginalTransactionUsecase {
     required PayjoinRepository payjoinRepository,
   }) : _payjoin = payjoinRepository;
 
-  Future<PayjoinReceiver> execute(PayjoinReceiver payjoin) async {
+  Future<Payjoin> execute(Payjoin payjoin) async {
     try {
-      if (payjoin.originalTxBytes == null) {
-        throw BroadcastOriginalTransactionException(
-          'No original transaction bytes to broadcast found for payjoin:'
-          ' ${payjoin.id}',
-        );
+      if (payjoin is PayjoinReceiver) {
+        if (payjoin.originalTxBytes == null) {
+          throw BroadcastOriginalTransactionException(
+            'No original transaction bytes to broadcast found for payjoin:'
+            ' ${payjoin.id}',
+          );
+        }
       }
 
       // Try to broadcast the original transaction for the payjoin
