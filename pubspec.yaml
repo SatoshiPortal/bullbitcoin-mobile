@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 0.5.6+43
+version: 0.5.7+44
 
 environment:
   sdk: ">=3.7.0 <4.0.0"
@@ -181,4 +181,3 @@ flutter_launcher_icons:
   min_sdk_android: 21 # android min sdk min:16, default 21
   adaptive_icon_background: "#FBFBFB"
   adaptive_icon_foreground: "assets/iconnew-red.png"
-
