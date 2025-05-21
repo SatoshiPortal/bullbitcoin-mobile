@@ -1,9 +1,9 @@
-.PHONY: all setup clean deps build-runner l10n hooks
+.PHONY: all setup clean deps build-runner l10n hooks ios-pod-update
 
 all: setup
 	@echo "✨ All tasks completed!"
 
-setup: clean deps build-runner l10n hooks
+setup: clean deps build-runner l10n hooks ios-pod-update
 	@echo "🚀 Setup complete!"
 
 clean:
@@ -38,3 +38,7 @@ hooks:
 drift-migrate:
 	@echo "🔄 Strating SQLiteMigration"
 	dart run drift_dev make-migrations
+
+ios-pod-update:
+	@echo " Fetch dependencies"
+	@cd ios && pod install --repo-update && cd -
