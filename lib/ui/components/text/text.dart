@@ -6,13 +6,13 @@ class BBText extends StatelessWidget {
     this.text, {
     super.key,
     required this.style,
-    this.maxLines = 1,
+    this.maxLines,
     this.color,
     this.textAlign,
   });
 
   final String text;
-  final int maxLines;
+  final int? maxLines;
   final TextStyle? style;
   final Color? color;
   final TextAlign? textAlign;

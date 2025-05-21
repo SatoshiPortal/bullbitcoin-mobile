@@ -10,7 +10,7 @@ class CopyInput extends StatelessWidget {
 
   final String text;
   final String?
-      clipboardText; // In case it should be different from the shown text
+  clipboardText; // In case it should be different from the shown text
 
   @override
   Widget build(BuildContext context) {
@@ -19,35 +19,28 @@ class CopyInput extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colour.onPrimary,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: context.colour.secondaryFixedDim,
-        ),
+        border: Border.all(color: context.colour.secondaryFixedDim),
       ),
       child: Row(
         children: [
           const Gap(15),
           Expanded(
-            child: text.isEmpty
-                ? const LoadingLineContent(width: double.infinity)
-                : BBText(
-                    text,
-                    style: context.font.bodyLarge,
-                    color: context.colour.secondary,
-                  ),
+            child:
+                text.isEmpty
+                    ? const LoadingLineContent(width: double.infinity)
+                    : BBText(
+                      text,
+                      style: context.font.bodyLarge,
+                      color: context.colour.secondary,
+                      maxLines: 1,
+                    ),
           ),
           IconButton(
             visualDensity: VisualDensity.compact,
             iconSize: 20,
-            icon: Icon(
-              Icons.copy_sharp,
-              color: context.colour.secondary,
-            ),
+            icon: Icon(Icons.copy_sharp, color: context.colour.secondary),
             onPressed: () {
-              Clipboard.setData(
-                ClipboardData(
-                  text: clipboardText ?? text,
-                ),
-              );
+              Clipboard.setData(ClipboardData(text: clipboardText ?? text));
             },
           ),
           const Gap(8),

@@ -49,7 +49,6 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
                     const Gap(20),
                     BBText(
                       'Without a backup, you will eventually lose access to your money. It is critically important to do a backup.',
-                      maxLines: 2,
                       textAlign: TextAlign.center,
                       style: context.font.bodyLarge,
                     ),
