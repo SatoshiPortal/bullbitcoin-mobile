@@ -523,6 +523,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<List<Swap>> getOngoingSwaps() async {
     final allSwapModels = await _boltz.storage.fetchAll();
+    // final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
+
+    // debugPrint('allSwapModels: ${allSwapModels.first.toEntity()}');
     final allSwaps =
         allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
     return allSwaps
@@ -630,6 +633,85 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
           swapId: swapId,
           isCooperative: isCooperative,
           refundAddress: refundAddressForChainSwaps!,
+        );
+    }
+  }
+
+  @override
+  Future<void> migrateOldSwap({
+    required String primaryWalletId,
+    required String swapId,
+    required SwapType swapType,
+    required String? lockupTxid,
+    required String? counterWalletId,
+    required bool? isCounterWalletExternal,
+    required String? claimAddress,
+  }) async {
+    switch (swapType) {
+      case SwapType.lightningToBitcoin:
+        final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
+        await _boltz.fromBtcLnSwapObjectMigration(
+          swapObject,
+          primaryWalletId,
+          null,
+          lockupTxid,
+          claimAddress,
+        );
+      case SwapType.bitcoinToLightning:
+        final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
+        await _boltz.fromBtcLnSwapObjectMigration(
+          swapObject,
+          null,
+          primaryWalletId,
+          lockupTxid,
+          null,
+        );
+      case SwapType.lightningToLiquid:
+        final swapObject = await _boltz.storage.fetchLbtcLnSwap(swapId);
+        await _boltz.fromLbtcLnSwapObjectMigration(
+          swapObject,
+          primaryWalletId,
+          null,
+          lockupTxid,
+          claimAddress,
+        );
+      case SwapType.liquidToLightning:
+        final swapObject = await _boltz.storage.fetchLbtcLnSwap(swapId);
+        await _boltz.fromLbtcLnSwapObjectMigration(
+          swapObject,
+          null,
+          primaryWalletId,
+          lockupTxid,
+          null,
+        );
+      case SwapType.liquidToBitcoin:
+        final swapObject = await _boltz.storage.fetchChainSwap(swapId);
+        if (counterWalletId == null || isCounterWalletExternal == null) {
+          throw Exception(
+            'Counter wallet ID and isCounterWalletExternal must be provided for chain swaps',
+          );
+        }
+        await _boltz.fromChainSwapObjectMigration(
+          swapObject,
+          primaryWalletId,
+          counterWalletId,
+          isCounterWalletExternal,
+          lockupTxid,
+        );
+
+      case SwapType.bitcoinToLiquid:
+        if (counterWalletId == null || isCounterWalletExternal == null) {
+          throw Exception(
+            'Counter wallet ID and isCounterWalletExternal must be provided for chain swaps',
+          );
+        }
+        final swapObject = await _boltz.storage.fetchChainSwap(swapId);
+        await _boltz.fromChainSwapObjectMigration(
+          swapObject,
+          primaryWalletId,
+          counterWalletId,
+          isCounterWalletExternal,
+          lockupTxid,
         );
     }
   }

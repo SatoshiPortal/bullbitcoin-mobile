@@ -6,8 +6,6 @@ import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.da
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/seed/sqlite_seed.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
@@ -37,17 +35,15 @@ void main() {
 
   // TODO: Change and move these to github secrets so the testnet coins for our integration
   //  tests are not at risk of being used by others.
-  const senderMnemonic =
-      'duty tattoo frown crazy pelican aisle area wrist robot stove taxi material';
   const receiverMnemonic =
+      'duty tattoo frown crazy pelican aisle area wrist robot stove taxi material';
+  const senderMnemonic =
       'model float claim feature convince exchange truck cream assume fancy swamp offer';
 
   setUpAll(() async {
     await Future.wait([dotenv.load(isOptional: true), core.init()]);
 
     await AppLocator.setup();
-
-    await locator<SqliteDatabase>().seedTables();
 
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
 

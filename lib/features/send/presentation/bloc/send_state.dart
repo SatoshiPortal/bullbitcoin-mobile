@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -73,13 +74,10 @@ abstract class SendState with _$SendState {
 
     FeeOptions? bitcoinFeesList,
     FeeOptions? liquidFeesList,
-    NetworkFee? selectedFee,
+    NetworkFee? customFee,
+    @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
     int? bitcoinTxSize,
-    // TODO: remove absFee and make usecases return size so abs fee can
-    // be calculated from NetworkFee
-    int? absoluteFees,
-    FeeSelection? selectedFeeOption,
-    int? customFee,
+    int? liquidAbsoluteFees,
     // prepare
     String? unsignedPsbt,
     String? signedBitcoinPsbt,
@@ -89,6 +87,7 @@ abstract class SendState with _$SendState {
     // confirm
     String? txId,
     PayjoinSender? payjoinSender,
+    WalletTransaction? transaction,
     Object? error,
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,
@@ -308,6 +307,40 @@ abstract class SendState with _$SendState {
     return (selectedWallet!.network.isBitcoin && sendType == SendType.liquid) ||
         (selectedWallet!.network.isLiquid && sendType == SendType.bitcoin);
   }
+
+  NetworkFee? get selectedFee {
+    switch (selectedFeeOption) {
+      case FeeSelection.fastest:
+        return selectedWallet!.isLiquid
+            ? liquidFeesList?.fastest
+            : bitcoinFeesList?.fastest;
+      case FeeSelection.economic:
+        return selectedWallet!.isLiquid
+            ? liquidFeesList?.economic
+            : bitcoinFeesList?.economic;
+
+      case FeeSelection.slow:
+        return selectedWallet!.isLiquid
+            ? liquidFeesList?.slow
+            : bitcoinFeesList?.slow;
+      case FeeSelection.custom:
+        return customFee;
+    }
+  }
+
+  FeeOptions? get feeOptions =>
+      selectedWallet == null
+          ? null
+          : selectedWallet!.isLiquid
+          ? liquidFeesList
+          : bitcoinFeesList;
+
+  int? get absoluteFees =>
+      selectedWallet == null
+          ? null
+          : selectedWallet!.isLiquid
+          ? liquidAbsoluteFees
+          : selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
 }
 
 class SwapCreationException implements Exception {

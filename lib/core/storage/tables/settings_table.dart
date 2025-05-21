@@ -8,4 +8,5 @@ class Settings extends Table {
   TextColumn get language => text()();
   TextColumn get currency => text()();
   BoolColumn get hideAmounts => boolean()();
+  BoolColumn get isSuperuser => boolean()();
 }

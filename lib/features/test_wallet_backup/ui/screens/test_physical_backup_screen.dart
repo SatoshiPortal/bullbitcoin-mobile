@@ -1,6 +1,11 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/ui/components/bottom_sheet/x.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -11,53 +16,177 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
-class TestPhysicalBackupFlow extends StatelessWidget {
+class TestPhysicalBackupFlow extends StatefulWidget {
   const TestPhysicalBackupFlow();
 
   @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(
-          value:
-              locator<TestWalletBackupBloc>()
-                ..add(const LoadSeedForVerification()),
-        ),
-      ],
-      child: BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
-        listener: (context, state) {
-          if (state.status == TestWalletBackupStatus.error) {
-          } else if (state.status == TestWalletBackupStatus.success &&
-              state.testMnemonicOrder.isNotEmpty) {
-            context.goNamed(TestWalletBackupSubroute.backupTestSuccess.name);
-          }
-        },
-        child: Builder(
-          builder: (context) {
-            final isVerifying = context.select(
-              (TestWalletBackupBloc bloc) =>
-                  bloc.state.status == TestWalletBackupStatus.verifying,
-            );
+  State<TestPhysicalBackupFlow> createState() => _TestPhysicalBackupFlowState();
+}
 
-            return Scaffold(
-              backgroundColor: context.colour.onSecondary,
-              appBar: AppBar(
-                forceMaterialTransparency: true,
-                automaticallyImplyLeading: false,
-                flexibleSpace: TopBar(
-                  onBack: () => context.pop(),
-                  title: 'Test Backup',
+class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
+    with PrivacyScreen {
+  @override
+  void dispose() {
+    unawaited(disableScreenPrivacy());
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: enableScreenPrivacy(),
+      builder: (context, snapshot) {
+        return BlocProvider.value(
+          value: locator<TestWalletBackupBloc>()..add(const LoadWallets()),
+          child: BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
+            listener: (context, state) {
+              if (state.status == TestWalletBackupStatus.error) {
+              } else if (state.status == TestWalletBackupStatus.success &&
+                  state.testMnemonicOrder.isNotEmpty) {
+                context.goNamed(
+                  TestWalletBackupSubroute.backupTestSuccess.name,
+                );
+              }
+            },
+            child: Builder(
+              builder: (context) {
+                final isVerifying = context.select(
+                  (TestWalletBackupBloc bloc) =>
+                      bloc.state.status == TestWalletBackupStatus.verifying,
+                );
+                final wallets = context.select(
+                  (TestWalletBackupBloc bloc) => bloc.state.wallets,
+                );
+                final selectedWallet = context.select(
+                  (TestWalletBackupBloc bloc) => bloc.state.selectedWallet,
+                );
+                final mnemonicWallets =
+                    wallets.where((w) => w.source.name == 'mnemonic').toList();
+                final showDropdown = mnemonicWallets.length > 1;
+                final isLoading = context.select(
+                  (TestWalletBackupBloc bloc) =>
+                      bloc.state.status == TestWalletBackupStatus.loading,
+                );
+                return Scaffold(
+                  backgroundColor: context.colour.onSecondary,
+                  appBar: AppBar(
+                    automaticallyImplyLeading: false,
+                    flexibleSpace: TopBar(
+                      color: context.colour.onSecondary,
+                      onBack: () => context.pop(),
+
+                      title: 'Test ${selectedWallet?.getLabel() ?? 'Backup'}',
+                      actionIcon:
+                          showDropdown ? CupertinoIcons.chevron_down : null,
+                      onAction:
+                          showDropdown
+                              ? () async {
+                                final bloc =
+                                    context.read<TestWalletBackupBloc>();
+                                final selectedId = selectedWallet?.id;
+                                final selectedIndex = mnemonicWallets
+                                    .indexWhere((w) => w.id == selectedId);
+
+                                final selectedWalletId =
+                                    await _showWalletPicker(
+                                      context: context,
+                                      wallets: mnemonicWallets,
+                                      initialIndex: selectedIndex,
+                                    );
+
+                                if (selectedWalletId != null && mounted) {
+                                  bloc.add(
+                                    LoadMnemonicForWallet(
+                                      walletId: selectedWalletId,
+                                    ),
+                                  );
+                                }
+                              }
+                              : null,
+                    ),
+                  ),
+
+                  body: SafeArea(
+                    top: false,
+                    child:
+                        isLoading
+                            ? const LinearProgressIndicator()
+                            : !isVerifying
+                            ? const TestPhysicalBackupScreen()
+                            : const ShuffledMnemonicScreen(),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<String?> _showWalletPicker({
+    required BuildContext context,
+    required List<Wallet> wallets,
+    required int initialIndex,
+  }) {
+    final controller = FixedExtentScrollController(
+      initialItem: initialIndex >= 0 ? initialIndex : 0,
+    );
+
+    return BlurredBottomSheet.show<String>(
+      context: context,
+      isDismissible: true,
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.4,
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+        decoration: BoxDecoration(
+          color: context.colour.onPrimary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => context.pop(),
                 ),
+              ],
+            ),
+            const Gap(8),
+            Expanded(
+              child: CupertinoPicker(
+                scrollController: controller,
+                itemExtent: 70,
+                onSelectedItemChanged: (_) {},
+                children: [
+                  for (final wallet in wallets)
+                    Center(
+                      child: BBText(
+                        wallet.getLabel() ?? wallet.label ?? '',
+                        style: context.font.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              body: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child:
-                    !isVerifying
-                        ? const TestPhysicalBackupScreen()
-                        : const ShuffledMnemonicScreen(),
-              ),
-            );
-          },
+            ),
+            const Gap(16),
+            BBButton.big(
+              label: "Confirm",
+              onPressed: () {
+                final wallet = wallets[controller.selectedItem];
+                context.pop(wallet.id);
+              },
+              bgColor: context.colour.secondary,
+              textColor: context.colour.onSecondary,
+            ),
+            const Gap(16),
+          ],
         ),
       ),
     );
@@ -74,127 +203,129 @@ class TestPhysicalBackupScreen extends StatelessWidget {
     );
 
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(20),
-            BBText(
-              'Write down your recovery phrase\nin the correct order',
-              textAlign: TextAlign.center,
-              style: context.font.headlineLarge?.copyWith(
-                fontWeight: FontWeight.w600,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Gap(20),
+              BBText(
+                'Write down your recovery phrase\nin the correct order',
+                textAlign: TextAlign.center,
+                style: context.font.headlineLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 2,
               ),
-              maxLines: 2,
-            ),
-            const Gap(20),
-            BBText(
-              'Store it somewhere safe.',
-              textAlign: TextAlign.center,
-              style: context.font.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: context.colour.surface,
-                letterSpacing: 0,
-                fontSize: 12,
-              ),
-            ),
-            const Gap(32),
-            SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  if (mnemonic.length == 12) ...[
-                    for (var i = 0; i < 6; i++)
-                      Row(
-                        children: [
-                          RecoveryPhraseWord(index: i, number: i + 1),
-                          RecoveryPhraseWord(index: i + 6, number: i + 7),
-                        ],
-                      ),
-                  ],
-                ],
-              ),
-            ),
-            const Spacer(),
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: context.colour.surface),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(11),
-                  topRight: Radius.circular(11),
-                  bottomLeft: Radius.circular(2),
-                  bottomRight: Radius.circular(2),
+              const Gap(20),
+              BBText(
+                'Store it somewhere safe.',
+                textAlign: TextAlign.center,
+                style: context.font.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: context.colour.surface,
+                  letterSpacing: 0,
+                  fontSize: 12,
                 ),
               ),
-              child: Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: context.colour.secondaryFixedDim,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(11),
-                        topRight: Radius.circular(11),
-                        bottomLeft: Radius.circular(2),
-                        bottomRight: Radius.circular(2),
-                      ),
-                    ),
-                    child: BBText(
-                      'DO NOT SHARE WITH ANYONE',
-                      textAlign: TextAlign.center,
-                      style: context.font.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: context.colour.secondary,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 16,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildWarningItem(
-                          icon: CupertinoIcons.check_mark,
-                          text: 'Transcribe',
-                          iconColor: const Color(0xFF34C759),
-                          context: context,
+              const Gap(32),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    if (mnemonic.length == 12) ...[
+                      for (var i = 0; i < 6; i++)
+                        Row(
+                          children: [
+                            RecoveryPhraseWord(index: i, number: i + 1),
+                            RecoveryPhraseWord(index: i + 6, number: i + 7),
+                          ],
                         ),
-                        _buildWarningItem(
-                          icon: CupertinoIcons.xmark,
-                          text: 'Digital copy',
-                          iconColor: context.colour.error,
-                          context: context,
-                        ),
-                        _buildWarningItem(
-                          icon: CupertinoIcons.xmark,
-                          text: 'Screenshot',
-                          iconColor: context.colour.error,
-                          context: context,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                    ],
+                    const PassphraseWidget(),
+                  ],
+                ),
               ),
-            ),
-            const Gap(16),
-            BBButton.big(
-              label: "Next",
-              onPressed: () {
-                context.read<TestWalletBackupBloc>().add(
-                  const StartPhysicalBackupVerification(),
-                );
-              },
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
-            ),
-          ],
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: context.colour.surface),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(11),
+                    topRight: Radius.circular(11),
+                    bottomLeft: Radius.circular(2),
+                    bottomRight: Radius.circular(2),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: context.colour.secondaryFixedDim,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(11),
+                          topRight: Radius.circular(11),
+                          bottomLeft: Radius.circular(2),
+                          bottomRight: Radius.circular(2),
+                        ),
+                      ),
+                      child: BBText(
+                        'DO NOT SHARE WITH ANYONE',
+                        textAlign: TextAlign.center,
+                        style: context.font.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          color: context.colour.secondary,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 16,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildWarningItem(
+                            icon: CupertinoIcons.check_mark,
+                            text: 'Transcribe',
+                            iconColor: const Color(0xFF34C759),
+                            context: context,
+                          ),
+                          _buildWarningItem(
+                            icon: CupertinoIcons.xmark,
+                            text: 'Digital copy',
+                            iconColor: context.colour.error,
+                            context: context,
+                          ),
+                          _buildWarningItem(
+                            icon: CupertinoIcons.xmark,
+                            text: 'Screenshot',
+                            iconColor: context.colour.error,
+                            context: context,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Gap(16),
+              BBButton.big(
+                label: "Next",
+                onPressed: () {
+                  context.read<TestWalletBackupBloc>().add(
+                    const StartPhysicalBackupVerification(),
+                  );
+                },
+                bgColor: context.colour.secondary,
+                textColor: context.colour.onSecondary,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -561,6 +692,55 @@ class RecoveryPhraseWord extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class PassphraseWidget extends StatelessWidget {
+  const PassphraseWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final passphrase = context.select(
+      (TestWalletBackupBloc bloc) => bloc.state.passphrase,
+    );
+
+    if (passphrase.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(8, 0, 8, 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(2.76),
+        border: Border.all(color: context.colour.surface, width: 0.69),
+        boxShadow: [
+          BoxShadow(color: context.colour.surface, offset: const Offset(0, 2)),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BBText(
+            'Passphrase',
+            style: context.font.labelMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: context.colour.surface,
+              letterSpacing: 0,
+              fontSize: 14,
+            ),
+          ),
+          const Gap(8),
+          BBText(
+            passphrase,
+            style: context.font.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+              color: context.colour.secondary,
+            ),
+          ),
+        ],
       ),
     );
   }

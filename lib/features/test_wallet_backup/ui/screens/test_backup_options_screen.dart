@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/cards/tag_card.dart';
@@ -21,6 +22,9 @@ class TestBackupOptionsScreen extends StatefulWidget {
 class _TestBackupOptionsScreenState extends State<TestBackupOptionsScreen> {
   @override
   Widget build(BuildContext context) {
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state?.isSuperuser ?? false,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -48,26 +52,30 @@ class _TestBackupOptionsScreenState extends State<TestBackupOptionsScreen> {
                       style: context.font.bodyLarge,
                     ),
                     const Gap(16),
-                    BackupOptionCard(
-                      icon: Image.asset(
-                        'assets/encrypted_vault.png',
-                        width: 36,
-                        height: 45,
-                        fit: BoxFit.cover,
-                      ),
-                      title: 'Encrypted vault',
-                      description:
-                          'Anonymous backup with strong encryption using your cloud.',
-                      tag: 'Easy and simple (1 minute)',
-                      onTap: () => {
-                        context.read<KeyServerCubit>().checkConnection(),
-                        context.pushNamed(
-                          TestWalletBackupSubroute
-                              .chooseBackupTestProvider.name,
+                    if (isSuperuser) ...[
+                      BackupOptionCard(
+                        icon: Image.asset(
+                          'assets/encrypted_vault.png',
+                          width: 36,
+                          height: 45,
+                          fit: BoxFit.cover,
                         ),
-                      },
-                    ),
-                    const Gap(16),
+                        title: 'Encrypted vault',
+                        description:
+                            'Anonymous backup with strong encryption using your cloud.',
+                        tag: 'Easy and simple (1 minute)',
+                        onTap:
+                            () => {
+                              context.read<KeyServerCubit>().checkConnection(),
+                              context.pushNamed(
+                                TestWalletBackupSubroute
+                                    .chooseBackupTestProvider
+                                    .name,
+                              ),
+                            },
+                      ),
+                      const Gap(16),
+                    ],
                     BackupOptionCard(
                       icon: Image.asset(
                         'assets/physical_backup.png',
@@ -79,9 +87,10 @@ class _TestBackupOptionsScreenState extends State<TestBackupOptionsScreen> {
                       description:
                           'Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.',
                       tag: 'Trustless (take your time)',
-                      onTap: () => context.pushNamed(
-                        TestWalletBackupSubroute.testPhysicalBackup.name,
-                      ),
+                      onTap:
+                          () => context.pushNamed(
+                            TestWalletBackupSubroute.testPhysicalBackup.name,
+                          ),
                     ),
                   ],
                 ),
@@ -134,20 +143,13 @@ class BackupOptionCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: 36,
-                    height: 45,
-                    child: icon,
-                  ),
+                  SizedBox(width: 36, height: 45, child: icon),
                   const Gap(12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        BBText(
-                          title,
-                          style: context.font.headlineMedium,
-                        ),
+                        BBText(title, style: context.font.headlineMedium),
                         const Gap(10),
                         BBText(
                           description,

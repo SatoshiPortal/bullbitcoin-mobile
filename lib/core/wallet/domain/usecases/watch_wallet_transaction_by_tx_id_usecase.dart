@@ -1,0 +1,48 @@
+import 'dart:async';
+
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
+
+class WatchWalletTransactionByTxIdUsecase {
+  final WalletTransactionRepository _walletTransactionRepository;
+  final WalletRepository _walletRepository;
+
+  const WatchWalletTransactionByTxIdUsecase({
+    required WalletTransactionRepository walletTransactionRepository,
+    required WalletRepository walletRepository,
+  }) : _walletTransactionRepository = walletTransactionRepository,
+       _walletRepository = walletRepository;
+
+  Stream<WalletTransaction> execute({
+    required String walletId,
+    required String txId,
+  }) {
+    return _walletRepository.walletSyncFinishedStream
+        .where((wallet) => wallet.id == walletId)
+        .asyncMap((wallet) async {
+          debugPrint(
+            'Fetching transaction with txId $txId'
+            ' for wallet: $walletId',
+          );
+
+          try {
+            final tx = await _walletTransactionRepository.getWalletTransaction(
+              txId,
+              walletId: walletId,
+            );
+
+            debugPrint(
+              'Fetched transaction with txId $txId for wallet: $walletId',
+            );
+            return tx;
+          } catch (e) {
+            debugPrint('WatchWalletTransactionByTxIdUsecase exception: $e');
+            return null;
+          }
+        })
+        .whereType<WalletTransaction>();
+  }
+}

@@ -16,7 +16,7 @@ class HomeWalletCards extends StatelessWidget {
     final isLiquid = wallet.isLiquid;
     final isWatchOnly = wallet.isWatchOnly;
 
-    final watchonlyColor = context.colour.onPrimaryContainer;
+    final watchonlyColor = context.colour.secondary;
 
     if (isWatchOnly && !isTestnet) return watchonlyColor;
     if (isWatchOnly && isTestnet) return watchonlyColor;
@@ -39,14 +39,13 @@ class HomeWalletCards extends StatelessWidget {
           for (final w in wallets) ...[
             WalletCard(
               tagColor: cardDetails(context, w),
-              title: w.getLabel(),
+              title: w.getLabel() ?? '',
               description: w.getWalletTypeString(),
               wallet: w,
               onTap: () {
                 context.goNamed(
                   HomeRoute.walletHome.name,
                   pathParameters: {'walletId': w.id},
-                  extra: context.read<HomeBloc>(),
                 );
               },
             ),

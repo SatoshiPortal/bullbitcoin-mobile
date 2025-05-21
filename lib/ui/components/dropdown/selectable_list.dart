@@ -67,7 +67,7 @@ class _SelectableRow extends StatelessWidget {
       radius: 2,
       onTap: onSelected,
       child: Material(
-        elevation: isSelected ? 1 : 4,
+        elevation: isSelected ? 4 : 1,
         borderRadius: BorderRadius.circular(2),
         clipBehavior: Clip.hardEdge,
         color: context.colour.onSecondary,

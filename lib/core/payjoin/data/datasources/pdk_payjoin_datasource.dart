@@ -458,6 +458,11 @@ class PdkPayjoinDatasource {
                 '[Receivers Isolate] timer cancelled in receivers isolate for ${receiver.id()}',
               );
             });
+          } else {
+            log(
+              '[Receivers Isolate] No request found in receivers isolate for '
+              '${receiver.id()}',
+            );
           }
         } catch (e) {
           log(
@@ -552,15 +557,20 @@ class PdkPayjoinDatasource {
     //  exposes different exceptions for specific errors
     Object? ffiError;
     try {
+      receiver.id();
       (Request, ClientResponse)? request;
       for (final ohttpRelay in PayjoinConstants.ohttpRelayUrls) {
         try {
           request = await receiver.extractReq(ohttpRelay: ohttpRelay);
           ffiError = null;
-          log('receiver extractReq success: $request with relay $ohttpRelay');
+          log(
+            '[${receiver.id()}] receiver extractReq success: $request with relay $ohttpRelay',
+          );
           break;
         } catch (e) {
-          log('receiver extractReq exception: $e with relay $ohttpRelay');
+          log(
+            '[${receiver.id()}] receiver extractReq exception: $e with relay $ohttpRelay',
+          );
           ffiError = e;
           continue;
         }
@@ -570,9 +580,12 @@ class PdkPayjoinDatasource {
         if (ffiError != null) {
           throw ffiError;
         }
-        throw PayjoinNotFoundException('No payjoin request found');
+        throw PayjoinNotFoundException(
+          '[${receiver.id()}] No payjoin request found',
+        );
       }
 
+      log('[${receiver.id()}] request != null');
       final (req, context) = request;
       final ohttpResponse = await dio.post(
         req.url.asString(),
@@ -582,14 +595,15 @@ class PdkPayjoinDatasource {
           responseType: ResponseType.bytes,
         ),
       );
+      log('[${receiver.id()}] processing request...');
       final proposal = await receiver.processRes(
         body: ohttpResponse.data as List<int>,
         ctx: context,
       );
-
+      log('[${receiver.id()}] request processed');
       return proposal;
     } catch (e) {
-      log('getRequest exception: $e');
+      log('[${receiver.id()}] getRequest exception: $e');
       if (e == ffiError) {
         // TODO: Check for the correct error.
         //  We just assume the error is an expired error for now.

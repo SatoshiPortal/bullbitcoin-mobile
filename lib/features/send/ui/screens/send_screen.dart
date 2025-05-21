@@ -3,12 +3,13 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/scan/scan_widget.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
+import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
-import 'package:bb_mobile/ui/components/dropdown/selectable_list.dart';
 import 'package:bb_mobile/ui/components/inputs/paste_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/price_input/balance_row.dart';
@@ -614,7 +615,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'From',
             details: BBText(
-              selectedWallet!.label,
+              selectedWallet!.getLabel() ?? '',
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -686,11 +687,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
               title: 'Fee Priority',
               details: InkWell(
                 onTap: () async {
-                  final selected = await _showFeeOptions(
-                    context,
-                    context.read<SendCubit>().state.selectedFeeOption!,
-                    context.read<SendCubit>().state.bitcoinFeesList!,
-                  );
+                  final selected = await _showFeeOptions(context);
 
                   if (selected != null) {
                     final fee = FeeSelectionName.fromString(selected);
@@ -702,7 +699,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     BBText(
-                      selectedFeeOption!.title(),
+                      selectedFeeOption.title(),
                       style: context.font.bodyLarge,
                       color: context.colour.primary,
                       textAlign: TextAlign.end,
@@ -724,52 +721,17 @@ class _OnchainSendInfoSection extends StatelessWidget {
     );
   }
 
-  Future<String?> _showFeeOptions(
-    BuildContext context,
-    FeeSelection selectedFeeOption,
-    FeeOptions feeList,
-  ) async {
-    final fees = feeList.display(
-      context.read<SendCubit>().state.bitcoinTxSize ?? 140,
-      context.read<SendCubit>().state.exchangeRate,
-      context.read<SendCubit>().state.fiatCurrencyCode,
-    );
-    final List<SelectableListItem> feeOptions = [
-      for (final fee in fees)
-        SelectableListItem(
-          value: fee.$1,
-          title: fee.$1,
-          subtitle1: fee.$2,
-          subtitle2: fee.$3,
-        ),
-    ];
+  Future<String?> _showFeeOptions(BuildContext context) async {
+    final sendCubit = context.read<SendCubit>();
+
     final selected = await showModalBottomSheet<String>(
       useRootNavigator: true,
       context: context,
+      isScrollControlled: true,
       backgroundColor: context.colour.onSecondary,
       builder:
-          (BuildContext buildContext) => Padding(
-            padding: const EdgeInsets.all(16),
-
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-
-              children: [
-                const Gap(16),
-
-                BBText(
-                  'Select network fee',
-                  style: context.font.headlineMedium,
-                ),
-                const Gap(16),
-                SelectableList(
-                  selectedValue: selectedFeeOption.title(),
-                  items: feeOptions,
-                ),
-                const Spacer(),
-              ],
-            ),
-          ),
+          (BuildContext buildContext) =>
+              BlocProvider.value(value: sendCubit, child: FeeOptionsModal()),
     );
 
     return selected;
@@ -806,7 +768,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'From',
             details: BBText(
-              selectedWallet!.label,
+              selectedWallet!.getLabel() ?? '',
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -915,7 +877,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           InfoRow(
             title: 'From',
             details: BBText(
-              selectedWallet!.label,
+              selectedWallet!.getLabel() ?? '',
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -1162,6 +1124,10 @@ class SendSucessScreen extends StatelessWidget {
     final isChainSwap = context.select(
       (SendCubit cubit) => cubit.state.chainSwap != null,
     );
+    final transaction = context.select(
+      (SendCubit cubit) => cubit.state.transaction,
+    );
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -1175,6 +1141,8 @@ class SendSucessScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Spacer(),
             Padding(
@@ -1216,12 +1184,18 @@ class SendSucessScreen extends StatelessWidget {
               ),
             ),
             const Spacer(flex: 2),
-            BBButton.big(
-              label: 'View Details',
-              onPressed: () {},
-              bgColor: context.colour.secondary,
-              textColor: context.colour.onSecondary,
-            ),
+            if (transaction != null)
+              BBButton.big(
+                label: 'View Details',
+                onPressed: () {
+                  context.push(
+                    '/send/${SendRoute.sendTransactionDetails.path}',
+                    extra: transaction,
+                  );
+                },
+                bgColor: context.colour.secondary,
+                textColor: context.colour.onSecondary,
+              ),
             const Gap(32),
           ],
         ),

@@ -3,8 +3,6 @@ import 'dart:developer';
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/seed/sqlite_seed.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
@@ -37,13 +35,9 @@ Future main() async {
 
       // The Locator setup might depend on the initialization of the libraries above
       //  so it's important to call it after the initialization
+
       await AppLocator.setup();
-
-      // Populate the database with needed data
-      await locator<SqliteDatabase>().seedTables();
-
       Bloc.observer = AppBlocObserver();
-
       runApp(const BullBitcoinWalletApp());
     },
     (error, stack) {
@@ -117,12 +111,15 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: locator<SettingsCubit>()..init()),
-        BlocProvider.value(
-          value: locator<AppStartupBloc>()..add(const AppStartupStarted()),
+        BlocProvider(create: (_) => locator<SettingsCubit>()..init()),
+        BlocProvider(
+          create:
+              (_) => locator<AppStartupBloc>()..add(const AppStartupStarted()),
         ),
-        BlocProvider.value(
-          value: locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
+        BlocProvider(
+          create:
+              (_) =>
+                  locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
         ),
       ],
       child: BlocSelector<SettingsCubit, SettingsEntity?, Language?>(
@@ -132,9 +129,6 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
               title: 'BullBitcoin Wallet',
               debugShowCheckedModeBanner: false,
               routerConfig: AppRouter.router,
-              // routeInformationParser: router.routeInformationParser,
-              // routeInformationProvider: router.routeInformationProvider,
-              // routerDelegate: router.routerDelegate,
               theme: AppTheme.themeData(AppThemeType.light),
               locale: language?.locale,
               localizationsDelegates: AppLocalizations.localizationsDelegates,

@@ -9,14 +9,16 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_encrypted_vault_verification_usecase.dart.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_default_mnemonic_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'test_wallet_backup_bloc.freezed.dart';
 part 'test_wallet_backup_event.dart';
 part 'test_wallet_backup_state.dart';
-part 'test_wallet_backup_bloc.freezed.dart';
 
 class TestWalletBackupBloc
     extends Bloc<TestWalletBackupEvent, TestWalletBackupState> {
@@ -24,80 +26,66 @@ class TestWalletBackupBloc
     required SelectFileFromPathUsecase selectFileFromPathUsecase,
     required ConnectToGoogleDriveUsecase connectToGoogleDriveUsecase,
     required RestoreEncryptedVaultFromBackupKeyUsecase
-        restoreEncryptedVaultFromBackupKeyUsecase,
+    restoreEncryptedVaultFromBackupKeyUsecase,
     required FetchLatestGoogleDriveBackupUsecase
-        fetchLatestGoogleDriveBackupUsecase,
+    fetchLatestGoogleDriveBackupUsecase,
     required FetchBackupFromFileSystemUsecase fetchBackupFromFileSystemUsecase,
     required CompleteEncryptedVaultVerificationUsecase
-        completeEncryptedVaultVerificationUsecase,
+    completeEncryptedVaultVerificationUsecase,
     required CompletePhysicalBackupVerificationUsecase
-        completePhysicalBackupVerificationUsecase,
-    required LoadDefaultMnemonicUsecase loadDefaultMnemonicUsecase,
-  })  : _selectFileFromPathUsecase = selectFileFromPathUsecase,
-        _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
-        _restoreEncryptedVaultFromBackupKeyUsecase =
-            restoreEncryptedVaultFromBackupKeyUsecase,
-        _fetchLatestGoogleDriveBackupUsecase =
-            fetchLatestGoogleDriveBackupUsecase,
-        _fetchBackupFromFileSystemUsecase = fetchBackupFromFileSystemUsecase,
-        _completeEncryptedVaultVerificationUsecase =
-            completeEncryptedVaultVerificationUsecase,
-        _completePhysicalBackupVerificationUsecase =
-            completePhysicalBackupVerificationUsecase,
-        _loadDefaultMnemonicUsecase = loadDefaultMnemonicUsecase,
-        super(TestWalletBackupState()) {
+    completePhysicalBackupVerificationUsecase,
+    required LoadWalletsForNetworkUsecase loadWalletsForNetworkUsecase,
+    required GetMnemonicFromFingerprintUsecase
+    getMnemonicFromFingerprintUsecase,
+  }) : _selectFileFromPathUsecase = selectFileFromPathUsecase,
+       _connectToGoogleDriveUsecase = connectToGoogleDriveUsecase,
+       _restoreEncryptedVaultFromBackupKeyUsecase =
+           restoreEncryptedVaultFromBackupKeyUsecase,
+       _fetchLatestGoogleDriveBackupUsecase =
+           fetchLatestGoogleDriveBackupUsecase,
+       _fetchBackupFromFileSystemUsecase = fetchBackupFromFileSystemUsecase,
+       _completeEncryptedVaultVerificationUsecase =
+           completeEncryptedVaultVerificationUsecase,
+       _completePhysicalBackupVerificationUsecase =
+           completePhysicalBackupVerificationUsecase,
+       _loadWalletsForNetworkUsecase = loadWalletsForNetworkUsecase,
+       _getMnemonicFromFingerprintUsecase = getMnemonicFromFingerprintUsecase,
+       super(const TestWalletBackupState()) {
     on<SelectGoogleDriveBackupTest>(_onSelectGoogleDriveBackupTest);
     on<SelectFileSystemBackupTes>(_onSelectFileSystemBackupTest);
     on<StartVaultBackupTesting>(_onStartVaultBackupTesting);
     on<OnWordsSelected>(_onWordsSelected);
     on<VerifyPhysicalBackup>(_verifyPhysicalBackup);
-    on<LoadSeedForVerification>(_loadSeedForVerification);
     on<StartPhysicalBackupVerification>((event, emit) {
-      emit(
-        state.copyWith(
-          status: TestWalletBackupStatus.verifying,
-        ),
-      );
+      emit(state.copyWith(status: TestWalletBackupStatus.verifying));
     });
-    // Add handlers for transitioning events
-    on<StartTransitioning>((event, emit) {
-      emit(state.copyWith(transitioning: true));
-    });
-
-    on<EndTransitioning>((event, emit) {
-      emit(state.copyWith(transitioning: false));
-    });
+    on<LoadWallets>(_onLoadWallets);
+    on<LoadMnemonicForWallet>(_onLoadMnemonicForWallet);
   }
 
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;
   final ConnectToGoogleDriveUsecase _connectToGoogleDriveUsecase;
   final RestoreEncryptedVaultFromBackupKeyUsecase
-      _restoreEncryptedVaultFromBackupKeyUsecase;
+  _restoreEncryptedVaultFromBackupKeyUsecase;
   final FetchLatestGoogleDriveBackupUsecase
-      _fetchLatestGoogleDriveBackupUsecase;
+  _fetchLatestGoogleDriveBackupUsecase;
   final FetchBackupFromFileSystemUsecase _fetchBackupFromFileSystemUsecase;
   final CompleteEncryptedVaultVerificationUsecase
-      _completeEncryptedVaultVerificationUsecase;
+  _completeEncryptedVaultVerificationUsecase;
   final CompletePhysicalBackupVerificationUsecase
-      _completePhysicalBackupVerificationUsecase;
-  final LoadDefaultMnemonicUsecase _loadDefaultMnemonicUsecase;
+  _completePhysicalBackupVerificationUsecase;
+  final LoadWalletsForNetworkUsecase _loadWalletsForNetworkUsecase;
+  final GetMnemonicFromFingerprintUsecase _getMnemonicFromFingerprintUsecase;
+
   Future<void> _onSelectGoogleDriveBackupTest(
     SelectGoogleDriveBackupTest event,
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      emit(
-        state.copyWith(
-          status: TestWalletBackupStatus.loading,
-        ),
-      );
+      emit(state.copyWith(status: TestWalletBackupStatus.loading));
 
       await _connectToGoogleDriveUsecase.execute();
-      emit(
-        state.copyWith(
-          vaultProvider: const VaultProvider.googleDrive(),
-        ),
-      );
+      emit(state.copyWith(vaultProvider: const VaultProvider.googleDrive()));
 
       final encryptedBackup =
           await _fetchLatestGoogleDriveBackupUsecase.execute();
@@ -135,13 +123,12 @@ class TestWalletBackupBloc
       }
 
       emit(
-        state.copyWith(
-          vaultProvider: VaultProvider.fileSystem(selectedFile),
-        ),
+        state.copyWith(vaultProvider: VaultProvider.fileSystem(selectedFile)),
       );
 
-      final encryptedBackup =
-          await _fetchBackupFromFileSystemUsecase.execute(selectedFile);
+      final encryptedBackup = await _fetchBackupFromFileSystemUsecase.execute(
+        selectedFile,
+      );
       emit(
         state.copyWith(
           status: TestWalletBackupStatus.success,
@@ -163,11 +150,7 @@ class TestWalletBackupBloc
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      emit(
-        state.copyWith(
-          status: TestWalletBackupStatus.loading,
-        ),
-      );
+      emit(state.copyWith(status: TestWalletBackupStatus.loading));
 
       try {
         await _restoreEncryptedVaultFromBackupKeyUsecase.execute(
@@ -226,8 +209,9 @@ class TestWalletBackupBloc
     final testMnemonic = state.testMnemonicOrder.toList();
     if (testMnemonic.length == 12) return;
 
-    final (word, isSelected, actualIdx) =
-        state.shuffleElementAt(event.shuffledIdx);
+    final (word, isSelected, actualIdx) = state.shuffleElementAt(
+      event.shuffledIdx,
+    );
     if (isSelected) return;
     if (actualIdx != testMnemonic.length) {
       await Future.delayed(const Duration(milliseconds: 300));
@@ -242,50 +226,14 @@ class TestWalletBackupBloc
     }
 
     // Add the selected word to testMnemonicOrder
-    testMnemonic.add(
-      (
-        word: word,
-        shuffleIdx: event.shuffledIdx,
-        selectedActualIdx: actualIdx,
-      ),
-    );
+    testMnemonic.add((
+      word: word,
+      shuffleIdx: event.shuffledIdx,
+      selectedActualIdx: actualIdx,
+    ));
 
     // Emit new state with updated testMnemonicOrder
-    emit(
-      state.copyWith(
-        testMnemonicOrder: testMnemonic,
-        statusError: '',
-      ),
-    );
-  }
-
-  Future<void> _loadSeedForVerification(
-    LoadSeedForVerification event,
-    Emitter<TestWalletBackupState> emit,
-  ) async {
-    try {
-      emit(
-        state.copyWith(
-          status: TestWalletBackupStatus.loading,
-        ),
-      );
-      final mnemonic = await _loadDefaultMnemonicUsecase.execute();
-      emit(
-        state.copyWith(
-          mnemonic: mnemonic,
-          status: TestWalletBackupStatus.success,
-          shuffledMnemonic: mnemonic.toList()..shuffle(),
-          testMnemonicOrder: [],
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          status: TestWalletBackupStatus.error,
-          statusError: 'Failed to load seed for verification: $e',
-        ),
-      );
-    }
+    emit(state.copyWith(testMnemonicOrder: testMnemonic, statusError: ''));
   }
 
   Future<void> _verifyPhysicalBackup(
@@ -343,6 +291,70 @@ class TestWalletBackupBloc
         state.copyWith(
           status: TestWalletBackupStatus.error,
           statusError: 'Verification failed: $e',
+        ),
+      );
+    }
+  }
+
+  Future<void> _onLoadWallets(
+    LoadWallets event,
+    Emitter<TestWalletBackupState> emit,
+  ) async {
+    emit(state.copyWith(status: TestWalletBackupStatus.loading));
+    try {
+      final wallets = await _loadWalletsForNetworkUsecase.execute();
+      if (wallets.isEmpty) throw Exception('No wallets found');
+      final Wallet selected = wallets.firstWhere(
+        (w) => w.isDefault,
+        orElse: () => wallets.first,
+      );
+      emit(
+        state.copyWith(
+          wallets: wallets,
+          selectedWallet: selected,
+          status: TestWalletBackupStatus.success,
+        ),
+      );
+      // Automatically load mnemonic for default wallet
+      add(LoadMnemonicForWallet(walletId: selected.id));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: TestWalletBackupStatus.error,
+          statusError: 'Failed to load wallets: $e',
+        ),
+      );
+    }
+  }
+
+  Future<void> _onLoadMnemonicForWallet(
+    LoadMnemonicForWallet event,
+    Emitter<TestWalletBackupState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(status: TestWalletBackupStatus.loading));
+      final wallet = state.wallets.firstWhere((w) => w.id == event.walletId);
+      final (
+        mnemonicWords,
+        passphrase,
+      ) = await _getMnemonicFromFingerprintUsecase.execute(
+        wallet.masterFingerprint,
+      );
+      emit(
+        state.copyWith(
+          selectedWallet: wallet,
+          mnemonic: mnemonicWords,
+          passphrase: passphrase ?? '',
+          shuffledMnemonic: mnemonicWords.toList()..shuffle(),
+          testMnemonicOrder: [],
+          status: TestWalletBackupStatus.success,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: TestWalletBackupStatus.error,
+          statusError: 'Failed to load mnemonic: $e',
         ),
       );
     }

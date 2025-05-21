@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
-import 'package:bb_mobile/core/seed/domain/services/mnemonic_seed_factory.dart';
+import 'package:bb_mobile/core/seed/domain/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
@@ -8,18 +8,18 @@ import 'package:flutter/material.dart';
 class CreateDefaultWalletsUsecase {
   final SeedRepository _seedRepository;
   final SettingsRepository _settingsRepository;
-  final MnemonicSeedFactory _mnemonicSeedFactory;
+  final MnemonicGenerator _mnemonicGenerator;
   final WalletRepository _wallet;
 
   CreateDefaultWalletsUsecase({
     required SeedRepository seedRepository,
     required SettingsRepository settingsRepository,
-    required MnemonicSeedFactory mnemonicSeedFactory,
+    required MnemonicGenerator mnemonicGenerator,
     required WalletRepository walletRepository,
-  })  : _seedRepository = seedRepository,
-        _settingsRepository = settingsRepository,
-        _mnemonicSeedFactory = mnemonicSeedFactory,
-        _wallet = walletRepository;
+  }) : _seedRepository = seedRepository,
+       _settingsRepository = settingsRepository,
+       _mnemonicGenerator = mnemonicGenerator,
+       _wallet = walletRepository;
 
   Future<List<Wallet>> execute({
     List<String>? mnemonicWords,
@@ -28,16 +28,11 @@ class CreateDefaultWalletsUsecase {
     try {
       // Generate a mnemonic seed if the user creates a new wallet
       //  or use the provided mnemonic words in case of recovery.
-      final mnemonicSeed = mnemonicWords == null
-          ? await _mnemonicSeedFactory.generate(passphrase: passphrase)
-          : _mnemonicSeedFactory.fromWords(
-              mnemonicWords,
-              passphrase: passphrase,
-            );
-      // Store the seed in the repository
-      await _seedRepository.store(
-        fingerprint: mnemonicSeed.masterFingerprint,
-        seed: mnemonicSeed,
+      final mnemonic = mnemonicWords ?? await _mnemonicGenerator.generate();
+      // Create and store the seed
+      final seed = await _seedRepository.createFromMnemonic(
+        mnemonicWords: mnemonic,
+        passphrase: passphrase,
       );
 
       // The current default script type for the wallets is BIP84
@@ -46,22 +41,23 @@ class CreateDefaultWalletsUsecase {
       // Get the current environment to determine the network
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
-      final bitcoinNetwork = environment.isMainnet
-          ? Network.bitcoinMainnet
-          : Network.bitcoinTestnet;
+      final bitcoinNetwork =
+          environment.isMainnet
+              ? Network.bitcoinMainnet
+              : Network.bitcoinTestnet;
       final liquidNetwork =
           environment.isMainnet ? Network.liquidMainnet : Network.liquidTestnet;
 
       // The default wallets should be 1 Bitcoin and 1 Liquid wallet.
       final defaultWallets = await Future.wait([
         _wallet.createWallet(
-          seed: mnemonicSeed,
+          seed: seed,
           network: bitcoinNetwork,
           scriptType: scriptType,
           isDefault: true,
         ),
         _wallet.createWallet(
-          seed: mnemonicSeed,
+          seed: seed,
           network: liquidNetwork,
           scriptType: scriptType,
           isDefault: true,

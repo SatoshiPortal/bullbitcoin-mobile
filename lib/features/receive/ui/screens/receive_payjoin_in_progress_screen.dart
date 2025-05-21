@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -20,7 +21,7 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
 
-        context.pop();
+        context.go(HomeRoute.home.path);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -29,7 +30,7 @@ class ReceivePayjoinInProgressScreen extends StatelessWidget {
           flexibleSpace: TopBar(
             title: 'Receive',
             actionIcon: Icons.close,
-            onAction: context.pop,
+            onAction: () => context.go(HomeRoute.home.path),
           ),
         ),
         body: const PayjoinInProgressPage(),

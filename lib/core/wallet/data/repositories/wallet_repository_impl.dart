@@ -54,7 +54,7 @@ class WalletRepositoryImpl implements WalletRepository {
     required Seed seed,
     required Network network,
     required ScriptType scriptType,
-    String label = '',
+    String? label,
     bool isDefault = false,
     bool sync = false,
   }) async {
@@ -69,6 +69,7 @@ class WalletRepositoryImpl implements WalletRepository {
                     network == Network.liquidTestnet)
             ? 'Instant Payments'
             : label;
+
     final metadata = await WalletMetadataService.deriveFromSeed(
       seed: seed,
       network: network,
@@ -76,12 +77,19 @@ class WalletRepositoryImpl implements WalletRepository {
       label: walletLabel,
       isDefault: isDefault,
     );
-    await _walletMetadataDatasource.store(metadata);
 
-    // Get the balance
+    if (isDefault) {
+      final allWallets = await getWallets(onlyDefaults: true);
+      for (final wallet in allWallets) {
+        if (wallet.isDefault && wallet.network == metadata.network) {
+          throw Exception('Default wallet already exists');
+        }
+      }
+    }
+
+    await _walletMetadataDatasource.store(metadata);
     final balance = await _getBalance(metadata, sync: sync);
 
-    // Return the created wallet entity
     return Wallet(
       origin: metadata.id,
       label: metadata.label,
@@ -117,6 +125,13 @@ class WalletRepositoryImpl implements WalletRepository {
 
     // Fetch the balance (in the future maybe other details of the wallet too)
     final balance = await _getBalance(metadata, sync: sync);
+
+    final allWallets = await getWallets(onlyDefaults: true);
+    for (final wallet in allWallets) {
+      if (wallet.id == metadata.id) {
+        throw Exception('Wallet already exists');
+      }
+    }
 
     // Return the created wallet entity
     return Wallet(
@@ -318,6 +333,10 @@ class WalletRepositoryImpl implements WalletRepository {
 
   Future<void> _startAutoSyncing() async {
     // TODO: get from constants
+    // TODO(azad): shouldn't we store `autoSyncIntervalSeconds` in sqlite settings?
+    // @azad Yes we should, but for now it is not an option in the UI yet,
+    //  so OK as a constant for now. When we add the option to the UI, we can
+    //  move it to the settings table.
     const autoSyncInterval = Duration(
       seconds: SettingsConstants.autoSyncIntervalSeconds,
     );

@@ -1,18 +1,11 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SettingsConstants {
-  static const environmentKey = 'environment';
-  static const bitcoinUnitKey = 'bitcoinUnit';
-  static const languageKey = 'language';
-  static const currencyKey = 'currency';
-  static const hideAmountsKey = 'hideAmounts';
-  static const blockstreamElectrumServerKeyPrefix = 'blockstreamElectrumServer';
-  static const bullBitcoinElectrumServerKeyPrefix = 'bullBitcoinElectrumServer';
-  static const customElectrumServerKeyPrefix = 'customElectrumServer';
-  static const defaultCurrencyCode = 'CAD';
-  // Added `autoSyncIntervalSeconds` to `SettingsConstants` since we could make
-  //  this configurable in the future if desired.
+  // `SettingsConstants` are constants that in the future potentially can become
+  //  a configurable setting, in which case they should be added to the Settings
+  //  table in sqlite and not be defined here as constants anymore.
   static const autoSyncIntervalSeconds = 5;
+  static const logFileName = 'bb_mobile.log';
 }
 
 class ConversionConstants {

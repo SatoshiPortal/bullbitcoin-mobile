@@ -13,7 +13,7 @@ sealed class TransactionOutput with _$TransactionOutput implements Labelable {
     required bool isOwn,
     BigInt? value,
     required Uint8List scriptPubkey,
-    required String address,
+    String? address,
     @Default([]) List<String> labels,
     @Default([]) List<String> addressLabels,
   }) = BitcoinTransactionOutput;

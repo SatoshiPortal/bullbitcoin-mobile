@@ -1,9 +1,11 @@
+import 'package:bb_mobile/core/logging/domain/usecases/add_log_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_hide_amounts_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/set_is_superuser_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_language_usecase.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
@@ -22,17 +24,20 @@ class SettingsLocator {
       ),
     );
     locator.registerFactory<SetLanguageUsecase>(
-      () => SetLanguageUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () =>
+          SetLanguageUsecase(settingsRepository: locator<SettingsRepository>()),
     );
     locator.registerFactory<SetCurrencyUsecase>(
-      () => SetCurrencyUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-      ),
+      () =>
+          SetCurrencyUsecase(settingsRepository: locator<SettingsRepository>()),
     );
     locator.registerFactory<SetHideAmountsUsecase>(
       () => SetHideAmountsUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerFactory<SetIsSuperuserUsecase>(
+      () => SetIsSuperuserUsecase(
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
@@ -46,6 +51,8 @@ class SettingsLocator {
         setLanguageUsecase: locator<SetLanguageUsecase>(),
         setCurrencyUsecase: locator<SetCurrencyUsecase>(),
         setHideAmountsUsecase: locator<SetHideAmountsUsecase>(),
+        setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
+        addLogUsecase: locator<AddLogUsecase>(),
       ),
     );
   }

@@ -5,9 +5,11 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_la
 import 'package:bb_mobile/core/recoverbull/domain/usecases/restore_encrypted_vault_from_backup_key_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_file_path_usecase.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/complete_encrypted_vault_verification_usecase.dart.dart';
-import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_default_mnemonic_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/get_mnemonic_from_fingerprint_usecase.dart';
+import 'package:bb_mobile/features/test_wallet_backup/domain/usecases/load_wallets_for_network_usecase.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 
@@ -20,9 +22,14 @@ class TestWalletBackupLocator {
       ),
     );
 
-    locator.registerLazySingleton<LoadDefaultMnemonicUsecase>(
-      () => LoadDefaultMnemonicUsecase(
+    locator.registerLazySingleton<LoadWalletsForNetworkUsecase>(
+      () => LoadWalletsForNetworkUsecase(
         walletRepository: locator<WalletRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+    locator.registerLazySingleton<GetMnemonicFromFingerprintUsecase>(
+      () => GetMnemonicFromFingerprintUsecase(
         seedRepository: locator<SeedRepository>(),
       ),
     );
@@ -31,7 +38,9 @@ class TestWalletBackupLocator {
       () => TestWalletBackupBloc(
         fetchBackupFromFileSystemUsecase:
             locator<FetchBackupFromFileSystemUsecase>(),
-        loadDefaultMnemonicUsecase: locator<LoadDefaultMnemonicUsecase>(),
+        loadWalletsForNetworkUsecase: locator<LoadWalletsForNetworkUsecase>(),
+        getMnemonicFromFingerprintUsecase:
+            locator<GetMnemonicFromFingerprintUsecase>(),
         completeEncryptedVaultVerificationUsecase:
             locator<CompleteEncryptedVaultVerificationUsecase>(),
         completePhysicalBackupVerificationUsecase:

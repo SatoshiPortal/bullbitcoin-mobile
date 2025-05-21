@@ -18,15 +18,14 @@ class WatchWalletTransactionByAddressUsecase {
 
   Stream<WalletTransaction> execute({
     required String walletId,
-    String? toAddress,
+    required String toAddress,
   }) {
     return _walletRepository.walletSyncFinishedStream
         .where((wallet) => wallet.id == walletId)
         .asyncMap((wallet) async {
           try {
             debugPrint(
-              'Fetching transactions'
-              ' ${toAddress != null ? 'to address $toAddress' : ''}'
+              'Fetching transactions to address $toAddress'
               ' for wallet: $walletId',
             );
 
@@ -37,15 +36,13 @@ class WatchWalletTransactionByAddressUsecase {
                 );
 
             debugPrint(
-              'Fetched ${txs.length} transactions'
-              ' ${toAddress != null ? 'to address $toAddress' : ''}'
+              'Fetched ${txs.length} transactions to address $toAddress'
               ' for wallet: $walletId',
             );
 
             if (txs.isEmpty) {
               debugPrint(
-                'No transactions found for wallet: $walletId'
-                ' ${toAddress != null ? 'and address $toAddress' : ''}',
+                'No transactions found for wallet: $walletId and address $toAddress',
               );
               return null;
             }

@@ -58,21 +58,8 @@ class ReceiveRouter {
                         current.isPaymentInProgress == true,
                 listener: (context, state) {
                   final bloc = context.read<ReceiveBloc>();
-                  final matched = GoRouterState.of(context).matchedLocation;
                   final type = state.type;
-
-                  // Pop the current route if it's not one of the main receive routes
-                  // This is to prevent the user from going back to the previous screen
-                  // when they select a different network
-                  // and then pressing the back button.
-                  // TODO: this is a temporary fix, we should handle this better in the future
-                  // with proper stateful nested navigation.
                   final location = GoRouter.of(context).state.matchedLocation;
-                  if (location != ReceiveRoute.receiveBitcoin.path &&
-                      location != ReceiveRoute.receiveLightning.path &&
-                      location != ReceiveRoute.receiveLiquid.path) {
-                    context.pop();
-                  }
 
                   // For a Payjoin or Lightning receive, show the payment in progress screen
                   //  when the payjoin is requested or swap is claimable.
@@ -81,13 +68,13 @@ class ReceiveRouter {
                   //  in the context. We need to pass it as an extra parameter.
                   if (type == ReceiveType.bitcoin &&
                       state.payjoin?.status == PayjoinStatus.requested) {
-                    context.pushReplacement(
-                      '$matched/${ReceiveRoute.payjoinInProgress.path}',
+                    context.go(
+                      '$location/${ReceiveRoute.payjoinInProgress.path}',
                       extra: bloc,
                     );
                   } else if (type == ReceiveType.lightning) {
-                    context.pushReplacement(
-                      '$matched/${ReceiveRoute.paymentInProgress.path}',
+                    context.go(
+                      '$location/${ReceiveRoute.paymentInProgress.path}',
                       extra: bloc,
                     );
                   }
@@ -100,29 +87,16 @@ class ReceiveRouter {
                         current.isPaymentReceived == true,
                 listener: (context, state) {
                   final bloc = context.read<ReceiveBloc>();
-                  final matched = GoRouterState.of(context).matchedLocation;
+                  final matched = GoRouter.of(context).state.matchedLocation;
                   final type = state.type;
 
                   final path = switch (type) {
                     ReceiveType.lightning =>
-                      '$matched/${ReceiveRoute.paymentInProgress.path}/${ReceiveRoute.paymentReceived.path}',
+                      '$matched/${ReceiveRoute.paymentReceived.path}',
                     _ => '$matched/${ReceiveRoute.details.path}',
                   };
 
-                  // Pop the current route if it's not one of the main receive routes
-                  // This is to prevent the user from going back to the previous screen
-                  // when they select a different network
-                  // and then pressing the back button.
-                  // TODO: this is a temporary fix, we should handle this better in the future
-                  // with proper stateful nested navigation.
-                  final location = GoRouter.of(context).state.matchedLocation;
-                  if (location != ReceiveRoute.receiveBitcoin.path &&
-                      location != ReceiveRoute.receiveLightning.path &&
-                      location != ReceiveRoute.receiveLiquid.path) {
-                    context.pop();
-                  }
-
-                  context.pushReplacement(path, extra: bloc);
+                  context.go(path, extra: bloc);
                 },
               ),
             ],
@@ -134,7 +108,6 @@ class ReceiveRouter {
     routes: [
       // Bitcoin Receive
       GoRoute(
-        name: ReceiveRoute.receiveBitcoin.name,
         path: ReceiveRoute.receiveBitcoin.path,
         pageBuilder: (context, state) {
           // This is the entry route for the bitcoin receive flow when coming from
@@ -197,7 +170,6 @@ class ReceiveRouter {
       ),
       // Lightning receive
       GoRoute(
-        name: ReceiveRoute.receiveLightning.name,
         path: ReceiveRoute.receiveLightning.path,
         pageBuilder: (context, state) {
           // This is the entry route for the lightning receive flow.
@@ -226,48 +198,50 @@ class ReceiveRouter {
                   state.extra is Wallet ? state.extra! as Wallet : null;
               return NoTransitionPage(child: ReceiveQrPage(wallet: wallet));
             },
-          ),
-          GoRoute(
-            path: ReceiveRoute.amount.path,
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: ReceiveAmountScreen()),
-          ),
-          GoRoute(
-            path: ReceiveRoute.paymentInProgress.path,
-            parentNavigatorKey: AppRouter.rootNavigatorKey,
-            builder: (context, state) {
-              final bloc = state.extra! as ReceiveBloc;
-
-              return BlocProvider.value(
-                value: bloc,
-                child: const ReceivePaymentInProgressScreen(),
-              );
-            },
             routes: [
               GoRoute(
-                path: ReceiveRoute.paymentReceived.path,
+                path: ReceiveRoute.amount.path,
+                pageBuilder:
+                    (context, state) =>
+                        const NoTransitionPage(child: ReceiveAmountScreen()),
+              ),
+              GoRoute(
+                path: ReceiveRoute.paymentInProgress.path,
                 parentNavigatorKey: AppRouter.rootNavigatorKey,
                 builder: (context, state) {
                   final bloc = state.extra! as ReceiveBloc;
 
                   return BlocProvider.value(
                     value: bloc,
-                    child: const ReceivePaymentReceivedScreen(),
+                    child: const ReceivePaymentInProgressScreen(),
                   );
                 },
                 routes: [
                   GoRoute(
-                    path: ReceiveRoute.details.path,
+                    path: ReceiveRoute.paymentReceived.path,
                     parentNavigatorKey: AppRouter.rootNavigatorKey,
                     builder: (context, state) {
                       final bloc = state.extra! as ReceiveBloc;
 
                       return BlocProvider.value(
                         value: bloc,
-                        child: const ReceiveDetailsScreen(),
+                        child: const ReceivePaymentReceivedScreen(),
                       );
                     },
+                    routes: [
+                      GoRoute(
+                        path: ReceiveRoute.details.path,
+                        parentNavigatorKey: AppRouter.rootNavigatorKey,
+                        builder: (context, state) {
+                          final bloc = state.extra! as ReceiveBloc;
+
+                          return BlocProvider.value(
+                            value: bloc,
+                            child: const ReceiveDetailsScreen(),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -277,7 +251,6 @@ class ReceiveRouter {
       ),
       // Liquid receive
       GoRoute(
-        name: ReceiveRoute.receiveLiquid.name,
         path: ReceiveRoute.receiveLiquid.path,
         pageBuilder: (context, state) {
           // This is the entry route for the liquid receive flow when coming from
@@ -315,4 +288,164 @@ class ReceiveRouter {
       ),
     ],
   );
+
+  // Test example for stateful navigation with independent blocs as we should
+  // have in the future for the receive flow.
+  /*
+  static final statefulTestRoute = StatefulShellRoute.indexedStack(
+    builder: (context, state, shell) => ScaffoldWithNavBar(shell: shell),
+    branches: [
+      // Branch A with Bloc scoped using ShellRoute
+      StatefulShellBranch(
+        initialLocation: '/a',
+        routes: [
+          ShellRoute(
+            builder: (context, state, child) {
+              return BlocProvider(create: (_) => CounterBloc(), child: child);
+            },
+            routes: [
+              GoRoute(
+                path: '/a',
+                builder: (context, state) => const TabAScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'details',
+                    builder: (context, state) => const TabADetailsScreen(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+
+      // Branch B with separate Bloc
+      StatefulShellBranch(
+        routes: [
+          ShellRoute(
+            builder: (context, state, child) {
+              return BlocProvider(create: (_) => CounterBloc(), child: child);
+            },
+            routes: [
+              GoRoute(
+                path: '/b',
+                builder: (context, state) => const TabBScreen(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );*/
 }
+
+/*
+// Components for the stateful test route
+class TabAScreen extends StatelessWidget {
+  const TabAScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final count = context.watch<CounterBloc>().state;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Tab A')),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Counter A: $count', style: const TextStyle(fontSize: 24)),
+            ElevatedButton(
+              onPressed: () => context.read<CounterBloc>().increment(),
+              child: const Text('Increment A'),
+            ),
+            ElevatedButton(
+              onPressed: () => context.push('/a/details'),
+              child: const Text('Go to A Details'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TabADetailsScreen extends StatelessWidget {
+  const TabADetailsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final count = context.watch<CounterBloc>().state;
+    return Scaffold(
+      appBar: AppBar(title: const Text('A Details')),
+      body: Center(child: Text('Counter A (in details): $count')),
+    );
+  }
+}
+
+class TabBScreen extends StatelessWidget {
+  const TabBScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final count = context.watch<CounterBloc>().state;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Tab B')),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Counter B: $count', style: const TextStyle(fontSize: 24)),
+            ElevatedButton(
+              onPressed: () => context.read<CounterBloc>().increment(),
+              child: const Text('Increment B'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CounterBloc extends Cubit<int> {
+  CounterBloc() : super(0);
+
+  void increment() => emit(state + 1);
+}
+
+class ScaffoldWithNavBar extends StatelessWidget {
+  final StatefulNavigationShell shell;
+  const ScaffoldWithNavBar({super.key, required this.shell});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Shell Navigation Example'),
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_left),
+          onPressed: () {
+            GoRouter.of(context).state.matchedLocation == '/a' ||
+                    GoRouter.of(context).state.matchedLocation == '/b'
+                ? context.pop()
+                : GoRouter.of(
+                  shell.shellRouteContext.navigatorKey.currentContext!,
+                ).pop();
+          },
+        ),
+      ),
+      body: shell,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: shell.currentIndex,
+        onTap: shell.goBranch,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.looks_one), label: 'Tab A'),
+          BottomNavigationBarItem(icon: Icon(Icons.looks_two), label: 'Tab B'),
+        ],
+      ),
+    );
+  }
+}
+*/

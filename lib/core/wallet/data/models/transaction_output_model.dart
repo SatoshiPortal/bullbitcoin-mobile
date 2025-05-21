@@ -12,7 +12,7 @@ sealed class TransactionOutputModel with _$TransactionOutputModel {
     required bool isOwn,
     BigInt? value,
     required Uint8List scriptPubkey,
-    required String address,
+    String? address,
   }) = BitcoinTransactionOutputModel;
   const factory TransactionOutputModel.liquid({
     required String txId,

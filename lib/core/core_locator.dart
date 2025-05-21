@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/electrum/electrum_locator.dart';
 import 'package:bb_mobile/core/exchange/exchange_locator.dart';
 import 'package:bb_mobile/core/fees/fees_locator.dart';
 import 'package:bb_mobile/core/labels/labels_locator.dart';
+import 'package:bb_mobile/core/logging/log_locator.dart';
 import 'package:bb_mobile/core/payjoin/payjoin_locator.dart';
 import 'package:bb_mobile/core/recoverbull/recoverbull_locator.dart';
 import 'package:bb_mobile/core/seed/seed_locator.dart';
@@ -20,6 +21,7 @@ class CoreLocator {
   }
 
   static Future<void> registerDatasources() async {
+    LogLocator.registerDatasources();
     await TorLocator.registerDatasources();
     BlockchainLocator.registerDatasources();
     await ElectrumLocator.registerDatasources();
@@ -28,7 +30,7 @@ class CoreLocator {
     await PayjoinLocator.registerDatasources();
     await RecoverbullLocator.registerDatasources();
     SeedLocator.registerDatasources();
-    StorageLocator.registerDatasources();
+    await StorageLocator.registerDatasources();
     await SwapsLocator.registerDatasources();
     await WalletLocator.registerDatasourceres();
     LabelsLocator.registerDatasources();
@@ -36,6 +38,7 @@ class CoreLocator {
   }
 
   static Future<void> registerRepositories() async {
+    LogLocator.registerRepositories();
     await TorLocator.registerRepositories();
     BlockchainLocator.registerRepositories();
     ElectrumLocator.registerRepositories();
@@ -45,8 +48,8 @@ class CoreLocator {
     PayjoinLocator.registerRepositories();
     await RecoverbullLocator.registerRepositories();
     SeedLocator.registerRepositories();
+    StorageLocator.registerRepositories();
     await SettingsLocator.registerRepositories();
-    ElectrumLocator.registerUsecases();
     SwapsLocator.registerRepositories();
     WalletLocator.registerRepositories();
   }
@@ -57,6 +60,8 @@ class CoreLocator {
   }
 
   static void registerUsecases() {
+    LogLocator.registerUsecases();
+    ElectrumLocator.registerUsecases();
     BlockchainLocator.registerUsecases();
     ExchangeLocator.registerUseCases();
     FeesLocator.registerUseCases();
@@ -64,6 +69,7 @@ class CoreLocator {
     PayjoinLocator.registerUsecases();
     RecoverbullLocator.registerUsecases();
     SeedLocator.registerUsecases();
+    StorageLocator.registerUsecases();
     SettingsLocator.registerUsecases();
     SwapsLocator.registerUsecases();
     TorLocator.registerUsecases();

@@ -17,6 +17,7 @@ class SettingsRepository {
     required String currency,
     required Language language,
     required bool hideAmounts,
+    required bool isSuperuser,
   }) async {
     await _settingsDatasource.store(
       SettingsModel(
@@ -26,6 +27,7 @@ class SettingsRepository {
         language: language,
         currency: currency,
         hideAmounts: hideAmounts,
+        isSuperuser: isSuperuser,
       ),
     );
   }
@@ -39,6 +41,7 @@ class SettingsRepository {
       currencyCode: s.currency,
       language: s.language,
       hideAmounts: s.hideAmounts,
+      isSuperuser: s.isSuperuser,
     );
   }
 
@@ -60,5 +63,9 @@ class SettingsRepository {
 
   Future<void> setHideAmounts(bool hide) async {
     await _settingsDatasource.setHideAmounts(hide);
+  }
+
+  Future<void> setIsSuperuser(bool superuser) async {
+    await _settingsDatasource.setIsSuperuser(superuser);
   }
 }

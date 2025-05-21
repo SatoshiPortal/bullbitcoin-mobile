@@ -1,5 +1,6 @@
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/cards/tag_card.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -21,6 +22,9 @@ class OnboardingRecoverOptions extends StatefulWidget {
 class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
   @override
   Widget build(BuildContext context) {
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state?.isSuperuser ?? false,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -48,27 +52,31 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                       style: context.font.bodyLarge,
                     ),
                     const Gap(16),
-                    BackupOptionCard(
-                      icon: Image.asset(
-                        'assets/encrypted_vault.png',
-                        width: 36,
-                        height: 45,
-                        fit: BoxFit.cover,
-                      ),
-                      title: 'Encrypted vault',
-                      description:
-                          'Anonymous backup with strong encryption using your cloud.',
-                      tag: 'Easy and simple (1 minute)',
-                      onTap: () => {
-                        context.read<KeyServerCubit>().checkConnection(),
-                        context.pushNamed(
-                          OnboardingSubroute.chooseRecoverProvider
-                              .name, // ChooseVaultProviderScreen
-                          extra: true,
+                    if (isSuperuser) ...[
+                      BackupOptionCard(
+                        icon: Image.asset(
+                          'assets/encrypted_vault.png',
+                          width: 36,
+                          height: 45,
+                          fit: BoxFit.cover,
                         ),
-                      },
-                    ),
-                    const Gap(16),
+                        title: 'Encrypted vault',
+                        description:
+                            'Anonymous backup with strong encryption using your cloud.',
+                        tag: 'Easy and simple (1 minute)',
+                        onTap:
+                            () => {
+                              context.read<KeyServerCubit>().checkConnection(),
+                              context.pushNamed(
+                                OnboardingRoute
+                                    .chooseRecoverProvider
+                                    .name, // ChooseVaultProviderScreen
+                                extra: true,
+                              ),
+                            },
+                      ),
+                      const Gap(16),
+                    ],
                     BackupOptionCard(
                       icon: Image.asset(
                         'assets/physical_backup.png',
@@ -80,9 +88,10 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                       description:
                           'Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.',
                       tag: 'Trustless (take your time)',
-                      onTap: () => context.pushNamed(
-                        OnboardingSubroute.recoverFromPhysical.name,
-                      ),
+                      onTap:
+                          () => context.pushNamed(
+                            OnboardingRoute.recoverFromPhysical.name,
+                          ),
                     ),
                   ],
                 ),
@@ -135,20 +144,13 @@ class BackupOptionCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: 36,
-                    height: 45,
-                    child: icon,
-                  ),
+                  SizedBox(width: 36, height: 45, child: icon),
                   const Gap(12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        BBText(
-                          title,
-                          style: context.font.headlineMedium,
-                        ),
+                        BBText(title, style: context.font.headlineMedium),
                         const Gap(10),
                         BBText(
                           description,

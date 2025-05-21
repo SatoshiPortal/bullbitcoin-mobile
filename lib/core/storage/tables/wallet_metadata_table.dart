@@ -1,16 +1,5 @@
 import 'package:drift/drift.dart';
 
-enum WalletSource {
-  mnemonic,
-  xpub,
-  descriptors,
-  coldcard;
-
-  static WalletSource fromName(String name) {
-    return WalletSource.values.firstWhere((source) => source.name == name);
-  }
-}
-
 @DataClassName('WalletMetadataRow')
 class WalletMetadatas extends Table {
   TextColumn get id => text()();
@@ -23,9 +12,9 @@ class WalletMetadatas extends Table {
   TextColumn get xpub => text()();
   TextColumn get externalPublicDescriptor => text()();
   TextColumn get internalPublicDescriptor => text()();
-  TextColumn get source => textEnum<WalletSource>()();
+  TextColumn get source => text()();
   BoolColumn get isDefault => boolean()();
-  TextColumn get label => text()();
+  TextColumn get label => text().nullable()();
   DateTimeColumn get syncedAt => dateTime().nullable()();
 
   @override

@@ -22,14 +22,8 @@ class StartVaultBackupTesting extends TestWalletBackupEvent {
 }
 
 class OnWordsSelected extends TestWalletBackupEvent {
-  const OnWordsSelected({
-    required this.shuffledIdx,
-  });
+  const OnWordsSelected({required this.shuffledIdx});
   final int shuffledIdx;
-}
-
-class LoadSeedForVerification extends TestWalletBackupEvent {
-  const LoadSeedForVerification();
 }
 
 class StartPhysicalBackupVerification extends TestWalletBackupEvent {
@@ -46,4 +40,13 @@ class StartTransitioning extends TestWalletBackupEvent {
 
 class EndTransitioning extends TestWalletBackupEvent {
   const EndTransitioning();
+}
+
+class LoadWallets extends TestWalletBackupEvent {
+  const LoadWallets();
+}
+
+class LoadMnemonicForWallet extends TestWalletBackupEvent {
+  const LoadMnemonicForWallet({required this.walletId});
+  final String walletId;
 }

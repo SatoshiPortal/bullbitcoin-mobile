@@ -22,9 +22,9 @@ class HomeWalletScreen extends StatelessWidget {
         wallet.isDefault
             ? wallet.isLiquid
                 ? // TODO: use labels from translations for hardcoded names here
-                "Instant wallet"
-                : "Secure Bitcoin wallet"
-            : wallet.label;
+                "Instant Payments"
+                : "Secure Bitcoin"
+            : wallet.getLabel() ?? '';
 
     return Scaffold(
       appBar: AppBar(
@@ -40,6 +40,7 @@ class HomeWalletScreen extends StatelessWidget {
               HomeWalletBalanceCard(
                 balanceSat: wallet.balanceSat.toInt(),
                 isLiquid: wallet.isLiquid,
+                walletSource: wallet.source,
               ),
               const Gap(16.0),
               const HomeWalletTxsList(),
