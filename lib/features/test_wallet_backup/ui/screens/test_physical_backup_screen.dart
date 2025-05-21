@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/mixins/privacy_screen.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/ui/components/bottom_sheet/x.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -24,6 +26,12 @@ class TestPhysicalBackupFlow extends StatefulWidget {
 class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
     with PrivacyScreen {
   @override
+  void initState() {
+    super.initState();
+    enableScreenPrivacy();
+  }
+
+  @override
   void dispose() {
     unawaited(disableScreenPrivacy());
     super.dispose();
@@ -31,57 +39,150 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: enableScreenPrivacy(),
-      builder: (context, snapshot) {
-        return MultiBlocProvider(
-          providers: [
-            BlocProvider.value(
-              value:
-                  locator<TestWalletBackupBloc>()
-                    ..add(const LoadSeedForVerification()),
-            ),
-          ],
-          child: BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
-            listener: (context, state) {
-              if (state.status == TestWalletBackupStatus.error) {
-              } else if (state.status == TestWalletBackupStatus.success &&
-                  state.testMnemonicOrder.isNotEmpty) {
-                context.goNamed(
-                  TestWalletBackupSubroute.backupTestSuccess.name,
-                );
-              }
-            },
-            child: Builder(
-              builder: (context) {
-                final isVerifying = context.select(
-                  (TestWalletBackupBloc bloc) =>
-                      bloc.state.status == TestWalletBackupStatus.verifying,
-                );
+    return BlocProvider.value(
+      value: locator<TestWalletBackupBloc>()..add(const LoadWallets()),
+      child: BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
+        listener: (context, state) {
+          if (state.status == TestWalletBackupStatus.error) {
+          } else if (state.status == TestWalletBackupStatus.success &&
+              state.testMnemonicOrder.isNotEmpty) {
+            context.goNamed(TestWalletBackupSubroute.backupTestSuccess.name);
+          }
+        },
+        child: Builder(
+          builder: (context) {
+            final isVerifying = context.select(
+              (TestWalletBackupBloc bloc) =>
+                  bloc.state.status == TestWalletBackupStatus.verifying,
+            );
+            final wallets = context.select(
+              (TestWalletBackupBloc bloc) => bloc.state.wallets,
+            );
+            final selectedWallet = context.select(
+              (TestWalletBackupBloc bloc) => bloc.state.selectedWallet,
+            );
+            final mnemonicWallets =
+                wallets.where((w) => w.source.name == 'mnemonic').toList();
+            final showDropdown = mnemonicWallets.length > 1;
+            final isLoading = context.select(
+              (TestWalletBackupBloc bloc) =>
+                  bloc.state.status == TestWalletBackupStatus.loading,
+            );
+            return Scaffold(
+              backgroundColor: context.colour.onSecondary,
+              appBar: AppBar(
+                automaticallyImplyLeading: false,
+                flexibleSpace: TopBar(
+                  color: context.colour.onSecondary,
+                  onBack: () => context.pop(),
 
-                return Scaffold(
-                  backgroundColor: context.colour.onSecondary,
-                  appBar: AppBar(
-                    forceMaterialTransparency: true,
-                    automaticallyImplyLeading: false,
-                    flexibleSpace: TopBar(
-                      onBack: () => context.pop(),
-                      title: 'Test Backup',
-                    ),
-                  ),
-                  body: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child:
-                        !isVerifying
-                            ? const TestPhysicalBackupScreen()
-                            : const ShuffledMnemonicScreen(),
-                  ),
-                );
-              },
+                  title: 'Test ${selectedWallet?.getLabel() ?? 'Backup'}',
+                  actionIcon: showDropdown ? CupertinoIcons.chevron_down : null,
+                  onAction:
+                      showDropdown
+                          ? () async {
+                            final bloc = context.read<TestWalletBackupBloc>();
+                            final selectedId = selectedWallet?.id;
+                            final selectedIndex = mnemonicWallets.indexWhere(
+                              (w) => w.id == selectedId,
+                            );
+
+                            final selectedWalletId = await _showWalletPicker(
+                              context: context,
+                              wallets: mnemonicWallets,
+                              initialIndex: selectedIndex,
+                            );
+
+                            if (selectedWalletId != null && mounted) {
+                              bloc.add(
+                                LoadMnemonicForWallet(
+                                  walletId: selectedWalletId,
+                                ),
+                              );
+                            }
+                          }
+                          : null,
+                ),
+              ),
+
+              body: SafeArea(
+                top: false,
+                child:
+                    isLoading
+                        ? const LinearProgressIndicator()
+                        : !isVerifying
+                        ? const TestPhysicalBackupScreen()
+                        : const ShuffledMnemonicScreen(),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Future<String?> _showWalletPicker({
+    required BuildContext context,
+    required List<Wallet> wallets,
+    required int initialIndex,
+  }) {
+    final controller = FixedExtentScrollController(
+      initialItem: initialIndex >= 0 ? initialIndex : 0,
+    );
+
+    return BlurredBottomSheet.show<String>(
+      context: context,
+      isDismissible: true,
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.25,
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+        decoration: BoxDecoration(
+          color: context.colour.onPrimary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => context.pop(),
+                ),
+              ],
             ),
-          ),
-        );
-      },
+            const Gap(8),
+            Expanded(
+              child: CupertinoPicker(
+                scrollController: controller,
+                itemExtent: 70,
+                onSelectedItemChanged: (_) {},
+                children: [
+                  for (final wallet in wallets)
+                    Center(
+                      child: BBText(
+                        wallet.getLabel() ?? wallet.label ?? '',
+                        style: context.font.bodyMedium,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const Gap(16),
+            BBButton.big(
+              label: "Confirm",
+              onPressed: () {
+                final wallet = wallets[controller.selectedItem];
+                context.pop(wallet.id);
+              },
+              bgColor: context.colour.secondary,
+              textColor: context.colour.onSecondary,
+            ),
+            const Gap(16),
+          ],
+        ),
+      ),
     );
   }
 }
