@@ -19,7 +19,6 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:flutter/foundation.dart';
-import 'package:payjoin_flutter/uri.dart' show Url;
 import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
@@ -104,9 +103,8 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
   @override
   Future<bool> checkOhttpRelayHealth() async {
-    final directory = await Url.fromStr(PayjoinConstants.directoryUrl);
     final (ohttpKeys, ohttpRelay) = await _pdkPayjoinDatasource
-        .fetchOhttpKeyAndRelay(payjoinDirectory: directory);
+        .fetchOhttpKeyAndRelay(payjoinDirectory: PayjoinConstants.directoryUrl);
     return ohttpKeys != null && ohttpRelay != null;
   }
 

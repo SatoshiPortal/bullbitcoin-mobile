@@ -1346,11 +1346,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "release/v0.23.0-dev.1"
-      resolved-ref: ee7418e85af103317493365f956de92b6a98dee8
-      url: "https://github.com/LtbLightning/payjoin-flutter"
+      ref: deps-for-bb
+      resolved-ref: "322b61b9074be2c0170e44e589f6552917e58a2e"
+      url: "https://github.com/DanGould/payjoin-flutter"
     source: git
-    version: "0.23.0-dev.1"
+    version: "0.23.0"
   permission_handler:
     dependency: "direct main"
     description:

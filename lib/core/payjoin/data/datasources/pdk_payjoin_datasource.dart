@@ -49,7 +49,7 @@ class PdkPayjoinDatasource {
   Stream<PayjoinModel> get expiredPayjoins => _expiredController.stream;
 
   Future<(OhttpKeys?, Url?)> fetchOhttpKeyAndRelay({
-    required Url payjoinDirectory,
+    required String payjoinDirectory,
   }) async {
     Url? ohttpRelay;
     OhttpKeys? ohttpKeys;
@@ -57,7 +57,7 @@ class PdkPayjoinDatasource {
       try {
         final relay = await Url.fromStr(ohttpRelayUrl);
         ohttpKeys = await fetchOhttpKeys(
-          ohttpRelay: relay,
+          ohttpRelay: ohttpRelayUrl,
           payjoinDirectory: payjoinDirectory,
         );
         ohttpRelay = relay;
@@ -77,23 +77,39 @@ class PdkPayjoinDatasource {
     required int expireAfterSec,
   }) async {
     try {
-      final payjoinDirectory = await Url.fromStr(_payjoinDirectoryUrl);
-
       final (ohttpKeys, ohttpRelay) = await fetchOhttpKeyAndRelay(
-        payjoinDirectory: payjoinDirectory,
+        payjoinDirectory: _payjoinDirectoryUrl,
       );
 
       if (ohttpRelay == null || ohttpKeys == null) {
         throw Exception('All OHTTP relays failed');
       }
 
-      final receiver = await Receiver.create(
+      final newReceiver = NewReceiver.create(
         address: address,
         network: isTestnet ? Network.testnet : Network.bitcoin,
-        directory: payjoinDirectory,
+        directory: _payjoinDirectoryUrl,
         ohttpKeys: ohttpKeys,
-        ohttpRelay: ohttpRelay,
         expireAfter: BigInt.from(expireAfterSec),
+      );
+
+      final imp = InMemoryReceiverPersister();
+      final noOpPersister = DartReceiverPersister(
+        save: (receiver) async {
+          debugPrint('SAVING RECEIVER');
+          final token = await imp.save(receiver: receiver);
+          return token;
+        },
+        load: (token) async {
+          final receiver = await imp.load(token: token);
+          return receiver;
+        },
+      );
+      final token = await newReceiver.persist(persister: noOpPersister);
+
+      final receiver = await Receiver.load(
+        token: token,
+        persister: noOpPersister,
       );
 
       // Create and store the model to keep track of the payjoin session
@@ -104,7 +120,7 @@ class PdkPayjoinDatasource {
                 isTestnet: isTestnet,
                 receiver: receiver.toJson(),
                 walletId: walletId,
-                pjUri: receiver.pjUriBuilder().build().asString(),
+                pjUri: (await receiver.pjUri()).asString(),
                 maxFeeRateSatPerVb: maxFeeRateSatPerVb,
                 createdAt: DateTime.now().millisecondsSinceEpoch ~/ 1000,
                 expireAfterSec: expireAfterSec,
@@ -144,10 +160,20 @@ class PdkPayjoinDatasource {
       psbtBase64: originalPsbt,
       pjUri: pjUri,
     );
-    final sender = await senderBuilder.buildRecommended(
+    final newSender = await senderBuilder.buildRecommended(
       minFeeRate: minFeeRateSatPerKwu,
     );
-
+    final imp = InMemorySenderPersister();
+    final persister = DartSenderPersister(
+      save: (sender) async {
+        return await imp.save(sender: sender);
+      },
+      load: (token) async {
+        return await imp.load(token: token);
+      },
+    );
+    final token = await newSender.persist(persister: persister);
+    final sender = await Sender.load(token: token, persister: persister);
     final senderJson = sender.toJson();
 
     // Create and store the model with the data needed to keep track of the
@@ -181,7 +207,7 @@ class PdkPayjoinDatasource {
     required List<PayjoinInputPairModel> inputPairs,
     required FutureOr<String> Function(String) processPsbt,
   }) async {
-    final receiver = Receiver.fromJson(receiverModel.receiver);
+    final receiver = Receiver.fromJson(json: receiverModel.receiver);
     final request = await getRequest(receiver: receiver, dio: _dio);
 
     if (request == null) {
@@ -205,7 +231,7 @@ class PdkPayjoinDatasource {
     final candidateInputs = await Future.wait(
       inputPairs.map(
         (input) async => await InputPair.newInstance(
-          TxIn(
+          txin: TxIn(
             previousOutput: OutPoint(txid: input.txId, vout: input.vout),
             scriptSig: await Script.newInstance(
               rawOutputScript: input.scriptSigRawOutputScript,
@@ -213,7 +239,7 @@ class PdkPayjoinDatasource {
             sequence: input.sequence,
             witness: input.witness,
           ),
-          PsbtInput(
+          psbtin: PsbtInput(
             witnessUtxo: TxOut(
               value: input.value!,
               scriptPubkey: input.scriptPubkey,
@@ -376,7 +402,7 @@ class PdkPayjoinDatasource {
       final receiverModel = PayjoinReceiverModel.fromJson(
         data as Map<String, dynamic>,
       );
-      final receiver = Receiver.fromJson(receiverModel.receiver);
+      final receiver = Receiver.fromJson(json: receiverModel.receiver);
 
       // Start checking for a payjoin request from the sender periodically
       Timer.periodic(const Duration(seconds: PayjoinConstants.directoryPollingInterval), (
@@ -432,6 +458,11 @@ class PdkPayjoinDatasource {
                 '[Receivers Isolate] timer cancelled in receivers isolate for ${receiver.id()}',
               );
             });
+          } else {
+            log(
+              '[Receivers Isolate] No request found in receivers isolate for '
+              '${receiver.id()}',
+            );
           }
         } catch (e) {
           log(
@@ -465,7 +496,7 @@ class PdkPayjoinDatasource {
       final senderModel = PayjoinSenderModel.fromJson(
         data as Map<String, dynamic>,
       );
-      final sender = Sender.fromJson(senderModel.sender);
+      final sender = Sender.fromJson(json: senderModel.sender);
       log('[Senders Isolate] Requesting payjoin...');
       final context = await PdkPayjoinDatasource.request(
         sender: sender,
@@ -522,8 +553,40 @@ class PdkPayjoinDatasource {
     required Receiver receiver,
     required Dio dio,
   }) async {
+    // The use of ffiError here is a hack, we should change it once payjoin-flutter
+    //  exposes different exceptions for specific errors
+    Object? ffiError;
     try {
-      final (req, context) = await receiver.extractReq();
+      receiver.id();
+      (Request, ClientResponse)? request;
+      for (final ohttpRelay in PayjoinConstants.ohttpRelayUrls) {
+        try {
+          request = await receiver.extractReq(ohttpRelay: ohttpRelay);
+          ffiError = null;
+          log(
+            '[${receiver.id()}] receiver extractReq success: $request with relay $ohttpRelay',
+          );
+          break;
+        } catch (e) {
+          log(
+            '[${receiver.id()}] receiver extractReq exception: $e with relay $ohttpRelay',
+          );
+          ffiError = e;
+          continue;
+        }
+      }
+
+      if (request == null) {
+        if (ffiError != null) {
+          throw ffiError;
+        }
+        throw PayjoinNotFoundException(
+          '[${receiver.id()}] No payjoin request found',
+        );
+      }
+
+      log('[${receiver.id()}] request != null');
+      final (req, context) = request;
       final ohttpResponse = await dio.post(
         req.url.asString(),
         data: req.body,
@@ -532,15 +595,18 @@ class PdkPayjoinDatasource {
           responseType: ResponseType.bytes,
         ),
       );
+      log('[${receiver.id()}] processing request...');
       final proposal = await receiver.processRes(
         body: ohttpResponse.data as List<int>,
         ctx: context,
       );
-
+      log('[${receiver.id()}] request processed');
       return proposal;
     } catch (e) {
-      log('getRequest exception: $e');
-      if (e.toString().contains('expired')) {
+      log('[${receiver.id()}] getRequest exception: $e');
+      if (e == ffiError) {
+        // TODO: Check for the correct error.
+        //  We just assume the error is an expired error for now.
         throw PayjoinExpiredException(
           'Payjoin receiver $receiver.id() expired',
         );
@@ -550,7 +616,21 @@ class PdkPayjoinDatasource {
   }
 
   Future<void> _sendPayjoinProposal(PayjoinProposal proposal) async {
-    final (req, ohttpCtx) = await proposal.extractV2Req();
+    (Request, ClientResponse)? request;
+    for (final ohttpRelayUrl in PayjoinConstants.ohttpRelayUrls) {
+      try {
+        request = await proposal.extractReq(ohttpRelay: ohttpRelayUrl);
+        break;
+      } catch (e) {
+        log('proposal extractReq exception: $e with relay $ohttpRelayUrl');
+        continue;
+      }
+    }
+    if (request == null) {
+      throw PayjoinNotFoundException('No payjoin proposal found');
+    }
+
+    final (req, ohttpCtx) = request;
     final res = await _dio.post(
       req.url.asString(),
       data: req.body,
@@ -609,22 +689,30 @@ class PdkPayjoinDatasource {
     required V2GetContext context,
     required Dio dio,
   }) async {
+    // The use of ffiError here is a hack, we should change it once payjoin-flutter
+    //  exposes different exceptions for specific errors
+    Object? ffiError;
     try {
       (Request, ClientResponse)? result;
-
       for (final ohttpRelay in PayjoinConstants.ohttpRelayUrls) {
         try {
-          result = await context.extractReq(
-            ohttpRelay: await Url.fromStr(ohttpRelay),
+          result = await context.extractReq(ohttpRelay: ohttpRelay);
+          ffiError = null;
+          log(
+            'context extract request success: $result with relay $ohttpRelay',
           );
           break;
         } catch (e) {
-          log('extract request exception: $e');
+          log('context extract request exception: $e with relay $ohttpRelay');
+          ffiError = e;
           continue;
         }
       }
 
       if (result == null) {
+        if (ffiError != null) {
+          throw ffiError;
+        }
         throw Exception('All OHTTP relays failed');
       }
 
@@ -647,12 +735,61 @@ class PdkPayjoinDatasource {
       return proposalPsbt;
     } catch (e) {
       log('getProposalPsbt exception: $e');
-      if (e.toString().contains('expired')) {
+      if (e == ffiError) {
+        // TODO: Check for the correct error.
+        //  We just assume the error is an expired error for now.
         throw PayjoinExpiredException('Payjoin sender expired');
       }
       return null;
     }
   }
+}
+
+class InMemoryReceiverPersister {
+  final Map<String, Receiver> _store = {};
+
+  Future<ReceiverToken> save({required Receiver receiver}) async {
+    final token = receiver.key();
+    _store[token.toBytes().toString()] = receiver;
+    return token;
+  }
+
+  Future<Receiver> load({required ReceiverToken token}) async {
+    debugPrint('LOADING RECEIVER ${token.toBytes()}');
+    final receiver = _store[token.toBytes().toString()];
+    if (receiver == null) {
+      throw Exception('Receiver not found for the provided token.');
+    }
+    return receiver;
+  }
+}
+
+class InMemorySenderPersister implements DartSenderPersister {
+  final Map<String, Sender> _store = {};
+
+  Future<SenderToken> save({required Sender sender}) async {
+    final token = sender.key();
+    debugPrint('TOKEN SAVE: ${token.toBytes()}');
+    _store[token.toBytes().toString()] = sender;
+    return token;
+  }
+
+  Future<Sender> load({required SenderToken token}) async {
+    debugPrint('TOKEN LOAD: ${token.toBytes()}');
+    final sender = _store[token.toBytes().toString()];
+    if (sender == null) {
+      throw Exception('Sender not found for the provided token.');
+    }
+    return sender;
+  }
+
+  @override
+  void dispose() {
+    _store.clear();
+  }
+
+  @override
+  bool get isDisposed => _store.isEmpty;
 }
 
 class PayjoinNotFoundException implements Exception {
@@ -677,4 +814,10 @@ class PayjoinExpiredException implements Exception {
   final String message;
 
   PayjoinExpiredException(this.message);
+}
+
+class OhttpRelaysUnavailableException implements Exception {
+  final String message;
+
+  OhttpRelaysUnavailableException(this.message);
 }

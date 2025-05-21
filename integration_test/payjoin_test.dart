@@ -6,8 +6,6 @@ import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.da
 import 'package:bb_mobile/core/payjoin/domain/usecases/receive_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/send_with_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/storage/seed/sqlite_seed.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
@@ -37,17 +35,15 @@ void main() {
 
   // TODO: Change and move these to github secrets so the testnet coins for our integration
   //  tests are not at risk of being used by others.
-  const senderMnemonic =
-      'duty tattoo frown crazy pelican aisle area wrist robot stove taxi material';
   const receiverMnemonic =
+      'duty tattoo frown crazy pelican aisle area wrist robot stove taxi material';
+  const senderMnemonic =
       'model float claim feature convince exchange truck cream assume fancy swamp offer';
 
   setUpAll(() async {
     await Future.wait([dotenv.load(isOptional: true), core.init()]);
 
     await AppLocator.setup();
-
-    await locator<SqliteDatabase>().seedTables();
 
     await locator<SetEnvironmentUsecase>().execute(Environment.testnet);
 
@@ -158,16 +154,16 @@ void main() {
         expect(pjUri.scheme, 'bitcoin');
         expect(pjUri.path, address.address);
         expect(pjUri.queryParameters.containsKey('pj'), true);
-        expect(pjUri.queryParameters['pjos'], '0');
 
         // Build the psbt with the sender wallet
-        const amountSat = 1000;
+        const amountSat = 1000000;
         const networkFeesSatPerVb = 1000.0;
         final preparedBitcoinSend = await prepareBitcoinSendUsecase.execute(
           walletId: senderWallet.id,
           address: address.address,
-          amountSat: 1000,
+          amountSat: 1000000,
           networkFee: const NetworkFee.relative(networkFeesSatPerVb),
+          ignoreUnspendableInputs: false,
         );
 
         final payjoinSender = await sendWithPayjoinUsecase.execute(
@@ -256,7 +252,7 @@ void main() {
 
     group('with multiple ongoing payjoins', () {
       const numberOfPayjoins = 2;
-      const networkFeesSatPerVb = 250.0;
+      const networkFeesSatPerVb = 1000.0;
       final List<String> receiverAddresses = [];
       final List<Uri> payjoinUris = [];
       final Map<String, Completer<bool>> payjoinCompleters = {};
@@ -337,7 +333,6 @@ void main() {
               expect(pjUri.scheme, 'bitcoin');
               expect(pjUri.path, address.address);
               expect(pjUri.queryParameters.containsKey('pj'), true);
-              expect(pjUri.queryParameters['pjos'], '0');
 
               // Cache the address and payjoin uri
               receiverAddresses.add(address.address);
@@ -346,7 +341,7 @@ void main() {
               payjoinCompleters[payjoin.id] = Completer();
             }
 
-            const amountSat = 1000;
+            const amountSat = 1000000;
             // Set up multiple sender sessions
             for (int i = 0; i < numberOfPayjoins; i++) {
               // Build the psbt with the sender wallet
@@ -356,6 +351,7 @@ void main() {
                     address: receiverAddresses[i],
                     amountSat: amountSat,
                     networkFee: const NetworkFee.relative(networkFeesSatPerVb),
+                    ignoreUnspendableInputs: false,
                   );
 
               final payjoinSender = await sendWithPayjoinUsecase.execute(
