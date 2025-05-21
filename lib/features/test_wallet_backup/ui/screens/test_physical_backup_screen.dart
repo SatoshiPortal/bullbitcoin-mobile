@@ -137,7 +137,7 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
       context: context,
       isDismissible: true,
       child: Container(
-        height: MediaQuery.of(context).size.height * 0.25,
+        height: MediaQuery.of(context).size.height * 0.4,
         padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
         decoration: BoxDecoration(
           color: context.colour.onPrimary,
@@ -166,7 +166,10 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                     Center(
                       child: BBText(
                         wallet.getLabel() ?? wallet.label ?? '',
-                        style: context.font.bodyMedium,
+                        style: context.font.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                        ),
                       ),
                     ),
                 ],
