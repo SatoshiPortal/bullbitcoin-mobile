@@ -1,6 +1,4 @@
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
-import 'package:bb_mobile/core/storage/seed/sqlite_seed.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
@@ -44,8 +42,6 @@ void main() {
     await lwk.LibLwk.init();
     await AppLocator.setup();
 
-    await locator<SqliteDatabase>().seedTables();
-
     for (final mnemonic in mnemonics) {
       final w = await locator<RecoverOrCreateWalletUsecase>().execute(
         mnemonicWords: mnemonic.split(' '),
@@ -79,13 +75,15 @@ void main() {
       );
     }
 
-    bdkElectrum = ElectrumServerModel.blockstream(
+    bdkElectrum = const ElectrumServerModel(
+      url: '',
       isTestnet: false,
       isLiquid: false,
     );
-    lwkElectrum = ElectrumServerModel.blockstream(
+    lwkElectrum = const ElectrumServerModel(
       isTestnet: false,
       isLiquid: true,
+      url: '',
     );
   });
 

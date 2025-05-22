@@ -42,3 +42,7 @@ drift-migrate:
 ios-pod-update:
 	@echo " Fetch dependencies"
 	@cd ios && pod install --repo-update && cd -
+
+ios-sqlite-update:
+	@echo "🔄 Updating SQLite"
+	@cd ios && pod update sqlite3 && cd -
