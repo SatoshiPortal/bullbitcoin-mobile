@@ -71,15 +71,16 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
 
     final swaps = await _boltzRepo.getOngoingSwaps();
     final swapIdsToWatch = swaps.map((swap) => swap.id).toList();
-    await _logRepository.logInfo(
-      message: 'Watching Swaps',
-      logger: 'SwapWatcherService',
-      context: {
-        'swapIds': swapIdsToWatch.join(', '),
-        'function': 'restartWatcherWithOngoingSwaps',
-      },
-    );
-    debugPrint('Watching Swaps: ${swapIdsToWatch.join(', ')}');
+    if (swapIdsToWatch.isNotEmpty) {
+      await _logRepository.logInfo(
+        message: 'Watching Swaps',
+        logger: 'SwapWatcherService',
+        context: {
+          'swapIds': swapIdsToWatch.join(', '),
+          'function': 'restartWatcherWithOngoingSwaps',
+        },
+      );
+    }
     await _boltzRepo.reinitializeStreamWithSwaps(swapIds: swapIdsToWatch);
     startWatching();
   }

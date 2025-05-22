@@ -383,32 +383,6 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
   }
 
-  Future<void> updateExpiredSwap({required String swapId}) async {
-    final swapModel = await _boltz.storage.fetch(swapId);
-    if (swapModel == null) {
-      throw "No swap model found";
-    }
-    final swap = swapModel.toEntity();
-    if (swap.status != SwapStatus.pending) {
-      throw "Can only update status of a pending swap";
-    }
-    final updatedSwap = swap.copyWith(status: SwapStatus.expired);
-    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
-  }
-
-  Future<void> updateFailedSwap({required String swapId}) async {
-    final swapModel = await _boltz.storage.fetch(swapId);
-    if (swapModel == null) {
-      throw "No swap model found";
-    }
-    final swap = swapModel.toEntity();
-    if (swap.status != SwapStatus.pending) {
-      throw "Can only update status of a pending swap";
-    }
-    final updatedSwap = swap.copyWith(status: SwapStatus.failed);
-    await _boltz.storage.store(SwapModel.fromEntity(updatedSwap));
-  }
-
   /// PRIVATE
   Future<void> _updateCompletedSendSwap({required String swapId}) async {
     final swapModel = await _boltz.storage.fetch(swapId);
