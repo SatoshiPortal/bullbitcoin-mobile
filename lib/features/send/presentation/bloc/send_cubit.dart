@@ -173,7 +173,9 @@ class SendCubit extends Cubit<SendState> {
   Future<void> loadWalletWithRatesAndFees() async {
     try {
       final wallets = await _getWalletsUsecase.execute();
-      emit(state.copyWith(wallets: wallets));
+      emit(
+        state.copyWith(wallets: wallets.where((w) => !w.isWatchOnly).toList()),
+      );
       await getCurrencies();
       await getExchangeRate();
       await loadFees();

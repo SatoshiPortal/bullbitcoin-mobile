@@ -932,7 +932,7 @@ class BoltzDatasource {
                 }
                 if (swapModel is ChainSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.paid.name,
+                    status: swap_entity.SwapStatus.pending.name,
                   );
                 } else {
                   updatedSwapModel = swapModel.copyWith(
@@ -945,10 +945,6 @@ class BoltzDatasource {
                 if (swapModel is LnReceiveSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
                     status: swap_entity.SwapStatus.claimable.name,
-                  );
-                } else {
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.paid.name,
                   );
                 }
 
