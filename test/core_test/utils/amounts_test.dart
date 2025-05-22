@@ -72,6 +72,12 @@ void main() {
       expect(FormatAmount.btc(0.09), '0.09000000 BTC');
       expect(FormatAmount.btc(0.00000001), '0.00000001 BTC');
       expect(FormatAmount.btc(1.23456789), '1.23456789 BTC');
+      expect(FormatAmount.btc(0.1), '0.1 BTC');
+      expect(FormatAmount.btc(0.0000001), '0.00000010 BTC');
+      expect(FormatAmount.btc(0.09), '0.09000000 BTC');
+      expect(FormatAmount.btc(0.0), '0 BTC');
+      expect(FormatAmount.btc(1.234), '1.234 BTC');
+      expect(FormatAmount.btc(25.12345), '25.12345 BTC');
     });
 
     test('formatFiat', () {

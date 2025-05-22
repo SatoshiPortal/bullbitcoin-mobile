@@ -13,11 +13,25 @@ class FormatAmount {
 
   static String btc(double btcAmount) {
     const maxDecimals = 8;
-    final amountFormatter = NumberFormat('0.${'#' * maxDecimals}');
-    final formattedAmount = amountFormatter.format(btcAmount);
-    final amountWithCurrencyCode = '$formattedAmount ${BitcoinUnit.btc.code}';
+    if (btcAmount >= 0.1 || btcAmount == 0.0) {
+      // Format without trailing zero's with a maximum of 8 if the amount is
+      // bigger or equal to 0.1 BTC. Also 0 should be formatted without trailing
+      // zero's.
+      final amountFormatter = NumberFormat('0.${'#' * maxDecimals}');
+      final formattedAmount = amountFormatter.format(btcAmount);
+      final amountWithCurrencyCode = '$formattedAmount ${BitcoinUnit.btc.code}';
 
-    return amountWithCurrencyCode;
+      return amountWithCurrencyCode;
+    } else {
+      // Keep all decimal digits for lower amounts
+      final currencyFormatter = NumberFormat.currency(
+        name: 'BTC',
+        decimalDigits: maxDecimals,
+        customPattern: '#,##0.00000000 ¤',
+      );
+      final formatted = currencyFormatter.format(btcAmount);
+      return formatted;
+    }
   }
 
   static String fiat(double fiat, String currencyCode) {
