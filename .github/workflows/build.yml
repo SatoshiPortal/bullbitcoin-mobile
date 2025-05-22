@@ -22,8 +22,10 @@ jobs:
         channel: stable
         architecture: x64
 
-    - run: flutter pub get
-    - run: dart run build_runner build --delete-conflicting-outputs
+    - run: make clean
+    - run: make deps
+    - run: make build-runner
+    - run: make l10n
 
     - name: Build no-codesign release
       run: flutter build ios --release --no-codesign
