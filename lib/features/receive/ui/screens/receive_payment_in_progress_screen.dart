@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -44,8 +45,7 @@ class PaymentInProgressPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Using read instead of select or watch is ok here,
     //  since the amounts can not be changed at this point anymore.
-    final amountBitcoin =
-        context.read<ReceiveBloc>().state.formattedConfirmedAmountBitcoin;
+    final amountSat = context.read<ReceiveBloc>().state.confirmedAmountSat;
     final amountFiat =
         context.read<ReceiveBloc>().state.formattedConfirmedAmountFiat;
 
@@ -70,7 +70,11 @@ class PaymentInProgressPage extends StatelessWidget {
             ),
           ],
           const Gap(16),
-          BBText(amountBitcoin, style: context.font.headlineLarge),
+          CurrencyText(
+            amountSat ?? 0,
+            showFiat: false,
+            style: context.font.headlineLarge,
+          ),
           const Gap(4),
           BBText(
             '~$amountFiat',

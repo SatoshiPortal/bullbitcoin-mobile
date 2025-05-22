@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -44,10 +45,15 @@ class PayjoinInProgressPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final amountSat = context.watch<ReceiveBloc>().state.payjoin?.amountSat;
-    final amountFiat = context.watch<ReceiveBloc>().state.payjoinAmountFiat;
-    final fiatCurrencyCode =
-        context.watch<ReceiveBloc>().state.fiatCurrencyCode;
+    final amountSat = context.select(
+      (ReceiveBloc bloc) => bloc.state.payjoin?.amountSat,
+    );
+    final amountFiat = context.select(
+      (ReceiveBloc bloc) => bloc.state.payjoinAmountFiat,
+    );
+    final fiatCurrencyCode = context.select(
+      (ReceiveBloc bloc) => bloc.state.fiatCurrencyCode,
+    );
 
     return Center(
       child: Column(
@@ -60,8 +66,9 @@ class PayjoinInProgressPage extends StatelessWidget {
           ),
           if (amountSat != null) ...[
             const Gap(16),
-            BBText(
-              FormatAmount.sats(amountSat),
+            CurrencyText(
+              amountSat,
+              showFiat: false,
               style: context.font.headlineLarge,
             ),
             const Gap(4),

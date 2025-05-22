@@ -1,5 +1,8 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/ui/components/tables/details_table.dart';
 import 'package:bb_mobile/ui/components/tables/details_table_item.dart';
@@ -23,6 +26,10 @@ class TransactionDetailsTable extends StatelessWidget {
     final swap = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swap,
     );
+    final swapFees =
+        (swap?.fees?.claimFee ?? 0) +
+        (swap?.fees?.boltzFee ?? 0) +
+        (swap?.fees?.lockupFee ?? 0);
     final payjoin = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.payjoin,
     );
@@ -33,9 +40,14 @@ class TransactionDetailsTable extends StatelessWidget {
     final abbreviatedAddress = StringFormatting.truncateMiddle(address);
     final addressLabels = tx?.toAddressLabels?.join(', ') ?? '';
     final abbreviatedTxId = StringFormatting.truncateMiddle(txId);
+    final bitcoinUnit = context.select(
+      (SettingsCubit cubit) => cubit.state?.bitcoinUnit,
+    );
 
     return DetailsTable(
       items: [
+        // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
+        // to be able to use the CurrencyText widget instead of having to format the amount here.
         DetailsTableItem(
           label:
               tx?.isIncoming != null
@@ -43,17 +55,32 @@ class TransactionDetailsTable extends StatelessWidget {
                       ? 'Amount received'
                       : 'Amount sent'
                   : 'Amount',
-          displayValue: FormatAmount.sats(amountSat).toUpperCase(),
+          displayValue:
+              bitcoinUnit == BitcoinUnit.sats
+                  ? FormatAmount.sats(amountSat).toUpperCase()
+                  : FormatAmount.btc(
+                    ConvertAmount.satsToBtc(amountSat),
+                  ).toUpperCase(),
         ),
         if (tx?.isToSelf == true)
           DetailsTableItem(
             label: 'Amount received',
-            displayValue: FormatAmount.sats(amountSat).toUpperCase(),
+            displayValue:
+                bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(amountSat).toUpperCase()
+                    : FormatAmount.btc(
+                      ConvertAmount.satsToBtc(amountSat),
+                    ).toUpperCase(),
           ),
         if (tx?.isOutgoing == true)
           DetailsTableItem(
             label: 'Transaction Fee',
-            displayValue: FormatAmount.sats(tx?.feeSat ?? 0).toUpperCase(),
+            displayValue:
+                bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(tx?.feeSat ?? 0).toUpperCase()
+                    : FormatAmount.btc(
+                      ConvertAmount.satsToBtc(tx?.feeSat ?? 0),
+                    ).toUpperCase(),
           ),
         DetailsTableItem(
           label: 'Wallet',
@@ -111,11 +138,11 @@ class TransactionDetailsTable extends StatelessWidget {
             DetailsTableItem(
               label: 'Total Swap fees',
               displayValue:
-                  FormatAmount.sats(
-                    (swap.fees!.claimFee ?? 0) +
-                        (swap.fees!.boltzFee ?? 0) +
-                        (swap.fees!.lockupFee ?? 0),
-                  ).toUpperCase(),
+                  bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(swapFees).toUpperCase()
+                      : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(swapFees),
+                      ).toUpperCase(),
             ),
         ],
         if (payjoin != null) ...[

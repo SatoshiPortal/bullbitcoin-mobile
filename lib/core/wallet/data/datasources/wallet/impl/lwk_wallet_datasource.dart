@@ -288,7 +288,7 @@ class LwkWalletDatasource implements WalletDatasource {
           if (!matches) return null; // Skip this transaction
         }
 
-        final isIncoming = tx.kind != 'outgoing';
+        final isIncoming = tx.kind == 'incoming';
         final balances = tx.balances;
         final finalBalance =
             balances
@@ -297,7 +297,8 @@ class LwkWalletDatasource implements WalletDatasource {
                 .firstOrNull ??
             0;
 
-        final isToSelf = finalBalance.abs() == tx.fee.toInt();
+        final isToSelf =
+            tx.kind == 'redeposit' || finalBalance.abs() == tx.fee.toInt();
         int changeAmountInToSelf = 0;
 
         final (inputs, outputs) =

@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/widgets/receive_transaction_details_table.dart';
@@ -52,8 +52,9 @@ class ReceiveDetailsScreen extends StatelessWidget {
                   const Gap(24),
                   BBText('Payment received', style: context.font.headlineLarge),
                   const Gap(8),
-                  BBText(
-                    FormatAmount.sats(amountSat),
+                  CurrencyText(
+                    amountSat,
+                    showFiat: false,
                     style: context.font.displaySmall?.copyWith(
                       color: theme.colorScheme.outlineVariant,
                       fontWeight: FontWeight.w500,

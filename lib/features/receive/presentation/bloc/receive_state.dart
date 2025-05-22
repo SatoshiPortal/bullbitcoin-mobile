@@ -140,16 +140,6 @@ abstract class ReceiveState with _$ReceiveState {
     return ConvertAmount.btcToFiat(confirmedAmountBtc, exchangeRate);
   }
 
-  String get formattedConfirmedAmountBitcoin {
-    if (bitcoinUnit == null) {
-      return '';
-    } else if (bitcoinUnit == BitcoinUnit.sats) {
-      return FormatAmount.sats(confirmedAmountSat ?? 0);
-    } else {
-      return FormatAmount.btc(confirmedAmountBtc);
-    }
-  }
-
   String get formattedConfirmedAmountFiat {
     return FormatAmount.fiat(confirmedAmountFiat, fiatCurrencyCode);
   }

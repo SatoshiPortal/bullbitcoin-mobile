@@ -112,8 +112,8 @@ class ReceiveInfoDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bitcoinAmount = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.formattedConfirmedAmountBitcoin,
+    final amountSat = context.select(
+      (ReceiveBloc bloc) => bloc.state.confirmedAmountSat,
     );
     final amountEquivalent = context.select<ReceiveBloc, String>(
       (bloc) => bloc.state.formattedConfirmedAmountFiat,
@@ -156,8 +156,13 @@ class ReceiveInfoDetails extends StatelessWidget {
                       const Gap(4),
                       Row(
                         children: [
-                          BBText(bitcoinAmount, style: context.font.bodyMedium),
+                          CurrencyText(
+                            amountSat ?? 0,
+                            showFiat: false,
+                            style: context.font.bodyMedium,
+                          ),
                           const Gap(12),
+                          // TODO: Check if CurrencyText can be used here too with showFiat: true
                           BBText(
                             '~$amountEquivalent',
                             style: context.font.bodyLarge,
@@ -249,8 +254,8 @@ class ReceiveLnInfoDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bitcoinAmount = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.formattedConfirmedAmountBitcoin,
+    final amountSat = context.select(
+      (ReceiveBloc bloc) => bloc.state.confirmedAmountSat,
     );
     final amountEquivalent = context.select<ReceiveBloc, String>(
       (bloc) => bloc.state.formattedConfirmedAmountFiat,
@@ -289,7 +294,11 @@ class ReceiveLnInfoDetails extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    BBText(bitcoinAmount, style: context.font.bodyMedium),
+                    CurrencyText(
+                      amountSat ?? 0,
+                      showFiat: false,
+                      style: context.font.bodyMedium,
+                    ),
                     BBText(
                       '~$amountEquivalent',
                       style: context.font.labelSmall,

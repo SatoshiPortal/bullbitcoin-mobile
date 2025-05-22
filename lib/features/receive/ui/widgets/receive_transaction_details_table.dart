@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/ui/components/tables/details_table.dart';
@@ -29,22 +31,34 @@ class ReceiveTransactionDetailsTable extends StatelessWidget {
     final abbreviatedTxId = context.select(
       (ReceiveBloc bloc) => bloc.state.abbreviatedTxId,
     );
+    final bitcoinUnit = context.select(
+      (ReceiveBloc bloc) => bloc.state.bitcoinUnit,
+    );
+    final totalSwapFeesSat =
+        (swap?.fees?.claimFee ?? 0) +
+        (swap?.fees?.boltzFee ?? 0) +
+        (swap?.fees?.lockupFee ?? 0);
 
     return DetailsTable(
       items: [
         DetailsTableItem(
           label: 'Amount received',
-          displayValue: FormatAmount.sats(amountSat).toUpperCase(),
+          displayValue:
+              (bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(amountSat)
+                      : FormatAmount.btc(ConvertAmount.satsToBtc(amountSat)))
+                  .toUpperCase(),
         ),
         if (swap != null && swap.fees != null)
           DetailsTableItem(
             label: 'Total Swap fees',
             displayValue:
-                FormatAmount.sats(
-                  (swap.fees!.claimFee ?? 0) +
-                      (swap.fees!.boltzFee ?? 0) +
-                      (swap.fees!.lockupFee ?? 0),
-                ).toUpperCase(),
+                (bitcoinUnit == BitcoinUnit.sats
+                        ? FormatAmount.sats(totalSwapFeesSat)
+                        : FormatAmount.btc(
+                          ConvertAmount.satsToBtc(totalSwapFeesSat),
+                        ))
+                    .toUpperCase(),
           ),
         if (receiveType == ReceiveType.lightning) ...[
           DetailsTableItem(

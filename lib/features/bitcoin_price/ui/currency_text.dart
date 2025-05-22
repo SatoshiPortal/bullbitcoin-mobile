@@ -1,3 +1,6 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -39,14 +42,11 @@ class CurrencyText extends StatelessWidget {
       );
       if (unit == null) return const SizedBox.shrink();
 
-      final amount = context.select(
-        (BitcoinPriceBloc bloc) =>
-            bloc.state.displayBTCAmount(satsAmount, unit),
-      );
-
-      if (amount == null) return const SizedBox.shrink();
-
-      text = amount;
+      if (unit == BitcoinUnit.btc) {
+        text = FormatAmount.btc(ConvertAmount.satsToBtc(satsAmount));
+      } else {
+        text = FormatAmount.sats(satsAmount);
+      }
     }
 
     final hideAmt = context.select(
