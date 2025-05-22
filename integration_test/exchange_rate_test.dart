@@ -4,8 +4,6 @@ import 'package:bb_mobile/core/exchange/data/datasources/bull_bitcoin_price_data
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
-import 'package:bb_mobile/core/storage/seed/sqlite_seed.dart';
-import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -23,8 +21,6 @@ void main() {
     await Future.wait([dotenv.load(isOptional: true), core.init()]);
 
     await AppLocator.setup();
-
-    await locator<SqliteDatabase>().seedTables();
 
     bitcoinPriceDatasource = locator.get<BullBitcoinPriceDatasource>();
     getAvailableCurrenciesUsecase =

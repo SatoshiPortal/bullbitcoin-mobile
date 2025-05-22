@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:async/async.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
+import 'package:bb_mobile/core/logging/domain/repositories/log_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -20,16 +21,19 @@ class WalletRepositoryImpl implements WalletRepository {
   final BdkWalletDatasource _bdkWallet;
   final LwkWalletDatasource _lwkWallet;
   final ElectrumServerStorageDatasource _electrumServerStorage;
+  final LogRepository _logRepository;
 
   WalletRepositoryImpl({
     required WalletMetadataDatasource walletMetadataDatasource,
     required BdkWalletDatasource bdkWalletDatasource,
     required LwkWalletDatasource lwkWalletDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
+    required LogRepository logRepository,
   }) : _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWallet = bdkWalletDatasource,
        _lwkWallet = lwkWalletDatasource,
-       _electrumServerStorage = electrumServerStorageDatasource {
+       _electrumServerStorage = electrumServerStorageDatasource,
+       _logRepository = logRepository {
     // Keep track of the last sync time in the wallet metadata
     _walletSyncFinishedStream.listen(_updateWalletSyncTime);
     // Start auto syncing wallets
@@ -405,17 +409,29 @@ class WalletRepositoryImpl implements WalletRepository {
   }
 
   Future<void> _syncWallet(WalletModel wallet) async {
-    final isLiquid = wallet is PublicLwkWalletModel;
-    final electrumServer = await _electrumServerStorage.fetchPrioritizedServer(
-      network: Network.fromEnvironment(
-        isTestnet: wallet.isTestnet,
-        isLiquid: isLiquid,
-      ),
-    );
-    if (isLiquid) {
-      await _lwkWallet.sync(wallet: wallet, electrumServer: electrumServer);
-    } else {
-      await _bdkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+    try {
+      final isLiquid = wallet is PublicLwkWalletModel;
+      final electrumServer = await _electrumServerStorage
+          .fetchPrioritizedServer(
+            network: Network.fromEnvironment(
+              isTestnet: wallet.isTestnet,
+              isLiquid: isLiquid,
+            ),
+          );
+      if (isLiquid) {
+        await _lwkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+      } else {
+        await _bdkWallet.sync(wallet: wallet, electrumServer: electrumServer);
+      }
+    } catch (e) {
+      await _logRepository.logError(
+        message: 'SYNC_ERROR: $e',
+        stackTrace: StackTrace.current,
+        context: {'walletId': wallet.id, 'function': "_syncWallet"},
+        logger: 'WalletRepository',
+        exception: e,
+      );
+      rethrow;
     }
   }
 }

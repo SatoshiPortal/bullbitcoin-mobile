@@ -563,14 +563,10 @@ class PdkPayjoinDatasource {
         try {
           request = await receiver.extractReq(ohttpRelay: ohttpRelay);
           ffiError = null;
-          log(
-            '[${receiver.id()}] receiver extractReq success: $request with relay $ohttpRelay',
-          );
+          log('[${receiver.id()}] receiver extractReq success');
           break;
         } catch (e) {
-          log(
-            '[${receiver.id()}] receiver extractReq exception: $e with relay $ohttpRelay',
-          );
+          log('[${receiver.id()}] receiver extractReq exception: $e');
           ffiError = e;
           continue;
         }
