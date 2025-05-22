@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
+// ignore: unused_import
 import 'package:bb_mobile/ui/screens/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -331,7 +332,9 @@ class CommonSendBottomButtons extends StatelessWidget {
        _disableSendButton = disableSendButton,
        _onSendPressed = onSendPressed;
 
+  // ignore: unused_field
   final bool _isBitcoinWallet;
+  // ignore: unused_field
   final StateStreamableSource<Object?> _blocProviderValue;
   final bool _disableSendButton;
   final Function _onSendPressed;
@@ -343,28 +346,28 @@ class CommonSendBottomButtons extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (_isBitcoinWallet) ...[
-            BBButton.big(
-              label: 'Advanced Settings',
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: context.colour.secondaryFixed,
-                  builder:
-                      (BuildContext buildContext) => BlocProvider.value(
-                        value: _blocProviderValue,
-                        child: const AdvancedOptionsBottomSheet(),
-                      ),
-                );
-              },
-              borderColor: context.colour.secondary,
-              outlined: true,
-              bgColor: Colors.transparent,
-              textColor: context.colour.secondary,
-            ),
-            const Gap(12),
-          ],
+          // if (_isBitcoinWallet) ...[
+          //   BBButton.big(
+          //     label: 'Advanced Settings',
+          //     onPressed: () {
+          //       showModalBottomSheet(
+          //         context: context,
+          //         isScrollControlled: true,
+          //         backgroundColor: context.colour.secondaryFixed,
+          //         builder:
+          //             (BuildContext buildContext) => BlocProvider.value(
+          //               value: _blocProviderValue,
+          //               child: const AdvancedOptionsBottomSheet(),
+          //             ),
+          //       );
+          //     },
+          //     borderColor: context.colour.secondary,
+          //     outlined: true,
+          //     bgColor: Colors.transparent,
+          //     textColor: context.colour.secondary,
+          //   ),
+          //   const Gap(12),
+          // ],
           CommonConfirmSendButton(
             disableSendButton: _disableSendButton,
             onPressed: _onSendPressed,
