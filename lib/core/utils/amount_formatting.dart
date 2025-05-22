@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:intl/intl.dart';
 
 class FormatAmount {
@@ -11,27 +12,12 @@ class FormatAmount {
   }
 
   static String btc(double btcAmount) {
-    NumberFormat currencyFormatter;
-    String formatted;
+    const maxDecimals = 8;
+    final amountFormatter = NumberFormat('0.${'#' * maxDecimals}');
+    final formattedAmount = amountFormatter.format(btcAmount);
+    final amountWithCurrencyCode = '$formattedAmount ${BitcoinUnit.btc.code}';
 
-    if (btcAmount >= 0.1) {
-      currencyFormatter = NumberFormat.currency(
-        name: 'BTC',
-        decimalDigits: 8,
-        customPattern: '#,##0.00 ¤',
-      );
-      formatted = currencyFormatter.format(btcAmount);
-      formatted = formatted.replaceAll(RegExp(r'([.]*0+)(?!.*\d)'), '');
-    } else {
-      currencyFormatter = NumberFormat.currency(
-        name: 'BTC',
-        decimalDigits: 8,
-        customPattern: '#,##0.00000000 ¤',
-      );
-      formatted = currencyFormatter.format(btcAmount);
-    }
-
-    return formatted;
+    return amountWithCurrencyCode;
   }
 
   static String fiat(double fiat, String currencyCode) {
