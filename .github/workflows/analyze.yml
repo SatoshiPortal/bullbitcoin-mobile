@@ -24,12 +24,11 @@ jobs:
         with:
           channel: stable
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Generate freezed files
-        run: dart run build_runner build --delete-conflicting-outputs
-
+      - run: make clean
+      - run: make deps
+      - run: make build-runner
+      - run: make l10n
+      
       - name: "${{ matrix.analyze_mode.name }}"
         run: flutter analyze ${{ matrix.analyze_mode.mode }}
         continue-on-error: ${{ matrix.analyze_mode.allow_failure }}
