@@ -857,7 +857,6 @@ class BoltzDatasource {
           final swapId = event.id;
           final boltzStatus = event.status;
           try {
-            await Future.delayed(const Duration(milliseconds: 1000));
             final swapModel = await _boltzStore.fetch(swapId);
             if (swapModel == null) {
               debugPrint('No swap found for id: $swapId');
