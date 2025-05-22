@@ -219,7 +219,7 @@ class SendCubit extends Cubit<SendState> {
           _bestWalletUsecase.execute(
             wallets: state.wallets,
             request: paymentRequest,
-            amountSat: state.inputAmountSat,
+            amountSat: paymentRequest.amountSat,
           );
       // Listen to the wallet syncing status to update the wallet balance and its utxos
       await _selectedWalletSyncingSubscription?.cancel();
@@ -233,6 +233,7 @@ class SendCubit extends Cubit<SendState> {
       emit(
         state.copyWith(
           paymentRequest: paymentRequest,
+          amount: paymentRequest.amountSat?.toString() ?? '',
           selectedWallet: wallet,
           sendType: sendType,
         ),
@@ -269,8 +270,7 @@ class SendCubit extends Cubit<SendState> {
             state.copyWith(
               step: SendStep.confirm,
               lightningSwap: swap,
-              confirmedAmountSat:
-                  (paymentRequest as Bolt11PaymentRequest).amountSat,
+              confirmedAmountSat: paymentRequest.amountSat,
               creatingSwap: false,
             ),
           );
