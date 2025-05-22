@@ -545,6 +545,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           }
           if (swap.isChainSwap()) {
             final toWalletIdOld = swap.chainSwapDetails?.toWalletId ?? '';
+            final claimAddress = swap.claimAddress ?? '';
 
             final counterWalletIdMapping = allWalletIdMappings.firstWhere(
               (e) => e.oldWalletId == toWalletIdOld,
@@ -575,7 +576,7 @@ class MigrateToV5HiveToSqliteToUsecase {
               counterWalletId: counterWalletIdMapping.newWalletId,
               isCounterWalletExternal:
                   counterWalletIdMapping.walletIdIsExternal,
-              claimAddress: null,
+              claimAddress: claimAddress,
             );
 
             count++;
