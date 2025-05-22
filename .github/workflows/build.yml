@@ -27,6 +27,8 @@ jobs:
     - run: make build-runner
     - run: make l10n
 
+    - run: cp .env.template .env
+
     - name: Build no-codesign release
       run: flutter build ios --release --no-codesign
     
