@@ -167,7 +167,7 @@ class AppStartupFailureScreen extends StatelessWidget {
               const SizedBox(height: 24),
               GestureDetector(
                 onTap: () {
-                  final url = Uri.parse('https://t.me/+gUHV3ZcQ-_RmZDdh');
+                  final url = Uri.parse(SettingsConstants.telegramSupportLink);
                   // ignore: deprecated_member_use
                   launchUrl(url, mode: LaunchMode.externalApplication);
                 },

@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/electrum_settings/ui/electrum_settings_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -7,6 +8,7 @@ import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -75,6 +77,15 @@ class SettingsScreen extends StatelessWidget {
                   context.pushNamed(SettingsRoute.logs.name);
                 },
                 trailing: const Icon(Icons.chevron_right),
+              ),
+              ListTile(
+                leading: const Icon(Icons.support_agent),
+                title: const Text('Contact support'),
+                onTap: () {
+                  final url = Uri.parse(SettingsConstants.telegramSupportLink);
+                  // ignore: deprecated_member_use
+                  launchUrl(url, mode: LaunchMode.externalApplication);
+                },
               ),
             ],
           ),
