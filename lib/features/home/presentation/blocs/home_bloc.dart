@@ -5,7 +5,6 @@ import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_u
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/check_payjoin_relay_health_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
@@ -36,7 +35,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required GetApiKeyUsecase getApiKeyUsecase,
     required GetUserSummaryUseCase getUserSummaryUseCase,
     required GetPrioritizedServerUsecase getBestAvailableServerUsecase,
-    required CheckPayjoinRelayHealthUsecase checkPayjoinRelayHealth,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -48,7 +46,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
        _getApiKeyUsecase = getApiKeyUsecase,
        _getUserSummaryUsecase = getUserSummaryUseCase,
        _getPrioritizedServerUsecase = getBestAvailableServerUsecase,
-       _checkPayjoinRelayHealth = checkPayjoinRelayHealth,
 
        super(const HomeState()) {
     on<HomeStarted>(_onStarted);
@@ -74,7 +71,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final GetUserSummaryUseCase _getUserSummaryUsecase;
   final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
 
-  final CheckPayjoinRelayHealthUsecase _checkPayjoinRelayHealth;
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
 
@@ -227,16 +223,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
 
     // Run all checks in parallel
-    final (electrumWarnings, payjoinWarnings) =
-        await (
-          _checkElectrumServers(defaultWallets),
-          _checkPayjoinHealth(),
-        ).wait;
+    final electrumWarnings = await _checkElectrumServers(defaultWallets);
 
-    final warnings = [
-      if (electrumWarnings != null) electrumWarnings,
-      if (payjoinWarnings != null) payjoinWarnings,
-    ];
+    final warnings = [if (electrumWarnings != null) electrumWarnings];
 
     emit(state.copyWith(warnings: warnings));
   }
@@ -277,20 +266,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         type: WarningType.error,
       );
     }
-    return null;
-  }
-
-  Future<HomeWarning?> _checkPayjoinHealth() async {
-    final isHealthy = await _checkPayjoinRelayHealth.execute();
-    if (!isHealthy) {
-      return HomeWarning(
-        title: 'Payjoin Service Unreachable',
-        description: 'Contact support for assistance',
-        actionRoute: SettingsRoute.settings.name,
-        type: WarningType.error,
-      );
-    }
-
     return null;
   }
 }

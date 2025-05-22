@@ -1,7 +1,6 @@
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/check_payjoin_relay_health_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
@@ -30,7 +29,6 @@ class HomeLocator {
         getApiKeyUsecase: locator<GetApiKeyUsecase>(),
         getUserSummaryUseCase: locator<GetUserSummaryUseCase>(),
         getBestAvailableServerUsecase: locator<GetPrioritizedServerUsecase>(),
-        checkPayjoinRelayHealth: locator<CheckPayjoinRelayHealthUsecase>(),
       ),
     );
   }
