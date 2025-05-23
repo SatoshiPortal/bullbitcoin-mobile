@@ -11,6 +11,7 @@ enum KeyServerRoute {
 
 class KeyServerRouter {
   static final route = GoRoute(
+    name: KeyServerRoute.keyServerFlow.name,
     path: KeyServerRoute.keyServerFlow.path,
     builder: (context, state) {
       final (String? backupFile, String? flow, bool fromOnboarding) =

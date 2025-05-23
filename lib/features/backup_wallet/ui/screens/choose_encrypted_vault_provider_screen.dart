@@ -59,8 +59,8 @@ class _Screen extends StatelessWidget {
           context.read<BackupWalletBloc>().add(const StartTransitioning());
           final bloc = context.read<BackupWalletBloc>();
           context
-              .push(
-                KeyServerRoute.keyServerFlow.path,
+              .pushNamed(
+                KeyServerRoute.keyServerFlow.name,
                 extra: (
                   state.backupFile,
                   CurrentKeyServerFlow.enter.toString(),

@@ -78,8 +78,8 @@ class FetchedBackupInfoScreen extends StatelessWidget {
             BBButton.big(
               label: 'Decrypt vault',
               onPressed:
-                  () => context.push(
-                    KeyServerRoute.keyServerFlow.path,
+                  () => context.pushNamed(
+                    KeyServerRoute.keyServerFlow.name,
                     extra: (
                       encryptedInfo.backupFile,
                       CurrentKeyServerFlow.recovery.name,
