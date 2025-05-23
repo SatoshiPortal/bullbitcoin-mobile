@@ -9,7 +9,7 @@ class SatsBitcoinUnitSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSats =
-        context.watch<SettingsCubit>().state?.bitcoinUnit == BitcoinUnit.sats;
+        context.watch<SettingsCubit>().state.bitcoinUnit == BitcoinUnit.sats;
 
     return Switch(
       value: isSats,

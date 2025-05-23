@@ -18,7 +18,7 @@ class SuperuserTapUnlocker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state?.isSuperuser ?? false,
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
     );
     return MultiTapTrigger(
       onRequiredTaps: () async {

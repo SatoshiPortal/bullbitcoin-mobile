@@ -8,8 +8,8 @@ class TestnetModeSwitch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTestnetMode = context.watch<SettingsCubit>().state?.environment ==
-        Environment.testnet;
+    final isTestnetMode =
+        context.watch<SettingsCubit>().state.environment == Environment.testnet;
 
     return Switch(
       value: isTestnetMode,

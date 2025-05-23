@@ -41,7 +41,7 @@ class TransactionDetailsTable extends StatelessWidget {
     final addressLabels = tx?.toAddressLabels?.join(', ') ?? '';
     final abbreviatedTxId = StringFormatting.truncateMiddle(txId);
     final bitcoinUnit = context.select(
-      (SettingsCubit cubit) => cubit.state?.bitcoinUnit,
+      (SettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
 
     return DetailsTable(

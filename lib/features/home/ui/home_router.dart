@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/home/presentation/blocs/home_bloc.dart';
 import 'package:bb_mobile/features/home/ui/screens/home_screen.dart';
@@ -34,11 +33,10 @@ class HomeRouter {
                 locator<HomeBloc>()
                   ..add(const HomeStarted())
                   ..add(const CheckAllWarnings()),
-        child: BlocListener<SettingsCubit, SettingsEntity?>(
+        child: BlocListener<SettingsCubit, SettingsState>(
           listenWhen:
               (previous, current) =>
-                  previous != null &&
-                  previous.environment != current?.environment,
+                  previous.environment != current.environment,
           listener: (context, settings) {
             context.read<HomeBloc>().add(const HomeStarted());
           },
