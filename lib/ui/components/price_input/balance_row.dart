@@ -1,8 +1,6 @@
 import 'package:bb_mobile/ui/components/buttons/button.dart';
-import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 
 class BalanceRow extends StatelessWidget {
   final String balance;
@@ -22,62 +20,55 @@ class BalanceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        children: [
-          Container(height: 1, color: context.colour.secondaryFixedDim),
-          const Gap(14),
-
-          Row(
-            children: [
-              if (walletLabel != null) ...[
-                const Gap(8),
-                BBText(
-                  'Wallet',
-                  style: context.font.labelSmall,
-                  color: context.colour.surface,
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title:
+          walletLabel != null
+              ? RichText(
+                text: TextSpan(
+                  text: 'Wallet: ',
+                  style: context.font.labelSmall?.copyWith(
+                    color: context.colour.surface,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: walletLabel,
+                      style: context.font.labelMedium?.copyWith(
+                        color: context.colour.secondary,
+                      ),
+                    ),
+                  ],
                 ),
-                const Gap(4),
-                BBText(
-                  '$walletLabel',
-                  style: context.font.labelMedium,
-                  color: context.colour.secondary,
-                ),
-              ],
-            ],
+              )
+              : null,
+      subtitle: RichText(
+        text: TextSpan(
+          text: 'Balance: ',
+          style: context.font.labelLarge?.copyWith(
+            color: context.colour.surface,
           ),
-          Row(
-            children: [
-              const Gap(8),
-              BBText(
-                'Balance',
-                style: context.font.labelLarge,
-                color: context.colour.surface,
-              ),
-              const Gap(4),
-              BBText(
-                '$balance $currencyCode',
-                style: context.font.labelMedium,
+          children: [
+            TextSpan(
+              text: '$balance $currencyCode',
+              style: context.font.labelMedium?.copyWith(
                 color: context.colour.secondary,
               ),
-              const Spacer(),
-              if (showMax)
-                BBButton.small(
-                  label: 'MAX',
-                  height: 30,
-                  width: 51,
-                  bgColor: context.colour.secondaryFixedDim,
-                  textColor: context.colour.secondary,
-                  textStyle: context.font.labelLarge,
-                  onPressed: () => onMaxPressed(),
-                ),
-              const Gap(8),
-            ],
-          ),
-          const Gap(4),
-        ],
+            ),
+          ],
+        ),
       ),
+      trailing:
+          showMax
+              ? BBButton.small(
+                label: 'MAX',
+                height: 30,
+                width: 51,
+                bgColor: context.colour.secondaryFixedDim,
+                textColor: context.colour.secondary,
+                textStyle: context.font.labelLarge,
+                onPressed: onMaxPressed,
+              )
+              : null,
     );
   }
 }

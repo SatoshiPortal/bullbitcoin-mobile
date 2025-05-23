@@ -241,84 +241,69 @@ class SendAmountScreen extends StatelessWidget {
           );
           return IgnorePointer(
             ignoring: state.amountConfirmedClicked,
-            child: Stack(
-              children: [
-                SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Gap(10),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        child: NetworkDisplay(),
-                      ),
-                      const Gap(48),
-                      PriceInput(
-                        amount: state.amount,
-                        currency: inputCurrency,
-                        amountEquivalent: state.formattedAmountInputEquivalent,
-                        availableCurrencies: availableInputCurrencies,
-                        onNoteChanged: cubit.noteChanged,
-                        onCurrencyChanged: (currencyCode) {
-                          context.read<SendCubit>().onCurrencyChanged(
-                            currencyCode,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Gap(10),
+                    const NetworkDisplay(),
+                    const Gap(24),
+                    PriceInput(
+                      amount: state.amount,
+                      currency: inputCurrency,
+                      amountEquivalent: state.formattedAmountInputEquivalent,
+                      availableCurrencies: availableInputCurrencies,
+                      onNoteChanged: cubit.noteChanged,
+                      onCurrencyChanged: (currencyCode) {
+                        context.read<SendCubit>().onCurrencyChanged(
+                          currencyCode,
+                        );
+                      },
+                      error:
+                          balanceError != null
+                              ? balanceError.toString()
+                              : !walletHasBalance
+                              ? 'Insufficient balance'
+                              : swapLimitsError != null
+                              ? swapLimitsError.toString()
+                              : swapCreationError?.toString(),
+                    ),
+                    const Gap(48),
+                    Divider(height: 1, color: context.colour.secondaryFixedDim),
+                    BalanceRow(
+                      balance: state.formattedWalletBalance(),
+                      currencyCode: '',
+                      showMax: !isLightning,
+                      onMaxPressed: cubit.onMaxPressed,
+                      walletLabel: selectedWalletLabel,
+                    ),
+                    DialPad(
+                      onNumberPressed: (number) {
+                        final inputAmount =
+                            context.read<SendCubit>().state.amount;
+                        final amount = inputAmount + number;
+                        context.read<SendCubit>().amountChanged(amount);
+                      },
+                      onBackspacePressed: () {
+                        final inputAmount =
+                            context.read<SendCubit>().state.amount;
+                        if (inputAmount.isNotEmpty) {
+                          final amount = inputAmount.substring(
+                            0,
+                            inputAmount.length - 1,
                           );
-                        },
-                        error:
-                            balanceError != null
-                                ? balanceError.toString()
-                                : !walletHasBalance
-                                ? 'Insufficient balance'
-                                : swapLimitsError != null
-                                ? swapLimitsError.toString()
-                                : swapCreationError?.toString(),
-                      ),
-                      const Gap(64),
-                      BalanceRow(
-                        balance: state.formattedWalletBalance(),
-                        currencyCode: '',
-                        showMax: !isLightning,
-                        onMaxPressed: cubit.onMaxPressed,
-                        walletLabel: selectedWalletLabel,
-                      ),
-                      DialPad(
-                        onNumberPressed: (number) {
-                          final inputAmount =
-                              context.read<SendCubit>().state.amount;
-                          final amount = inputAmount + number;
                           context.read<SendCubit>().amountChanged(amount);
-                        },
-                        onBackspacePressed: () {
-                          final inputAmount =
-                              context.read<SendCubit>().state.amount;
-                          if (inputAmount.isNotEmpty) {
-                            final amount = inputAmount.substring(
-                              0,
-                              inputAmount.length - 1,
-                            );
-                            context.read<SendCubit>().amountChanged(amount);
-                          }
-                        },
-                      ),
-                      const Gap(64),
-                    ],
-                  ),
+                        }
+                      },
+                    ),
+                    const Gap(16),
+                    const SendAmountConfirmButton(),
+                    const Gap(48),
+                  ],
                 ),
-                const Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: SendAmountConfirmButton(),
-                      ),
-                      Gap(16),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
           );
         },
