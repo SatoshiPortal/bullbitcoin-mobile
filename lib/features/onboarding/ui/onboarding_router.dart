@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/features/home/ui/home_router.dart';
-import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/fetched_backup_info_screen.dart';
@@ -93,13 +92,11 @@ class OnboardingRouter {
                   final backupInfo = state.extra! as BackupInfo;
                   return FetchedBackupInfoScreen(encryptedInfo: backupInfo);
                 },
-                routes: [KeyServerRouter.route],
               ),
               GoRoute(
                 name: OnboardingRoute.chooseRecoverProvider.name,
                 path: OnboardingRoute.chooseRecoverProvider.path,
                 builder: (context, state) => const ChooseVaultProviderScreen(),
-                routes: [KeyServerRouter.route],
               ),
               GoRoute(
                 name: OnboardingRoute.recoverSuccess.name,
