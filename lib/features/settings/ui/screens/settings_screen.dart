@@ -96,16 +96,15 @@ class SettingsScreen extends StatelessWidget {
         child: SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               if (appVersion != null)
                 ListTile(
-                  tileColor: theme.colorScheme.surface,
+                  tileColor: theme.colorScheme.secondaryFixedDim,
                   title: Center(
                     child: Text(
                       'App version: $appVersion',
                       style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.onSurface,
+                        color: theme.colorScheme.surfaceContainer,
                       ),
                     ),
                   ),
@@ -114,7 +113,7 @@ class SettingsScreen extends StatelessWidget {
                   },
                 ),
               Padding(
-                padding: const EdgeInsets.only(top: 16),
+                padding: const EdgeInsets.only(top: 24),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -133,7 +132,7 @@ class SettingsScreen extends StatelessWidget {
                           Text(
                             'Telegram',
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurface,
+                              color: theme.colorScheme.secondary,
                             ),
                           ),
                         ],
@@ -154,7 +153,7 @@ class SettingsScreen extends StatelessWidget {
                           Text(
                             'Github',
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurface,
+                              color: theme.colorScheme.secondary,
                             ),
                           ),
                         ],
