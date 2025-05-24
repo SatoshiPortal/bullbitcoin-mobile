@@ -25,6 +25,7 @@ class TransactionDetailsScreen extends StatelessWidget {
     await showModalBottomSheet(
       context: context,
       useRootNavigator: true,
+      isScrollControlled: true,
       backgroundColor: context.colour.onPrimary,
       builder: (context) {
         return BlocProvider.value(
