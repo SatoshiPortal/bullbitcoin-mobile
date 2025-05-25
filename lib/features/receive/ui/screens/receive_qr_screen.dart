@@ -58,14 +58,15 @@ class ReceiveQRDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLightning = context.select<ReceiveBloc, bool>(
-      (bloc) => bloc.state.type == ReceiveType.lightning,
+    final isLightning = context.select(
+      (ReceiveBloc bloc) => bloc.state.type == ReceiveType.lightning,
     );
-    final qrData = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.qrData,
+    final qrData = context.select((ReceiveBloc bloc) => bloc.state.qrData);
+    final clipboardData = context.select(
+      (ReceiveBloc bloc) => bloc.state.clipboardData,
     );
-    final addressOrInvoiceOnly = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.addressOrInvoiceOnly,
+    final addressOrInvoiceOnly = context.select(
+      (ReceiveBloc bloc) => bloc.state.addressOrInvoiceOnly,
     );
 
     return Column(
@@ -96,7 +97,10 @@ class ReceiveQRDetails extends StatelessWidget {
                 style: context.font.bodyMedium,
               ),
               const Gap(6),
-              CopyInput(text: addressOrInvoiceOnly, clipboardText: qrData),
+              CopyInput(
+                text: addressOrInvoiceOnly,
+                clipboardText: clipboardData,
+              ),
             ],
           ),
         ),
