@@ -198,10 +198,23 @@ class SendCubit extends Cubit<SendState> {
       clearAllExceptions();
       emit(state.copyWith(loadingBestWallet: true));
       PaymentRequest? paymentRequest;
+      bool isMrh = false;
       try {
         paymentRequest = await _detectBitcoinStringUsecase.execute(
           data: state.addressOrInvoice,
         );
+        if (paymentRequest.isBolt11) {
+          final invoice = await _decodeInvoiceUsecase.execute(
+            invoice: state.addressOrInvoice,
+            isTestnet: paymentRequest.isTestnet,
+          );
+          if (invoice.magicBip21 != null) {
+            isMrh = true;
+            paymentRequest = await _detectBitcoinStringUsecase.execute(
+              data: invoice.magicBip21!,
+            );
+          }
+        }
       } catch (e) {
         emit(
           state.copyWith(
@@ -222,6 +235,7 @@ class SendCubit extends Cubit<SendState> {
             amountSat: paymentRequest.amountSat,
           );
       // Listen to the wallet syncing status to update the wallet balance and its utxos
+      // Do we need to do this? The wallet selected may change in the amount page
       await _selectedWalletSyncingSubscription?.cancel();
       _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
           .execute(walletId: wallet.id)
@@ -244,7 +258,31 @@ class SendCubit extends Cubit<SendState> {
               ? SwapType.liquidToLightning
               : SwapType.bitcoinToLightning;
       // for bolt12 or lnaddress we need to redirect to the amount page and only create a swap after amount is set
+      if (isMrh) {
+        if (!await hasBalance()) {
+          emit(
+            state.copyWith(
+              insufficientBalanceException: InsufficientBalanceException(),
+              creatingSwap: false,
+              loadingBestWallet: false,
+            ),
+          );
+          return;
+        }
+        //
+        await loadFees();
+        await loadUtxos();
+        emit(state.copyWith(confirmedAmountSat: paymentRequest.amountSat));
+        await createTransaction();
+        emit(
+          state.copyWith(
+            step: SendStep.confirm,
+            confirmedAmountSat: paymentRequest.amountSat,
+          ),
+        );
 
+        return;
+      }
       if (paymentRequest.isBolt11) {
         emit(state.copyWith(creatingSwap: true));
         if (!await hasBalance()) {
@@ -282,11 +320,13 @@ class SendCubit extends Cubit<SendState> {
               loadingBestWallet: false,
             ),
           );
+          return;
         }
       } else {
         await loadFees();
         await loadUtxos();
         emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
+        return;
       }
     } catch (e) {
       if (e is NotEnoughFundsException) {
