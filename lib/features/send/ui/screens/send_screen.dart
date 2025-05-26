@@ -233,7 +233,9 @@ class SendAmountScreen extends StatelessWidget {
           final inputCurrency = context.select(
             (SendCubit cubit) => cubit.state.inputAmountCurrencyCode,
           );
-
+          final isChainSwap = context.select(
+            (SendCubit cubit) => cubit.state.chainSwap != null,
+          );
           final availableInputCurrencies = context
               .select<SendCubit, List<String>>(
                 (bloc) => bloc.state.inputAmountCurrencyCodes,
@@ -278,7 +280,7 @@ class SendAmountScreen extends StatelessWidget {
                     BalanceRow(
                       balance: state.formattedWalletBalance(),
                       currencyCode: '',
-                      showMax: !isLightning,
+                      showMax: !isLightning && !isChainSwap,
                       onMaxPressed: cubit.onMaxPressed,
                       walletLabel: selectedWalletLabel,
                     ),

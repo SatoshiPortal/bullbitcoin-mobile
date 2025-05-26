@@ -9,7 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   bdk_flutter:
     git:
       url: https://github.com/LtbLightning/bdk-flutter
