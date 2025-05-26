@@ -67,9 +67,9 @@ class SendAddressScreen extends StatelessWidget {
           children: [
             Expanded(
               child: ScanWidget(
-                onAddressDetected:
-                    (address) =>
-                        context.read<SendCubit>().addressChanged(address),
+                onScannedPaymentRequest:
+                    (data) =>
+                        context.read<SendCubit>().onScannedPaymentRequest(data),
               ),
             ),
             Align(
@@ -147,7 +147,7 @@ class AddressField extends StatelessWidget {
 
     return PasteInput(
       text: address,
-      onChanged: (text) => context.read<SendCubit>().addressChanged(text),
+      onChanged: (text) => context.read<SendCubit>().onPastedText(text),
     );
   }
 }

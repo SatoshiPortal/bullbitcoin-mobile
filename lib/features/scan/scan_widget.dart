@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_cubit.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_state.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -11,14 +12,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-/// Callback for when an address is detected from a QR code
-typedef OnAddressDetectedCallback = void Function(String address);
+/// Callback for when a payment request is detected from a QR code
+typedef OnScannedPaymentRequestCallback =
+    void Function((String, PaymentRequest?) data);
 
 class ScanWidget extends StatefulWidget {
-  /// Callback function that will be called when an address is detected
-  final OnAddressDetectedCallback? onAddressDetected;
+  /// Callback function that will be called when a payment request is detected
+  final OnScannedPaymentRequestCallback? onScannedPaymentRequest;
 
-  const ScanWidget({super.key, this.onAddressDetected});
+  const ScanWidget({super.key, this.onScannedPaymentRequest});
 
   @override
   State<ScanWidget> createState() => _ScanWidgetState();
@@ -110,8 +112,8 @@ class _ScanWidgetState extends State<ScanWidget> {
                     child: BlocConsumer<ScanCubit, ScanState>(
                       listener: (context, state) {
                         // Auto-trigger callback when address is detected
-                        if (state.data.isNotEmpty) {
-                          widget.onAddressDetected?.call(state.data);
+                        if (state.data.$1.isNotEmpty && state.data.$2 != null) {
+                          widget.onScannedPaymentRequest?.call(state.data);
                         }
                       },
                       builder: (context, state) {
@@ -121,7 +123,7 @@ class _ScanWidgetState extends State<ScanWidget> {
                             fit: StackFit.expand,
                             children: [
                               CameraPreview(_controller!),
-                              if (state.data.isNotEmpty)
+                              if (state.data.$1.isNotEmpty)
                                 Positioned(
                                   bottom: 60,
                                   left: 0,
@@ -132,9 +134,9 @@ class _ScanWidgetState extends State<ScanWidget> {
                                     textColor: context.colour.onPrimary,
                                     onPressed: () {},
                                     label:
-                                        state.data.length > 30
-                                            ? '${state.data.substring(0, 10)}…${state.data.substring(state.data.length - 10)}'
-                                            : state.data,
+                                        state.data.$1.length > 30
+                                            ? '${state.data.$1.substring(0, 10)}…${state.data.$1.substring(state.data.$1.length - 10)}'
+                                            : state.data.$1,
                                     bgColor: Colors.transparent,
                                   ),
                                 ),

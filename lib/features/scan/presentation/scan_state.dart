@@ -7,9 +7,8 @@ part 'scan_state.freezed.dart';
 abstract class ScanState with _$ScanState {
   const factory ScanState({
     required bool isStreaming,
-    required String data,
-    PaymentRequest? paymentRequest,
+    required (String, PaymentRequest?) data,
   }) = _ScanState;
-
-  factory ScanState.initial() => const ScanState(isStreaming: false, data: '');
+  factory ScanState.initial() =>
+      const ScanState(isStreaming: false, data: ('', null));
 }

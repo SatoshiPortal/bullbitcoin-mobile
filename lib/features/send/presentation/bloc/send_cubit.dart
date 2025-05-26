@@ -184,12 +184,26 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  Future<void> addressChanged(String address) async {
+  /// Called when a payment request is detected directly from the scanner
+  Future<void> onScannedPaymentRequest((String, PaymentRequest?) data) async {
+    clearAllExceptions();
+    emit(state.copyWith(paymentRequestData: data));
+  }
+
+  /// Called when text is pasted or entered manually
+  Future<void> onPastedText(String text) async {
     try {
       clearAllExceptions();
-      emit(state.copyWith(addressOrInvoice: address.trim()));
+      final paymentRequest = await _detectBitcoinStringUsecase.execute(
+        data: text,
+      );
+      emit(state.copyWith(paymentRequestData: (text, paymentRequest)));
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(
+        state.copyWith(
+          invalidBitcoinStringException: InvalidBitcoinStringException(),
+        ),
+      );
     }
   }
 
@@ -197,25 +211,8 @@ class SendCubit extends Cubit<SendState> {
     try {
       clearAllExceptions();
       emit(state.copyWith(loadingBestWallet: true));
-      PaymentRequest? paymentRequest;
-      bool isMrh = false;
-      try {
-        paymentRequest = await _detectBitcoinStringUsecase.execute(
-          data: state.addressOrInvoice,
-        );
-        if (paymentRequest.isBolt11) {
-          final invoice = await _decodeInvoiceUsecase.execute(
-            invoice: state.addressOrInvoice,
-            isTestnet: paymentRequest.isTestnet,
-          );
-          if (invoice.magicBip21 != null) {
-            isMrh = true;
-            paymentRequest = await _detectBitcoinStringUsecase.execute(
-              data: invoice.magicBip21!,
-            );
-          }
-        }
-      } catch (e) {
+
+      if (!state.hasValidPaymentRequest) {
         emit(
           state.copyWith(
             loadingBestWallet: false,
@@ -225,15 +222,35 @@ class SendCubit extends Cubit<SendState> {
         return;
       }
 
+      bool isMrh = false;
+      if (state.paymentRequest!.isBolt11) {
+          final invoice = await _decodeInvoiceUsecase.execute(
+            invoice: state.addressOrInvoice,
+          isTestnet: state.paymentRequest!.isTestnet,
+          );
+          if (invoice.magicBip21 != null) {
+            isMrh = true;
+          final updatedRequest = await _detectBitcoinStringUsecase.execute(
+              data: invoice.magicBip21!,
+            );
+        emit(
+          state.copyWith(
+              paymentRequestData: (invoice.magicBip21!, updatedRequest),
+          ),
+        );
+        }
+      }
+
       // Use the preselected wallet passed in the constructor if available,
       //  otherwise use the best wallet for the payment request and amount
       final wallet =
           _wallet ??
           _bestWalletUsecase.execute(
             wallets: state.wallets,
-            request: paymentRequest,
-            amountSat: paymentRequest.amountSat,
+            request: state.paymentRequest!,
+            amountSat: state.paymentRequest!.amountSat,
           );
+
       // Listen to the wallet syncing status to update the wallet balance and its utxos
       // Do we need to do this? The wallet selected may change in the amount page
       await _selectedWalletSyncingSubscription?.cancel();
@@ -243,20 +260,22 @@ class SendCubit extends Cubit<SendState> {
             emit(state.copyWith(selectedWallet: wallet));
             await loadUtxos();
           });
-      final sendType = SendType.from(paymentRequest);
+
+      final sendType = SendType.from(state.paymentRequest!);
       emit(
         state.copyWith(
-          paymentRequest: paymentRequest,
-          amount: paymentRequest.amountSat?.toString() ?? '',
+          amount: state.paymentRequest!.amountSat?.toString() ?? '',
           selectedWallet: wallet,
           sendType: sendType,
         ),
       );
+
       await loadSwapLimits();
       final swapType =
           wallet.isLiquid
               ? SwapType.liquidToLightning
               : SwapType.bitcoinToLightning;
+
       // for bolt12 or lnaddress we need to redirect to the amount page and only create a swap after amount is set
       if (isMrh) {
         if (!await hasBalance()) {
@@ -272,18 +291,20 @@ class SendCubit extends Cubit<SendState> {
         //
         await loadFees();
         await loadUtxos();
-        emit(state.copyWith(confirmedAmountSat: paymentRequest.amountSat));
+        emit(
+          state.copyWith(confirmedAmountSat: state.paymentRequest!.amountSat),
+        );
         await createTransaction();
         emit(
           state.copyWith(
             step: SendStep.confirm,
-            confirmedAmountSat: paymentRequest.amountSat,
+            confirmedAmountSat: state.paymentRequest!.amountSat,
           ),
         );
 
         return;
       }
-      if (paymentRequest.isBolt11) {
+      if (state.paymentRequest!.isBolt11) {
         emit(state.copyWith(creatingSwap: true));
         if (!await hasBalance()) {
           emit(
@@ -344,7 +365,7 @@ class SendCubit extends Cubit<SendState> {
             state.copyWith(
               step: SendStep.confirm,
               lightningSwap: swap,
-              confirmedAmountSat: paymentRequest.amountSat,
+              confirmedAmountSat: state.paymentRequest!.amountSat,
               creatingSwap: false,
             ),
           );

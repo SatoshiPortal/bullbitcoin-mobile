@@ -54,9 +54,7 @@ abstract class SendState with _$SendState {
   const factory SendState({
     @Default(SendStep.address) SendStep step,
     @Default(SendType.lightning) SendType sendType,
-    // input
-    PaymentRequest? paymentRequest,
-    @Default('') String addressOrInvoice,
+    @Default(('', null)) (String, PaymentRequest?) paymentRequestData,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
     @Default('') String amount,
@@ -341,6 +339,15 @@ abstract class SendState with _$SendState {
           : selectedWallet!.isLiquid
           ? liquidAbsoluteFees
           : selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
+
+  /// The raw text input from either scanner or paste
+  String get addressOrInvoice => paymentRequestData.$1;
+
+  /// The parsed payment request, if valid
+  PaymentRequest? get paymentRequest => paymentRequestData.$2;
+
+  /// Whether we have a valid payment request
+  bool get hasValidPaymentRequest => paymentRequest != null;
 }
 
 class SwapCreationException implements Exception {

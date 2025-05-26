@@ -33,7 +33,7 @@ class ScanCubit extends Cubit<ScanState> {
           image.height,
         );
 
-        if (qrText.isNotEmpty && qrText != state.data) {
+        if (qrText.isNotEmpty && qrText != state.data.$1) {
           PaymentRequest? pr;
           try {
             pr = await PaymentRequest.parse(qrText);
@@ -41,7 +41,7 @@ class ScanCubit extends Cubit<ScanState> {
             debugPrint('Error: $e, parsing payment request: $qrText');
           }
 
-          emit(state.copyWith(data: qrText, paymentRequest: pr));
+          emit(state.copyWith(data: (qrText, pr)));
         }
       } catch (_) {
       } finally {
