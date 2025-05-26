@@ -247,28 +247,54 @@ class MigrateToV5HiveToSqliteToUsecase {
       final List<WalletWithOngoingSwaps> recovered = [];
 
       for (final oldWallet in oldMainWallets) {
+        if (oldWallet.isBitcoin() && oldWallet.hasPassphrase()) {
+          final oldSeed = await _oldSeedRepository.fetch(
+            fingerprint: oldWallet.mnemonicFingerprint,
+          );
+          if (oldSeed == null) continue;
+          final oldPassphrase = oldSeed.getPassphraseFromIndex(
+            oldWallet.sourceFingerprint,
+          );
+          final newPassphraseSeed = await _newSeedRepository.createFromMnemonic(
+            mnemonicWords: oldSeed.mnemonicList(),
+            passphrase: oldPassphrase.passphrase,
+          );
+          final newWallet = await _newWalletRepository.createWallet(
+            seed: newPassphraseSeed,
+            scriptType: ScriptType.bip84,
+            network: Network.bitcoinMainnet,
+            isDefault: false,
+          );
+          final isBackupTested = oldWallet.backupTested;
+          final lastBackupTested = oldWallet.lastBackupTested ?? DateTime.now();
+          await _newWalletRepository.updateBackupInfo(
+            walletId: newWallet.id,
+            isEncryptedVaultTested: false,
+            isPhysicalBackupTested: isBackupTested,
+            latestEncryptedBackup: null,
+            latestPhysicalBackup: lastBackupTested,
+          );
+          final ongoingSwaps = await _getOldOngoingSwaps(oldWallet);
+          final walletWithSwaps = WalletWithOngoingSwaps(
+            walletIdMapping: WalletIdMapping(
+              oldWalletId: oldWallet.id,
+              newWalletId: newWallet.id,
+            ),
+            oldOngoingSwaps: ongoingSwaps.toList(),
+          );
+          recovered.add(walletWithSwaps);
+        }
         final mainWalletSeed = await _newSeedRepository.get(
           oldWallet.sourceFingerprint, // incase of passphrase
         );
-        final network =
-            oldWallet.baseWalletType == OldBaseWalletType.Bitcoin
-                ? (oldWallet.isTestnet()
-                    ? Network.bitcoinTestnet
-                    : Network.bitcoinMainnet)
-                : (oldWallet.isTestnet()
-                    ? Network.liquidTestnet
-                    : Network.liquidMainnet);
-
-        final scriptType = switch (oldWallet.scriptType) {
-          OldScriptType.bip84 => ScriptType.bip84,
-          OldScriptType.bip49 => ScriptType.bip49,
-          OldScriptType.bip44 => ScriptType.bip44,
-        };
 
         final newWallet = await _newWalletRepository.createWallet(
           seed: mainWalletSeed,
-          scriptType: scriptType,
-          network: network,
+          scriptType: ScriptType.bip84,
+          network:
+              oldWallet.isBitcoin()
+                  ? Network.bitcoinMainnet
+                  : Network.liquidMainnet,
           isDefault: true,
         );
         final isBackupTested = oldWallet.backupTested;
