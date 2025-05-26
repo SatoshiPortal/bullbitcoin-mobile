@@ -5,11 +5,11 @@ import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entitie
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
 
-class MigrateToV5HiveToSqliteToUsecase {
+class GetOldSeedsUsecase {
   final OldSeedRepository _oldSeedRepository;
   final OldWalletRepository _oldWalletRepository;
   final AddLogUsecase _addLogUsecase;
-  MigrateToV5HiveToSqliteToUsecase({
+  GetOldSeedsUsecase({
     required OldSeedRepository oldSeedRepository,
     required OldWalletRepository oldWalletRepository,
     required AddLogUsecase addLogUsecase,
