@@ -114,6 +114,7 @@ class ReceiveQRDetails extends StatelessWidget {
               CopyInput(
                 text: addressOrInvoiceOnly,
                 clipboardText: clipboardData,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

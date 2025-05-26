@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
+import 'package:bb_mobile/features/transactions/presentation/view_models/transaction_view_model.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
@@ -1112,9 +1113,6 @@ class SendSucessScreen extends StatelessWidget {
     final isChainSwap = context.select(
       (SendCubit cubit) => cubit.state.chainSwap != null,
     );
-    final transaction = context.select(
-      (SendCubit cubit) => cubit.state.transaction,
-    );
 
     return Scaffold(
       appBar: AppBar(
@@ -1178,7 +1176,7 @@ class SendSucessScreen extends StatelessWidget {
                 onPressed: () {
                   context.push(
                     '/send/${SendRoute.sendTransactionDetails.path}',
-                    extra: transaction,
+                    extra: transaction as TransactionViewModel,
                   );
                 },
                 bgColor: context.colour.secondary,

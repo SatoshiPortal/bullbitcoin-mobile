@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/labels/domain/labelable.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_input.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/transaction_output.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wallet_transaction.freezed.dart';
@@ -25,8 +24,9 @@ enum WalletTransactionStatus {
 
 @freezed
 sealed class WalletTransaction with _$WalletTransaction implements Labelable {
-  const factory WalletTransaction.bitcoin({
+  const factory WalletTransaction({
     required String walletId,
+    required Network network,
     required WalletTransactionDirection direction,
     required WalletTransactionStatus status,
     required String txId,
@@ -37,38 +37,17 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
     DateTime? confirmationTime,
     @Default(false) bool isToSelf,
     @Default([]) List<String> labels,
-    Payjoin? payjoin,
-    Swap? swap,
-    @Default('') String exchangeId,
-  }) = BitcoinWalletTransaction;
-  const factory WalletTransaction.liquid({
-    required String walletId,
-    required WalletTransactionDirection direction,
-    required WalletTransactionStatus status,
-    required String txId,
-    required int amountSat,
-    required int feeSat,
-    required List<TransactionInput> inputs,
-    required List<TransactionOutput> outputs,
-    DateTime? confirmationTime,
-    @Default(false) bool isToSelf,
-    @Default([]) List<String> labels,
-    Swap? swap,
-    @Default('') String exchangeId,
-  }) = LiquidWalletTransaction;
+  }) = _WalletTransaction;
   const WalletTransaction._();
 
+  bool get isBitcoin => network.isBitcoin;
+  bool get isLiquid => network.isLiquid;
+  bool get isTestnet => network.isTestnet;
+  bool get isMainnet => network.isMainnet;
   bool get isIncoming => direction == WalletTransactionDirection.incoming;
   bool get isOutgoing => direction == WalletTransactionDirection.outgoing;
   bool get isPending => status == WalletTransactionStatus.pending;
   bool get isConfirmed => status == WalletTransactionStatus.confirmed;
-  bool get isPayjoin =>
-      this is BitcoinWalletTransaction &&
-      (this as BitcoinWalletTransaction).payjoin != null;
-  bool get isSwap => swap != null;
-  bool get isLnSwap => isSwap && (swap!.isLnReceiveSwap || swap!.isLnSendSwap);
-  bool get isChainSwap => isSwap && swap!.isChainSwap;
-  bool get isExchange => exchangeId.isNotEmpty;
 
   TransactionOutput? get destinationOutput {
     if (outputs.isEmpty) {

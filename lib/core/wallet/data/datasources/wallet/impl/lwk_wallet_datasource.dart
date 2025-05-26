@@ -362,7 +362,7 @@ class LwkWalletDatasource implements WalletDatasource {
                 ? finalBalance
                 : finalBalance.abs() - tx.fee.toInt();
 
-        return WalletTransactionModel.liquid(
+        return WalletTransactionModel(
           txId: tx.txid,
           isIncoming: isIncoming,
           amountSat: netAmountSat,
@@ -371,6 +371,8 @@ class LwkWalletDatasource implements WalletDatasource {
           isToSelf: isToSelf,
           inputs: inputs,
           outputs: outputs,
+          isLiquid: true,
+          isTestnet: wallet.isTestnet,
         );
       }),
     );

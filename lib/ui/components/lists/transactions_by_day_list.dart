@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/features/transactions/presentation/view_models/transaction_view_model.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/fonts.dart';
@@ -9,7 +9,7 @@ import 'package:intl/intl.dart';
 class TransactionsByDayList extends StatelessWidget {
   const TransactionsByDayList({super.key, required this.transactionsByDay});
 
-  final Map<int, List<WalletTransaction>>? transactionsByDay;
+  final Map<int, List<TransactionViewModel>>? transactionsByDay;
 
   @override
   Widget build(BuildContext context) {

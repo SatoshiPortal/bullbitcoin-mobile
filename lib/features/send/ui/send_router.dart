@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/view_models/transaction_view_model.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transaction_details_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,11 +37,11 @@ class SendRouter {
       GoRoute(
         path: SendRoute.sendTransactionDetails.path,
         builder: (context, state) {
-          final tx = state.extra! as WalletTransaction;
+          final tx = state.extra! as TransactionViewModel;
           return BlocProvider(
             create:
                 (context) =>
-                    locator<TransactionDetailsCubit>()..loadTxDetails(tx),
+                    locator<TransactionDetailsCubit>()..monitorTransaction(tx),
             child: const TransactionDetailsScreen(title: 'Send'),
           );
         },

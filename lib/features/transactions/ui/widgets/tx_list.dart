@@ -9,7 +9,7 @@ class TxList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final txsByDay = context.select(
-      (TransactionsCubit cubit) => cubit.state.transactionsByDay,
+      (TransactionsCubit cubit) => cubit.state.filteredTransactionsByDay,
     );
 
     return TransactionsByDayList(transactionsByDay: txsByDay);

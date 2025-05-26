@@ -1,16 +1,15 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/presentation/view_models/transaction_view_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -20,6 +19,8 @@ part 'transaction_details_state.dart';
 class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   TransactionDetailsCubit({
     required GetWalletUsecase getWalletUsecase,
+    required WatchWalletTransactionByTxIdUsecase
+    watchWalletTransactionByTxIdUsecase,
     required GetSwapUsecase getSwapUsecase,
     required WatchSwapUsecase watchSwapUsecase,
     required GetPayjoinByIdUsecase getPayjoinByIdUsecase,
@@ -28,6 +29,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required BroadcastOriginalTransactionUsecase
     broadcastOriginalTransactionUsecase,
   }) : _getWalletUsecase = getWalletUsecase,
+       _watchWalletTransactionByTxIdUsecase =
+           watchWalletTransactionByTxIdUsecase,
        _getSwapUsecase = getSwapUsecase,
        _watchSwapUsecase = watchSwapUsecase,
        _getPayjoinByIdUsecase = getPayjoinByIdUsecase,
@@ -38,6 +41,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
        super(const TransactionDetailsState());
 
   final GetWalletUsecase _getWalletUsecase;
+  final WatchWalletTransactionByTxIdUsecase
+  _watchWalletTransactionByTxIdUsecase;
   final GetSwapUsecase _getSwapUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final GetPayjoinByIdUsecase _getPayjoinByIdUsecase;
@@ -58,23 +63,29 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     return super.close();
   }
 
-  Future<void> loadTxDetails(WalletTransaction tx) async {
+  Future<void> monitorTransaction(TransactionViewModel tx) async {
     try {
       emit(state.copyWith(transaction: tx));
 
-      // Load the wallet
-      final wallet = await _getWalletUsecase.execute(tx.walletId);
-      emit(state.copyWith(wallet: wallet));
-
-      // Check if the transaction was a payjoin
-      if (tx is BitcoinWalletTransaction && tx.payjoin != null) {
+      // Check if the transaction was a payjoin and if so, start monitoring it
+      if (tx.payjoin != null) {
         final payjoinId = tx.payjoin!.id;
         final payjoin = await _getPayjoinByIdUsecase.execute(payjoinId);
         _payjoinSubscription = _watchPayjoinUsecase
             .execute(ids: [payjoinId])
-            .listen((payjoin) => emit(state.copyWith(payjoin: payjoin)));
+            .listen(
+              (payjoin) => emit(
+                state.copyWith(
+                  transaction: state.transaction?.copyWith(payjoin: payjoin),
+                ),
+              ),
+            );
 
-        emit(state.copyWith(payjoin: payjoin));
+        emit(
+          state.copyWith(
+            transaction: state.transaction?.copyWith(payjoin: payjoin),
+          ),
+        );
       }
 
       if (tx.swap != null) {
@@ -82,33 +93,22 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         final swapId = tx.swap!.id;
         final swap = await _getSwapUsecase.execute(
           swapId,
-          isTestnet: wallet.isTestnet,
+          isTestnet: tx.isTestnet,
         );
         // Watch swap by id so the UI can update if the state changes
         _swapSubscription = _watchSwapUsecase
             .execute(swapId)
-            .listen((swap) => emit(state.copyWith(swap: swap)));
-        emit(state.copyWith(swap: swap));
+            .listen(
+              (swap) => emit(
+                state.copyWith(
+                  transaction: state.transaction?.copyWith(swap: swap),
+                ),
+              ),
+            );
+        emit(
+          state.copyWith(transaction: state.transaction?.copyWith(swap: swap)),
+        );
       }
-    } catch (e) {
-      if (!isClosed) {
-        emit(state.copyWith(err: e));
-      }
-    }
-  }
-
-  Future<void> loadPayjoinDetails(String payjoinId) async {
-    try {
-      // Load the wallet
-      final wallet = await _getWalletUsecase.execute(payjoinId);
-      emit(state.copyWith(wallet: wallet));
-
-      final payjoin = await _getPayjoinByIdUsecase.execute(payjoinId);
-      _payjoinSubscription = _watchPayjoinUsecase
-          .execute(ids: [payjoinId])
-          .listen((payjoin) => emit(state.copyWith(payjoin: payjoin)));
-
-      emit(state.copyWith(payjoin: payjoin));
     } catch (e) {
       if (!isClosed) {
         emit(state.copyWith(err: e));
@@ -117,32 +117,36 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   }
 
   Future<void> saveTransactionNote(String note) async {
-    // TODO: Permit multiple labels
+    // TODO: Permit multiple labels && labels from payjoin txs (for example set on the original tx)
     final transaction = state.transaction;
-    if (transaction == null) return;
+    if (transaction == null || transaction.walletTransaction == null) return;
 
     await _createLabelUsecase.execute<WalletTransaction>(
-      origin: state.wallet!.origin,
-      entity: transaction,
+      origin: transaction.wallet!.origin,
+      entity: transaction.walletTransaction!,
       label: note,
     );
 
     final updatedTransaction = transaction.copyWith(
-      labels: [...transaction.labels, note],
+      walletTransaction: transaction.walletTransaction?.copyWith(
+        labels: [...transaction.walletTransaction!.labels, note],
+      ),
     );
     emit(state.copyWith(transaction: updatedTransaction));
   }
 
   Future<void> broadcastPayjoinOriginalTx() async {
     try {
-      if (state.payjoin == null) return;
+      final payjoin = state.transaction?.payjoin;
+      if (payjoin == null) return;
       emit(state.copyWith(isBroadcastingPayjoinOriginalTx: true));
-      final payjoin = await _broadcastOriginalTransactionUsecase.execute(
-        state.payjoin!,
+      final updatedPayjoin = await _broadcastOriginalTransactionUsecase.execute(
+        payjoin,
       );
       emit(
         state.copyWith(
-          payjoin: payjoin,
+          transaction: state.transaction?.copyWith(payjoin: updatedPayjoin),
+          err: null,
           isBroadcastingPayjoinOriginalTx: false,
         ),
       );

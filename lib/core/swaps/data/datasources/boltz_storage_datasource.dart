@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:boltz/boltz.dart';
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
 class BoltzStorageDatasource {
@@ -62,8 +63,15 @@ class BoltzStorageDatasource {
     };
   }
 
-  Future<List<SwapModel>> fetchAll() async {
-    final all = await _localSwapStorage.managers.swaps.get();
+  Future<List<SwapModel>> fetchAll({String? walletId}) async {
+    final all =
+        await _localSwapStorage.managers.swaps
+            .filter(
+              (f) =>
+                  f.sendWalletId.equals(walletId) |
+                  f.receiveWalletId.equals(walletId),
+            )
+            .get();
     return all.map((e) => SwapModel.fromSqlite(e)).toList();
   }
 

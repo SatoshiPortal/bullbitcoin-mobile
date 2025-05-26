@@ -5,30 +5,30 @@ enum TransactionsFilter { all, send, receive, swap, payjoin, sell, buy }
 @freezed
 abstract class TransactionsState with _$TransactionsState {
   const factory TransactionsState({
-    List<WalletTransaction>? transactions,
+    List<TransactionViewModel>? transactions,
     @Default(false) bool isSyncing,
     @Default(TransactionsFilter.all) TransactionsFilter filter,
     Object? err,
   }) = _TransactionsState;
   const TransactionsState._();
 
-  Map<int, List<WalletTransaction>>? get transactionsByDay {
-    if (filteredTransactions == null) {
+  Map<int, List<TransactionViewModel>>? get transactionsByDay {
+    if (transactions == null) {
       return null;
     }
 
-    final Map<int, List<WalletTransaction>> grouped = {};
+    final Map<int, List<TransactionViewModel>> grouped = {};
 
-    for (final tx in filteredTransactions!) {
+    for (final tx in transactions!) {
       int day;
-      if (tx.confirmationTime == null) {
+      if (tx.timestamp == null) {
         // Pending transactions can't be assigned to a specific day yet, since
         //  they are in the future we assign them to a day that is always
         //  greater than any other day. This way they will always be at the top
         //  of the list when sorted by date.
         day = 8640000000000000; // Max milliseconds value for DateTime
       } else {
-        final date = tx.confirmationTime!;
+        final date = tx.timestamp!;
         day = DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
       }
 
@@ -38,10 +38,8 @@ abstract class TransactionsState with _$TransactionsState {
     // Sort transactions inside each day
     grouped.forEach((_, txs) {
       txs.sort((a, b) {
-        final aTime =
-            a.confirmationTime ?? DateTime.fromMillisecondsSinceEpoch(0);
-        final bTime =
-            b.confirmationTime ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final aTime = a.timestamp ?? DateTime.fromMillisecondsSinceEpoch(0);
+        final bTime = b.timestamp ?? DateTime.fromMillisecondsSinceEpoch(0);
         return bTime.compareTo(aTime); // descending
       });
     });
@@ -52,30 +50,33 @@ abstract class TransactionsState with _$TransactionsState {
       (a, b) => b.compareTo(a), // descending key sort
     );
 
-    return LinkedHashMap<int, List<WalletTransaction>>.from(sorted);
+    return LinkedHashMap<int, List<TransactionViewModel>>.from(sorted);
   }
 
-  List<WalletTransaction>? get filteredTransactions {
-    return transactions
-        ?.where((tx) {
-          switch (filter) {
-            case TransactionsFilter.all:
-              return true;
-            case TransactionsFilter.send:
-              return tx.isOutgoing;
-            case TransactionsFilter.receive:
-              return tx.isIncoming;
-            case TransactionsFilter.swap:
-              return tx.isSwap;
-            case TransactionsFilter.payjoin:
-              return tx.isPayjoin;
-            case TransactionsFilter.sell:
-              return false;
-            case TransactionsFilter.buy:
-              return false;
-          }
-        })
-        .toList(growable: false);
+  Map<int, List<TransactionViewModel>>? get filteredTransactionsByDay {
+    if (transactionsByDay == null) {
+      return null;
+    }
+
+    final filtered = {
+      for (final key in transactionsByDay!.keys)
+        key:
+            transactionsByDay![key]!
+                .where(
+                  (tx) => switch (filter) {
+                    TransactionsFilter.all => true,
+                    TransactionsFilter.send => tx.isOutgoing,
+                    TransactionsFilter.receive => tx.isIncoming,
+                    TransactionsFilter.swap => tx.isSwap,
+                    TransactionsFilter.payjoin => tx.isPayjoin,
+                    TransactionsFilter.sell => false,
+                    TransactionsFilter.buy => false,
+                  },
+                )
+                .toList(),
+    };
+
+    return filtered;
   }
 
   bool get hasNoTransactions {

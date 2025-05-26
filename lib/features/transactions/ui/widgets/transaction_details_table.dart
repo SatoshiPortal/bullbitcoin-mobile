@@ -21,17 +21,17 @@ class TransactionDetailsTable extends StatelessWidget {
     );
     final amountSat = tx?.amountSat ?? 0;
     final wallet = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.wallet,
+      (TransactionDetailsCubit cubit) => cubit.state.transaction?.wallet,
     );
     final swap = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.swap,
+      (TransactionDetailsCubit cubit) => cubit.state.transaction?.swap,
     );
     final swapFees =
         (swap?.fees?.claimFee ?? 0) +
         (swap?.fees?.boltzFee ?? 0) +
         (swap?.fees?.lockupFee ?? 0);
     final payjoin = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.payjoin,
+      (TransactionDetailsCubit cubit) => cubit.state.transaction?.payjoin,
     );
 
     final labels = tx?.labels.join(', ') ?? '';

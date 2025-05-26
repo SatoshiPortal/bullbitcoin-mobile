@@ -3,14 +3,9 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 
 abstract class WalletTransactionRepository {
   //Stream<WalletTransaction> get walletTransactions;
-  Future<List<WalletTransaction>> getBroadcastedWalletTransactions({
+  Future<List<WalletTransaction>> getWalletTransactions({
     String? walletId,
     String? toAddress,
-    Environment? environment,
-    bool sync = false,
-  });
-  Future<List<BitcoinWalletTransaction>> getOngoingPayjoinWalletTransactions({
-    String? walletId,
     Environment? environment,
     bool sync = false,
   });
