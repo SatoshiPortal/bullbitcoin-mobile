@@ -65,9 +65,7 @@ class GetOldSeedsUsecase {
         final seed = await _oldSeedRepository.fetch(
           fingerprint: wallet.mnemonicFingerprint,
         );
-        if (seed != null) {
-          oldSeeds.add(seed);
-        }
+        oldSeeds.add(seed);
       }
       return oldSeeds;
     } catch (e) {

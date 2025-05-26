@@ -206,9 +206,8 @@ class MigrateToV5HiveToSqliteToUsecase {
       final List<MnemonicSeed> seeds = [];
       for (final oldWallet in oldWallets) {
         final oldSeed = await _oldSeedRepository.fetch(
-          fingerprint: oldWallet.mnemonicFingerprint,
+          fingerprint: oldWallet.getRelatedSeedStorageString(),
         );
-        if (oldSeed == null) continue;
         if (oldWallet.hasPassphrase()) {
           final oldPassphrase = oldSeed.getPassphraseFromIndex(
             oldWallet.sourceFingerprint,
@@ -218,8 +217,7 @@ class MigrateToV5HiveToSqliteToUsecase {
             passphrase: oldPassphrase.passphrase,
           );
           seeds.add(seed);
-        }
-        if (oldWallet.isLiquid()) {
+        } else {
           final seed = await _newSeedRepository.createFromMnemonic(
             mnemonicWords: oldSeed.mnemonicList(),
           );
@@ -285,7 +283,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           final oldSeed = await _oldSeedRepository.fetch(
             fingerprint: oldWallet.mnemonicFingerprint,
           );
-          if (oldSeed == null) continue;
+
           final oldPassphrase = oldSeed.getPassphraseFromIndex(
             oldWallet.sourceFingerprint,
           );
