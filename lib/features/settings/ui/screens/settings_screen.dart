@@ -85,6 +85,13 @@ class SettingsScreen extends StatelessWidget {
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),
+              ListTile(
+                title: const Text('Legacy Seeds'),
+                onTap: () {
+                  context.pushNamed(SettingsRoute.legacySeeds.name);
+                },
+                trailing: const Icon(Icons.chevron_right),
+              ),
             ],
           ),
         ),

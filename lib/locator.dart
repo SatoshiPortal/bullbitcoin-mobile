@@ -8,6 +8,7 @@ import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.d
 import 'package:bb_mobile/features/home/home_locator.dart';
 import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_wallet_locator.dart';
 import 'package:bb_mobile/features/key_server/key_server_locator.dart';
+import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';
 import 'package:bb_mobile/features/pin_code/pin_code_locator.dart';
 import 'package:bb_mobile/features/receive/receive_locator.dart';
@@ -41,6 +42,7 @@ class AppLocator {
     AppUnlockLocator.setup();
     OnboardingLocator.setup();
     RecoverWalletLocator.setup();
+    LegacySeedViewLocator.setup();
     SettingsLocator.setup();
     BitcoinPriceLocator.setup();
     HomeLocator.setup();
