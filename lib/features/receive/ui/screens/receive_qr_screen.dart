@@ -68,6 +68,9 @@ class ReceiveQRDetails extends StatelessWidget {
     final addressOrInvoiceOnly = context.select(
       (ReceiveBloc bloc) => bloc.state.addressOrInvoiceOnly,
     );
+    final isPayjoinAvailable = context.select(
+      (ReceiveBloc bloc) => bloc.state.isPayjoinAvailable,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -86,6 +89,17 @@ class ReceiveQRDetails extends StatelessWidget {
                     : const LoadingBoxContent(size: 200),
           ),
         ),
+        if (isPayjoinAvailable) ...[
+          const Gap(16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: BBText(
+              'Payjoin activated',
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
         const Gap(20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),

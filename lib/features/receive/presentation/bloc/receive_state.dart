@@ -229,6 +229,16 @@ abstract class ReceiveState with _$ReceiveState {
     return false;
   }
 
+  bool get isPayjoinAvailable {
+    if (type == ReceiveType.bitcoin) {
+      return wallet != null &&
+          !wallet!.isWatchOnly &&
+          !isAddressOnly &&
+          payjoin != null;
+    }
+    return false;
+  }
+
   double get payjoinAmountFiat {
     final payjoinAmountSat = payjoin?.amountSat ?? 0;
     final payjoinAmountBtc = ConvertAmount.satsToBtc(payjoinAmountSat);
