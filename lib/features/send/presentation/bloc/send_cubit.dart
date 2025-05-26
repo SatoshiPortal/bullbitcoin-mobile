@@ -156,10 +156,6 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
-  void onClickAddressOrInvoice(String addressOrInvoice) {
-    emit(state.copyWith(addressOrInvoice: addressOrInvoice));
-  }
-
   void backClicked() {
     if (state.step == SendStep.address) {
       emit(state.copyWith(step: SendStep.address));
@@ -224,20 +220,20 @@ class SendCubit extends Cubit<SendState> {
 
       bool isMrh = false;
       if (state.paymentRequest!.isBolt11) {
-          final invoice = await _decodeInvoiceUsecase.execute(
-            invoice: state.addressOrInvoice,
+        final invoice = await _decodeInvoiceUsecase.execute(
+          invoice: state.addressOrInvoice,
           isTestnet: state.paymentRequest!.isTestnet,
-          );
-          if (invoice.magicBip21 != null) {
-            isMrh = true;
-          final updatedRequest = await _detectBitcoinStringUsecase.execute(
-              data: invoice.magicBip21!,
-            );
-        emit(
-          state.copyWith(
-              paymentRequestData: (invoice.magicBip21!, updatedRequest),
-          ),
         );
+        if (invoice.magicBip21 != null) {
+          isMrh = true;
+          final updatedRequest = await _detectBitcoinStringUsecase.execute(
+            data: invoice.magicBip21!,
+          );
+          emit(
+            state.copyWith(
+              paymentRequestData: (invoice.magicBip21!, updatedRequest),
+            ),
+          );
         }
       }
 
@@ -400,9 +396,9 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<void> loadSwapLimits() async {
-    final paymentRequest = state.paymentRequest!;
+    final paymentRequest = state.paymentRequest;
     final loadLnSwapLimits =
-        paymentRequest.isBolt11 || paymentRequest.isLnAddress;
+        paymentRequest?.isBolt11 == true || paymentRequest?.isLnAddress == true;
     if (loadLnSwapLimits) {
       final (
         (liquidSwapLimits, liquidSwapFees),
@@ -480,7 +476,7 @@ class SendCubit extends Cubit<SendState> {
       return false;
     }
     final wallet = state.selectedWallet!;
-    final paymentRequest = state.paymentRequest!;
+    final paymentRequest = state.paymentRequest;
     switch (paymentRequest) {
       case Bolt11PaymentRequest _:
         // final swapLimits = state.swapLimits!.;
