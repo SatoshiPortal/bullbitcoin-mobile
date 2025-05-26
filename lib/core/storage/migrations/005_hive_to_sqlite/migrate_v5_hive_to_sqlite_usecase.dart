@@ -218,7 +218,8 @@ class MigrateToV5HiveToSqliteToUsecase {
             passphrase: oldPassphrase.passphrase,
           );
           seeds.add(seed);
-        } else {
+        }
+        if (oldWallet.isLiquid()) {
           final seed = await _newSeedRepository.createFromMnemonic(
             mnemonicWords: oldSeed.mnemonicList(),
           );
@@ -247,6 +248,39 @@ class MigrateToV5HiveToSqliteToUsecase {
       final List<WalletWithOngoingSwaps> recovered = [];
 
       for (final oldWallet in oldMainWallets) {
+        final mainWalletSeed = await _newSeedRepository.get(
+          oldWallet.mnemonicFingerprint,
+        );
+
+        final newWallet = await _newWalletRepository.createWallet(
+          seed: mainWalletSeed,
+          scriptType: ScriptType.bip84,
+          network:
+              oldWallet.isBitcoin()
+                  ? Network.bitcoinMainnet
+                  : Network.liquidMainnet,
+          isDefault: true,
+        );
+        final isBackupTested = oldWallet.backupTested;
+        final lastBackupTested = oldWallet.lastBackupTested ?? DateTime.now();
+
+        await _newWalletRepository.updateBackupInfo(
+          walletId: newWallet.id,
+          isEncryptedVaultTested: false,
+          isPhysicalBackupTested: isBackupTested,
+          latestEncryptedBackup: null,
+          latestPhysicalBackup: lastBackupTested,
+        );
+        final ongoingSwaps = await _getOldOngoingSwaps(oldWallet);
+        final walletWithSwaps = WalletWithOngoingSwaps(
+          walletIdMapping: WalletIdMapping(
+            oldWalletId: oldWallet.id,
+            newWalletId: newWallet.id,
+          ),
+          oldOngoingSwaps: ongoingSwaps.toList(),
+        );
+        recovered.add(walletWithSwaps);
+
         if (oldWallet.isBitcoin() && oldWallet.hasPassphrase()) {
           final oldSeed = await _oldSeedRepository.fetch(
             fingerprint: oldWallet.mnemonicFingerprint,
@@ -285,39 +319,6 @@ class MigrateToV5HiveToSqliteToUsecase {
           );
           recovered.add(walletWithSwaps);
         }
-        final mainWalletSeed = await _newSeedRepository.get(
-          oldWallet.sourceFingerprint, // incase of passphrase
-        );
-
-        final newWallet = await _newWalletRepository.createWallet(
-          seed: mainWalletSeed,
-          scriptType: ScriptType.bip84,
-          network:
-              oldWallet.isBitcoin()
-                  ? Network.bitcoinMainnet
-                  : Network.liquidMainnet,
-          isDefault: true,
-        );
-        final isBackupTested = oldWallet.backupTested;
-        final lastBackupTested = oldWallet.lastBackupTested ?? DateTime.now();
-
-        await _newWalletRepository.updateBackupInfo(
-          walletId: newWallet.id,
-          isEncryptedVaultTested: false,
-          isPhysicalBackupTested: isBackupTested,
-          latestEncryptedBackup: null,
-          latestPhysicalBackup: lastBackupTested,
-        );
-        final ongoingSwaps = await _getOldOngoingSwaps(oldWallet);
-        final walletWithSwaps = WalletWithOngoingSwaps(
-          walletIdMapping: WalletIdMapping(
-            oldWalletId: oldWallet.id,
-            newWalletId: newWallet.id,
-          ),
-          oldOngoingSwaps: ongoingSwaps.toList(),
-        );
-        recovered.add(walletWithSwaps);
-        // TODO: Store newWallet in the new database
       }
       return recovered;
     } catch (e) {

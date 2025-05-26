@@ -51,7 +51,7 @@ class OnboardingSplash extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 48),
                   child: BBText(
-                    'Sovereign non-custodial Bitcoin wallet and Bitcoin-only exchange service.',
+                    'Sovereign self custody Bitcoin wallet and Bitcoin-only exchange service.',
                     style: context.font.labelSmall,
                     color: context.colour.onPrimary,
                     textAlign: TextAlign.center,

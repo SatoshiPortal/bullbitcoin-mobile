@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
-import 'package:bb_mobile/ui/components/cards/info_card.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -53,11 +52,33 @@ class LegacySeedViewScreen extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    InfoCard(
-                      title: 'Mnemonic',
-                      description: seed.mnemonic,
-                      tagColor: context.colour.primary,
-                      bgColor: context.colour.surface,
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: context.colour.surface,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: context.colour.primary,
+                          width: 2,
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          BBText(
+                            'Mnemonic',
+                            style: context.font.bodyLarge,
+                            color: context.colour.primary,
+                          ),
+                          const SizedBox(height: 8),
+                          BBText(
+                            seed.mnemonic,
+                            style: context.font.bodyMedium,
+                            color: context.colour.secondary,
+                            maxLines: 5,
+                          ),
+                        ],
+                      ),
                     ),
                     if (seed.passphrases.isNotEmpty)
                       Padding(
