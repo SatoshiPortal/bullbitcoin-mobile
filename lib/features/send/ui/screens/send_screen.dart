@@ -174,6 +174,7 @@ class AddressErrorSection extends StatelessWidget {
           style: context.font.bodyMedium,
           color: context.colour.error,
           textAlign: TextAlign.center,
+          maxLines: 2,
         ),
       );
     }
@@ -183,6 +184,7 @@ class AddressErrorSection extends StatelessWidget {
         style: context.font.bodyMedium,
         color: context.colour.error,
         textAlign: TextAlign.center,
+        maxLines: 2,
       );
     }
     if (invalidAddress != null) {
@@ -191,6 +193,7 @@ class AddressErrorSection extends StatelessWidget {
         style: context.font.bodyMedium,
         color: context.colour.error,
         textAlign: TextAlign.center,
+        maxLines: 2,
       );
     }
     return const SizedBox(height: 21);

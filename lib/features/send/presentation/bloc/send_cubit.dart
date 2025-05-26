@@ -295,6 +295,42 @@ class SendCubit extends Cubit<SendState> {
           );
           return;
         }
+        if (!state.swapAmountBelowLimit) {
+          if (!state.selectedWallet!.isLiquid) {
+            emit(
+              state.copyWith(
+                creatingSwap: false,
+                insufficientBalanceException: InsufficientBalanceException(
+                  message:
+                      'Not enough balance to pay this swap via Liquid and not within swap limits to pay via Bitcoin.',
+                ),
+                loadingBestWallet: false,
+              ),
+            );
+          } else {
+            emit(
+              state.copyWith(
+                creatingSwap: false,
+                swapLimitsException: SwapLimitsException(
+                  'Amount is below swap limits',
+                ),
+                loadingBestWallet: false,
+              ),
+            );
+          }
+          return;
+        }
+        if (!state.swapAmountAboveLimit) {
+          emit(
+            state.copyWith(
+              creatingSwap: false,
+              swapLimitsException: SwapLimitsException(
+                'Amount is above swap limits',
+              ),
+              loadingBestWallet: false,
+            ),
+          );
+        }
 
         try {
           final swap = await _createSendSwapUsecase.execute(
