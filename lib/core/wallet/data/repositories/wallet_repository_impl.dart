@@ -418,6 +418,11 @@ class WalletRepositoryImpl implements WalletRepository {
               isLiquid: isLiquid,
             ),
           );
+      await _logRepository.logInfo(
+        message: 'Using electrum server: ${electrumServer.url}',
+        context: {'walletId': wallet.id, 'function': "_syncWallet"},
+        logger: 'WalletRepository',
+      );
       if (isLiquid) {
         await _lwkWallet.sync(wallet: wallet, electrumServer: electrumServer);
       } else {

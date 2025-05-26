@@ -236,7 +236,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           stackTrace: StackTrace.current,
         ),
       );
-      return [];
+      rethrow;
     }
   }
 
@@ -303,7 +303,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           stackTrace: StackTrace.current,
         ),
       );
-      return [];
+      rethrow;
     }
   }
 
@@ -383,7 +383,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           stackTrace: StackTrace.current,
         ),
       );
-      return [];
+      rethrow;
     }
     // TODO: Store newWallet in the new database
   }
@@ -453,7 +453,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           stackTrace: StackTrace.current,
         ),
       );
-      return 0;
+      rethrow;
     }
   }
 
@@ -595,7 +595,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           stackTrace: StackTrace.current,
         ),
       );
-      return 0;
+      rethrow;
     }
   }
 }
