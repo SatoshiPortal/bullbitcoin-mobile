@@ -245,11 +245,11 @@ class MigrateToV5HiveToSqliteToUsecase {
   ) async {
     try {
       final List<WalletWithOngoingSwaps> recovered = [];
-      final mainWalletSeed = await _newSeedRepository.get(
-        oldMainWallets.first.mnemonicFingerprint,
-      );
 
       for (final oldWallet in oldMainWallets) {
+        final mainWalletSeed = await _newSeedRepository.get(
+          oldWallet.sourceFingerprint, // incase of passphrase
+        );
         final network =
             oldWallet.baseWalletType == OldBaseWalletType.Bitcoin
                 ? (oldWallet.isTestnet()
