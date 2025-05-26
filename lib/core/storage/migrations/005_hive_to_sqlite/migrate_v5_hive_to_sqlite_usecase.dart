@@ -361,16 +361,8 @@ class MigrateToV5HiveToSqliteToUsecase {
           OldScriptType.bip44 => ScriptType.bip44,
         };
 
-        final source = switch (oldExternalWallet.type) {
-          OldBBWalletType.main => WalletSource.mnemonic,
-          OldBBWalletType.coldcard => WalletSource.coldcard,
-          OldBBWalletType.xpub => WalletSource.xpub,
-          OldBBWalletType.words => WalletSource.mnemonic,
-          OldBBWalletType.descriptors => WalletSource.descriptors,
-        };
-
         // ignore: unused_local_variable
-        if (source == WalletSource.mnemonic) {
+        if (oldExternalWallet.type == OldBBWalletType.words) {
           final newWallet = await _newWalletRepository.createWallet(
             seed: newExternalSeed,
             scriptType: scriptType,
