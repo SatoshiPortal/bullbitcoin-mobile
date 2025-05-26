@@ -264,6 +264,7 @@ class MigrateToV5HiveToSqliteToUsecase {
             scriptType: ScriptType.bip84,
             network: Network.bitcoinMainnet,
             isDefault: false,
+            label: oldWallet.sourceFingerprint,
           );
           final isBackupTested = oldWallet.backupTested;
           final lastBackupTested = oldWallet.lastBackupTested ?? DateTime.now();
