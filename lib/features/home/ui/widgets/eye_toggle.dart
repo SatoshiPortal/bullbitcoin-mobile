@@ -9,7 +9,7 @@ class EyeToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hide = context.select(
-      (SettingsCubit settingsCubit) => settingsCubit.state?.hideAmounts ?? true,
+      (SettingsCubit settingsCubit) => settingsCubit.state.hideAmounts ?? true,
     );
     return GestureDetector(
       onTap: () {

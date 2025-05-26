@@ -11,23 +11,17 @@ class LanguageSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SettingsCubit, SettingsEntity?>(
-      listenWhen: (previous, current) =>
-          current?.language != previous?.language,
+    return BlocListener<SettingsCubit, SettingsState>(
+      listenWhen: (previous, current) => current.language != previous.language,
       listener: (context, state) => context.pop(),
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(context.loc.languageSettingsScreenTitle),
-        ),
+        appBar: AppBar(title: Text(context.loc.languageSettingsScreenTitle)),
         body: SafeArea(
           child: ListView(
-            children: Language.values
-                .map(
-                  (language) => LanguageOption(
-                    language: language,
-                  ),
-                )
-                .toList(),
+            children:
+                Language.values
+                    .map((language) => LanguageOption(language: language))
+                    .toList(),
           ),
         ),
       ),

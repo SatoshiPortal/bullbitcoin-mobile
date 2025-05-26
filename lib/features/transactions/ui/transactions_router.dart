@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/features/transactions/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:bb_mobile/features/transactions/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/ongoing_payjoin_transaction_details_screen.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transaction_details_screen.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transactions_screen.dart';

@@ -25,7 +25,7 @@ class _BackupOptionsScreenState extends State<BackupOptionsScreen> {
   @override
   Widget build(BuildContext context) {
     final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state?.isSuperuser ?? false,
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
     );
     return Scaffold(
       appBar: AppBar(

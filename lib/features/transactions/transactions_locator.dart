@@ -9,8 +9,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_us
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/transactions/blocs/transaction_details/transaction_details_cubit.dart';
-import 'package:bb_mobile/features/transactions/blocs/transactions_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 
 class TransactionsLocator {

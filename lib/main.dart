@@ -122,8 +122,8 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
                   locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
         ),
       ],
-      child: BlocSelector<SettingsCubit, SettingsEntity?, Language?>(
-        selector: (settings) => settings?.language,
+      child: BlocSelector<SettingsCubit, SettingsState, Language?>(
+        selector: (settings) => settings.language,
         builder:
             (context, language) => MaterialApp.router(
               title: 'BullBitcoin Wallet',

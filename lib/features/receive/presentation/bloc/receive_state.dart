@@ -63,7 +63,21 @@ abstract class ReceiveState with _$ReceiveState {
     return ConvertAmount.btcToFiat(inputAmountBtc, exchangeRate);
   }
 
-  String get qrData {
+  // The QR code data should always show the full payment request when all parameters are available,
+  //  this way the QR code doesn't change from an address only QR to a BIP21 uri with payjoin parameters while loading.
+  String get qrData => paymentRequest;
+
+  // The clipboard data should permit the user to copy just the address or invoice
+  // from the moment it is available and not wait for the full payment request like payjoin
+  // parameters. Once the full payment request is available, it should be copied instead of
+  // just the address or invoice of course.
+  String get clipboardData =>
+      paymentRequest.isEmpty ? addressOrInvoiceOnly : paymentRequest;
+
+  // The payment request can be an address, invoice or bip21 URI depending on
+  // the type of receive and some set parameters. It waits for all data to
+  // be available before returning anything.
+  String get paymentRequest {
     switch (type) {
       case ReceiveType.bitcoin:
         if (bitcoinAddress == null || isPayjoinLoading) {
@@ -206,9 +220,21 @@ abstract class ReceiveState with _$ReceiveState {
 
   bool get isPayjoinLoading {
     if (type == ReceiveType.bitcoin) {
-      return payjoin == null &&
-          error is! ReceivePayjoinException &&
-          !isAddressOnly;
+      return wallet != null &&
+          !wallet!.isWatchOnly &&
+          !isAddressOnly &&
+          payjoin == null &&
+          error is! ReceivePayjoinException;
+    }
+    return false;
+  }
+
+  bool get isPayjoinAvailable {
+    if (type == ReceiveType.bitcoin) {
+      return wallet != null &&
+          !wallet!.isWatchOnly &&
+          !isAddressOnly &&
+          payjoin != null;
     }
     return false;
   }

@@ -61,6 +61,12 @@ class TestWalletBackupBloc
     });
     on<LoadWallets>(_onLoadWallets);
     on<LoadMnemonicForWallet>(_onLoadMnemonicForWallet);
+    on<StartTransitioning>((event, emit) {
+      emit(state.copyWith(transitioning: true));
+    });
+    on<EndTransitioning>((event, emit) {
+      emit(state.copyWith(transitioning: false));
+    });
   }
 
   final SelectFileFromPathUsecase _selectFileFromPathUsecase;

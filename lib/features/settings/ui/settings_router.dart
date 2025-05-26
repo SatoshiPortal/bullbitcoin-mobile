@@ -1,11 +1,15 @@
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
+import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
+import 'package:bb_mobile/features/legacy_seed_view/ui/legacy_seed_view_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/settings/ui/screens/language_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/locator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum SettingsRoute {
@@ -14,7 +18,8 @@ enum SettingsRoute {
   language('language'),
   currency('currency'),
   backupSettings('backup-settings'),
-  logs('logs');
+  logs('logs'),
+  legacySeeds('legacy-seeds');
 
   final String path;
 
@@ -51,6 +56,15 @@ class SettingsRouter {
         path: SettingsRoute.logs.path,
         name: SettingsRoute.logs.name,
         builder: (context, state) => const LogSettingsScreen(),
+      ),
+      GoRoute(
+        path: SettingsRoute.legacySeeds.path,
+        name: SettingsRoute.legacySeeds.name,
+        builder:
+            (context, state) => BlocProvider(
+              create: (_) => locator<LegacySeedViewCubit>(),
+              child: const LegacySeedViewScreen(),
+            ),
       ),
 
       /** TODO: Implement CurrencySettingsScreen

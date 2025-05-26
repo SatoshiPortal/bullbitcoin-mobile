@@ -43,17 +43,7 @@ class SendLocator {
 
   static void registerUsecases() {
     locator.registerFactory<DetectBitcoinStringUsecase>(
-      () => DetectBitcoinStringUsecase(
-        mainnetSwapRepository: locator<SwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetSwapRepository: locator<SwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
-        ),
-      ),
+      () => DetectBitcoinStringUsecase(),
     );
     locator.registerFactory<PrepareBitcoinSendUsecase>(
       () => PrepareBitcoinSendUsecase(

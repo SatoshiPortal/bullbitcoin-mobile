@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/transactions/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/ui/components/tables/details_table.dart';
 import 'package:bb_mobile/ui/components/tables/details_table_item.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +41,7 @@ class TransactionDetailsTable extends StatelessWidget {
     final addressLabels = tx?.toAddressLabels?.join(', ') ?? '';
     final abbreviatedTxId = StringFormatting.truncateMiddle(txId);
     final bitcoinUnit = context.select(
-      (SettingsCubit cubit) => cubit.state?.bitcoinUnit,
+      (SettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
 
     return DetailsTable(

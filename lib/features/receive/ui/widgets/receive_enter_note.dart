@@ -17,10 +17,7 @@ class ReceiveEnterNote extends StatelessWidget {
       context: context,
       useRootNavigator: true,
       backgroundColor: context.colour.onPrimary,
-      constraints: const BoxConstraints(
-        minHeight: 200,
-        maxHeight: 300,
-      ),
+      isScrollControlled: true,
       builder: (context) {
         return BlocProvider.value(
           value: receive,
@@ -33,8 +30,14 @@ class ReceiveEnterNote extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: EdgeInsets.fromLTRB(
+        16,
+        0,
+        16,
+        MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Gap(22),
@@ -42,10 +45,7 @@ class ReceiveEnterNote extends StatelessWidget {
             children: [
               const Gap(22),
               const Spacer(),
-              BBText(
-                'Add Label',
-                style: context.font.headlineMedium,
-              ),
+              BBText('Add Label', style: context.font.headlineMedium),
               const Spacer(),
               IconButton(
                 onPressed: () {
@@ -62,9 +62,7 @@ class ReceiveEnterNote extends StatelessWidget {
               hintText: 'Note',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(2),
-                borderSide: BorderSide(
-                  color: context.colour.secondary,
-                ),
+                borderSide: BorderSide(color: context.colour.secondary),
               ),
             ),
             onChanged: (note) {

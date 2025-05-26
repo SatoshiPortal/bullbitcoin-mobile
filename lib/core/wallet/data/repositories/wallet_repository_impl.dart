@@ -418,6 +418,7 @@ class WalletRepositoryImpl implements WalletRepository {
               isLiquid: isLiquid,
             ),
           );
+
       if (isLiquid) {
         await _lwkWallet.sync(wallet: wallet, electrumServer: electrumServer);
       } else {

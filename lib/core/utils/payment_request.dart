@@ -48,6 +48,14 @@ sealed class PaymentRequest with _$PaymentRequest {
 
   const PaymentRequest._();
 
+  int? get amountSat => switch (this) {
+    BitcoinPaymentRequest() => null,
+    LiquidPaymentRequest() => null,
+    LnAddressPaymentRequest() => null,
+    Bolt11PaymentRequest(amountSat: final amountSat) => amountSat,
+    Bip21PaymentRequest(amountSat: final amountSat) => amountSat,
+  };
+
   static Future<PaymentRequest> parse(String data) async {
     try {
       final String trimmed = data.trim();

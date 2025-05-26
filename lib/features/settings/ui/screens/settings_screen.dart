@@ -6,7 +6,10 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/sats_bitcoin_unit_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -15,8 +18,12 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state?.isSuperuser ?? false,
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
+    final appVersion = context.select(
+      (SettingsCubit cubit) => cubit.state.appVersion,
     );
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
@@ -79,13 +86,88 @@ class SettingsScreen extends StatelessWidget {
                 trailing: const Icon(Icons.chevron_right),
               ),
               ListTile(
-                leading: const Icon(Icons.support_agent),
-                title: const Text('Contact support'),
+                title: const Text('Legacy Seeds'),
                 onTap: () {
-                  final url = Uri.parse(SettingsConstants.telegramSupportLink);
-                  // ignore: deprecated_member_use
-                  launchUrl(url, mode: LaunchMode.externalApplication);
+                  context.pushNamed(SettingsRoute.legacySeeds.name);
                 },
+                trailing: const Icon(Icons.chevron_right),
+              ),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        height: 150,
+        padding: EdgeInsets.zero,
+        color: Colors.transparent,
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (appVersion != null)
+                ListTile(
+                  tileColor: theme.colorScheme.secondaryFixedDim,
+                  title: Center(
+                    child: Text(
+                      'App version: $appVersion',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.surfaceContainer,
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: appVersion));
+                  },
+                ),
+              Padding(
+                padding: const EdgeInsets.only(top: 24),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        final url = Uri.parse(
+                          SettingsConstants.telegramSupportLink,
+                        );
+                        launchUrl(url, mode: LaunchMode.externalApplication);
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(FontAwesomeIcons.telegram),
+                          const Gap(8),
+                          Text(
+                            'Telegram',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.secondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        final url = Uri.parse(
+                          SettingsConstants.githubSupportLink,
+                        );
+                        launchUrl(url, mode: LaunchMode.externalApplication);
+                      },
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(FontAwesomeIcons.github),
+                          const Gap(8),
+                          Text(
+                            'Github',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.secondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

@@ -4,17 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LanguageOption extends StatelessWidget {
-  const LanguageOption({
-    super.key,
-    required this.language,
-  });
+  const LanguageOption({super.key, required this.language});
 
   final Language language;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      selected: context.watch<SettingsCubit>().state?.language == language,
+      selected: context.watch<SettingsCubit>().state.language == language,
       title: Text(
         '${language.languageCode}${language.countryCode != null ? ' (${language.countryCode})' : ''}',
       ),

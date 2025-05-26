@@ -9,8 +9,8 @@ class CopyInput extends StatelessWidget {
   const CopyInput({super.key, required this.text, this.clipboardText});
 
   final String text;
-  final String?
-  clipboardText; // In case it should be different from the shown text
+  // In case it should be different from the shown text
+  final String? clipboardText;
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +35,17 @@ class CopyInput extends StatelessWidget {
                       maxLines: 1,
                     ),
           ),
-          IconButton(
-            visualDensity: VisualDensity.compact,
-            iconSize: 20,
-            icon: Icon(Icons.copy_sharp, color: context.colour.secondary),
-            onPressed: () {
-              Clipboard.setData(ClipboardData(text: clipboardText ?? text));
-            },
-          ),
+          // Only show the copy button if there is something to copy
+          if ((clipboardText == null && text.isNotEmpty) ||
+              (clipboardText != null && clipboardText!.isNotEmpty))
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              iconSize: 20,
+              icon: Icon(Icons.copy_sharp, color: context.colour.secondary),
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: clipboardText ?? text));
+              },
+            ),
           const Gap(8),
         ],
       ),

@@ -38,7 +38,7 @@ class CurrencyText extends StatelessWidget {
       text = price;
     } else {
       final unit = context.select(
-        (SettingsCubit cubit) => cubit.state?.bitcoinUnit,
+        (SettingsCubit cubit) => cubit.state.bitcoinUnit,
       );
       if (unit == null) return const SizedBox.shrink();
 
@@ -50,7 +50,7 @@ class CurrencyText extends StatelessWidget {
     }
 
     final hideAmt = context.select(
-      (SettingsCubit cubit) => cubit.state?.hideAmounts ?? true,
+      (SettingsCubit cubit) => cubit.state.hideAmounts ?? true,
     );
 
     if (hideAmt) {

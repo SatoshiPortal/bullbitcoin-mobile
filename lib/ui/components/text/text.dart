@@ -25,6 +25,7 @@ class BBText extends StatelessWidget {
       maxLines: maxLines,
       textAlign: textAlign,
       softWrap: true,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }

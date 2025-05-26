@@ -11,9 +11,10 @@ class DescriptorDerivation {
   }) async {
     final secretKey = await bdk.DescriptorSecretKey.fromString(xprv);
     final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
-    final keychain = isInternalKeychain
-        ? bdk.KeychainKind.internalChain
-        : bdk.KeychainKind.externalChain;
+    final keychain =
+        isInternalKeychain
+            ? bdk.KeychainKind.internalChain
+            : bdk.KeychainKind.externalChain;
     bdk.Descriptor descriptor;
 
     switch (scriptType) {
@@ -46,8 +47,8 @@ class DescriptorDerivation {
     required ScriptType scriptType,
     required bool isTestnet,
   }) async {
-    final lwk.Descriptor confidentialDescriptor =
-        await lwk.Descriptor.newConfidential(
+    final lwk.Descriptor confidentialDescriptor = await lwk
+        .Descriptor.newConfidential(
       network: isTestnet ? lwk.Network.testnet : lwk.Network.mainnet,
       mnemonic: mnemonic,
     );
@@ -64,9 +65,10 @@ class DescriptorDerivation {
   }) async {
     final publicKey = await bdk.DescriptorPublicKey.fromString(xpub);
     final network = isTestnet ? bdk.Network.testnet : bdk.Network.bitcoin;
-    final keychain = isInternalKeychain
-        ? bdk.KeychainKind.internalChain
-        : bdk.KeychainKind.externalChain;
+    final keychain =
+        isInternalKeychain
+            ? bdk.KeychainKind.internalChain
+            : bdk.KeychainKind.externalChain;
 
     await bdk.Descriptor.newBip84Public(
       publicKey: publicKey,

@@ -206,9 +206,8 @@ class MigrateToV5HiveToSqliteToUsecase {
       final List<MnemonicSeed> seeds = [];
       for (final oldWallet in oldWallets) {
         final oldSeed = await _oldSeedRepository.fetch(
-          fingerprint: oldWallet.mnemonicFingerprint,
+          fingerprint: oldWallet.getRelatedSeedStorageString(),
         );
-        if (oldSeed == null) continue;
         if (oldWallet.hasPassphrase()) {
           final oldPassphrase = oldSeed.getPassphraseFromIndex(
             oldWallet.sourceFingerprint,
@@ -236,7 +235,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           stackTrace: StackTrace.current,
         ),
       );
-      return [];
+      rethrow;
     }
   }
 
@@ -245,30 +244,19 @@ class MigrateToV5HiveToSqliteToUsecase {
   ) async {
     try {
       final List<WalletWithOngoingSwaps> recovered = [];
-      final mainWalletSeed = await _newSeedRepository.get(
-        oldMainWallets.first.mnemonicFingerprint,
-      );
 
       for (final oldWallet in oldMainWallets) {
-        final network =
-            oldWallet.baseWalletType == OldBaseWalletType.Bitcoin
-                ? (oldWallet.isTestnet()
-                    ? Network.bitcoinTestnet
-                    : Network.bitcoinMainnet)
-                : (oldWallet.isTestnet()
-                    ? Network.liquidTestnet
-                    : Network.liquidMainnet);
-
-        final scriptType = switch (oldWallet.scriptType) {
-          OldScriptType.bip84 => ScriptType.bip84,
-          OldScriptType.bip49 => ScriptType.bip49,
-          OldScriptType.bip44 => ScriptType.bip44,
-        };
+        final mainWalletSeed = await _newSeedRepository.get(
+          oldWallet.mnemonicFingerprint,
+        );
 
         final newWallet = await _newWalletRepository.createWallet(
           seed: mainWalletSeed,
-          scriptType: scriptType,
-          network: network,
+          scriptType: ScriptType.bip84,
+          network:
+              oldWallet.isBitcoin()
+                  ? Network.bitcoinMainnet
+                  : Network.liquidMainnet,
           isDefault: true,
         );
         final isBackupTested = oldWallet.backupTested;
@@ -290,7 +278,45 @@ class MigrateToV5HiveToSqliteToUsecase {
           oldOngoingSwaps: ongoingSwaps.toList(),
         );
         recovered.add(walletWithSwaps);
-        // TODO: Store newWallet in the new database
+
+        if (oldWallet.isBitcoin() && oldWallet.hasPassphrase()) {
+          final oldSeed = await _oldSeedRepository.fetch(
+            fingerprint: oldWallet.mnemonicFingerprint,
+          );
+
+          final oldPassphrase = oldSeed.getPassphraseFromIndex(
+            oldWallet.sourceFingerprint,
+          );
+          final newPassphraseSeed = await _newSeedRepository.createFromMnemonic(
+            mnemonicWords: oldSeed.mnemonicList(),
+            passphrase: oldPassphrase.passphrase,
+          );
+          final newWallet = await _newWalletRepository.createWallet(
+            seed: newPassphraseSeed,
+            scriptType: ScriptType.bip84,
+            network: Network.bitcoinMainnet,
+            isDefault: false,
+            label: oldWallet.sourceFingerprint,
+          );
+          final isBackupTested = oldWallet.backupTested;
+          final lastBackupTested = oldWallet.lastBackupTested ?? DateTime.now();
+          await _newWalletRepository.updateBackupInfo(
+            walletId: newWallet.id,
+            isEncryptedVaultTested: false,
+            isPhysicalBackupTested: isBackupTested,
+            latestEncryptedBackup: null,
+            latestPhysicalBackup: lastBackupTested,
+          );
+          final ongoingSwaps = await _getOldOngoingSwaps(oldWallet);
+          final walletWithSwaps = WalletWithOngoingSwaps(
+            walletIdMapping: WalletIdMapping(
+              oldWalletId: oldWallet.id,
+              newWalletId: newWallet.id,
+            ),
+            oldOngoingSwaps: ongoingSwaps.toList(),
+          );
+          recovered.add(walletWithSwaps);
+        }
       }
       return recovered;
     } catch (e) {
@@ -303,7 +329,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           stackTrace: StackTrace.current,
         ),
       );
-      return [];
+      rethrow;
     }
   }
 
@@ -333,16 +359,8 @@ class MigrateToV5HiveToSqliteToUsecase {
           OldScriptType.bip44 => ScriptType.bip44,
         };
 
-        final source = switch (oldExternalWallet.type) {
-          OldBBWalletType.main => WalletSource.mnemonic,
-          OldBBWalletType.coldcard => WalletSource.coldcard,
-          OldBBWalletType.xpub => WalletSource.xpub,
-          OldBBWalletType.words => WalletSource.mnemonic,
-          OldBBWalletType.descriptors => WalletSource.descriptors,
-        };
-
         // ignore: unused_local_variable
-        if (source == WalletSource.mnemonic) {
+        if (oldExternalWallet.type == OldBBWalletType.words) {
           final newWallet = await _newWalletRepository.createWallet(
             seed: newExternalSeed,
             scriptType: scriptType,
@@ -383,7 +401,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           stackTrace: StackTrace.current,
         ),
       );
-      return [];
+      rethrow;
     }
     // TODO: Store newWallet in the new database
   }
@@ -453,7 +471,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           stackTrace: StackTrace.current,
         ),
       );
-      return 0;
+      rethrow;
     }
   }
 
@@ -595,7 +613,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           stackTrace: StackTrace.current,
         ),
       );
-      return 0;
+      rethrow;
     }
   }
 }
