@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:bb_mobile/core/recoverbull/data/constants/backup_providers.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
     show CurrentKeyServerFlow;
 import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
@@ -10,8 +10,8 @@ import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
+import 'package:bb_mobile/ui/components/selectors/backup_provider_selector.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/components/vault/vault_locations.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
@@ -39,13 +39,19 @@ class _ChooseVaultProviderScreenState extends State<ChooseVaultProviderScreen> {
 
 class _Screen extends StatelessWidget {
   const _Screen();
-  void _handleProviderTap(BuildContext context, BackupProviderEntity provider) {
-    if (provider == backupProviders[0]) {
-      context.read<BackupWalletBloc>().add(const OnGoogleDriveBackupSelected());
-    } else if (provider == backupProviders[2]) {
-      context.read<BackupWalletBloc>().add(const OnFileSystemBackupSelected());
-    } else if (provider == backupProviders[1]) {
-      debugPrint('Selected provider: ${provider.name}, not supported yet');
+
+  void onProviderSelected(BuildContext context, BackupProviderType provider) {
+    switch (provider) {
+      case BackupProviderType.googleDrive:
+        context.read<BackupWalletBloc>().add(
+          const OnGoogleDriveBackupSelected(),
+        );
+      case BackupProviderType.custom:
+        context.read<BackupWalletBloc>().add(
+          const OnFileSystemBackupSelected(),
+        );
+      case BackupProviderType.iCloud:
+        debugPrint('iCloud, not supported yet');
     }
   }
 
@@ -153,9 +159,9 @@ class _Screen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            VaultLocations(
+            BackupProviderSelector(
               onProviderSelected:
-                  (provider) => _handleProviderTap(context, provider),
+                  (provider) => onProviderSelected(context, provider),
             ),
             const Gap(16),
             GestureDetector(

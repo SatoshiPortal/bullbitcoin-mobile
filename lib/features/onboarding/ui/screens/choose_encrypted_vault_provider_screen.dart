@@ -1,11 +1,11 @@
-import 'package:bb_mobile/core/recoverbull/data/constants/backup_providers.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/vault/vault_locations.dart';
+import 'package:bb_mobile/ui/components/selectors/backup_provider_selector.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
@@ -38,13 +38,14 @@ class _Screen extends StatefulWidget {
 }
 
 class _ScreenState extends State<_Screen> {
-  void _handleProviderTap(BuildContext context, BackupProviderEntity provider) {
-    if (provider == backupProviders[0]) {
-      context.read<OnboardingBloc>().add(const SelectGoogleDriveRecovery());
-    } else if (provider == backupProviders[2]) {
-      context.read<OnboardingBloc>().add(const SelectFileSystemRecovery());
-    } else if (provider == backupProviders[1]) {
-      debugPrint('Selected provider: ${provider.name}, not supported yet');
+  void onProviderSelected(BuildContext context, BackupProviderType provider) {
+    switch (provider) {
+      case BackupProviderType.googleDrive:
+        context.read<OnboardingBloc>().add(const SelectGoogleDriveRecovery());
+      case BackupProviderType.custom:
+        context.read<OnboardingBloc>().add(const SelectFileSystemRecovery());
+      case BackupProviderType.iCloud:
+        debugPrint('iCloud, not supported yet');
     }
   }
 
@@ -137,13 +138,13 @@ class _ScreenState extends State<_Screen> {
             );
           }
 
-          return _buildScaffold(context);
+          return buildScaffold(context);
         },
       ),
     );
   }
 
-  Widget _buildScaffold(BuildContext context) {
+  Widget buildScaffold(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -155,9 +156,9 @@ class _ScreenState extends State<_Screen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: VaultLocations(
+        child: BackupProviderSelector(
           onProviderSelected:
-              (provider) => _handleProviderTap(context, provider),
+              (provider) => onProviderSelected(context, provider),
         ),
       ),
     );
