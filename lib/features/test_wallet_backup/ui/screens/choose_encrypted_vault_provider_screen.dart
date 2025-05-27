@@ -13,9 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart'
 import 'package:go_router/go_router.dart';
 
 class ChooseVaultProviderScreen extends StatefulWidget {
-  const ChooseVaultProviderScreen({
-    super.key,
-  });
+  const ChooseVaultProviderScreen({super.key});
 
   @override
   State<ChooseVaultProviderScreen> createState() =>
@@ -37,14 +35,14 @@ class _Screen extends StatelessWidget {
 
   void _handleProviderTap(BuildContext context, BackupProviderEntity provider) {
     if (provider == backupProviders[0]) {
-      context
-          .read<TestWalletBackupBloc>()
-          .add(const SelectGoogleDriveBackupTest());
+      context.read<TestWalletBackupBloc>().add(
+        const SelectGoogleDriveBackupTest(),
+      );
     } else if (provider == backupProviders[2]) {
-      context
-          .read<TestWalletBackupBloc>()
-          .add(const SelectFileSystemBackupTes());
-    } else if (provider == backupProviders[3]) {
+      context.read<TestWalletBackupBloc>().add(
+        const SelectFileSystemBackupTes(),
+      );
+    } else if (provider == backupProviders[1]) {
       debugPrint('Selected provider: ${provider.name}, not supported yet');
     }
   }
@@ -52,9 +50,10 @@ class _Screen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
-      listenWhen: (previous, current) =>
-          current.status != previous.status ||
-          current.statusError != previous.statusError,
+      listenWhen:
+          (previous, current) =>
+              current.status != previous.status ||
+              current.statusError != previous.statusError,
       listener: (context, state) {
         if (state.status == TestWalletBackupStatus.success &&
             !state.backupInfo.isCorrupted) {
@@ -66,20 +65,21 @@ class _Screen extends StatelessWidget {
 
           context
               .pushNamed(
-            TestWalletBackupSubroute.testBackupInfo.name,
-            extra: state.backupInfo,
-          )
+                TestWalletBackupSubroute.testBackupInfo.name,
+                extra: state.backupInfo,
+              )
               .then((_) {
-            // When we return from the route, end the navigation state
-            bloc.add(const EndTransitioning());
-          });
+                // When we return from the route, end the navigation state
+                bloc.add(const EndTransitioning());
+              });
         }
       },
       child: BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
-        buildWhen: (previous, current) =>
-            current.status != previous.status ||
-            current.statusError != previous.statusError ||
-            current.transitioning != previous.transitioning,
+        buildWhen:
+            (previous, current) =>
+                current.status != previous.status ||
+                current.statusError != previous.statusError ||
+                current.transitioning != previous.transitioning,
         builder: (context, state) {
           // Show loading screen during loading OR navigation to avoid flickers
           if (state.status == TestWalletBackupStatus.loading ||
@@ -87,48 +87,51 @@ class _Screen extends StatelessWidget {
             return Scaffold(
               backgroundColor: context.colour.onSecondary,
               body: ProgressScreen(
-                title: (state.vaultProvider is GoogleDrive)
-                    ? "You will need to sign-in to Google Drive"
-                    : "Fetching from your device.",
-                description: (state.vaultProvider is GoogleDrive)
-                    ? "Google will ask you to share personal information with this app."
-                    : "",
+                title:
+                    (state.vaultProvider is GoogleDrive)
+                        ? "You will need to sign-in to Google Drive"
+                        : "Fetching from your device.",
+                description:
+                    (state.vaultProvider is GoogleDrive)
+                        ? "Google will ask you to share personal information with this app."
+                        : "",
                 isLoading: true,
-                extras: (state.vaultProvider is GoogleDrive)
-                    ? [
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "This information ",
-                                style: context.font.headlineMedium,
-                              ),
-                              TextSpan(
-                                text: "will not ",
-                                style: context.font.headlineLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                extras:
+                    (state.vaultProvider is GoogleDrive)
+                        ? [
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "This information ",
+                                  style: context.font.headlineMedium,
                                 ),
-                              ),
-                              TextSpan(
-                                text: "leave your phone and is ",
-                                style: context.font.headlineMedium,
-                              ),
-                              TextSpan(
-                                text: "never ",
-                                style: context.font.headlineLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                                TextSpan(
+                                  text: "will not ",
+                                  style: context.font.headlineLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              TextSpan(
-                                text: "shared with Bull Bitcoin.",
-                                style: context.font.headlineMedium,
-                              ),
-                            ],
+                                TextSpan(
+                                  text: "leave your phone and is ",
+                                  style: context.font.headlineMedium,
+                                ),
+                                TextSpan(
+                                  text: "never ",
+                                  style: context.font.headlineLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: "shared with Bull Bitcoin.",
+                                  style: context.font.headlineMedium,
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ]
-                    : [],
+                        ]
+                        : [],
               ),
             );
           }
@@ -154,8 +157,8 @@ class _Screen extends StatelessWidget {
         child: VaultLocations(
           description:
               'Test to make sure you can retrieve your encrypted vault.',
-          onProviderSelected: (provider) =>
-              _handleProviderTap(context, provider),
+          onProviderSelected:
+              (provider) => _handleProviderTap(context, provider),
         ),
       ),
     );

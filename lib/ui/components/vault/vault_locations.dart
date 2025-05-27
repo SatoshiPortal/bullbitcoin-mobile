@@ -23,10 +23,7 @@ class VaultLocations extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (description != null) ...[
-          BBText(
-            description!,
-            style: context.font.bodySmall,
-          ),
+          BBText(description!, style: context.font.bodySmall),
           const Gap(20),
         ],
         for (final provider in backupProviders) ...[
@@ -45,10 +42,7 @@ class _ProviderTile extends StatefulWidget {
   final BackupProviderEntity provider;
   final VoidCallback onTap;
 
-  const _ProviderTile({
-    required this.provider,
-    required this.onTap,
-  });
+  const _ProviderTile({required this.provider, required this.onTap});
 
   @override
   State<_ProviderTile> createState() => _ProviderTileState();
@@ -66,9 +60,10 @@ class _ProviderTileState extends State<_ProviderTile>
       duration: const Duration(milliseconds: 150),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.98,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -124,10 +119,7 @@ class _ProviderTileState extends State<_ProviderTile>
                     ),
                   ),
                   const Gap(8),
-                  Icon(
-                    Icons.arrow_forward,
-                    color: context.colour.secondary,
-                  ),
+                  Icon(Icons.arrow_forward, color: context.colour.secondary),
                 ],
               ),
             ),

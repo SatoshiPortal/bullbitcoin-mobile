@@ -44,7 +44,7 @@ class _Screen extends StatelessWidget {
       context.read<BackupWalletBloc>().add(const OnGoogleDriveBackupSelected());
     } else if (provider == backupProviders[2]) {
       context.read<BackupWalletBloc>().add(const OnFileSystemBackupSelected());
-    } else if (provider == backupProviders[3]) {
+    } else if (provider == backupProviders[1]) {
       debugPrint('Selected provider: ${provider.name}, not supported yet');
     }
   }

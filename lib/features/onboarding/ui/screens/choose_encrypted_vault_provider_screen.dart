@@ -41,9 +41,9 @@ class _ScreenState extends State<_Screen> {
   void _handleProviderTap(BuildContext context, BackupProviderEntity provider) {
     if (provider == backupProviders[0]) {
       context.read<OnboardingBloc>().add(const SelectGoogleDriveRecovery());
-    } else if (provider == backupProviders[1]) {
-      context.read<OnboardingBloc>().add(const SelectFileSystemRecovery());
     } else if (provider == backupProviders[2]) {
+      context.read<OnboardingBloc>().add(const SelectFileSystemRecovery());
+    } else if (provider == backupProviders[1]) {
       debugPrint('Selected provider: ${provider.name}, not supported yet');
     }
   }
