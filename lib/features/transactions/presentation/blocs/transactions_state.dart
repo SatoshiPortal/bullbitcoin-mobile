@@ -5,19 +5,19 @@ enum TransactionsFilter { all, send, receive, swap, payjoin, sell, buy }
 @freezed
 abstract class TransactionsState with _$TransactionsState {
   const factory TransactionsState({
-    List<TransactionViewModel>? transactions,
+    List<Transaction>? transactions,
     @Default(false) bool isSyncing,
     @Default(TransactionsFilter.all) TransactionsFilter filter,
     Object? err,
   }) = _TransactionsState;
   const TransactionsState._();
 
-  Map<int, List<TransactionViewModel>>? get transactionsByDay {
+  Map<int, List<Transaction>>? get transactionsByDay {
     if (transactions == null) {
       return null;
     }
 
-    final Map<int, List<TransactionViewModel>> grouped = {};
+    final Map<int, List<Transaction>> grouped = {};
 
     for (final tx in transactions!) {
       int day;
@@ -50,10 +50,10 @@ abstract class TransactionsState with _$TransactionsState {
       (a, b) => b.compareTo(a), // descending key sort
     );
 
-    return LinkedHashMap<int, List<TransactionViewModel>>.from(sorted);
+    return LinkedHashMap<int, List<Transaction>>.from(sorted);
   }
 
-  Map<int, List<TransactionViewModel>>? get filteredTransactionsByDay {
+  Map<int, List<Transaction>>? get filteredTransactionsByDay {
     if (transactionsByDay == null) {
       return null;
     }
@@ -83,3 +83,53 @@ abstract class TransactionsState with _$TransactionsState {
     return transactions != null || transactions!.isEmpty;
   }
 }
+
+/*
+  Payjoin? payjoin;
+            try {
+              final payjoinModel = payjoins.firstWhere(
+                (payjoin) => payjoin.txId == walletTransactionModel.txId,
+              );
+              payjoin = payjoinModel.toEntity();
+            } catch (_) {
+              // Transaction is not a payjoin
+              payjoin = null;
+            }
+
+            Swap? swap;
+            try {
+              final swapModel = swaps.firstWhere((swap) {
+                switch (swap) {
+                  case LnReceiveSwapModel _:
+                    return swap.receiveTxid == walletTransactionModel.txId;
+                  case LnSendSwapModel _:
+                    return swap.sendTxid == walletTransactionModel.txId;
+                  case ChainSwapModel _:
+                    if (walletTransactionModel.isIncoming) {
+                      return swap.receiveTxid == walletTransactionModel.txId;
+                    } else {
+                      return swap.sendTxid == walletTransactionModel.txId;
+                    }
+                }
+              });
+              swap = swapModel.toEntity();
+            } catch (_) {
+              // Transaction is not a swap
+              swap = null;
+            }
+*/
+
+
+/*
+final broadcastedBitcoinTxIds = broadcastedTransactions
+          .whereType<BitcoinWalletTransaction>()
+          .map((tx) => tx.txId);
+
+      final walletTransactions = [
+        ...broadcastedTransactions,
+        ...ongoingPayjoinTransactions.where(
+          (tx) =>
+              !broadcastedBitcoinTxIds.contains(tx.payjoin!.txId) &&
+              !broadcastedBitcoinTxIds.contains(tx.payjoin!.originalTxId),
+        ),
+      ];*/

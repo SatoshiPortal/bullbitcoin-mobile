@@ -523,6 +523,15 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
+  Future<Swap?> getSwapByTxId(String txId) async {
+    final swapModel = await _boltz.storage.fetchByTxId(txId);
+    if (swapModel == null) {
+      return null; // No swap found for the given txId
+    }
+    return swapModel.toEntity();
+  }
+
+  @override
   Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees({
     required SwapType type,
   }) async {

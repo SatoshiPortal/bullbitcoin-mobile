@@ -75,6 +75,20 @@ class BoltzStorageDatasource {
     return all.map((e) => SwapModel.fromSqlite(e)).toList();
   }
 
+  Future<SwapModel?> fetchByTxId(String txId) async {
+    final swap =
+        await _localSwapStorage.managers.swaps
+            .filter(
+              (f) =>
+                  f.sendTxid.equals(txId) |
+                  f.receiveTxid.equals(txId) |
+                  f.refundTxid.equals(txId),
+            )
+            .getSingleOrNull();
+    if (swap == null) return null;
+    return SwapModel.fromSqlite(swap);
+  }
+
   Future<void> trash(String swapId) async {
     await _localSwapStorage.managers.swaps.filter((f) => f.id(swapId)).delete();
   }

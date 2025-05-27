@@ -1,6 +1,6 @@
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
-import 'package:bb_mobile/features/transactions/presentation/view_models/transaction_view_model.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transaction_details_screen.dart';
 import 'package:bb_mobile/features/transactions/ui/screens/transactions_screen.dart';
 import 'package:bb_mobile/locator.dart';
@@ -32,11 +32,9 @@ class TransactionsRouter {
         name: TransactionsRoute.transactionDetails.name,
         path: TransactionsRoute.transactionDetails.path,
         builder: (context, state) {
-          final tx = state.extra! as TransactionViewModel;
+          final tx = state.extra! as Transaction;
           return BlocProvider(
-            create:
-                (context) =>
-                    locator<TransactionDetailsCubit>()..monitorTransaction(tx),
+            create: (context) => locator<TransactionDetailsCubit>()..init(tx),
             child: const TransactionDetailsScreen(),
           );
         },

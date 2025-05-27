@@ -1,5 +1,8 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bolt11_decoder/bolt11_decoder.dart';
+import 'package:decimal/decimal.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'swap.freezed.dart';
@@ -131,6 +134,12 @@ sealed class Swap with _$Swap {
   bool get isLnSendSwap => this is LnSendSwap;
   bool get isChainSwap => this is ChainSwap;
 
+  String? get txId => switch (this) {
+    LnReceiveSwap(:final receiveTxid) => receiveTxid,
+    LnSendSwap(:final sendTxid) => sendTxid,
+    ChainSwap(:final sendTxid) => sendTxid,
+  };
+
   String get abbreviatedReceiveTxid => switch (this) {
     final LnReceiveSwap swap => StringFormatting.truncateMiddle(
       swap.receiveTxid ?? '',
@@ -173,6 +182,38 @@ sealed class Swap with _$Swap {
     LnReceiveSwap(:final fees) => fees,
     LnSendSwap(:final fees) => fees,
     ChainSwap(:final fees) => fees,
+  };
+
+  int get amountSat => switch (this) {
+    LnReceiveSwap(:final invoice) =>
+      (Bolt11PaymentRequest(invoice).amount *
+              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
+          .toBigInt()
+          .toInt(),
+    LnSendSwap(:final invoice) =>
+      (Bolt11PaymentRequest(invoice).amount *
+              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
+          .toBigInt()
+          .toInt(),
+    ChainSwap(:final paymentAmount) => paymentAmount,
+  };
+
+  String? get sendTxId => switch (this) {
+    LnReceiveSwap() => null,
+    LnSendSwap(:final sendTxid) => sendTxid,
+    ChainSwap(:final sendTxid) => sendTxid,
+  };
+
+  String? get receiveTxId => switch (this) {
+    LnReceiveSwap(:final receiveTxid) => receiveTxid,
+    LnSendSwap() => null,
+    ChainSwap(:final receiveTxid) => receiveTxid,
+  };
+
+  String get walletId => switch (this) {
+    LnReceiveSwap(:final receiveWalletId) => receiveWalletId,
+    LnSendSwap(:final sendWalletId) => sendWalletId,
+    ChainSwap(:final sendWalletId) => sendWalletId,
   };
 }
 

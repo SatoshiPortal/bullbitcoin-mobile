@@ -1,11 +1,7 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_model.dart';
-import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
-import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
-import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
-import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/mappers/transaction_input_mapper.dart';
@@ -25,8 +21,6 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   final WalletDatasource _bdkWalletTransactionDatasource;
   final WalletDatasource _lwkWalletTransactionDatasource;
   final ElectrumServerStorageDatasource _electrumServerStorage;
-  final LocalPayjoinDatasource _payjoinDatasource;
-  final BoltzStorageDatasource _swapDatasource;
 
   WalletTransactionRepositoryImpl({
     required WalletMetadataDatasource walletMetadataDatasource,
@@ -34,38 +28,29 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
     required WalletDatasource bdkWalletTransactionDatasource,
     required WalletDatasource lwkWalletTransactionDatasource,
     required ElectrumServerStorageDatasource electrumServerStorage,
-    required LocalPayjoinDatasource payjoinDatasource,
-    required BoltzStorageDatasource swapDatasource,
   }) : _labelDatasource = labelDatasource,
        _walletMetadataDatasource = walletMetadataDatasource,
        _bdkWalletTransactionDatasource = bdkWalletTransactionDatasource,
        _lwkWalletTransactionDatasource = lwkWalletTransactionDatasource,
-       _electrumServerStorage = electrumServerStorage,
-       _payjoinDatasource = payjoinDatasource,
-       _swapDatasource = swapDatasource;
+       _electrumServerStorage = electrumServerStorage;
 
   @override
   Future<List<WalletTransaction>> getWalletTransactions({
+    String? txId,
     String? walletId,
     String? toAddress,
     Environment? environment,
     bool sync = false,
   }) async {
-    final (walletModels, payjoins, swaps) =
-        await (
-          _getPublicWalletModels(
-            walletId: walletId,
-            environment: environment,
-            sync: sync,
-          ),
-          _payjoinDatasource.fetchAll(),
-          _swapDatasource.fetchAll(),
-        ).wait;
+    final walletModels = await _getPublicWalletModels(
+      walletId: walletId,
+      environment: environment,
+      sync: sync,
+    );
 
     final walletTransactions = await _getWalletTransactions(
+      txId: txId,
       walletModels: walletModels,
-      payjoins: payjoins,
-      swaps: swaps,
       toAddress: toAddress,
     );
 
@@ -73,28 +58,23 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
   }
 
   @override
-  Future<WalletTransaction> getWalletTransaction(
+  Future<WalletTransaction?> getWalletTransaction(
     String txId, {
     required String walletId,
     bool sync = false,
   }) async {
     final transactions = await getWalletTransactions(
+      txId: txId,
       walletId: walletId,
       sync: sync,
     );
 
-    final transaction = transactions.firstWhere(
-      (transaction) => transaction.txId == txId,
-      orElse: () => throw Exception('Transaction not found'),
-    );
-
-    return transaction;
+    return transactions.firstOrNull;
   }
 
   Future<List<WalletTransaction>> _getWalletTransactions({
     required List<WalletModel> walletModels,
-    required List<PayjoinModel> payjoins,
-    required List<SwapModel> swaps,
+    String? txId,
     String? toAddress,
   }) async {
     final walletTransactionLists = await Future.wait(
@@ -106,6 +86,12 @@ class WalletTransactionRepositoryImpl implements WalletTransactionRepository {
 
         final walletTransactionModels = await walletTransactionDatasource
             .getTransactions(wallet: walletModel, toAddress: toAddress);
+
+        if (txId != null) {
+          walletTransactionModels.retainWhere(
+            (transaction) => transaction.txId == txId,
+          );
+        }
 
         return await Future.wait(
           walletTransactionModels.map((walletTransactionModel) async {

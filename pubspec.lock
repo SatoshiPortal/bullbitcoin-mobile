@@ -74,6 +74,14 @@ packages:
       url: "https://github.com/LtbLightning/bdk-flutter"
     source: git
     version: "0.31.3"
+  bech32:
+    dependency: transitive
+    description:
+      name: bech32
+      sha256: "156cbace936f7720c79a79d16a03efad343b1ef17106716e04b8b8e39f99f7f7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.2"
   bip32:
     dependency: "direct main"
     description:
@@ -115,6 +123,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "8.1.4"
+  bolt11_decoder:
+    dependency: "direct main"
+    description:
+      name: bolt11_decoder
+      sha256: ce3c4e4311e84c7b6ceb06ffbf84329bf6bdac1244ecfa1fc157c46038021bbc
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   boltz:
     dependency: "direct main"
     description:

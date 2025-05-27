@@ -1,5 +1,6 @@
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/transactions/presentation/view_models/transaction_view_model.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -11,11 +12,10 @@ import 'package:timeago/timeago.dart' as timeago;
 class TxListItem extends StatelessWidget {
   const TxListItem({super.key, required this.tx});
 
-  final TransactionViewModel tx;
+  final Transaction tx;
 
   @override
   Widget build(BuildContext context) {
-    // final isSwap = tx.isSwap;
     final isLnSwap = tx.isLnSwap;
     final isChainSwap = tx.isChainSwap;
     final icon =
@@ -29,6 +29,10 @@ class TxListItem extends StatelessWidget {
     final networkLabel =
         isLnSwap
             ? 'Lightning'
+            : isChainSwap
+            ? tx.swap!.type == SwapType.liquidToBitcoin
+                ? 'L-BTC -> BTC'
+                : 'BTC -> L-BTC'
             : tx.isBitcoin
             ? 'Bitcoin'
             : 'Liquid';

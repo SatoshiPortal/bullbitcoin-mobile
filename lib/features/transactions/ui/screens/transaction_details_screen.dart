@@ -42,7 +42,7 @@ class TransactionDetailsScreen extends StatelessWidget {
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
     );
     final amountSat = tx?.amountSat ?? 0;
-    final isIncoming = tx?.isIncoming;
+    final isIncoming = tx?.isIncoming ?? false;
     final isOngoingSenderPayjoin =
         context.select(
           (TransactionDetailsCubit bloc) => bloc.state.isOngoingPayjoin,

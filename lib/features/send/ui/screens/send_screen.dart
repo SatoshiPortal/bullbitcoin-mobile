@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
-import 'package:bb_mobile/features/transactions/presentation/view_models/transaction_view_model.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/entities/transaction.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
@@ -1104,15 +1104,25 @@ class SendSucessScreen extends StatelessWidget {
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
 
-    final isLnSwap = context.select(
-      (SendCubit cubit) => cubit.state.lightningSwap != null,
-    );
     final isBitcoin = context.select(
       (SendCubit cubit) => !cubit.state.selectedWallet!.isLiquid,
     );
-    final isChainSwap = context.select(
-      (SendCubit cubit) => cubit.state.chainSwap != null,
+
+    final walletTransaction = context.select(
+      (SendCubit cubit) => cubit.state.walletTransaction,
     );
+    final payjoin = context.select(
+      (SendCubit cubit) => cubit.state.payjoinSender,
+    );
+    final lnSwap = context.select(
+      (SendCubit cubit) => cubit.state.lightningSwap,
+    );
+    final chainSwap = context.select(
+      (SendCubit cubit) => cubit.state.chainSwap,
+    );
+    final isLnSwap = lnSwap != null;
+    final isChainSwap = chainSwap != null;
+    final isSwap = isLnSwap || isChainSwap;
 
     return Scaffold(
       appBar: AppBar(
@@ -1170,13 +1180,23 @@ class SendSucessScreen extends StatelessWidget {
               ),
             ),
             const Spacer(flex: 2),
-            if (transaction != null)
+            if (walletTransaction != null || isSwap || payjoin != null)
               BBButton.big(
                 label: 'View Details',
                 onPressed: () {
+                  final transaction =
+                      walletTransaction != null
+                          ? Transaction.broadcasted(
+                            walletTransaction: walletTransaction,
+                            swap: lnSwap ?? chainSwap,
+                            payjoin: payjoin,
+                          )
+                          : isSwap
+                          ? Transaction.ongoingSwap(swap: lnSwap ?? chainSwap!)
+                          : Transaction.ongoingPayjoin(payjoin: payjoin!);
                   context.push(
                     '/send/${SendRoute.sendTransactionDetails.path}',
-                    extra: transaction as TransactionViewModel,
+                    extra: transaction,
                   );
                 },
                 bgColor: context.colour.secondary,
