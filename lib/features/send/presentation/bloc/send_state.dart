@@ -69,7 +69,7 @@ abstract class SendState with _$SendState {
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(false) bool replaceByFee,
-
+    @Default(false) bool invoiceHasMrh,
     FeeOptions? bitcoinFeesList,
     FeeOptions? liquidFeesList,
     NetworkFee? customFee,
@@ -115,6 +115,36 @@ abstract class SendState with _$SendState {
 
   List<String> get inputAmountCurrencyCodes {
     return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
+  }
+
+  String get paymentRequestAddress {
+    if (paymentRequest == null) return '';
+
+    if (paymentRequest!.isBip21) {
+      if (invoiceHasMrh) {
+        return addressOrInvoice;
+      }
+      final bip21PaymentRequest = paymentRequest! as Bip21PaymentRequest;
+      return bip21PaymentRequest.address;
+    }
+    if (paymentRequest!.isBolt11) {
+      final bip21PaymentRequest = paymentRequest! as Bolt11PaymentRequest;
+      return bip21PaymentRequest.invoice;
+    }
+    if (paymentRequest!.isLnAddress) {
+      final lnAddressPaymentRequest =
+          paymentRequest! as LnAddressPaymentRequest;
+      return lnAddressPaymentRequest.address;
+    }
+    if (paymentRequest!.isBitcoinAddress) {
+      final bitcoinPaymentRequest = paymentRequest! as BitcoinPaymentRequest;
+      return bitcoinPaymentRequest.address;
+    }
+    if (paymentRequest!.isLiquidAddress) {
+      final liquidPaymentRequest = paymentRequest! as LiquidPaymentRequest;
+      return liquidPaymentRequest.address;
+    }
+    return addressOrInvoice;
   }
 
   bool get isInputAmountFiat =>

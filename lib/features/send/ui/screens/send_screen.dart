@@ -579,7 +579,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
     final addressOrInvoice = context.select(
-      (SendCubit cubit) => cubit.state.addressOrInvoice,
+      (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final formattedBitcoinAmount = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
@@ -740,7 +740,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
     final addressOrInvoice = context.select(
-      (SendCubit cubit) => cubit.state.addressOrInvoice,
+      (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final formattedBitcoinAmount = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
@@ -849,7 +849,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
     final addressOrInvoice = context.select(
-      (SendCubit cubit) => cubit.state.addressOrInvoice,
+      (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final formattedBitcoinAmount = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
