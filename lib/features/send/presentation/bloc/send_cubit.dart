@@ -184,6 +184,7 @@ class SendCubit extends Cubit<SendState> {
   Future<void> onScannedPaymentRequest((String, PaymentRequest?) data) async {
     clearAllExceptions();
     emit(state.copyWith(paymentRequestData: data));
+    await continueOnAddressConfirmed();
   }
 
   /// Called when text is pasted or entered manually
