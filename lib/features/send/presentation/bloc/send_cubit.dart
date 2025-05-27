@@ -257,13 +257,8 @@ class SendCubit extends Cubit<SendState> {
           });
 
       final sendType = SendType.from(state.paymentRequest!);
-      emit(
-        state.copyWith(
-          amount: state.paymentRequest!.amountSat?.toString() ?? '',
-          selectedWallet: wallet,
-          sendType: sendType,
-        ),
-      );
+
+      emit(state.copyWith(selectedWallet: wallet, sendType: sendType));
 
       await loadSwapLimits();
       final swapType =
@@ -364,6 +359,7 @@ class SendCubit extends Cubit<SendState> {
               creatingSwap: false,
             ),
           );
+          await createTransaction();
         } catch (e) {
           emit(
             state.copyWith(
@@ -374,6 +370,20 @@ class SendCubit extends Cubit<SendState> {
           );
           return;
         }
+      }
+      if (state.paymentRequest!.isBip21) {
+        await loadFees();
+        await loadUtxos();
+        emit(
+          state.copyWith(
+            confirmedAmountSat: state.paymentRequest!.amountSat,
+            step: SendStep.confirm,
+            loadingBestWallet: false,
+          ),
+        );
+        await createTransaction();
+
+        return;
       } else {
         await loadFees();
         await loadUtxos();
