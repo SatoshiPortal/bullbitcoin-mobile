@@ -217,6 +217,12 @@ class MigrateToV5HiveToSqliteToUsecase {
             passphrase: oldPassphrase.passphrase,
           );
           seeds.add(seed);
+          if (oldWallet.isLiquid()) {
+            final seed = await _newSeedRepository.createFromMnemonic(
+              mnemonicWords: oldSeed.mnemonicList(),
+            );
+            seeds.add(seed);
+          }
         } else {
           final seed = await _newSeedRepository.createFromMnemonic(
             mnemonicWords: oldSeed.mnemonicList(),
