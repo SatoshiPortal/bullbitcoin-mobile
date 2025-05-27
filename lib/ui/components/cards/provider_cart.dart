@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/data/constants/backup_providers.dart';
-import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/ui/components/cards/tag_card.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -7,48 +6,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 
-class VaultLocations extends StatelessWidget {
-  final void Function(BackupProviderEntity provider) onProviderSelected;
-  final String? description;
-
-  const VaultLocations({
-    super.key,
-    required this.onProviderSelected,
-    this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (description != null) ...[
-          BBText(description!, style: context.font.bodySmall),
-          const Gap(20),
-        ],
-        for (final provider in backupProviders) ...[
-          _ProviderTile(
-            provider: provider,
-            onTap: () => onProviderSelected(provider),
-          ),
-          if (provider != backupProviders.last) const Gap(16),
-        ],
-      ],
-    );
-  }
-}
-
-class _ProviderTile extends StatefulWidget {
-  final BackupProviderEntity provider;
+class ProviderCard extends StatefulWidget {
+  final BackupProviderType provider;
   final VoidCallback onTap;
 
-  const _ProviderTile({required this.provider, required this.onTap});
+  const ProviderCard({required this.provider, required this.onTap});
 
   @override
-  State<_ProviderTile> createState() => _ProviderTileState();
+  State<ProviderCard> createState() => _ProviderCardState();
 }
 
-class _ProviderTileState extends State<_ProviderTile>
+class _ProviderCardState extends State<ProviderCard>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _scaleAnimation;
