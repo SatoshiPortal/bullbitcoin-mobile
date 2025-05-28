@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -50,22 +51,22 @@ class _Screen extends StatelessWidget {
             child:
                 state.loading
                     ? const Center(child: LinearProgressIndicator())
-                : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Gap(20),
-                        const _BackupTestStatusWidget(),
-                        const Gap(30),
-                        if (state.lastEncryptedBackup != null ||
-                            state.lastPhysicalBackup != null)
-                          const _TestBackupButton(),
-                        const Gap(5),
-                        const _StartBackupButton(),
-                      ],
+                    : Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Gap(20),
+                          const _BackupTestStatusWidget(),
+                          const Gap(30),
+                          if (state.lastEncryptedBackup != null ||
+                              state.lastPhysicalBackup != null)
+                            const _TestBackupButton(),
+                          const Gap(5),
+                          const _StartBackupButton(),
+                        ],
+                      ),
                     ),
-                  ),
           ),
         );
       },
@@ -78,6 +79,9 @@ class _BackupTestStatusWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
     return BlocBuilder<BackupSettingsCubit, BackupSettingsState>(
       builder: (context, state) {
         return Column(
@@ -87,11 +91,13 @@ class _BackupTestStatusWidget extends StatelessWidget {
               label: 'Physical Backup',
               isTested: state.isDefaultPhysicalBackupTested,
             ),
-            const Gap(15),
-            _StatusRow(
-              label: 'Encrypted Vault',
-              isTested: state.isDefaultEncryptedBackupTested,
-            ),
+            if (isSuperuser) ...[
+              const Gap(15),
+              _StatusRow(
+                label: 'Encrypted Vault',
+                isTested: state.isDefaultEncryptedBackupTested,
+              ),
+            ],
           ],
         );
       },
@@ -103,19 +109,13 @@ class _StatusRow extends StatelessWidget {
   final String label;
   final bool isTested;
 
-  const _StatusRow({
-    required this.label,
-    required this.isTested,
-  });
+  const _StatusRow({required this.label, required this.isTested});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(
-          label,
-          style: context.font.bodyMedium,
-        ),
+        Text(label, style: context.font.bodyMedium),
         const Spacer(),
         Text(
           isTested ? 'Tested' : 'Not Tested',
@@ -136,10 +136,11 @@ class _TestBackupButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return BBButton.big(
       label: 'Test Backup',
-      onPressed: () => context.pushNamed(
-        BackupSettingsSubroute.testbackupOptions.name,
-        extra: false,
-      ),
+      onPressed:
+          () => context.pushNamed(
+            BackupSettingsSubroute.testbackupOptions.name,
+            extra: false,
+          ),
       borderColor: context.colour.secondary,
       outlined: true,
       bgColor: Colors.transparent,
@@ -157,9 +158,8 @@ class _StartBackupButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: BBButton.big(
         label: 'Start Backup',
-        onPressed: () => context.pushNamed(
-          BackupSettingsSubroute.backupOptions.name,
-        ),
+        onPressed:
+            () => context.pushNamed(BackupSettingsSubroute.backupOptions.name),
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
       ),
