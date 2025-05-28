@@ -63,7 +63,7 @@ RUN flutter config --android-sdk=/opt/android-sdk
 
 # Accept licenses and install necessary Android SDK components
 RUN yes | sdkmanager --licenses
-RUN sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+RUN sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
 # Clean up existing app directory
 RUN sudo rm -rf /app

@@ -23,7 +23,7 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '
 
 
 android {
-    compileSdk = 34
+    compileSdk = 35
 
     ndkVersion flutter.ndkVersion
     compileOptions {
@@ -43,7 +43,7 @@ android {
         applicationId = 'com.bullbitcoin.mobile'
         minSdkVersion 24
         // TODO: targetSdkVersion flutter.targetSdkVersion
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
