@@ -38,7 +38,10 @@ class ScanCubit extends Cubit<ScanState> {
           final psbt = await tryToCollectBbqrPsbt(qr);
           if (psbt != null) {
             final pr = await PaymentRequest.parse(psbt);
-            if (pr is PsbtPaymentRequest) emit(state.copyWith(data: (qr, pr)));
+            if (pr is PsbtPaymentRequest) {
+              emit(state.copyWith(data: (pr.psbt, pr)));
+              debugPrint('PSBT found: ${pr.psbt}');
+            }
           }
         } else {
           if (qr.isNotEmpty && qr != state.data.$1) {
@@ -84,7 +87,8 @@ class ScanCubit extends Cubit<ScanState> {
     return null;
   }
 
+  // reset state
   void switchBbqr() => emit(
-    state.copyWith(isCollectingBbqr: !state.isCollectingBbqr),
-  ); // reset state
+    ScanState(data: ('', null), isCollectingBbqr: !state.isCollectingBbqr),
+  );
 }
