@@ -1,6 +1,10 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bolt11_decoder/bolt11_decoder.dart';
+import 'package:decimal/decimal.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:bb_mobile/core/utils/percentage.dart';
 
 part 'swap.freezed.dart';
 
@@ -128,6 +132,20 @@ sealed class Swap with _$Swap {
   bool get isLnSendSwap => this is LnSendSwap;
   bool get isChainSwap => this is ChainSwap;
 
+  int get amountSat => switch (this) {
+    LnReceiveSwap(:final invoice) =>
+      (Bolt11PaymentRequest(invoice).amount *
+              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
+          .toBigInt()
+          .toInt(),
+    LnSendSwap(:final invoice) =>
+      (Bolt11PaymentRequest(invoice).amount *
+              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
+          .toBigInt()
+          .toInt(),
+    ChainSwap(:final paymentAmount) => paymentAmount,
+  };
+
   String get abbreviatedReceiveTxid => switch (this) {
     final LnReceiveSwap swap => StringFormatting.truncateMiddle(
       swap.receiveTxid ?? '',
@@ -171,6 +189,16 @@ sealed class Swap with _$Swap {
     LnSendSwap(:final fees) => fees,
     ChainSwap(:final fees) => fees,
   };
+}
+
+extension SwapFeePercent on Swap {
+  double getFeeAsPercentOfAmount() {
+    final fees = this.fees;
+    final amount = amountSat;
+    if (fees == null || amount == 0) return 0.0;
+    final totalFees = fees.totalFees(amount) ?? 0;
+    return calculatePercentage(amount, totalFees);
+  }
 }
 
 class SwapLimits {
