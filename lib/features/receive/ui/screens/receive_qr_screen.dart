@@ -163,34 +163,39 @@ class ReceiveInfoDetails extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BBText(
-                        'Amount',
-                        style: context.font.labelSmall,
-                        color: context.colour.outline,
-                      ),
-                      const Gap(4),
-                      Row(
-                        children: [
-                          CurrencyText(
-                            amountSat ?? 0,
-                            showFiat: false,
-                            style: context.font.bodyMedium,
-                          ),
-                          const Gap(12),
-                          // TODO: Check if CurrencyText can be used here too with showFiat: true
-                          BBText(
-                            '~$amountEquivalent',
-                            style: context.font.bodyLarge,
-                            color: context.colour.outline,
-                          ),
-                        ],
-                      ),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BBText(
+                          'Amount',
+                          style: context.font.labelSmall,
+                          color: context.colour.outline,
+                        ),
+                        const Gap(4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: CurrencyText(
+                                amountSat ?? 0,
+                                showFiat: false,
+                                style: context.font.bodyMedium,
+                              ),
+                            ),
+                            const Gap(12),
+                            Expanded(
+                              child: BBText(
+                                '~$amountEquivalent',
+                                style: context.font.bodyLarge,
+                                color: context.colour.outline,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                  const Spacer(),
                   IconButton(
                     onPressed: () {
                       final receiveType =
