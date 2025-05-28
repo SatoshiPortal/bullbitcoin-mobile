@@ -13,6 +13,8 @@ class SettingsConstants {
 
 class ConversionConstants {
   static final satsAmountOfOneBitcoin = BigInt.from(100000000);
+  static final maxBitcoinAmount = BigInt.from(21_000_000); // 21 million BTC
+  static final maxSatsAmount = maxBitcoinAmount * satsAmountOfOneBitcoin;
 }
 
 class SecureStorageKeyPrefixConstants {

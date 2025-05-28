@@ -580,7 +580,9 @@ class SendCubit extends Cubit<SendState> {
         final hasDecimals = amount.contains('.');
 
         validatedAmount =
-            amountSats == null || hasDecimals
+            amountSats == null ||
+                    hasDecimals ||
+                    amountSats > ConversionConstants.maxSatsAmount
                 ? state.amount
                 : amountSats.toString();
       } else {
@@ -592,7 +594,10 @@ class SendCubit extends Cubit<SendState> {
 
         validatedAmount =
             (amountBtc == null && !isDecimalPoint) ||
-                    decimals > BitcoinUnit.btc.decimals
+                    decimals > BitcoinUnit.btc.decimals ||
+                    (amountBtc != null &&
+                        amountBtc >
+                            ConversionConstants.maxBitcoinAmount.toDouble())
                 ? state.amount
                 : amount;
       }

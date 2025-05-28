@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -421,24 +422,29 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
                 : event.amount;
       } else if (state.inputAmountCurrencyCode == BitcoinUnit.sats.code) {
         // If the amount is in sats, make sure it is a valid BigInt and do not
-        //  allow a decimal point.
+        //  allow a decimal point or for it to be bigger than the max sats amount that can exist.
         final amountSats = BigInt.tryParse(event.amount);
         final hasDecimals = event.amount.contains('.');
 
         amount =
-            amountSats == null || hasDecimals
+            amountSats == null ||
+                    hasDecimals ||
+                    amountSats > ConversionConstants.maxSatsAmount
                 ? state.inputAmount
                 : amountSats.toString();
       } else {
         // If the amount is in BTC, make sure it is a valid double and
-        //  do not allow more than 8 decimal places.
+        //  do not allow more than 8 decimal places and that it is not bigger than the max bitcoin amount that can exist.
         final amountBtc = double.tryParse(event.amount);
         final decimals = event.amount.split('.').last.length;
         final isDecimalPoint = event.amount == '.';
 
         amount =
             (amountBtc == null && !isDecimalPoint) ||
-                    decimals > BitcoinUnit.btc.decimals
+                    decimals > BitcoinUnit.btc.decimals ||
+                    (amountBtc != null &&
+                        amountBtc >
+                            ConversionConstants.maxBitcoinAmount.toDouble())
                 ? state.inputAmount
                 : event.amount;
       }
