@@ -57,6 +57,7 @@ sealed class PaymentRequest with _$PaymentRequest {
     LnAddressPaymentRequest() => null,
     Bolt11PaymentRequest(amountSat: final amountSat) => amountSat,
     Bip21PaymentRequest(amountSat: final amountSat) => amountSat,
+    PsbtPaymentRequest() => throw UnimplementedError(),
   };
 
   static Future<PaymentRequest> parse(String data) async {

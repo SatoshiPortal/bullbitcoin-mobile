@@ -38,19 +38,19 @@ class ScanCubit extends Cubit<ScanState> {
           final psbt = await tryToCollectBbqrPsbt(qr);
           if (psbt != null) {
             final pr = await PaymentRequest.parse(psbt);
-            emit(state.copyWith(data: psbt, paymentRequest: pr));
+            emit(state.copyWith(data: (qr, pr)));
           }
         } else {
           if (qr.isNotEmpty && qr != state.data.$1) {
             try {
               final pr = await PaymentRequest.parse(qr);
-              emit(state.copyWith(data: qr, paymentRequest: pr));
+              emit(state.copyWith(data: (qr, pr)));
             } catch (e) {
               debugPrint('$PaymentRequest not found $e');
             }
           }
 
-          emit(state.copyWith(data: qrText, paymentRequest: pr));
+          emit(state.copyWith(data: (qr, null)));
         }
       } catch (_) {}
       _processingImage = false;
@@ -84,6 +84,7 @@ class ScanCubit extends Cubit<ScanState> {
     return null;
   }
 
-  void switchBbqr() =>
-      emit(ScanState(isCollectingBbqr: !state.isCollectingBbqr)); // reset state
+  void switchBbqr() => emit(
+    state.copyWith(isCollectingBbqr: !state.isCollectingBbqr),
+  ); // reset state
 }
