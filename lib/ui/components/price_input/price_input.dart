@@ -62,16 +62,28 @@ class PriceInput extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Gap(24),
-            BBText(
-              amount.isEmpty ? '0' : amount,
-              style: context.font.displaySmall!.copyWith(fontSize: 36),
-              color: context.colour.outlineVariant,
-            ),
-            const Gap(8),
-            BBText(
-              currency,
-              style: context.font.displaySmall,
-              color: context.colour.outlineVariant,
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    BBText(
+                      amount.isEmpty ? '0' : amount,
+                      style: context.font.displaySmall!.copyWith(fontSize: 36),
+                      color: context.colour.outlineVariant,
+                      maxLines: 1,
+                    ),
+                    const Gap(8),
+                    BBText(
+                      currency,
+                      style: context.font.displaySmall,
+                      color: context.colour.outlineVariant,
+                      maxLines: 1,
+                    ),
+                  ],
+                ),
+              ),
             ),
             const Gap(16),
             InkWell(
