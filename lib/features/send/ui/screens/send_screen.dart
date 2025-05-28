@@ -23,6 +23,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 
 class SendScreen extends StatelessWidget {
   const SendScreen({super.key});
@@ -802,14 +804,6 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                 ),
               ],
             ),
-            // const Gap(4),
-            // InkWell(
-            //   child: Icon(
-            //     Icons.copy,
-            //     color: context.colour.primary,
-            //     size: 16,
-            //   ),
-            // ),
           ),
           _divider(context),
           InfoRow(
@@ -827,15 +821,102 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
-            title: 'Total fees',
-            details: BBText(
-              "${swap.fees?.totalFees(null)} sats",
-              style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+          _SwapFeeBreakdown(fees: swap.fees),
+          _divider(context),
+        ],
+      ),
+    );
+  }
+}
+
+class _SwapFeeBreakdown extends StatefulWidget {
+  final SwapFees? fees;
+  const _SwapFeeBreakdown({required this.fees});
+  @override
+  State<_SwapFeeBreakdown> createState() => _SwapFeeBreakdownState();
+}
+
+class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
+  bool expanded = false;
+
+  Widget _feeRow(BuildContext context, String label, int amt) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          BBText(
+            label,
+            style: context.font.bodySmall,
+            color: context.colour.surfaceContainer,
+          ),
+          const Spacer(),
+          CurrencyText(
+            amt,
+            showFiat: false,
+            style: context.font.bodySmall,
+            color: context.colour.surfaceContainer,
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fees = widget.fees;
+    final total = fees?.totalFees(null) ?? 0;
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: InkWell(
+              splashColor: Colors.transparent,
+              splashFactory: NoSplash.splashFactory,
+              highlightColor: Colors.transparent,
+              onTap: () {
+                setState(() {
+                  expanded = !expanded;
+                });
+              },
+              child: Row(
+                children: [
+                  BBText(
+                    'Total Fee',
+                    style: context.font.bodySmall,
+                    color: context.colour.surfaceContainer,
+                  ),
+                  const Spacer(),
+                  CurrencyText(
+                    total,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                    color: context.colour.outlineVariant,
+                  ),
+                  const Gap(4),
+                  Icon(
+                    expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    color: context.colour.primary,
+                  ),
+                ],
+              ),
             ),
           ),
-          _divider(context),
+          const Gap(12),
+          if (expanded && fees != null) ...[
+            Container(color: context.colour.surface, height: 1),
+            Column(
+              children: [
+                const Gap(4),
+
+                _feeRow(context, 'Lockup Network Fee', fees.lockupFee ?? 0),
+                _feeRow(context, 'Claim Network Fee', fees.claimFee ?? 0),
+                _feeRow(context, 'Boltz Swap Fee', fees.boltzFee ?? 0),
+                const Gap(4),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -936,14 +1017,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
-            title: 'Total fees',
-            details: BBText(
-              "${swap.fees?.totalFees(null)} sats",
-              style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
-            ),
-          ),
+          _SwapFeeBreakdown(fees: swap.fees),
           _divider(context),
         ],
       ),
