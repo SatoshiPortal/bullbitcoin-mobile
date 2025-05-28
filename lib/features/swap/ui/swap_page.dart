@@ -164,14 +164,12 @@ class SwapCard extends StatelessWidget {
             IgnorePointer(
               ignoring: type == _SwapCardType.receive,
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Expanded(
                     child: BBInputText(
                       style: context.font.displaySmall,
                       value: amount,
                       hideBorder: true,
-                      noFixedHeight: true,
                       maxLines: 1,
                       onChanged: (v) {
                         if (type == _SwapCardType.pay) {

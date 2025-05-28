@@ -12,7 +12,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
-import 'package:bb_mobile/ui/components/inputs/paste_input.dart';
+import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/price_input/balance_row.dart';
 import 'package:bb_mobile/ui/components/price_input/price_input.dart';
@@ -121,7 +121,9 @@ class SendContinueWithAddressButton extends StatelessWidget {
     final loadingBestWallet = context.select(
       (SendCubit cubit) => cubit.state.loadingBestWallet,
     );
-
+    final isValidPaymentRequest = context.select(
+      (SendCubit cubit) => cubit.state.paymentRequest != null,
+    );
     final creatingSwap = context.select(
       (SendCubit cubit) => cubit.state.creatingSwap,
     );
@@ -131,7 +133,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
-      disabled: loadingBestWallet || creatingSwap,
+      disabled: !isValidPaymentRequest || loadingBestWallet || creatingSwap,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );
@@ -147,9 +149,28 @@ class AddressField extends StatelessWidget {
       (cubit) => cubit.state.addressOrInvoice,
     );
 
-    return PasteInput(
-      text: address,
-      onChanged: (text) => context.read<SendCubit>().onPastedText(text),
+    return BBInputText(
+      onChanged: context.read<SendCubit>().onChangedText,
+      value: address,
+      hint: 'Paste a payment address or invoice',
+      hintStyle: context.font.bodyLarge?.copyWith(
+        color: context.colour.surfaceContainer,
+      ),
+      maxLines: 1,
+      rightIcon: Icon(
+        Icons.paste_sharp,
+        color: context.colour.secondary,
+        size: 20,
+      ),
+      onRightTap: () {
+        Clipboard.getData(Clipboard.kTextPlain).then((value) {
+          if (value != null) {
+            if (context.mounted) {
+              context.read<SendCubit>().onChangedText(value.text ?? '');
+            }
+          }
+        });
+      },
     );
   }
 }

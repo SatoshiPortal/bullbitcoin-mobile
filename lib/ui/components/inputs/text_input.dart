@@ -8,6 +8,7 @@ class BBInputText extends StatefulWidget {
     required this.onChanged,
     required this.value,
     this.hint,
+    this.hintStyle,
     this.rightIcon,
     this.onRightTap,
     this.disabled = false,
@@ -19,17 +20,16 @@ class BBInputText extends StatefulWidget {
     this.obscure = false,
     this.style,
     this.hideBorder = false,
-    this.noFixedHeight = false,
     this.maxLines,
+    this.minLines,
   });
 
   final Key? uiKey;
-
   final TextEditingController? controller;
   final Function(String) onChanged;
-
   final String value;
   final String? hint;
+  final TextStyle? hintStyle;
   final Widget? rightIcon;
   final Function? onRightTap;
   final bool disabled;
@@ -40,9 +40,9 @@ class BBInputText extends StatefulWidget {
   final bool onlyNumbers;
   final bool obscure;
   final int? maxLines;
+  final int? minLines;
   final TextStyle? style;
   final bool hideBorder;
-  final bool noFixedHeight;
 
   @override
   State<BBInputText> createState() => _BBInputTextState();
@@ -77,63 +77,60 @@ class _BBInputTextState extends State<BBInputText> {
     super.dispose();
   }
 
+  InputBorder _getBorder(BuildContext context) {
+    if (widget.hideBorder) return InputBorder.none;
+
+    return OutlineInputBorder(
+      borderRadius: BorderRadius.circular(2),
+      borderSide: BorderSide(color: context.colour.secondaryFixedDim),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: !widget.noFixedHeight ? 56 : null,
-      constraints: BoxConstraints(maxHeight: !widget.noFixedHeight ? 56 : 62),
-      decoration: BoxDecoration(
-        color: context.colour.onPrimary,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color:
-              widget.hideBorder
-                  ? Colors.transparent
-                  : context.colour.secondaryFixedDim,
-        ),
-      ),
-      child: TextField(
-        expands: !widget.obscure && widget.maxLines == null,
-        maxLines: widget.maxLines ?? (widget.obscure ? 1 : null),
-        focusNode: widget.focusNode,
-        enabled: !widget.disabled,
-        onChanged: widget.onChanged,
-        controller: _controller,
-        enableIMEPersonalizedLearning: false,
-        keyboardType: widget.onlyNumbers ? null : TextInputType.text,
-        obscureText: widget.obscure,
-        obscuringCharacter: widget.onlyNumbers ? 'x' : '*',
-        onTap: () => widget.onEnter?.call(),
-        textAlign: TextAlign.left,
-        textAlignVertical: TextAlignVertical.center,
-        maxLength: widget.maxLength,
-
-        style:
-            widget.style ??
-            context.font.headlineSmall?.copyWith(
-              color: context.colour.secondary,
+    return TextField(
+      key: widget.uiKey,
+      controller: _controller,
+      onChanged: widget.onChanged,
+      focusNode: widget.focusNode,
+      enabled: !widget.disabled,
+      keyboardType:
+          widget.onlyNumbers ? TextInputType.number : TextInputType.multiline,
+      obscureText: widget.obscure,
+      obscuringCharacter: widget.onlyNumbers ? 'x' : '*',
+      enableIMEPersonalizedLearning: false,
+      maxLength: widget.maxLength,
+      minLines: widget.minLines ?? 1,
+      maxLines: widget.maxLines ?? (widget.obscure ? 1 : null),
+      style:
+          widget.style ??
+          context.font.headlineSmall?.copyWith(color: context.colour.secondary),
+      onTap: () => widget.onEnter?.call(),
+      onSubmitted: widget.onDone,
+      textAlign: TextAlign.left,
+      textAlignVertical: TextAlignVertical.center,
+      decoration: InputDecoration(
+        hintText: widget.hint,
+        hintStyle:
+            widget.hintStyle ??
+            TextStyle(
+              color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
             ),
-        decoration: InputDecoration(
-          hintText: widget.hint,
-
-          hintStyle: TextStyle(
-            color: context.colour.onPrimaryContainer.withValues(alpha: 0.5),
-          ),
-          suffixIcon:
-              widget.rightIcon != null
-                  ? IconButton(
-                    padding: const EdgeInsets.all(5),
-                    icon: widget.rightIcon!,
-                    onPressed: () => widget.onRightTap!(),
-                  )
-                  : null,
-          border: InputBorder.none,
-          labelStyle: context.font.labelSmall,
-          contentPadding:
-              !widget.noFixedHeight
-                  ? const EdgeInsets.all(16)
-                  : EdgeInsets.zero,
-        ),
+        suffixIcon:
+            widget.rightIcon != null
+                ? IconButton(
+                  padding: const EdgeInsets.all(5),
+                  icon: widget.rightIcon!,
+                  onPressed: () => widget.onRightTap?.call(),
+                )
+                : null,
+        border: _getBorder(context),
+        enabledBorder: _getBorder(context),
+        focusedBorder: _getBorder(context),
+        disabledBorder: _getBorder(context),
+        contentPadding: const EdgeInsets.all(16),
+        filled: true,
+        fillColor: context.colour.onPrimary,
       ),
     );
   }

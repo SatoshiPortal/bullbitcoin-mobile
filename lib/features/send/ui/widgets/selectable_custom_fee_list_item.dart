@@ -168,6 +168,7 @@ class _SelectableCustomFeeListItemState
                 controller: _controller,
                 value: _controller.text,
                 onChanged: _onValueChanged,
+                onlyNumbers: true,
                 focusNode: _focusNode,
                 rightIcon: Text(
                   _isAbsolute ? 'sats' : 'sats/vB',

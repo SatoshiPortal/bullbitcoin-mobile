@@ -6,9 +6,10 @@ enum AppThemeType { light, dark }
 
 class AppTheme {
   static ThemeData themeData(AppThemeType themeType) {
-    final colours = themeType == AppThemeType.dark
-        ? AppColours.darkColourScheme
-        : AppColours.lightColourScheme;
+    final colours =
+        themeType == AppThemeType.dark
+            ? AppColours.darkColourScheme
+            : AppColours.lightColourScheme;
     final fonts = AppFonts.textTheme;
 
     return ThemeData(
@@ -18,6 +19,32 @@ class AppTheme {
       scaffoldBackgroundColor: colours.secondaryFixed,
       fontFamily: fonts.fontFamily,
       textTheme: fonts.textTheme,
+      /* TODO: Add theme for inputs like TextField here and remove BBInputText
+       Make sure to check impact on all different inputs in the app and adjust accordingly.
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: fonts.textTheme.bodyLarge?.copyWith(
+          color: colours.surfaceContainer,
+        ),
+        filled: true,
+        fillColor: colours.onPrimary,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(2),
+          borderSide: BorderSide(color: colours.surface),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(2),
+          borderSide: BorderSide(color: colours.surface),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(2),
+          borderSide: BorderSide(color: colours.surface),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(2),
+          borderSide: BorderSide(color: colours.surface),
+        ),
+      ),
+       */
       appBarTheme: AppBarTheme(
         backgroundColor: colours.secondaryFixed,
         // foregroundColor: colours.primary,
@@ -48,21 +75,14 @@ class WidgetStyles {
       hintStyle: context.font.bodyMedium!.copyWith(
         color: context.colour.surfaceContainer,
       ),
-      contentPadding: const EdgeInsets.symmetric(
-        vertical: 12,
-        horizontal: 10,
-      ),
+      contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(4),
-        borderSide: BorderSide(
-          color: context.colour.secondaryFixedDim,
-        ),
+        borderSide: BorderSide(color: context.colour.secondaryFixedDim),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(4),
-        borderSide: BorderSide(
-          color: context.colour.secondaryFixedDim,
-        ),
+        borderSide: BorderSide(color: context.colour.secondaryFixedDim),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),

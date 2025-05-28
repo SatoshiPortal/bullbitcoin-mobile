@@ -188,7 +188,7 @@ class SendCubit extends Cubit<SendState> {
   }
 
   /// Called when text is pasted or entered manually
-  Future<void> onPastedText(String text) async {
+  Future<void> onChangedText(String text) async {
     try {
       clearAllExceptions();
       final sanitizedText = text.trim().replaceAll(
@@ -202,7 +202,11 @@ class SendCubit extends Cubit<SendState> {
     } catch (e) {
       emit(
         state.copyWith(
-          invalidBitcoinStringException: InvalidBitcoinStringException(),
+          // Remove the previous successful payment request on error
+          paymentRequestData: (text, null),
+          // Don't show exception if text field is clear
+          invalidBitcoinStringException:
+              text.isNotEmpty ? InvalidBitcoinStringException() : null,
         ),
       );
     }
