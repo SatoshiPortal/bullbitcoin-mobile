@@ -6,9 +6,10 @@ import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/scan/bbqr_service.dart' show BbqrService;
 import 'package:bb_mobile/features/scan/presentation/scan_state.dart';
 import 'package:bb_mobile/features/scan/scan_service.dart';
-import 'package:bbqr/bbqr.dart' as bbqr show Joined;
+
 import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:camera/camera.dart';
+import 'package:dart_bbqr/bbqr.dart' as bbqr show Joined;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

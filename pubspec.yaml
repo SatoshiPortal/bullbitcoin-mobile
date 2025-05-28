@@ -90,9 +90,9 @@ dependencies:
   share_plus: ^11.0.0
   font_awesome_flutter: ^10.8.0
   bolt11_decoder: ^1.0.2
-  bbqr:
+  dart_bbqr:
     git:
-      url: https://github.com/ethicnology/dart-bbqr.git
+      url: https://github.com/SatoshiPortal/bbqr-dart.git
       ref: main
 
 dev_dependencies:

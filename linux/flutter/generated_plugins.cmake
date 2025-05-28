@@ -9,8 +9,8 @@ list(APPEND FLUTTER_PLUGIN_LIST
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
-  bbqr_dart
   bip85
+  dart_bbqr
   lwk
   tor
 )

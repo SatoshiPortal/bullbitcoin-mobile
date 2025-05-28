@@ -65,23 +65,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  auto_size_text_field:
-    dependency: "direct main"
-    description:
-      name: auto_size_text_field
-      sha256: "41c90b2270e38edc6ce5c02e5a17737a863e65e246bdfc94565a38f3ec399144"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.4"
-  bbqr:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: main
-      resolved-ref: "489d2f91d8486e13359913fa7a2ef4abb9063c3b"
-      url: "https://github.com/ethicnology/dart-bbqr.git"
-    source: git
-    version: "0.0.1"
   bdk_flutter:
     dependency: "direct main"
     description:
@@ -412,6 +395,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.5"
+  dart_bbqr:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: main
+      resolved-ref: "348feb8db3dd00260f17da9f7d850301cb899a87"
+      url: "https://github.com/SatoshiPortal/bbqr-dart.git"
+    source: git
+    version: "0.0.1"
   dart_bip21:
     dependency: "direct main"
     description:
@@ -1842,5 +1834,5 @@ packages:
     source: hosted
     version: "0.2.3"
 sdks:
-  dart: ">=3.7.0 <4.0.0"
+  dart: ">=3.7.2 <4.0.0"
   flutter: ">=3.29.0"
