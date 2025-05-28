@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/scan/scan_widget.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -23,8 +25,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 
 class SendScreen extends StatelessWidget {
   const SendScreen({super.key});
@@ -287,13 +287,13 @@ class SendAmountScreen extends StatelessWidget {
                       walletLabel: selectedWalletLabel,
                     ),
                     DialPad(
-                      onNumberPressed: (number) {
+                      onNumberPressed: (number) async {
                         final inputAmount =
                             context.read<SendCubit>().state.amount;
                         final amount = inputAmount + number;
-                        context.read<SendCubit>().amountChanged(amount);
+                        await context.read<SendCubit>().amountChanged(amount);
                       },
-                      onBackspacePressed: () {
+                      onBackspacePressed: () async {
                         final inputAmount =
                             context.read<SendCubit>().state.amount;
                         if (inputAmount.isNotEmpty) {
@@ -301,7 +301,7 @@ class SendAmountScreen extends StatelessWidget {
                             0,
                             inputAmount.length - 1,
                           );
-                          context.read<SendCubit>().amountChanged(amount);
+                          await context.read<SendCubit>().amountChanged(amount);
                         }
                       },
                     ),
@@ -784,12 +784,15 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                BBText(
-                  paymentRequest!.isLnAddress
-                      ? addressOrInvoice
-                      : StringFormatting.truncateMiddle(addressOrInvoice),
-                  style: context.font.bodyLarge,
-                  textAlign: TextAlign.end,
+                Expanded(
+                  child: BBText(
+                    paymentRequest!.isLnAddress
+                        ? addressOrInvoice
+                        : StringFormatting.truncateMiddle(addressOrInvoice),
+                    style: context.font.bodyLarge,
+                    textAlign: TextAlign.end,
+                    maxLines: 10,
+                  ),
                 ),
                 const Gap(4),
                 InkWell(
@@ -974,10 +977,13 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                BBText(
-                  StringFormatting.truncateMiddle(addressOrInvoice),
-                  style: context.font.bodyLarge,
-                  textAlign: TextAlign.end,
+                Expanded(
+                  child: BBText(
+                    addressOrInvoice,
+                    style: context.font.bodyLarge,
+                    textAlign: TextAlign.end,
+                    maxLines: 10,
+                  ),
                 ),
                 const Gap(4),
                 InkWell(

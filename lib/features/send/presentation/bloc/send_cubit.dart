@@ -560,7 +560,7 @@ class SendCubit extends Cubit<SendState> {
     );
   }
 
-  void amountChanged(String amount) {
+  Future<void> amountChanged(String amount) async {
     try {
       clearAllExceptions();
       String validatedAmount;
@@ -598,7 +598,7 @@ class SendCubit extends Cubit<SendState> {
       }
 
       emit(state.copyWith(amount: validatedAmount, sendMax: false));
-      updateBestWallet();
+      await updateBestWallet();
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
@@ -677,6 +677,26 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(loadingBestWallet: false));
     }
   }
+
+  // Future<void> updateUpdatedWalletSyncSubscription(
+  //   String previousSelectedWalletId,
+  // ) async {
+  //   try {
+  //     if (state.selectedWallet!.id != previousSelectedWalletId) {
+  //       toggleSwapLimitsForWallet();
+  //       await _selectedWalletSyncingSubscription?.cancel();
+  //       _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
+  //           .execute(walletId: state.selectedWallet!.id)
+  //           .listen((wallet) async {
+  //             emit(state.copyWith(selectedWallet: wallet));
+  //             await loadFees();
+  //             await loadUtxos();
+  //           });
+  //     }
+  //   } catch (e) {
+  //     emit(state.copyWith(loadingBestWallet: false));
+  //   }
+  // }
 
   Future<void> onAmountConfirmed() async {
     clearAllExceptions();
