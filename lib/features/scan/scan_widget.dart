@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_cubit.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_state.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart'
+    show SettingsCubit;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -78,6 +81,10 @@ class _ScanWidgetState extends State<ScanWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
+
     return ColoredBox(
       color: context.colour.secondaryFixedDim,
       child: SafeArea(
@@ -152,26 +159,27 @@ class _ScanWidgetState extends State<ScanWidget> {
                                     ),
                                   ),
                                 ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                left: 0,
-                                child: BBButton.big(
-                                  iconData:
-                                      state.isCollectingBbqr
-                                          ? Icons.cancel
-                                          : Icons.check_circle,
-                                  textStyle: context.font.labelSmall,
-                                  textColor:
-                                      state.isCollectingBbqr
-                                          ? Colors.red
-                                          : Colors.green,
-                                  onPressed:
-                                      context.read<ScanCubit>().switchBbqr,
-                                  label: 'BBQR',
-                                  bgColor: Colors.transparent,
+                              if (isSuperuser && kDebugMode)
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  left: 0,
+                                  child: BBButton.big(
+                                    iconData:
+                                        state.isCollectingBbqr
+                                            ? Icons.cancel
+                                            : Icons.check_circle,
+                                    textStyle: context.font.labelSmall,
+                                    textColor:
+                                        state.isCollectingBbqr
+                                            ? Colors.red
+                                            : Colors.green,
+                                    onPressed:
+                                        context.read<ScanCubit>().switchBbqr,
+                                    label: 'BBQR',
+                                    bgColor: Colors.transparent,
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
                         );
