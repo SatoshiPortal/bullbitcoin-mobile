@@ -6,7 +6,7 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';

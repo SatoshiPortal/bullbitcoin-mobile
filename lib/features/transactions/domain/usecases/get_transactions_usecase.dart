@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.da
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 
 class GetTransactionsUsecase {
   final SettingsRepository _settingsRepository;
