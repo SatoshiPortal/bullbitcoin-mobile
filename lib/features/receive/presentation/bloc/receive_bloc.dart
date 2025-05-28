@@ -246,6 +246,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           inputAmount: '',
           confirmedAmountSat: null,
           note: '',
+          amountException: null,
         ),
       );
 
@@ -409,13 +410,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
   ) async {
     try {
       String amount;
+      AmountException? amountException;
 
       if (event.amount.isEmpty) {
         amount = event.amount;
+        amountException = null;
       } else if (state.isInputAmountFiat) {
         final amountFiat = double.tryParse(event.amount);
         final isDecimalPoint = event.amount == '.';
-
         amount =
             amountFiat == null && !isDecimalPoint
                 ? state.inputAmount
@@ -425,31 +427,63 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         //  allow a decimal point or for it to be bigger than the max sats amount that can exist.
         final amountSats = BigInt.tryParse(event.amount);
         final hasDecimals = event.amount.contains('.');
-
-        amount =
-            amountSats == null ||
-                    hasDecimals ||
-                    amountSats > ConversionConstants.maxSatsAmount
-                ? state.inputAmount
-                : amountSats.toString();
+        if (amountSats == null || hasDecimals) {
+          amount = state.inputAmount; // revert if not integer
+        } else {
+          amount = amountSats.toString();
+        }
       } else {
         // If the amount is in BTC, make sure it is a valid double and
         //  do not allow more than 8 decimal places and that it is not bigger than the max bitcoin amount that can exist.
         final amountBtc = double.tryParse(event.amount);
         final decimals = event.amount.split('.').last.length;
         final isDecimalPoint = event.amount == '.';
-
-        amount =
-            (amountBtc == null && !isDecimalPoint) ||
-                    decimals > BitcoinUnit.btc.decimals ||
-                    (amountBtc != null &&
-                        amountBtc >
-                            ConversionConstants.maxBitcoinAmount.toDouble())
-                ? state.inputAmount
-                : event.amount;
+        if ((amountBtc == null && !isDecimalPoint) ||
+            decimals > BitcoinUnit.btc.decimals) {
+          amount = state.inputAmount;
+        } else {
+          amount = event.amount;
+        }
       }
 
-      emit(state.copyWith(inputAmount: amount));
+      int inputSat = 0;
+      if (amount.isNotEmpty) {
+        inputSat =
+            state.isInputAmountFiat
+                ? ConvertAmount.fiatToSats(
+                  double.tryParse(amount) ?? 0,
+                  state.exchangeRate,
+                )
+                : state.inputAmountCurrencyCode == BitcoinUnit.sats.code
+                ? int.tryParse(amount) ?? 0
+                : ConvertAmount.btcToSats(double.tryParse(amount) ?? 0);
+      }
+      if ((state.type == ReceiveType.bitcoin ||
+              state.type == ReceiveType.liquid) &&
+          inputSat > ConversionConstants.maxSatsAmount.toInt()) {
+        amountException = AmountException.aboveBitcoinProtocolLimit(
+          ConversionConstants.maxSatsAmount.toInt(),
+        );
+        amount = state.inputAmount;
+      }
+
+      if (state.type == ReceiveType.lightning &&
+          state.swapLimits != null &&
+          amount.isNotEmpty) {
+        if (inputSat < state.swapLimits!.min) {
+          amountException = AmountException.belowSwapLimit(
+            state.swapLimits!.min,
+          );
+        } else if (inputSat > state.swapLimits!.max) {
+          amountException = AmountException.aboveSwapLimit(
+            state.swapLimits!.max,
+          );
+        }
+      }
+
+      emit(
+        state.copyWith(inputAmount: amount, amountException: amountException),
+      );
     } catch (e) {
       emit(state.copyWith(error: e));
     }
@@ -489,7 +523,8 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         inputAmountCurrencyCode: event.currencyCode,
         fiatCurrencyCode: fiatCurrencyCode,
         exchangeRate: exchangeRate,
-        inputAmount: '', // Clear the amount when changing the currency
+        inputAmount: '',
+        amountException: null,
       ),
     );
   }
