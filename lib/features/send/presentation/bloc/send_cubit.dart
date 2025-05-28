@@ -224,8 +224,9 @@ class SendCubit extends Cubit<SendState> {
       }
 
       if (state.paymentRequest!.isBolt11) {
+        final paymentRequest = state.paymentRequest! as Bolt11PaymentRequest;
         final invoice = await _decodeInvoiceUsecase.execute(
-          invoice: state.addressOrInvoice,
+          invoice: paymentRequest.invoice,
           isTestnet: state.paymentRequest!.isTestnet,
         );
         if (invoice.magicBip21 != null) {
@@ -311,7 +312,7 @@ class SendCubit extends Cubit<SendState> {
           );
           return;
         }
-        if (!state.swapAmountBelowLimit) {
+        if (state.swapAmountBelowLimit) {
           if (!state.selectedWallet!.isLiquid) {
             emit(
               state.copyWith(
@@ -323,6 +324,7 @@ class SendCubit extends Cubit<SendState> {
                 loadingBestWallet: false,
               ),
             );
+            return;
           } else {
             emit(
               state.copyWith(
@@ -336,7 +338,7 @@ class SendCubit extends Cubit<SendState> {
           }
           return;
         }
-        if (!state.swapAmountAboveLimit) {
+        if (state.swapAmountAboveLimit) {
           emit(
             state.copyWith(
               creatingSwap: false,
@@ -346,13 +348,15 @@ class SendCubit extends Cubit<SendState> {
               loadingBestWallet: false,
             ),
           );
+          return;
         }
 
         try {
+          final paymentRequest = state.paymentRequest! as Bolt11PaymentRequest;
           final swap = await _createSendSwapUsecase.execute(
             walletId: wallet.id,
             type: swapType,
-            invoice: state.addressOrInvoice,
+            invoice: paymentRequest.invoice,
           );
           await loadFees();
           await loadUtxos();
@@ -1014,6 +1018,15 @@ class SendCubit extends Cubit<SendState> {
     } catch (e) {
       debugPrint(e.toString());
       if (e is PrepareBitcoinSendException) {
+        emit(
+          state.copyWith(
+            buildTransactionException: BuildTransactionException(e.message),
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
+      if (e is PrepareLiquidSendException) {
         emit(
           state.copyWith(
             buildTransactionException: BuildTransactionException(e.message),
