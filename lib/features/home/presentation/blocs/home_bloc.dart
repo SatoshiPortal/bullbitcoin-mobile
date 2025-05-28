@@ -155,7 +155,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     HomeWalletSyncStarted event,
     Emitter<HomeState> emit,
   ) async {
-    emit(state.copyWith(isSyncing: true));
+    // Do nothing for now, since we only want to show the syncing indicator
+    // when the user itself refreshes the wallets.
   }
 
   Future<void> _onWalletSyncFinished(
@@ -169,13 +170,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       //  with the updated balance as well as the other wallets which may or
       //  may not be synced as well.
       final wallets = await _getWalletsUsecase.execute();
-      final isAnyOtherWalletSyncing = _checkWalletSyncingUsecase.execute();
+      // No need to check if any other wallet is syncing, since we don't want to
+      // show the syncing indicator for automatic syncs anymore.
+      //final isAnyOtherWalletSyncing = _checkWalletSyncingUsecase.execute();
 
       emit(
         state.copyWith(
           status: HomeStatus.success,
           wallets: wallets,
-          isSyncing: isAnyOtherWalletSyncing,
+          //isSyncing: isAnyOtherWalletSyncing,
         ),
       );
     } catch (e) {
