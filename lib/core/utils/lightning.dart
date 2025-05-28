@@ -11,6 +11,9 @@ Future<String> invoiceFromLnAddress({
     );
     return invoice;
   } catch (e) {
+    if (e is BoltzError) {
+      throw Exception(e.message);
+    }
     rethrow;
   }
 }

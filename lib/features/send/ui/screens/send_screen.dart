@@ -749,6 +749,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
     final swap = context.select((SendCubit cubit) => cubit.state.lightningSwap);
+    final paymentRequest = context.select(
+      (SendCubit cubit) => cubit.state.paymentRequest,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -780,7 +783,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 BBText(
-                  StringFormatting.truncateMiddle(addressOrInvoice),
+                  paymentRequest!.isLnAddress
+                      ? addressOrInvoice
+                      : StringFormatting.truncateMiddle(addressOrInvoice),
                   style: context.font.bodyLarge,
                   textAlign: TextAlign.end,
                 ),

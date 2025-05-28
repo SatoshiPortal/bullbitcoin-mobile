@@ -191,10 +191,14 @@ class SendCubit extends Cubit<SendState> {
   Future<void> onPastedText(String text) async {
     try {
       clearAllExceptions();
-      final paymentRequest = await _detectBitcoinStringUsecase.execute(
-        data: text,
+      final sanitizedText = text.trim().replaceAll(
+        RegExp(r'^["\"]+|["\"]+$'),
+        '',
       );
-      emit(state.copyWith(paymentRequestData: (text, paymentRequest)));
+      final paymentRequest = await _detectBitcoinStringUsecase.execute(
+        data: sanitizedText,
+      );
+      emit(state.copyWith(paymentRequestData: (sanitizedText, paymentRequest)));
     } catch (e) {
       emit(
         state.copyWith(
