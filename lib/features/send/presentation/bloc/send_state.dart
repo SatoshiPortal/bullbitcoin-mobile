@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -383,6 +384,23 @@ abstract class SendState with _$SendState {
 
   /// Whether we have a valid payment request
   bool get hasValidPaymentRequest => paymentRequest != null;
+}
+
+extension SendStateFeePercent on SendState {
+  double getFeeAsPercentOfAmount() {
+    if (lightningSwap != null) {
+      return lightningSwap!.getFeeAsPercentOfAmount();
+    }
+    if (chainSwap != null) {
+      return chainSwap!.getFeeAsPercentOfAmount();
+    }
+    final fee = absoluteFees ?? 0;
+    final amount = confirmedAmountSat ?? 0;
+    if (fee == 0 || amount == 0) return 0.0;
+    return calculatePercentage(amount, fee);
+  }
+
+  bool get showFeeWarning => getFeeAsPercentOfAmount() > 1.0;
 }
 
 class SwapCreationException implements Exception {

@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bolt11_decoder/bolt11_decoder.dart';
 import 'package:decimal/decimal.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:bb_mobile/core/utils/percentage.dart';
 
 part 'swap.freezed.dart';
 
@@ -198,6 +198,11 @@ extension SwapFeePercent on Swap {
     if (fees == null || amount == 0) return 0.0;
     final totalFees = fees.totalFees(amount) ?? 0;
     return calculatePercentage(amount, totalFees);
+  }
+
+  bool showFeeWarning() {
+    final feePercent = getFeeAsPercentOfAmount();
+    return feePercent > 1.0;
   }
 }
 
