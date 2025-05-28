@@ -47,6 +47,9 @@ class PaymentReceivedPage extends StatelessWidget {
     // Using read instead of select or watch is ok here,
     //  since the amounts can not be changed at this point anymore.
     final amountSat = context.read<ReceiveBloc>().state.confirmedAmountSat;
+    final lnSwap = context.read<ReceiveBloc>().state.lightningSwap;
+    final fees = lnSwap?.fees?.totalFees(amountSat) ?? 0;
+    final finalAmount = (amountSat ?? 0) - fees;
     final amountFiat =
         context.read<ReceiveBloc>().state.formattedConfirmedAmountFiat;
 
@@ -58,7 +61,7 @@ class PaymentReceivedPage extends StatelessWidget {
           BBText('Payment received', style: context.font.headlineLarge),
           const Gap(24),
           CurrencyText(
-            amountSat ?? 0,
+            finalAmount,
             showFiat: false,
             style: context.font.displaySmall,
           ),
