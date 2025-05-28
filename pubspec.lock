@@ -395,6 +395,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.5"
+  dart_bbqr:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: main
+      resolved-ref: "348feb8db3dd00260f17da9f7d850301cb899a87"
+      url: "https://github.com/SatoshiPortal/bbqr-dart.git"
+    source: git
+    version: "0.0.1"
   dart_bip21:
     dependency: "direct main"
     description:
@@ -1825,5 +1834,5 @@ packages:
     source: hosted
     version: "0.2.3"
 sdks:
-  dart: ">=3.7.0 <4.0.0"
+  dart: ">=3.7.2 <4.0.0"
   flutter: ">=3.29.0"

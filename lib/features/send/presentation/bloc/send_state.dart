@@ -33,6 +33,8 @@ enum SendType {
         } else {
           return SendType.liquid;
         }
+      case PsbtPaymentRequest():
+        return SendType.bitcoin; //TODO(azad): nop
     }
   }
 
