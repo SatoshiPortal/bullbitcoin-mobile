@@ -38,7 +38,7 @@ class ScanCubit extends Cubit<ScanState> {
           final psbt = await tryToCollectBbqrPsbt(qr);
           if (psbt != null) {
             final pr = await PaymentRequest.parse(psbt);
-            emit(state.copyWith(data: (qr, pr)));
+            if (pr is PsbtPaymentRequest) emit(state.copyWith(data: (qr, pr)));
           }
         } else {
           if (qr.isNotEmpty && qr != state.data.$1) {
