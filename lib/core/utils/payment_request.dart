@@ -72,7 +72,7 @@ sealed class PaymentRequest with _$PaymentRequest {
           trimmed.toLowerCase().startsWith('lightning:')) {
         if (trimmed.toLowerCase().startsWith('lightning:')) {
           final withoutPrefix = trimmed.replaceAll("lightning:", "");
-          final result = await _tryParseBolt11(withoutPrefix);
+          final result = await _tryParseBolt11(withoutPrefix.toLowerCase());
           if (result != null) return result;
         }
         final result = await _tryParseBolt11(trimmed.toLowerCase());
