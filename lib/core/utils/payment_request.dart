@@ -57,7 +57,7 @@ sealed class PaymentRequest with _$PaymentRequest {
     LnAddressPaymentRequest() => null,
     Bolt11PaymentRequest(amountSat: final amountSat) => amountSat,
     Bip21PaymentRequest(amountSat: final amountSat) => amountSat,
-    PsbtPaymentRequest() => throw UnimplementedError(),
+    PsbtPaymentRequest() => null,
   };
 
   static Future<PaymentRequest> parse(String data) async {
@@ -321,7 +321,8 @@ sealed class PaymentRequest with _$PaymentRequest {
     LiquidPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     Bolt11PaymentRequest(isTestnet: final isTestnet) => isTestnet,
     Bip21PaymentRequest(network: final network) => network.isTestnet,
-    _ => false,
+    LnAddressPaymentRequest() => false,
+    PsbtPaymentRequest() => false,
   };
 
   String get name => switch (this) {
