@@ -68,7 +68,7 @@ abstract class SendState with _$SendState {
     @Default('') String label,
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
-    @Default(false) bool replaceByFee,
+    @Default(true) bool replaceByFee,
     @Default(false) bool invoiceHasMrh,
     FeeOptions? bitcoinFeesList,
     FeeOptions? liquidFeesList,
