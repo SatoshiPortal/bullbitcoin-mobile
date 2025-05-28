@@ -167,13 +167,13 @@ class _ScanWidgetState extends State<ScanWidget> {
                                   child: BBButton.big(
                                     iconData:
                                         state.isCollectingBbqr
-                                            ? Icons.cancel
-                                            : Icons.check_circle,
+                                            ? Icons.check_box
+                                            : Icons.disabled_by_default,
                                     textStyle: context.font.labelSmall,
                                     textColor:
                                         state.isCollectingBbqr
-                                            ? Colors.red
-                                            : Colors.green,
+                                            ? Colors.green
+                                            : Colors.red,
                                     onPressed:
                                         context.read<ScanCubit>().switchBbqr,
                                     label: 'BBQR',
