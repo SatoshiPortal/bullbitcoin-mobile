@@ -47,8 +47,9 @@ class _Screen extends StatelessWidget {
             ),
           ),
           body: SafeArea(
-            child: state.loading
-                ? const Center(child: CircularProgressIndicator())
+            child:
+                state.loading
+                    ? const Center(child: LinearProgressIndicator())
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: Column(
