@@ -17,7 +17,34 @@ class LegacySeedViewCubit extends Cubit<LegacySeedViewState> {
     emit(state.copyWith(loading: true, error: null));
     try {
       final seeds = await _getOldSeedsUsecase.execute();
-      emit(state.copyWith(loading: false, seeds: seeds, error: null));
+      final Map<String, OldSeed> mnemonicMap = {};
+      for (final seed in seeds) {
+        if (mnemonicMap.containsKey(seed.mnemonic)) {
+          final existing = mnemonicMap[seed.mnemonic]!;
+          mnemonicMap[seed.mnemonic] = existing.copyWith(
+            passphrases: [
+              ...existing.passphrases,
+              ...seed.passphrases.where(
+                (p) =>
+                    !existing.passphrases.any(
+                      (ep) =>
+                          ep.passphrase == p.passphrase &&
+                          ep.sourceFingerprint == p.sourceFingerprint,
+                    ),
+              ),
+            ],
+          );
+        } else {
+          mnemonicMap[seed.mnemonic] = seed;
+        }
+      }
+      emit(
+        state.copyWith(
+          loading: false,
+          seeds: mnemonicMap.values.toList(),
+          error: null,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(loading: false, error: e.toString()));
     }
