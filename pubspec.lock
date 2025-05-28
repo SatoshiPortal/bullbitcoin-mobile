@@ -1009,10 +1009,11 @@ packages:
   lwk:
     dependency: "direct main"
     description:
-      name: lwk
-      sha256: "355e2f8e3ecd39fa42dc242118f6d4e6a83abb52fb20a947be89d3d8f330e75a"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: develop
+      resolved-ref: "0410eaab3d1a177cc53872caac3ba362f37964a4"
+      url: "https://github.com/SatoshiPortal/lwk-dart.git"
+    source: git
     version: "0.2.0"
   matcher:
     dependency: transitive

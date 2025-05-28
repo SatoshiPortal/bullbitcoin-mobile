@@ -242,7 +242,9 @@ class SendAmountScreen extends StatelessWidget {
               .select<SendCubit, List<String>>(
                 (bloc) => bloc.state.inputAmountCurrencyCodes,
               );
-
+          final buildError = context.select(
+            (SendCubit cubit) => cubit.state.buildTransactionException,
+          );
           final selectedWalletLabel = context.select(
             (SendCubit cubit) => cubit.state.selectedWallet!.label,
           );
@@ -306,6 +308,7 @@ class SendAmountScreen extends StatelessWidget {
                       },
                     ),
                     const Gap(16),
+                    if (buildError != null) const _SendError(),
                     const SendAmountConfirmButton(),
                     const Gap(48),
                   ],
@@ -413,7 +416,7 @@ class SendConfirmScreen extends StatelessWidget {
               const _OnchainSendInfoSection(),
             const Spacer(),
             // const _Warning(),
-            const _ConfirmSendErrorSection(),
+            const _SendError(),
             const _BottomButtons(),
           ],
         ),
@@ -422,8 +425,8 @@ class SendConfirmScreen extends StatelessWidget {
   }
 }
 
-class _ConfirmSendErrorSection extends StatelessWidget {
-  const _ConfirmSendErrorSection();
+class _SendError extends StatelessWidget {
+  const _SendError();
 
   @override
   Widget build(BuildContext context) {
@@ -441,7 +444,7 @@ class _ConfirmSendErrorSection extends StatelessWidget {
         child: Column(
           children: [
             BBText(
-              buildError.title,
+              'Could Not Build Transaction',
               style: context.font.bodyLarge,
               color: context.colour.error,
               maxLines: 5,

@@ -537,7 +537,8 @@ class SendCubit extends Cubit<SendState> {
       default:
         // does not consider fees yet
         // we will only consider fee estimate at this stage
-        return wallet.balanceSat.toInt() >= state.inputAmountSat;
+        return wallet.balanceSat.toInt() >=
+            (state.inputAmountSat + (state.absoluteFees ?? 0));
     }
   }
 
@@ -715,17 +716,7 @@ class SendCubit extends Cubit<SendState> {
         confirmedAmountSat: state.inputAmountSat,
       ),
     );
-    if (!await hasBalance()) {
-      emit(
-        state.copyWith(
-          insufficientBalanceException: InsufficientBalanceException(
-            message: 'Not enough funds to cover amount and fees',
-          ),
-          amountConfirmedClicked: false,
-        ),
-      );
-      return;
-    }
+
     if (state.sendType == SendType.lightning) {
       final swapType =
           state.selectedWallet!.isLiquid
@@ -852,12 +843,31 @@ class SendCubit extends Cubit<SendState> {
         state.sendType == SendType.liquid) {
       await createTransaction();
     }
-    emit(
-      state.copyWith(
-        step: SendStep.confirm,
-        confirmedAmountSat: state.inputAmountSat,
-      ),
-    );
+    if (state.sendType == SendType.liquid ||
+        state.sendType == SendType.bitcoin) {
+      await createTransaction();
+    }
+    if (!await hasBalance()) {
+      emit(
+        state.copyWith(
+          insufficientBalanceException: InsufficientBalanceException(
+            message: 'Not enough funds to cover amount and fees',
+          ),
+          amountConfirmedClicked: false,
+        ),
+      );
+      return;
+    }
+    if (state.buildTransactionException == null) {
+      emit(
+        state.copyWith(
+          step: SendStep.confirm,
+          confirmedAmountSat: state.inputAmountSat,
+        ),
+      );
+    } else {
+      emit(state.copyWith(amountConfirmedClicked: false));
+    }
   }
 
   void onMaxPressed() {
@@ -1041,6 +1051,7 @@ class SendCubit extends Cubit<SendState> {
           buildingTransaction: false,
         ),
       );
+      return;
     }
   }
 
