@@ -499,8 +499,8 @@ class _Warning extends StatelessWidget {
       title: 'High fee warning',
       description:
           'Total fee is over ${feePercent.toStringAsFixed(2)}% of the amount.',
-      tagColor: context.colour.error,
-      bgColor: context.colour.secondaryFixedDim,
+      tagColor: context.colour.onError,
+      bgColor: context.colour.secondaryFixed,
     );
   }
 }
