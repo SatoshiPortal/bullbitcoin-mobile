@@ -30,7 +30,7 @@ class PasteInput extends StatelessWidget {
                       color: context.colour.surfaceContainer,
                     )
                     : BBText(
-                      text,
+                      text.trim(),
                       style: context.font.bodyLarge,
                       color: context.colour.secondary,
                     ),

@@ -404,6 +404,7 @@ class SwapCubit extends Cubit<SwapState> {
             isTestnet: isTestnet,
             isLiquid: false,
           ),
+          absoluteFees: state.absoluteFees!,
         );
       } else {
         emit(state.copyWith(buildingTransaction: true));
@@ -436,6 +437,7 @@ class SwapCubit extends Cubit<SwapState> {
             isTestnet: isTestnet,
             isLiquid: true,
           ),
+          absoluteFees: state.absoluteFees!,
         );
       }
       emit(

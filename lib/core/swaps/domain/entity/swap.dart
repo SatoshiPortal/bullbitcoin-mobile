@@ -28,18 +28,16 @@ enum SwapStatus {
   }
 }
 
-class SwapFees {
-  final double? boltzPercent;
-  final int? boltzFee;
-  final int? lockupFee;
-  final int? claimFee;
+@freezed
+abstract class SwapFees with _$SwapFees {
+  const factory SwapFees({
+    double? boltzPercent,
+    int? boltzFee,
+    int? lockupFee,
+    int? claimFee,
+  }) = _SwapFees;
 
-  const SwapFees({
-    this.boltzPercent,
-    this.boltzFee,
-    this.lockupFee,
-    this.claimFee,
-  });
+  const SwapFees._();
 
   int? totalFees(int? amount) {
     int total = 0;
@@ -64,7 +62,6 @@ class SwapFees {
     if (boltzFee == null) {
       return 0;
     }
-
     return double.parse(((boltzFee! / amount) * 100).toStringAsFixed(2));
   }
 }

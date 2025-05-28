@@ -370,6 +370,11 @@ abstract class SendState with _$SendState {
           ? liquidAbsoluteFees
           : selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
 
+  int? get totalSwapFees {
+    if (lightningSwap == null) return null;
+    return lightningSwap!.fees?.totalFees(lightningSwap!.paymentAmount) ?? 0;
+  }
+
   /// The raw text input from either scanner or paste
   String get addressOrInvoice => paymentRequestData.$1;
 

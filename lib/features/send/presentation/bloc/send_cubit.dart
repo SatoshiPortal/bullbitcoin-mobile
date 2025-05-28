@@ -361,6 +361,7 @@ class SendCubit extends Cubit<SendState> {
             ),
           );
           await createTransaction();
+          updateSwapLockupFees();
         } catch (e) {
           emit(
             state.copyWith(
@@ -402,6 +403,24 @@ class SendCubit extends Cubit<SendState> {
       } else {
         emit(state.copyWith(error: e, loadingBestWallet: false));
       }
+    }
+  }
+
+  void updateSwapLockupFees() {
+    final absFees = state.absoluteFees;
+    if (absFees == null) return;
+
+    if (state.lightningSwap != null) {
+      final swap = state.lightningSwap!;
+      final updatedFees = swap.fees?.copyWith(lockupFee: absFees);
+      emit(state.copyWith(lightningSwap: swap.copyWith(fees: updatedFees)));
+      return;
+    }
+    if (state.chainSwap != null) {
+      final swap = state.chainSwap!;
+      final updatedFees = swap.fees?.copyWith(lockupFee: absFees);
+      emit(state.copyWith(chainSwap: swap.copyWith(fees: updatedFees)));
+      return;
     }
   }
 
@@ -709,9 +728,8 @@ class SendCubit extends Cubit<SendState> {
           walletId: state.selectedWallet!.id,
           type: swapType,
           lnAddress: state.addressOrInvoice,
-          amountSat: state.inputAmountSat,
+          amountSat: state.confirmedAmountSat,
         );
-        _watchSendSwap(swap.id);
         emit(
           state.copyWith(
             amountConfirmedClicked: false,
@@ -720,15 +738,20 @@ class SendCubit extends Cubit<SendState> {
             creatingSwap: false,
           ),
         );
+        _watchSendSwap(swap.id);
+        await createTransaction();
+        updateSwapLockupFees();
       } catch (e) {
         emit(
           state.copyWith(
             creatingSwap: false,
             swapCreationException: SwapCreationException(e.toString()),
             amountConfirmedClicked: false,
+            step: SendStep.amount,
           ),
         );
       }
+      return;
     }
     final isChainSwap =
         (state.sendType == SendType.liquid &&
@@ -781,6 +804,8 @@ class SendCubit extends Cubit<SendState> {
             creatingSwap: false,
           ),
         );
+        await createTransaction();
+        updateSwapLockupFees();
       } catch (e) {
         emit(
           state.copyWith(
@@ -790,9 +815,10 @@ class SendCubit extends Cubit<SendState> {
           ),
         );
       }
+    } else if (state.sendType == SendType.bitcoin ||
+        state.sendType == SendType.liquid) {
+      await createTransaction();
     }
-    await createTransaction();
-
     emit(
       state.copyWith(
         step: SendStep.confirm,
@@ -887,12 +913,14 @@ class SendCubit extends Cubit<SendState> {
 
   void feeOptionSelected(FeeSelection feeSelection) {
     emit(state.copyWith(selectedFeeOption: feeSelection));
+    updateSwapLockupFees();
   }
 
   void customFeesChanged(NetworkFee fee) {
     emit(
       state.copyWith(customFee: fee, selectedFeeOption: FeeSelection.custom),
     );
+    updateSwapLockupFees();
   }
 
   Future<void> createTransaction() async {
@@ -955,6 +983,16 @@ class SendCubit extends Cubit<SendState> {
         );
       }
     } catch (e) {
+      debugPrint(e.toString());
+      if (e is PrepareBitcoinSendException) {
+        emit(
+          state.copyWith(
+            buildTransactionException: BuildTransactionException(e.message),
+            buildingTransaction: false,
+          ),
+        );
+        return;
+      }
       emit(
         state.copyWith(
           buildTransactionException: BuildTransactionException(e.toString()),
@@ -1058,6 +1096,7 @@ class SendCubit extends Cubit<SendState> {
           txid: state.txId!,
           swapId: state.lightningSwap!.id,
           network: state.selectedWallet!.network,
+          absoluteFees: state.absoluteFees!,
         );
       }
       if (state.chainSwap != null) {
@@ -1065,6 +1104,7 @@ class SendCubit extends Cubit<SendState> {
           txid: state.txId!,
           swapId: state.chainSwap!.id,
           network: state.selectedWallet!.network,
+          absoluteFees: state.absoluteFees!,
         );
       }
       // await Future.delayed(const Duration(seconds: 3));

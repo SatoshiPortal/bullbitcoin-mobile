@@ -356,6 +356,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   Future<void> updatePaidSendSwap({
     required String swapId,
     required String txid,
+    required int absoluteFees,
   }) async {
     final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
@@ -371,11 +372,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
+        fees: swap.fees?.copyWith(lockupFee: absoluteFees),
       ),
       ChainSwap() => swap.copyWith(
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
+        fees: swap.fees?.copyWith(lockupFee: absoluteFees),
       ),
       _ => throw "Only lnSend or chain swaps can be marked as paid",
     };
