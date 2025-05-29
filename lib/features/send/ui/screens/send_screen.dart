@@ -72,8 +72,10 @@ class SendAddressScreen extends StatelessWidget {
             height: MediaQuery.of(context).size.height * 0.5,
             child: ScanWidget(
               onScannedPaymentRequest:
-                  (data) =>
-                      context.read<SendCubit>().onScannedPaymentRequest(data),
+                  (data) => context.read<SendCubit>().onScannedPaymentRequest(
+                    data.$1,
+                    data.$2,
+                  ),
             ),
           ),
           Positioned(
@@ -150,7 +152,7 @@ class AddressField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final address = context.select<SendCubit, String>(
-      (cubit) => cubit.state.copiedPaymentRequestData.$1,
+      (cubit) => cubit.state.copiedRawPaymentRequest,
     );
 
     return BBInputText(
@@ -607,7 +609,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final selectedWallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
-    final addressOrInvoice = context.select(
+    final paymentRequestAddress = context.select(
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final formattedBitcoinAmount = context.select(
@@ -654,7 +656,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
               children: [
                 Expanded(
                   child: BBText(
-                    addressOrInvoice,
+                    paymentRequestAddress,
                     maxLines: 5,
                     style: context.font.bodyLarge,
                     textAlign: TextAlign.end,
@@ -668,7 +670,9 @@ class _OnchainSendInfoSection extends StatelessWidget {
                     size: 16,
                   ),
                   onTap: () {
-                    Clipboard.setData(ClipboardData(text: addressOrInvoice));
+                    Clipboard.setData(
+                      ClipboardData(text: paymentRequestAddress),
+                    );
                   },
                 ),
               ],
@@ -775,7 +779,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
     final selectedWallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
-    final addressOrInvoice = context.select(
+    final paymentRequestAddress = context.select(
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final formattedBitcoinAmount = context.select(
@@ -827,8 +831,10 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                 Expanded(
                   child: BBText(
                     paymentRequest!.isLnAddress
-                        ? addressOrInvoice
-                        : StringFormatting.truncateMiddle(addressOrInvoice),
+                        ? paymentRequestAddress
+                        : StringFormatting.truncateMiddle(
+                          paymentRequestAddress,
+                        ),
                     style: context.font.bodyLarge,
                     textAlign: TextAlign.end,
                     maxLines: 10,
@@ -842,7 +848,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                     size: 16,
                   ),
                   onTap: () {
-                    Clipboard.setData(ClipboardData(text: addressOrInvoice));
+                    Clipboard.setData(
+                      ClipboardData(text: paymentRequestAddress),
+                    );
                   },
                 ),
               ],
@@ -978,7 +986,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
     final selectedWallet = context.select(
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
-    final addressOrInvoice = context.select(
+    final paymentRequestAddress = context.select(
       (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final formattedBitcoinAmount = context.select(
@@ -1026,7 +1034,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               children: [
                 Expanded(
                   child: BBText(
-                    addressOrInvoice,
+                    paymentRequestAddress,
                     style: context.font.bodyLarge,
                     textAlign: TextAlign.end,
                     maxLines: 10,
@@ -1040,7 +1048,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                     size: 16,
                   ),
                   onTap: () {
-                    Clipboard.setData(ClipboardData(text: addressOrInvoice));
+                    Clipboard.setData(
+                      ClipboardData(text: paymentRequestAddress),
+                    );
                   },
                 ),
               ],
