@@ -973,6 +973,7 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> feeOptionSelected(FeeSelection feeSelection) async {
     emit(state.copyWith(selectedFeeOption: feeSelection));
+    await createTransaction();
     updateSwapLockupFees();
   }
 
@@ -980,7 +981,6 @@ class SendCubit extends Cubit<SendState> {
     emit(
       state.copyWith(customFee: fee, selectedFeeOption: FeeSelection.custom),
     );
-    updateSwapLockupFees();
     if (fee.isRelative) {
       final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
         psbt: state.unsignedPsbt!,
@@ -990,6 +990,8 @@ class SendCubit extends Cubit<SendState> {
     } else {
       emit(state.copyWith(bitcoinAbsoluteFees: fee.value.toInt()));
     }
+    await createTransaction();
+    updateSwapLockupFees();
   }
 
   Future<void> createTransaction() async {
