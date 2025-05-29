@@ -14,19 +14,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ScanCubit extends Cubit<ScanState> {
   final CameraController controller;
-  bool _processingImage = false;
 
   ScanCubit({required this.controller}) : super(ScanState.initial());
 
-  Future<void> startScanning() async {
+  Future<void> closeCamera() async {
+    await controller.stopImageStream();
+  }
+
+  Future<void> openCamera() async {
     // Added delay for iOS to ensure camera is fully initialized
     if (Platform.isIOS) {
       await Future.delayed(const Duration(milliseconds: 100));
     }
 
     await controller.startImageStream((CameraImage image) async {
-      if (_processingImage) return;
-      _processingImage = true;
+      if (state.processingImage) return;
+      emit(state.copyWith(processingImage: true));
 
       try {
         final imageBytes = image.planes[0].bytes;
@@ -54,8 +57,10 @@ class ScanCubit extends Cubit<ScanState> {
 
           emit(state.copyWith(data: (qr, null)));
         }
-      } catch (_) {}
-      _processingImage = false;
+      } catch (e) {
+        debugPrint('Error decoding QR: $e');
+      }
+      emit(state.copyWith(processingImage: false));
     });
   }
 
