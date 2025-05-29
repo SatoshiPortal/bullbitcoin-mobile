@@ -106,7 +106,14 @@ class SelectBestWalletUsecase {
         return w;
       }
     }
-
+    // Any wallet
+    // Any wallet with enough funds from the same network
+    for (final w in wallets) {
+      if (w.balanceSat.toInt() >= satoshis &&
+          w.source == WalletSource.mnemonic) {
+        return w;
+      }
+    }
     throw NotEnoughFundsException();
   }
 }

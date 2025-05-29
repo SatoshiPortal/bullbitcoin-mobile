@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
+import 'package:bb_mobile/core/utils/percentage.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
@@ -32,6 +33,8 @@ enum SendType {
         } else {
           return SendType.liquid;
         }
+      case PsbtPaymentRequest():
+        return SendType.bitcoin; //TODO(azad): nop
     }
   }
 
@@ -54,9 +57,7 @@ abstract class SendState with _$SendState {
   const factory SendState({
     @Default(SendStep.address) SendStep step,
     @Default(SendType.lightning) SendType sendType,
-    // input
-    PaymentRequest? paymentRequest,
-    @Default('') String addressOrInvoice,
+    @Default(('', null)) (String, PaymentRequest?) paymentRequestData,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
     @Default('') String amount,
@@ -70,8 +71,8 @@ abstract class SendState with _$SendState {
     @Default('') String label,
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
-    @Default(false) bool replaceByFee,
-
+    @Default(true) bool replaceByFee,
+    @Default(false) bool invoiceHasMrh,
     FeeOptions? bitcoinFeesList,
     FeeOptions? liquidFeesList,
     NetworkFee? customFee,
@@ -117,6 +118,36 @@ abstract class SendState with _$SendState {
 
   List<String> get inputAmountCurrencyCodes {
     return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
+  }
+
+  String get paymentRequestAddress {
+    if (paymentRequest == null) return '';
+
+    if (paymentRequest!.isBip21) {
+      if (invoiceHasMrh) {
+        return addressOrInvoice;
+      }
+      final bip21PaymentRequest = paymentRequest! as Bip21PaymentRequest;
+      return bip21PaymentRequest.address;
+    }
+    if (paymentRequest!.isBolt11) {
+      final bip21PaymentRequest = paymentRequest! as Bolt11PaymentRequest;
+      return bip21PaymentRequest.invoice;
+    }
+    if (paymentRequest!.isLnAddress) {
+      final lnAddressPaymentRequest =
+          paymentRequest! as LnAddressPaymentRequest;
+      return lnAddressPaymentRequest.address;
+    }
+    if (paymentRequest!.isBitcoinAddress) {
+      final bitcoinPaymentRequest = paymentRequest! as BitcoinPaymentRequest;
+      return bitcoinPaymentRequest.address;
+    }
+    if (paymentRequest!.isLiquidAddress) {
+      final liquidPaymentRequest = paymentRequest! as LiquidPaymentRequest;
+      return liquidPaymentRequest.address;
+    }
+    return addressOrInvoice;
   }
 
   bool get isInputAmountFiat =>
@@ -241,6 +272,15 @@ abstract class SendState with _$SendState {
     }
   }
 
+  String get formattedAbsoluteFees {
+    if (absoluteFees == null) return '0';
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(absoluteFees!);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFees!));
+    }
+  }
+
   bool get walletHasBalance =>
       // ignore: avoid_bool_literals_in_conditional_expressions
       selectedWallet == null
@@ -328,6 +368,10 @@ abstract class SendState with _$SendState {
     }
   }
 
+  bool get isChainSwap =>
+      (sendType == SendType.liquid && !selectedWallet!.isLiquid) ||
+      sendType == SendType.bitcoin && selectedWallet!.isLiquid;
+
   FeeOptions? get feeOptions =>
       selectedWallet == null
           ? null
@@ -341,6 +385,37 @@ abstract class SendState with _$SendState {
           : selectedWallet!.isLiquid
           ? liquidAbsoluteFees
           : selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
+
+  int? get totalSwapFees {
+    if (lightningSwap == null) return null;
+    return lightningSwap!.fees?.totalFees(lightningSwap!.paymentAmount) ?? 0;
+  }
+
+  /// The raw text input from either scanner or paste
+  String get addressOrInvoice => paymentRequestData.$1;
+
+  /// The parsed payment request, if valid
+  PaymentRequest? get paymentRequest => paymentRequestData.$2;
+
+  /// Whether we have a valid payment request
+  bool get hasValidPaymentRequest => paymentRequest != null;
+}
+
+extension SendStateFeePercent on SendState {
+  double getFeeAsPercentOfAmount() {
+    if (lightningSwap != null) {
+      return lightningSwap!.getFeeAsPercentOfAmount();
+    }
+    if (chainSwap != null) {
+      return chainSwap!.getFeeAsPercentOfAmount();
+    }
+    final fee = absoluteFees ?? 0;
+    final amount = confirmedAmountSat ?? 0;
+    if (fee == 0 || amount == 0) return 0.0;
+    return calculatePercentage(amount, fee);
+  }
+
+  bool get showFeeWarning => getFeeAsPercentOfAmount() > 5.0;
 }
 
 class SwapCreationException implements Exception {

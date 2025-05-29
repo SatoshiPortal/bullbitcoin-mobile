@@ -5,7 +5,6 @@ import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/template/screen_template.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -56,6 +55,7 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
     return PopScope(
       canPop: canPop,
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: AppBar(
           forceMaterialTransparency: true,
           automaticallyImplyLeading: false,
@@ -64,10 +64,65 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
             title: "Authentication",
           ),
         ),
-        body: StackedPage(
-          bottomChildHeight: MediaQuery.of(context).size.height * 0.11,
-          bottomChild: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 5),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Gap(75),
+                  BBText(
+                    'Enter your pin code to unlock',
+                    textAlign: TextAlign.center,
+                    style: context.font.headlineMedium?.copyWith(
+                      color: context.colour.outline,
+                    ),
+                    maxLines: 3,
+                  ),
+                  const Gap(50),
+                  BlocSelector<AppUnlockBloc, AppUnlockState, (String, bool)>(
+                    selector: (state) => (state.pinCode, state.obscurePinCode),
+                    builder: (context, data) {
+                      final (pinCode, obscurePinCode) = data;
+                      return BBInputText(
+                        value: pinCode,
+                        obscure: obscurePinCode,
+                        onRightTap:
+                            () => context.read<AppUnlockBloc>().add(
+                              AppUnlockPinCodeObscureToggled(),
+                            ),
+                        rightIcon: const Icon(Icons.visibility_off_outlined),
+                        onlyNumbers: true,
+                        onChanged: (value) {},
+                      );
+                    },
+                  ),
+                  const Gap(130),
+                  DialPad(
+                    onNumberPressed:
+                        (value) => context.read<AppUnlockBloc>().add(
+                          AppUnlockPinCodeNumberAdded(int.parse(value)),
+                        ),
+                    onBackspacePressed:
+                        () => context.read<AppUnlockBloc>().add(
+                          const AppUnlockPinCodeNumberRemoved(),
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        bottomNavigationBar: SafeArea(
+          child: AnimatedPadding(
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+            ),
             child: BlocSelector<AppUnlockBloc, AppUnlockState, bool>(
               selector: (state) => state.canSubmit,
               builder: (context, canSubmit) {
@@ -89,52 +144,6 @@ class PinCodeUnlockInputScreen extends StatelessWidget {
                   textColor: context.colour.onSecondary,
                 );
               },
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Gap(75),
-                BBText(
-                  'Enter your pin code to unlock',
-                  textAlign: TextAlign.center,
-                  style: context.font.headlineMedium?.copyWith(
-                    color: context.colour.outline,
-                  ),
-                  maxLines: 3,
-                ),
-                const Gap(50),
-                BlocSelector<AppUnlockBloc, AppUnlockState, (String, bool)>(
-                  selector: (state) => (state.pinCode, state.obscurePinCode),
-                  builder: (context, data) {
-                    final (pinCode, obscurePinCode) = data;
-                    return BBInputText(
-                      value: pinCode,
-                      obscure: obscurePinCode,
-                      onRightTap:
-                          () => context.read<AppUnlockBloc>().add(
-                            AppUnlockPinCodeObscureToggled(),
-                          ),
-                      rightIcon: const Icon(Icons.visibility_off_outlined),
-                      onlyNumbers: true,
-                      onChanged: (value) {},
-                    );
-                  },
-                ),
-                const Gap(130),
-                DialPad(
-                  onNumberPressed:
-                      (value) => context.read<AppUnlockBloc>().add(
-                        AppUnlockPinCodeNumberAdded(int.parse(value)),
-                      ),
-                  onBackspacePressed:
-                      () => context.read<AppUnlockBloc>().add(
-                        const AppUnlockPinCodeNumberRemoved(),
-                      ),
-                ),
-              ],
             ),
           ),
         ),

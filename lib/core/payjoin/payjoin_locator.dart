@@ -31,8 +31,10 @@ class PayjoinLocator {
   }
 
   static void registerRepositories() {
-    locator.registerLazySingleton<PayjoinRepository>(
-      () => PayjoinRepositoryImpl(
+    // Not a lazy singleton, because it should resume payjoins from the
+    // moment the app starts.
+    locator.registerSingleton<PayjoinRepository>(
+      PayjoinRepositoryImpl(
         localPayjoinDatasource: locator<LocalPayjoinDatasource>(),
         pdkPayjoinDatasource: locator<PdkPayjoinDatasource>(),
         walletMetadataDatasource: locator<WalletMetadataDatasource>(),

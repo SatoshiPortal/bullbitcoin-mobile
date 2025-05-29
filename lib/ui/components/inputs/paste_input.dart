@@ -5,11 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 
 class PasteInput extends StatelessWidget {
-  const PasteInput({
-    super.key,
-    required this.text,
-    required this.onChanged,
-  });
+  const PasteInput({super.key, required this.text, required this.onChanged});
 
   final String text;
   final Function(String) onChanged;
@@ -20,41 +16,35 @@ class PasteInput extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colour.onPrimary,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: context.colour.secondaryFixedDim,
-        ),
+        border: Border.all(color: context.colour.secondaryFixedDim),
       ),
       child: Row(
         children: [
           const Gap(15),
           Expanded(
-            child: text.isEmpty
-                ? BBText(
-                    'Paste a payment address or invoice',
-                    style: context.font.labelSmall,
-                    color: context.colour.surfaceContainer,
-                  )
-                : BBText(
-                    text,
-                    style: context.font.bodyLarge,
-                    color: context.colour.secondary,
-                  ),
+            child:
+                text.isEmpty
+                    ? BBText(
+                      'Paste a payment address or invoice',
+                      style: context.font.labelSmall,
+                      color: context.colour.surfaceContainer,
+                    )
+                    : BBText(
+                      text.trim(),
+                      style: context.font.bodyLarge,
+                      color: context.colour.secondary,
+                    ),
           ),
           IconButton(
             visualDensity: VisualDensity.compact,
             iconSize: 20,
-            icon: Icon(
-              Icons.copy_sharp,
-              color: context.colour.secondary,
-            ),
+            icon: Icon(Icons.paste_sharp, color: context.colour.secondary),
             onPressed: () {
-              Clipboard.getData(Clipboard.kTextPlain).then(
-                (value) {
-                  if (value != null) {
-                    onChanged(value.text ?? '');
-                  }
-                },
-              );
+              Clipboard.getData(Clipboard.kTextPlain).then((value) {
+                if (value != null) {
+                  onChanged(value.text ?? '');
+                }
+              });
             },
           ),
           const Gap(8),

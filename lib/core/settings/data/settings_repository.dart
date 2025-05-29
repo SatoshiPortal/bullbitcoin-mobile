@@ -6,9 +6,17 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 
 class SettingsRepository {
   final SettingsDatasource _settingsDatasource;
+  final StreamController<String> _currencyChangeController;
 
   SettingsRepository({required SettingsDatasource settingsDatasource})
-    : _settingsDatasource = settingsDatasource;
+    : _settingsDatasource = settingsDatasource,
+      _currencyChangeController = StreamController<String>.broadcast();
+
+  Stream<String> get currencyChangeStream => _currencyChangeController.stream;
+
+  Future<void> close() async {
+    await _currencyChangeController.close();
+  }
 
   Future<void> store({
     required int id,
@@ -59,6 +67,7 @@ class SettingsRepository {
 
   Future<void> setCurrency(String currencyCode) async {
     await _settingsDatasource.setCurrency(currencyCode);
+    _currencyChangeController.add(currencyCode);
   }
 
   Future<void> setHideAmounts(bool hide) async {

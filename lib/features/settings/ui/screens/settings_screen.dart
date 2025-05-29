@@ -3,7 +3,6 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/electrum_settings/ui/electrum_settings_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/sats_bitcoin_unit_switch.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -37,10 +36,6 @@ class SettingsScreen extends StatelessWidget {
                   trailing: const TestnetModeSwitch(),
                 ),
               ListTile(
-                title: Text(context.loc.satsBitcoinUnitSettingsLabel),
-                trailing: const SatsBitcoinUnitSwitch(),
-              ),
-              ListTile(
                 title: Text(context.loc.backupSettingsLabel),
                 onTap: () {
                   context.pushNamed(SettingsRoute.backupSettings.name);
@@ -70,14 +65,13 @@ class SettingsScreen extends StatelessWidget {
                   },
                   trailing: const Icon(Icons.chevron_right),
                 ),
-              if (isSuperuser)
-                ListTile(
-                  title: Text(context.loc.fiatCurrencySettingsLabel),
-                  onTap: () {
-                    //context.pushNamed(SettingsSubroute.currency.name);
-                  },
-                  trailing: const Icon(Icons.chevron_right),
-                ),
+              ListTile(
+                title: const Text('Currency'),
+                onTap: () {
+                  context.pushNamed(SettingsRoute.currency.name);
+                },
+                trailing: const Icon(Icons.chevron_right),
+              ),
               ListTile(
                 title: const Text('Logs'),
                 onTap: () {

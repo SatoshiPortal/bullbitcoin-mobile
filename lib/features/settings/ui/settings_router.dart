@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
 import 'package:bb_mobile/features/legacy_seed_view/ui/legacy_seed_view_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
+import 'package:bb_mobile/features/settings/ui/screens/currency_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/language_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
@@ -66,16 +67,11 @@ class SettingsRouter {
               child: const LegacySeedViewScreen(),
             ),
       ),
-
-      /** TODO: Implement CurrencySettingsScreen
-     * Add the `BitcoinPriceCurrencyChanged` event to the `BitcoinPriceBloc` when the currency is changed successfully on the settings screen
-     *  This way the `BitcoinPriceBloc` can fetch the bitcoin price with the new currency and the whole app will be updated with the new currency
-     * The global BitcoinPriceBloc can also be used to obtain the available fiat currencies and show them in the CurrencySettingsScreen
-    GoRoute(
-      path: SettingsRoute.currency.path,
-      name: SettingsRoute.currency.name,
-      builder: (context, state) => const CurrencySettingsScreen(),
-    ),*/
+      GoRoute(
+        path: SettingsRoute.currency.path,
+        name: SettingsRoute.currency.name,
+        builder: (context, state) => const CurrencySettingsScreen(),
+      ),
     ],
   );
 }

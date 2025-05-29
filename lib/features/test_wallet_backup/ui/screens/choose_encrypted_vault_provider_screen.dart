@@ -1,11 +1,11 @@
-import 'package:bb_mobile/core/recoverbull/data/constants/backup_providers.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
+import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/loading/progress_screen.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
-import 'package:bb_mobile/ui/components/vault/vault_locations.dart';
+import 'package:bb_mobile/ui/components/selectors/backup_provider_selector.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
@@ -13,9 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart'
 import 'package:go_router/go_router.dart';
 
 class ChooseVaultProviderScreen extends StatefulWidget {
-  const ChooseVaultProviderScreen({
-    super.key,
-  });
+  const ChooseVaultProviderScreen({super.key});
 
   @override
   State<ChooseVaultProviderScreen> createState() =>
@@ -35,26 +33,28 @@ class _ChooseVaultProviderScreenState extends State<ChooseVaultProviderScreen> {
 class _Screen extends StatelessWidget {
   const _Screen();
 
-  void _handleProviderTap(BuildContext context, BackupProviderEntity provider) {
-    if (provider == backupProviders[0]) {
-      context
-          .read<TestWalletBackupBloc>()
-          .add(const SelectGoogleDriveBackupTest());
-    } else if (provider == backupProviders[2]) {
-      context
-          .read<TestWalletBackupBloc>()
-          .add(const SelectFileSystemBackupTes());
-    } else if (provider == backupProviders[3]) {
-      debugPrint('Selected provider: ${provider.name}, not supported yet');
+  void onProviderSelected(BuildContext context, BackupProviderType provider) {
+    switch (provider) {
+      case BackupProviderType.googleDrive:
+        context.read<TestWalletBackupBloc>().add(
+          const SelectGoogleDriveBackupTest(),
+        );
+      case BackupProviderType.custom:
+        context.read<TestWalletBackupBloc>().add(
+          const SelectFileSystemBackupTes(),
+        );
+      case BackupProviderType.iCloud:
+        debugPrint('iCloud, not supported yet');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
-      listenWhen: (previous, current) =>
-          current.status != previous.status ||
-          current.statusError != previous.statusError,
+      listenWhen:
+          (previous, current) =>
+              current.status != previous.status ||
+              current.statusError != previous.statusError,
       listener: (context, state) {
         if (state.status == TestWalletBackupStatus.success &&
             !state.backupInfo.isCorrupted) {
@@ -66,20 +66,21 @@ class _Screen extends StatelessWidget {
 
           context
               .pushNamed(
-            TestWalletBackupSubroute.testBackupInfo.name,
-            extra: state.backupInfo,
-          )
+                TestWalletBackupSubroute.testBackupInfo.name,
+                extra: state.backupInfo,
+              )
               .then((_) {
-            // When we return from the route, end the navigation state
-            bloc.add(const EndTransitioning());
-          });
+                // When we return from the route, end the navigation state
+                bloc.add(const EndTransitioning());
+              });
         }
       },
       child: BlocBuilder<TestWalletBackupBloc, TestWalletBackupState>(
-        buildWhen: (previous, current) =>
-            current.status != previous.status ||
-            current.statusError != previous.statusError ||
-            current.transitioning != previous.transitioning,
+        buildWhen:
+            (previous, current) =>
+                current.status != previous.status ||
+                current.statusError != previous.statusError ||
+                current.transitioning != previous.transitioning,
         builder: (context, state) {
           // Show loading screen during loading OR navigation to avoid flickers
           if (state.status == TestWalletBackupStatus.loading ||
@@ -87,48 +88,51 @@ class _Screen extends StatelessWidget {
             return Scaffold(
               backgroundColor: context.colour.onSecondary,
               body: ProgressScreen(
-                title: (state.vaultProvider is GoogleDrive)
-                    ? "You will need to sign-in to Google Drive"
-                    : "Fetching from your device.",
-                description: (state.vaultProvider is GoogleDrive)
-                    ? "Google will ask you to share personal information with this app."
-                    : "",
+                title:
+                    (state.vaultProvider is GoogleDrive)
+                        ? "You will need to sign-in to Google Drive"
+                        : "Fetching from your device.",
+                description:
+                    (state.vaultProvider is GoogleDrive)
+                        ? "Google will ask you to share personal information with this app."
+                        : "",
                 isLoading: true,
-                extras: (state.vaultProvider is GoogleDrive)
-                    ? [
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: "This information ",
-                                style: context.font.headlineMedium,
-                              ),
-                              TextSpan(
-                                text: "will not ",
-                                style: context.font.headlineLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                extras:
+                    (state.vaultProvider is GoogleDrive)
+                        ? [
+                          Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: "This information ",
+                                  style: context.font.headlineMedium,
                                 ),
-                              ),
-                              TextSpan(
-                                text: "leave your phone and is ",
-                                style: context.font.headlineMedium,
-                              ),
-                              TextSpan(
-                                text: "never ",
-                                style: context.font.headlineLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                                TextSpan(
+                                  text: "will not ",
+                                  style: context.font.headlineLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                              TextSpan(
-                                text: "shared with Bull Bitcoin.",
-                                style: context.font.headlineMedium,
-                              ),
-                            ],
+                                TextSpan(
+                                  text: "leave your phone and is ",
+                                  style: context.font.headlineMedium,
+                                ),
+                                TextSpan(
+                                  text: "never ",
+                                  style: context.font.headlineLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: "shared with Bull Bitcoin.",
+                                  style: context.font.headlineMedium,
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ]
-                    : [],
+                        ]
+                        : [],
               ),
             );
           }
@@ -151,11 +155,11 @@ class _Screen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: VaultLocations(
+        child: BackupProviderSelector(
           description:
               'Test to make sure you can retrieve your encrypted vault.',
-          onProviderSelected: (provider) =>
-              _handleProviderTap(context, provider),
+          onProviderSelected:
+              (provider) => onProviderSelected(context, provider),
         ),
       ),
     );

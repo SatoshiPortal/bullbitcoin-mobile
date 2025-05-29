@@ -14,6 +14,7 @@ import 'package:bb_mobile/router.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:bip85/bip85.dart';
 import 'package:boltz/boltz.dart';
+import 'package:dart_bbqr/bbqr.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
@@ -31,6 +32,7 @@ Future main() async {
         LibBip85.init(),
         PConfig.initializeApp(),
         dotenv.load(isOptional: true),
+        LibBbqr.init(),
       ]);
 
       // The Locator setup might depend on the initialization of the libraries above

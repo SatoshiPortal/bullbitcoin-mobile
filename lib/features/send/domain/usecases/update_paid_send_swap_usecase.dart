@@ -8,13 +8,14 @@ class UpdatePaidSendSwapUsecase {
   UpdatePaidSendSwapUsecase({
     required SwapRepository swapRepository,
     required SwapRepository swapRepositoryTestnet,
-  })  : _swapRepository = swapRepository,
-        _swapRepositoryTestnet = swapRepositoryTestnet;
+  }) : _swapRepository = swapRepository,
+       _swapRepositoryTestnet = swapRepositoryTestnet;
 
   Future<void> execute({
     required String txid,
     required String swapId,
     required Network network,
+    required int absoluteFees,
   }) async {
     try {
       final swapRepository =
@@ -23,6 +24,7 @@ class UpdatePaidSendSwapUsecase {
       return await swapRepository.updatePaidSendSwap(
         swapId: swapId,
         txid: txid,
+        absoluteFees: absoluteFees,
       );
     } catch (e) {
       rethrow;

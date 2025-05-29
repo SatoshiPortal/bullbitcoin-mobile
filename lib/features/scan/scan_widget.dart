@@ -1,24 +1,29 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_cubit.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_state.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart'
+    show SettingsCubit;
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-/// Callback for when an address is detected from a QR code
-typedef OnAddressDetectedCallback = void Function(String address);
+/// Callback for when a payment request is detected from a QR code
+typedef OnScannedPaymentRequestCallback =
+    void Function((String, PaymentRequest?) data);
 
 class ScanWidget extends StatefulWidget {
-  /// Callback function that will be called when an address is detected
-  final OnAddressDetectedCallback? onAddressDetected;
+  /// Callback function that will be called when a payment request is detected
+  final OnScannedPaymentRequestCallback? onScannedPaymentRequest;
 
-  const ScanWidget({super.key, this.onAddressDetected});
+  const ScanWidget({super.key, this.onScannedPaymentRequest});
 
   @override
   State<ScanWidget> createState() => _ScanWidgetState();
@@ -30,20 +35,13 @@ class _ScanWidgetState extends State<ScanWidget> {
   String _error = '';
   bool _cameraInitialized = false;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Future<void> _initCamera() async {
     try {
       WidgetsFlutterBinding.ensureInitialized();
       _cameras = await availableCameras();
 
       if (_cameras.isEmpty) {
-        setState(() {
-          _error = 'No cameras available.';
-        });
+        setState(() => _error = 'No cameras available.');
         return;
       }
 
@@ -69,17 +67,9 @@ class _ScanWidgetState extends State<ScanWidget> {
 
       await _controller?.initialize();
 
-      if (mounted) {
-        setState(() {
-          _cameraInitialized = true;
-        });
-      }
+      if (mounted) setState(() => _cameraInitialized = true);
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-        });
-      }
+      if (mounted) setState(() => _error = e.toString());
     }
   }
 
@@ -91,6 +81,10 @@ class _ScanWidgetState extends State<ScanWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
+
     return ColoredBox(
       color: context.colour.secondaryFixedDim,
       child: SafeArea(
@@ -110,8 +104,8 @@ class _ScanWidgetState extends State<ScanWidget> {
                     child: BlocConsumer<ScanCubit, ScanState>(
                       listener: (context, state) {
                         // Auto-trigger callback when address is detected
-                        if (state.data.isNotEmpty) {
-                          widget.onAddressDetected?.call(state.data);
+                        if (state.data.$1.isNotEmpty && state.data.$2 != null) {
+                          widget.onScannedPaymentRequest?.call(state.data);
                         }
                       },
                       builder: (context, state) {
@@ -121,7 +115,7 @@ class _ScanWidgetState extends State<ScanWidget> {
                             fit: StackFit.expand,
                             children: [
                               CameraPreview(_controller!),
-                              if (state.data.isNotEmpty)
+                              if (state.data.$1.isNotEmpty)
                                 Positioned(
                                   bottom: 60,
                                   left: 0,
@@ -132,9 +126,57 @@ class _ScanWidgetState extends State<ScanWidget> {
                                     textColor: context.colour.onPrimary,
                                     onPressed: () {},
                                     label:
-                                        state.data.length > 30
-                                            ? '${state.data.substring(0, 10)}…${state.data.substring(state.data.length - 10)}'
-                                            : state.data,
+                                        state.data.$1.length > 30
+                                            ? '${state.data.$1.substring(0, 10)}…${state.data.$1.substring(state.data.$1.length - 10)}'
+                                            : state.data.$1,
+                                    bgColor: Colors.transparent,
+                                  ),
+                                ),
+                              if (state.isCollectingBbqr &&
+                                  state.bbqrOptions != null)
+                                Positioned(
+                                  top: 60,
+                                  left: 0,
+                                  right: 0,
+                                  child: Center(
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          'BBQR ${state.bbqr.keys.length}/${state.bbqrOptions!.total}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                        CircularProgressIndicator(
+                                          value:
+                                              state.bbqr.keys.length /
+                                              state.bbqrOptions!.total,
+                                          strokeWidth: 6,
+                                          backgroundColor: Colors.grey.shade300,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              if (isSuperuser && kDebugMode)
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  left: 0,
+                                  child: BBButton.big(
+                                    iconData:
+                                        state.isCollectingBbqr
+                                            ? Icons.check_box
+                                            : Icons.disabled_by_default,
+                                    textStyle: context.font.labelSmall,
+                                    textColor:
+                                        state.isCollectingBbqr
+                                            ? Colors.green
+                                            : Colors.red,
+                                    onPressed:
+                                        context.read<ScanCubit>().switchBbqr,
+                                    label: 'BBQR',
                                     bgColor: Colors.transparent,
                                   ),
                                 ),

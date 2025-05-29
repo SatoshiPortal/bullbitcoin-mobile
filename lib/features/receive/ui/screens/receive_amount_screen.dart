@@ -66,6 +66,7 @@ class ReceiveAmountContinueButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final creatingSwap = context.watch<ReceiveBloc>().state.creatingSwap;
+    final amountException = context.watch<ReceiveBloc>().state.amountException;
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -84,7 +85,7 @@ class ReceiveAmountContinueButton extends StatelessWidget {
             bloc.add(const ReceiveAmountConfirmed());
           }
         },
-        disabled: creatingSwap,
+        disabled: creatingSwap || amountException != null,
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,
       ),

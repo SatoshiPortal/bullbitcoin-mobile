@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/scan/scan_widget.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
@@ -10,7 +12,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
-import 'package:bb_mobile/ui/components/inputs/paste_input.dart';
+import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/price_input/balance_row.dart';
 import 'package:bb_mobile/ui/components/price_input/price_input.dart';
@@ -67,9 +69,9 @@ class SendAddressScreen extends StatelessWidget {
           children: [
             Expanded(
               child: ScanWidget(
-                onAddressDetected:
-                    (address) =>
-                        context.read<SendCubit>().addressChanged(address),
+                onScannedPaymentRequest:
+                    (data) =>
+                        context.read<SendCubit>().onScannedPaymentRequest(data),
               ),
             ),
             Align(
@@ -119,7 +121,9 @@ class SendContinueWithAddressButton extends StatelessWidget {
     final loadingBestWallet = context.select(
       (SendCubit cubit) => cubit.state.loadingBestWallet,
     );
-
+    final isValidPaymentRequest = context.select(
+      (SendCubit cubit) => cubit.state.paymentRequest != null,
+    );
     final creatingSwap = context.select(
       (SendCubit cubit) => cubit.state.creatingSwap,
     );
@@ -129,7 +133,7 @@ class SendContinueWithAddressButton extends StatelessWidget {
       onPressed: () {
         context.read<SendCubit>().continueOnAddressConfirmed();
       },
-      disabled: loadingBestWallet || creatingSwap,
+      disabled: !isValidPaymentRequest || loadingBestWallet || creatingSwap,
       bgColor: context.colour.secondary,
       textColor: context.colour.onPrimary,
     );
@@ -145,9 +149,29 @@ class AddressField extends StatelessWidget {
       (cubit) => cubit.state.addressOrInvoice,
     );
 
-    return PasteInput(
-      text: address,
-      onChanged: (text) => context.read<SendCubit>().addressChanged(text),
+    return BBInputText(
+      onlyPaste: true,
+      onChanged: context.read<SendCubit>().onChangedText,
+      value: address,
+      hint: 'Paste a payment address or invoice',
+      hintStyle: context.font.bodyLarge?.copyWith(
+        color: context.colour.surfaceContainer,
+      ),
+      maxLines: 1,
+      rightIcon: Icon(
+        Icons.paste_sharp,
+        color: context.colour.secondary,
+        size: 20,
+      ),
+      onRightTap: () {
+        Clipboard.getData(Clipboard.kTextPlain).then((value) {
+          if (value != null) {
+            if (context.mounted) {
+              context.read<SendCubit>().onChangedText(value.text ?? '');
+            }
+          }
+        });
+      },
     );
   }
 }
@@ -241,7 +265,9 @@ class SendAmountScreen extends StatelessWidget {
               .select<SendCubit, List<String>>(
                 (bloc) => bloc.state.inputAmountCurrencyCodes,
               );
-
+          final buildError = context.select(
+            (SendCubit cubit) => cubit.state.buildTransactionException,
+          );
           final selectedWalletLabel = context.select(
             (SendCubit cubit) => cubit.state.selectedWallet!.label,
           );
@@ -286,13 +312,13 @@ class SendAmountScreen extends StatelessWidget {
                       walletLabel: selectedWalletLabel,
                     ),
                     DialPad(
-                      onNumberPressed: (number) {
+                      onNumberPressed: (number) async {
                         final inputAmount =
                             context.read<SendCubit>().state.amount;
                         final amount = inputAmount + number;
-                        context.read<SendCubit>().amountChanged(amount);
+                        await context.read<SendCubit>().amountChanged(amount);
                       },
-                      onBackspacePressed: () {
+                      onBackspacePressed: () async {
                         final inputAmount =
                             context.read<SendCubit>().state.amount;
                         if (inputAmount.isNotEmpty) {
@@ -300,11 +326,12 @@ class SendAmountScreen extends StatelessWidget {
                             0,
                             inputAmount.length - 1,
                           );
-                          context.read<SendCubit>().amountChanged(amount);
+                          await context.read<SendCubit>().amountChanged(amount);
                         }
                       },
                     ),
                     const Gap(16),
+                    if (buildError != null) const _SendError(),
                     const SendAmountConfirmButton(),
                     const Gap(48),
                   ],
@@ -412,7 +439,7 @@ class SendConfirmScreen extends StatelessWidget {
               const _OnchainSendInfoSection(),
             const Spacer(),
             // const _Warning(),
-            const _ConfirmSendErrorSection(),
+            const _SendError(),
             const _BottomButtons(),
           ],
         ),
@@ -421,8 +448,8 @@ class SendConfirmScreen extends StatelessWidget {
   }
 }
 
-class _ConfirmSendErrorSection extends StatelessWidget {
-  const _ConfirmSendErrorSection();
+class _SendError extends StatelessWidget {
+  const _SendError();
 
   @override
   Widget build(BuildContext context) {
@@ -440,7 +467,7 @@ class _ConfirmSendErrorSection extends StatelessWidget {
         child: Column(
           children: [
             BBText(
-              buildError.title,
+              'Could Not Build Transaction',
               style: context.font.bodyLarge,
               color: context.colour.error,
               maxLines: 5,
@@ -489,18 +516,17 @@ class _ConfirmSendErrorSection extends StatelessWidget {
 
 // ignore: unused_element
 class _Warning extends StatelessWidget {
-  const _Warning();
+  final double feePercent;
+  const _Warning(this.feePercent);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: InfoCard(
-        title: 'High fee warning',
-        description: 'Network fee is over 3% of total transaction amount.',
-        tagColor: context.colour.tertiary,
-        bgColor: context.colour.tertiary.withAlpha(33),
-      ),
+    return InfoCard(
+      title: 'High fee warning',
+      description:
+          'Total fee is ${feePercent.toStringAsFixed(2)}% of the amount you are sending',
+      tagColor: context.colour.onError,
+      bgColor: context.colour.secondaryFixed,
     );
   }
 }
@@ -580,7 +606,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
     final addressOrInvoice = context.select(
-      (SendCubit cubit) => cubit.state.addressOrInvoice,
+      (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final formattedBitcoinAmount = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
@@ -591,13 +617,19 @@ class _OnchainSendInfoSection extends StatelessWidget {
     // final selectedFees = context.select(
     //   (SendCubit cubit) => cubit.state.selectedFee,
     // );
-    final absoluteFees = context.select(
-      (SendCubit cubit) => cubit.state.absoluteFees,
-    );
+
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
     );
-
+    final feePercent = context.select(
+      (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
+    );
+    final showFeeWarning = context.select(
+      (SendCubit cubit) => cubit.state.showFeeWarning,
+    );
+    final formattedAbsoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -663,11 +695,12 @@ class _OnchainSendInfoSection extends StatelessWidget {
               ],
             ),
           ),
+
           _divider(context),
           InfoRow(
             title: 'Network fees',
             details: BBText(
-              "${absoluteFees ?? 0} sats",
+              formattedAbsoluteFees,
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -683,7 +716,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
                   if (selected != null) {
                     final fee = FeeSelectionName.fromString(selected);
                     // ignore: use_build_context_synchronously
-                    context.read<SendCubit>().feeOptionSelected(fee);
+                    await context.read<SendCubit>().feeOptionSelected(fee);
                   }
                 },
                 child: Row(
@@ -707,6 +740,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
               ),
             ),
           ],
+          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
         ],
       ),
     );
@@ -741,7 +775,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
     final addressOrInvoice = context.select(
-      (SendCubit cubit) => cubit.state.addressOrInvoice,
+      (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final formattedBitcoinAmount = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
@@ -750,6 +784,15 @@ class _LnSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
     final swap = context.select((SendCubit cubit) => cubit.state.lightningSwap);
+    final paymentRequest = context.select(
+      (SendCubit cubit) => cubit.state.paymentRequest,
+    );
+    final feePercent = context.select(
+      (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
+    );
+    final showFeeWarning = context.select(
+      (SendCubit cubit) => cubit.state.showFeeWarning,
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -780,10 +823,15 @@ class _LnSwapSendInfoSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                BBText(
-                  StringFormatting.truncateMiddle(addressOrInvoice),
-                  style: context.font.bodyLarge,
-                  textAlign: TextAlign.end,
+                Expanded(
+                  child: BBText(
+                    paymentRequest!.isLnAddress
+                        ? addressOrInvoice
+                        : StringFormatting.truncateMiddle(addressOrInvoice),
+                    style: context.font.bodyLarge,
+                    textAlign: TextAlign.end,
+                    maxLines: 10,
+                  ),
                 ),
                 const Gap(4),
                 InkWell(
@@ -798,14 +846,6 @@ class _LnSwapSendInfoSection extends StatelessWidget {
                 ),
               ],
             ),
-            // const Gap(4),
-            // InkWell(
-            //   child: Icon(
-            //     Icons.copy,
-            //     color: context.colour.primary,
-            //     size: 16,
-            //   ),
-            // ),
           ),
           _divider(context),
           InfoRow(
@@ -823,15 +863,106 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          InfoRow(
-            title: 'Total fees',
-            details: BBText(
-              "${swap.fees?.totalFees(null)} sats",
-              style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+          _SwapFeeBreakdown(fees: swap.fees),
+          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
+          _divider(context),
+        ],
+      ),
+    );
+  }
+}
+
+class _SwapFeeBreakdown extends StatefulWidget {
+  final SwapFees? fees;
+  const _SwapFeeBreakdown({required this.fees});
+  @override
+  State<_SwapFeeBreakdown> createState() => _SwapFeeBreakdownState();
+}
+
+class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
+  bool expanded = false;
+
+  Widget _feeRow(BuildContext context, String label, int amt) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          BBText(
+            label,
+            style: context.font.bodySmall,
+            color: context.colour.surfaceContainer,
+          ),
+          const Spacer(),
+          CurrencyText(
+            amt,
+            showFiat: false,
+            style: context.font.bodySmall,
+            color: context.colour.surfaceContainer,
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fees = widget.fees;
+    final total = fees?.totalFees(null) ?? 0;
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: InkWell(
+              splashColor: Colors.transparent,
+              splashFactory: NoSplash.splashFactory,
+              highlightColor: Colors.transparent,
+              onTap: () {
+                setState(() {
+                  expanded = !expanded;
+                });
+              },
+              child: Row(
+                children: [
+                  BBText(
+                    'Swap Fees',
+                    style: context.font.bodySmall,
+                    color: context.colour.surfaceContainer,
+                  ),
+                  const Spacer(),
+                  CurrencyText(
+                    total,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                    color: context.colour.outlineVariant,
+                  ),
+                  const Gap(4),
+                  Icon(
+                    expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    color: context.colour.primary,
+                  ),
+                ],
+              ),
             ),
           ),
-          _divider(context),
+          const Gap(12),
+          if (expanded && fees != null) ...[
+            Container(color: context.colour.surface, height: 1),
+            Column(
+              children: [
+                const Gap(4),
+
+                _feeRow(
+                  context,
+                  'Network Fee',
+                  fees.lockupFee! + fees.claimFee!,
+                ),
+                _feeRow(context, 'Boltz Swap Fee', fees.boltzFee ?? 0),
+                const Gap(4),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -850,7 +981,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.selectedWallet,
     );
     final addressOrInvoice = context.select(
-      (SendCubit cubit) => cubit.state.addressOrInvoice,
+      (SendCubit cubit) => cubit.state.paymentRequestAddress,
     );
     final formattedBitcoinAmount = context.select(
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountBitcoin,
@@ -859,7 +990,15 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
       (SendCubit cubit) => cubit.state.formattedConfirmedAmountFiat,
     );
     final swap = context.select((SendCubit cubit) => cubit.state.chainSwap);
-
+    final feePercent = context.select(
+      (SendCubit cubit) => cubit.state.getFeeAsPercentOfAmount(),
+    );
+    final showFeeWarning = context.select(
+      (SendCubit cubit) => cubit.state.showFeeWarning,
+    );
+    final formattedAbsoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -889,10 +1028,13 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
               children: [
-                BBText(
-                  StringFormatting.truncateMiddle(addressOrInvoice),
-                  style: context.font.bodyLarge,
-                  textAlign: TextAlign.end,
+                Expanded(
+                  child: BBText(
+                    addressOrInvoice,
+                    style: context.font.bodyLarge,
+                    textAlign: TextAlign.end,
+                    maxLines: 10,
+                  ),
                 ),
                 const Gap(4),
                 InkWell(
@@ -932,14 +1074,19 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
+
           InfoRow(
-            title: 'Total fees',
-            details: BBText(
-              "${swap.fees?.totalFees(null)} sats",
-              style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+            title: 'Send Network Fee',
+            details: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                BBText(formattedAbsoluteFees, style: context.font.bodyLarge),
+              ],
             ),
           ),
+          _divider(context),
+          _SwapFeeBreakdown(fees: swap.fees),
+          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
           _divider(context),
         ],
       ),
@@ -1192,14 +1339,5 @@ class SendSucessScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class SendWarning extends StatelessWidget {
-  const SendWarning({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }

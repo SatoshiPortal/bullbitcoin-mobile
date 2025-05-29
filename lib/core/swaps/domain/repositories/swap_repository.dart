@@ -140,6 +140,7 @@ abstract class SwapRepository {
   Future<void> updatePaidSendSwap({
     required String swapId,
     required String txid,
+    required int absoluteFees,
   });
 
   // STREAM

@@ -1,15 +1,18 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/electrum/data/datasources/electrum_remote_datasource.dart'
+    show ElectrumRemoteDatasource;
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/transaction/data/electrum_service.dart';
 import 'package:bb_mobile/core/transaction/data/models/transaction_mapper.dart';
 import 'package:bb_mobile/core/transaction/domain/entities/tx.dart';
 import 'package:bb_mobile/locator.dart';
 
 class TransactionRepository {
-  final _electrum = ElectrumService(host: 'blockstream.info', port: 700);
+  final ElectrumRemoteDatasource _electrumRemoteDatasource;
 
-  TransactionRepository();
+  TransactionRepository({
+    required ElectrumRemoteDatasource electrumRemoteDatasource,
+  }) : _electrumRemoteDatasource = electrumRemoteDatasource;
 
   Future<Tx> fetch({required String txid}) async {
     final sqlite = locator<SqliteDatabase>();
@@ -23,7 +26,7 @@ class TransactionRepository {
     }
 
     // If not found in cache, fetch from Electrum
-    final txBytes = await _electrum.getTransaction(txid);
+    final txBytes = await _electrumRemoteDatasource.getTransaction(txid);
     final tx = await TransactionMapper.fromBytes(txBytes);
 
     // Cache the transaction

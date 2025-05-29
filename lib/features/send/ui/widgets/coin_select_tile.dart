@@ -28,22 +28,21 @@ class CoinSelectTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final utxoValue = bitcoinUnit == BitcoinUnit.btc
-        ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
-        : FormatAmount.sats(utxo.amountSat.toInt());
+    final utxoValue =
+        bitcoinUnit == BitcoinUnit.btc
+            ? FormatAmount.btc(ConvertAmount.satsToBtc(utxo.amountSat.toInt()))
+            : FormatAmount.sats(utxo.amountSat.toInt());
 
     final fiatEquivalent = FormatAmount.fiat(
-      ConvertAmount.satsToFiat(
-        utxo.amountSat.toInt(),
-        exchangeRate,
-      ),
+      ConvertAmount.satsToFiat(utxo.amountSat.toInt(), exchangeRate),
       fiatCurrency,
     ); // You can format this better
 
     final address = utxo.address;
-    final addressType = utxo.addressKeyChain == WalletAddressKeyChain.external
-        ? 'Receive'
-        : 'Change';
+    final addressType =
+        utxo.addressKeyChain == WalletAddressKeyChain.external
+            ? 'Receive'
+            : 'Change';
     final label = utxo.labels.join(', ');
 
     return GestureDetector(
@@ -53,9 +52,7 @@ class CoinSelectTile extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: context.colour.outlineVariant,
-          ),
+          border: Border.all(color: context.colour.outlineVariant),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,12 +72,6 @@ class CoinSelectTile extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        BBText(
-                          '~$fiatEquivalent',
-                          style: context.font.labelSmall?.copyWith(
-                            color: context.colour.outlineVariant,
-                          ),
-                        ),
                       ],
                     ),
                     subtitle: BBText(
@@ -96,7 +87,15 @@ class CoinSelectTile extends StatelessWidget {
                       activeColor: context.colour.secondary,
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  // const SizedBox(height: 4),
+                  BBText(
+                    '~$fiatEquivalent',
+                    style: context.font.labelSmall?.copyWith(
+                      color: context.colour.outlineVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
                   Divider(color: context.colour.secondaryFixedDim),
                   const SizedBox(height: 8),
                   Row(
@@ -110,8 +109,9 @@ class CoinSelectTile extends StatelessWidget {
                       Expanded(
                         child: BBText(
                           StringFormatting.truncateMiddle(address),
-                          style: context.font.labelLarge
-                              ?.copyWith(color: context.colour.secondary),
+                          style: context.font.labelLarge?.copyWith(
+                            color: context.colour.secondary,
+                          ),
                         ),
                       ),
                       BBText(
@@ -122,8 +122,9 @@ class CoinSelectTile extends StatelessWidget {
                       ),
                       BBText(
                         addressType,
-                        style: context.font.labelLarge
-                            ?.copyWith(color: context.colour.secondary),
+                        style: context.font.labelLarge?.copyWith(
+                          color: context.colour.secondary,
+                        ),
                       ),
                     ],
                   ),

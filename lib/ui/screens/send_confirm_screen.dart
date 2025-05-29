@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/errors/send_errors.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -321,6 +323,217 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
   }
 }
 
+class _SwapFeeBreakdown extends StatefulWidget {
+  final SwapFees? fees;
+  const _SwapFeeBreakdown({required this.fees});
+  @override
+  State<_SwapFeeBreakdown> createState() => _SwapFeeBreakdownState();
+}
+
+class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
+  bool expanded = false;
+
+  Widget _feeRow(BuildContext context, String label, int amt) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          BBText(
+            label,
+            style: context.font.bodySmall,
+            color: context.colour.surfaceContainer,
+          ),
+          const Spacer(),
+          CurrencyText(
+            amt,
+            showFiat: false,
+            style: context.font.bodySmall,
+            color: context.colour.surfaceContainer,
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fees = widget.fees;
+    final total = fees?.totalFees(null) ?? 0;
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: InkWell(
+              splashColor: Colors.transparent,
+              splashFactory: NoSplash.splashFactory,
+              highlightColor: Colors.transparent,
+              onTap: () {
+                setState(() {
+                  expanded = !expanded;
+                });
+              },
+              child: Row(
+                children: [
+                  BBText(
+                    'Total Fee',
+                    style: context.font.bodySmall,
+                    color: context.colour.surfaceContainer,
+                  ),
+                  const Spacer(),
+                  CurrencyText(
+                    total,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                    color: context.colour.outlineVariant,
+                  ),
+                  const Gap(4),
+                  Icon(
+                    expanded ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+                    color: context.colour.primary,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Gap(12),
+          if (expanded && fees != null) ...[
+            Container(color: context.colour.surface, height: 1),
+            Column(
+              children: [
+                const Gap(4),
+                _feeRow(
+                  context,
+                  'Network Fee',
+                  fees.lockupFee! + fees.claimFee!,
+                ),
+                _feeRow(context, 'Boltz Fee', fees.boltzFee ?? 0),
+                const Gap(4),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class CommonChainSwapSendInfoSection extends StatelessWidget {
+  const CommonChainSwapSendInfoSection({
+    required this.sendWalletLabel,
+    this.receiveWalletLabel,
+    this.receiveAddress,
+    required this.formattedBitcoinAmount,
+    required this.swap,
+    required this.absoluteFeesFormatted,
+  });
+  final String sendWalletLabel;
+  final String? receiveWalletLabel;
+  final String? receiveAddress;
+  final String formattedBitcoinAmount;
+  final Swap swap;
+  final String absoluteFeesFormatted;
+  Widget _divider(BuildContext context) {
+    return Container(height: 1, color: context.colour.secondaryFixedDim);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CommonInfoRow(
+            title: 'From',
+            details: BBText(
+              sendWalletLabel,
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+          CommonInfoRow(
+            title: 'To',
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (swap.isChainSwap &&
+                    (swap as ChainSwap).receiveWalletId != null)
+                  BBText(
+                    receiveWalletLabel ?? receiveAddress ?? '',
+                    style: context.font.bodyLarge,
+                    textAlign: TextAlign.end,
+                  )
+                else if (swap.isChainSwap &&
+                    (swap as ChainSwap).receiveAddress != null) ...[
+                  BBText(
+                    StringFormatting.truncateMiddle(
+                      (swap as ChainSwap).receiveAddress!,
+                    ),
+                    style: context.font.bodyLarge,
+                    textAlign: TextAlign.end,
+                  ),
+                  const Gap(4),
+                  InkWell(
+                    child: Icon(
+                      Icons.copy,
+                      color: context.colour.primary,
+                      size: 16,
+                    ),
+                    onTap: () {
+                      Clipboard.setData(
+                        ClipboardData(
+                          text: (swap as ChainSwap).receiveAddress!,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ],
+            ),
+          ),
+          _divider(context),
+          CommonInfoRow(
+            title: 'Swap ID',
+            details: BBText(
+              swap.id,
+              style: context.font.bodyLarge,
+              textAlign: TextAlign.end,
+            ),
+          ),
+          _divider(context),
+          CommonInfoRow(
+            title: 'Amount',
+            details: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
+              ],
+            ),
+          ),
+          _divider(context),
+          CommonInfoRow(
+            title: 'Send Network Fees',
+            details: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                BBText(absoluteFeesFormatted, style: context.font.bodyLarge),
+              ],
+            ),
+          ),
+          _divider(context),
+          _SwapFeeBreakdown(fees: swap.fees),
+
+          _divider(context),
+        ],
+      ),
+    );
+  }
+}
+
 class CommonSendBottomButtons extends StatelessWidget {
   const CommonSendBottomButtons({
     required bool isBitcoinWallet,
@@ -372,133 +585,6 @@ class CommonSendBottomButtons extends StatelessWidget {
             disableSendButton: _disableSendButton,
             onPressed: _onSendPressed,
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class CommonChainSwapSendInfoSection extends StatelessWidget {
-  const CommonChainSwapSendInfoSection({
-    required String sendWalletLabel,
-    String? receiveWalletLabel,
-    String? receiveAddress,
-    required String formattedBitcoinAmount,
-    required String formattedFiatEquivalent,
-    required String swapId,
-    required String totalSwapFees,
-  }) : _sendWalletLabel = sendWalletLabel,
-       _receiveWalletLabel = receiveWalletLabel,
-       _receiveAddress = receiveAddress,
-       _formattedBitcoinAmount = formattedBitcoinAmount,
-       _formattedFiatEquivalent = formattedFiatEquivalent,
-       _swapId = swapId,
-       _totalSwapFees = totalSwapFees;
-  final String _sendWalletLabel;
-  final String? _receiveWalletLabel;
-  final String? _receiveAddress;
-  final String _formattedBitcoinAmount;
-  // ignore: unused_field
-  final String _formattedFiatEquivalent;
-  final String _swapId;
-  final String _totalSwapFees;
-
-  Widget _divider(BuildContext context) {
-    return Container(height: 1, color: context.colour.secondaryFixedDim);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          CommonInfoRow(
-            title: 'From',
-            details: BBText(
-              _sendWalletLabel,
-              style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
-            ),
-          ),
-          _divider(context),
-
-          CommonInfoRow(
-            title: 'To',
-            details: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (_receiveWalletLabel != null)
-                  BBText(
-                    _receiveWalletLabel,
-                    style: context.font.bodyLarge,
-                    textAlign: TextAlign.end,
-                  )
-                else ...[
-                  BBText(
-                    StringFormatting.truncateMiddle(_receiveAddress!),
-                    style: context.font.bodyLarge,
-                    textAlign: TextAlign.end,
-                  ),
-                  const Gap(4),
-                  InkWell(
-                    child: Icon(
-                      Icons.copy,
-                      color: context.colour.primary,
-                      size: 16,
-                    ),
-                    onTap: () {
-                      Clipboard.setData(ClipboardData(text: _receiveAddress));
-                    },
-                  ),
-                ],
-              ],
-            ),
-            // const Gap(4),
-            // InkWell(
-            //   child: Icon(
-            //     Icons.copy,
-            //     color: context.colour.primary,
-            //     size: 16,
-            //   ),
-            // ),
-          ),
-          _divider(context),
-          CommonInfoRow(
-            title: 'Swap ID',
-            details: BBText(
-              _swapId,
-              style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
-            ),
-          ),
-          _divider(context),
-          CommonInfoRow(
-            title: 'Amount',
-            details: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                BBText(_formattedBitcoinAmount, style: context.font.bodyLarge),
-                // BBText(
-                //   '~$_formattedFiatEquivalent',
-                //   style: context.font.labelSmall,
-                //   color: context.colour.surfaceContainer,
-                // ),
-              ],
-            ),
-          ),
-          _divider(context),
-          CommonInfoRow(
-            title: 'Total fees',
-            details: BBText(
-              _totalSwapFees,
-              style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
-            ),
-          ),
-          _divider(context),
         ],
       ),
     );
