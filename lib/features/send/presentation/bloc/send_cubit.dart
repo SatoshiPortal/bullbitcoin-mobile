@@ -1036,7 +1036,7 @@ class SendCubit extends Cubit<SendState> {
           ),
         );
       } else {
-        final psbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
+        final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: state.selectedWallet!.id,
           address: address,
           networkFee: state.selectedFee!,
@@ -1047,7 +1047,7 @@ class SendCubit extends Cubit<SendState> {
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
         final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
-          psbt: psbtAndTxSize.unsignedPsbt,
+          psbt: unsignedPsbtAndTxSize.unsignedPsbt,
           walletId: state.selectedWallet!.id,
         );
         // sign transaction and use signed psbt to calculate absolute fees
@@ -1057,9 +1057,9 @@ class SendCubit extends Cubit<SendState> {
         );
         emit(
           state.copyWith(
-            unsignedPsbt: psbtAndTxSize.unsignedPsbt,
+            unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
             signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
-            bitcoinTxSize: psbtAndTxSize.txSize,
+            bitcoinTxSize: signedPsbtAndTxSize.txSize,
             buildingTransaction: false,
             bitcoinAbsoluteFees: absoluteFees,
           ),
