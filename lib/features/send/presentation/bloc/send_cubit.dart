@@ -397,6 +397,51 @@ class SendCubit extends Cubit<SendState> {
         if (state.paymentRequest!.amountSat == null) {
           emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
         } else {
+          final isChainSwap =
+              (state.sendType == SendType.liquid &&
+                  !state.selectedWallet!.isLiquid) ||
+              state.sendType == SendType.bitcoin &&
+                  state.selectedWallet!.isLiquid;
+          if (isChainSwap) {
+            final swapType =
+                state.selectedWallet!.isLiquid
+                    ? SwapType.liquidToBitcoin
+                    : SwapType.bitcoinToLiquid;
+            toggleSwapLimitsForWallet();
+            if (state.swapAmountBelowLimit) {
+              emit(
+                state.copyWith(
+                  swapLimitsException: SwapLimitsException(
+                    'Amount below minimum swap limit: ${state.selectedSwapLimits!.min} sats',
+                  ),
+                  amountConfirmedClicked: false,
+                ),
+              );
+              return;
+            }
+            if (state.swapAmountAboveLimit) {
+              emit(
+                state.copyWith(
+                  swapLimitsException: SwapLimitsException(
+                    'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
+                  ),
+                  amountConfirmedClicked: false,
+                ),
+              );
+              return;
+            }
+            emit(state.copyWith(creatingSwap: true));
+
+            final swap = await _createChainSwapToExternalUsecase.execute(
+              sendWalletId: state.selectedWallet!.id,
+              receiveAddress: state.paymentRequestAddress,
+              type: swapType,
+              amountSat: state.inputAmountSat,
+            );
+            _watchSendSwap(swap.id);
+
+            emit(state.copyWith(chainSwap: swap, creatingSwap: false));
+          }
           emit(
             state.copyWith(
               confirmedAmountSat: state.paymentRequest!.amountSat,
@@ -828,7 +873,7 @@ class SendCubit extends Cubit<SendState> {
 
         final swap = await _createChainSwapToExternalUsecase.execute(
           sendWalletId: state.selectedWallet!.id,
-          receiveAddress: state.addressOrInvoice,
+          receiveAddress: state.paymentRequestAddress,
           type: swapType,
           amountSat: state.inputAmountSat,
         );
