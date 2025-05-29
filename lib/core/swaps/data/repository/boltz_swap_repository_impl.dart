@@ -378,7 +378,9 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
-        fees: swap.fees?.copyWith(lockupFee: absoluteFees),
+        fees: swap.fees?.copyWith(
+          lockupFee: (swap.fees?.lockupFee ?? 0) + absoluteFees,
+        ),
       ),
       _ => throw "Only lnSend or chain swaps can be marked as paid",
     };

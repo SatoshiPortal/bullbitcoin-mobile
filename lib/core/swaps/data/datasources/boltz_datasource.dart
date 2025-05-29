@@ -74,9 +74,7 @@ class BoltzDatasource {
           final swapFees = swap_entity.SwapFees(
             boltzPercent: fees.lbtcFees.percentage,
             lockupFee:
-                fees.btcFees.userLockup.toInt() +
-                fees.btcFees.server.toInt() +
-                fees.lbtcFees.server.toInt(),
+                fees.btcFees.server.toInt() + fees.lbtcFees.server.toInt(),
             claimFee: fees.lbtcFees.userClaim.toInt(),
           );
           return swapFees;
@@ -85,9 +83,7 @@ class BoltzDatasource {
           final swapFees = swap_entity.SwapFees(
             boltzPercent: fees.lbtcFees.percentage,
             lockupFee:
-                fees.btcFees.userLockup.toInt() +
-                fees.btcFees.server.toInt() +
-                fees.lbtcFees.server.toInt(),
+                fees.btcFees.server.toInt() + fees.lbtcFees.server.toInt(),
             claimFee: fees.lbtcFees.userClaim.toInt(),
           );
           return swapFees;
@@ -502,11 +498,8 @@ class BoltzDatasource {
         paymentAddress: chainSwap.scriptAddress,
         paymentAmount: chainSwap.outAmount.toInt(),
         receiveAddress: externalRecipientAddress,
-        boltzFees:
-            (chainFees.lbtcFees.percentage * amountSat / 100).ceil() +
-            chainFees.btcFees.server.toInt() +
-            chainFees.lbtcFees.server.toInt(),
-        lockupFees: chainFees.btcFees.userLockup.toInt(),
+        boltzFees: (chainFees.btcFees.percentage * amountSat / 100).ceil(),
+        lockupFees: chainFees.btcFees.server.toInt(),
         claimFees: chainFees.lbtcFees.userClaim.toInt(),
       );
       await _boltzStore.store(swapModel);
@@ -560,11 +553,8 @@ class BoltzDatasource {
         paymentAddress: chainSwap.scriptAddress,
         paymentAmount: chainSwap.outAmount.toInt(),
         receiveAddress: externalRecipientAddress,
-        boltzFees:
-            (chainFees.btcFees.percentage * amountSat / 100).ceil() +
-            chainFees.lbtcFees.server.toInt() +
-            chainFees.btcFees.server.toInt(),
-        lockupFees: chainFees.lbtcFees.userLockup.toInt(),
+        boltzFees: (chainFees.lbtcFees.percentage * amountSat / 100).ceil(),
+        lockupFees: chainFees.lbtcFees.server.toInt(),
         claimFees: chainFees.btcFees.userClaim.toInt(),
       );
       await _boltzStore.store(swapModel);
