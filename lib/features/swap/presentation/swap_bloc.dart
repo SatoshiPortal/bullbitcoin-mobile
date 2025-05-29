@@ -389,11 +389,17 @@ class SwapCubit extends Cubit<SwapState> {
           walletId: bitcoinWalletId,
           psbt: psbtAndTxSize.unsignedPsbt,
         );
+        final bitcoinAbsoluteFees = await _calculateBitcoinAbsoluteFeesUsecase
+            .execute(
+              psbt: signedPsbtAndTxSize.signedPsbt,
+              feeRate: state.feesList!.fastest.value as double,
+            );
+
         emit(
           state.copyWith(
             signingTransaction: false,
             broadcastingTransaction: true,
-            bitcoinTxSize: signedPsbtAndTxSize.txSize,
+            bitcoinAbsoluteFees: bitcoinAbsoluteFees,
           ),
         );
 

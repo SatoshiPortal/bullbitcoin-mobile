@@ -46,7 +46,7 @@ abstract class SwapState with _$SwapState {
     NetworkFee? selectedFee,
     // TODO: remove absFee and make usecases return size so abs fee can
     // be calculated from NetworkFee
-    int? bitcoinTxSize,
+    int? bitcoinAbsoluteFees,
     int? liquidAbsoluteFees,
     FeeSelection? selectedFeeOption,
     int? customFee,
@@ -84,7 +84,7 @@ abstract class SwapState with _$SwapState {
     if (fromWalletNetwork == WalletNetwork.liquid) {
       return liquidAbsoluteFees;
     } else {
-      return feesList!.fastest.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
+      return bitcoinAbsoluteFees;
     }
   }
 
