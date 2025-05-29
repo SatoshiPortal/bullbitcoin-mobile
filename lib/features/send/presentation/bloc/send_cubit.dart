@@ -923,7 +923,7 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  void utxoSelected(WalletUtxo utxo) {
+  Future<void> utxoSelected(WalletUtxo utxo) async {
     final selectedUtxos = List.of(state.selectedUtxos);
     if (selectedUtxos.contains(utxo)) {
       selectedUtxos.remove(utxo);
@@ -931,10 +931,13 @@ class SendCubit extends Cubit<SendState> {
       selectedUtxos.add(utxo);
     }
     emit(state.copyWith(selectedUtxos: selectedUtxos));
+    await createTransaction();
+    updateSwapLockupFees();
   }
 
-  void replaceByFeeChanged(bool replaceByFee) {
+  Future<void> replaceByFeeChanged(bool replaceByFee) async {
     emit(state.copyWith(replaceByFee: replaceByFee));
+    await createTransaction();
   }
 
   Future<void> loadFees() async {

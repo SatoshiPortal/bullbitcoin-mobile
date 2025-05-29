@@ -84,7 +84,9 @@ class CoinSelectionBottomSheet extends StatelessWidget {
               return CoinSelectTile(
                 utxo: utxo,
                 selected: selectedUtxos.contains(utxo),
-                onTap: () => context.read<SendCubit>().utxoSelected(utxo),
+                onTap:
+                    () async =>
+                        await context.read<SendCubit>().utxoSelected(utxo),
                 exchangeRate: exchangeRate,
                 bitcoinUnit: bitcoinUnit!,
                 fiatCurrency: fiatCurrency,
