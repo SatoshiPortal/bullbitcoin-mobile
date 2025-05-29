@@ -95,7 +95,11 @@ class LwkWalletDatasource implements WalletDatasource {
           }
         } finally {
           _walletSyncFinishedController.add(wallet.id);
-          await _activeSyncs.remove(wallet.id);
+          // Remove the sync so future syncs can be triggered
+          // Do not await this, as it is not necessary and can cause deadlocks
+          // since it returns the Future from the map.
+          // ignore: unawaited_futures
+          _activeSyncs.remove(wallet.id);
         }
       });
     } catch (e) {
