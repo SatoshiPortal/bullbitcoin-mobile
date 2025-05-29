@@ -58,6 +58,8 @@ abstract class SendState with _$SendState {
     @Default(SendStep.address) SendStep step,
     @Default(SendType.lightning) SendType sendType,
     @Default(('', null)) (String, PaymentRequest?) paymentRequestData,
+    @Default(('', null)) (String, PaymentRequest?) scannedPaymentRequestData,
+    @Default(('', null)) (String, PaymentRequest?) copiedPaymentRequestData,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
     @Default('') String amount,

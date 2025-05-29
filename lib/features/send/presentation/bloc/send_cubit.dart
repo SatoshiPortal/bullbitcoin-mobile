@@ -183,7 +183,9 @@ class SendCubit extends Cubit<SendState> {
   /// Called when a payment request is detected directly from the scanner
   Future<void> onScannedPaymentRequest((String, PaymentRequest?) data) async {
     clearAllExceptions();
-    emit(state.copyWith(paymentRequestData: data));
+    emit(
+      state.copyWith(scannedPaymentRequestData: data, paymentRequestData: data),
+    );
     await continueOnAddressConfirmed();
   }
 
@@ -198,7 +200,13 @@ class SendCubit extends Cubit<SendState> {
       final paymentRequest = await _detectBitcoinStringUsecase.execute(
         data: sanitizedText,
       );
-      emit(state.copyWith(paymentRequestData: (sanitizedText, paymentRequest)));
+      emit(
+        state.copyWith(
+          copiedPaymentRequestData: (sanitizedText, paymentRequest),
+          paymentRequestData: (sanitizedText, paymentRequest),
+        ),
+      );
+      await continueOnAddressConfirmed();
     } catch (e) {
       emit(
         state.copyWith(
@@ -214,7 +222,6 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> continueOnAddressConfirmed() async {
     try {
-      clearAllExceptions();
       emit(state.copyWith(loadingBestWallet: true, invoiceHasMrh: false));
 
       if (!state.hasValidPaymentRequest) {
