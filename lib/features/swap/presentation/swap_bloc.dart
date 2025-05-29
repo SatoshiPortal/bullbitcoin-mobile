@@ -481,7 +481,8 @@ class SwapCubit extends Cubit<SwapState> {
             isTestnet: isTestnet,
             isLiquid: false,
           ),
-          absoluteFees: state.absoluteFees ?? 0,
+          absoluteFees:
+              0, // TODO (ishi): removed until server fees are implemented
         );
       } else {
         if (state.signedLiquidTx == null) {
@@ -500,7 +501,8 @@ class SwapCubit extends Cubit<SwapState> {
             isTestnet: isTestnet,
             isLiquid: true,
           ),
-          absoluteFees: state.absoluteFees ?? 0,
+          absoluteFees:
+              0, // TODO (ishi): removed until server fees are implemented
         );
       }
       emit(

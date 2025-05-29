@@ -1215,7 +1215,8 @@ class SendCubit extends Cubit<SendState> {
           txid: state.txId!,
           swapId: state.lightningSwap!.id,
           network: state.selectedWallet!.network,
-          absoluteFees: state.absoluteFees!,
+          absoluteFees:
+              0, // TODO (ishi): removed until server fees are implemented
         );
       }
       if (state.chainSwap != null) {
@@ -1223,7 +1224,8 @@ class SendCubit extends Cubit<SendState> {
           txid: state.txId!,
           swapId: state.chainSwap!.id,
           network: state.selectedWallet!.network,
-          absoluteFees: state.absoluteFees!,
+          absoluteFees:
+              0, // TODO (ishi): removed until server fees are implemented
         );
       }
       // await Future.delayed(const Duration(seconds: 3));
