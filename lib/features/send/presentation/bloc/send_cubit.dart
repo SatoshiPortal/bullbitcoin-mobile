@@ -252,7 +252,8 @@ class SendCubit extends Cubit<SendState> {
           );
           emit(
             state.copyWith(
-              paymentRequestData: (invoice.magicBip21!, updatedRequest),
+              // copiedRawPaymentRequest: invoice.toString(),
+              paymentRequest: updatedRequest,
               invoiceHasMrh: true,
             ),
           );
