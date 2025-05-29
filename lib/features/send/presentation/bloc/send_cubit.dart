@@ -181,7 +181,10 @@ class SendCubit extends Cubit<SendState> {
   }
 
   /// Called when a payment request is detected directly from the scanner
-  Future<void> onScannedPaymentRequest((String, PaymentRequest?) data) async {
+  Future<void> onScannedPaymentRequest(
+    String scannedRawPaymentRequest,
+    PaymentRequest? paymentRequest,
+  ) async {
     clearAllExceptions();
     emit(
       state.copyWith(scannedPaymentRequestData: data, paymentRequestData: data),
