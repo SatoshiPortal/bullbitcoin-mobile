@@ -498,8 +498,8 @@ class BoltzDatasource {
         paymentAddress: chainSwap.scriptAddress,
         paymentAmount: chainSwap.outAmount.toInt(),
         receiveAddress: externalRecipientAddress,
-        boltzFees: (chainFees.btcFees.percentage * amountSat / 100).ceil(),
-        lockupFees: chainFees.btcFees.server.toInt(),
+        boltzFees: (chainFees.lbtcFees.percentage * amountSat / 100).ceil(),
+        lockupFees: chainFees.lbtcFees.server.toInt(),
         claimFees: chainFees.lbtcFees.userClaim.toInt(),
       );
       await _boltzStore.store(swapModel);
@@ -553,8 +553,8 @@ class BoltzDatasource {
         paymentAddress: chainSwap.scriptAddress,
         paymentAmount: chainSwap.outAmount.toInt(),
         receiveAddress: externalRecipientAddress,
-        boltzFees: (chainFees.lbtcFees.percentage * amountSat / 100).ceil(),
-        lockupFees: chainFees.lbtcFees.server.toInt(),
+        boltzFees: (chainFees.btcFees.percentage * amountSat / 100).ceil(),
+        lockupFees: chainFees.btcFees.server.toInt(),
         claimFees: chainFees.btcFees.userClaim.toInt(),
       );
       await _boltzStore.store(swapModel);

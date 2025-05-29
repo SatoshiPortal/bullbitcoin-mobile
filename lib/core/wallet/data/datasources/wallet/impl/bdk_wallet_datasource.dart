@@ -230,6 +230,7 @@ class BdkWalletDatasource implements WalletDatasource {
     final fee = psbt.feeAmount() ?? BigInt.zero;
     return fee.toInt();
   }
+  // 25000 - 988
 
   Future<String> signPsbt(
     String unsignedPsbt, {
