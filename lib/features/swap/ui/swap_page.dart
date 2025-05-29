@@ -154,6 +154,9 @@ class SwapCard extends StatelessWidget {
     final availableCurrencies = context.select(
       (SwapCubit cubit) => cubit.state.inputAmountCurrencyCodes,
     );
+    final loadingWallets = context.select(
+      (SwapCubit cubit) => cubit.state.loadingWallets,
+    );
     return Material(
       elevation: 2,
       child: Container(
@@ -179,9 +182,11 @@ class SwapCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: BBInputText(
+                      disabled: loadingWallets,
                       style: context.font.displaySmall,
                       value: amount,
                       hideBorder: true,
+                      onlyNumbers: true,
                       maxLines: 1,
                       onChanged: (v) {
                         if (type == _SwapCardType.pay) {
