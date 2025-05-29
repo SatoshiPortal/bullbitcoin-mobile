@@ -25,6 +25,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
@@ -69,6 +70,8 @@ class SendCubit extends Cubit<SendState> {
     required CreateChainSwapToExternalUsecase createChainSwapToExternalUsecase,
     required WatchWalletTransactionByTxIdUsecase
     watchWalletTransactionByTxIdUsecase,
+    required CalculateBitcoinAbsoluteFeesUsecase
+    calculateBitcoinAbsoluteFeesUsecase,
   }) : _wallet = wallet,
        _getSettingsUsecase = getSettingsUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
@@ -96,6 +99,8 @@ class SendCubit extends Cubit<SendState> {
        _createChainSwapToExternalUsecase = createChainSwapToExternalUsecase,
        _watchWalletTransactionByTxIdUsecase =
            watchWalletTransactionByTxIdUsecase,
+       _calculateBitcoinAbsoluteFeesUsecase =
+           calculateBitcoinAbsoluteFeesUsecase,
        super(const SendState());
 
   // ignore: unused_field
@@ -121,7 +126,8 @@ class SendCubit extends Cubit<SendState> {
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final DecodeInvoiceUsecase _decodeInvoiceUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
-
+  final CalculateBitcoinAbsoluteFeesUsecase
+  _calculateBitcoinAbsoluteFeesUsecase;
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
   final WatchWalletTransactionByTxIdUsecase
@@ -961,16 +967,32 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  void feeOptionSelected(FeeSelection feeSelection) {
+  Future<void> feeOptionSelected(FeeSelection feeSelection) async {
     emit(state.copyWith(selectedFeeOption: feeSelection));
     updateSwapLockupFees();
+    if (feeSelection != FeeSelection.custom) {
+      final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
+        psbt: state.unsignedPsbt!,
+        feeRate: state.selectedFee!.value as double,
+      );
+      emit(state.copyWith(bitcoinAbsoluteFees: absoluteFees));
+    }
   }
 
-  void customFeesChanged(NetworkFee fee) {
+  Future<void> customFeesChanged(NetworkFee fee) async {
     emit(
       state.copyWith(customFee: fee, selectedFeeOption: FeeSelection.custom),
     );
     updateSwapLockupFees();
+    if (fee.isRelative) {
+      final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
+        psbt: state.unsignedPsbt!,
+        feeRate: fee.value as double,
+      );
+      emit(state.copyWith(bitcoinAbsoluteFees: absoluteFees));
+    } else {
+      emit(state.copyWith(bitcoinAbsoluteFees: fee.value.toInt()));
+    }
   }
 
   Future<void> createTransaction() async {
@@ -1024,11 +1046,22 @@ class SendCubit extends Cubit<SendState> {
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
+        final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+          psbt: psbtAndTxSize.unsignedPsbt,
+          walletId: state.selectedWallet!.id,
+        );
+        // sign transaction and use signed psbt to calculate absolute fees
+        final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
+          psbt: signedPsbtAndTxSize.signedPsbt,
+          feeRate: state.selectedFee!.value as double,
+        );
         emit(
           state.copyWith(
             unsignedPsbt: psbtAndTxSize.unsignedPsbt,
+            signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
             bitcoinTxSize: psbtAndTxSize.txSize,
             buildingTransaction: false,
+            bitcoinAbsoluteFees: absoluteFees,
           ),
         );
       }
@@ -1103,14 +1136,14 @@ class SendCubit extends Cubit<SendState> {
             ),
           );
         } else {
-          final signedPsbt = await _signBitcoinTxUsecase.execute(
+          final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
             psbt: state.unsignedPsbt!,
             walletId: state.selectedWallet!.id,
           );
 
           emit(
             state.copyWith(
-              signedBitcoinPsbt: signedPsbt,
+              signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
               signingTransaction: false,
             ),
           );

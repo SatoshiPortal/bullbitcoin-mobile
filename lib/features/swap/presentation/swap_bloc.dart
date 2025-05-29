@@ -385,7 +385,7 @@ class SwapCubit extends Cubit<SwapState> {
           state.copyWith(buildingTransaction: false, signingTransaction: true),
         );
 
-        final signedPsbt = await _signBitcoinTxUsecase.execute(
+        final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
           walletId: bitcoinWalletId,
           psbt: psbtAndTxSize.unsignedPsbt,
         );
@@ -393,11 +393,13 @@ class SwapCubit extends Cubit<SwapState> {
           state.copyWith(
             signingTransaction: false,
             broadcastingTransaction: true,
-            bitcoinTxSize: psbtAndTxSize.txSize,
+            bitcoinTxSize: signedPsbtAndTxSize.txSize,
           ),
         );
 
-        final txid = await _broadcastBitcoinTxUsecase.execute(signedPsbt);
+        final txid = await _broadcastBitcoinTxUsecase.execute(
+          signedPsbtAndTxSize.signedPsbt,
+        );
         await _updatePaidChainSwapUsecase.execute(
           txid: txid,
           swapId: swap.id,

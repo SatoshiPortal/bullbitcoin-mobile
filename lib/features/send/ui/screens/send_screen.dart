@@ -713,7 +713,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
                   if (selected != null) {
                     final fee = FeeSelectionName.fromString(selected);
                     // ignore: use_build_context_synchronously
-                    context.read<SendCubit>().feeOptionSelected(fee);
+                    await context.read<SendCubit>().feeOptionSelected(fee);
                   }
                 },
                 child: Row(
@@ -737,10 +737,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
               ),
             ),
           ],
-          if (showFeeWarning == true) ...[
-            const Gap(16),
-            Expanded(child: _Warning(feePercent)),
-          ],
+          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
         ],
       ),
     );
@@ -1070,10 +1067,7 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           _SwapFeeBreakdown(fees: swap.fees),
-          if (showFeeWarning == true) ...[
-            const Gap(16),
-            Expanded(child: _Warning(feePercent)),
-          ],
+          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
           _divider(context),
         ],
       ),
