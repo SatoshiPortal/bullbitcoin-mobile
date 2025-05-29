@@ -6,6 +6,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
+import 'package:bb_mobile/ui/components/loading/loading_line_content.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/price_input/price_input.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -63,49 +64,60 @@ class SwapAmountPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Swap',
-          color: context.colour.secondaryFixedDim,
-          onBack: () => context.pop(),
+        flexibleSpace: TopBar(title: 'Swap', onBack: () => context.pop()),
+      ),
+      body: const SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SwapFromToDropdown(type: _SwapDropdownType.from),
+                Gap(16),
+                SwapAvailableBalance(),
+                Gap(16),
+                SizedBox(
+                  height: 142 * 2,
+                  child: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: SwapCard(type: _SwapCardType.pay),
+                      ),
+                      Align(
+                        alignment: Alignment.bottomCenter,
+                        child: SwapCard(type: _SwapCardType.receive),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: SwapChangeButton(),
+                      ),
+                    ],
+                  ),
+                ),
+                Gap(16),
+                SwapFeesInformation(),
+                Gap(32),
+                SwapFromToDropdown(type: _SwapDropdownType.to),
+                Gap(32),
+                SwapCreationError(),
+                Gap(40),
+              ],
+            ),
+          ),
         ),
       ),
-      body: const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SwapFromToDropdown(type: _SwapDropdownType.from),
-            Gap(16),
-            SwapAvailableBalance(),
-            Gap(16),
-            SizedBox(
-              height: 128 * 2,
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: SwapCard(type: _SwapCardType.pay),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: SwapCard(type: _SwapCardType.receive),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: SwapChangeButton(),
-                  ),
-                ],
-              ),
-            ),
-            Gap(16),
-            SwapFeesInformation(),
-            Gap(32),
-            SwapFromToDropdown(type: _SwapDropdownType.to),
-            Gap(32),
-            SwapCreationError(),
-            Spacer(),
-            SwapContinueWithAmountButton(),
-          ],
+      bottomNavigationBar: SafeArea(
+        child: AnimatedPadding(
+          duration: const Duration(milliseconds: 150),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+          ),
+          child: const SwapContinueWithAmountButton(),
         ),
       ),
     );
@@ -145,7 +157,7 @@ class SwapCard extends StatelessWidget {
     return Material(
       elevation: 2,
       child: Container(
-        height: 124,
+        height: 138,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: context.colour.onPrimary,
@@ -355,9 +367,7 @@ class SwapFromToDropdown extends StatelessWidget {
               ? cubit.state.fromWalletDropdownItems
               : cubit.state.toWalletDropdownItems,
     );
-    if (items.isEmpty) {
-      return const SizedBox.shrink();
-    }
+
     final id = context.select(
       (SwapCubit cubit) =>
           type == _SwapDropdownType.from
@@ -382,29 +392,34 @@ class SwapFromToDropdown extends StatelessWidget {
             color: context.colour.onPrimary,
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
-              child: DropdownButtonFormField(
-                value: id,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                ),
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: context.colour.secondary,
-                ),
-                items: dropdownItems,
-                onChanged: (value) {
-                  if (value != null) {
-                    type == _SwapDropdownType.from
-                        ? context.read<SwapCubit>().updateSelectedFromWallet(
-                          value as String,
-                        )
-                        : context.read<SwapCubit>().updateSelectedToWallet(
-                          value as String,
-                        );
-                  }
-                },
-              ),
+              child:
+                  items.isEmpty
+                      ? const LoadingLineContent(width: double.infinity)
+                      : DropdownButtonFormField(
+                        value: id,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                          ),
+                        ),
+                        icon: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: context.colour.secondary,
+                        ),
+                        items: dropdownItems,
+                        onChanged: (value) {
+                          if (value != null) {
+                            type == _SwapDropdownType.from
+                                ? context
+                                    .read<SwapCubit>()
+                                    .updateSelectedFromWallet(value as String)
+                                : context
+                                    .read<SwapCubit>()
+                                    .updateSelectedToWallet(value as String);
+                          }
+                        },
+                      ),
             ),
           ),
         ),
