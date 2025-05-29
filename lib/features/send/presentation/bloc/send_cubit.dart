@@ -729,6 +729,7 @@ class SendCubit extends Cubit<SendState> {
         confirmedAmountSat: state.inputAmountSat,
       ),
     );
+    await loadUtxos();
 
     if (state.sendType == SendType.lightning) {
       final swapType =
