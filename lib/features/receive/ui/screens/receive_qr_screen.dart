@@ -183,15 +183,12 @@ class ReceiveInfoDetails extends StatelessWidget {
                                 style: context.font.bodyMedium,
                               ),
                             ),
-                            const Gap(12),
-                            Expanded(
-                              child: BBText(
-                                '~$amountEquivalent',
-                                style: context.font.bodyLarge,
-                                color: context.colour.outline,
-                              ),
-                            ),
                           ],
+                        ),
+                        BBText(
+                          '~$amountEquivalent',
+                          style: context.font.bodyLarge,
+                          color: context.colour.outline,
                         ),
                       ],
                     ),
