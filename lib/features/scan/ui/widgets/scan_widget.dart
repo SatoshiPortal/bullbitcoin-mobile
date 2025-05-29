@@ -53,7 +53,7 @@ class ScanWidget extends StatelessWidget {
                 Navigator.of(context).push(
                   PageRouteBuilder(
                     pageBuilder:
-                        (context, _, _) => ScanCameraScreen(
+                        (context, _, _) => FullScreenScanner(
                           onScannedPaymentRequest: (data) {
                             onScannedPaymentRequest.call(data);
                           },
@@ -78,21 +78,21 @@ class ScanWidget extends StatelessWidget {
   }
 }
 
-class ScanCameraScreen extends StatefulWidget {
+class FullScreenScanner extends StatefulWidget {
   final OnScannedPaymentRequestCallback onScannedPaymentRequest;
   final bool isModal;
 
-  const ScanCameraScreen({
+  const FullScreenScanner({
     super.key,
     required this.onScannedPaymentRequest,
     this.isModal = false,
   });
 
   @override
-  State<ScanCameraScreen> createState() => _ScanCameraScreenState();
+  State<FullScreenScanner> createState() => _FullScreenScannerState();
 }
 
-class _ScanCameraScreenState extends State<ScanCameraScreen> {
+class _FullScreenScannerState extends State<FullScreenScanner> {
   CameraController? _controller;
 
   @override
