@@ -71,7 +71,7 @@ class ScanWidget extends StatelessWidget {
               textColor: context.colour.secondary,
             ),
           ),
-          const Spacer(),
+          const Gap(24),
         ],
       ),
     );
