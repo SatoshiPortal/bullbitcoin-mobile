@@ -375,6 +375,7 @@ class SendCubit extends Cubit<SendState> {
           );
           await createTransaction();
           updateSwapLockupFees();
+          return;
         } catch (e) {
           emit(
             state.copyWith(
