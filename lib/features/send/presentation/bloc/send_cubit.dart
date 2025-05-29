@@ -981,15 +981,7 @@ class SendCubit extends Cubit<SendState> {
     emit(
       state.copyWith(customFee: fee, selectedFeeOption: FeeSelection.custom),
     );
-    if (fee.isRelative) {
-      final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-        psbt: state.unsignedPsbt!,
-        feeRate: fee.value as double,
-      );
-      emit(state.copyWith(bitcoinAbsoluteFees: absoluteFees));
-    } else {
-      emit(state.copyWith(bitcoinAbsoluteFees: fee.value.toInt()));
-    }
+
     await createTransaction();
     updateSwapLockupFees();
   }
