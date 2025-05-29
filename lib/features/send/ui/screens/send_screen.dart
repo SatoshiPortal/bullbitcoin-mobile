@@ -55,6 +55,7 @@ class SendAddressScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: context.colour.secondaryFixedDim,
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
@@ -64,21 +65,23 @@ class SendAddressScreen extends StatelessWidget {
           onBack: () => context.pop(),
         ),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Expanded(
-              child: ScanWidget(
-                onScannedPaymentRequest:
-                    (data) =>
-                        context.read<SendCubit>().onScannedPaymentRequest(data),
-              ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: ScanWidget(
+              onScannedPaymentRequest:
+                  (data) =>
+                      context.read<SendCubit>().onScannedPaymentRequest(data),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SingleChildScrollView(
               child: Container(
-                alignment: Alignment.bottomCenter,
-                // height: 250,
                 decoration: BoxDecoration(
                   color: context.colour.onPrimary,
                   borderRadius: const BorderRadius.only(
@@ -89,6 +92,7 @@ class SendAddressScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     const Gap(32),
                     BBText(
@@ -106,8 +110,8 @@ class SendAddressScreen extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
