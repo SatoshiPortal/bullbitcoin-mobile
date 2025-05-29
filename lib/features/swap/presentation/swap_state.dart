@@ -81,11 +81,10 @@ abstract class SwapState with _$SwapState {
   const SwapState._();
 
   int? get absoluteFees {
-    if (fromWalletNetwork == WalletNetwork.bitcoin &&
-        toWalletNetwork == WalletNetwork.liquid) {
+    if (fromWalletNetwork == WalletNetwork.liquid) {
       return liquidAbsoluteFees;
     } else {
-      return selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
+      return feesList!.fastest.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
     }
   }
 
