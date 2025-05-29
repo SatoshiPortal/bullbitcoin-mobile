@@ -950,8 +950,11 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
               children: [
                 const Gap(4),
 
-                _feeRow(context, 'Lockup Network Fee', fees.lockupFee ?? 0),
-                _feeRow(context, 'Claim Network Fee', fees.claimFee ?? 0),
+                _feeRow(
+                  context,
+                  'Network Fee',
+                  fees.lockupFee! + fees.claimFee!,
+                ),
                 _feeRow(context, 'Boltz Swap Fee', fees.boltzFee ?? 0),
                 const Gap(4),
               ],

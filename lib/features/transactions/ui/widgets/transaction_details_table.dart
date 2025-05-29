@@ -162,14 +162,10 @@ class TransactionDetailsTable extends StatelessWidget {
 
                   _feeRow(
                     context,
-                    'Lockup Network Fee',
-                    swap.fees?.lockupFee ?? 0,
+                    'Network Fee',
+                    swap.fees!.lockupFee! + swap.fees!.claimFee!,
                   ),
-                  _feeRow(
-                    context,
-                    'Claim Network Fee',
-                    swap.fees?.claimFee ?? 0,
-                  ),
+
                   _feeRow(context, 'Boltz Swap Fee', swap.fees?.boltzFee ?? 0),
                   const Gap(4),
                 ],
