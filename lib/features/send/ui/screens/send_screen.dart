@@ -150,6 +150,7 @@ class AddressField extends StatelessWidget {
     );
 
     return BBInputText(
+      onlyPaste: true,
       onChanged: context.read<SendCubit>().onChangedText,
       value: address,
       hint: 'Paste a payment address or invoice',

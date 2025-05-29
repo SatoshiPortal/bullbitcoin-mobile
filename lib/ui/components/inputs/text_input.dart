@@ -16,6 +16,7 @@ class BBInputText extends StatefulWidget {
     this.onEnter,
     this.onDone,
     this.maxLength,
+    this.onlyPaste = false,
     this.onlyNumbers = false,
     this.obscure = false,
     this.style,
@@ -37,6 +38,7 @@ class BBInputText extends StatefulWidget {
   final Function? onEnter;
   final Function(String)? onDone;
   final int? maxLength;
+  final bool onlyPaste;
   final bool onlyNumbers;
   final bool obscure;
   final int? maxLines;
@@ -95,7 +97,11 @@ class _BBInputTextState extends State<BBInputText> {
       focusNode: widget.focusNode,
       enabled: !widget.disabled,
       keyboardType:
-          widget.onlyNumbers ? TextInputType.number : TextInputType.multiline,
+          widget.onlyPaste
+              ? TextInputType.none
+              : widget.onlyNumbers
+              ? TextInputType.number
+              : TextInputType.multiline,
       obscureText: widget.obscure,
       obscuringCharacter: widget.onlyNumbers ? 'x' : '*',
       enableIMEPersonalizedLearning: false,
