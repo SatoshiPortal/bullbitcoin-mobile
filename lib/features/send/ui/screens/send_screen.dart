@@ -257,7 +257,7 @@ class SendAmountScreen extends StatelessWidget {
             (SendCubit cubit) => cubit.state.inputAmountCurrencyCode,
           );
           final isChainSwap = context.select(
-            (SendCubit cubit) => cubit.state.chainSwap != null,
+            (SendCubit cubit) => cubit.state.isChainSwap,
           );
           final availableInputCurrencies = context
               .select<SendCubit, List<String>>(

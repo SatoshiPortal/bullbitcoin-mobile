@@ -359,6 +359,10 @@ abstract class SendState with _$SendState {
     }
   }
 
+  bool get isChainSwap =>
+      (sendType == SendType.liquid && !selectedWallet!.isLiquid) ||
+      sendType == SendType.bitcoin && selectedWallet!.isLiquid;
+
   FeeOptions? get feeOptions =>
       selectedWallet == null
           ? null
