@@ -702,7 +702,6 @@ class _OnchainSendInfoSection extends StatelessWidget {
               textAlign: TextAlign.end,
             ),
           ),
-          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
           if (!selectedWallet.isLiquid) ...[
             _divider(context),
             InfoRow(
@@ -738,6 +737,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
               ),
             ),
           ],
+          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
         ],
       ),
     );

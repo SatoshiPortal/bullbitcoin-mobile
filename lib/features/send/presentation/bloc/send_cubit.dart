@@ -388,15 +388,18 @@ class SendCubit extends Cubit<SendState> {
       if (state.paymentRequest!.isBip21) {
         await loadFees();
         await loadUtxos();
-        emit(
-          state.copyWith(
-            confirmedAmountSat: state.paymentRequest!.amountSat,
-            step: SendStep.confirm,
-            loadingBestWallet: false,
-          ),
-        );
-        await createTransaction();
-
+        if (state.paymentRequest!.amountSat == null) {
+          emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
+        } else {
+          emit(
+            state.copyWith(
+              confirmedAmountSat: state.paymentRequest!.amountSat,
+              step: SendStep.confirm,
+              loadingBestWallet: false,
+            ),
+          );
+          await createTransaction();
+        }
         return;
       } else {
         await loadFees();
