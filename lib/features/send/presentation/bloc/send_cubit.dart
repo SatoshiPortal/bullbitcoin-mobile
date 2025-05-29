@@ -1133,7 +1133,6 @@ class SendCubit extends Cubit<SendState> {
             psbt: state.unsignedPsbt!,
             walletId: state.selectedWallet!.id,
           );
-
           emit(
             state.copyWith(
               signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,

@@ -402,7 +402,7 @@ extension SendStateFeePercent on SendState {
     return calculatePercentage(amount, fee);
   }
 
-  bool get showFeeWarning => getFeeAsPercentOfAmount() > 1.0;
+  bool get showFeeWarning => getFeeAsPercentOfAmount() > 5.0;
 }
 
 class SwapCreationException implements Exception {

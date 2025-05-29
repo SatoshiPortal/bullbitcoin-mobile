@@ -403,7 +403,11 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
             Column(
               children: [
                 const Gap(4),
-                _feeRow(context, 'Lockup Network Fee', fees.lockupFee ?? 0),
+                _feeRow(
+                  context,
+                  'Lockup + Server Network Fee',
+                  fees.lockupFee ?? 0,
+                ),
                 _feeRow(context, 'Claim Network Fee', fees.claimFee ?? 0),
                 _feeRow(context, 'Boltz Swap Fee', fees.boltzFee ?? 0),
                 const Gap(4),
@@ -444,7 +448,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           CommonInfoRow(
             title: 'From',
             details: BBText(
-              swap.isChainSwap ? (swap as ChainSwap).sendWalletId : '',
+              sendWalletLabel,
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -459,7 +463,7 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
                 if (swap.isChainSwap &&
                     (swap as ChainSwap).receiveWalletId != null)
                   BBText(
-                    (swap as ChainSwap).receiveWalletId!,
+                    receiveWalletLabel ?? receiveAddress ?? '',
                     style: context.font.bodyLarge,
                     textAlign: TextAlign.end,
                   )

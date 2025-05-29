@@ -202,7 +202,7 @@ extension SwapFeePercent on Swap {
 
   bool showFeeWarning() {
     final feePercent = getFeeAsPercentOfAmount();
-    return feePercent > 1.0;
+    return feePercent > 5.0;
   }
 }
 
