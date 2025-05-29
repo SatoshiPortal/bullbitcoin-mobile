@@ -59,7 +59,7 @@ abstract class SwapFees with _$SwapFees {
     if (boltzPercent == null) {
       return 0;
     }
-    return ((amount * boltzPercent!) / 100).ceil();
+    return ((amount * boltzPercent!) / 100).round();
   }
 
   double boltzPercentFromFees(int amount) {

@@ -302,7 +302,6 @@ class SendCubit extends Cubit<SendState> {
             confirmedAmountSat: state.paymentRequest!.amountSat,
           ),
         );
-
         return;
       }
       if (state.paymentRequest!.isBolt11) {
