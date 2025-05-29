@@ -73,18 +73,16 @@ class BoltzDatasource {
           final fees = await allFees.chain();
           final swapFees = swap_entity.SwapFees(
             boltzPercent: fees.lbtcFees.percentage,
-            lockupFee:
-                fees.btcFees.server.toInt() + fees.lbtcFees.server.toInt(),
+            lockupFee: fees.lbtcFees.server.toInt(),
             claimFee: fees.lbtcFees.userClaim.toInt(),
           );
           return swapFees;
         case swap_entity.SwapType.liquidToBitcoin:
           final fees = await allFees.chain();
           final swapFees = swap_entity.SwapFees(
-            boltzPercent: fees.lbtcFees.percentage,
-            lockupFee:
-                fees.btcFees.server.toInt() + fees.lbtcFees.server.toInt(),
-            claimFee: fees.lbtcFees.userClaim.toInt(),
+            boltzPercent: fees.btcFees.percentage,
+            lockupFee: fees.btcFees.server.toInt(),
+            claimFee: fees.btcFees.userClaim.toInt(),
           );
           return swapFees;
       }
