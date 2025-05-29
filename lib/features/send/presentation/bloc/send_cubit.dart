@@ -1215,8 +1215,7 @@ class SendCubit extends Cubit<SendState> {
           txid: state.txId!,
           swapId: state.lightningSwap!.id,
           network: state.selectedWallet!.network,
-          absoluteFees:
-              0, // TODO (ishi): removed until server fees are implemented
+          absoluteFees: state.absoluteFees!,
         );
       }
       if (state.chainSwap != null) {
