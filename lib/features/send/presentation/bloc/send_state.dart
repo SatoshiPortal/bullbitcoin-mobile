@@ -272,6 +272,15 @@ abstract class SendState with _$SendState {
     }
   }
 
+  String get formattedAbsoluteFees {
+    if (absoluteFees == null) return '0';
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(absoluteFees!);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFees!));
+    }
+  }
+
   bool get walletHasBalance =>
       // ignore: avoid_bool_literals_in_conditional_expressions
       selectedWallet == null

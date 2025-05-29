@@ -523,7 +523,7 @@ class _Warning extends StatelessWidget {
     return InfoCard(
       title: 'High fee warning',
       description:
-          'Total fee is over ${feePercent.toStringAsFixed(2)}% of the amount.',
+          'Total fee is ${feePercent.toStringAsFixed(2)}% of the amount you are sending',
       tagColor: context.colour.onError,
       bgColor: context.colour.secondaryFixed,
     );
@@ -616,9 +616,7 @@ class _OnchainSendInfoSection extends StatelessWidget {
     // final selectedFees = context.select(
     //   (SendCubit cubit) => cubit.state.selectedFee,
     // );
-    final absoluteFees = context.select(
-      (SendCubit cubit) => cubit.state.absoluteFees,
-    );
+
     final selectedFeeOption = context.select(
       (SendCubit cubit) => cubit.state.selectedFeeOption,
     );
@@ -628,7 +626,9 @@ class _OnchainSendInfoSection extends StatelessWidget {
     final showFeeWarning = context.select(
       (SendCubit cubit) => cubit.state.showFeeWarning,
     );
-
+    final formattedAbsoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -694,11 +694,12 @@ class _OnchainSendInfoSection extends StatelessWidget {
               ],
             ),
           ),
+
           _divider(context),
           InfoRow(
             title: 'Network fees',
             details: BBText(
-              "${absoluteFees ?? 0} sats",
+              formattedAbsoluteFees,
               style: context.font.bodyLarge,
               textAlign: TextAlign.end,
             ),
@@ -924,7 +925,7 @@ class _SwapFeeBreakdownState extends State<_SwapFeeBreakdown> {
               child: Row(
                 children: [
                   BBText(
-                    'Total Fee',
+                    'Swap Fees',
                     style: context.font.bodySmall,
                     color: context.colour.surfaceContainer,
                   ),
@@ -994,7 +995,9 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
     final showFeeWarning = context.select(
       (SendCubit cubit) => cubit.state.showFeeWarning,
     );
-
+    final formattedAbsoluteFees = context.select(
+      (SendCubit cubit) => cubit.state.formattedAbsoluteFees,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -1066,6 +1069,17 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
                   style: context.font.labelSmall,
                   color: context.colour.surfaceContainer,
                 ),
+              ],
+            ),
+          ),
+          _divider(context),
+
+          InfoRow(
+            title: 'Send Network Fee',
+            details: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                BBText(formattedAbsoluteFees, style: context.font.bodyLarge),
               ],
             ),
           ),
