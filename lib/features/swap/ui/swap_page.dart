@@ -473,9 +473,7 @@ class SwapConfirmPage extends StatelessWidget {
     final sendNetwork = context.select(
       (SwapCubit cubit) => cubit.state.fromWalletNetwork,
     );
-    final totalFees = context.select(
-      (SwapCubit cubit) => cubit.state.estimatedFeesFormatted,
-    );
+    context.select((SwapCubit cubit) => cubit.state.estimatedFeesFormatted);
     final disableSendSwapButton = context.select(
       (SwapCubit cubit) => cubit.state.disableSendSwapButton,
     );
@@ -505,12 +503,8 @@ class SwapConfirmPage extends StatelessWidget {
               sendWalletLabel: sendWalletLabel,
               receiveWalletLabel: receiveWalletLabel,
               formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
-              formattedFiatEquivalent: '',
-              swapId: swap!.id,
-              totalSwapFees: totalFees,
+              swap: swap!,
             ),
-            // const Gap(64),
-            // const Spacer(),
             const Spacer(),
             // const _Warning(),
             CommonConfirmSendErrorSection(

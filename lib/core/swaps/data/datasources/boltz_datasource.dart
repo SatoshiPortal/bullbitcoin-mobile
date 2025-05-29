@@ -921,7 +921,7 @@ class BoltzDatasource {
                 }
                 if (swapModel is ChainSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.pending.name,
+                    status: swap_entity.SwapStatus.paid.name,
                   );
                 }
                 if (swapModel is LnSendSwapModel) {

@@ -79,7 +79,6 @@ abstract class SendState with _$SendState {
     @Default(FeeSelection.fastest) FeeSelection selectedFeeOption,
     int? bitcoinTxSize,
     int? liquidAbsoluteFees,
-    int? bitcoinAbsoluteFees,
     // prepare
     String? unsignedPsbt,
     String? signedBitcoinPsbt,
@@ -372,7 +371,7 @@ abstract class SendState with _$SendState {
           ? null
           : selectedWallet!.isLiquid
           ? liquidAbsoluteFees
-          : bitcoinAbsoluteFees;
+          : selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
 
   int? get totalSwapFees {
     if (lightningSwap == null) return null;

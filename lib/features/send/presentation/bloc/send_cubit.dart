@@ -974,13 +974,6 @@ class SendCubit extends Cubit<SendState> {
   Future<void> feeOptionSelected(FeeSelection feeSelection) async {
     emit(state.copyWith(selectedFeeOption: feeSelection));
     updateSwapLockupFees();
-    if (feeSelection != FeeSelection.custom) {
-      final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-        psbt: state.unsignedPsbt!,
-        feeRate: state.selectedFee!.value as double,
-      );
-      emit(state.copyWith(bitcoinAbsoluteFees: absoluteFees));
-    }
   }
 
   Future<void> customFeesChanged(NetworkFee fee) async {
@@ -1055,17 +1048,13 @@ class SendCubit extends Cubit<SendState> {
           walletId: state.selectedWallet!.id,
         );
         // sign transaction and use signed psbt to calculate absolute fees
-        final absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-          psbt: signedPsbtAndTxSize.signedPsbt,
-          feeRate: state.selectedFee!.value as double,
-        );
+
         emit(
           state.copyWith(
             unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
             signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
             bitcoinTxSize: signedPsbtAndTxSize.txSize,
             buildingTransaction: false,
-            bitcoinAbsoluteFees: absoluteFees,
           ),
         );
       }
