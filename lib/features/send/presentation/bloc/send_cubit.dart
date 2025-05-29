@@ -25,7 +25,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.d
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/calculate_bitcoin_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/calculate_liquid_absolute_fees_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/create_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/detect_bitcoin_string_usecase.dart';
@@ -70,8 +69,6 @@ class SendCubit extends Cubit<SendState> {
     required CreateChainSwapToExternalUsecase createChainSwapToExternalUsecase,
     required WatchWalletTransactionByTxIdUsecase
     watchWalletTransactionByTxIdUsecase,
-    required CalculateBitcoinAbsoluteFeesUsecase
-    calculateBitcoinAbsoluteFeesUsecase,
   }) : _wallet = wallet,
        _getSettingsUsecase = getSettingsUsecase,
        _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
@@ -99,8 +96,7 @@ class SendCubit extends Cubit<SendState> {
        _createChainSwapToExternalUsecase = createChainSwapToExternalUsecase,
        _watchWalletTransactionByTxIdUsecase =
            watchWalletTransactionByTxIdUsecase,
-       _calculateBitcoinAbsoluteFeesUsecase =
-           calculateBitcoinAbsoluteFeesUsecase,
+
        super(const SendState());
 
   // ignore: unused_field
@@ -126,8 +122,7 @@ class SendCubit extends Cubit<SendState> {
   final GetSwapLimitsUsecase _getSwapLimitsUsecase;
   final DecodeInvoiceUsecase _decodeInvoiceUsecase;
   final CalculateLiquidAbsoluteFeesUsecase _calculateLiquidAbsoluteFeesUsecase;
-  final CalculateBitcoinAbsoluteFeesUsecase
-  _calculateBitcoinAbsoluteFeesUsecase;
+
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
   final WatchWalletTransactionByTxIdUsecase
