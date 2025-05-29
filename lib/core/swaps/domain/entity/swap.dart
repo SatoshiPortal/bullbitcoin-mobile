@@ -226,3 +226,87 @@ class Invoice {
     this.description,
   });
 }
+
+extension SwapStatusMessage on Swap {
+  String getDisplayMessage() {
+    if (isLnReceiveSwap) {
+      switch (status) {
+        case SwapStatus.pending:
+          return "Swap is not yet initialized.";
+        case SwapStatus.paid:
+          return "Sender has paid the invoice.";
+        case SwapStatus.claimable:
+          return "Swap is ready to be claimed.";
+        case SwapStatus.refundable:
+          return "Swap is ready to be refunded.";
+        case SwapStatus.canCoop:
+          return "Swap will complete momentarily.";
+        case SwapStatus.completed:
+          return "Swap is completed.";
+        case SwapStatus.expired:
+          return "Swap Expired.";
+        case SwapStatus.failed:
+          return "Swap Failed.";
+      }
+    } else if (isLnSendSwap) {
+      switch (status) {
+        case SwapStatus.pending:
+          return "Swap is not yet initialized.";
+        case SwapStatus.paid:
+          return "Invoice will be paid after you payment receives confirmation.";
+        case SwapStatus.claimable:
+          return "Swap is ready to be claimed.";
+        case SwapStatus.refundable:
+          return "Swap is ready to be refunded.";
+        case SwapStatus.canCoop:
+          return "Swap will complete momentarily.";
+        case SwapStatus.completed:
+          final swap = this;
+          if (swap is LnSendSwap && swap.refundTxid != null) {
+            return "Swap has been refunded.";
+          } else {
+            return "Swap is completed successfully.";
+          }
+        case SwapStatus.expired:
+          return "Swap Expired";
+        case SwapStatus.failed:
+          final swap = this;
+          if (swap is LnSendSwap && swap.sendTxid != null) {
+            return "Swap will be refunded shortly.";
+          } else {
+            return "Swap Failed.";
+          }
+      }
+    } else if (isChainSwap) {
+      switch (status) {
+        case SwapStatus.pending:
+          return "Swap is not yet initialized.";
+        case SwapStatus.paid:
+          return "Waiting for swap provider's payment to receive confirmation. This may take a while to complete.";
+        case SwapStatus.claimable:
+          return "Swap is ready to be claimed.";
+        case SwapStatus.refundable:
+          return "Swap is ready to be refunded.";
+        case SwapStatus.canCoop:
+          return "Swap will complete momentarily.";
+        case SwapStatus.completed:
+          final swap = this;
+          if (swap is ChainSwap && swap.refundTxid != null) {
+            return "Swap has been refunded.";
+          } else {
+            return "Swap is completed successfully.";
+          }
+        case SwapStatus.expired:
+          return "Swap Expired";
+        case SwapStatus.failed:
+          final swap = this;
+          if (swap is ChainSwap && swap.sendTxid != null) {
+            return "Swap will be refunded shortly.";
+          } else {
+            return "Swap Failed.";
+          }
+      }
+    }
+    return "";
+  }
+}

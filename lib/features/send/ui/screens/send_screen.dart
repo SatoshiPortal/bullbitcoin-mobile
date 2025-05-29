@@ -737,7 +737,10 @@ class _OnchainSendInfoSection extends StatelessWidget {
               ),
             ),
           ],
-          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
+          if (showFeeWarning == true) ...[
+            const Gap(16),
+            Expanded(child: _Warning(feePercent)),
+          ],
         ],
       ),
     );
@@ -1067,7 +1070,10 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           _SwapFeeBreakdown(fees: swap.fees),
-          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
+          if (showFeeWarning == true) ...[
+            const Gap(16),
+            Expanded(child: _Warning(feePercent)),
+          ],
           _divider(context),
         ],
       ),

@@ -1,13 +1,18 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
+import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/ui/components/tables/details_table.dart';
 import 'package:bb_mobile/ui/components/tables/details_table_item.dart';
+import 'package:bb_mobile/ui/components/text/text.dart';
+import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 class TransactionDetailsTable extends StatelessWidget {
@@ -119,14 +124,22 @@ class TransactionDetailsTable extends StatelessWidget {
           DetailsTableItem(label: 'Transaction notes', displayValue: labels),
         if (swap != null) ...[
           DetailsTableItem(
-            label: 'Swap status',
-            displayValue: swap.status.displayName,
-          ),
-          DetailsTableItem(
             label: 'Swap ID',
             displayValue: swap.id,
             copyValue: swap.id,
           ),
+          DetailsTableItem(
+            label: 'Swap status',
+            displayValue: swap.status.displayName,
+            expandableChild: BBText(
+              swap.getDisplayMessage(),
+              style: context.font.bodySmall?.copyWith(
+                color: context.colour.secondary,
+              ),
+              maxLines: 5,
+            ),
+          ),
+
           if (swap.completionTime != null)
             DetailsTableItem(
               label: 'Swap time received',
@@ -143,6 +156,24 @@ class TransactionDetailsTable extends StatelessWidget {
                       : FormatAmount.btc(
                         ConvertAmount.satsToBtc(swapFees),
                       ).toUpperCase(),
+              expandableChild: Column(
+                children: [
+                  const Gap(4),
+
+                  _feeRow(
+                    context,
+                    'Lockup Network Fee',
+                    swap.fees?.lockupFee ?? 0,
+                  ),
+                  _feeRow(
+                    context,
+                    'Claim Network Fee',
+                    swap.fees?.claimFee ?? 0,
+                  ),
+                  _feeRow(context, 'Boltz Swap Fee', swap.fees?.boltzFee ?? 0),
+                  const Gap(4),
+                ],
+              ),
             ),
         ],
         if (payjoin != null) ...[
@@ -165,4 +196,26 @@ class TransactionDetailsTable extends StatelessWidget {
       ],
     );
   }
+}
+
+Widget _feeRow(BuildContext context, String label, int amt) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4),
+    child: Row(
+      children: [
+        BBText(
+          label,
+          style: context.font.bodySmall,
+          color: context.colour.surfaceContainer,
+        ),
+        const Spacer(),
+        CurrencyText(
+          amt,
+          showFiat: false,
+          style: context.font.bodySmall,
+          color: context.colour.surfaceContainer,
+        ),
+      ],
+    ),
+  );
 }

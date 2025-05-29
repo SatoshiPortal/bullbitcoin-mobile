@@ -393,6 +393,7 @@ class SwapCubit extends Cubit<SwapState> {
           state.copyWith(
             signingTransaction: false,
             broadcastingTransaction: true,
+            bitcoinTxSize: psbtAndTxSize.txSize,
           ),
         );
 
@@ -404,7 +405,7 @@ class SwapCubit extends Cubit<SwapState> {
             isTestnet: isTestnet,
             isLiquid: false,
           ),
-          absoluteFees: state.absoluteFees!,
+          absoluteFees: state.absoluteFees ?? 0,
         );
       } else {
         emit(state.copyWith(buildingTransaction: true));
@@ -415,8 +416,16 @@ class SwapCubit extends Cubit<SwapState> {
           amountSat: swap.paymentAmount,
           networkFee: state.feesList!.fastest,
         );
+        final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
+          pset: psbt,
+          walletId: liquidWalletId,
+        );
         emit(
-          state.copyWith(buildingTransaction: false, signingTransaction: true),
+          state.copyWith(
+            buildingTransaction: false,
+            signingTransaction: true,
+            liquidAbsoluteFees: absoluteFees,
+          ),
         );
 
         final signedPsbt = await _signLiquidTxUsecase.execute(
@@ -437,7 +446,7 @@ class SwapCubit extends Cubit<SwapState> {
             isTestnet: isTestnet,
             isLiquid: true,
           ),
-          absoluteFees: state.absoluteFees!,
+          absoluteFees: state.absoluteFees ?? 0,
         );
       }
       emit(

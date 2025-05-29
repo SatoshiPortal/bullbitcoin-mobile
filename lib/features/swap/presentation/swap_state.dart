@@ -46,7 +46,8 @@ abstract class SwapState with _$SwapState {
     NetworkFee? selectedFee,
     // TODO: remove absFee and make usecases return size so abs fee can
     // be calculated from NetworkFee
-    int? absoluteFees,
+    int? bitcoinTxSize,
+    int? liquidAbsoluteFees,
     FeeSelection? selectedFeeOption,
     int? customFee,
     // prepare
@@ -78,6 +79,15 @@ abstract class SwapState with _$SwapState {
     @Default(0) double exchangeRate,
   }) = _SwapState;
   const SwapState._();
+
+  int? get absoluteFees {
+    if (fromWalletNetwork == WalletNetwork.bitcoin &&
+        toWalletNetwork == WalletNetwork.liquid) {
+      return liquidAbsoluteFees;
+    } else {
+      return selectedFee?.toAbsolute(bitcoinTxSize ?? 0).value.toInt();
+    }
+  }
 
   String get estimatedFeesFormatted {
     int totalFees = 0;
