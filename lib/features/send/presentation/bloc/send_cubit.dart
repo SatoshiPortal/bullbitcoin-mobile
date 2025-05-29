@@ -476,7 +476,9 @@ class SendCubit extends Cubit<SendState> {
       } else {
         emit(
           state.copyWith(
-            error: e,
+            invalidBitcoinStringException: InvalidBitcoinStringException(
+              message: e.toString(),
+            ),
             loadingBestWallet: false,
             creatingSwap: false,
           ),
@@ -589,7 +591,7 @@ class SendCubit extends Cubit<SendState> {
       case Bolt11PaymentRequest _:
         // final swapLimits = state.swapLimits!.;
         final invoice = await _decodeInvoiceUsecase.execute(
-          invoice: state.addressOrInvoice,
+          invoice: paymentRequest.invoice,
           isTestnet: wallet.network.isTestnet,
         );
         final invoiceAmount = invoice.sats;
