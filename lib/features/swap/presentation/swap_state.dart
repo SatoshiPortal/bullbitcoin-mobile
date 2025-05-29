@@ -370,7 +370,8 @@ abstract class SwapState with _$SwapState {
   }
 
   bool get disableContinueWithAmounts =>
-      fromWalletBalance == 0 ||
+      fromAmountSat == 0 ||
+      toAmountSat <= 0 ||
       fromWalletBalance < fromAmountSat ||
       creatingSwap ||
       amountConfirmedClicked;
