@@ -31,7 +31,6 @@ abstract class SwapState with _$SwapState {
     @Default('') String toAmount,
     int? confirmedFromAmountSat,
     @Default('') String receiverAddress,
-
     @Default('BTC') String selectedFromCurrencyCode,
     @Default('L-BTC') String selectedToCurrencyCode,
     (SwapLimits, SwapFees)? btcToLbtcSwapLimitsAndFees,
@@ -85,6 +84,15 @@ abstract class SwapState with _$SwapState {
       return liquidAbsoluteFees;
     } else {
       return bitcoinAbsoluteFees;
+    }
+  }
+
+  String get absoluteFeesFormatted {
+    if (absoluteFees == null) return '0';
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(absoluteFees!);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFees!));
     }
   }
 
@@ -370,11 +378,11 @@ abstract class SwapState with _$SwapState {
   }
 
   bool get disableContinueWithAmounts =>
+      amountConfirmedClicked ||
       fromAmountSat == 0 ||
       toAmountSat <= 0 ||
       fromWalletBalance < fromAmountSat ||
-      creatingSwap ||
-      amountConfirmedClicked;
+      creatingSwap;
 
   bool get disableSendSwapButton =>
       broadcastingTransaction || signingTransaction || buildingTransaction;

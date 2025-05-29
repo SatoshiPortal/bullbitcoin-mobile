@@ -426,13 +426,14 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
     this.receiveAddress,
     required this.formattedBitcoinAmount,
     required this.swap,
+    required this.absoluteFeesFormatted,
   });
   final String sendWalletLabel;
   final String? receiveWalletLabel;
   final String? receiveAddress;
   final String formattedBitcoinAmount;
   final Swap swap;
-
+  final String absoluteFeesFormatted;
   Widget _divider(BuildContext context) {
     return Container(height: 1, color: context.colour.secondaryFixedDim);
   }
@@ -509,10 +510,17 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
             details: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                BBText(
-                  swap.amountSat.toString(),
-                  style: context.font.bodyLarge,
-                ),
+                BBText(formattedBitcoinAmount, style: context.font.bodyLarge),
+              ],
+            ),
+          ),
+          _divider(context),
+          CommonInfoRow(
+            title: 'Send Network Fees',
+            details: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                BBText(absoluteFeesFormatted, style: context.font.bodyLarge),
               ],
             ),
           ),

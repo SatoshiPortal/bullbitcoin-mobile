@@ -142,6 +142,7 @@ class SwapCubit extends Cubit<SwapState> {
       orElse: () => bitcoinWallets.first,
     );
 
+    await loadSwapLimits();
     emit(
       state.copyWith(
         fromWallets: bitcoinWallets,
@@ -156,8 +157,6 @@ class SwapCubit extends Cubit<SwapState> {
         selectedToCurrencyCode: bitcoinUnit.code,
       ),
     );
-
-    await loadSwapLimits();
   }
 
   Future<void> loadSwapLimits() async {
@@ -336,7 +335,6 @@ class SwapCubit extends Cubit<SwapState> {
 
       _watchChainSwap(swap.id);
       await loadFees();
-
       emit(
         state.copyWith(
           amountConfirmedClicked: false,
@@ -346,6 +344,7 @@ class SwapCubit extends Cubit<SwapState> {
           creatingSwap: false,
         ),
       );
+      await buildAndSignOnchainTransaction();
     } catch (e) {
       emit(
         state.copyWith(
@@ -357,14 +356,12 @@ class SwapCubit extends Cubit<SwapState> {
     }
   }
 
-  Future<void> confirmSwapClicked() async {
+  Future<void> buildAndSignOnchainTransaction() async {
     try {
       final swap = state.swap;
       if (swap == null) return;
       emit(state.copyWith(buildingTransaction: true));
 
-      final settings = await _getSettingsUsecase.execute();
-      final isTestnet = settings.environment == Environment.testnet;
       final bitcoinWalletId =
           state.fromWalletNetwork == WalletNetwork.bitcoin
               ? state.fromWalletId
@@ -398,22 +395,9 @@ class SwapCubit extends Cubit<SwapState> {
         emit(
           state.copyWith(
             signingTransaction: false,
-            broadcastingTransaction: true,
             bitcoinAbsoluteFees: bitcoinAbsoluteFees,
+            signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
           ),
-        );
-
-        final txid = await _broadcastBitcoinTxUsecase.execute(
-          signedPsbtAndTxSize.signedPsbt,
-        );
-        await _updatePaidChainSwapUsecase.execute(
-          txid: txid,
-          swapId: swap.id,
-          network: Network.fromEnvironment(
-            isTestnet: isTestnet,
-            isLiquid: false,
-          ),
-          absoluteFees: state.absoluteFees ?? 0,
         );
       } else {
         emit(state.copyWith(buildingTransaction: true));
@@ -441,12 +425,74 @@ class SwapCubit extends Cubit<SwapState> {
           psbt: psbt,
         );
         emit(
+          state.copyWith(signingTransaction: false, signedLiquidTx: signedPsbt),
+        );
+      }
+    } catch (e) {
+      if (e is PrepareBitcoinSendException) {
+        emit(
           state.copyWith(
-            signingTransaction: false,
-            broadcastingTransaction: true,
+            confirmTransactionException: ConfirmTransactionException(
+              'Could not build transaction. Likely due to insufficient funds to cover fees and amount.',
+            ),
           ),
         );
-        final txid = await _broadcastLiquidTxUsecase.execute(signedPsbt);
+        return;
+      }
+      emit(
+        state.copyWith(
+          confirmTransactionException: ConfirmTransactionException(
+            e.toString(),
+          ),
+        ),
+      );
+      emit(
+        state.copyWith(
+          buildingTransaction: false,
+          signingTransaction: false,
+          broadcastingTransaction: false,
+        ),
+      );
+    }
+  }
+
+  Future<void> confirmSwapClicked() async {
+    try {
+      final swap = state.swap;
+      if (swap == null) return;
+      emit(state.copyWith(buildingTransaction: true));
+
+      final settings = await _getSettingsUsecase.execute();
+      final isTestnet = settings.environment == Environment.testnet;
+
+      if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
+        if (state.signedBitcoinPsbt == null) {
+          emit(state.copyWith(buildingTransaction: false));
+          return;
+          // TODO: add a proper error in the state
+        }
+        final txid = await _broadcastBitcoinTxUsecase.execute(
+          state.signedBitcoinPsbt!,
+        );
+        await _updatePaidChainSwapUsecase.execute(
+          txid: txid,
+          swapId: swap.id,
+          network: Network.fromEnvironment(
+            isTestnet: isTestnet,
+            isLiquid: false,
+          ),
+          absoluteFees: state.absoluteFees ?? 0,
+        );
+      } else {
+        if (state.signedLiquidTx == null) {
+          emit(state.copyWith(buildingTransaction: false));
+          return;
+          // TODO: add a proper error in the state
+        }
+
+        final txid = await _broadcastLiquidTxUsecase.execute(
+          state.signedLiquidTx!,
+        );
         await _updatePaidChainSwapUsecase.execute(
           txid: txid,
           swapId: swap.id,

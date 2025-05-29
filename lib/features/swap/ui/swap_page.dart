@@ -477,6 +477,9 @@ class SwapConfirmPage extends StatelessWidget {
     final disableSendSwapButton = context.select(
       (SwapCubit cubit) => cubit.state.disableSendSwapButton,
     );
+    final absoluteFeesFormatted = context.select(
+      (SwapCubit cubit) => cubit.state.absoluteFeesFormatted,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -504,6 +507,7 @@ class SwapConfirmPage extends StatelessWidget {
               receiveWalletLabel: receiveWalletLabel,
               formattedBitcoinAmount: formattedConfirmedAmountBitcoin,
               swap: swap!,
+              absoluteFeesFormatted: absoluteFeesFormatted,
             ),
             const Spacer(),
             // const _Warning(),
