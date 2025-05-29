@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/scan/scan_widget.dart';
+import 'package:bb_mobile/features/scan/ui/widgets/scan_widget.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/send_router.dart';
@@ -146,7 +146,7 @@ class AddressField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final address = context.select<SendCubit, String>(
-      (cubit) => cubit.state.addressOrInvoice,
+      (cubit) => cubit.state.copiedPaymentRequestData.$1,
     );
 
     return BBInputText(
