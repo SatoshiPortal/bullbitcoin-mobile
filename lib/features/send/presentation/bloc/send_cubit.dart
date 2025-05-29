@@ -187,7 +187,10 @@ class SendCubit extends Cubit<SendState> {
   ) async {
     clearAllExceptions();
     emit(
-      state.copyWith(scannedPaymentRequestData: data, paymentRequestData: data),
+      state.copyWith(
+        scannedRawPaymentRequest: scannedRawPaymentRequest,
+        paymentRequest: paymentRequest,
+      ),
     );
     await continueOnAddressConfirmed();
   }
@@ -205,16 +208,16 @@ class SendCubit extends Cubit<SendState> {
       );
       emit(
         state.copyWith(
-          copiedPaymentRequestData: (sanitizedText, paymentRequest),
-          paymentRequestData: (sanitizedText, paymentRequest),
+          copiedRawPaymentRequest: sanitizedText,
+          paymentRequest: paymentRequest,
         ),
       );
       await continueOnAddressConfirmed();
     } catch (e) {
       emit(
         state.copyWith(
-          // Remove the previous successful payment request on error
-          paymentRequestData: (text, null),
+          copiedRawPaymentRequest: text,
+          paymentRequest: null,
           // Don't show exception if text field is clear
           invalidBitcoinStringException:
               text.isNotEmpty ? InvalidBitcoinStringException() : null,
@@ -526,16 +529,17 @@ class SendCubit extends Cubit<SendState> {
   }
 
   Future<bool> hasBalance() async {
-    if (state.selectedWallet == null && state.paymentRequest == null) {
+    if ((state.selectedWallet == null && state.paymentRequest == null) ||
+        state.paymentRequest == null) {
       return false;
     }
     final wallet = state.selectedWallet!;
-    final paymentRequest = state.paymentRequest;
+    final paymentRequest = state.paymentRequest!;
     switch (paymentRequest) {
       case Bolt11PaymentRequest _:
         // final swapLimits = state.swapLimits!.;
         final invoice = await _decodeInvoiceUsecase.execute(
-          invoice: state.addressOrInvoice,
+          invoice: state.paymentRequestAddress,
           isTestnet: wallet.network.isTestnet,
         );
         final invoiceAmount = invoice.sats;
@@ -768,7 +772,7 @@ class SendCubit extends Cubit<SendState> {
         final swap = await _createSendSwapUsecase.execute(
           walletId: state.selectedWallet!.id,
           type: swapType,
-          lnAddress: state.addressOrInvoice,
+          lnAddress: state.paymentRequestAddress,
           amountSat: state.confirmedAmountSat,
         );
         emit(
@@ -831,7 +835,7 @@ class SendCubit extends Cubit<SendState> {
 
         final swap = await _createChainSwapToExternalUsecase.execute(
           sendWalletId: state.selectedWallet!.id,
-          receiveAddress: state.addressOrInvoice,
+          receiveAddress: state.paymentRequestAddress,
           type: swapType,
           amountSat: state.inputAmountSat,
         );
@@ -995,7 +999,7 @@ class SendCubit extends Cubit<SendState> {
               ? (state.paymentRequest! as Bip21PaymentRequest).address
               : (state.chainSwap != null)
               ? state.chainSwap!.paymentAddress
-              : state.addressOrInvoice;
+              : state.paymentRequestAddress;
       final amount =
           state.lightningSwap != null
               ? state.lightningSwap!.paymentAmount
