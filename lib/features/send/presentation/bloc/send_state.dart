@@ -286,6 +286,15 @@ abstract class SendState with _$SendState {
     }
   }
 
+  String get formattedAbsoluteFees {
+    if (absoluteFees == null) return '0';
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(absoluteFees!);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFees!));
+    }
+  }
+
   bool get walletHasBalance =>
       // ignore: avoid_bool_literals_in_conditional_expressions
       selectedWallet == null
@@ -373,6 +382,10 @@ abstract class SendState with _$SendState {
     }
   }
 
+  bool get isChainSwap =>
+      (sendType == SendType.liquid && !selectedWallet!.isLiquid) ||
+      sendType == SendType.bitcoin && selectedWallet!.isLiquid;
+
   FeeOptions? get feeOptions =>
       selectedWallet == null
           ? null
@@ -407,7 +420,7 @@ extension SendStateFeePercent on SendState {
     return calculatePercentage(amount, fee);
   }
 
-  bool get showFeeWarning => getFeeAsPercentOfAmount() > 1.0;
+  bool get showFeeWarning => getFeeAsPercentOfAmount() > 5.0;
 }
 
 class SwapCreationException implements Exception {

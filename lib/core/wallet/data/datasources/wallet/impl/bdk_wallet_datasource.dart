@@ -221,9 +221,16 @@ class BdkWalletDatasource implements WalletDatasource {
 
   Future<int> decodeTxSize(String psbtString) async {
     final psbt = await bdk.PartiallySignedTransaction.fromString(psbtString);
-    final size = psbt.extractTx().size();
+    final size = psbt.extractTx().vsize();
     return size.toInt();
   }
+
+  Future<int> getFeeAmount(String psbtString) async {
+    final psbt = await bdk.PartiallySignedTransaction.fromString(psbtString);
+    final fee = psbt.feeAmount() ?? BigInt.zero;
+    return fee.toInt();
+  }
+  // 25000 - 988
 
   Future<String> signPsbt(
     String unsignedPsbt, {

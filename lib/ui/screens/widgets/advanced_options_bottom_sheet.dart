@@ -55,8 +55,10 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
               ),
               BBSwitch(
                 value: isRBFEnabled,
-                onChanged: (val) =>
-                    context.read<SendCubit>().replaceByFeeChanged(val),
+                onChanged:
+                    (val) async => await context
+                        .read<SendCubit>()
+                        .replaceByFeeChanged(val),
               ),
             ],
           ),
@@ -64,9 +66,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           ListTile(
             tileColor: context.colour.onPrimary,
             shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: context.colour.surface,
-              ),
+              side: BorderSide(color: context.colour.surface),
             ),
             title: BBText(
               "Select coins manually",
@@ -81,10 +81,11 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
                 isScrollControlled: true,
                 backgroundColor: context.colour.secondaryFixed,
                 useSafeArea: true,
-                builder: (BuildContext buildContext) => BlocProvider.value(
-                  value: context.read<SendCubit>(),
-                  child: const CoinSelectionBottomSheet(),
-                ),
+                builder:
+                    (BuildContext buildContext) => BlocProvider.value(
+                      value: context.read<SendCubit>(),
+                      child: const CoinSelectionBottomSheet(),
+                    ),
               );
             },
           ),

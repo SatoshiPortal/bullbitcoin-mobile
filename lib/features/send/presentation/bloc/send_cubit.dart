@@ -96,6 +96,7 @@ class SendCubit extends Cubit<SendState> {
        _createChainSwapToExternalUsecase = createChainSwapToExternalUsecase,
        _watchWalletTransactionByTxIdUsecase =
            watchWalletTransactionByTxIdUsecase,
+
        super(const SendState());
 
   // ignore: unused_field
@@ -315,7 +316,6 @@ class SendCubit extends Cubit<SendState> {
             confirmedAmountSat: state.paymentRequest!.amountSat,
           ),
         );
-
         return;
       }
       if (state.paymentRequest!.isBolt11) {
@@ -387,7 +387,8 @@ class SendCubit extends Cubit<SendState> {
             ),
           );
           await createTransaction();
-          updateSwapLockupFees();
+          // updateSwapLockupFees();
+          return;
         } catch (e) {
           emit(
             state.copyWith(
@@ -405,6 +406,62 @@ class SendCubit extends Cubit<SendState> {
         if (state.paymentRequest!.amountSat == null) {
           emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
         } else {
+          final isChainSwap =
+              (state.sendType == SendType.liquid &&
+                  !state.selectedWallet!.isLiquid) ||
+              state.sendType == SendType.bitcoin &&
+                  state.selectedWallet!.isLiquid;
+          if (isChainSwap) {
+            try {
+              final swapType =
+                  state.selectedWallet!.isLiquid
+                      ? SwapType.liquidToBitcoin
+                      : SwapType.bitcoinToLiquid;
+              toggleSwapLimitsForWallet();
+              if (state.swapAmountBelowLimit) {
+                emit(
+                  state.copyWith(
+                    swapLimitsException: SwapLimitsException(
+                      'Amount below minimum swap limit: ${state.selectedSwapLimits!.min} sats',
+                    ),
+                    amountConfirmedClicked: false,
+                  ),
+                );
+                return;
+              }
+              if (state.swapAmountAboveLimit) {
+                emit(
+                  state.copyWith(
+                    swapLimitsException: SwapLimitsException(
+                      'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
+                    ),
+                    amountConfirmedClicked: false,
+                  ),
+                );
+                return;
+              }
+              emit(state.copyWith(creatingSwap: true));
+
+              final swap = await _createChainSwapToExternalUsecase.execute(
+                sendWalletId: state.selectedWallet!.id,
+                receiveAddress: state.paymentRequestAddress,
+                type: swapType,
+                amountSat: state.paymentRequest!.amountSat,
+              );
+              _watchSendSwap(swap.id);
+
+              emit(state.copyWith(chainSwap: swap, creatingSwap: false));
+            } catch (e) {
+              emit(
+                state.copyWith(
+                  creatingSwap: false,
+                  swapCreationException: SwapCreationException(e.toString()),
+                  loadingBestWallet: false,
+                ),
+              );
+              return;
+            }
+          }
           emit(
             state.copyWith(
               confirmedAmountSat: state.paymentRequest!.amountSat,
@@ -427,31 +484,40 @@ class SendCubit extends Cubit<SendState> {
           state.copyWith(
             loadingBestWallet: false,
             insufficientBalanceException: InsufficientBalanceException(),
+            creatingSwap: false,
           ),
         );
       } else {
-        emit(state.copyWith(error: e, loadingBestWallet: false));
+        emit(
+          state.copyWith(
+            invalidBitcoinStringException: InvalidBitcoinStringException(
+              message: e.toString(),
+            ),
+            loadingBestWallet: false,
+            creatingSwap: false,
+          ),
+        );
       }
     }
   }
 
-  void updateSwapLockupFees() {
-    final absFees = state.absoluteFees;
-    if (absFees == null) return;
+  // void updateSwapLockupFees() {
+  //   // final absFees = state.absoluteFees;
+  //   // if (absFees == null) return;
 
-    if (state.lightningSwap != null) {
-      final swap = state.lightningSwap!;
-      final updatedFees = swap.fees?.copyWith(lockupFee: absFees);
-      emit(state.copyWith(lightningSwap: swap.copyWith(fees: updatedFees)));
-      return;
-    }
-    if (state.chainSwap != null) {
-      final swap = state.chainSwap!;
-      final updatedFees = swap.fees?.copyWith(lockupFee: absFees);
-      emit(state.copyWith(chainSwap: swap.copyWith(fees: updatedFees)));
-      return;
-    }
-  }
+  //   // if (state.lightningSwap != null) {
+  //   //   final swap = state.lightningSwap!;
+  //   //   final updatedFees = swap.fees?.copyWith(lockupFee: absFees);
+  //   //   emit(state.copyWith(lightningSwap: swap.copyWith(fees: updatedFees)));
+  //   //   return;
+  //   // }
+  //   // if (state.chainSwap != null) {
+  //   //   final swap = state.chainSwap!;
+  //   //   final updatedFees = swap.fees?.copyWith(lockupFee: absFees);
+  //   //   emit(state.copyWith(chainSwap: swap.copyWith(fees: updatedFees)));
+  //   //   return;
+  //   // }
+  // }
 
   Future<void> loadSwapLimits() async {
     final paymentRequest = state.paymentRequest;
@@ -738,6 +804,7 @@ class SendCubit extends Cubit<SendState> {
         confirmedAmountSat: state.inputAmountSat,
       ),
     );
+    await loadUtxos();
 
     if (state.sendType == SendType.lightning) {
       final swapType =
@@ -786,7 +853,7 @@ class SendCubit extends Cubit<SendState> {
         );
         _watchSendSwap(swap.id);
         await createTransaction();
-        updateSwapLockupFees();
+        // updateSwapLockupFees();
       } catch (e) {
         emit(
           state.copyWith(
@@ -851,7 +918,7 @@ class SendCubit extends Cubit<SendState> {
           ),
         );
         await createTransaction();
-        updateSwapLockupFees();
+        // updateSwapLockupFees();
       } catch (e) {
         emit(
           state.copyWith(
@@ -932,7 +999,7 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  void utxoSelected(WalletUtxo utxo) {
+  Future<void> utxoSelected(WalletUtxo utxo) async {
     final selectedUtxos = List.of(state.selectedUtxos);
     if (selectedUtxos.contains(utxo)) {
       selectedUtxos.remove(utxo);
@@ -940,10 +1007,13 @@ class SendCubit extends Cubit<SendState> {
       selectedUtxos.add(utxo);
     }
     emit(state.copyWith(selectedUtxos: selectedUtxos));
+    await createTransaction();
+    // updateSwapLockupFees();
   }
 
-  void replaceByFeeChanged(bool replaceByFee) {
+  Future<void> replaceByFeeChanged(bool replaceByFee) async {
     emit(state.copyWith(replaceByFee: replaceByFee));
+    await createTransaction();
   }
 
   Future<void> loadFees() async {
@@ -976,16 +1046,19 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  void feeOptionSelected(FeeSelection feeSelection) {
+  Future<void> feeOptionSelected(FeeSelection feeSelection) async {
     emit(state.copyWith(selectedFeeOption: feeSelection));
-    updateSwapLockupFees();
+    await createTransaction();
+    // updateSwapLockupFees();
   }
 
-  void customFeesChanged(NetworkFee fee) {
+  Future<void> customFeesChanged(NetworkFee fee) async {
     emit(
       state.copyWith(customFee: fee, selectedFeeOption: FeeSelection.custom),
     );
-    updateSwapLockupFees();
+
+    await createTransaction();
+    // updateSwapLockupFees();
   }
 
   Future<void> createTransaction() async {
@@ -995,11 +1068,11 @@ class SendCubit extends Cubit<SendState> {
       final address =
           state.lightningSwap != null
               ? state.lightningSwap!.paymentAddress
+              : (state.chainSwap != null)
+              ? state.chainSwap!.paymentAddress
               : state.paymentRequest != null &&
                   state.paymentRequest is Bip21PaymentRequest
               ? (state.paymentRequest! as Bip21PaymentRequest).address
-              : (state.chainSwap != null)
-              ? state.chainSwap!.paymentAddress
               : state.paymentRequestAddress;
       final amount =
           state.lightningSwap != null
@@ -1029,7 +1102,7 @@ class SendCubit extends Cubit<SendState> {
           ),
         );
       } else {
-        final psbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
+        final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: state.selectedWallet!.id,
           address: address,
           networkFee: state.selectedFee!,
@@ -1039,10 +1112,17 @@ class SendCubit extends Cubit<SendState> {
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
+        final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+          psbt: unsignedPsbtAndTxSize.unsignedPsbt,
+          walletId: state.selectedWallet!.id,
+        );
+        // sign transaction and use signed psbt to calculate absolute fees
+
         emit(
           state.copyWith(
-            unsignedPsbt: psbtAndTxSize.unsignedPsbt,
-            bitcoinTxSize: psbtAndTxSize.txSize,
+            unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
+            signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
+            bitcoinTxSize: signedPsbtAndTxSize.txSize,
             buildingTransaction: false,
           ),
         );
@@ -1118,14 +1198,13 @@ class SendCubit extends Cubit<SendState> {
             ),
           );
         } else {
-          final signedPsbt = await _signBitcoinTxUsecase.execute(
+          final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
             psbt: state.unsignedPsbt!,
             walletId: state.selectedWallet!.id,
           );
-
           emit(
             state.copyWith(
-              signedBitcoinPsbt: signedPsbt,
+              signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
               signingTransaction: false,
             ),
           );
@@ -1179,7 +1258,8 @@ class SendCubit extends Cubit<SendState> {
           txid: state.txId!,
           swapId: state.chainSwap!.id,
           network: state.selectedWallet!.network,
-          absoluteFees: state.absoluteFees!,
+          absoluteFees:
+              0, // TODO (ishi): removed until server fees are implemented
         );
       }
       // await Future.delayed(const Duration(seconds: 3));

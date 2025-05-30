@@ -31,7 +31,6 @@ abstract class SwapState with _$SwapState {
     @Default('') String toAmount,
     int? confirmedFromAmountSat,
     @Default('') String receiverAddress,
-
     @Default('BTC') String selectedFromCurrencyCode,
     @Default('L-BTC') String selectedToCurrencyCode,
     (SwapLimits, SwapFees)? btcToLbtcSwapLimitsAndFees,
@@ -46,7 +45,8 @@ abstract class SwapState with _$SwapState {
     NetworkFee? selectedFee,
     // TODO: remove absFee and make usecases return size so abs fee can
     // be calculated from NetworkFee
-    int? absoluteFees,
+    int? bitcoinAbsoluteFees,
+    int? liquidAbsoluteFees,
     FeeSelection? selectedFeeOption,
     int? customFee,
     // prepare
@@ -78,6 +78,23 @@ abstract class SwapState with _$SwapState {
     @Default(0) double exchangeRate,
   }) = _SwapState;
   const SwapState._();
+
+  int? get absoluteFees {
+    if (fromWalletNetwork == WalletNetwork.liquid) {
+      return liquidAbsoluteFees;
+    } else {
+      return bitcoinAbsoluteFees;
+    }
+  }
+
+  String get absoluteFeesFormatted {
+    if (absoluteFees == null) return '0';
+    if (bitcoinUnit == BitcoinUnit.sats) {
+      return FormatAmount.sats(absoluteFees!);
+    } else {
+      return FormatAmount.btc(ConvertAmount.satsToBtc(absoluteFees!));
+    }
+  }
 
   String get estimatedFeesFormatted {
     int totalFees = 0;
@@ -361,10 +378,11 @@ abstract class SwapState with _$SwapState {
   }
 
   bool get disableContinueWithAmounts =>
-      fromWalletBalance == 0 ||
+      amountConfirmedClicked ||
+      fromAmountSat == 0 ||
+      toAmountSat <= 0 ||
       fromWalletBalance < fromAmountSat ||
-      creatingSwap ||
-      amountConfirmedClicked;
+      creatingSwap;
 
   bool get disableSendSwapButton =>
       broadcastingTransaction || signingTransaction || buildingTransaction;
