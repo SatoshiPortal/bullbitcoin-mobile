@@ -90,19 +90,19 @@ class CommonInfoRow extends StatelessWidget {
 class CommonOnchainSendInfoSection extends StatelessWidget {
   const CommonOnchainSendInfoSection({
     required String sendWalletLabel,
-    required String addressOrInvoice,
+    required String paymentRequestAddress,
     required String formattedBitcoinAmount,
     required String formattedFiatEquivalent,
     required String absoluteFees,
     required String selectedFeeOptionTitle,
   }) : _sendWalletLabel = sendWalletLabel,
-       _addressOrInvoice = addressOrInvoice,
+       _paymentRequestAddress = paymentRequestAddress,
        _formattedBitcoinAmount = formattedBitcoinAmount,
        _formattedFiatEquivalent = formattedFiatEquivalent,
        _absoluteFees = absoluteFees,
        _selectedFeeOptionTitle = selectedFeeOptionTitle;
   final String _sendWalletLabel;
-  final String _addressOrInvoice;
+  final String _paymentRequestAddress;
   final String _formattedBitcoinAmount;
   final String _formattedFiatEquivalent;
   final String _absoluteFees;
@@ -135,7 +135,7 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
               children: [
                 Expanded(
                   child: BBText(
-                    _addressOrInvoice,
+                    _paymentRequestAddress,
                     maxLines: 5,
                     style: context.font.bodyLarge,
                     textAlign: TextAlign.end,
@@ -149,7 +149,9 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
                     size: 16,
                   ),
                   onTap: () {
-                    Clipboard.setData(ClipboardData(text: _addressOrInvoice));
+                    Clipboard.setData(
+                      ClipboardData(text: _paymentRequestAddress),
+                    );
                   },
                 ),
               ],
@@ -212,19 +214,19 @@ class CommonOnchainSendInfoSection extends StatelessWidget {
 class CommonLnSwapSendInfoSection extends StatelessWidget {
   const CommonLnSwapSendInfoSection({
     required String sendWalletLabel,
-    required String addressOrInvoice,
+    required String paymentRequestAddress,
     required String formattedBitcoinAmount,
     required String formattedFiatEquivalent,
     required String swapId,
     required String totalSwapFees,
   }) : _sendWalletLabel = sendWalletLabel,
-       _addressOrInvoice = addressOrInvoice,
+       _paymentRequestAddress = paymentRequestAddress,
        _formattedBitcoinAmount = formattedBitcoinAmount,
        _formattedFiatEquivalent = formattedFiatEquivalent,
        _swapId = swapId,
        _totalSwapFees = totalSwapFees;
   final String _sendWalletLabel;
-  final String _addressOrInvoice;
+  final String _paymentRequestAddress;
   final String _formattedBitcoinAmount;
   final String _formattedFiatEquivalent;
   final String _swapId;
@@ -257,7 +259,7 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 BBText(
-                  StringFormatting.truncateMiddle(_addressOrInvoice),
+                  StringFormatting.truncateMiddle(_paymentRequestAddress),
                   style: context.font.bodyLarge,
                   textAlign: TextAlign.end,
                 ),
@@ -269,7 +271,9 @@ class CommonLnSwapSendInfoSection extends StatelessWidget {
                     size: 16,
                   ),
                   onTap: () {
-                    Clipboard.setData(ClipboardData(text: _addressOrInvoice));
+                    Clipboard.setData(
+                      ClipboardData(text: _paymentRequestAddress),
+                    );
                   },
                 ),
               ],

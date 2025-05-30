@@ -12,19 +12,17 @@ class BbqrOptions {
     required this.total,
     required this.share,
   });
-}
 
-class BbqrService {
   static bool isValid(String code) {
     try {
-      decodeOptions(code);
+      BbqrOptions.decode(code);
       return true;
     } catch (e) {
       return false;
     }
   }
 
-  static BbqrOptions decodeOptions(String code) {
+  factory BbqrOptions.decode(String code) {
     if (code.length < 6) throw "Encoded string is too short";
     if (code.substring(0, 2) != "B\$") throw "Invalid header: expected 'B\$'";
 
