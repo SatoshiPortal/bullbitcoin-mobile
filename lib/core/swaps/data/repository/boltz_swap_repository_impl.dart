@@ -502,9 +502,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<List<Swap>> getOngoingSwaps() async {
     final allSwapModels = await _boltz.storage.fetchAll();
-    // final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
 
-    // debugPrint('allSwapModels: ${allSwapModels.first.toEntity()}');
     final allSwaps =
         allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
     return allSwaps
