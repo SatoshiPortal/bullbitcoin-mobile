@@ -404,6 +404,15 @@ abstract class SendState with _$SendState {
     if (lightningSwap == null) return null;
     return lightningSwap!.fees?.totalFees(lightningSwap!.paymentAmount) ?? 0;
   }
+
+  bool get isSlowPayment =>
+      // ignore: avoid_bool_literals_in_conditional_expressions
+      selectedWallet == null
+          ? false
+          // ignore: avoid_bool_literals_in_conditional_expressions
+          : selectedWallet!.isLiquid
+          ? false
+          : true;
 }
 
 extension SendStateFeePercent on SendState {

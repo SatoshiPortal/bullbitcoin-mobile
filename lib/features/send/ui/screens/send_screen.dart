@@ -521,9 +521,9 @@ class _SendError extends StatelessWidget {
 }
 
 // ignore: unused_element
-class _Warning extends StatelessWidget {
+class _HighFeeWarning extends StatelessWidget {
   final double feePercent;
-  const _Warning(this.feePercent);
+  const _HighFeeWarning(this.feePercent);
 
   @override
   Widget build(BuildContext context) {
@@ -531,6 +531,20 @@ class _Warning extends StatelessWidget {
       title: 'High fee warning',
       description:
           'Total fee is ${feePercent.toStringAsFixed(2)}% of the amount you are sending',
+      tagColor: context.colour.onError,
+      bgColor: context.colour.secondaryFixed,
+    );
+  }
+}
+
+class _SlowPaymentWarning extends StatelessWidget {
+  const _SlowPaymentWarning();
+
+  @override
+  Widget build(BuildContext context) {
+    return InfoCard(
+      title: 'Slow Payment Warning',
+      description: 'Bitcoin swaps will take time to confirm.',
       tagColor: context.colour.onError,
       bgColor: context.colour.secondaryFixed,
     );
@@ -748,7 +762,10 @@ class _OnchainSendInfoSection extends StatelessWidget {
               ),
             ),
           ],
-          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
+          if (showFeeWarning == true) ...[
+            const Gap(16),
+            _HighFeeWarning(feePercent),
+          ],
         ],
       ),
     );
@@ -801,7 +818,9 @@ class _LnSwapSendInfoSection extends StatelessWidget {
     final showFeeWarning = context.select(
       (SendCubit cubit) => cubit.state.showFeeWarning,
     );
-
+    final isSlowPayment = context.select(
+      (SendCubit cubit) => cubit.state.isSlowPayment,
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -876,7 +895,14 @@ class _LnSwapSendInfoSection extends StatelessWidget {
           ),
           _divider(context),
           _SwapFeeBreakdown(fees: swap.fees),
-          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
+          if (showFeeWarning == true) ...[
+            const Gap(16),
+            _HighFeeWarning(feePercent),
+          ],
+          if (isSlowPayment == true) ...[
+            const Gap(16),
+            const _SlowPaymentWarning(),
+          ],
           _divider(context),
         ],
       ),
@@ -1099,8 +1125,12 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
+          const _SlowPaymentWarning(),
           _SwapFeeBreakdown(fees: swap.fees),
-          if (showFeeWarning == true) ...[const Gap(16), _Warning(feePercent)],
+          if (showFeeWarning == true) ...[
+            const Gap(16),
+            _HighFeeWarning(feePercent),
+          ],
           _divider(context),
         ],
       ),
