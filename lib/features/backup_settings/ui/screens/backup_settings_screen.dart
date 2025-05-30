@@ -1,7 +1,10 @@
+import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/features/backup_settings/presentation/cubit/backup_settings_cubit.dart';
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
+import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -9,6 +12,7 @@ import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
 class BackupSettingsScreen extends StatefulWidget {
@@ -33,6 +37,9 @@ class _Screen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
     return BlocConsumer<BackupSettingsCubit, BackupSettingsState>(
       listener: (context, state) {
         // Add global state handling if needed
@@ -64,12 +71,76 @@ class _Screen extends StatelessWidget {
                             const _TestBackupButton(),
                           const Gap(5),
                           const _StartBackupButton(),
+                          const Spacer(),
+                          if (state.lastEncryptedBackup != null && isSuperuser)
+                            const _KeyServerStatusWidget(),
                         ],
                       ),
                     ),
           ),
         );
       },
+    );
+  }
+}
+
+class _KeyServerStatusWidget extends StatelessWidget {
+  const _KeyServerStatusWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => locator<KeyServerCubit>()..checkConnection(),
+      child: BlocBuilder<KeyServerCubit, KeyServerState>(
+        builder: (context, state) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child:
+                  state.torStatus == TorStatus.connecting
+                      ? Gif(
+                        image: AssetImage(Assets.images2.cubesLoading.path),
+                        autostart: Autostart.loop,
+                        height: 56,
+                        width: 56,
+                      )
+                      : RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'Key Server: ',
+                              style: context.font.labelLarge?.copyWith(
+                                fontSize: 12,
+                                color: context.colour.secondary,
+                              ),
+                            ),
+                            TextSpan(
+                              text:
+                                  state.torStatus == TorStatus.online
+                                      ? 'Online'
+                                      : 'Offline',
+                              style: context.font.labelLarge?.copyWith(
+                                fontSize: 12,
+                                color: context.colour.secondary,
+                              ),
+                            ),
+                            WidgetSpan(
+                              child: Icon(
+                                Icons.bar_chart_rounded,
+                                size: 18,
+                                color:
+                                    state.torStatus == TorStatus.online
+                                        ? context.colour.inverseSurface
+                                        : context.colour.error,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
