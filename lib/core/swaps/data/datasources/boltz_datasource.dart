@@ -7,6 +7,17 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:boltz/boltz.dart';
 import 'package:flutter/material.dart';
 
+class AllFeesAndLimits {
+  final ReverseFeesAndLimits reverse;
+  final SubmarineFeesAndLimits submarine;
+  final ChainFeesAndLimits chain;
+  AllFeesAndLimits({
+    required this.reverse,
+    required this.submarine,
+    required this.chain,
+  });
+}
+
 class BoltzDatasource {
   final String _baseUrl;
   late String _httpsUrl;
@@ -17,7 +28,7 @@ class BoltzDatasource {
   final StreamController<SwapModel> _swapUpdatesController =
       StreamController<SwapModel>.broadcast();
 
-  Map<String, dynamic>? _allFeesAndLimits;
+  AllFeesAndLimits? _allFeesAndLimits;
 
   BoltzDatasource({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
@@ -33,11 +44,11 @@ class BoltzDatasource {
     final reverse = await allFees.reverse();
     final submarine = await allFees.submarine();
     final chain = await allFees.chain();
-    _allFeesAndLimits = {
-      'reverse': reverse,
-      'submarine': submarine,
-      'chain': chain,
-    };
+    _allFeesAndLimits = AllFeesAndLimits(
+      reverse: reverse,
+      submarine: submarine,
+      chain: chain,
+    );
   }
 
   BoltzStorageDatasource get storage => _boltzStore;
@@ -53,42 +64,42 @@ class BoltzDatasource {
     }
     switch (type) {
       case swap_entity.SwapType.lightningToBitcoin:
-        final fees = _allFeesAndLimits!['reverse'];
+        final fees = _allFeesAndLimits!.reverse;
         return swap_entity.SwapFees(
           boltzPercent: fees.btcFees.percentage as double?,
           lockupFee: fees.btcFees.minerFees.lockup.toInt() as int?,
           claimFee: fees.btcFees.minerFees.claim.toInt() as int?,
         );
       case swap_entity.SwapType.lightningToLiquid:
-        final fees = _allFeesAndLimits!['reverse'];
+        final fees = _allFeesAndLimits!.reverse;
         return swap_entity.SwapFees(
           boltzPercent: fees.lbtcFees.percentage as double?,
           lockupFee: fees.lbtcFees.minerFees.lockup.toInt() as int?,
           claimFee: fees.lbtcFees.minerFees.claim.toInt() as int?,
         );
       case swap_entity.SwapType.bitcoinToLightning:
-        final fees = _allFeesAndLimits!['submarine'];
+        final fees = _allFeesAndLimits!.submarine;
         return swap_entity.SwapFees(
           boltzPercent: fees.btcFees.percentage as double?,
           lockupFee: fees.btcFees.minerFees.toInt() as int?,
           claimFee: fees.btcFees.minerFees.toInt() as int?,
         );
       case swap_entity.SwapType.liquidToLightning:
-        final fees = _allFeesAndLimits!['submarine'];
+        final fees = _allFeesAndLimits!.submarine;
         return swap_entity.SwapFees(
           boltzPercent: fees.lbtcFees.percentage as double?,
           lockupFee: fees.lbtcFees.minerFees.toInt() as int?,
           claimFee: fees.lbtcFees.minerFees.toInt() as int?,
         );
       case swap_entity.SwapType.bitcoinToLiquid:
-        final fees = _allFeesAndLimits!['chain'];
+        final fees = _allFeesAndLimits!.chain;
         return swap_entity.SwapFees(
           boltzPercent: fees.lbtcFees.percentage as double?,
           lockupFee: fees.lbtcFees.server.toInt() as int?,
           claimFee: fees.lbtcFees.userClaim.toInt() as int?,
         );
       case swap_entity.SwapType.liquidToBitcoin:
-        final fees = _allFeesAndLimits!['chain'];
+        final fees = _allFeesAndLimits!.chain;
         return swap_entity.SwapFees(
           boltzPercent: fees.btcFees.percentage as double?,
           lockupFee: fees.btcFees.server.toInt() as int?,
@@ -112,7 +123,7 @@ class BoltzDatasource {
       if (_allFeesAndLimits == null) {
         await updateFees();
       }
-      final reverseFees = _allFeesAndLimits!['reverse'];
+      final reverseFees = _allFeesAndLimits!.reverse;
       final btcLnSwap = await BtcLnSwap.newReverse(
         mnemonic: mnemonic,
         index: BigInt.from(index),
@@ -186,7 +197,7 @@ class BoltzDatasource {
       if (_allFeesAndLimits == null) {
         await updateFees();
       }
-      final reverseFees = _allFeesAndLimits!['reverse'];
+      final reverseFees = _allFeesAndLimits!.reverse;
       final lbtcLnSwap = await LbtcLnSwap.newReverse(
         mnemonic: mnemonic,
         index: BigInt.from(index),
@@ -300,7 +311,7 @@ class BoltzDatasource {
       if (_allFeesAndLimits == null) {
         await updateFees();
       }
-      final submarineFees = _allFeesAndLimits!['submarine'];
+      final submarineFees = _allFeesAndLimits!.submarine;
       final btcLnSwap = await BtcLnSwap.newSubmarine(
         mnemonic: mnemonic,
         index: BigInt.from(index),
@@ -356,7 +367,7 @@ class BoltzDatasource {
       if (_allFeesAndLimits == null) {
         await updateFees();
       }
-      final submarineFees = _allFeesAndLimits!['submarine'];
+      final submarineFees = _allFeesAndLimits!.submarine;
       final lbtcLnSwap = await LbtcLnSwap.newSubmarine(
         mnemonic: mnemonic,
         index: BigInt.from(index),
@@ -485,7 +496,7 @@ class BoltzDatasource {
       if (_allFeesAndLimits == null) {
         await updateFees();
       }
-      final chainFees = _allFeesAndLimits!['chain'];
+      final chainFees = _allFeesAndLimits!.chain;
       final chainSwap = await ChainSwap.newSwap(
         mnemonic: mnemonic,
         index: BigInt.from(index),
@@ -541,7 +552,7 @@ class BoltzDatasource {
       if (_allFeesAndLimits == null) {
         await updateFees();
       }
-      final chainFees = _allFeesAndLimits!['chain'];
+      final chainFees = _allFeesAndLimits!.chain;
 
       final chainSwap = await ChainSwap.newSwap(
         mnemonic: mnemonic,
@@ -725,10 +736,10 @@ class BoltzDatasource {
     if (_allFeesAndLimits == null) {
       await updateFees();
     }
-    final reverse = _allFeesAndLimits!['reverse'];
+    final reverse = _allFeesAndLimits!.reverse;
     return (
-      reverse.btcLimits.minimal.toInt() as int,
-      reverse.btcLimits.maximal.toInt() as int,
+      reverse.btcLimits.minimal.toInt(),
+      reverse.btcLimits.maximal.toInt(),
     );
   }
 
@@ -736,10 +747,10 @@ class BoltzDatasource {
     if (_allFeesAndLimits == null) {
       await updateFees();
     }
-    final reverse = _allFeesAndLimits!['reverse'];
+    final reverse = _allFeesAndLimits!.reverse;
     return (
-      reverse.lbtcLimits.minimal.toInt() as int,
-      reverse.lbtcLimits.maximal.toInt() as int,
+      reverse.lbtcLimits.minimal.toInt(),
+      reverse.lbtcLimits.maximal.toInt(),
     );
   }
 
@@ -747,10 +758,10 @@ class BoltzDatasource {
     if (_allFeesAndLimits == null) {
       await updateFees();
     }
-    final submarine = _allFeesAndLimits!['submarine'];
+    final submarine = _allFeesAndLimits!.submarine;
     return (
-      submarine.btcLimits.minimal.toInt() as int,
-      submarine.btcLimits.maximal.toInt() as int,
+      submarine.btcLimits.minimal.toInt(),
+      submarine.btcLimits.maximal.toInt(),
     );
   }
 
@@ -758,10 +769,10 @@ class BoltzDatasource {
     if (_allFeesAndLimits == null) {
       await updateFees();
     }
-    final submarine = _allFeesAndLimits!['submarine'];
+    final submarine = _allFeesAndLimits!.submarine;
     return (
-      submarine.lbtcLimits.minimal.toInt() as int,
-      submarine.lbtcLimits.maximal.toInt() as int,
+      submarine.lbtcLimits.minimal.toInt(),
+      submarine.lbtcLimits.maximal.toInt(),
     );
   }
 
@@ -769,22 +780,16 @@ class BoltzDatasource {
     if (_allFeesAndLimits == null) {
       await updateFees();
     }
-    final chain = _allFeesAndLimits!['chain'];
-    return (
-      chain.btcLimits.minimal.toInt() as int,
-      chain.btcLimits.maximal.toInt() as int,
-    );
+    final chain = _allFeesAndLimits!.chain;
+    return (chain.btcLimits.minimal.toInt(), chain.btcLimits.maximal.toInt());
   }
 
   Future<(int, int)> getLbtcToBtcChainSwapLimits() async {
     if (_allFeesAndLimits == null) {
       await updateFees();
     }
-    final chain = _allFeesAndLimits!['chain'];
-    return (
-      chain.lbtcLimits.minimal.toInt() as int,
-      chain.lbtcLimits.maximal.toInt() as int,
-    );
+    final chain = _allFeesAndLimits!.chain;
+    return (chain.lbtcLimits.minimal.toInt(), chain.lbtcLimits.maximal.toInt());
   }
 
   Future<int> getLbtLnRefundTxSize({
