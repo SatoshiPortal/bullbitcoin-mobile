@@ -560,6 +560,11 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
+  Future<void> updateSwapLimitsAndFees() async {
+    await _boltz.updateFees();
+  }
+
+  @override
   Future<Invoice> decodeInvoice({required String invoice}) async {
     // TODO: implement decodeInvoice
     final (sats, expired, bip21) = await _boltz.decodeInvoice(invoice);

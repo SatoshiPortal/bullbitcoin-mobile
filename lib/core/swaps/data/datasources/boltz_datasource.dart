@@ -17,6 +17,8 @@ class BoltzDatasource {
   final StreamController<SwapModel> _swapUpdatesController =
       StreamController<SwapModel>.broadcast();
 
+  Map<String, dynamic>? _allFeesAndLimits;
+
   BoltzDatasource({
     String url = ApiServiceConstants.boltzMainnetUrlPath,
     required BoltzStorageDatasource boltzStore,
@@ -24,6 +26,18 @@ class BoltzDatasource {
        _boltzStore = boltzStore {
     _httpsUrl = 'https://$_baseUrl';
     _initializeBoltzWebSocket();
+  }
+
+  Future<void> updateFees() async {
+    final allFees = Fees(boltzUrl: _httpsUrl);
+    final reverse = await allFees.reverse();
+    final submarine = await allFees.submarine();
+    final chain = await allFees.chain();
+    _allFeesAndLimits = {
+      'reverse': reverse,
+      'submarine': submarine,
+      'chain': chain,
+    };
   }
 
   BoltzStorageDatasource get storage => _boltzStore;
@@ -34,63 +48,52 @@ class BoltzDatasource {
       _swapUpdatesController;
 
   Future<swap_entity.SwapFees> getSwapFees(swap_entity.SwapType type) async {
-    try {
-      final allFees = Fees(boltzUrl: _httpsUrl);
-      switch (type) {
-        case swap_entity.SwapType.lightningToBitcoin:
-          final fees = await allFees.reverse();
-          final swapFees = swap_entity.SwapFees(
-            boltzPercent: fees.btcFees.percentage,
-            lockupFee: fees.btcFees.minerFees.lockup.toInt(),
-            claimFee: fees.btcFees.minerFees.claim.toInt(),
-          );
-          return swapFees;
-        case swap_entity.SwapType.lightningToLiquid:
-          final fees = await allFees.reverse();
-          final swapFees = swap_entity.SwapFees(
-            boltzPercent: fees.lbtcFees.percentage,
-            lockupFee: fees.lbtcFees.minerFees.lockup.toInt(),
-            claimFee: fees.lbtcFees.minerFees.claim.toInt(),
-          );
-          return swapFees;
-        case swap_entity.SwapType.bitcoinToLightning:
-          final fees = await allFees.submarine();
-          final swapFees = swap_entity.SwapFees(
-            boltzPercent: fees.btcFees.percentage,
-            lockupFee: fees.btcFees.minerFees.toInt(),
-            claimFee: fees.btcFees.minerFees.toInt(),
-          );
-          return swapFees;
-        case swap_entity.SwapType.liquidToLightning:
-          final fees = await allFees.submarine();
-          final swapFees = swap_entity.SwapFees(
-            boltzPercent: fees.lbtcFees.percentage,
-            lockupFee: fees.lbtcFees.minerFees.toInt(),
-            claimFee: fees.lbtcFees.minerFees.toInt(),
-          );
-          return swapFees;
-        case swap_entity.SwapType.bitcoinToLiquid:
-          final fees = await allFees.chain();
-          final swapFees = swap_entity.SwapFees(
-            boltzPercent: fees.lbtcFees.percentage,
-            lockupFee: fees.lbtcFees.server.toInt(),
-            claimFee: fees.lbtcFees.userClaim.toInt(),
-          );
-          return swapFees;
-        case swap_entity.SwapType.liquidToBitcoin:
-          final fees = await allFees.chain();
-          final swapFees = swap_entity.SwapFees(
-            boltzPercent: fees.btcFees.percentage,
-            lockupFee: fees.btcFees.server.toInt(),
-            claimFee: fees.btcFees.userClaim.toInt(),
-          );
-          return swapFees;
-      }
-    } catch (e) {
-      if (e is BoltzError) {
-        throw e.message;
-      }
-      rethrow;
+    if (_allFeesAndLimits == null) {
+      await updateFees();
+    }
+    switch (type) {
+      case swap_entity.SwapType.lightningToBitcoin:
+        final fees = _allFeesAndLimits!['reverse'];
+        return swap_entity.SwapFees(
+          boltzPercent: fees.btcFees.percentage as double?,
+          lockupFee: fees.btcFees.minerFees.lockup.toInt() as int?,
+          claimFee: fees.btcFees.minerFees.claim.toInt() as int?,
+        );
+      case swap_entity.SwapType.lightningToLiquid:
+        final fees = _allFeesAndLimits!['reverse'];
+        return swap_entity.SwapFees(
+          boltzPercent: fees.lbtcFees.percentage as double?,
+          lockupFee: fees.lbtcFees.minerFees.lockup.toInt() as int?,
+          claimFee: fees.lbtcFees.minerFees.claim.toInt() as int?,
+        );
+      case swap_entity.SwapType.bitcoinToLightning:
+        final fees = _allFeesAndLimits!['submarine'];
+        return swap_entity.SwapFees(
+          boltzPercent: fees.btcFees.percentage as double?,
+          lockupFee: fees.btcFees.minerFees.toInt() as int?,
+          claimFee: fees.btcFees.minerFees.toInt() as int?,
+        );
+      case swap_entity.SwapType.liquidToLightning:
+        final fees = _allFeesAndLimits!['submarine'];
+        return swap_entity.SwapFees(
+          boltzPercent: fees.lbtcFees.percentage as double?,
+          lockupFee: fees.lbtcFees.minerFees.toInt() as int?,
+          claimFee: fees.lbtcFees.minerFees.toInt() as int?,
+        );
+      case swap_entity.SwapType.bitcoinToLiquid:
+        final fees = _allFeesAndLimits!['chain'];
+        return swap_entity.SwapFees(
+          boltzPercent: fees.lbtcFees.percentage as double?,
+          lockupFee: fees.lbtcFees.server.toInt() as int?,
+          claimFee: fees.lbtcFees.userClaim.toInt() as int?,
+        );
+      case swap_entity.SwapType.liquidToBitcoin:
+        final fees = _allFeesAndLimits!['chain'];
+        return swap_entity.SwapFees(
+          boltzPercent: fees.btcFees.percentage as double?,
+          lockupFee: fees.btcFees.server.toInt() as int?,
+          claimFee: fees.btcFees.userClaim.toInt() as int?,
+        );
     }
   }
 
@@ -704,96 +707,69 @@ class BoltzDatasource {
   }
 
   Future<(int, int)> getBtcReverseSwapLimits() async {
-    try {
-      final fees = Fees(boltzUrl: _httpsUrl);
-      final reverse = await fees.reverse();
-      return (
-        reverse.btcLimits.minimal.toInt(),
-        reverse.btcLimits.maximal.toInt(),
-      );
-    } catch (e) {
-      if (e is BoltzError) {
-        throw e.message;
-      }
-      rethrow;
+    if (_allFeesAndLimits == null) {
+      await updateFees();
     }
+    final reverse = _allFeesAndLimits!['reverse'];
+    return (
+      reverse.btcLimits.minimal.toInt() as int,
+      reverse.btcLimits.maximal.toInt() as int,
+    );
   }
 
   Future<(int, int)> getLbtcReverseSwapLimits() async {
-    try {
-      final fees = Fees(boltzUrl: _httpsUrl);
-      final reverse = await fees.reverse();
-      return (
-        reverse.lbtcLimits.minimal.toInt(),
-        reverse.lbtcLimits.maximal.toInt(),
-      );
-    } catch (e) {
-      if (e is BoltzError) {
-        throw e.message;
-      }
-      rethrow;
+    if (_allFeesAndLimits == null) {
+      await updateFees();
     }
+    final reverse = _allFeesAndLimits!['reverse'];
+    return (
+      reverse.lbtcLimits.minimal.toInt() as int,
+      reverse.lbtcLimits.maximal.toInt() as int,
+    );
   }
 
   Future<(int, int)> getBtcSubmarineSwapLimits() async {
-    try {
-      final fees = Fees(boltzUrl: _httpsUrl);
-      final submarine = await fees.submarine();
-      return (
-        submarine.btcLimits.minimal.toInt(),
-        submarine.btcLimits.maximal.toInt(),
-      );
-    } catch (e) {
-      if (e is BoltzError) {
-        throw e.message;
-      }
-      rethrow;
+    if (_allFeesAndLimits == null) {
+      await updateFees();
     }
+    final submarine = _allFeesAndLimits!['submarine'];
+    return (
+      submarine.btcLimits.minimal.toInt() as int,
+      submarine.btcLimits.maximal.toInt() as int,
+    );
   }
 
   Future<(int, int)> getLbtcSubmarineSwapLimits() async {
-    try {
-      final fees = Fees(boltzUrl: _httpsUrl);
-      final submarine = await fees.submarine();
-      return (
-        submarine.lbtcLimits.minimal.toInt(),
-        submarine.lbtcLimits.maximal.toInt(),
-      );
-    } catch (e) {
-      if (e is BoltzError) {
-        throw e.message;
-      }
-      rethrow;
+    if (_allFeesAndLimits == null) {
+      await updateFees();
     }
+    final submarine = _allFeesAndLimits!['submarine'];
+    return (
+      submarine.lbtcLimits.minimal.toInt() as int,
+      submarine.lbtcLimits.maximal.toInt() as int,
+    );
   }
 
   Future<(int, int)> getBtcToLbtcChainSwapLimits() async {
-    try {
-      final fees = Fees(boltzUrl: _httpsUrl);
-      final chain = await fees.chain();
-      return (chain.btcLimits.minimal.toInt(), chain.btcLimits.maximal.toInt());
-    } catch (e) {
-      if (e is BoltzError) {
-        throw e.message;
-      }
-      rethrow;
+    if (_allFeesAndLimits == null) {
+      await updateFees();
     }
+    final chain = _allFeesAndLimits!['chain'];
+    return (
+      chain.btcLimits.minimal.toInt() as int,
+      chain.btcLimits.maximal.toInt() as int,
+    );
   }
 
   Future<(int, int)> getLbtcToBtcChainSwapLimits() async {
-    try {
-      final fees = Fees(boltzUrl: _httpsUrl);
-      final chain = await fees.chain();
-      return (
-        chain.lbtcLimits.minimal.toInt(),
-        chain.lbtcLimits.maximal.toInt(),
-      );
-    } catch (e) {
-      if (e is BoltzError) {
-        throw e.message;
-      }
-      rethrow;
+    if (_allFeesAndLimits == null) {
+      await updateFees();
     }
+    final chain = _allFeesAndLimits!['chain'];
+    return (
+      chain.lbtcLimits.minimal.toInt() as int,
+      chain.lbtcLimits.maximal.toInt() as int,
+    );
   }
 
   Future<int> getLbtLnRefundTxSize({

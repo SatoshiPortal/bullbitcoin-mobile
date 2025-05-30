@@ -900,7 +900,7 @@ class _LnSwapSendInfoSection extends StatelessWidget {
             _HighFeeWarning(feePercent),
           ],
           if (isSlowPayment == true) ...[
-            const Gap(16),
+            const Gap(8),
             const _SlowPaymentWarning(),
           ],
           _divider(context),
@@ -1125,10 +1125,11 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
+          const Gap(16),
           const _SlowPaymentWarning(),
           _SwapFeeBreakdown(fees: swap.fees),
           if (showFeeWarning == true) ...[
-            const Gap(16),
+            const Gap(8),
             _HighFeeWarning(feePercent),
           ],
           _divider(context),
