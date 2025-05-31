@@ -9,8 +9,8 @@ class GetSwapLimitsUsecase {
   GetSwapLimitsUsecase({
     required SwapRepository mainnetSwapRepository,
     required SwapRepository testnetSwapRepository,
-  })  : _mainnetSwapRepository = mainnetSwapRepository,
-        _testnetSwapRepository = testnetSwapRepository;
+  }) : _mainnetSwapRepository = mainnetSwapRepository,
+       _testnetSwapRepository = testnetSwapRepository;
 
   Future<(SwapLimits, SwapFees)> execute({
     required SwapType type,
@@ -19,7 +19,7 @@ class GetSwapLimitsUsecase {
     try {
       final swapRepository =
           isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
-
+      await swapRepository.updateSwapLimitsAndFees();
       return await swapRepository.getSwapLimitsAndFees(type: type);
     } catch (e) {
       debugPrint('[GetSwapLimitsUsecase] Error getting swap limits: $e');

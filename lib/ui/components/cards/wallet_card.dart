@@ -26,59 +26,63 @@ class WalletCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => onTap(),
-      child: SizedBox(
-        height: 80,
-        child: Material(
-          clipBehavior: Clip.antiAlias,
-          elevation: 2,
-          color: context.colour.onPrimary,
-          borderRadius: BorderRadius.circular(2),
+      child: Material(
+        elevation: 2,
+        color: context.colour.onPrimary,
+        borderRadius: BorderRadius.circular(2),
+        child: Container(
+          height: 80,
+          decoration: BoxDecoration(
+            color: context.colour.onPrimary,
+            border: Border(left: BorderSide(color: tagColor, width: 4)),
+            borderRadius: BorderRadius.circular(2),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                width: 4,
-                height: double.infinity,
-                color: tagColor,
-              ),
-              const Gap(12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Gap(16),
-                  BBText(
-                    title,
-                    style: context.font.bodyLarge,
-                    color: context.colour.secondary,
-                  ),
-                  const Gap(4),
-                  BBText(
-                    description,
-                    style: context.font.labelMedium,
-                    color: context.colour.outline,
-                  ),
-                  const Gap(16),
-                ],
-              ),
-              const Spacer(),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  const Gap(16),
-                  CurrencyText(
-                    wallet.balanceSat.toInt(),
-                    showFiat: false,
-                    style: context.font.bodyLarge,
-                    color: context.colour.secondary,
-                  ),
-                  const Gap(4),
-                  CurrencyText(
-                    wallet.balanceSat.toInt(),
-                    showFiat: true,
-                    style: context.font.labelMedium,
-                    color: context.colour.outline,
-                  ),
-                  const Gap(16),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        BBText(
+                          title,
+                          style: context.font.bodyLarge,
+                          color: context.colour.secondary,
+                        ),
+                        const Gap(4),
+                        CurrencyText(
+                          wallet.balanceSat.toInt(),
+                          showFiat: false,
+                          style: context.font.bodyLarge,
+                          color: context.colour.secondary,
+                        ),
+                      ],
+                    ),
+                    const Gap(4),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        BBText(
+                          description,
+                          style: context.font.labelMedium,
+                          color: context.colour.outline,
+                        ),
+                        const Gap(4),
+                        CurrencyText(
+                          wallet.balanceSat.toInt(),
+                          showFiat: true,
+                          style: context.font.labelMedium,
+                          color: context.colour.outline,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const Gap(8),
               Icon(
@@ -86,7 +90,6 @@ class WalletCard extends StatelessWidget {
                 color: context.colour.outline,
                 size: 24,
               ),
-              const Gap(8),
             ],
           ),
         ),

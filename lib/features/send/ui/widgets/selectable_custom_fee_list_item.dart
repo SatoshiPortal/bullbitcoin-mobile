@@ -168,6 +168,7 @@ class _SelectableCustomFeeListItemState
                 controller: _controller,
                 value: _controller.text,
                 onChanged: _onValueChanged,
+                onlyNumbers: true,
                 focusNode: _focusNode,
                 rightIcon: Text(
                   _isAbsolute ? 'sats' : 'sats/vB',
@@ -178,8 +179,11 @@ class _SelectableCustomFeeListItemState
               BBButton.big(
                 disabled: _customFee == null,
                 label: 'Confirm custom fee',
-                onPressed: () {
-                  context.read<SendCubit>().customFeesChanged(_customFee!);
+                onPressed: () async {
+                  await context.read<SendCubit>().customFeesChanged(
+                    _customFee!,
+                  );
+                  // ignore: use_build_context_synchronously
                   Navigator.pop(context, 'Custom Fee');
                 },
                 bgColor: context.colour.secondary,

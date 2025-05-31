@@ -46,6 +46,9 @@ sealed class PaymentRequest with _$PaymentRequest {
     @Default('') String pjos,
   }) = Bip21PaymentRequest;
 
+  const factory PaymentRequest.psbt({required String psbt}) =
+      PsbtPaymentRequest;
+
   const PaymentRequest._();
 
   int? get amountSat => switch (this) {
@@ -54,6 +57,7 @@ sealed class PaymentRequest with _$PaymentRequest {
     LnAddressPaymentRequest() => null,
     Bolt11PaymentRequest(amountSat: final amountSat) => amountSat,
     Bip21PaymentRequest(amountSat: final amountSat) => amountSat,
+    PsbtPaymentRequest() => null,
   };
 
   static Future<PaymentRequest> parse(String data) async {
@@ -72,7 +76,7 @@ sealed class PaymentRequest with _$PaymentRequest {
           trimmed.toLowerCase().startsWith('lightning:')) {
         if (trimmed.toLowerCase().startsWith('lightning:')) {
           final withoutPrefix = trimmed.replaceAll("lightning:", "");
-          final result = await _tryParseBolt11(withoutPrefix);
+          final result = await _tryParseBolt11(withoutPrefix.toLowerCase());
           if (result != null) return result;
         }
         final result = await _tryParseBolt11(trimmed.toLowerCase());
@@ -95,8 +99,11 @@ sealed class PaymentRequest with _$PaymentRequest {
         if (result != null) return result;
       }
 
-      final result = await _tryParseLiquidAddress(trimmed);
-      if (result != null) return result;
+      final liquid = await _tryParseLiquidAddress(trimmed);
+      if (liquid != null) return liquid;
+
+      final psbt = await _tryParsePsbt(data);
+      if (psbt != null) return psbt;
 
       throw 'Invalid payment request';
     } catch (e) {
@@ -292,18 +299,30 @@ sealed class PaymentRequest with _$PaymentRequest {
     return null;
   }
 
+  static Future<PaymentRequest?> _tryParsePsbt(String psbtBase64) async {
+    try {
+      final psbt = await bdk.PartiallySignedTransaction.fromString(psbtBase64);
+      return PaymentRequest.psbt(psbt: psbt.toString());
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return null;
+  }
+
   bool get isBolt11 => this is Bolt11PaymentRequest;
   bool get isLnAddress => this is LnAddressPaymentRequest;
   bool get isBip21 => this is Bip21PaymentRequest;
   bool get isBitcoinAddress => this is BitcoinPaymentRequest;
   bool get isLiquidAddress => this is LiquidPaymentRequest;
+  bool get isPsbt => this is PsbtPaymentRequest;
 
   bool get isTestnet => switch (this) {
     BitcoinPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     LiquidPaymentRequest(isTestnet: final isTestnet) => isTestnet,
     Bolt11PaymentRequest(isTestnet: final isTestnet) => isTestnet,
     Bip21PaymentRequest(network: final network) => network.isTestnet,
-    _ => false,
+    LnAddressPaymentRequest() => false,
+    PsbtPaymentRequest() => false,
   };
 
   String get name => switch (this) {
@@ -312,5 +331,6 @@ sealed class PaymentRequest with _$PaymentRequest {
     LnAddressPaymentRequest() => 'Lightning Address',
     Bolt11PaymentRequest() => 'Bolt11',
     Bip21PaymentRequest() => 'BIP21',
+    PsbtPaymentRequest() => 'PSBT',
   };
 }

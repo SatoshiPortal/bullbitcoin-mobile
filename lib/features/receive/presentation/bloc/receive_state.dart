@@ -291,6 +291,8 @@ sealed class AmountException with _$AmountException implements Exception {
       BelowSwapLimitAmountException;
   const factory AmountException.aboveSwapLimit(int limitAmountSat) =
       AboveSwapLimitAmountException;
+  const factory AmountException.aboveBitcoinProtocolLimit(int limitAmountSat) =
+      AboveBitcoinProtocolLimitAmountException;
   const AmountException._();
 
   String get message {
@@ -299,6 +301,15 @@ sealed class AmountException with _$AmountException implements Exception {
         return 'Amount below swap limit of ${FormatAmount.sats(limitAmountSat)}';
       case AboveSwapLimitAmountException _:
         return 'Amount above swap limit of ${FormatAmount.sats(limitAmountSat)}';
+      case AboveBitcoinProtocolLimitAmountException _:
+        return 'Amount above Bitcoin protocol limit.';
     }
   }
+}
+
+class AboveBitcoinProtocolLimitAmountException extends AmountException {
+  @override
+  final int limitAmountSat;
+  const AboveBitcoinProtocolLimitAmountException(this.limitAmountSat)
+    : super._();
 }

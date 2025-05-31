@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -16,20 +19,37 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     required GetAvailableCurrenciesUsecase getAvailableCurrenciesUsecase,
     required GetSettingsUsecase getSettingsUsecase,
     required ConvertSatsToCurrencyAmountUsecase
-        convertSatsToCurrencyAmountUsecase,
-  })  : _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
-        _getSettingsUsecase = getSettingsUsecase,
-        _convertSatsToCurrencyAmountUsecase =
-            convertSatsToCurrencyAmountUsecase,
-        super(const BitcoinPriceState()) {
+    convertSatsToCurrencyAmountUsecase,
+    required WatchCurrencyChangesUsecase watchCurrencyChangesUsecase,
+  }) : _getAvailableCurrenciesUsecase = getAvailableCurrenciesUsecase,
+       _getSettingsUsecase = getSettingsUsecase,
+       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
+       _watchCurrencyChangesUsecase = watchCurrencyChangesUsecase,
+       super(const BitcoinPriceState()) {
     on<BitcoinPriceStarted>(_onStarted);
     on<BitcoinPriceFetched>(_onFetched);
     on<BitcoinPriceCurrencyChanged>(_onCurrencyChanged);
+
+    // Watch for currency changes and emit a new state when the currency changes
+    _currencyChangeSubscription = _watchCurrencyChangesUsecase.execute().listen(
+      (currencyCode) {
+        debugPrint('Currency changed to $currencyCode');
+        add(BitcoinPriceCurrencyChanged(currencyCode: currencyCode));
+      },
+    );
   }
 
   final GetAvailableCurrenciesUsecase _getAvailableCurrenciesUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
   final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
+  final WatchCurrencyChangesUsecase _watchCurrencyChangesUsecase;
+  late final StreamSubscription<String> _currencyChangeSubscription;
+
+  @override
+  Future<void> close() async {
+    await _currencyChangeSubscription.cancel();
+    return super.close();
+  }
 
   Future<void> _onStarted(
     BitcoinPriceStarted event,
@@ -74,11 +94,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
           currencyCode: currency,
         );
 
-        emit(
-          state.copyWith(
-            bitcoinPrice: price,
-          ),
-        );
+        emit(state.copyWith(bitcoinPrice: price));
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -108,12 +124,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
         currencyCode: currency,
       );
 
-      emit(
-        state.copyWith(
-          currency: currency,
-          bitcoinPrice: price,
-        ),
-      );
+      emit(state.copyWith(currency: currency, bitcoinPrice: price));
     } catch (e) {
       debugPrint(e.toString());
       emit(state.copyWith(error: e));

@@ -6,15 +6,17 @@ class SignBitcoinTxUsecase {
   SignBitcoinTxUsecase({
     required BitcoinWalletRepository bitcoinWalletRepository,
   }) : _bitcoinWalletRepository = bitcoinWalletRepository;
-  Future<String> execute({
+  Future<({String signedPsbt, int txSize})> execute({
     required String psbt,
     required String walletId,
   }) async {
     try {
-      return await _bitcoinWalletRepository.signPsbt(
+      final signedPsbt = await _bitcoinWalletRepository.signPsbt(
         psbt,
         walletId: walletId,
       );
+      final size = await _bitcoinWalletRepository.getTxSize(psbt: signedPsbt);
+      return (signedPsbt: signedPsbt, txSize: size);
     } catch (e) {
       throw SignBitcoinTxException(e.toString());
     }

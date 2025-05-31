@@ -356,6 +356,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   Future<void> updatePaidSendSwap({
     required String swapId,
     required String txid,
+    required int absoluteFees,
   }) async {
     final swapModel = await _boltz.storage.fetch(swapId);
     if (swapModel == null) {
@@ -371,11 +372,15 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
+        fees: swap.fees?.copyWith(lockupFee: absoluteFees),
       ),
       ChainSwap() => swap.copyWith(
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
+        fees: swap.fees?.copyWith(
+          lockupFee: (swap.fees?.lockupFee ?? 0) + absoluteFees,
+        ),
       ),
       _ => throw "Only lnSend or chain swaps can be marked as paid",
     };
@@ -497,9 +502,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<List<Swap>> getOngoingSwaps() async {
     final allSwapModels = await _boltz.storage.fetchAll();
-    // final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
 
-    // debugPrint('allSwapModels: ${allSwapModels.first.toEntity()}');
     final allSwaps =
         allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
     return allSwaps
@@ -561,6 +564,11 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         final fees = await _boltz.getSwapFees(type);
         return (SwapLimits(min: min, max: max), fees);
     }
+  }
+
+  @override
+  Future<void> updateSwapLimitsAndFees() async {
+    await _boltz.updateFees();
   }
 
   @override

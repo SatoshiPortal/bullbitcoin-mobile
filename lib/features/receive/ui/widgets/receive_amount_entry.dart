@@ -52,6 +52,8 @@ class ReceiveAmountEntry extends StatelessWidget {
                   ? 'Minimum swap amount is ${bitcoinUnit == BitcoinUnit.sats ? FormatAmount.sats(amountException.limitAmountSat) : FormatAmount.btc(ConvertAmount.satsToBtc(amountException.limitAmountSat))}'
                   : amountException is AboveSwapLimitAmountException
                   ? 'Maximum swap amount is ${bitcoinUnit == BitcoinUnit.sats ? FormatAmount.sats(amountException.limitAmountSat) : FormatAmount.btc(ConvertAmount.satsToBtc(amountException.limitAmountSat))}'
+                  : amountException is AboveBitcoinProtocolLimitAmountException
+                  ? 'Amount above Bitcoin protocol limit.'
                   : null
               : null,
     );

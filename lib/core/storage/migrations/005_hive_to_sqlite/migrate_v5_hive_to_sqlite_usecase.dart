@@ -206,9 +206,8 @@ class MigrateToV5HiveToSqliteToUsecase {
       final List<MnemonicSeed> seeds = [];
       for (final oldWallet in oldWallets) {
         final oldSeed = await _oldSeedRepository.fetch(
-          fingerprint: oldWallet.mnemonicFingerprint,
+          fingerprint: oldWallet.getRelatedSeedStorageString(),
         );
-        if (oldSeed == null) continue;
         if (oldWallet.hasPassphrase()) {
           final oldPassphrase = oldSeed.getPassphraseFromIndex(
             oldWallet.sourceFingerprint,
@@ -218,8 +217,13 @@ class MigrateToV5HiveToSqliteToUsecase {
             passphrase: oldPassphrase.passphrase,
           );
           seeds.add(seed);
-        }
-        if (oldWallet.isLiquid()) {
+          if (oldWallet.isLiquid()) {
+            final seed = await _newSeedRepository.createFromMnemonic(
+              mnemonicWords: oldSeed.mnemonicList(),
+            );
+            seeds.add(seed);
+          }
+        } else {
           final seed = await _newSeedRepository.createFromMnemonic(
             mnemonicWords: oldSeed.mnemonicList(),
           );
@@ -285,7 +289,7 @@ class MigrateToV5HiveToSqliteToUsecase {
           final oldSeed = await _oldSeedRepository.fetch(
             fingerprint: oldWallet.mnemonicFingerprint,
           );
-          if (oldSeed == null) continue;
+
           final oldPassphrase = oldSeed.getPassphraseFromIndex(
             oldWallet.sourceFingerprint,
           );
@@ -361,16 +365,8 @@ class MigrateToV5HiveToSqliteToUsecase {
           OldScriptType.bip44 => ScriptType.bip44,
         };
 
-        final source = switch (oldExternalWallet.type) {
-          OldBBWalletType.main => WalletSource.mnemonic,
-          OldBBWalletType.coldcard => WalletSource.coldcard,
-          OldBBWalletType.xpub => WalletSource.xpub,
-          OldBBWalletType.words => WalletSource.mnemonic,
-          OldBBWalletType.descriptors => WalletSource.descriptors,
-        };
-
         // ignore: unused_local_variable
-        if (source == WalletSource.mnemonic) {
+        if (oldExternalWallet.type == OldBBWalletType.words) {
           final newWallet = await _newWalletRepository.createWallet(
             seed: newExternalSeed,
             scriptType: scriptType,

@@ -1,18 +1,21 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' show SecureSocket;
 
+import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:convert/convert.dart';
 
-class ElectrumService {
-  final String host;
-  final int port;
+class ElectrumRemoteDatasource {
+  final ElectrumServerModel _server;
+  late Uri _uri;
 
-  ElectrumService({required this.host, this.port = 50001});
+  ElectrumRemoteDatasource({required ElectrumServerModel server})
+    : _server = server {
+    _uri = Uri.parse(_server.url);
+  }
 
   Future<List<int>> getTransaction(String txid) async {
     try {
-      final socket = await SecureSocket.connect(host, port);
+      final socket = await SecureSocket.connect(_uri.host, _uri.port);
 
       final request = {
         'id': 1,

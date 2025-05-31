@@ -142,6 +142,7 @@ class SwapCubit extends Cubit<SwapState> {
       orElse: () => bitcoinWallets.first,
     );
 
+    await loadSwapLimits();
     emit(
       state.copyWith(
         fromWallets: bitcoinWallets,
@@ -156,8 +157,6 @@ class SwapCubit extends Cubit<SwapState> {
         selectedToCurrencyCode: bitcoinUnit.code,
       ),
     );
-
-    await loadSwapLimits();
   }
 
   Future<void> loadSwapLimits() async {
@@ -336,7 +335,6 @@ class SwapCubit extends Cubit<SwapState> {
 
       _watchChainSwap(swap.id);
       await loadFees();
-
       emit(
         state.copyWith(
           amountConfirmedClicked: false,
@@ -346,12 +344,113 @@ class SwapCubit extends Cubit<SwapState> {
           creatingSwap: false,
         ),
       );
+      await buildAndSignOnchainTransaction();
     } catch (e) {
       emit(
         state.copyWith(
           creatingSwap: false,
           swapCreationException: SwapCreationException(e.toString()),
           amountConfirmedClicked: false,
+        ),
+      );
+    }
+  }
+
+  Future<void> buildAndSignOnchainTransaction() async {
+    try {
+      final swap = state.swap;
+      if (swap == null) return;
+      emit(state.copyWith(buildingTransaction: true));
+
+      final bitcoinWalletId =
+          state.fromWalletNetwork == WalletNetwork.bitcoin
+              ? state.fromWalletId
+              : state.toWalletId;
+      final liquidWalletId =
+          state.fromWalletNetwork == WalletNetwork.liquid
+              ? state.fromWalletId
+              : state.toWalletId;
+
+      if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
+        final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
+          walletId: bitcoinWalletId!,
+          address: swap.paymentAddress,
+          amountSat: swap.paymentAmount,
+          networkFee: state.feesList!.fastest,
+        );
+        emit(
+          state.copyWith(buildingTransaction: false, signingTransaction: true),
+        );
+
+        final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+          walletId: bitcoinWalletId,
+          psbt: unsignedPsbtAndTxSize.unsignedPsbt,
+        );
+        final bitcoinAbsoluteFees = await _calculateBitcoinAbsoluteFeesUsecase
+            .execute(
+              psbt: signedPsbtAndTxSize.signedPsbt,
+              feeRate: state.feesList!.fastest.value as double,
+            );
+
+        emit(
+          state.copyWith(
+            signingTransaction: false,
+            bitcoinAbsoluteFees: bitcoinAbsoluteFees,
+            signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
+          ),
+        );
+      } else {
+        emit(state.copyWith(buildingTransaction: true));
+
+        final psbt = await _prepareLiquidSendUsecase.execute(
+          walletId: liquidWalletId!,
+          address: swap.paymentAddress,
+          amountSat: swap.paymentAmount,
+          networkFee: state.feesList!.fastest,
+        );
+        final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
+          pset: psbt,
+          walletId: liquidWalletId,
+        );
+        emit(
+          state.copyWith(
+            buildingTransaction: false,
+            signingTransaction: true,
+            liquidAbsoluteFees: absoluteFees,
+          ),
+        );
+
+        final signedPsbt = await _signLiquidTxUsecase.execute(
+          walletId: liquidWalletId,
+          psbt: psbt,
+        );
+        emit(
+          state.copyWith(signingTransaction: false, signedLiquidTx: signedPsbt),
+        );
+      }
+    } catch (e) {
+      if (e is PrepareBitcoinSendException) {
+        emit(
+          state.copyWith(
+            confirmTransactionException: ConfirmTransactionException(
+              'Could not build transaction. Likely due to insufficient funds to cover fees and amount.',
+            ),
+          ),
+        );
+        return;
+      }
+      emit(
+        state.copyWith(
+          confirmTransactionException: ConfirmTransactionException(
+            e.toString(),
+          ),
+        ),
+      );
+      emit(
+        state.copyWith(
+          buildingTransaction: false,
+          signingTransaction: false,
+          broadcastingTransaction: false,
         ),
       );
     }
@@ -365,38 +464,16 @@ class SwapCubit extends Cubit<SwapState> {
 
       final settings = await _getSettingsUsecase.execute();
       final isTestnet = settings.environment == Environment.testnet;
-      final bitcoinWalletId =
-          state.fromWalletNetwork == WalletNetwork.bitcoin
-              ? state.fromWalletId
-              : state.toWalletId;
-      final liquidWalletId =
-          state.fromWalletNetwork == WalletNetwork.liquid
-              ? state.fromWalletId
-              : state.toWalletId;
 
       if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
-        final psbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
-          walletId: bitcoinWalletId!,
-          address: swap.paymentAddress,
-          amountSat: swap.paymentAmount,
-          networkFee: state.feesList!.fastest,
+        if (state.signedBitcoinPsbt == null) {
+          emit(state.copyWith(buildingTransaction: false));
+          return;
+          // TODO: add a proper error in the state
+        }
+        final txid = await _broadcastBitcoinTxUsecase.execute(
+          state.signedBitcoinPsbt!,
         );
-        emit(
-          state.copyWith(buildingTransaction: false, signingTransaction: true),
-        );
-
-        final signedPsbt = await _signBitcoinTxUsecase.execute(
-          walletId: bitcoinWalletId,
-          psbt: psbtAndTxSize.unsignedPsbt,
-        );
-        emit(
-          state.copyWith(
-            signingTransaction: false,
-            broadcastingTransaction: true,
-          ),
-        );
-
-        final txid = await _broadcastBitcoinTxUsecase.execute(signedPsbt);
         await _updatePaidChainSwapUsecase.execute(
           txid: txid,
           swapId: swap.id,
@@ -404,31 +481,19 @@ class SwapCubit extends Cubit<SwapState> {
             isTestnet: isTestnet,
             isLiquid: false,
           ),
+          absoluteFees:
+              0, // TODO (ishi): removed until server fees are implemented
         );
       } else {
-        emit(state.copyWith(buildingTransaction: true));
+        if (state.signedLiquidTx == null) {
+          emit(state.copyWith(buildingTransaction: false));
+          return;
+          // TODO: add a proper error in the state
+        }
 
-        final psbt = await _prepareLiquidSendUsecase.execute(
-          walletId: liquidWalletId!,
-          address: swap.paymentAddress,
-          amountSat: swap.paymentAmount,
-          networkFee: state.feesList!.fastest,
+        final txid = await _broadcastLiquidTxUsecase.execute(
+          state.signedLiquidTx!,
         );
-        emit(
-          state.copyWith(buildingTransaction: false, signingTransaction: true),
-        );
-
-        final signedPsbt = await _signLiquidTxUsecase.execute(
-          walletId: liquidWalletId,
-          psbt: psbt,
-        );
-        emit(
-          state.copyWith(
-            signingTransaction: false,
-            broadcastingTransaction: true,
-          ),
-        );
-        final txid = await _broadcastLiquidTxUsecase.execute(signedPsbt);
         await _updatePaidChainSwapUsecase.execute(
           txid: txid,
           swapId: swap.id,
@@ -436,6 +501,8 @@ class SwapCubit extends Cubit<SwapState> {
             isTestnet: isTestnet,
             isLiquid: true,
           ),
+          absoluteFees:
+              0, // TODO (ishi): removed until server fees are implemented
         );
       }
       emit(

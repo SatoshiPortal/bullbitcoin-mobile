@@ -4,11 +4,11 @@ import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 class GetApiKeyUsecase {
   final ApiKeyStorageDatasource _apiKeyStorage;
 
-  GetApiKeyUsecase({
-    required ApiKeyStorageDatasource apiKeyStorage,
-  }) : _apiKeyStorage = apiKeyStorage;
+  GetApiKeyUsecase({required ApiKeyStorageDatasource apiKeyStorage})
+    : _apiKeyStorage = apiKeyStorage;
 
   Future<ExchangeApiKeyModel?> execute() async {
+    // await _apiKeyStorage.delete();
     return await _apiKeyStorage.get();
   }
 }

@@ -8,14 +8,10 @@ class CalculateBitcoinAbsoluteFeesUsecase {
   }) : _bitcoinWalletRepository = bitcoinWalletRepository;
 
   /// Returns (amount, absFees)
-  Future<int> execute({
-    required String psbt,
-    required double feeRate,
-  }) async {
+  Future<int> execute({required String psbt, required double feeRate}) async {
     try {
-      final size = await _bitcoinWalletRepository.getTxSize(psbt: psbt);
-      final absFees = (size * feeRate).toInt();
-      return absFees;
+      final absFee = await _bitcoinWalletRepository.getTxFeeAmount(psbt: psbt);
+      return absFee;
     } catch (e) {
       throw CalculateBitcoinAbsoluteFeesException(e.toString());
     }

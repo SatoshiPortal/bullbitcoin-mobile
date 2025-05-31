@@ -6,12 +6,12 @@ class OldSeedRepository {
 
   OldSeedRepository(this.storageDatasource);
 
-  Future<OldSeed?> fetch({required String fingerprint}) async {
+  Future<OldSeed> fetch({required String fingerprint}) async {
     try {
       final seed = await storageDatasource.oldSeedFetch(fingerprint);
       return seed;
     } catch (e) {
-      return null;
+      rethrow;
     }
   }
 }
