@@ -52,39 +52,40 @@ class GetTransactionsUsecase {
               ? await _testnetSwapRepository.getAllSwaps(walletId: walletId)
               : await _mainnetSwapRepository.getAllSwaps(walletId: walletId);
 
-      final broadcastedTransactions = walletTransactions.map((wt) {
-        final swap =
-            swaps
-                .where(
-                  (swap) =>
-                      (wt.isOutgoing && swap.sendTxId == wt.txId) ||
-                      (wt.isIncoming && swap.receiveTxId == wt.txId),
-                )
-                .firstOrNull;
-        final payjoin =
-            payjoins
-                .where(
-                  (pj) =>
-                      [pj.txId, pj.originalTxId].contains(wt.txId) &&
-                      // Make sure to match the direction of the payjoin, since
-                      //  both a sender and receiver payjoin can exist for the
-                      //  same transaction if it was done between two wallets in
-                      //  the app.
-                      wt.isOutgoing == pj is PayjoinSender,
-                )
-                .firstOrNull;
-        if (payjoin != null) {
-          // Remove the payjoin from the list of payjoins to avoid duplication
-          //  since it's already included in the broadcasted transaction
-          payjoins.remove(payjoin);
-        }
+      final broadcastedTransactions =
+          walletTransactions.map((wt) {
+            final swap =
+                swaps
+                    .where(
+                      (swap) =>
+                          (wt.isOutgoing && swap.sendTxId == wt.txId) ||
+                          (wt.isIncoming && swap.receiveTxId == wt.txId),
+                    )
+                    .firstOrNull;
+            final payjoin =
+                payjoins
+                    .where(
+                      (pj) =>
+                          [pj.txId, pj.originalTxId].contains(wt.txId) &&
+                          // Make sure to match the direction of the payjoin, since
+                          //  both a sender and receiver payjoin can exist for the
+                          //  same transaction if it was done between two wallets in
+                          //  the app.
+                          wt.isOutgoing == pj is PayjoinSender,
+                    )
+                    .firstOrNull;
+            if (payjoin != null) {
+              // Remove the payjoin from the list of payjoins to avoid duplication
+              //  since it's already included in the broadcasted transaction
+              payjoins.remove(payjoin);
+            }
 
-        return Transaction.broadcasted(
-          walletTransaction: wt,
-          swap: swap,
-          payjoin: payjoin,
-        );
-      });
+            return Transaction(
+              walletTransaction: wt,
+              swap: swap,
+              payjoin: payjoin,
+            );
+          }).toList();
 
       // Filter out any swaps that are already included in the broadcasted transactions
       // We didn't do it in the previous step like with payjoins because one swap can
@@ -98,11 +99,13 @@ class GetTransactionsUsecase {
         }
       }
 
-      // Combine results into a list of Transaction entities
+      // Combine results of broadcasted transactions, remaining swaps which are
+      //  ongoing and remaining payjoins that are unbroadcasted as well
+      //  into a single list of Transaction entities.
       return [
         ...broadcastedTransactions,
-        ...swaps.map((s) => Transaction.ongoingSwap(swap: s)),
-        ...payjoins.map((p) => Transaction.ongoingPayjoin(payjoin: p)),
+        ...swaps.map((s) => Transaction(swap: s)),
+        ...payjoins.map((p) => Transaction(payjoin: p)),
       ];
     } catch (e) {
       throw Exception('Failed to fetch transactions: $e');

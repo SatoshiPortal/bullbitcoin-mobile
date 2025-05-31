@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
@@ -64,13 +65,24 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         (tx) =>
             // We don't want to show receive payjoin transactions that didn't get a
             // request from the sender yet.
-            (tx is OngoingPayjoinTransaction &&
-                tx.payjoin is PayjoinReceiver &&
-                tx.payjoin.status == PayjoinStatus.started) ||
+            (tx.isOngoingPayjoinReceiver &&
+                tx.payjoin!.status == PayjoinStatus.started) ||
             // We also only want to show one item in the list for ongoing swaps
             // between wallets, so we filter out the receiving side of the
             // swap, since the sending should be already in the list as well.
-            (tx.isChainSwap && tx.walletTransaction?.isIncoming == true),
+            (tx.isChainSwap &&
+                _walletId != null &&
+                tx.walletTransaction?.walletId != _walletId) ||
+            (tx.isChainSwap &&
+                _walletId == null &&
+                tx.walletTransaction?.isIncoming == true) ||
+            // We don't want to show failed or expired swaps in the list,
+            // since they are not relevant for the user.
+            (tx.isSwap &&
+                [
+                  SwapStatus.expired,
+                  SwapStatus.failed,
+                ].contains(tx.swap!.status)),
       );
       final isSyncing = _checkWalletSyncingUsecase.execute(walletId: _walletId);
 

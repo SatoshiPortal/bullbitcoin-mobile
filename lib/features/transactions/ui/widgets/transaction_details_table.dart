@@ -19,26 +19,27 @@ class TransactionDetailsTable extends StatelessWidget {
     final tx = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.transaction,
     );
-    final amountSat = tx?.amountSat ?? 0;
+    final amountSat = tx.amountSat;
     final wallet = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.transaction?.wallet,
+      (TransactionDetailsCubit cubit) => cubit.state.wallet,
     );
     final swap = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.transaction?.swap,
+      (TransactionDetailsCubit cubit) => cubit.state.swap,
     );
     final swapFees =
         (swap?.fees?.claimFee ?? 0) +
         (swap?.fees?.boltzFee ?? 0) +
         (swap?.fees?.lockupFee ?? 0);
     final payjoin = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.transaction?.payjoin,
+      (TransactionDetailsCubit cubit) => cubit.state.payjoin,
     );
 
-    final labels = tx?.labels.join(', ') ?? '';
-    final address = tx?.toAddress ?? '';
-    final txId = tx?.txId ?? '';
+    final labels = tx.labels?.join(', ') ?? '';
+    final address = tx.walletTransaction?.toAddress ?? '';
+    final txId = tx.txId ?? '';
     final abbreviatedAddress = StringFormatting.truncateMiddle(address);
-    final addressLabels = tx?.toAddressLabels?.join(', ') ?? '';
+    final addressLabels =
+        tx.walletTransaction?.toAddressLabels?.join(', ') ?? '';
     final abbreviatedTxId = StringFormatting.truncateMiddle(txId);
     final bitcoinUnit = context.select(
       (SettingsCubit cubit) => cubit.state.bitcoinUnit,
@@ -49,12 +50,7 @@ class TransactionDetailsTable extends StatelessWidget {
         // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
         // to be able to use the CurrencyText widget instead of having to format the amount here.
         DetailsTableItem(
-          label:
-              tx?.isIncoming != null
-                  ? tx!.isIncoming
-                      ? 'Amount received'
-                      : 'Amount sent'
-                  : 'Amount',
+          label: tx.isIncoming ? 'Amount received' : 'Amount sent',
           displayValue:
               bitcoinUnit == BitcoinUnit.sats
                   ? FormatAmount.sats(amountSat).toUpperCase()
@@ -62,7 +58,7 @@ class TransactionDetailsTable extends StatelessWidget {
                     ConvertAmount.satsToBtc(amountSat),
                   ).toUpperCase(),
         ),
-        if (tx?.isToSelf == true)
+        if (tx.walletTransaction?.isToSelf == true)
           DetailsTableItem(
             label: 'Amount received',
             displayValue:
@@ -72,14 +68,18 @@ class TransactionDetailsTable extends StatelessWidget {
                       ConvertAmount.satsToBtc(amountSat),
                     ).toUpperCase(),
           ),
-        if (tx?.isOutgoing == true)
+        if (tx.isOutgoing == true)
           DetailsTableItem(
             label: 'Transaction Fee',
             displayValue:
                 bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(tx?.feeSat ?? 0).toUpperCase()
+                    ? FormatAmount.sats(
+                      tx.walletTransaction?.feeSat ?? 0,
+                    ).toUpperCase()
                     : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(tx?.feeSat ?? 0),
+                      ConvertAmount.satsToBtc(
+                        tx.walletTransaction?.feeSat ?? 0,
+                      ),
                     ).toUpperCase(),
           ),
         DetailsTableItem(
@@ -93,14 +93,14 @@ class TransactionDetailsTable extends StatelessWidget {
         ),
         DetailsTableItem(
           label: 'Status',
-          displayValue: tx?.status.displayName ?? '',
+          displayValue: tx.walletTransaction?.status.displayName ?? '',
         ),
-        if (tx?.confirmationTime != null)
+        if (tx.walletTransaction?.confirmationTime != null)
           DetailsTableItem(
             label: 'Confirmation time',
             displayValue: DateFormat(
               'MMM d, y, h:mm a',
-            ).format(tx!.confirmationTime!),
+            ).format(tx.walletTransaction!.confirmationTime!),
           ),
         if (abbreviatedAddress.isNotEmpty)
           DetailsTableItem(

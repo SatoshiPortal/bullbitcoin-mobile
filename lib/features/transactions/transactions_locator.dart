@@ -14,6 +14,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/get_swap_counterpart_transaction_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -55,6 +57,23 @@ class TransactionsLocator {
         payjoinRepository: locator<PayjoinRepository>(),
       ),
     );
+
+    locator.registerFactory<GetSwapCounterpartTransactionUsecase>(
+      () => GetSwapCounterpartTransactionUsecase(
+        settingsRepository: locator<SettingsRepository>(),
+        walletTransactionRepository: locator<WalletTransactionRepository>(),
+        mainnetSwapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        testnetSwapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
+        ),
+        payjoinRepository: locator<PayjoinRepository>(),
+      ),
+    );
   }
 
   static void registerBlocs() {
@@ -70,9 +89,12 @@ class TransactionsLocator {
         checkWalletSyncingUsecase: locator<CheckWalletSyncingUsecase>(),
       ),
     );
-    locator.registerFactory<TransactionDetailsCubit>(
-      () => TransactionDetailsCubit(
+    locator.registerFactoryParam<TransactionDetailsCubit, Transaction, void>(
+      (transaction, _) => TransactionDetailsCubit(
+        transaction: transaction,
         getWalletUsecase: locator<GetWalletUsecase>(),
+        getSwapCounterpartTransactionUsecase:
+            locator<GetSwapCounterpartTransactionUsecase>(),
         getTransactionsByTxIdUsecase: locator<GetTransactionsByTxIdUsecase>(),
         watchWalletTransactionByTxIdUsecase:
             locator<WatchWalletTransactionByTxIdUsecase>(),

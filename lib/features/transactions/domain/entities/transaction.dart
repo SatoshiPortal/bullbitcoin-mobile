@@ -1,57 +1,28 @@
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:drift/drift.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'transaction.freezed.dart';
 
 @freezed
 sealed class Transaction with _$Transaction {
-  // Factory constructor for a transaction that was already broadcasted and
-  // picked up by the wallet.
-  const factory Transaction.broadcasted({
-    required WalletTransaction walletTransaction,
+  const factory Transaction({
+    WalletTransaction? walletTransaction,
     Swap? swap,
     Payjoin? payjoin,
-  }) = BroadcastedTransaction;
-  // Factory constructor for a swap that has been created but not broadcasted or
-  //  picked up by the wallet yet.
-  const factory Transaction.ongoingSwap({
-    required Swap swap,
-    // Payjoin? payjoin, // Maybe in the future swaps can be done with payjoin
-  }) = OngoingSwapTransaction;
-  // Factory constructor for a payjoin that has been created but not broadcasted
-  // or picked up by the wallet yet.
-  const factory Transaction.ongoingPayjoin({required Payjoin payjoin}) =
-      OngoingPayjoinTransaction;
+  }) = _Transaction;
   const Transaction._();
 
-  WalletTransaction? get walletTransaction => switch (this) {
-    BroadcastedTransaction(walletTransaction: final wt) => wt,
-    OngoingSwapTransaction() => null,
-    OngoingPayjoinTransaction() => null,
-  };
-  Swap? get swap => switch (this) {
-    BroadcastedTransaction(swap: final swap) => swap,
-    OngoingSwapTransaction(swap: final swap) => swap,
-    OngoingPayjoinTransaction() => null,
-  };
-  Payjoin? get payjoin => switch (this) {
-    BroadcastedTransaction(payjoin: final payjoin) => payjoin,
-    OngoingSwapTransaction() => null,
-    OngoingPayjoinTransaction(payjoin: final payjoin) => payjoin,
-  };
-  String? get txId => switch (this) {
-    BroadcastedTransaction(walletTransaction: final wt) => wt.txId,
-    OngoingSwapTransaction(swap: final swap) => swap.txId,
-    OngoingPayjoinTransaction(payjoin: final payjoin) => payjoin.txId,
-  };
+  String? get txId => walletTransaction?.txId ?? swap?.txId ?? payjoin?.txId;
 
+  bool get isBroadcasted => walletTransaction != null;
   bool get isSwap => swap != null;
-  bool get isOngoingSwap => this is OngoingSwapTransaction;
+  bool get isOngoingSwap => isSwap && !isBroadcasted;
   bool get isPayjoin => payjoin != null;
-  bool get isOngoingPayjoin => this is OngoingPayjoinTransaction;
+  bool get isOngoingPayjoin => isPayjoin && !isBroadcasted;
+  bool get isOngoingPayjoinReceiver =>
+      isOngoingPayjoin && payjoin is PayjoinReceiver;
   bool get isOngoingPayjoinSender =>
       isOngoingPayjoin && payjoin is PayjoinSender;
 
@@ -85,16 +56,10 @@ sealed class Transaction with _$Transaction {
   bool get isLnSwap => isSwap && (swap!.isLnReceiveSwap || swap!.isLnSendSwap);
   bool get isChainSwap => isSwap && swap!.isChainSwap;
 
-  DateTime? get timestamp => switch (this) {
-    BroadcastedTransaction(
-      walletTransaction: final wt,
-      swap: final swap,
-      payjoin: final payjoin,
-    ) =>
-      swap?.creationTime ?? payjoin?.createdAt ?? wt.confirmationTime,
-    OngoingSwapTransaction(swap: final swap) => swap.creationTime,
-    OngoingPayjoinTransaction(payjoin: final payjoin) => payjoin.createdAt,
-  };
+  DateTime? get timestamp =>
+      swap?.creationTime ??
+      payjoin?.createdAt ??
+      walletTransaction?.confirmationTime;
 
   int get amountSat =>
       walletTransaction?.amountSat ??
@@ -104,6 +69,8 @@ sealed class Transaction with _$Transaction {
 
   String get walletId =>
       walletTransaction?.walletId ?? swap?.walletId ?? payjoin!.walletId;
+
+  List<String>? get labels => walletTransaction?.labels;
 }
 
 /*

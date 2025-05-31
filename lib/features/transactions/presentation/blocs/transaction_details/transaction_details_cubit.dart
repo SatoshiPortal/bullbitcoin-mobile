@@ -13,6 +13,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/get_swap_counterpart_transaction_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -22,7 +23,10 @@ part 'transaction_details_state.dart';
 
 class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   TransactionDetailsCubit({
+    required Transaction transaction,
     required GetWalletUsecase getWalletUsecase,
+    required GetSwapCounterpartTransactionUsecase
+    getSwapCounterpartTransactionUsecase,
     required GetTransactionsByTxIdUsecase getTransactionsByTxIdUsecase,
     required WatchWalletTransactionByTxIdUsecase
     watchWalletTransactionByTxIdUsecase,
@@ -34,6 +38,8 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required BroadcastOriginalTransactionUsecase
     broadcastOriginalTransactionUsecase,
   }) : _getWalletUsecase = getWalletUsecase,
+       _getSwapCounterpartTransactionUsecase =
+           getSwapCounterpartTransactionUsecase,
        _getTransactionsByTxIdUsecase = getTransactionsByTxIdUsecase,
        _watchWalletTransactionByTxIdUsecase =
            watchWalletTransactionByTxIdUsecase,
@@ -44,10 +50,13 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
        _createLabelUsecase = createLabelUsecase,
        _broadcastOriginalTransactionUsecase =
            broadcastOriginalTransactionUsecase,
-       super(const TransactionDetailsState.loading());
+       super(TransactionDetailsState(transaction: transaction));
 
   final GetWalletUsecase _getWalletUsecase;
+  final GetSwapCounterpartTransactionUsecase
+  _getSwapCounterpartTransactionUsecase;
   final GetTransactionsByTxIdUsecase _getTransactionsByTxIdUsecase;
+
   final WatchWalletTransactionByTxIdUsecase
   _watchWalletTransactionByTxIdUsecase;
   final GetSwapUsecase _getSwapUsecase;
@@ -70,8 +79,9 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     return super.close();
   }
 
-  Future<void> init(Transaction tx) async {
+  Future<void> load() async {
     try {
+      final tx = state.transaction;
       final walletId = tx.walletId;
       final wallet = await _getWalletUsecase.execute(walletId);
 
@@ -79,39 +89,22 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         throw Exception('Wallet not found for id: $walletId');
       }
 
+      Wallet? counterpartWallet;
+      Transaction? swapCounterpartTransaction;
       if (tx.isChainSwap) {
+        // Get the counterpart transaction and wallet for chain swaps.
         final swap = tx.swap! as ChainSwap;
-        final otherWalletId =
+        final counterpartWalletId =
             walletId == swap.sendWalletId
                 ? swap.receiveWalletId
                 : swap.sendWalletId;
-        final otherTxId =
-            walletId == swap.sendWalletId ? swap.receiveTxId : swap.sendTxId;
-        if (otherWalletId != null && otherTxId != null) {
-          final (otherWallet, txsWithOtherTxId) =
+        if (counterpartWalletId != null) {
+          (counterpartWallet, swapCounterpartTransaction) =
               await (
-                _getWalletUsecase.execute(otherWalletId),
-                _getTransactionsByTxIdUsecase.execute(otherTxId),
+                _getWalletUsecase.execute(counterpartWalletId),
+                _getSwapCounterpartTransactionUsecase.execute(tx),
               ).wait;
-          final otherTransaction =
-              txsWithOtherTxId
-                  .where((tx) => tx.walletId == otherWalletId)
-                  .firstOrNull;
-          if (otherWallet != null && otherTransaction != null) {
-            emit(
-              TransactionDetailsState.betweenWalletsWithSwap(
-                transaction: tx,
-                wallet: wallet,
-                otherWallet: otherWallet,
-                otherTransaction: otherTransaction,
-              ),
-            );
-            return;
-          }
         }
-        emit(TransactionDetailsState.outgoing(transaction: tx, wallet: wallet));
-
-        return;
       } else {
         // Check if the transaction is between internal wallets. This is the case
         // if more than one transaction is returned for the same txId.
@@ -120,40 +113,31 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
           final transactions = await _getTransactionsByTxIdUsecase.execute(
             txId,
           );
+          // Retain only transactions that are not the same wallet and
+          // have the opposite isIncoming value.
+          // This is to find the counterpart wallet for the transaction.
           transactions.retainWhere(
             (t) => t.walletId != tx.walletId && t.isIncoming != tx.isIncoming,
           );
           if (transactions.isNotEmpty) {
-            final otherWallet = await _getWalletUsecase.execute(
+            // If a transaction is found, get the wallet for it.
+            counterpartWallet = await _getWalletUsecase.execute(
               transactions.first.walletId,
             );
-            if (otherWallet != null) {
-              emit(
-                TransactionDetailsState.betweenWallets(
-                  transaction: tx,
-                  wallet: wallet,
-                  otherWallet: otherWallet,
-                ),
-              );
-              return;
-            }
           }
         }
-
-        if (tx.isIncoming) {
-          emit(
-            TransactionDetailsState.incoming(transaction: tx, wallet: wallet),
-          );
-          return;
-        } else {
-          emit(
-            TransactionDetailsState.outgoing(transaction: tx, wallet: wallet),
-          );
-          return;
-        }
       }
+
+      emit(
+        state.copyWith(
+          isLoading: false,
+          wallet: wallet,
+          counterpartWallet: counterpartWallet,
+          swapCounterpartTransaction: swapCounterpartTransaction,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(err: e));
+      emit(state.copyWith(isLoading: false, err: e));
     }
   }
 
@@ -213,21 +197,27 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
   Future<void> saveTransactionNote(String note) async {
     // TODO: Permit multiple labels && labels for payjoin txs, so not only wallet txs (for example set on the original tx)
+    //  I think the entity should be changed to Transaction instead of WalletTransaction for that
     final walletTransaction = state.walletTransaction;
     if (walletTransaction == null) return;
 
     await _createLabelUsecase.execute<WalletTransaction>(
-      origin: walletTransaction.wallet!.origin,
+      origin: state.wallet!.origin,
       entity: walletTransaction,
       label: note,
     );
 
-    final updatedTransaction = walletTransaction.copyWith(
-      walletTransaction: transaction.walletTransaction?.copyWith(
-        labels: [...transaction.walletTransaction!.labels, note],
+    final updatedWalletransaction = state.transaction.walletTransaction
+        ?.copyWith(
+          labels: [...?state.transaction.walletTransaction?.labels, note],
+        );
+    emit(
+      state.copyWith(
+        transaction: state.transaction.copyWith(
+          walletTransaction: updatedWalletransaction,
+        ),
       ),
     );
-    emit(state.copyWith(transaction: updatedTransaction));
   }
 
   Future<void> broadcastPayjoinOriginalTx() async {
@@ -240,7 +230,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       );
       emit(
         state.copyWith(
-          transaction: state.transaction?.copyWith(payjoin: updatedPayjoin),
+          transaction: state.transaction.copyWith(payjoin: updatedPayjoin),
           err: null,
           isBroadcastingPayjoinOriginalTx: false,
         ),

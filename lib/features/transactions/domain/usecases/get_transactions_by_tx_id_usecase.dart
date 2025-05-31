@@ -4,6 +4,14 @@ import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 
+// This use case retrieves transactions by their transaction ID (txId).
+// Two wallet transactions can exist for the same txId if the transaction was
+// done between wallets in the app. One would be an incoming transaction and
+// the other an outgoing transaction.
+// Only one swap can exist for the same txId, since swaps are done between different networks
+// and so they don't have the same txId for incoming and outgoing transactions.
+// For payjoins, two transactions can exist for the same txId, just as with wallet transactions,
+// there can be an incoming and an outgoing transaction for the same payjoin and so the same txId.
 class GetTransactionsByTxIdUsecase {
   final SettingsRepository _settingsRepository;
   final WalletTransactionRepository _walletTransactionRepository;
@@ -25,12 +33,12 @@ class GetTransactionsByTxIdUsecase {
 
   Future<List<Transaction>> execute(String txId) async {
     try {
-      // Fetch settings to determine environment
+      // Fetch settings to determine environment for swap repository
       final settings = await _settingsRepository.fetch();
       final isTestnet = settings.environment.isTestnet;
       final swapRepository =
           isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
-      // Fetch wallet transaction by txId
+      // Fetch wallet transactions, swap and payjoins by txId
       final (walletTransactions, swap, payjoins) =
           await (
             _walletTransactionRepository.getWalletTransactions(txId: txId),
@@ -40,23 +48,23 @@ class GetTransactionsByTxIdUsecase {
 
       if (walletTransactions.isNotEmpty) {
         return walletTransactions.map((walletTransaction) {
+          // Both a send and a receive transaction can exist for the same txId,
+          // so we take the one with the matching walletId.
           final payjoin =
               payjoins
                   .where((pj) => pj.walletId == walletTransaction.walletId)
                   .firstOrNull;
 
-          return Transaction.broadcasted(
+          return Transaction(
             walletTransaction: walletTransaction,
             swap: swap,
             payjoin: payjoin,
           );
         }).toList();
       } else if (swap != null) {
-        return [Transaction.ongoingSwap(swap: swap)];
+        return [Transaction(swap: swap)];
       } else if (payjoins.isNotEmpty) {
-        return payjoins
-            .map((pj) => Transaction.ongoingPayjoin(payjoin: pj))
-            .toList();
+        return payjoins.map((pj) => Transaction(payjoin: pj)).toList();
       } else {
         return []; // No transaction found
       }

@@ -1184,16 +1184,11 @@ class SendSucessScreen extends StatelessWidget {
               BBButton.big(
                 label: 'View Details',
                 onPressed: () {
-                  final transaction =
-                      walletTransaction != null
-                          ? Transaction.broadcasted(
-                            walletTransaction: walletTransaction,
-                            swap: lnSwap ?? chainSwap,
-                            payjoin: payjoin,
-                          )
-                          : isSwap
-                          ? Transaction.ongoingSwap(swap: lnSwap ?? chainSwap!)
-                          : Transaction.ongoingPayjoin(payjoin: payjoin!);
+                  final transaction = Transaction(
+                    walletTransaction: walletTransaction,
+                    swap: lnSwap ?? chainSwap,
+                    payjoin: payjoin,
+                  );
                   context.push(
                     '/send/${SendRoute.sendTransactionDetails.path}',
                     extra: transaction,

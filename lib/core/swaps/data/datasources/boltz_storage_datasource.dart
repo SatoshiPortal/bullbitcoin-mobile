@@ -68,8 +68,10 @@ class BoltzStorageDatasource {
         await _localSwapStorage.managers.swaps
             .filter(
               (f) =>
-                  f.sendWalletId.equals(walletId) |
-                  f.receiveWalletId.equals(walletId),
+                  walletId == null
+                      ? const Constant(true) // No filtering
+                      : f.sendWalletId.equals(walletId) |
+                          f.receiveWalletId.equals(walletId),
             )
             .get();
     return all.map((e) => SwapModel.fromSqlite(e)).toList();

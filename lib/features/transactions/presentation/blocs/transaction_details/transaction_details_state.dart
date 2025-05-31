@@ -2,74 +2,23 @@ part of 'transaction_details_cubit.dart';
 
 @freezed
 sealed class TransactionDetailsState with _$TransactionDetailsState {
-  const factory TransactionDetailsState.loading({
+  const factory TransactionDetailsState({
+    @Default(true) bool isLoading,
+    required Transaction transaction,
+    Wallet? wallet,
+    Wallet? counterpartWallet,
+    Transaction? swapCounterpartTransaction,
     @Default(false) bool isBroadcastingPayjoinOriginalTx,
     Object? err,
-  }) = _LoadingTransactionDetailsState;
-  const factory TransactionDetailsState.incoming({
-    required Transaction transaction,
-    required Wallet wallet,
-    Object? err,
-    bool? isBroadcastingPayjoinOriginalTx,
-  }) = _IncomingTransactionDetailsState;
-  const factory TransactionDetailsState.outgoing({
-    required Transaction transaction,
-    required Wallet wallet,
-    Object? err,
-    bool? isBroadcastingPayjoinOriginalTx,
-  }) = _OutgoingTransactionDetailsState;
-  const factory TransactionDetailsState.betweenWallets({
-    required Transaction transaction,
-    required Wallet wallet,
-    required Wallet otherWallet,
-    Object? err,
-    bool? isBroadcastingPayjoinOriginalTx,
-  }) = _BetweenWalletsTransactionDetailsState;
-  const factory TransactionDetailsState.betweenWalletsWithSwap({
-    required Transaction transaction,
-    required Wallet wallet,
-    required Transaction otherTransaction,
-    required Wallet otherWallet,
-    bool? isBroadcastingPayjoinOriginalTx,
-    Object? err,
-  }) = _BetweenWalletsWithSwapTransactionDetailsState;
+  }) = _TransactionDetailsState;
   const TransactionDetailsState._();
 
-  bool get isOngoingSwap => switch (this) {
-    _IncomingTransactionDetailsState(transaction: final tx) => tx.isOngoingSwap,
-    _OutgoingTransactionDetailsState(transaction: final tx) => tx.isOngoingSwap,
-    _BetweenWalletsTransactionDetailsState(transaction: final tx) =>
-      tx.isOngoingSwap,
-    _BetweenWalletsWithSwapTransactionDetailsState(
-      transaction: final transaction,
-    ) =>
-      transaction.isOngoingSwap,
-    _LoadingTransactionDetailsState() => false,
-  };
-  bool get isOngoingPayjoin => switch (this) {
-    _IncomingTransactionDetailsState(transaction: final tx) =>
-      tx.isOngoingPayjoin,
-    _OutgoingTransactionDetailsState(transaction: final tx) =>
-      tx.isOngoingPayjoin,
-    _BetweenWalletsTransactionDetailsState(transaction: final tx) =>
-      tx.isOngoingPayjoin,
-    _BetweenWalletsWithSwapTransactionDetailsState(
-      transaction: final transaction,
-    ) =>
-      transaction.isOngoingPayjoin,
-    _LoadingTransactionDetailsState() => false,
-  };
+  WalletTransaction? get walletTransaction => transaction.walletTransaction;
+  Swap? get swap => transaction.swap;
+  Payjoin? get payjoin => transaction.payjoin;
 
-  Payjoin? get payjoin => switch (this) {
-    _IncomingTransactionDetailsState(transaction: final tx) => tx.payjoin,
-    _OutgoingTransactionDetailsState(transaction: final tx) => tx.payjoin,
-    _BetweenWalletsTransactionDetailsState(transaction: final tx) => tx.payjoin,
-    _BetweenWalletsWithSwapTransactionDetailsState(
-      transaction: final transaction,
-    ) =>
-      transaction.payjoin,
-    _LoadingTransactionDetailsState() => null,
-  };
+  bool get isOngoingSwap => transaction.isOngoingSwap;
+  bool get isOngoingPayjoin => transaction.isOngoingPayjoin;
 
   /*
   bool

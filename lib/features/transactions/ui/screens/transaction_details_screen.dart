@@ -41,13 +41,13 @@ class TransactionDetailsScreen extends StatelessWidget {
     final tx = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
     );
-    final amountSat = tx?.amountSat ?? 0;
-    final isIncoming = tx?.isIncoming ?? false;
+    final amountSat = tx.amountSat;
+    final isIncoming = tx.isIncoming;
     final isOngoingSenderPayjoin =
         context.select(
           (TransactionDetailsCubit bloc) => bloc.state.isOngoingPayjoin,
         ) &&
-        tx?.isOutgoing == true;
+        tx.isOutgoing == true;
 
     return Scaffold(
       appBar: AppBar(
@@ -95,17 +95,16 @@ class TransactionDetailsScreen extends StatelessWidget {
                 ] else ...[
                   const Gap(64),
                 ],
-                if (tx != null)
-                  BBButton.big(
-                    label: 'Add note',
-                    onPressed: () async {
-                      await showTransactionLabelBottomSheet(context);
-                    },
-                    bgColor: Colors.transparent,
-                    textColor: theme.colorScheme.secondary,
-                    outlined: true,
-                    borderColor: theme.colorScheme.secondary,
-                  ),
+                BBButton.big(
+                  label: 'Add note',
+                  onPressed: () async {
+                    await showTransactionLabelBottomSheet(context);
+                  },
+                  bgColor: Colors.transparent,
+                  textColor: theme.colorScheme.secondary,
+                  outlined: true,
+                  borderColor: theme.colorScheme.secondary,
+                ),
                 const Gap(16),
               ],
             ),

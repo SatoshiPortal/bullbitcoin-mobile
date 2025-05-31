@@ -38,7 +38,9 @@ class SendRouter {
         builder: (context, state) {
           final tx = state.extra! as Transaction;
           return BlocProvider(
-            create: (context) => locator<TransactionDetailsCubit>()..init(tx),
+            create:
+                (context) =>
+                    locator<TransactionDetailsCubit>(param1: tx)..load(),
             child: const TransactionDetailsScreen(title: 'Send'),
           );
         },

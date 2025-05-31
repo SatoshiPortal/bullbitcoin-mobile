@@ -45,7 +45,7 @@ abstract class TransactionsState with _$TransactionsState {
     });
 
     // Sort days in descending order and preserve order with LinkedHashMap
-    final sorted = SplayTreeMap<int, List<WalletTransaction>>.from(
+    final sorted = SplayTreeMap<int, List<Transaction>>.from(
       grouped,
       (a, b) => b.compareTo(a), // descending key sort
     );
@@ -75,6 +75,8 @@ abstract class TransactionsState with _$TransactionsState {
                 )
                 .toList(),
     };
+
+    filtered.removeWhere((key, value) => value.isEmpty);
 
     return filtered;
   }
@@ -118,7 +120,6 @@ abstract class TransactionsState with _$TransactionsState {
               swap = null;
             }
 */
-
 
 /*
 final broadcastedBitcoinTxIds = broadcastedTransactions
