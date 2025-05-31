@@ -738,8 +738,8 @@ class BoltzDatasource {
     }
     final reverse = _reverseFeesAndLimits!;
     return (
-      reverse.btcLimits.minimal.toInt() as int,
-      reverse.btcLimits.maximal.toInt() as int,
+      reverse.btcLimits.minimal.toInt(),
+      reverse.btcLimits.maximal.toInt(),
     );
   }
 
@@ -749,8 +749,8 @@ class BoltzDatasource {
     }
     final reverse = _reverseFeesAndLimits!;
     return (
-      reverse.lbtcLimits.minimal.toInt() as int,
-      reverse.lbtcLimits.maximal.toInt() as int,
+      reverse.lbtcLimits.minimal.toInt(),
+      reverse.lbtcLimits.maximal.toInt(),
     );
   }
 
@@ -760,8 +760,8 @@ class BoltzDatasource {
     }
     final submarine = _submarineFeesAndLimits!;
     return (
-      submarine.btcLimits.minimal.toInt() as int,
-      submarine.btcLimits.maximal.toInt() as int,
+      submarine.btcLimits.minimal.toInt(),
+      submarine.btcLimits.maximal.toInt(),
     );
   }
 
@@ -771,8 +771,8 @@ class BoltzDatasource {
     }
     final submarine = _submarineFeesAndLimits!;
     return (
-      submarine.lbtcLimits.minimal.toInt() as int,
-      submarine.lbtcLimits.maximal.toInt() as int,
+      submarine.lbtcLimits.minimal.toInt(),
+      submarine.lbtcLimits.maximal.toInt(),
     );
   }
 
@@ -781,10 +781,7 @@ class BoltzDatasource {
       await updateFees(swapType: swap_entity.SwapType.bitcoinToLiquid);
     }
     final chain = _chainFeesAndLimits!;
-    return (
-      chain.btcLimits.minimal.toInt() as int,
-      chain.btcLimits.maximal.toInt() as int,
-    );
+    return (chain.btcLimits.minimal.toInt(), chain.btcLimits.maximal.toInt());
   }
 
   Future<(int, int)> getLbtcToBtcChainSwapLimits() async {
@@ -792,10 +789,7 @@ class BoltzDatasource {
       await updateFees(swapType: swap_entity.SwapType.liquidToBitcoin);
     }
     final chain = _chainFeesAndLimits!;
-    return (
-      chain.lbtcLimits.minimal.toInt() as int,
-      chain.lbtcLimits.maximal.toInt() as int,
-    );
+    return (chain.lbtcLimits.minimal.toInt(), chain.lbtcLimits.maximal.toInt());
   }
 
   Future<int> getLbtLnRefundTxSize({
