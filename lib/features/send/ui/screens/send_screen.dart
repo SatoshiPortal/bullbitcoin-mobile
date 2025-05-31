@@ -1114,7 +1114,6 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-
           InfoRow(
             title: 'Send Network Fee',
             details: Column(
@@ -1125,9 +1124,11 @@ class _ChainSwapSendInfoSection extends StatelessWidget {
             ),
           ),
           _divider(context),
-          const Gap(16),
-          const _SlowPaymentWarning(),
           _SwapFeeBreakdown(fees: swap.fees),
+          const Gap(16),
+
+          const _SlowPaymentWarning(),
+
           if (showFeeWarning == true) ...[
             const Gap(8),
             _HighFeeWarning(feePercent),

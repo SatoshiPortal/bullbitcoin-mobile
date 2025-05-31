@@ -526,9 +526,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees({
-    required SwapType type,
-  }) async {
+  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees(SwapType type) async {
     switch (type) {
       case SwapType.lightningToBitcoin:
         final (min, max) = await _boltz.getBtcReverseSwapLimits();
@@ -558,8 +556,8 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<void> updateSwapLimitsAndFees() async {
-    await _boltz.updateFees();
+  Future<void> updateSwapLimitsAndFees(SwapType type) async {
+    await _boltz.updateFees(swapType: type);
   }
 
   @override

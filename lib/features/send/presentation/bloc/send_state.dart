@@ -68,7 +68,6 @@ abstract class SendState with _$SendState {
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('CAD') String fiatCurrencyCode,
     @Default('') String inputAmountCurrencyCode,
-
     @Default(0) double exchangeRate,
     @Default('') String label,
     @Default([]) List<WalletUtxo> utxos,
@@ -108,12 +107,16 @@ abstract class SendState with _$SendState {
     ConfirmTransactionException? confirmTransactionException,
 
     // swapLimits
-    SwapLimits? bitcoinSwapLimits,
-    SwapLimits? liquidSwapLimits,
+    SwapLimits? bitcoinLnSwapLimits,
+    SwapLimits? liquidLnSwapLimits,
+    SwapLimits? btcToLbtcChainSwapLimits,
+    SwapLimits? lbtcToBtcChainSwapLimits,
     SwapLimits? selectedSwapLimits,
 
-    SwapFees? bitcoinSwapFees,
-    SwapFees? liquidSwapFees,
+    SwapFees? bitcoinLnSwapFees,
+    SwapFees? liquidLnSwapFees,
+    SwapFees? btcToLbtcChainSwapFees,
+    SwapFees? lbtcToBtcChainSwapFees,
     SwapFees? selectedSwapFees,
   }) = _SendState;
   const SendState._();

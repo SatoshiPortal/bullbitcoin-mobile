@@ -19,8 +19,8 @@ class GetSwapLimitsUsecase {
     try {
       final swapRepository =
           isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
-      await swapRepository.updateSwapLimitsAndFees();
-      return await swapRepository.getSwapLimitsAndFees(type: type);
+      await swapRepository.updateSwapLimitsAndFees(type);
+      return await swapRepository.getSwapLimitsAndFees(type);
     } catch (e) {
       debugPrint('[GetSwapLimitsUsecase] Error getting swap limits: $e');
       throw GetSwapLimitsException(e.toString());
