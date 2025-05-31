@@ -369,7 +369,7 @@ class BdkWalletDatasource implements WalletDatasource {
                 // to know the net amount
                 tx.sent - tx.received - (tx.fee ?? BigInt.zero);
 
-        return WalletTransactionModel.bitcoin(
+        return WalletTransactionModel(
           txId: tx.txid,
           isIncoming: tx.received > tx.sent,
           amountSat: netAmountSat.toInt(),
@@ -378,6 +378,8 @@ class BdkWalletDatasource implements WalletDatasource {
           isToSelf: isToSelf,
           inputs: inputModels,
           outputs: outputModels,
+          isLiquid: false,
+          isTestnet: wallet.isTestnet,
         );
       }),
     );

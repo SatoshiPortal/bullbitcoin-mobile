@@ -1,4 +1,3 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
@@ -42,13 +41,13 @@ class TransactionDetailsScreen extends StatelessWidget {
     final tx = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
     );
-    final amountSat = tx?.amountSat ?? 0;
-    final isIncoming = tx?.direction == WalletTransactionDirection.incoming;
+    final amountSat = tx.amountSat;
+    final isIncoming = tx.isIncoming;
     final isOngoingSenderPayjoin =
         context.select(
           (TransactionDetailsCubit bloc) => bloc.state.isOngoingPayjoin,
         ) &&
-        !isIncoming;
+        tx.isOutgoing == true;
 
     return Scaffold(
       appBar: AppBar(
@@ -96,17 +95,16 @@ class TransactionDetailsScreen extends StatelessWidget {
                 ] else ...[
                   const Gap(64),
                 ],
-                if (tx != null)
-                  BBButton.big(
-                    label: 'Add note',
-                    onPressed: () async {
-                      await showTransactionLabelBottomSheet(context);
-                    },
-                    bgColor: Colors.transparent,
-                    textColor: theme.colorScheme.secondary,
-                    outlined: true,
-                    borderColor: theme.colorScheme.secondary,
-                  ),
+                BBButton.big(
+                  label: 'Add note',
+                  onPressed: () async {
+                    await showTransactionLabelBottomSheet(context);
+                  },
+                  bgColor: Colors.transparent,
+                  textColor: theme.colorScheme.secondary,
+                  outlined: true,
+                  borderColor: theme.colorScheme.secondary,
+                ),
                 const Gap(16),
               ],
             ),

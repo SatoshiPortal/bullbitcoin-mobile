@@ -39,6 +39,10 @@ class CreateReceiveSwapUsecase {
     try {
       final wallet = await _walletRepository.getWallet(walletId);
 
+      if (wallet == null) {
+        throw Exception('Wallet not found');
+      }
+
       final swapRepository =
           wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
       final (limits, fees) = await _swapRepository.getSwapLimitsAndFees(

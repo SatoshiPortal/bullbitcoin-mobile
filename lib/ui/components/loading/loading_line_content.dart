@@ -2,10 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 
 class LoadingLineContent extends StatelessWidget {
-  const LoadingLineContent({
-    super.key,
-    required this.width,
-  });
+  const LoadingLineContent({super.key, required this.width});
 
   final double width;
 
@@ -15,7 +12,7 @@ class LoadingLineContent extends StatelessWidget {
       baseColor: Colors.grey.shade300,
       highlightColor: Colors.grey.shade100,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -29,8 +29,16 @@ class CreateChainSwapUsecase {
     int? amountSat,
   }) async {
     try {
-      final bitcoinWallet = await _walletRepository.getWallet(bitcoinWalletId);
-      final liquidWallet = await _walletRepository.getWallet(liquidWalletId);
+      final (bitcoinWallet, liquidWallet) =
+          await (
+            _walletRepository.getWallet(bitcoinWalletId),
+            _walletRepository.getWallet(liquidWalletId),
+          ).wait;
+
+      if (bitcoinWallet == null || liquidWallet == null) {
+        throw Exception('One or both wallets not found');
+      }
+
       if (bitcoinWallet.network.isTestnet != liquidWallet.network.isTestnet) {
         throw Exception('Both wallets must be on the same network');
       }

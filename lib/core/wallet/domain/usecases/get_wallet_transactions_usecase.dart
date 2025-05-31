@@ -19,32 +19,12 @@ class GetWalletTransactionsUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
-      final (broadcastedTransactions, ongoingPayjoinTransactions) =
-          await (
-            _walletTransactionRepository.getBroadcastedWalletTransactions(
-              walletId: walletId,
-              sync: sync,
-              environment: environment,
-            ),
-            _walletTransactionRepository.getOngoingPayjoinWalletTransactions(
-              walletId: walletId,
-              sync: sync,
-              environment: environment,
-            ),
-          ).wait;
-
-      final broadcastedBitcoinTxIds = broadcastedTransactions
-          .whereType<BitcoinWalletTransaction>()
-          .map((tx) => tx.txId);
-
-      final walletTransactions = [
-        ...broadcastedTransactions,
-        ...ongoingPayjoinTransactions.where(
-          (tx) =>
-              !broadcastedBitcoinTxIds.contains(tx.payjoin!.txId) &&
-              !broadcastedBitcoinTxIds.contains(tx.payjoin!.originalTxId),
-        ),
-      ];
+      final walletTransactions = await _walletTransactionRepository
+          .getWalletTransactions(
+            walletId: walletId,
+            sync: sync,
+            environment: environment,
+          );
 
       return walletTransactions;
     } catch (e) {

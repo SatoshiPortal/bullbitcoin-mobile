@@ -13,7 +13,7 @@ class SenderBroadcastPayjoinOriginalTxButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isBroadcastingPayjoinOriginalTx = context.select(
       (TransactionDetailsCubit bloc) =>
-          bloc.state.isBroadcastingPayjoinOriginalTx ?? false,
+          bloc.state.isBroadcastingPayjoinOriginalTx,
     );
     return Column(
       children: [

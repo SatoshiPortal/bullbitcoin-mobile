@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -15,12 +17,12 @@ part 'transactions_state.dart';
 class TransactionsCubit extends Cubit<TransactionsState> {
   TransactionsCubit({
     String? walletId,
-    required GetWalletTransactionsUsecase getWalletTransactionsUsecase,
+    required GetTransactionsUsecase getTransactionsUsecase,
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
     required CheckWalletSyncingUsecase checkWalletSyncingUsecase,
   }) : _walletId = walletId,
-       _getWalletTransactionsUsecase = getWalletTransactionsUsecase,
+       _getTransactionsUsecase = getTransactionsUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
@@ -34,7 +36,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   }
 
   final String? _walletId;
-  final GetWalletTransactionsUsecase _getWalletTransactionsUsecase;
+  final GetTransactionsUsecase _getTransactionsUsecase;
   final WatchStartedWalletSyncsUsecase _watchStartedWalletSyncsUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
   final CheckWalletSyncingUsecase _checkWalletSyncingUsecase;
@@ -54,8 +56,32 @@ class TransactionsCubit extends Cubit<TransactionsState> {
   Future<void> loadTxs() async {
     try {
       emit(state.copyWith(isSyncing: true));
-      final transactions = await _getWalletTransactionsUsecase.execute(
+      final transactions = await _getTransactionsUsecase.execute(
         walletId: _walletId,
+      );
+
+      transactions.removeWhere(
+        (tx) =>
+            // We don't want to show receive payjoin transactions that didn't get a
+            // request from the sender yet.
+            (tx.isOngoingPayjoinReceiver &&
+                tx.payjoin!.status == PayjoinStatus.started) ||
+            // We also only want to show one item in the list for ongoing swaps
+            // between wallets, so we filter out the receiving side of the
+            // swap, since the sending should be already in the list as well.
+            (tx.isChainSwap &&
+                _walletId != null &&
+                tx.walletTransaction?.walletId != _walletId) ||
+            (tx.isChainSwap &&
+                _walletId == null &&
+                tx.walletTransaction?.isIncoming == true) ||
+            // We don't want to show failed or expired swaps in the list,
+            // since they are not relevant for the user.
+            (tx.isSwap &&
+                [
+                  SwapStatus.expired,
+                  SwapStatus.failed,
+                ].contains(tx.swap!.status)),
       );
       final isSyncing = _checkWalletSyncingUsecase.execute(walletId: _walletId);
 
@@ -67,9 +93,7 @@ class TransactionsCubit extends Cubit<TransactionsState> {
         ),
       );
     } catch (e) {
-      if (e is GetWalletTransactionsException) {
-        emit(state.copyWith(err: e.message));
-      } else if (!isClosed) {
+      if (!isClosed) {
         emit(state.copyWith(err: e));
       }
     }

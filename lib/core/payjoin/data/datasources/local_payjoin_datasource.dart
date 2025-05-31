@@ -1,5 +1,7 @@
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:drift/drift.dart';
 
 class LocalPayjoinDatasource {
   final SqliteDatabase _db;
@@ -46,32 +48,57 @@ class LocalPayjoinDatasource {
     return PayjoinModel.fromSenderTable(sender) as PayjoinSenderModel;
   }
 
-  Future<List<PayjoinModel>> fetchAll({bool onlyUnfinished = false}) async {
-    List<PayjoinReceiverRow> receivers;
-    List<PayjoinSenderRow> senders;
+  Future<List<PayjoinModel>> fetchAll({
+    String? walletId,
+    bool onlyUnfinished = false,
+    Environment? environment,
+  }) async {
+    final isTestnet = environment?.isTestnet;
 
-    if (onlyUnfinished) {
-      receivers =
-          await _db.managers.payjoinReceivers
-              .filter((f) => f.isExpired(false))
-              .filter((f) => f.isCompleted(false))
-              .get();
-      senders =
-          await _db.managers.payjoinSenders
-              .filter((f) => f.isExpired(false))
-              .filter((f) => f.isCompleted(false))
-              .get();
-    } else {
-      (receivers, senders) =
-          await (
-            _db.managers.payjoinReceivers.get(),
-            _db.managers.payjoinSenders.get(),
-          ).wait;
-    }
+    final receiverFilter = _db.managers.payjoinReceivers.filter((row) {
+      Expression<bool> expr = const Constant(true); // identity
+
+      if (onlyUnfinished) {
+        expr =
+            expr & row.isExpired.equals(false) & row.isCompleted.equals(false);
+      }
+
+      if (walletId != null) {
+        expr = expr & row.walletId.equals(walletId);
+      }
+
+      if (isTestnet != null) {
+        expr = expr & row.isTestnet.equals(isTestnet);
+      }
+
+      return expr;
+    });
+
+    final senderFilter = _db.managers.payjoinSenders.filter((row) {
+      Expression<bool> expr = const Constant(true);
+
+      if (onlyUnfinished) {
+        expr =
+            expr & row.isExpired.equals(false) & row.isCompleted.equals(false);
+      }
+
+      if (walletId != null) {
+        expr = expr & row.walletId.equals(walletId);
+      }
+
+      if (isTestnet != null) {
+        expr = expr & row.isTestnet.equals(isTestnet);
+      }
+
+      return expr;
+    });
+
+    final (receivers, senders) =
+        await (receiverFilter.get(), senderFilter.get()).wait;
 
     return [
-      ...receivers.map((receiver) => PayjoinModel.fromReceiverTable(receiver)),
-      ...senders.map((sender) => PayjoinModel.fromSenderTable(sender)),
+      ...receivers.map(PayjoinModel.fromReceiverTable),
+      ...senders.map(PayjoinModel.fromSenderTable),
     ];
   }
 

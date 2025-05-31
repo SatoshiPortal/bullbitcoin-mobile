@@ -10,6 +10,7 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
@@ -82,9 +83,15 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
   }
 
   @override
-  Future<List<Payjoin>> getPayjoins({bool onlyOngoing = false}) async {
+  Future<List<Payjoin>> getPayjoins({
+    String? walletId,
+    bool onlyOngoing = false,
+    Environment? environment,
+  }) async {
     final models = await _localPayjoinDatasource.fetchAll(
+      walletId: walletId,
       onlyUnfinished: onlyOngoing,
+      environment: environment,
     );
 
     final payjoins = models.map((model) => model.toEntity()).toList();

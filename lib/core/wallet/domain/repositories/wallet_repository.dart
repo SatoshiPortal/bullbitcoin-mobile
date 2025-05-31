@@ -19,7 +19,7 @@ abstract class WalletRepository {
     required ScriptType scriptType,
     required String label,
   });
-  Future<Wallet> getWallet(String walletId, {bool sync = false});
+  Future<Wallet?> getWallet(String walletId, {bool sync = false});
   // These should also sync the wallets before returning them
   Future<List<Wallet>> getWallets({
     Environment? environment,
