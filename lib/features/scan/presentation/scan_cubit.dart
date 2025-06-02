@@ -38,7 +38,7 @@ class ScanCubit extends Cubit<ScanState> {
             final pr = await PaymentRequest.parse(psbt);
             if (pr is PsbtPaymentRequest) {
               emit(state.copyWith(data: (pr.psbt, pr)));
-              debugPrint('PSBT found: ${pr.psbt}');
+              debugPrint('SCAN PSBT: ${pr.psbt}');
             }
           }
         } else {
@@ -46,6 +46,7 @@ class ScanCubit extends Cubit<ScanState> {
             try {
               final pr = await PaymentRequest.parse(qr);
               emit(state.copyWith(data: (qr, pr)));
+              debugPrint('SCAN PaymentRequest: ${pr.runtimeType}');
             } catch (e) {
               debugPrint('$PaymentRequest not found $e');
             }
