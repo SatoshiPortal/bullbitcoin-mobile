@@ -242,7 +242,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   }
 
   void _startMonitoringSwap(String swapId, {required String walletId}) {
-    _swapSubscription = _watchSwapUsecase.execute(swapId).listen((swap) {
+    _swapSubscription = _watchSwapUsecase.execute(swapId).listen((swap) async {
       emit(state.copyWith(transaction: state.transaction.copyWith(swap: swap)));
       if (swap.txId != null) {
         if (swap.walletId == walletId) {
@@ -256,6 +256,17 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
             walletId: swap.walletId,
           );
         }
+      }
+      // If the swap is a chain swap, we also need to see when the counterpart
+      // transaction is available, so we can update the state accordingly.
+      if (swap.isChainSwap) {
+        final counterpartTransaction =
+            await _getSwapCounterpartTransactionUsecase.execute(
+              state.transaction,
+            );
+        emit(
+          state.copyWith(swapCounterpartTransaction: counterpartTransaction),
+        );
       }
     });
   }
