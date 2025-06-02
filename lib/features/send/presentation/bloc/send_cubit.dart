@@ -539,17 +539,17 @@ class SendCubit extends Cubit<SendState> {
           ).wait;
       emit(
         state.copyWith(
-          liquidSwapLimits: liquidSwapLimits,
-          liquidSwapFees: liquidSwapFees,
-          bitcoinSwapLimits: bitcoinSwapLimits,
-          bitcoinSwapFees: bitcoinSwapFees,
+          liquidLnSwapLimits: liquidSwapLimits,
+          liquidLnSwapFees: liquidSwapFees,
+          bitcoinLnSwapLimits: bitcoinSwapLimits,
+          bitcoinLnSwapFees: bitcoinSwapFees,
         ),
       );
     }
     if (state.requireChainSwap) {
       final (
-        (liquidSwapLimits, liquidSwapFees),
-        (bitcoinSwapLimits, bitcoinSwapFees),
+        (lbtcToBtcSwapLimits, lbtcToBtcSwapFees),
+        (btcToLbtcSwapLimits, btcToLbtcSwapFees),
       ) = await (
             _getSwapLimitsUsecase.execute(
               isTestnet: state.selectedWallet!.network.isTestnet,
@@ -562,10 +562,10 @@ class SendCubit extends Cubit<SendState> {
           ).wait;
       emit(
         state.copyWith(
-          liquidSwapLimits: liquidSwapLimits,
-          liquidSwapFees: liquidSwapFees,
-          bitcoinSwapLimits: bitcoinSwapLimits,
-          bitcoinSwapFees: bitcoinSwapFees,
+          btcToLbtcChainSwapLimits: btcToLbtcSwapLimits,
+          btcToLbtcChainSwapFees: btcToLbtcSwapFees,
+          lbtcToBtcChainSwapLimits: lbtcToBtcSwapLimits,
+          lbtcToBtcChainSwapFees: lbtcToBtcSwapFees,
         ),
       );
     }
@@ -578,20 +578,40 @@ class SendCubit extends Cubit<SendState> {
     switch (walletNetwork) {
       case Network.bitcoinMainnet:
       case Network.bitcoinTestnet:
-        emit(
-          state.copyWith(
-            selectedSwapFees: state.bitcoinSwapFees,
-            selectedSwapLimits: state.bitcoinSwapLimits,
-          ),
-        );
+        if (state.paymentRequest?.isBolt11 == true ||
+            state.paymentRequest?.isLnAddress == true) {
+          emit(
+            state.copyWith(
+              selectedSwapFees: state.bitcoinLnSwapFees,
+              selectedSwapLimits: state.bitcoinLnSwapLimits,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              selectedSwapFees: state.btcToLbtcChainSwapFees,
+              selectedSwapLimits: state.btcToLbtcChainSwapLimits,
+            ),
+          );
+        }
       case Network.liquidMainnet:
       case Network.liquidTestnet:
-        emit(
-          state.copyWith(
-            selectedSwapFees: state.liquidSwapFees,
-            selectedSwapLimits: state.liquidSwapLimits,
-          ),
-        );
+        if (state.paymentRequest?.isBolt11 == true ||
+            state.paymentRequest?.isLnAddress == true) {
+          emit(
+            state.copyWith(
+              selectedSwapFees: state.liquidLnSwapFees,
+              selectedSwapLimits: state.liquidLnSwapLimits,
+            ),
+          );
+        } else {
+          emit(
+            state.copyWith(
+              selectedSwapFees: state.lbtcToBtcChainSwapFees,
+              selectedSwapLimits: state.lbtcToBtcChainSwapLimits,
+            ),
+          );
+        }
     }
   }
 

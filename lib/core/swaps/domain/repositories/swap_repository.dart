@@ -2,8 +2,8 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 
 abstract class SwapRepository {
   // LIMITS
-  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees({required SwapType type});
-  Future<void> updateSwapLimitsAndFees();
+  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees(SwapType type);
+  Future<void> updateSwapLimitsAndFees(SwapType type);
 
   // RECEIVE SWAPS
   Future<LnReceiveSwap> createLightningToLiquidSwap({
