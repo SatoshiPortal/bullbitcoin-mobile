@@ -27,32 +27,36 @@ sealed class Transaction with _$Transaction {
       isOngoingPayjoin && payjoin is PayjoinSender;
 
   bool get isOutgoing =>
-      walletTransaction?.isOutgoing == true ||
-      swap?.isLnSendSwap == true ||
-      swap?.isChainSwap == true ||
-      payjoin is PayjoinSender;
+      walletTransaction != null
+          ? walletTransaction!.isOutgoing
+          : swap?.isLnSendSwap == true ||
+              swap?.isChainSwap == true ||
+              payjoin is PayjoinSender;
   bool get isIncoming =>
-      walletTransaction?.isIncoming == true ||
-      swap?.isLnReceiveSwap == true ||
-      swap?.isChainSwap == true ||
-      payjoin is PayjoinReceiver;
+      walletTransaction != null
+          ? walletTransaction!.isIncoming
+          : swap?.isLnReceiveSwap == true ||
+              swap?.isChainSwap == true ||
+              payjoin is PayjoinReceiver;
   bool get isBitcoin =>
-      walletTransaction?.isBitcoin == true ||
-      payjoin != null ||
-      [
-        SwapType.bitcoinToLightning,
-        SwapType.bitcoinToLiquid,
-        SwapType.lightningToBitcoin,
-        SwapType.liquidToBitcoin,
-      ].contains(swap?.type);
+      walletTransaction != null
+          ? walletTransaction!.isBitcoin
+          : payjoin != null ||
+              [
+                SwapType.bitcoinToLightning,
+                SwapType.bitcoinToLiquid,
+                SwapType.lightningToBitcoin,
+                SwapType.liquidToBitcoin,
+              ].contains(swap?.type);
   bool get isLiquid =>
-      walletTransaction?.isLiquid == true ||
-      [
-        SwapType.liquidToLightning,
-        SwapType.liquidToBitcoin,
-        SwapType.lightningToLiquid,
-        SwapType.bitcoinToLiquid,
-      ].contains(swap?.type);
+      walletTransaction != null
+          ? walletTransaction!.isLiquid
+          : [
+            SwapType.liquidToLightning,
+            SwapType.liquidToBitcoin,
+            SwapType.lightningToLiquid,
+            SwapType.bitcoinToLiquid,
+          ].contains(swap?.type);
   bool get isLnSwap => isSwap && (swap!.isLnReceiveSwap || swap!.isLnSendSwap);
   bool get isChainSwap => isSwap && swap!.isChainSwap;
 

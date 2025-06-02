@@ -28,6 +28,20 @@ class TransactionDetailsTable extends StatelessWidget {
     final wallet = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.wallet,
     );
+    final walletLabel =
+        wallet?.label ??
+        (wallet?.isLiquid == true ? 'Instant Payments' : 'Secure Bitcoin');
+    final counterpartWallet = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.counterpartWallet,
+    );
+    final counterpartWalletLabel =
+        counterpartWallet != null
+            ? counterpartWallet.label ??
+                (counterpartWallet.isLiquid == true
+                    ? 'Instant Payments'
+                    : 'Secure Bitcoin')
+            : null;
+
     final swap = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.swap,
     );
@@ -38,6 +52,13 @@ class TransactionDetailsTable extends StatelessWidget {
     final payjoin = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.payjoin,
     );
+    final swapCounterpartTransaction = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTransaction,
+    );
+    final abbreviatedSwapCounterpartTransactionTxId =
+        swapCounterpartTransaction?.txId != null
+            ? StringFormatting.truncateMiddle(swapCounterpartTransaction!.txId!)
+            : '';
 
     final labels = tx.labels?.join(', ') ?? '';
     final address = tx.walletTransaction?.toAddress ?? '';
@@ -87,15 +108,13 @@ class TransactionDetailsTable extends StatelessWidget {
                       ),
                     ).toUpperCase(),
           ),
-        DetailsTableItem(
-          label: 'Wallet',
-          displayValue:
-              wallet != null
-                  ? wallet.isLiquid
-                      ? 'Instant Payments'
-                      : 'Secure Bitcoin'
-                  : '',
-        ),
+        if (walletLabel.isNotEmpty)
+          DetailsTableItem(label: 'Wallet', displayValue: walletLabel),
+        if (counterpartWalletLabel != null && counterpartWalletLabel.isNotEmpty)
+          DetailsTableItem(
+            label: tx.isOutgoing ? 'To wallet' : 'From wallet',
+            displayValue: counterpartWalletLabel,
+          ),
         DetailsTableItem(
           label: 'Status',
           displayValue: tx.walletTransaction?.status.displayName ?? '',
@@ -139,7 +158,15 @@ class TransactionDetailsTable extends StatelessWidget {
               maxLines: 5,
             ),
           ),
-
+          if (swapCounterpartTransaction != null)
+            DetailsTableItem(
+              label:
+                  swapCounterpartTransaction.isBitcoin
+                      ? 'Bitcoin transaction ID'
+                      : 'Liquid transaction ID',
+              displayValue: abbreviatedSwapCounterpartTransactionTxId,
+              copyValue: swapCounterpartTransaction.txId,
+            ),
           if (swap.completionTime != null)
             DetailsTableItem(
               label: 'Swap time received',

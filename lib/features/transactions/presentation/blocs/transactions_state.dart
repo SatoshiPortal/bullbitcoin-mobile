@@ -75,26 +75,28 @@ abstract class TransactionsState with _$TransactionsState {
                     SwapStatus.expired,
                     SwapStatus.failed,
                   ].contains(tx.swap!.status);
-              // We also only want to show one item in the list for ongoing swaps
-              // between wallets, so we always filter out the outgoing side of the
-              // swap, unless the filter is set to 'send' or the walletId is
-              // set to the wallet that does the sending in the swap.
-              final isNotFromWalletOrIsOutgoingChainSwap =
-                  tx.isChainSwap &&
-                  ((walletId != null &&
-                          tx.walletTransaction?.walletId != walletId) ||
-                      (walletId == null &&
-                          tx.walletTransaction?.isOutgoing == true));
+              // We also only want to show the incoming side of a chain swap,
+              //  unless in specific sending wallet overview or with the 'send'
+              //  filter selected.
+              final isOutgoingChainSwap =
+                  tx.isChainSwap && tx.walletTransaction?.isOutgoing == true;
 
               return !isReceivePayjoinWithoutRequest &&
                   !isExpiredOrFailedSwap &&
-                  !isNotFromWalletOrIsOutgoingChainSwap &&
                   switch (filter) {
-                    TransactionsFilter.all => true,
+                    TransactionsFilter.all =>
+                      (!isOutgoingChainSwap ||
+                          walletId == tx.walletTransaction?.walletId),
                     TransactionsFilter.send => tx.isOutgoing,
                     TransactionsFilter.receive => tx.isIncoming,
-                    TransactionsFilter.swap => tx.isSwap,
-                    TransactionsFilter.payjoin => tx.isPayjoin,
+                    TransactionsFilter.swap =>
+                      tx.isSwap &&
+                          (!isOutgoingChainSwap ||
+                              walletId == tx.walletTransaction?.walletId),
+                    TransactionsFilter.payjoin =>
+                      tx.isPayjoin &&
+                          (!isOutgoingChainSwap ||
+                              walletId == tx.walletTransaction?.walletId),
                     TransactionsFilter.sell => false,
                     TransactionsFilter.buy => false,
                   };
