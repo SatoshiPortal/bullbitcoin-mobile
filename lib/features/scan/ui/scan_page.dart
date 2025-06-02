@@ -83,12 +83,12 @@ class _FullScreenScannerState extends State<FullScreenScanner> {
                 current != null &&
                 current.data.$1.isNotEmpty &&
                 current.data.$2 != null,
-        listener: (context, state) async {
+        listener: (context, state) {
           if (state != null &&
               state.data.$1.isNotEmpty &&
               state.data.$2 != null) {
             widget.onScannedPaymentRequest.call(state.data);
-            await context.read<ScanCubit>().closeCamera();
+
             if (context.mounted) context.pop();
           }
         },
@@ -170,8 +170,7 @@ class _FullScreenScannerState extends State<FullScreenScanner> {
                     right: 0,
                     child: Center(
                       child: IconButton(
-                        onPressed: () async {
-                          await context.read<ScanCubit>().closeCamera();
+                        onPressed: () {
                           if (context.mounted) context.pop();
                         },
                         icon: Icon(
