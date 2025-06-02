@@ -8,7 +8,7 @@ class ScanService {
   static bool _isProcessing = false;
 
   static String decode(List<int> bytes, int width, int height) {
-    if (_isProcessing) return '';
+    if (_isProcessing) throw Exception('Already processing…');
 
     _isProcessing = true;
     try {
@@ -18,8 +18,8 @@ class ScanService {
       } else {
         return _decodeAndroid(bytes, width, height);
       }
-    } catch (_) {
-      return '';
+    } catch (e) {
+      rethrow;
     } finally {
       _isProcessing = false;
     }
@@ -92,7 +92,7 @@ class ScanService {
         final bitmap2 = BinaryBitmap(GlobalHistogramBinarizer(source));
         return reader.decode(bitmap2).text;
       } catch (_) {
-        return '';
+        throw Exception('HybridBinarizer and GlobalHistogramBinarizer failed');
       }
     }
   }

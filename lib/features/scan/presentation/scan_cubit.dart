@@ -17,15 +17,11 @@ class ScanCubit extends Cubit<ScanState> {
 
   ScanCubit({required this.controller}) : super(ScanState.initial());
 
-  Future<void> closeCamera() async {
-    await controller.stopImageStream();
-  }
+  Future<void> closeCamera() async => await controller.stopImageStream();
 
   Future<void> openCamera() async {
     // Added delay for iOS to ensure camera is fully initialized
-    if (Platform.isIOS) {
-      await Future.delayed(const Duration(milliseconds: 100));
-    }
+    if (Platform.isIOS) await Future.delayed(const Duration(milliseconds: 100));
 
     await controller.startImageStream((CameraImage image) async {
       if (state.processingImage) return;
@@ -66,6 +62,7 @@ class ScanCubit extends Cubit<ScanState> {
 
   Future<String?> tryToCollectBbqrPsbt(String payload) async {
     if (!BbqrOptions.isValid(payload)) return null;
+
     final options = BbqrOptions.decode(payload);
     final updatedBbqr = Map<int, String>.from(state.bbqr);
     updatedBbqr[options.share] = payload;
