@@ -17,7 +17,10 @@ class ScanCubit extends Cubit<ScanState> {
 
   ScanCubit({required this.controller}) : super(ScanState.initial());
 
-  Future<void> closeCamera() async => await controller.stopImageStream();
+  void dispose() {
+    controller.stopImageStream();
+    controller.dispose();
+  }
 
   Future<void> openCamera() async {
     // Added delay for iOS to ensure camera is fully initialized
