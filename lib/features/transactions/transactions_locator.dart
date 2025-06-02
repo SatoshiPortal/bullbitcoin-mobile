@@ -1,11 +1,9 @@
 import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
-import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
@@ -98,10 +96,8 @@ class TransactionsLocator {
         getTransactionsByTxIdUsecase: locator<GetTransactionsByTxIdUsecase>(),
         watchWalletTransactionByTxIdUsecase:
             locator<WatchWalletTransactionByTxIdUsecase>(),
-        getSwapUsecase: locator<GetSwapUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
-        getPayjoinByIdUsecase: locator<GetPayjoinByIdUsecase>(),
         createLabelUsecase: locator<CreateLabelUsecase>(),
         broadcastOriginalTransactionUsecase:
             locator<BroadcastOriginalTransactionUsecase>(),
