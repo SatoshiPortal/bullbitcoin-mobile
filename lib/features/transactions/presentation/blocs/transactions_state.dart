@@ -5,6 +5,7 @@ enum TransactionsFilter { all, send, receive, swap, payjoin, sell, buy }
 @freezed
 abstract class TransactionsState with _$TransactionsState {
   const factory TransactionsState({
+    String? walletId,
     List<Transaction>? transactions,
     @Default(false) bool isSyncing,
     @Default(TransactionsFilter.all) TransactionsFilter filter,
@@ -61,9 +62,34 @@ abstract class TransactionsState with _$TransactionsState {
     final filtered = {
       for (final key in transactionsByDay!.keys)
         key:
-            transactionsByDay![key]!
-                .where(
-                  (tx) => switch (filter) {
+            transactionsByDay![key]!.where((tx) {
+              // We don't want to show:
+              // - receive payjoin transactions that didn't get a request from the sender yet.
+              // - expired or failed swaps.
+              final isReceivePayjoinWithoutRequest =
+                  tx.isOngoingPayjoinReceiver &&
+                  tx.payjoin!.status == PayjoinStatus.started;
+              final isExpiredOrFailedSwap =
+                  tx.isSwap &&
+                  [
+                    SwapStatus.expired,
+                    SwapStatus.failed,
+                  ].contains(tx.swap!.status);
+              // We also only want to show one item in the list for ongoing swaps
+              // between wallets, so we always filter out the outgoing side of the
+              // swap, unless the filter is set to 'send' or the walletId is
+              // set to the wallet that does the sending in the swap.
+              final isNotFromWalletOrIsOutgoingChainSwap =
+                  tx.isChainSwap &&
+                  ((walletId != null &&
+                          tx.walletTransaction?.walletId != walletId) ||
+                      (walletId == null &&
+                          tx.walletTransaction?.isOutgoing == true));
+
+              return !isReceivePayjoinWithoutRequest &&
+                  !isExpiredOrFailedSwap &&
+                  !isNotFromWalletOrIsOutgoingChainSwap &&
+                  switch (filter) {
                     TransactionsFilter.all => true,
                     TransactionsFilter.send => tx.isOutgoing,
                     TransactionsFilter.receive => tx.isIncoming,
@@ -71,9 +97,8 @@ abstract class TransactionsState with _$TransactionsState {
                     TransactionsFilter.payjoin => tx.isPayjoin,
                     TransactionsFilter.sell => false,
                     TransactionsFilter.buy => false,
-                  },
-                )
-                .toList(),
+                  };
+            }).toList(),
     };
 
     filtered.removeWhere((key, value) => value.isEmpty);

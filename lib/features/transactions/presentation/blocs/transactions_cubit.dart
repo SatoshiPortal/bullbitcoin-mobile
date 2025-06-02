@@ -21,21 +21,19 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
     required CheckWalletSyncingUsecase checkWalletSyncingUsecase,
-  }) : _walletId = walletId,
-       _getTransactionsUsecase = getTransactionsUsecase,
+  }) : _getTransactionsUsecase = getTransactionsUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
-       super(const TransactionsState()) {
+       super(TransactionsState(walletId: walletId)) {
     _startedSyncSubscription = _watchStartedWalletSyncsUsecase
-        .execute(walletId: _walletId)
+        .execute(walletId: walletId)
         .listen((_) => emit(state.copyWith(isSyncing: true)));
     _finishedSyncSubscription = _watchFinishedWalletSyncsUsecase
-        .execute(walletId: _walletId)
+        .execute(walletId: walletId)
         .listen((_) => loadTxs());
   }
 
-  final String? _walletId;
   final GetTransactionsUsecase _getTransactionsUsecase;
   final WatchStartedWalletSyncsUsecase _watchStartedWalletSyncsUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
@@ -57,33 +55,12 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     try {
       emit(state.copyWith(isSyncing: true));
       final transactions = await _getTransactionsUsecase.execute(
-        walletId: _walletId,
+        walletId: state.walletId,
       );
 
-      transactions.removeWhere(
-        (tx) =>
-            // We don't want to show receive payjoin transactions that didn't get a
-            // request from the sender yet.
-            (tx.isOngoingPayjoinReceiver &&
-                tx.payjoin!.status == PayjoinStatus.started) ||
-            // We also only want to show one item in the list for ongoing swaps
-            // between wallets, so we filter out the receiving side of the
-            // swap, since the sending should be already in the list as well.
-            (tx.isChainSwap &&
-                _walletId != null &&
-                tx.walletTransaction?.walletId != _walletId) ||
-            (tx.isChainSwap &&
-                _walletId == null &&
-                tx.walletTransaction?.isIncoming == true) ||
-            // We don't want to show failed or expired swaps in the list,
-            // since they are not relevant for the user.
-            (tx.isSwap &&
-                [
-                  SwapStatus.expired,
-                  SwapStatus.failed,
-                ].contains(tx.swap!.status)),
+      final isSyncing = _checkWalletSyncingUsecase.execute(
+        walletId: state.walletId,
       );
-      final isSyncing = _checkWalletSyncingUsecase.execute(walletId: _walletId);
 
       emit(
         state.copyWith(
