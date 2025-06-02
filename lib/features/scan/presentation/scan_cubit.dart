@@ -65,7 +65,7 @@ class ScanCubit extends Cubit<ScanState> {
   }
 
   Future<String?> tryToCollectBbqrPsbt(String payload) async {
-    if (BbqrOptions.isValid(payload)) return null;
+    if (!BbqrOptions.isValid(payload)) return null;
     final options = BbqrOptions.decode(payload);
     final updatedBbqr = Map<int, String>.from(state.bbqr);
     updatedBbqr[options.share] = payload;
