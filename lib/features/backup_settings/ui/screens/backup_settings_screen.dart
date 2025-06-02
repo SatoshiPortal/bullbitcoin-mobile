@@ -108,22 +108,13 @@ class _KeyServerStatusWidget extends StatelessWidget {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: 'Key Server: ',
+                              text: 'Key Server ',
                               style: context.font.labelLarge?.copyWith(
                                 fontSize: 12,
                                 color: context.colour.secondary,
                               ),
                             ),
-                            TextSpan(
-                              text:
-                                  state.torStatus == TorStatus.online
-                                      ? 'Online'
-                                      : 'Offline',
-                              style: context.font.labelLarge?.copyWith(
-                                fontSize: 12,
-                                color: context.colour.secondary,
-                              ),
-                            ),
+
                             WidgetSpan(
                               child: Icon(
                                 Icons.bar_chart_rounded,
