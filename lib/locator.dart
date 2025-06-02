@@ -46,7 +46,8 @@ class AppLocator {
     SettingsLocator.setup();
     BitcoinPriceLocator.setup();
     HomeLocator.setup();
-    TransactionsLocator.setup();
+    TransactionsLocator.registerUsecases();
+    TransactionsLocator.registerBlocs();
     ReceiveLocator.setup();
     SendLocator.setup();
     BackupSettingsLocator.setup();

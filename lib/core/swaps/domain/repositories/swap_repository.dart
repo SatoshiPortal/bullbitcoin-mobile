@@ -134,7 +134,8 @@ abstract class SwapRepository {
   Future<Swap> getSwap({required String swapId});
   Future<LnSendSwap?> getSendSwapByInvoice({required String invoice});
   Future<List<Swap>> getOngoingSwaps();
-  Future<List<Swap>> getAllSwaps();
+  Future<List<Swap>> getAllSwaps({String? walletId});
+  Future<Swap?> getSwapByTxId(String txId);
 
   Future<void> updateSwap({required Swap swap});
 

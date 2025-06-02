@@ -30,7 +30,7 @@ class WatchWalletTransactionByAddressUsecase {
             );
 
             final txs = await _walletTransactionRepository
-                .getBroadcastedWalletTransactions(
+                .getWalletTransactions(
                   walletId: walletId,
                   toAddress: toAddress,
                 );

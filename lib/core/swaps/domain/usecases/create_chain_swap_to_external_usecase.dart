@@ -30,6 +30,11 @@ class CreateChainSwapToExternalUsecase {
   }) async {
     try {
       final sendWallet = await _walletRepository.getWallet(sendWalletId);
+
+      if (sendWallet == null) {
+        throw Exception('Send wallet not found');
+      }
+
       final isTestnet = sendWallet.network.isTestnet;
       final swapRepository =
           isTestnet ? _swapRepositoryTestnet : _swapRepository;

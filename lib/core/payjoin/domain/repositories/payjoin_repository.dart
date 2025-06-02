@@ -1,11 +1,16 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
+import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 
 abstract class PayjoinRepository {
   Stream<Payjoin> get payjoinStream;
   Future<bool> checkOhttpRelayHealth();
-  Future<List<Payjoin>> getPayjoins({bool onlyOngoing = false});
+  Future<List<Payjoin>> getPayjoins({
+    String? walletId,
+    bool onlyOngoing = false,
+    Environment? environment,
+  });
   Future<Payjoin?> getPayjoinById(String payjoinId);
   Future<List<Payjoin>> getPayjoinsByTxId(String txId);
   Future<List<({String txId, int vout})>> getUtxosFrozenByOngoingPayjoins();

@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.d
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
@@ -144,6 +145,21 @@ class SwapsLocator {
               LocatorInstanceNameConstants
                   .boltzTestnetSwapRepositoryInstanceName,
         ),
+      ),
+    );
+
+    locator.registerFactory<GetSwapsUsecase>(
+      () => GetSwapsUsecase(
+        mainnetSwapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        testnetSwapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 

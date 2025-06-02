@@ -1419,7 +1419,7 @@ class SendCubit extends Cubit<SendState> {
           debugPrint(
             '[SendBloc] Watched transaction ${tx.txId} updated: ${tx.status}',
           );
-          emit(state.copyWith(transaction: tx));
+          emit(state.copyWith(walletTransaction: tx));
         });
   }
 }

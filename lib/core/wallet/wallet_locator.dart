@@ -1,13 +1,11 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
 import 'package:bb_mobile/core/logging/domain/repositories/log_repository.dart';
-import 'package:bb_mobile/core/payjoin/data/datasources/local_payjoin_datasource.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
-import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/frozen_wallet_utxo_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/lwk_wallet_datasource.dart';
@@ -110,8 +108,6 @@ class WalletLocator {
         bdkWalletTransactionDatasource: locator<BdkWalletDatasource>(),
         lwkWalletTransactionDatasource: locator<LwkWalletDatasource>(),
         electrumServerStorage: locator<ElectrumServerStorageDatasource>(),
-        payjoinDatasource: locator<LocalPayjoinDatasource>(),
-        swapDatasource: locator<BoltzStorageDatasource>(),
       ),
     );
   }

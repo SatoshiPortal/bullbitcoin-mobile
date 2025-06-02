@@ -1,5 +1,6 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -11,34 +12,35 @@ import 'package:timeago/timeago.dart' as timeago;
 class TxListItem extends StatelessWidget {
   const TxListItem({super.key, required this.tx});
 
-  final WalletTransaction tx;
+  final Transaction tx;
 
   @override
   Widget build(BuildContext context) {
-    // final isSwap = tx.isSwap;
     final isLnSwap = tx.isLnSwap;
     final isChainSwap = tx.isChainSwap;
     final icon =
         isChainSwap
             ? Icons.swap_vert_rounded
-            : tx.direction == WalletTransactionDirection.outgoing
+            : tx.isOutgoing
             ? Icons.arrow_upward
             : Icons.arrow_downward;
     final walletColor =
-        tx is BitcoinWalletTransaction
-            ? context.colour.onTertiary
-            : context.colour.tertiary;
+        tx.isBitcoin ? context.colour.onTertiary : context.colour.tertiary;
     final networkLabel =
         isLnSwap
             ? 'Lightning'
-            : tx is BitcoinWalletTransaction
+            : isChainSwap
+            ? tx.swap!.type == SwapType.liquidToBitcoin
+                ? 'L-BTC -> BTC'
+                : 'BTC -> L-BTC'
+            : tx.isBitcoin
             ? 'Bitcoin'
             : 'Liquid';
-    final label = tx.labels.isNotEmpty ? tx.labels.first : null;
-    final date =
-        tx.confirmationTime != null
-            ? timeago.format(tx.confirmationTime!)
+    final label =
+        tx.walletTransaction != null && tx.walletTransaction!.labels.isNotEmpty
+            ? tx.walletTransaction!.labels.first
             : null;
+    final date = tx.timestamp != null ? timeago.format(tx.timestamp!) : null;
 
     return InkWell(
       onTap: () {
