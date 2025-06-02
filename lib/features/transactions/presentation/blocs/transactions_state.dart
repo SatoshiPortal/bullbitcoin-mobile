@@ -79,7 +79,9 @@ abstract class TransactionsState with _$TransactionsState {
               //  unless in specific sending wallet overview or with the 'send'
               //  filter selected.
               final isOutgoingChainSwap =
-                  tx.isChainSwap && tx.walletTransaction?.isOutgoing == true;
+                  tx.isChainSwap &&
+                  tx.walletTransaction?.isOutgoing == true &&
+                  tx.swap!.receiveTxId != null;
 
               return !isReceivePayjoinWithoutRequest &&
                   !isExpiredOrFailedSwap &&
