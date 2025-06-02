@@ -20,6 +20,7 @@ abstract class ReceiveState with _$ReceiveState {
     WalletAddress? liquidAddress,
     @Default('') String note,
     PayjoinReceiver? payjoin,
+    ReceivePayjoinException? receivePayjoinException,
     @Default(false) bool isAddressOnly,
     WalletTransaction? tx,
     Object? error,
@@ -224,7 +225,7 @@ abstract class ReceiveState with _$ReceiveState {
           !wallet!.isWatchOnly &&
           !isAddressOnly &&
           payjoin == null &&
-          error is! ReceivePayjoinException;
+          receivePayjoinException == null;
     }
     return false;
   }

@@ -202,7 +202,14 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           error = e;
         }
 
-        emit(state.copyWith(payjoin: payjoin, error: error));
+        emit(
+          state.copyWith(
+            payjoin: payjoin,
+            error: error is! ReceivePayjoinException ? error : null,
+            receivePayjoinException:
+                error is ReceivePayjoinException ? error : null,
+          ),
+        );
       } else if (state.payjoin != null && wallet.isWatchOnly) {
         // If the wallet is watch only, we need to clear the payjoin receiver
         //  since we can't sign proposals non-interactively.
