@@ -112,7 +112,6 @@ class ReceiveTransactionDetailsTable extends StatelessWidget {
                               swap.abbreviatedReceiveTxid,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.primary,
-                                decoration: TextDecoration.underline,
                               ),
                               textAlign: TextAlign.end,
                             ),
@@ -166,7 +165,6 @@ class ReceiveTransactionDetailsTable extends StatelessWidget {
                         abbreviatedTxId,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
-                          decoration: TextDecoration.underline,
                         ),
                         textAlign: TextAlign.end,
                       ),

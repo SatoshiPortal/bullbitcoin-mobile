@@ -90,10 +90,7 @@ class TransactionDetailsTable extends StatelessWidget {
                     },
                     child: Text(
                       abbreviatedTxId,
-                      style: TextStyle(
-                        color: context.colour.primary,
-                        decoration: TextDecoration.underline,
-                      ),
+                      style: TextStyle(color: context.colour.primary),
                       textAlign: TextAlign.end,
                     ),
                   ),
