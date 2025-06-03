@@ -369,8 +369,13 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
     try {
       if (operation == checkServerConnectionUsecase.execute) {
-        // Only retry for connection checks
-        for (var attempt = 0; attempt < maxRetries; attempt++) {
+        // Only retry failed connection checks
+
+        for (
+          var attempt = 0;
+          (attempt < maxRetries && state.torStatus != TorStatus.online);
+          attempt++
+        ) {
           try {
             final result = await operation();
             emit(
