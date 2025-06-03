@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/mempool_url.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TransactionDetailsTable extends StatelessWidget {
   const TransactionDetailsTable({super.key});
@@ -67,6 +69,7 @@ class TransactionDetailsTable extends StatelessWidget {
     final bitcoinUnit = context.select(
       (SettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
+    final unblindedUrl = walletTransaction?.unblindedUrl;
 
     return DetailsTable(
       items: [
@@ -74,6 +77,26 @@ class TransactionDetailsTable extends StatelessWidget {
           label: 'Transaction ID',
           displayValue: abbreviatedTxId,
           copyValue: txId,
+          displayWidget:
+              txId.isEmpty
+                  ? null
+                  : GestureDetector(
+                    onTap: () async {
+                      final url =
+                          walletTransaction?.isLiquid == true
+                              ? MempoolUrl.liquidTxidUrl(unblindedUrl ?? '')
+                              : MempoolUrl.bitcoinTxidUrl(txId);
+                      await launchUrl(Uri.parse(url));
+                    },
+                    child: Text(
+                      abbreviatedTxId,
+                      style: TextStyle(
+                        color: context.colour.primary,
+                        decoration: TextDecoration.underline,
+                      ),
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
         ),
         if (labels.isNotEmpty)
           DetailsTableItem(label: 'Transaction notes', displayValue: labels),

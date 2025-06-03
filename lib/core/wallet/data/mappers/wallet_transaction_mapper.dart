@@ -39,6 +39,7 @@ class WalletTransactionMapper {
       labels: labels ?? [],
       inputs: inputs,
       outputs: outputs,
+      unblindedUrl: walletTransactionModel.unblindedUrl,
     );
   }
 }

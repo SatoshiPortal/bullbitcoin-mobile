@@ -48,6 +48,8 @@ class ApiServiceConstants {
   static const publicMempoolUrlPath = 'mempool.space';
 
   // Liquid mempool
+  static const bbLiquidMempoolUrlPath = 'liquid.bullbitcoin.com';
+  static const bbLiquidMempoolTestnetUrlPath = 'liquid.bullbitcoin.com/testnet';
   static const publicLiquidMempoolUrl = 'https://liquid.network';
   static const publicLiquidMempoolTestnetUrl = 'https://liquid.network/testnet';
 

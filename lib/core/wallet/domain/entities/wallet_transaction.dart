@@ -37,6 +37,7 @@ sealed class WalletTransaction with _$WalletTransaction implements Labelable {
     DateTime? confirmationTime,
     @Default(false) bool isToSelf,
     @Default([]) List<String> labels,
+    String? unblindedUrl,
   }) = _WalletTransaction;
   const WalletTransaction._();
 

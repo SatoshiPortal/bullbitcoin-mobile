@@ -1,12 +1,14 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/mempool_url.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/ui/components/tables/details_table.dart';
 import 'package:bb_mobile/ui/components/tables/details_table_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ReceiveTransactionDetailsTable extends StatelessWidget {
   const ReceiveTransactionDetailsTable({super.key});
@@ -45,8 +47,10 @@ class ReceiveTransactionDetailsTable extends StatelessWidget {
           label: 'Amount received',
           displayValue:
               (bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(amountSat)
-                      : FormatAmount.btc(ConvertAmount.satsToBtc(amountSat)))
+                      ? FormatAmount.sats(amountSat - totalSwapFeesSat)
+                      : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(amountSat - totalSwapFeesSat),
+                      ))
                   .toUpperCase(),
         ),
         if (swap != null && swap.fees != null)
@@ -89,6 +93,30 @@ class ReceiveTransactionDetailsTable extends StatelessWidget {
                   label: 'Transaction Id',
                   displayValue: swap.abbreviatedReceiveTxid, // TODO: format
                   copyValue: swap.receiveTxid,
+                  displayWidget:
+                      swap.receiveTxid == null
+                          ? null
+                          : GestureDetector(
+                            onTap: () async {
+                              final url =
+                                  wallet.isLiquid
+                                      ? MempoolUrl.liquidTxidUrl(
+                                        swap.receiveAddress ?? '',
+                                      )
+                                      : MempoolUrl.bitcoinTxidUrl(
+                                        swap.receiveTxid!,
+                                      );
+                              await launchUrl(Uri.parse(url));
+                            },
+                            child: Text(
+                              swap.abbreviatedReceiveTxid,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                decoration: TextDecoration.underline,
+                              ),
+                              textAlign: TextAlign.end,
+                            ),
+                          ),
                 ),
               DetailsTableItem(
                 label: 'Lightning invoice',
@@ -121,6 +149,28 @@ class ReceiveTransactionDetailsTable extends StatelessWidget {
             label: 'Transaction ID',
             displayValue: abbreviatedTxId,
             copyValue: txId,
+            displayWidget:
+                txId.isEmpty
+                    ? null
+                    : GestureDetector(
+                      onTap: () async {
+                        final url =
+                            wallet!.isLiquid
+                                ? MempoolUrl.liquidTxidUrl(
+                                  tx?.unblindedUrl ?? '',
+                                )
+                                : MempoolUrl.bitcoinTxidUrl(txId);
+                        await launchUrl(Uri.parse(url));
+                      },
+                      child: Text(
+                        abbreviatedTxId,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          decoration: TextDecoration.underline,
+                        ),
+                        textAlign: TextAlign.end,
+                      ),
+                    ),
           ),
         ],
         if (note.isNotEmpty)

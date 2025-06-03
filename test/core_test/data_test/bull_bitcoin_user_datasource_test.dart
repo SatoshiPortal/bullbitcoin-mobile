@@ -1,6 +1,6 @@
-import 'package:flutter_test/flutter_test.dart';
-import 'package:dio/dio.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bull_bitcoin_user_datasource.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const apiKey =

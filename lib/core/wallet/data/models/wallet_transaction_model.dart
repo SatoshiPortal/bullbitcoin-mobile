@@ -16,6 +16,7 @@ sealed class WalletTransactionModel with _$WalletTransactionModel {
     required bool isLiquid,
     required bool isTestnet,
     int? confirmationTimestamp,
+    String? unblindedUrl,
     @Default(false) bool isToSelf,
   }) = _WalletTransactionModel;
   const WalletTransactionModel._();

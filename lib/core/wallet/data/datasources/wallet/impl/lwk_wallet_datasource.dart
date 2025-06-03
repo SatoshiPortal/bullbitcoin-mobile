@@ -416,6 +416,7 @@ class LwkWalletDatasource implements WalletDatasource {
             outputs: outputs,
             isLiquid: true,
             isTestnet: wallet.isTestnet,
+            unblindedUrl: tx.unblindedUrl,
           );
         }),
       );
