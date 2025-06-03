@@ -4,6 +4,7 @@ import 'package:bb_mobile/features/electrum_settings/ui/electrum_settings_router
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,6 +31,13 @@ class SettingsScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              if (isSuperuser && kDebugMode)
+                ListTile(
+                  title: const Text('Experimental / Danger Zone'),
+                  onTap:
+                      () => context.pushNamed(SettingsRoute.experimental.name),
+                  trailing: const Icon(Icons.chevron_right),
+                ),
               if (isSuperuser)
                 ListTile(
                   title: Text(context.loc.testnetModeSettingsLabel),

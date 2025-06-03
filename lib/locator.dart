@@ -5,8 +5,8 @@ import 'package:bb_mobile/features/backup_settings/backup_settings_locator.dart'
 import 'package:bb_mobile/features/backup_wallet/backup_wallet_locator.dart';
 import 'package:bb_mobile/features/bitcoin_price/bitcoin_price_locator.dart';
 import 'package:bb_mobile/features/electrum_settings/electrum_settings_locator.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_wallet_locator.dart';
 import 'package:bb_mobile/features/home/home_locator.dart';
-import 'package:bb_mobile/features/import_watch_only_wallet/import_watch_only_wallet_locator.dart';
 import 'package:bb_mobile/features/key_server/key_server_locator.dart';
 import 'package:bb_mobile/features/legacy_seed_view/legacy_seed_view_locator.dart';
 import 'package:bb_mobile/features/onboarding/onboarding_locator.dart';

@@ -1,10 +1,12 @@
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
 import 'package:bb_mobile/features/backup_settings/ui/screens/backup_settings_screen.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/backup_wallet_router.dart';
+import 'package:bb_mobile/features/experimental/experimental_router.dart';
 import 'package:bb_mobile/features/legacy_seed_view/presentation/legacy_seed_view_cubit.dart';
 import 'package:bb_mobile/features/legacy_seed_view/ui/legacy_seed_view_screen.dart';
 import 'package:bb_mobile/features/pin_code/ui/pin_code_setting_flow.dart';
 import 'package:bb_mobile/features/settings/ui/screens/currency_settings_screen.dart';
+import 'package:bb_mobile/features/settings/ui/screens/experimental_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/language_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/log_settings_screen.dart';
 import 'package:bb_mobile/features/settings/ui/screens/settings_screen.dart';
@@ -20,7 +22,8 @@ enum SettingsRoute {
   currency('currency'),
   backupSettings('backup-settings'),
   logs('logs'),
-  legacySeeds('legacy-seeds');
+  legacySeeds('legacy-seeds'),
+  experimental('experimental-settings');
 
   final String path;
 
@@ -71,6 +74,12 @@ class SettingsRouter {
         path: SettingsRoute.currency.path,
         name: SettingsRoute.currency.name,
         builder: (context, state) => const CurrencySettingsScreen(),
+      ),
+      GoRoute(
+        path: SettingsRoute.experimental.path,
+        name: SettingsRoute.experimental.name,
+        builder: (context, state) => const ExperimentalSettingsScreen(),
+        routes: [ExperimentalRouterConfig.route],
       ),
     ],
   );
