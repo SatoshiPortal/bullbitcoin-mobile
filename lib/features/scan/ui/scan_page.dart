@@ -80,9 +80,8 @@ class _FullScreenScannerState extends State<FullScreenScanner> {
       child: BlocListener<ScanCubit, ScanState?>(
         listenWhen:
             (previous, current) =>
-                current != null &&
-                current.data.$1.isNotEmpty &&
-                current.data.$2 != null,
+                previous?.data.$1 != current?.data.$1 ||
+                previous?.data.$2 != current?.data.$2,
         listener: (context, state) {
           if (state != null &&
               state.data.$1.isNotEmpty &&
