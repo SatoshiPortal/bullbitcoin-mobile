@@ -3,30 +3,31 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
-class ImportXpubUsecase {
+class ImportWatchOnlyWalletUsecase {
   final SettingsRepository _settings;
   final WalletRepository _wallet;
 
-  ImportXpubUsecase({
+  ImportWatchOnlyWalletUsecase({
     required SettingsRepository settingsRepository,
     required WalletRepository walletRepository,
-  })  : _settings = settingsRepository,
-        _wallet = walletRepository;
+  }) : _settings = settingsRepository,
+       _wallet = walletRepository;
 
-  Future<Wallet> execute({
-    required String xpub,
+  Future<Wallet> call({
+    required String extendedPublicKey,
     required ScriptType scriptType,
     String label = '',
   }) async {
     try {
       final settings = await _settings.fetch();
       final environment = settings.environment;
-      final bitcoinNetwork = environment == Environment.mainnet
-          ? Network.bitcoinMainnet
-          : Network.bitcoinTestnet;
+      final bitcoinNetwork =
+          environment == Environment.mainnet
+              ? Network.bitcoinMainnet
+              : Network.bitcoinTestnet;
 
       final wallet = await _wallet.importWatchOnlyWallet(
-        xpub: xpub,
+        xpub: extendedPublicKey,
         network: bitcoinNetwork,
         scriptType: scriptType,
         label: label,
