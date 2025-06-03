@@ -9,7 +9,7 @@ class LiquidBip21 {
     final urnScheme = uri.scheme;
     final address = uri.path;
     Network network;
-    if (urnScheme == 'liquidnetwork') {
+    if (urnScheme == 'liquidnetwork' || urnScheme == 'liquid') {
       network = Network.liquidMainnet;
     } else if (urnScheme == 'liquidtestnet') {
       network = Network.liquidTestnet;
