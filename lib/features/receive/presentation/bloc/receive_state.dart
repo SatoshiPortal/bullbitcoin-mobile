@@ -127,6 +127,10 @@ abstract class ReceiveState with _$ReceiveState {
           queryParameters: {
             if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
             if (note.isNotEmpty) 'message': note,
+            'asset_id':
+                wallet != null && wallet!.network == Network.liquidMainnet
+                    ? AssetConstants.lbtcMainnet
+                    : AssetConstants.lbtcTestnet,
           },
         );
         return bip21Uri.toString();
