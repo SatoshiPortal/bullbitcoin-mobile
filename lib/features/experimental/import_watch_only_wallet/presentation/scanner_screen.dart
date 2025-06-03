@@ -1,3 +1,5 @@
+import 'package:bb_mobile/features/experimental/experimental_router.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/extended_public_key_entity.dart';
 import 'package:bb_mobile/features/experimental/scanner/scanner_widget.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -23,7 +25,20 @@ class _ScannerScreenState extends State<ScannerScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          ScannerWidget(onScanned: (data) => setState(() => _scanned = data)),
+          ScannerWidget(
+            onScanned: (data) {
+              setState(() => _scanned = data);
+              try {
+                final pub = ExtendedPublicKeyEntity.from(data);
+                context.replaceNamed(
+                  ExperimentalRoutes.watchOnly.name,
+                  extra: pub,
+                );
+              } catch (e) {
+                debugPrint(e.toString());
+              }
+            },
+          ),
           if (_scanned.isNotEmpty)
             Positioned(
               bottom: MediaQuery.of(context).size.height * 0.25,
