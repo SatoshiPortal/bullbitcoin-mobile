@@ -31,6 +31,13 @@ class SettingsScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              if (isSuperuser && kDebugMode)
+                ListTile(
+                  title: const Text('Experimental / Danger Zone'),
+                  onTap:
+                      () => context.pushNamed(SettingsRoute.experimental.name),
+                  trailing: const Icon(Icons.chevron_right),
+                ),
               if (isSuperuser)
                 ListTile(
                   title: Text(context.loc.testnetModeSettingsLabel),
@@ -87,13 +94,6 @@ class SettingsScreen extends StatelessWidget {
                 },
                 trailing: const Icon(Icons.chevron_right),
               ),
-              if (isSuperuser && kDebugMode)
-                ListTile(
-                  title: const Text('Experimental / Danger Zone'),
-                  onTap:
-                      () => context.pushNamed(SettingsRoute.experimental.name),
-                  trailing: const Icon(Icons.chevron_right),
-                ),
             ],
           ),
         ),
