@@ -127,7 +127,7 @@ abstract class ReceiveState with _$ReceiveState {
           queryParameters: {
             if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
             if (note.isNotEmpty) 'message': note,
-            'asset_id':
+            'assetid':
                 wallet != null && wallet!.network == Network.liquidMainnet
                     ? AssetConstants.lbtcMainnet
                     : AssetConstants.lbtcTestnet,
