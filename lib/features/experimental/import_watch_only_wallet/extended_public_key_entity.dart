@@ -1,15 +1,15 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class ExtendedPublicKeyEntity {
-  final String key;
-  final ScriptType type;
-  final String label;
+part 'extended_public_key_entity.freezed.dart';
 
-  const ExtendedPublicKeyEntity({
-    required this.key,
-    required this.type,
-    this.label = '',
-  });
+@freezed
+abstract class ExtendedPublicKeyEntity with _$ExtendedPublicKeyEntity {
+  const factory ExtendedPublicKeyEntity({
+    required String key,
+    required ScriptType type,
+    @Default('') String label,
+  }) = _ExtendedPublicKeyEntity;
 
   factory ExtendedPublicKeyEntity.from(
     String extendedPublicKey, {
