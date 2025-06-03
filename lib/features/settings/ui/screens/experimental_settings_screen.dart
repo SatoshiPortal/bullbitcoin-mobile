@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
+import 'package:bb_mobile/features/experimental/experimental_router.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +26,7 @@ class ExperimentalSettingsScreen extends StatelessWidget {
             children: [
               ListTile(
                 title: const Text('Import Watch Only'),
-                onTap:
-                    () => context.pushNamed(SettingsRoute.importWatchOnly.name),
+                onTap: () => context.pushNamed(ExperimentalRoutes.scanner.name),
                 trailing: const Icon(Icons.remove_red_eye),
               ),
             ],
