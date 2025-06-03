@@ -23,7 +23,24 @@ void main() {
     expect(order.orderId.isNotEmpty, true);
     expect(order.orderType, 'Buy Bitcoin');
   });
-
+  test('refreshOrderSummary returns OrderModel', () async {
+    if (createdOrderId == null) {
+      final order = await datasource.createBuyOrder(
+        apiKey: apiKey,
+        fiatCurrency: FiatCurrency.cad,
+        fiatAmount: 10,
+        network: Network.lightning,
+        isOwner: true,
+      );
+      createdOrderId = order.orderId;
+    }
+    final order = await datasource.refreshOrderSummary(
+      apiKey: apiKey,
+      orderId: createdOrderId!,
+    );
+    expect(order.orderId, createdOrderId);
+    expect(order, isA<OrderModel>());
+  });
   test('confirmBuyOrder returns OrderModel', () async {
     if (createdOrderId == null) {
       final order = await datasource.createBuyOrder(
@@ -60,5 +77,14 @@ void main() {
     );
     expect(order.orderId, createdOrderId);
     expect(order.orderType, 'Buy Bitcoin');
+  });
+
+  test('listOrderSummaries returns List<OrderModel>', () async {
+    final orders = await datasource.listOrderSummaries(apiKey: apiKey);
+    expect(orders.isNotEmpty, true);
+    for (final order in orders) {
+      expect(order.orderId.isNotEmpty, true);
+      expect(order, isA<OrderModel>());
+    }
   });
 }

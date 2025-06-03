@@ -71,4 +71,44 @@ class BullBitcoinOrderDatasource {
           as Map<String, dynamic>,
     );
   }
+
+  Future<List<OrderModel>> listOrderSummaries({required String apiKey}) async {
+    final resp = await _http.post(
+      '/ak/api-orders',
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'listOrderSummaries',
+        'params': {},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to list order summaries');
+    }
+    final elements = resp.data['result']['elements'] as List<dynamic>?;
+    if (elements == null) return [];
+    return elements
+        .map((e) => OrderModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<OrderModel> refreshOrderSummary({
+    required String apiKey,
+    required String orderId,
+  }) async {
+    final resp = await _http.post(
+      '/ak/api-orders',
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'refreshOrderSummary',
+        'params': {'orderId': orderId},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    if (resp.statusCode != 200)
+      throw Exception('Failed to refresh order summary');
+    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+  }
 }
