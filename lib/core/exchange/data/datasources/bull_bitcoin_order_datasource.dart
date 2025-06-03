@@ -107,8 +107,9 @@ class BullBitcoinOrderDatasource {
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
-    if (resp.statusCode != 200)
+    if (resp.statusCode != 200) {
       throw Exception('Failed to refresh order summary');
+    }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
 }
