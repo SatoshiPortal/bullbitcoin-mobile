@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
-class ImportWatchOnlyScreen extends StatefulWidget {
-  const ImportWatchOnlyScreen({super.key});
+class ScannerScreen extends StatefulWidget {
+  const ScannerScreen({super.key});
 
   @override
-  State<ImportWatchOnlyScreen> createState() => _ImportWatchOnlyScreenState();
+  State<ScannerScreen> createState() => _ScannerScreenState();
 }
 
-class _ImportWatchOnlyScreenState extends State<ImportWatchOnlyScreen> {
+class _ScannerScreenState extends State<ScannerScreen> {
   String _scanned = '';
 
   @override
