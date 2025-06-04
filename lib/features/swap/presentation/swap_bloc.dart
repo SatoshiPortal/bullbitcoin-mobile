@@ -127,12 +127,22 @@ class SwapCubit extends Cubit<SwapState> {
     );
   }
 
+  Future<void> sendMaxClicked() async {
+    // create a drain transaction
+    // get the absolute fees of the drain transaction
+    //
+  }
+
   Future<void> init() async {
     final wallets = await _getWalletsUsecase.execute();
     final settings = await _getSettingsUsecase.execute();
     final bitcoinUnit = settings.bitcoinUnit;
     final currencies = await _getAvailableCurrenciesUsecase.execute();
-    final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute();
+    final selectedFiatCurrencyCode = settings.currencyCode;
+
+    final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+      currencyCode: selectedFiatCurrencyCode,
+    );
 
     final liquidWallets = wallets.where((w) => w.isLiquid).toList();
     final bitcoinWallets =
@@ -141,7 +151,6 @@ class SwapCubit extends Cubit<SwapState> {
       (w) => w.isDefault,
       orElse: () => bitcoinWallets.first,
     );
-
     await loadSwapLimits();
     emit(
       state.copyWith(
@@ -152,6 +161,7 @@ class SwapCubit extends Cubit<SwapState> {
         loadingWallets: false,
         bitcoinUnit: bitcoinUnit,
         fiatCurrencyCodes: currencies,
+        fiatCurrencyCode: selectedFiatCurrencyCode,
         exchangeRate: exchangeRate,
         selectedFromCurrencyCode: bitcoinUnit.code,
         selectedToCurrencyCode: bitcoinUnit.code,
