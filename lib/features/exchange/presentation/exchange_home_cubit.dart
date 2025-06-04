@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 
-import 'package:bb_mobile/core/exchange/domain/usecases/get_api_key_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/save_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_home_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,20 +16,21 @@ import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
   ExchangeHomeCubit({
-    required SaveApiKeyUsecase saveApiKeyUsecase,
-    required GetApiKeyUsecase getApiKeyUsecase,
-    required GetUserSummaryUsecase getUserSummaryUsecase,
-  }) : _saveApiKeyUsecase = saveApiKeyUsecase,
-       _getApiKeyUsecase = getApiKeyUsecase,
-       _getUserSummaryUsecase = getUserSummaryUsecase,
+    required SaveExchangeApiKeyUsecase saveExchangeApiKeyUsecase,
+    required DeleteExchangeApiKeyUsecase deleteExchangeApiKeyUsecase,
+    required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
+  }) : _saveExchangeApiKeyUsecase = saveExchangeApiKeyUsecase,
+       _deleteExchangeApiKeyUsecase = deleteExchangeApiKeyUsecase,
+       _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        super(const ExchangeHomeState()) {
     _initController();
     _checkForAPIKeyAndLoadDetails();
   }
 
-  final SaveApiKeyUsecase _saveApiKeyUsecase;
-  final GetApiKeyUsecase _getApiKeyUsecase;
-  final GetUserSummaryUsecase _getUserSummaryUsecase;
+  final SaveExchangeApiKeyUsecase _saveExchangeApiKeyUsecase;
+  // ignore: unused_field
+  final DeleteExchangeApiKeyUsecase _deleteExchangeApiKeyUsecase;
+  final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
 
   late final WebViewController webViewController;
   Timer? _cookieCheckTimer;
@@ -63,12 +64,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
   Future<void> fetchUserSummary() async {
     emit(state.copyWith(isFetchingUserSummary: true));
     try {
-      // TODO: Fetch api key on init of cubit and store it in state instead of fetching it here and refetching
-      // every time we need it.
-      final apiKey = await _getApiKeyUsecase.execute();
-      if (apiKey == null) throw 'NoApiKeyException';
-
-      final userSummary = await _getUserSummaryUsecase.execute(apiKey.key);
+      final userSummary = await _getExchangeUserSummaryUsecase.execute();
       emit(state.copyWith(userSummary: userSummary));
     } catch (e) {
       emit(state.copyWith(error: e));
@@ -138,15 +134,16 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
 
   Future<void> _checkForAPIKeyAndLoadDetails() async {
     try {
-      final apiKey = await _getApiKeyUsecase.execute();
-      if (apiKey == null) {
+      // Uncomment to delete API key for testing purposes
+      // await _deleteExchangeApiKeyUsecase.execute();
+      final user = await _getExchangeUserSummaryUsecase.execute();
+      if (user == null) {
         // TODO: Move this to bloc listener and execute if not loading anymore and
         // no api key is found.
         final Uri url = Uri.parse('https://${state.baseUrl}');
         await webViewController.loadRequest(url);
       } else {
-        emit(state.copyWith(showLoginSuccessDialog: true));
-        await fetchUserSummary();
+        emit(state.copyWith(showLoginSuccessDialog: true, userSummary: user));
         // final bbxUrl = dotenv.env['BBX_URL'];
         // final Uri url = Uri.parse('https://$bbxUrl');
         // webViewController.loadRequest(url);
@@ -170,13 +167,10 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
         debugPrint('No API key response available to store');
         return;
       }
-      final success = await _saveApiKeyUsecase.execute(jsonString);
-      if (success) {
-        await _checkForAPIKeyAndLoadDetails();
-        debugPrint('API key successfully stored');
-      } else {
-        debugPrint('Failed to store API key');
-      }
+      await _saveExchangeApiKeyUsecase.execute(jsonString);
+      debugPrint('API key successfully stored');
+
+      await _checkForAPIKeyAndLoadDetails();
     } catch (e) {
       debugPrint('Error in storeApiKey: $e');
     }

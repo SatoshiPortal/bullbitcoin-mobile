@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -20,7 +20,7 @@ abstract class ExchangeHomeState with _$ExchangeHomeState {
     @Default(0) int cookieCheckAttempts,
     @Default(30) int maxCookieCheckAttempts,
     @Default(false) bool showLoginSuccessDialog,
-    UserSummaryModel? userSummary,
+    UserSummary? userSummary,
     @Default(false) bool isFetchingUserSummary,
     Object? error,
   }) = _ExchangeHomeState;

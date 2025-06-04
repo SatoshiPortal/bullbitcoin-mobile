@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_home_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -26,7 +26,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
       (ExchangeHomeCubit cubit) =>
           cubit.state.userSummary?.balances ??
           (defaultCurrency != null
-              ? [UserBalanceModel(amount: 0, currencyCode: defaultCurrency)]
+              ? [UserBalance(amount: 0, currencyCode: defaultCurrency)]
               : []),
     );
     final balanceTextStyle =

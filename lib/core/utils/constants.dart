@@ -60,10 +60,6 @@ class ApiServiceConstants {
   static const publicLiquidMempoolUrl = 'https://liquid.network';
   static const publicLiquidMempoolTestnetUrl = 'https://liquid.network/testnet';
 
-  // BullBitcoin Exchange
-  static const bbExchangeUrlPath = 'api.bullbitcoin.com/price';
-  // final bbExchangeUrlPath = 'pricer.bullbitcoin.dev/api';
-
   // Bitcoin Electrum servers
   static const bbElectrumUrl = 'ssl://wes.bullbitcoin.com:50002';
   static const publicElectrumUrl = 'ssl://blockstream.info:700';
@@ -82,11 +78,11 @@ class ApiServiceConstants {
   static const boltzTestnetUrlPath = 'api.testnet.boltz.exchange/v2';
 
   // BullBitcoin API
-
   static final bullBitcoinKeyServerApiUrlPath =
       dotenv.env['KEY_SERVER'] ??
       'http://o7rwmpnfkzdcay2gotla6sbrviu27wcgck7nsjrq77nqhtwbjvwcraad.onion';
-
+  static String bbApiUrl =
+      dotenv.env['BB_API_URL'] ?? 'https://api.bullbitcoin.com';
   static String bbAuthUrl =
       '${dotenv.env['BB_AUTH_URL']}/en/registration?${dotenv.env['APIKEY_QUERY_PARAM']}';
 }

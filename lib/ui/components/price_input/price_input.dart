@@ -3,7 +3,7 @@ import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-class PriceInput extends StatelessWidget {
+class PriceInput extends StatefulWidget {
   const PriceInput({
     super.key,
     required this.amount,
@@ -117,7 +117,7 @@ class _PriceInputState extends State<PriceInput> {
                           hintText: "0",
                           hintStyle: context.font.displaySmall!.copyWith(
                             fontSize: 36,
-                      color: context.colour.outlineVariant,
+                            color: context.colour.outlineVariant,
                           ),
                         ),
                       ),

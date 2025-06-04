@@ -1,11 +1,103 @@
+import 'dart:math';
+
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
+import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
-class BullBitcoinOrderDatasource {
+abstract class BitcoinPriceDatasource {
+  Future<List<String>> get availableCurrencies;
+  Future<double> getPrice(String currencyCode);
+}
+
+class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
   final Dio _http;
+  final _pricePath = '/public/price';
+  final _usersPath = '/ak/api-users';
+  final _ordersPath = '/ak/api-orders';
 
-  BullBitcoinOrderDatasource({required Dio bullBitcoinHttpClient})
-    : _http = bullBitcoinHttpClient;
+  BullbitcoinApiDatasource({required Dio bullbitcoinApiHttpClient})
+    : _http = bullbitcoinApiHttpClient;
+
+  @override
+  Future<List<String>> get availableCurrencies async {
+    // TODO: fetch the actual list of currencies from the api
+    return ['USD', 'CAD', 'MXN', 'CRC', 'EUR'];
+  }
+
+  @override
+  Future<double> getPrice(String currencyCode) async {
+    try {
+      final resp = await _http.post(
+        _pricePath,
+        // TODO: Create a model for this request data
+        data: {
+          'id': 1,
+          'jsonrpc': '2.0',
+          'method': 'getRate',
+          'params': {
+            'element': {
+              'fromCurrency': 'BTC',
+              'toCurrency': currencyCode.toUpperCase(),
+            },
+          },
+        },
+      );
+
+      if (resp.statusCode == null || resp.statusCode != 200) {
+        debugPrint('Pricer error');
+        return 0.0;
+      }
+      // Parse the response data correctly
+      final data = resp.data as Map<String, dynamic>;
+      final result = data['result'] as Map<String, dynamic>;
+      final element = result['element'] as Map<String, dynamic>;
+
+      // Extract price and precision
+      final price = (element['indexPrice'] as num).toDouble();
+      final precision = element['precision'] as int? ?? 2;
+
+      // Convert price based on precision (e.g., if price is 11751892 and precision is 2, actual price is 117518.92)
+      final rate = price / pow(10, precision);
+
+      return rate;
+    } catch (e) {
+      debugPrint(e.toString());
+      return 0.0;
+    }
+  }
+
+  Future<UserSummaryModel?> getUserSummary(String apiKey) async {
+    try {
+      final resp = await _http.post(
+        _usersPath,
+        data: {
+          'id': 1,
+          'jsonrpc': '2.0',
+          'method': 'getUserSummary',
+          'params': {},
+        },
+        options: Options(
+          headers: {
+            // 'Authorization': 'Bearer $apiKey',
+            'X-API-Key': apiKey,
+          },
+        ),
+      );
+
+      if (resp.statusCode == null || resp.statusCode != 200) {
+        throw 'Unable to fetch user summary from Bull Bitcoin API';
+      }
+
+      final userSummary = UserSummaryModel.fromJson(
+        resp.data['result'] as Map<String, dynamic>,
+      );
+
+      return userSummary;
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   Future<OrderModel> createBuyOrder({
     required String apiKey,
@@ -15,7 +107,7 @@ class BullBitcoinOrderDatasource {
     required bool isOwner,
   }) async {
     final resp = await _http.post(
-      '/ak/api-orders',
+      _ordersPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',
@@ -38,7 +130,7 @@ class BullBitcoinOrderDatasource {
     required String orderId,
   }) async {
     final resp = await _http.post(
-      '/ak/api-orders',
+      _ordersPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',
@@ -56,7 +148,7 @@ class BullBitcoinOrderDatasource {
     required String orderId,
   }) async {
     final resp = await _http.post(
-      '/ak/api-orders',
+      _ordersPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',
@@ -74,7 +166,7 @@ class BullBitcoinOrderDatasource {
 
   Future<List<OrderModel>> listOrderSummaries({required String apiKey}) async {
     final resp = await _http.post(
-      '/ak/api-orders',
+      _ordersPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',
@@ -98,7 +190,7 @@ class BullBitcoinOrderDatasource {
     required String orderId,
   }) async {
     final resp = await _http.post(
-      '/ak/api-orders',
+      _ordersPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',

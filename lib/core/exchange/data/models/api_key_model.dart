@@ -29,24 +29,34 @@ class ExchangeApiKeyModel {
       userId: json['userId'] as String,
       isActive: json['isActive'] as bool,
       // Convert ISO8601 string dates to millisecond timestamps
-      lastUsedAt: json['lastUsedAt'] != null
-          ? (json['lastUsedAt'] is String
-              ? DateTime.parse(json['lastUsedAt'] as String)
-                  .millisecondsSinceEpoch
-              : json['lastUsedAt'] as int)
-          : null,
-      createdAt: json['createdAt'] is String
-          ? DateTime.parse(json['createdAt'] as String).millisecondsSinceEpoch
-          : json['createdAt'] as int,
-      updatedAt: json['updatedAt'] is String
-          ? DateTime.parse(json['updatedAt'] as String).millisecondsSinceEpoch
-          : json['updatedAt'] as int,
-      expiresAt: json['expiresAt'] != null
-          ? (json['expiresAt'] is String
-              ? DateTime.parse(json['expiresAt'] as String)
-                  .millisecondsSinceEpoch
-              : json['expiresAt'] as int)
-          : null,
+      lastUsedAt:
+          json['lastUsedAt'] != null
+              ? (json['lastUsedAt'] is String
+                  ? DateTime.parse(
+                    json['lastUsedAt'] as String,
+                  ).millisecondsSinceEpoch
+                  : json['lastUsedAt'] as int)
+              : null,
+      createdAt:
+          json['createdAt'] is String
+              ? DateTime.parse(
+                json['createdAt'] as String,
+              ).millisecondsSinceEpoch
+              : json['createdAt'] as int,
+      updatedAt:
+          json['updatedAt'] is String
+              ? DateTime.parse(
+                json['updatedAt'] as String,
+              ).millisecondsSinceEpoch
+              : json['updatedAt'] as int,
+      expiresAt:
+          json['expiresAt'] != null
+              ? (json['expiresAt'] is String
+                  ? DateTime.parse(
+                    json['expiresAt'] as String,
+                  ).millisecondsSinceEpoch
+                  : json['expiresAt'] as int)
+              : null,
     );
   }
 
@@ -72,14 +82,13 @@ class ExchangeApiKeyModelResponse {
 
   factory ExchangeApiKeyModelResponse.fromJson(Map<String, dynamic> json) {
     return ExchangeApiKeyModelResponse(
-      apiKey:
-          ExchangeApiKeyModel.fromJson(json['apiKey'] as Map<String, dynamic>),
+      apiKey: ExchangeApiKeyModel.fromJson(
+        json['apiKey'] as Map<String, dynamic>,
+      ),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'apiKey': apiKey.toJson(),
-    };
+    return {'apiKey': apiKey.toJson()};
   }
 }

@@ -4,22 +4,19 @@ import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:flutter/foundation.dart';
 
-class ApiKeyStorageDatasource {
+class BullbitcoinApiKeyDatasource {
   static const String _apiKeyStorageKey = 'exchange_api_key';
 
   final KeyValueStorageDatasource<String> _secureStorage;
 
-  ApiKeyStorageDatasource({
+  BullbitcoinApiKeyDatasource({
     required KeyValueStorageDatasource<String> secureStorage,
   }) : _secureStorage = secureStorage;
 
   Future<void> store(ExchangeApiKeyModel apiKey) async {
     try {
       final jsonString = jsonEncode(apiKey.toJson());
-      await _secureStorage.saveValue(
-        key: _apiKeyStorageKey,
-        value: jsonString,
-      );
+      await _secureStorage.saveValue(key: _apiKeyStorageKey, value: jsonString);
       debugPrint('API key stored successfully');
     } catch (e) {
       debugPrint('Error storing API key: $e');
