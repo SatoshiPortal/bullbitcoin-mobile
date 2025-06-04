@@ -371,9 +371,9 @@ abstract class SwapState with _$SwapState {
     if (fromWalletBalance == 0) return false;
     if (fromWalletNetwork == WalletNetwork.bitcoin &&
         toWalletNetwork == WalletNetwork.liquid) {
-      return fromWalletBalance >= fromAmountSat + estimatedBtcToLbtcSwapFees;
+      return fromWalletBalance >= fromAmountSat + (absoluteFees ?? 0);
     } else {
-      return fromWalletBalance >= fromAmountSat + estimatedLbtcToBtcSwapFees;
+      return fromWalletBalance >= fromAmountSat + (liquidAbsoluteFees ?? 0);
     }
   }
 

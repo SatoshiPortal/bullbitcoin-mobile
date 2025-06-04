@@ -288,7 +288,8 @@ class SwapAvailableBalance extends StatelessWidget {
           bgColor: context.colour.secondaryFixedDim,
           textColor: context.colour.secondary,
           textStyle: context.font.labelLarge,
-          onPressed: () => (),
+          onPressed:
+              () async => await context.read<SwapCubit>().sendMaxClicked(),
         ),
       ],
     );

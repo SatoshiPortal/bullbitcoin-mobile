@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.d
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
@@ -128,9 +129,128 @@ class SwapCubit extends Cubit<SwapState> {
   }
 
   Future<void> sendMaxClicked() async {
-    // create a drain transaction
-    // get the absolute fees of the drain transaction
-    //
+    try {
+      clearAllExceptions();
+
+      final fromWallet = state.fromWallet;
+      if (fromWallet == null) return;
+
+      // Get swap limits and fees
+      SwapLimits? swapLimits;
+      if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
+        if (state.btcToLbtcSwapLimitsAndFees == null) {
+          await loadSwapLimits();
+        }
+        swapLimits = state.btcToLbtcSwapLimitsAndFees!.$1;
+      }
+
+      // Load network fees if not already available
+      if (state.feesList == null) {
+        await loadFees();
+      }
+
+      final networkFee = state.feesList!.fastest;
+
+      // Create a drain transaction to calculate the absolute fees
+      int absoluteFees;
+      if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
+        final drainTxInfo = await _prepareBitcoinSendUsecase.execute(
+          walletId: fromWallet.id,
+          address:
+              "bc1qzthmksfy8qg7l3uznrcst2xpa3yfms0tc3e4j6", // Dummy address, won't be used
+          networkFee: networkFee,
+          drain: true,
+        );
+
+        absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
+          psbt: drainTxInfo.unsignedPsbt,
+          feeRate: networkFee.value as double,
+        );
+
+        debugPrint("Absolute fees: $absoluteFees");
+        emit(state.copyWith(bitcoinAbsoluteFees: absoluteFees));
+      } else {
+        if (state.lbtcToBtcSwapLimitsAndFees == null) {
+          await loadSwapLimits();
+        }
+        swapLimits = state.lbtcToBtcSwapLimitsAndFees!.$1;
+
+        final pset = await _prepareLiquidSendUsecase.execute(
+          walletId: fromWallet.id,
+          address:
+              "lq1qqv8enp5npmqngglxmgmgny2kr5snjyerfdsmvu04q6746sh365yf6k5yzhq4dddgcf69pahn47yxm0sh4zjs7hf3tlqgkkhtw", // Dummy address, won't be used
+          networkFee: networkFee,
+          drain: true,
+        );
+
+        absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
+          pset: pset,
+          walletId: fromWallet.id,
+        );
+        debugPrint("Absolute fees: $absoluteFees");
+
+        emit(state.copyWith(liquidAbsoluteFees: absoluteFees));
+      }
+
+      // Calculate the maximum amount that can be swapped
+      // balance - absolute fees - swap.lockupFees
+      final balance = fromWallet.balanceSat.toInt();
+      // final lockupFees = swapFees!.lockupFee!;
+      final maxAmount = balance - absoluteFees;
+
+      // Ensure the amount is within swap limits
+      debugPrint('Max amount: $maxAmount');
+      // If max amount is below minimum swap limit, show error
+      emit(
+        state.copyWith(
+          swapLimitsException: SwapLimitsException(
+            'Balance too low for minimum swap amount',
+          ),
+          sendMax: true,
+          confirmedFromAmountSat: maxAmount,
+        ),
+      );
+      if (state.bitcoinUnit == BitcoinUnit.sats) {
+        emit(state.copyWith(fromAmount: maxAmount.toString()));
+        emit(state.copyWith(toAmount: state.calculateToAmount));
+      } else {
+        final validatedAmount = ConvertAmount.satsToBtc(maxAmount);
+        emit(state.copyWith(fromAmount: validatedAmount.toString()));
+        emit(state.copyWith(toAmount: state.calculateToAmount));
+      }
+
+      // check swap limits
+      if (swapLimits!.min > maxAmount) {
+        emit(
+          state.copyWith(
+            swapLimitsException: SwapLimitsException(
+              'Balance too low for minimum swap amount',
+            ),
+            sendMax: true,
+          ),
+        );
+        return;
+      }
+      if (swapLimits.max < maxAmount) {
+        emit(
+          state.copyWith(
+            swapLimitsException: SwapLimitsException(
+              'Amount exceeds maximum swap amount',
+            ),
+            sendMax: true,
+          ),
+        );
+        return;
+      }
+      return;
+    } catch (e) {
+      emit(
+        state.copyWith(
+          swapLimitsException: SwapLimitsException(e.toString()),
+          sendMax: true,
+        ),
+      );
+    }
   }
 
   Future<void> init() async {
@@ -313,15 +433,15 @@ class SwapCubit extends Cubit<SwapState> {
   Future<void> continueWithAmountsClicked() async {
     try {
       emit(state.copyWith(amountConfirmedClicked: true));
-      if (!state.walletHasBalanceIncludingFees()) {
-        emit(
-          state.copyWith(
-            insufficientBalanceException: InsufficientBalanceException(),
-            amountConfirmedClicked: false,
-          ),
-        );
-        return;
-      }
+      // if (!state.walletHasBalanceIncludingFees()) {
+      //   emit(
+      //     state.copyWith(
+      //       insufficientBalanceException: InsufficientBalanceException(),
+      //       amountConfirmedClicked: false,
+      //     ),
+      //   );
+      //   return;
+      // }
       final bitcoinWalletId =
           state.fromWalletNetwork == WalletNetwork.bitcoin
               ? state.fromWalletId
@@ -386,7 +506,10 @@ class SwapCubit extends Cubit<SwapState> {
           walletId: bitcoinWalletId!,
           address: swap.paymentAddress,
           amountSat: swap.paymentAmount,
-          networkFee: state.feesList!.fastest,
+          networkFee:
+              state.absoluteFees != null
+                  ? NetworkFee.absolute(state.absoluteFees!)
+                  : state.feesList!.fastest,
         );
         emit(
           state.copyWith(buildingTransaction: false, signingTransaction: true),
@@ -416,7 +539,10 @@ class SwapCubit extends Cubit<SwapState> {
           walletId: liquidWalletId!,
           address: swap.paymentAddress,
           amountSat: swap.paymentAmount,
-          networkFee: state.feesList!.fastest,
+          networkFee:
+              state.liquidAbsoluteFees != null
+                  ? NetworkFee.absolute(state.absoluteFees!)
+                  : state.feesList!.fastest,
         );
         final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: psbt,
