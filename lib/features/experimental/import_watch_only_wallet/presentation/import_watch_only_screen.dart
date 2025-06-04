@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/domain/usecases/import_watch_only_wallet_usecase.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/extended_public_key_entity.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_usecase.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -10,9 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class ImportScreen extends StatelessWidget {
+class ImportWatchOnlyScreen extends StatelessWidget {
   final ExtendedPublicKeyEntity pub;
-  const ImportScreen({super.key, required this.pub});
+  const ImportWatchOnlyScreen({super.key, required this.pub});
 
   @override
   Widget build(BuildContext context) {
@@ -20,8 +20,7 @@ class ImportScreen extends StatelessWidget {
       create:
           (context) => ImportWatchOnlyCubit(
             pub: pub,
-            importWatchOnlyWalletUsecase:
-                locator<ImportWatchOnlyWalletUsecase>(),
+            importWatchOnlyUsecase: locator<ImportWatchOnlyUsecase>(),
           ),
       child: const _ImportScreenContent(),
     );

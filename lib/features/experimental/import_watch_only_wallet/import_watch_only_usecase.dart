@@ -3,11 +3,11 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 
-class ImportWatchOnlyWalletUsecase {
+class ImportWatchOnlyUsecase {
   final SettingsRepository _settings;
   final WalletRepository _wallet;
 
-  ImportWatchOnlyWalletUsecase({
+  ImportWatchOnlyUsecase({
     required SettingsRepository settingsRepository,
     required WalletRepository walletRepository,
   }) : _settings = settingsRepository,
@@ -35,13 +35,13 @@ class ImportWatchOnlyWalletUsecase {
 
       return wallet;
     } catch (e) {
-      throw ImportXpubException(e.toString());
+      throw ImportWatchOnlyException(e.toString());
     }
   }
 }
 
-class ImportXpubException implements Exception {
+class ImportWatchOnlyException implements Exception {
   final String message;
 
-  ImportXpubException(this.message);
+  ImportWatchOnlyException(this.message);
 }

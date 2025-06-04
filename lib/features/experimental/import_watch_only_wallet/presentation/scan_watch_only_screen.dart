@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/experimental/experimental_router.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/extended_public_key_entity.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/experimental/scanner/scanner_widget.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -8,14 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 
-class ScannerScreen extends StatefulWidget {
-  const ScannerScreen({super.key});
+class ScanWatchOnlyScreen extends StatefulWidget {
+  const ScanWatchOnlyScreen({super.key});
 
   @override
-  State<ScannerScreen> createState() => _ScannerScreenState();
+  State<ScanWatchOnlyScreen> createState() => _ScanWatchOnlyScreenState();
 }
 
-class _ScannerScreenState extends State<ScannerScreen> {
+class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
   String _scanned = '';
 
   @override
@@ -31,7 +31,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
               try {
                 final pub = ExtendedPublicKeyEntity.from(data);
                 context.replaceNamed(
-                  ExperimentalRoutes.watchOnly.name,
+                  ImportWatchOnlyRoutes.import.name,
                   extra: pub,
                 );
               } catch (e) {
