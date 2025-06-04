@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/home/ui/home_router.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -52,7 +52,7 @@ class BackupTestSuccessScreen extends StatelessWidget {
                 bgColor: context.colour.secondary,
                 textColor: context.colour.onPrimary,
                 onPressed: () {
-                  context.goNamed(HomeRoute.home.name);
+                  context.goNamed(WalletRoute.walletHome.name);
                 },
               ),
             ),

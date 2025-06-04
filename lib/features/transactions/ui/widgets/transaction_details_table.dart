@@ -73,28 +73,29 @@ class TransactionDetailsTable extends StatelessWidget {
 
     return DetailsTable(
       items: [
-        DetailsTableItem(
-          label: 'Transaction ID',
-          displayValue: abbreviatedTxId,
-          copyValue: txId,
-          displayWidget:
-              txId.isEmpty
-                  ? null
-                  : GestureDetector(
-                    onTap: () async {
-                      final url =
-                          walletTransaction?.isLiquid == true
-                              ? MempoolUrl.liquidTxidUrl(unblindedUrl ?? '')
-                              : MempoolUrl.bitcoinTxidUrl(txId);
-                      await launchUrl(Uri.parse(url));
-                    },
-                    child: Text(
-                      abbreviatedTxId,
-                      style: TextStyle(color: context.colour.primary),
-                      textAlign: TextAlign.end,
+        if (abbreviatedTxId.isNotEmpty)
+          DetailsTableItem(
+            label: 'Transaction ID',
+            displayValue: abbreviatedTxId,
+            copyValue: txId,
+            displayWidget:
+                txId.isEmpty
+                    ? null
+                    : GestureDetector(
+                      onTap: () async {
+                        final url =
+                            walletTransaction?.isLiquid == true
+                                ? MempoolUrl.liquidTxidUrl(unblindedUrl ?? '')
+                                : MempoolUrl.bitcoinTxidUrl(txId);
+                        await launchUrl(Uri.parse(url));
+                      },
+                      child: Text(
+                        abbreviatedTxId,
+                        style: TextStyle(color: context.colour.primary),
+                        textAlign: TextAlign.end,
+                      ),
                     ),
-                  ),
-        ),
+          ),
         if (labels.isNotEmpty)
           DetailsTableItem(label: 'Transaction notes', displayValue: labels),
         if (walletLabel.isNotEmpty)

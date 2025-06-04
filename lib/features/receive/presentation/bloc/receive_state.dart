@@ -288,6 +288,9 @@ abstract class ReceiveState with _$ReceiveState {
     _ => tx?.txId ?? '',
   };
   String get abbreviatedTxId => StringFormatting.truncateMiddle(txId);
+
+  Transaction get transaction =>
+      Transaction(walletTransaction: tx, swap: lightningSwap, payjoin: payjoin);
 }
 
 @freezed

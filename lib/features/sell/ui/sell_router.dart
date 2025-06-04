@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/sell/ui/sell_screen.dart';
 import 'package:go_router/go_router.dart';
 
 enum SellRoute {
-  sell('sell');
+  sell('/sell');
 
   final String path;
 

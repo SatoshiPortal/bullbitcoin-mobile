@@ -73,19 +73,16 @@ class ExchangeLocator {
     );
 
     locator.registerFactory<SaveApiKeyUsecase>(
-      () => SaveApiKeyUsecase(
-        apiKeyStorage: locator<ApiKeyStorageDatasource>(),
-      ),
+      () =>
+          SaveApiKeyUsecase(apiKeyStorage: locator<ApiKeyStorageDatasource>()),
     );
 
     locator.registerFactory<GetApiKeyUsecase>(
-      () => GetApiKeyUsecase(
-        apiKeyStorage: locator<ApiKeyStorageDatasource>(),
-      ),
+      () => GetApiKeyUsecase(apiKeyStorage: locator<ApiKeyStorageDatasource>()),
     );
 
-    locator.registerFactory<GetUserSummaryUseCase>(
-      () => GetUserSummaryUseCase(
+    locator.registerFactory<GetUserSummaryUsecase>(
+      () => GetUserSummaryUsecase(
         userDatasource: locator<BullBitcoinUserDatasource>(),
       ),
     );

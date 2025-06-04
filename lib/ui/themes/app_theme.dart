@@ -46,12 +46,23 @@ class AppTheme {
       ),
        */
       appBarTheme: AppBarTheme(
-        backgroundColor: colours.secondaryFixed,
+        backgroundColor: Colors.transparent,
         // foregroundColor: colours.primary,
         elevation: 0,
         scrolledUnderElevation: 32,
-
+        titleTextStyle: fonts.textTheme.headlineMedium!.copyWith(
+          color: colours.secondary,
+        ),
+        centerTitle: true,
         // shadowColor: colours.secondaryFixed,
+      ),
+      actionIconTheme: ActionIconThemeData(
+        backButtonIconBuilder: (context) => const Icon(Icons.arrow_back),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: colours.onPrimary,
+        selectedIconTheme: IconThemeData(color: colours.primary),
+        unselectedIconTheme: IconThemeData(color: colours.outline),
       ),
     );
   }

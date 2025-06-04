@@ -67,9 +67,9 @@ sealed class Transaction with _$Transaction {
 
   int get amountSat =>
       walletTransaction?.amountSat ??
-      swap?.amountSat ??
-      payjoin?.amountSat ??
-      0;
+      (swap != null
+          ? swap!.amountSat - (swap!.fees?.totalFees(swap!.amountSat) ?? 0)
+          : payjoin?.amountSat ?? 0);
 
   String get walletId =>
       walletTransaction?.walletId ?? swap?.walletId ?? payjoin!.walletId;

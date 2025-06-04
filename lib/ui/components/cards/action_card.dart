@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -50,10 +51,10 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.btc.path,
               label: 'Buy',
               onPressed: () {
-                // context.pushNamed(AppRoute.buy.name);
+                context.pushNamed(BuyRoute.buy.name);
               },
               position: _ButtonPosition.first,
-              disabled: true,
+              disabled: false,
             ),
             const Gap(1),
             _ActionButton(

@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/experimental/import_watch_only_wallet/domain/
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/extended_public_key_entity.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_cubit.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
-import 'package:bb_mobile/features/home/ui/home_router.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -50,7 +50,7 @@ class _ImportScreenContent extends StatelessWidget {
             );
           }
           if (state.importedWallet != null) {
-            context.goNamed(HomeRoute.home.name);
+            context.goNamed(WalletRoute.walletHome.name);
           }
         },
         builder: (context, state) {

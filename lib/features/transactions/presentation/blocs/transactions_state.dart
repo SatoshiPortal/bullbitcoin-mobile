@@ -72,6 +72,7 @@ abstract class TransactionsState with _$TransactionsState {
               final isExpiredOrFailedSwap =
                   tx.isSwap &&
                   [
+                    SwapStatus.pending,
                     SwapStatus.expired,
                     SwapStatus.failed,
                   ].contains(tx.swap!.status);

@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_d
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_label_bottomsheet.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/ui/components/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
@@ -14,9 +15,7 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class TransactionDetailsScreen extends StatelessWidget {
-  const TransactionDetailsScreen({super.key, this.title});
-
-  final String? title;
+  const TransactionDetailsScreen({super.key});
 
   Future<void> showTransactionLabelBottomSheet(BuildContext context) async {
     final receive = context.read<TransactionDetailsCubit>();
@@ -54,10 +53,14 @@ class TransactionDetailsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: title ?? 'Transaction details',
+          title: 'Transaction details',
           actionIcon: Icons.close,
           onAction: () {
-            context.pop();
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.goNamed(WalletRoute.walletHome.name);
+            }
           },
         ),
       ),

@@ -8,8 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum TransactionsRoute {
-  transactions('transactions'),
-  transactionDetails('details');
+  transactions('/transactions'),
+  transactionDetails('/transaction');
 
   const TransactionsRoute(this.path);
 
@@ -18,7 +18,7 @@ enum TransactionsRoute {
 
 /// The router for the transactions feature.
 class TransactionsRouter {
-  static final route = GoRoute(
+  static final transactionsRoute = GoRoute(
     name: TransactionsRoute.transactions.name,
     path: TransactionsRoute.transactions.path,
     builder: (context, state) {
@@ -27,20 +27,18 @@ class TransactionsRouter {
         child: const TransactionsScreen(),
       );
     },
-    routes: [
-      GoRoute(
-        name: TransactionsRoute.transactionDetails.name,
-        path: TransactionsRoute.transactionDetails.path,
-        builder: (context, state) {
-          final tx = state.extra! as Transaction;
-          return BlocProvider(
-            create:
-                (context) =>
-                    locator<TransactionDetailsCubit>(param1: tx)..load(),
-            child: const TransactionDetailsScreen(),
-          );
-        },
-      ),
-    ],
+  );
+
+  static final transactionDetailsRoute = GoRoute(
+    name: TransactionsRoute.transactionDetails.name,
+    path: TransactionsRoute.transactionDetails.path,
+    builder: (context, state) {
+      final tx = state.extra! as Transaction;
+      return BlocProvider(
+        create:
+            (context) => locator<TransactionDetailsCubit>(param1: tx)..load(),
+        child: const TransactionDetailsScreen(),
+      );
+    },
   );
 }
