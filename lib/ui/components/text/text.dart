@@ -23,7 +23,7 @@ class BBText extends StatelessWidget {
   Widget build(BuildContext context) {
     return AutoSizeText(
       text,
-      style: style!.copyWith(color: color),
+      style: style?.copyWith(color: color),
       maxLines: maxLines,
       textAlign: textAlign,
       softWrap: true,
