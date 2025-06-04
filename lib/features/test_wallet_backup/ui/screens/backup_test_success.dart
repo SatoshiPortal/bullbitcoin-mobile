@@ -41,6 +41,7 @@ class BackupTestSuccessScreen extends StatelessWidget {
                 BBText(
                   'You are able to recover access to a lost Bitcoin wallet',
                   style: context.font.bodyMedium,
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
