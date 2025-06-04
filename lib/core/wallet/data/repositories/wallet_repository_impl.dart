@@ -122,12 +122,14 @@ class WalletRepositoryImpl implements WalletRepository {
     required ScriptType scriptType,
     required String label,
     bool sync = false,
+    String? overrideFingerprint,
   }) async {
     final metadata = await WalletMetadataService.deriveFromXpub(
       xpub: xpub,
       network: network,
       scriptType: scriptType,
       label: label,
+      overrideFingerprint: overrideFingerprint,
     );
 
     await _walletMetadataDatasource.store(metadata);

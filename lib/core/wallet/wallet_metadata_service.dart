@@ -166,6 +166,10 @@ class WalletMetadataService {
     required Network network,
     required ScriptType scriptType,
     String label = '',
+
+    /// Sign only wallets must substitute the public key extended fingerprint
+    /// to the wallet master bip32 fingerprint or invalid psbt will be generated
+    String? overrideFingerprint,
   }) async {
     if (network.isLiquid) {
       throw UnimplementedError(
@@ -175,7 +179,7 @@ class WalletMetadataService {
 
     final bip32Xpub = Bip32Derivation.getBip32Xpub(xpub);
     final xpubBase58 = bip32Xpub.toBase58();
-    final fingerprint = bip32Xpub.fingerprintHex;
+    final fingerprint = overrideFingerprint ?? bip32Xpub.fingerprintHex;
 
     final descriptor =
         await DescriptorDerivation.deriveBitcoinDescriptorFromXpub(
