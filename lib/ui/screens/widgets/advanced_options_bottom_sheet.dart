@@ -2,7 +2,6 @@ import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/ui/widgets/coin_selection_bottom_sheet.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/components/toggle/switch.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,7 +52,7 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
                 "Replace-by-fee activated",
                 style: context.font.headlineMedium,
               ),
-              BBSwitch(
+              Switch(
                 value: isRBFEnabled,
                 onChanged:
                     (val) async => await context
@@ -64,10 +63,6 @@ class AdvancedOptionsBottomSheet extends StatelessWidget {
           ),
           const Gap(24),
           ListTile(
-            tileColor: context.colour.onPrimary,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(color: context.colour.surface),
-            ),
             title: BBText(
               "Select coins manually",
               style: context.font.bodyLarge?.copyWith(

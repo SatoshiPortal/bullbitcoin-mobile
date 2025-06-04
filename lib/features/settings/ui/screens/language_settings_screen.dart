@@ -18,6 +18,7 @@ class LanguageSettingsScreen extends StatelessWidget {
         appBar: AppBar(title: Text(context.loc.languageSettingsScreenTitle)),
         body: SafeArea(
           child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             children:
                 Language.values
                     .map((language) => LanguageOption(language: language))

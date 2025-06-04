@@ -21,7 +21,7 @@ abstract class ExchangeHomeState with _$ExchangeHomeState {
     @Default(30) int maxCookieCheckAttempts,
     @Default(false) bool showLoginSuccessDialog,
     UserSummaryModel? userSummary,
-    @Default(false) bool checkingUser,
+    @Default(false) bool isFetchingUserSummary,
     Object? error,
   }) = _ExchangeHomeState;
 
@@ -45,5 +45,5 @@ abstract class ExchangeHomeState with _$ExchangeHomeState {
   String get targetAuthCookie => 'bb_session';
   String get baseUrl => ApiServiceConstants.bbAuthUrl;
 
-  bool get showExchangeHome => userSummary != null || checkingUser;
+  bool get hasUserSummary => userSummary != null;
 }

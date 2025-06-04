@@ -1,16 +1,16 @@
-import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
-import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_home_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/cards/action_card.dart';
+import 'package:bb_mobile/ui/components/navbar/top_bar_bull_logo.dart';
+import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
 class ExchangeHomeTopSection extends StatelessWidget {
@@ -18,22 +18,63 @@ class ExchangeHomeTopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    final theme = context.theme;
+    final defaultCurrency = context.select(
+      (SettingsCubit settings) => settings.state.currencyCode,
+    );
+    final balances = context.select(
+      (ExchangeHomeCubit cubit) =>
+          cubit.state.userSummary?.balances ??
+          (defaultCurrency != null
+              ? [UserBalanceModel(amount: 0, currencyCode: defaultCurrency)]
+              : []),
+    );
+    final balanceTextStyle =
+        balances.length > 1
+            ? theme.textTheme.displaySmall
+            : theme.textTheme.displayMedium;
+    return SizedBox(
       height: 264 + 78 + 46,
       child: Stack(
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
+              Container(
+                color: Colors.black,
                 height: 264 + 78,
                 // color: Colors.red,
-                child: _UI(),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children:
+                          balances
+                              .map(
+                                (b) => BBText(
+                                  '${b.amount} ${b.currencyCode}',
+                                  style: balanceTextStyle?.copyWith(
+                                    color: theme.colorScheme.onPrimary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                    ),
+                    const Positioned(
+                      top: 54,
+                      left: 0,
+                      right: 0,
+                      child: _TopNav(),
+                    ),
+                  ],
+                ),
               ),
               // const Gap(40),
             ],
           ),
-          Positioned(
+          const Positioned(
             bottom: 0,
             left: 0,
             right: 0,
@@ -43,145 +84,6 @@ class ExchangeHomeTopSection extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _UI extends StatefulWidget {
-  const _UI();
-
-  @override
-  State<_UI> createState() => _UIState();
-}
-
-class _UIState extends State<_UI> {
-  late Image image;
-
-  @override
-  void initState() {
-    image = Image.asset(Assets.images2.bgRed.path, fit: BoxFit.fitHeight);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Transform.rotate(angle: 3.141, child: image),
-        const _Amounts(),
-        const Positioned(top: 54, left: 0, right: 0, child: _TopNav()),
-      ],
-    );
-  }
-}
-
-class _Amounts extends StatelessWidget {
-  const _Amounts();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Gap(32),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Spacer(),
-            Gap(31),
-            Gap(32),
-            _BtcTotalAmt(),
-            Gap(16),
-            _EyeToggle(),
-            Spacer(),
-          ],
-        ),
-        Gap(12),
-        _FiatAmt(),
-      ],
-    );
-  }
-}
-
-class _BtcTotalAmt extends StatelessWidget {
-  const _BtcTotalAmt();
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: Replace with actual total balance from ExchangeHomeCubit
-    const btcTotal = 0; /*context.select(
-      (ExchangeHomeCubit cubit) => cubit.state.totalBalance(),
-    );*/
-
-    return CurrencyText(
-      btcTotal,
-      showFiat: false,
-      style: context.font.displaySmall,
-      color: context.colour.onPrimary,
-    );
-  }
-}
-
-class _EyeToggle extends StatelessWidget {
-  const _EyeToggle();
-
-  @override
-  Widget build(BuildContext context) {
-    final hide = context.select(
-      (SettingsCubit settingsCubit) => settingsCubit.state.hideAmounts ?? true,
-    );
-    return GestureDetector(
-      onTap: () {
-        context.read<SettingsCubit>().toggleHideAmounts(!hide);
-      },
-      child: Container(
-        padding: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
-          border: Border.all(color: context.colour.surfaceBright),
-          color: context.colour.scrim,
-        ),
-        child: Icon(
-          !hide ? Icons.visibility : Icons.visibility_off,
-          color: context.colour.onPrimary,
-          size: 20,
-        ),
-      ),
-    );
-  }
-}
-
-class _FiatAmt extends StatelessWidget {
-  const _FiatAmt();
-
-  @override
-  Widget build(BuildContext context) {
-    final fiatPriceIsNull = context.select(
-      (BitcoinPriceBloc bitcoinPriceBloc) =>
-          bitcoinPriceBloc.state.bitcoinPrice == null,
-    );
-
-    if (fiatPriceIsNull) return const SizedBox.shrink();
-
-    // TODO: Replace with actual total balance from ExchangeHomeCubit
-    const totalBal = 0;
-    //context.select((ExchangeHomeCubit cubit) => cubit.state.totalBalance());
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: context.colour.surfaceDim),
-        color: context.colour.surfaceDim,
-      ),
-      child: CurrencyText(
-        totalBal,
-        showFiat: true,
-        // '\$0.0 CAD',
-        style: context.font.bodyLarge,
-        color: context.colour.onPrimary,
       ),
     );
   }
@@ -204,7 +106,15 @@ class _TopNav extends StatelessWidget {
         ),
         const Gap(24 + 42),
         const Spacer(),
-        const _BullLogo(),
+        TopBarBullLogo(
+          playAnimation: context.select(
+            (ExchangeHomeCubit cubit) => cubit.state.isFetchingUserSummary,
+          ),
+          onTap: () {
+            context.read<ExchangeHomeCubit>().fetchUserSummary();
+          },
+          enableSuperuserTapUnlocker: true,
+        ),
         const Spacer(),
         const Gap(20),
         IconButton(
@@ -236,38 +146,6 @@ class _TopNav extends StatelessWidget {
         // ),
         const Gap(16),
       ],
-    );
-  }
-}
-
-class _BullLogo extends StatelessWidget {
-  const _BullLogo();
-
-  @override
-  Widget build(BuildContext context) {
-    const syncing = false;
-    //context.select((ExchangeHomeCubit cubit) => cubit.state.isSyncing);
-
-    if (!syncing) {
-      return InkWell(
-        onTap: () {
-          // TODO: Implement refresh functionality
-          //context.read<ExchangeHomeCubit>().refresh();
-        },
-        child: Image.asset(
-          Assets.images2.bbLogoSmall.path,
-          width: 32,
-          height: 32,
-        ),
-      ).animate(delay: 300.ms).fadeIn();
-    }
-
-    // ignore: dead_code
-    return Gif(
-      image: AssetImage(Assets.images2.bbSync.path),
-      autostart: Autostart.loop,
-      height: 32,
-      width: 32,
     );
   }
 }

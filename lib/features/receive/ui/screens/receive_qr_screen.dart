@@ -7,7 +7,6 @@ import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/copy_input.dart';
 import 'package:bb_mobile/ui/components/loading/loading_box_content.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
-import 'package:bb_mobile/ui/components/toggle/switch.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -463,7 +462,7 @@ class ReceiveCopyAddress extends StatelessWidget {
             style: context.font.headlineSmall,
           ),
           const Spacer(),
-          BBSwitch(
+          Switch(
             value: context.select<ReceiveBloc, bool>(
               (bloc) =>
                   bloc.state.type == ReceiveType.bitcoin &&

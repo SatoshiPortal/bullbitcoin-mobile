@@ -13,16 +13,23 @@ class LogSettingsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Logs')),
       body: SafeArea(
-        child: Column(
-          children: [
-            ListTile(
-              title: const Text('Download / share logs'),
-              onTap: () async {
-                await _shareLogs(context);
-              },
-              trailing: const Icon(Icons.share),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                tileColor: Colors.transparent,
+                title: const Text('Download / share logs'),
+                onTap: () async {
+                  await _shareLogs(context);
+                },
+                trailing: const Icon(Icons.share),
+              ),
+            ],
+          ),
         ),
       ),
     );

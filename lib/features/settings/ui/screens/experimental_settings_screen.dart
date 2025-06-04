@@ -21,15 +21,23 @@ class ExperimentalSettingsScreen extends StatelessWidget {
       ),
       backgroundColor: Theme.of(context).colorScheme.secondaryFixed,
       body: SafeArea(
-        child: Center(
-          child: Column(
-            children: [
-              ListTile(
-                title: const Text('Import Watch Only'),
-                onTap: () => context.pushNamed(ExperimentalRoutes.scanner.name),
-                trailing: const Icon(Icons.remove_red_eye),
-              ),
-            ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Center(
+            child: Column(
+              children: [
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
+                  title: const Text('Import Watch Only'),
+                  onTap:
+                      () => context.pushNamed(ExperimentalRoutes.scanner.name),
+                  trailing: const Icon(Icons.remove_red_eye),
+                ),
+              ],
+            ),
           ),
         ),
       ),

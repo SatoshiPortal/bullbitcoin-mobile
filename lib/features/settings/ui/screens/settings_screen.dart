@@ -29,72 +29,114 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              if (isSuperuser && kDebugMode)
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                if (isSuperuser && kDebugMode)
+                  ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
+                    title: const Text('Experimental / Danger Zone'),
+                    onTap:
+                        () =>
+                            context.pushNamed(SettingsRoute.experimental.name),
+                    trailing: const Icon(Icons.chevron_right),
+                  ),
+                if (isSuperuser)
+                  ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
+                    title: Text(context.loc.testnetModeSettingsLabel),
+                    trailing: const TestnetModeSwitch(),
+                  ),
                 ListTile(
-                  title: const Text('Experimental / Danger Zone'),
-                  onTap:
-                      () => context.pushNamed(SettingsRoute.experimental.name),
-                  trailing: const Icon(Icons.chevron_right),
-                ),
-              if (isSuperuser)
-                ListTile(
-                  title: Text(context.loc.testnetModeSettingsLabel),
-                  trailing: const TestnetModeSwitch(),
-                ),
-              ListTile(
-                title: Text(context.loc.backupSettingsLabel),
-                onTap: () {
-                  context.pushNamed(SettingsRoute.backupSettings.name);
-                },
-                trailing: const Icon(Icons.chevron_right),
-              ),
-              if (isSuperuser)
-                ListTile(
-                  title: Text(context.loc.electrumServerSettingsLabel),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
+                  title: Text(context.loc.backupSettingsLabel),
                   onTap: () {
-                    ElectrumSettingsRouter.showElectrumServerSettings(context);
+                    context.pushNamed(SettingsRoute.backupSettings.name);
                   },
                   trailing: const Icon(Icons.chevron_right),
                 ),
-              ListTile(
-                title: Text(context.loc.pinCodeSettingsLabel),
-                onTap: () {
-                  context.pushNamed(SettingsRoute.pinCode.name);
-                },
-                trailing: const Icon(Icons.chevron_right),
-              ),
-              if (isSuperuser)
+                if (isSuperuser)
+                  ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
+                    title: Text(context.loc.electrumServerSettingsLabel),
+                    onTap: () {
+                      ElectrumSettingsRouter.showElectrumServerSettings(
+                        context,
+                      );
+                    },
+                    trailing: const Icon(Icons.chevron_right),
+                  ),
                 ListTile(
-                  title: Text(context.loc.languageSettingsLabel),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
+                  title: Text(context.loc.pinCodeSettingsLabel),
                   onTap: () {
-                    // context.pushNamed(SettingsSubroute.language.name);
+                    context.pushNamed(SettingsRoute.pinCode.name);
                   },
                   trailing: const Icon(Icons.chevron_right),
                 ),
-              ListTile(
-                title: const Text('Currency'),
-                onTap: () {
-                  context.pushNamed(SettingsRoute.currency.name);
-                },
-                trailing: const Icon(Icons.chevron_right),
-              ),
-              ListTile(
-                title: const Text('Logs'),
-                onTap: () {
-                  context.pushNamed(SettingsRoute.logs.name);
-                },
-                trailing: const Icon(Icons.chevron_right),
-              ),
-              ListTile(
-                title: const Text('Legacy Seeds'),
-                onTap: () {
-                  context.pushNamed(SettingsRoute.legacySeeds.name);
-                },
-                trailing: const Icon(Icons.chevron_right),
-              ),
-            ],
+                if (isSuperuser)
+                  ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
+                    title: Text(context.loc.languageSettingsLabel),
+                    onTap: () {
+                      context.pushNamed(SettingsRoute.language.name);
+                    },
+                    trailing: const Icon(Icons.chevron_right),
+                  ),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
+                  title: const Text('Currency'),
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.currency.name);
+                  },
+                  trailing: const Icon(Icons.chevron_right),
+                ),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
+                  title: const Text('Logs'),
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.logs.name);
+                  },
+                  trailing: const Icon(Icons.chevron_right),
+                ),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
+                  title: const Text('Legacy Seeds'),
+                  onTap: () {
+                    context.pushNamed(SettingsRoute.legacySeeds.name);
+                  },
+                  trailing: const Icon(Icons.chevron_right),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -113,7 +155,7 @@ class SettingsScreen extends StatelessWidget {
                     child: Text(
                       'App version: $appVersion',
                       style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.surfaceContainer,
+                        color: theme.colorScheme.secondary,
                       ),
                     ),
                   ),

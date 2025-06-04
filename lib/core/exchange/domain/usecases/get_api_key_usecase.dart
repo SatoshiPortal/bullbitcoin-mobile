@@ -8,7 +8,7 @@ class GetApiKeyUsecase {
     : _apiKeyStorage = apiKeyStorage;
 
   Future<ExchangeApiKeyModel?> execute() async {
-    // await _apiKeyStorage.delete();
+    //await _apiKeyStorage.delete();
     return await _apiKeyStorage.get();
   }
 }

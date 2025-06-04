@@ -62,6 +62,10 @@ class CoinSelectTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
                     contentPadding: EdgeInsets.zero,
                     title: Row(
                       children: [

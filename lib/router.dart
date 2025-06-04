@@ -40,7 +40,11 @@ class AppRouter {
                 if (index == 1 && !isSuperuser) {
                   return;
                 }
-                navigationShell.goBranch(index);
+
+                navigationShell.goBranch(
+                  index,
+                  initialLocation: navigationShell.currentIndex == index,
+                );
               },
               items: const [
                 BottomNavigationBarItem(

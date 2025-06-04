@@ -1,18 +1,16 @@
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/settings/ui/widgets/superuser_tap_unlocker.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/blocs/home/wallet_home_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/cards/action_card.dart';
+import 'package:bb_mobile/ui/components/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:gif/gif.dart';
 import 'package:go_router/go_router.dart';
 
 class WalletHomeTopSection extends StatelessWidget {
@@ -143,7 +141,6 @@ class _TopNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Row(
       children: [
         const Gap(8),
@@ -158,9 +155,14 @@ class _TopNav extends StatelessWidget {
         ),
         const Gap(24 + 42),
         const Spacer(),
-        SuperuserTapUnlocker(
-          tapsReachedMessageBackgroundColor: theme.colorScheme.primary,
-          child: const _BullLogo(),
+        TopBarBullLogo(
+          playAnimation: context.select(
+            (WalletHomeBloc bloc) => bloc.state.isSyncing,
+          ),
+          onTap: () {
+            context.read<WalletHomeBloc>().add(const WalletHomeRefreshed());
+          },
+          enableSuperuserTapUnlocker: true,
         ),
         const Spacer(),
         const Gap(20),
@@ -193,37 +195,6 @@ class _TopNav extends StatelessWidget {
         // ),
         const Gap(16),
       ],
-    );
-  }
-}
-
-class _BullLogo extends StatelessWidget {
-  const _BullLogo();
-
-  @override
-  Widget build(BuildContext context) {
-    final syncing = context.select(
-      (WalletHomeBloc homeBloc) => homeBloc.state.isSyncing,
-    );
-
-    if (!syncing) {
-      return InkWell(
-        onTap: () {
-          context.read<WalletHomeBloc>().add(const WalletHomeRefreshed());
-        },
-        child: Image.asset(
-          Assets.images2.bbLogoSmall.path,
-          width: 32,
-          height: 32,
-        ),
-      ).animate(delay: 300.ms).fadeIn();
-    }
-
-    return Gif(
-      image: AssetImage(Assets.images2.bbSync.path),
-      autostart: Autostart.loop,
-      height: 32,
-      width: 32,
     );
   }
 }

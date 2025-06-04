@@ -23,7 +23,6 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
        _getApiKeyUsecase = getApiKeyUsecase,
        _getUserSummaryUsecase = getUserSummaryUsecase,
        super(const ExchangeHomeState()) {
-    _getUserDetails();
     _initController();
     _checkForAPIKeyAndLoadDetails();
   }
@@ -41,8 +40,6 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
     return super.close();
   }
 
-  void _setLoading(bool isLoading) =>
-      emit(state.copyWith(isLoading: isLoading));
   void _setError({bool hasError = true, String message = ''}) => emit(
     state.copyWith(hasError: hasError, errorMessage: message, isLoading: false),
   );
@@ -63,6 +60,23 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
   void _setApiKeyResponse(String apiKeyResponse) =>
       emit(state.copyWith(apiKeyResponse: apiKeyResponse));
 
+  Future<void> fetchUserSummary() async {
+    emit(state.copyWith(isFetchingUserSummary: true));
+    try {
+      // TODO: Fetch api key on init of cubit and store it in state instead of fetching it here and refetching
+      // every time we need it.
+      final apiKey = await _getApiKeyUsecase.execute();
+      if (apiKey == null) throw 'NoApiKeyException';
+
+      final userSummary = await _getUserSummaryUsecase.execute(apiKey.key);
+      emit(state.copyWith(userSummary: userSummary));
+    } catch (e) {
+      emit(state.copyWith(error: e));
+    } finally {
+      emit(state.copyWith(isFetchingUserSummary: false));
+    }
+  }
+
   void _initController() {
     webViewController =
         WebViewController()
@@ -70,13 +84,13 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
           ..setNavigationDelegate(
             NavigationDelegate(
               onPageStarted: (url) {
-                _setLoading(true);
+                emit(state.copyWith(isLoading: true));
                 _setPreviousUrl(state.currentUrl);
                 _setCurrentUrl(url);
                 _checkForSuccessfulLogin(url);
               },
               onPageFinished: (url) {
-                _setLoading(false);
+                emit(state.copyWith(isLoading: false));
                 _resetCookieCheckAttempts();
                 Future.delayed(const Duration(milliseconds: 500), () {
                   _checkAllCookies();
@@ -126,10 +140,13 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
     try {
       final apiKey = await _getApiKeyUsecase.execute();
       if (apiKey == null) {
+        // TODO: Move this to bloc listener and execute if not loading anymore and
+        // no api key is found.
         final Uri url = Uri.parse('https://${state.baseUrl}');
         await webViewController.loadRequest(url);
       } else {
         emit(state.copyWith(showLoginSuccessDialog: true));
+        await fetchUserSummary();
         // final bbxUrl = dotenv.env['BBX_URL'];
         // final Uri url = Uri.parse('https://$bbxUrl');
         // webViewController.loadRequest(url);
@@ -318,19 +335,6 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
         }
         emit(state.copyWith(showLoginSuccessDialog: true));
       });
-    }
-  }
-
-  Future<void> _getUserDetails() async {
-    try {
-      emit(state.copyWith(checkingUser: true));
-      final apiKey = await _getApiKeyUsecase.execute();
-      if (apiKey == null) throw 'NoApiKeyException';
-
-      final userSummary = await _getUserSummaryUsecase.execute(apiKey.key);
-      emit(state.copyWith(userSummary: userSummary, checkingUser: false));
-    } catch (e) {
-      emit(state.copyWith(error: e, checkingUser: false, userSummary: null));
     }
   }
 }

@@ -64,6 +64,57 @@ class AppTheme {
         selectedIconTheme: IconThemeData(color: colours.primary),
         unselectedIconTheme: IconThemeData(color: colours.outline),
       ),
+      cardTheme: CardThemeData(
+        color: colours.onPrimary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(2),
+          side: BorderSide(color: colours.surface),
+        ),
+        elevation: 0,
+        shadowColor: colours.surface,
+        margin: EdgeInsets.zero,
+      ),
+      switchTheme: SwitchThemeData(
+        trackColor: WidgetStateProperty.resolveWith<Color>((states) {
+          if (states.contains(WidgetState.selected)) {
+            return colours.secondary; // Active background
+          }
+          return colours.surfaceContainer; // Inactive background
+        }),
+        trackOutlineWidth: const WidgetStatePropertyAll(0), // no border
+        thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
+          return colours.onPrimary; // Thumb is always white
+        }),
+        padding: EdgeInsets.zero,
+        overlayColor: WidgetStateProperty.all(Colors.transparent),
+        trackOutlineColor: WidgetStateProperty.all(
+          Colors.transparent,
+        ), // no border
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        thumbIcon: WidgetStateProperty.all(
+          Icon(Icons.circle, color: colours.onPrimary),
+        ),
+        splashRadius: 0,
+      ),
+      listTileTheme: ListTileThemeData(
+        tileColor: colours.onPrimary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(2),
+          side: BorderSide(color: colours.surface),
+        ),
+        textColor: colours.secondary,
+        titleTextStyle: fonts.textTheme.headlineSmall!.copyWith(
+          fontWeight: FontWeight.w400,
+        ),
+        subtitleTextStyle: fonts.textTheme.labelMedium!.copyWith(
+          color: colours.outline,
+          fontWeight: FontWeight.w400,
+        ),
+        leadingAndTrailingTextStyle: fonts.textTheme.labelLarge!.copyWith(
+          color: colours.secondary,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 }
