@@ -55,28 +55,25 @@ class _Screen extends StatelessWidget {
             ),
           ),
           body: SafeArea(
-            child:
-                state.loading
-                    ? const Center(child: LinearProgressIndicator())
-                    : Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Gap(20),
-                          const _BackupTestStatusWidget(),
-                          const Gap(30),
-                          if (state.lastEncryptedBackup != null ||
-                              state.lastPhysicalBackup != null)
-                            const _TestBackupButton(),
-                          const Gap(5),
-                          const _StartBackupButton(),
-                          const Spacer(),
-                          if (state.lastEncryptedBackup != null && isSuperuser)
-                            const _KeyServerStatusWidget(),
-                        ],
-                      ),
-                    ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Gap(20),
+                  const _BackupTestStatusWidget(),
+                  const Gap(30),
+                  if (state.lastEncryptedBackup != null ||
+                      state.lastPhysicalBackup != null)
+                    const _TestBackupButton(),
+                  const Gap(5),
+                  const _StartBackupButton(),
+                  const Spacer(),
+                  if (state.lastEncryptedBackup != null && isSuperuser)
+                    const _KeyServerStatusWidget(),
+                ],
+              ),
+            ),
           ),
         );
       },
@@ -117,8 +114,8 @@ class _KeyServerStatusWidget extends StatelessWidget {
 
                             WidgetSpan(
                               child: Icon(
-                                Icons.bar_chart_rounded,
-                                size: 18,
+                                Icons.circle,
+                                size: 12,
                                 color:
                                     state.torStatus == TorStatus.online
                                         ? context.colour.inverseSurface
