@@ -1390,7 +1390,8 @@ class SendCubit extends Cubit<SendState> {
       );
       if (updatedSwap is LnSendSwap) {
         emit(state.copyWith(lightningSwap: updatedSwap));
-        if (updatedSwap.status == SwapStatus.completed) {
+        if (updatedSwap.status == SwapStatus.completed ||
+            updatedSwap.status == SwapStatus.canCoop) {
           // Start syncing the wallet now that the swap is completed
           _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
           emit(state.copyWith(step: SendStep.success));

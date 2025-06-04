@@ -1342,8 +1342,19 @@ class SendSucessScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const Gap(8),
-                  if (isLnSwap && !isBitcoin)
+                  if (isLnSwap &&
+                      (lnSwap.status == SwapStatus.completed ||
+                          lnSwap.status == SwapStatus.canCoop))
                     BBText('Invoice Paid', style: context.font.headlineLarge)
+                  else if (isLnSwap &&
+                      !isBitcoin &&
+                      (lnSwap.status != SwapStatus.completed &&
+                          lnSwap.status != SwapStatus.canCoop))
+                    BBText(
+                      'The payment is being processed. It may take up to a minute',
+                      style: context.font.headlineLarge,
+                      textAlign: TextAlign.center,
+                    )
                   else if (isLnSwap && isBitcoin)
                     BBText(
                       'Invoice Will Be Paid Shortly',

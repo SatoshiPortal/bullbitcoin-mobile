@@ -281,6 +281,15 @@ class SwapAvailableBalance extends StatelessWidget {
         const Gap(4),
         BBText(balance, style: context.font.labelLarge),
         const Spacer(),
+        BBButton.small(
+          label: 'MAX',
+          height: 30,
+          width: 51,
+          bgColor: context.colour.secondaryFixedDim,
+          textColor: context.colour.secondary,
+          textStyle: context.font.labelLarge,
+          onPressed: () => (),
+        ),
       ],
     );
   }
