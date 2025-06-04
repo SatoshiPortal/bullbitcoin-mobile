@@ -22,6 +22,36 @@ class PriceInput extends StatelessWidget {
   final Function(String) onCurrencyChanged;
   final Function(String) onNoteChanged;
   final String? error;
+  @override
+  State<PriceInput> createState() => _PriceInputState();
+}
+
+class _PriceInputState extends State<PriceInput> {
+  late TextEditingController _amountController;
+
+  @override
+  void initState() {
+    super.initState();
+    _amountController = TextEditingController(text: widget.amount);
+  }
+
+  @override
+  void didUpdateWidget(PriceInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.amount != _amountController.text) {
+      _amountController.value = TextEditingValue(
+        text: widget.amount,
+        selection: TextSelection.collapsed(offset: widget.amount.length),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _amountController.dispose();
+    super.dispose();
+  }
+
   Future<String?> _openPopup(BuildContext context, String selected) async {
     final c = await showModalBottomSheet<String?>(
       useRootNavigator: true,
@@ -30,8 +60,8 @@ class PriceInput extends StatelessWidget {
       backgroundColor: context.colour.secondaryFixedDim,
       builder: (context) {
         return CurrencyBottomSheet(
-          availableCurrencies: availableCurrencies,
-          selectedValue: currency,
+          availableCurrencies: widget.availableCurrencies,
+          selectedValue: widget.currency,
         );
       },
     );
@@ -46,13 +76,11 @@ class PriceInput extends StatelessWidget {
 
     return Column(
       children: [
-        // if (error != null) ...[
-        // Padding(
-        // padding: const EdgeInsets.only(bottom: 8),
         BBText(
-          error ?? '',
+          widget.error ?? '',
           style: context.font.bodyLarge,
-          color: error != null ? context.colour.error : Colors.transparent,
+          color:
+              widget.error != null ? context.colour.error : Colors.transparent,
           maxLines: 2,
         ),
         // ),
@@ -68,15 +96,35 @@ class PriceInput extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    BBText(
-                      amount.isEmpty ? '0' : amount,
-                      style: context.font.displaySmall!.copyWith(fontSize: 36),
+                    IntrinsicWidth(
+                      child: TextField(
+                        controller: _amountController,
+                        keyboardType: TextInputType.none,
+                        showCursor: true,
+                        readOnly: true,
+                        cursorColor: context.colour.outline,
+                        cursorOpacityAnimates: true,
+                        cursorHeight: 30,
+                        style: context.font.displaySmall!.copyWith(
+                          fontSize: 36,
+                          color: context.colour.outlineVariant,
+                        ),
+                        textAlign: TextAlign.center,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                          isDense: false,
+                          hintText: "0",
+                          hintStyle: context.font.displaySmall!.copyWith(
+                            fontSize: 36,
                       color: context.colour.outlineVariant,
-                      maxLines: 1,
+                          ),
+                        ),
+                      ),
                     ),
                     const Gap(8),
                     BBText(
-                      currency,
+                      widget.currency,
                       style: context.font.displaySmall,
                       color: context.colour.outlineVariant,
                       maxLines: 1,
@@ -88,25 +136,20 @@ class PriceInput extends StatelessWidget {
             const Gap(16),
             InkWell(
               onTap: () async {
-                final selected = await _openPopup(context, currency);
-                if (selected != null) onCurrencyChanged(selected);
+                final selected = await _openPopup(context, widget.currency);
+                if (selected != null) widget.onCurrencyChanged(selected);
               },
               child: Icon(
                 Icons.arrow_drop_down,
                 color: context.colour.secondary,
                 size: 40,
               ),
-              // Image.asset(
-              //   Assets.images2.dropdownUpdown.path,
-              //   height: 20,
-              //   width: 20,
-              // ),
             ),
           ],
         ),
         const Gap(14),
         BBText(
-          '~$amountEquivalent',
+          '~${widget.amountEquivalent}',
           key: equivalentKey,
           style: context.font.bodyLarge,
           color: context.colour.surfaceContainer,
@@ -118,23 +161,16 @@ class PriceInput extends StatelessWidget {
             width: 200,
             alignment: Alignment.center,
             child: TextField(
-              onChanged: onNoteChanged,
+              onChanged: widget.onNoteChanged,
               textAlignVertical: TextAlignVertical.center,
               textAlign: TextAlign.center,
-              // expands: true,
-              // maxLines: 5,
-              // minLines: 1,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(2),
                   borderSide: BorderSide.none,
-                  // borderSide: BorderSide(
-                  //   color: context.colour.outline,
-                  // ),
                 ),
                 fillColor: context.colour.secondaryFixedDim,
                 filled: true,
-                // floatingLabelAlignment: FloatingLabelAlignment.center,
                 hintText: 'Add note',
                 hintStyle: context.font.labelSmall!.copyWith(
                   color: context.colour.surfaceContainer,
@@ -164,7 +200,6 @@ class CurrencyBottomSheet extends StatelessWidget {
       children: [
         const Gap(16),
         Row(
-          // crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             const Gap(16 * 3),
             const Spacer(),
