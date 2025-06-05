@@ -8,6 +8,4 @@ abstract class ShowBbqrState with _$ShowBbqrState {
     @Default(0) int currentIndex,
     @Default([]) List<String> parts,
   }) = _ShowBbqrState;
-
-  factory ShowBbqrState.initial() => const ShowBbqrState();
 }

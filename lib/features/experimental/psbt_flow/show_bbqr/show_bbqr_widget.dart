@@ -26,6 +26,17 @@ class _ShowBbqrView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ShowBbqrCubit, ShowBbqrState>(
       builder: (context, state) {
+        if (state.parts.isEmpty) {
+          return Center(
+            child: Text(
+              'No parts to display',
+              style: context.font.bodyMedium?.copyWith(
+                color: context.colour.error,
+              ),
+            ),
+          );
+        }
+
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

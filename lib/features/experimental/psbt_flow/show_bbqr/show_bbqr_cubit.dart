@@ -11,7 +11,7 @@ class ShowBbqrCubit extends Cubit<ShowBbqrState> {
   ShowBbqrCubit({
     required this.parts,
     this.cycleInterval = const Duration(seconds: 2),
-  }) : super(ShowBbqrState.initial()) {
+  }) : super(ShowBbqrState(parts: parts)) {
     _startCycling();
   }
 
