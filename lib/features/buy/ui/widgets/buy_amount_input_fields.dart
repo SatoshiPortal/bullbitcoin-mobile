@@ -64,7 +64,10 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
                 ),
                 style: context.font.headlineMedium,
                 decoration: InputDecoration(
-                  hintText: currencyCode.isEmpty ? '' : '0 $currencyCode',
+                  hint:
+                      currencyCode.isEmpty
+                          ? const LoadingLineContent()
+                          : Text('0 $currencyCode'),
                   hintStyle: context.font.headlineMedium?.copyWith(
                     color: context.colour.outline,
                   ),
