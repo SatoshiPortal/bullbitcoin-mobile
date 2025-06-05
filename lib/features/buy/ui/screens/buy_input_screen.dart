@@ -54,14 +54,22 @@ class BuyInputScreen extends StatelessWidget {
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: BBButton.big(
-            label: 'Continue',
-            disabled: !canCreateOrder || isCreatingOrder,
-            onPressed: () {
-              context.read<BuyBloc>().add(const BuyEvent.createOrder());
-            },
-            bgColor: context.colour.secondary,
-            textColor: context.colour.onSecondary,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isCreatingOrder)
+                const Center(child: CircularProgressIndicator()),
+              const Gap(16),
+              BBButton.big(
+                label: 'Continue',
+                disabled: !canCreateOrder || isCreatingOrder,
+                onPressed: () {
+                  context.read<BuyBloc>().add(const BuyEvent.createOrder());
+                },
+                bgColor: context.colour.secondary,
+                textColor: context.colour.onSecondary,
+              ),
+            ],
           ),
         ),
       ),

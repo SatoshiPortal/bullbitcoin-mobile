@@ -43,7 +43,18 @@ class BuyRouter {
           GoRoute(
             name: BuyRoute.buyConfirmation.name,
             path: BuyRoute.buyConfirmation.path,
-            builder: (context, state) => const BuyConfirmScreen(),
+            builder: (context, state) {
+              return BlocListener<BuyBloc, BuyState>(
+                listenWhen:
+                    (previous, current) =>
+                        previous.buyOrder?.isPayinCompleted != true &&
+                        current.buyOrder?.isPayinCompleted == true,
+                listener: (context, state) {
+                  context.goNamed(BuyRoute.buySuccess.name);
+                },
+                child: const BuyConfirmScreen(),
+              );
+            },
           ),
           GoRoute(
             name: BuyRoute.buySuccess.name,

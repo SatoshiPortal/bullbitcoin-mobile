@@ -15,6 +15,10 @@ sealed class BuyState with _$BuyState {
     GetReceiveAddressException? getReceiveAddressException,
     @Default(false) bool isCreatingOrder,
     CreateBuyOrderException? createBuyOrderException,
+    @Default(false) bool isRefreshingOrder,
+    RefreshBuyOrderException? refreshBuyOrderException,
+    @Default(false) bool isConfirmingOrder,
+    ConfirmBuyOrderException? confirmBuyOrderException,
     BuyOrder? buyOrder,
   }) = _BuyState;
   const BuyState._();

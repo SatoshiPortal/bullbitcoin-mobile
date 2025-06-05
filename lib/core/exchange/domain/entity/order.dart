@@ -166,6 +166,11 @@ sealed class Order with _$Order {
     required Network network,
   }) = SellOrder;
 
+  bool get isPayinCompleted => payinStatus.toLowerCase() == 'completed';
+  bool get isPayoutCompleted => payoutStatus.toLowerCase() == 'completed';
+
+  // TODO: Check if these values are correct and if no other statuses are need to
+  // be checked instead of these ones.
   bool isCompleted() => orderStatus.toLowerCase() == 'complete';
   bool isProcessing() => orderStatus.toLowerCase() == 'processing';
   bool isCancelled() => orderStatus.toLowerCase() == 'cancelled';

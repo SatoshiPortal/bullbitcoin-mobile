@@ -41,6 +41,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     on<_BuySelectedWalletChanged>(_onSelectedWalletChanged);
     on<_BuyBitcoinAddressInputChanged>(_onBitcoinAddressInputChanged);
     on<_BuyCreateOrder>(_onCreateOrder);
+    on<_BuyRefreshOrder>(_onRefreshOrder);
+    on<_BuyConfirmOrder>(_onConfirmOrder);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -176,6 +178,54 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       }
     } finally {
       emit(state.copyWith(isCreatingOrder: false));
+    }
+  }
+
+  Future<void> _onRefreshOrder(
+    _BuyRefreshOrder event,
+    Emitter<BuyState> emit,
+  ) async {
+    try {
+      emit(
+        state.copyWith(isRefreshingOrder: true, refreshBuyOrderException: null),
+      );
+
+      final order = await _refreshBuyOrderUsecase.execute(
+        orderId: state.buyOrder!.orderId,
+      );
+
+      emit(state.copyWith(buyOrder: order));
+    } catch (e) {
+      debugPrint('[BuyBloc] _onRefreshOrder error: $e');
+      if (e is RefreshBuyOrderException) {
+        emit(state.copyWith(refreshBuyOrderException: e));
+      }
+    } finally {
+      emit(state.copyWith(isRefreshingOrder: false));
+    }
+  }
+
+  Future<void> _onConfirmOrder(
+    _BuyConfirmOrder event,
+    Emitter<BuyState> emit,
+  ) async {
+    try {
+      emit(
+        state.copyWith(isConfirmingOrder: true, confirmBuyOrderException: null),
+      );
+
+      final order = await _confirmBuyOrderUsecase.execute(
+        orderId: state.buyOrder!.orderId,
+      );
+
+      emit(state.copyWith(buyOrder: order));
+    } catch (e) {
+      debugPrint('[BuyBloc] _onConfirmOrder error: $e');
+      if (e is ConfirmBuyOrderException) {
+        emit(state.copyWith(confirmBuyOrderException: e));
+      }
+    } finally {
+      emit(state.copyWith(isConfirmingOrder: false));
     }
   }
 }
