@@ -28,6 +28,11 @@ class PsbtRouterConfig {
         path: PsbtFlowRoutes.scanSignedPsbt.path,
         builder: (context, state) => const ScanSignedPsbtScreen(),
       ),
+      GoRoute(
+        name: PsbtFlowRoutes.broadcastSignedPsbt.name,
+        path: PsbtFlowRoutes.broadcastSignedPsbt.path,
+        builder: (context, state) => const ScanSignedPsbtScreen(),
+      ),
     ],
   );
 }
