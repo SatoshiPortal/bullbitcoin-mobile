@@ -125,11 +125,9 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                   textAlignVertical: TextAlignVertical.center,
                   style: context.font.headlineSmall,
                   decoration: InputDecoration(
-                    hint: Text(
-                      'BC1QYL7J673H...6Y6ALV70M0',
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.outline,
-                      ),
+                    hintText: 'BC1QYL7J673H...6Y6ALV70M0',
+                    hintStyle: context.font.headlineSmall?.copyWith(
+                      color: context.colour.outline,
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
