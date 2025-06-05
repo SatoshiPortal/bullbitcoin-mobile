@@ -8,11 +8,16 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_rep
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/create_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/refresh_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -104,6 +109,37 @@ class ExchangeLocator {
     locator.registerFactory<GetExchangeUserSummaryUsecase>(
       () => GetExchangeUserSummaryUsecase(
         exchangeUserRepository: locator<ExchangeUserRepository>(),
+      ),
+    );
+
+    // Order usecases
+    locator.registerFactory<CreateBuyOrderUsecase>(
+      () => CreateBuyOrderUsecase(
+        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
+      ),
+    );
+
+    locator.registerFactory<ConfirmBuyOrderUsecase>(
+      () => ConfirmBuyOrderUsecase(
+        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
+      ),
+    );
+
+    locator.registerFactory<RefreshBuyOrderUsecase>(
+      () => RefreshBuyOrderUsecase(
+        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
+      ),
+    );
+
+    locator.registerFactory<GetOrderUsecase>(
+      () => GetOrderUsecase(
+        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
+      ),
+    );
+
+    locator.registerFactory<ListAllOrdersUsecase>(
+      () => ListAllOrdersUsecase(
+        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
       ),
     );
   }
