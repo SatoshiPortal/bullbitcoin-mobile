@@ -33,6 +33,7 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
         extendedPublicKey: state.watchOnlyWallet!.pubkey,
         scriptType: state.watchOnlyWallet!.type,
         label: state.watchOnlyWallet!.label,
+        overrideFingerprint: state.watchOnlyWallet!.fingerprint,
       );
       emit(state.copyWith(importedWallet: wallet));
     } catch (e) {

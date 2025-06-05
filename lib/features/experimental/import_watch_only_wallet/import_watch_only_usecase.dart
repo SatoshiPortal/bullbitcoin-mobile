@@ -17,6 +17,7 @@ class ImportWatchOnlyUsecase {
     required String extendedPublicKey,
     required ScriptType scriptType,
     String label = '',
+    String? overrideFingerprint,
   }) async {
     try {
       final settings = await _settings.fetch();
@@ -31,6 +32,7 @@ class ImportWatchOnlyUsecase {
         network: bitcoinNetwork,
         scriptType: scriptType,
         label: label,
+        overrideFingerprint: overrideFingerprint,
       );
 
       return wallet;
