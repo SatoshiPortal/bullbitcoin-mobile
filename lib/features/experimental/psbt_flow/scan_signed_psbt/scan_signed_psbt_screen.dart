@@ -38,59 +38,63 @@ class _ScanSignedPsbtView extends StatelessWidget {
         title: const Text('PSBT'),
         backgroundColor: context.colour.surface,
       ),
-      body: BlocBuilder<ScanSignedPsbtCubit, ScanSignedPsbtState>(
-        builder: (context, state) {
-          final cubit = context.read<ScanSignedPsbtCubit>();
+      body: BlocListener<ScanSignedPsbtCubit, ScanSignedPsbtState>(
+        listener: (context, state) {
+          if (state.txid.isNotEmpty) {
+            context.goNamed(WalletRoute.walletHome.name);
+          }
+        },
+        child: BlocBuilder<ScanSignedPsbtCubit, ScanSignedPsbtState>(
+          builder: (context, state) {
+            final cubit = context.read<ScanSignedPsbtCubit>();
 
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (state.parts.isNotEmpty)
-                  Text(
-                    'Parts collected: ${state.parts.length}',
-                    style: context.font.bodyMedium?.copyWith(
-                      color: context.colour.secondary,
-                    ),
-                  ),
-                if (state.error != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      state.error!,
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (state.parts.isNotEmpty)
+                    Text(
+                      'Parts collected: ${state.parts.length}',
                       style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.error,
+                        color: context.colour.secondary,
                       ),
                     ),
-                  ),
-                if (state.psbt.isEmpty)
-                  Expanded(
-                    child: Center(
-                      child: ScannerWidget(onScanned: cubit.tryCollectPsbt),
+                  if (state.error != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Text(
+                        state.error!,
+                        style: context.font.bodyMedium?.copyWith(
+                          color: context.colour.error,
+                        ),
+                      ),
                     ),
+                  if (state.psbt.isEmpty)
+                    Expanded(
+                      child: Center(
+                        child: ScannerWidget(onScanned: cubit.tryCollectPsbt),
+                      ),
+                    ),
+                  PasteInput(
+                    text: state.psbt,
+                    hint: 'Paste a PSBT',
+                    onChanged: cubit.tryParsePsbt,
                   ),
-                PasteInput(
-                  text: state.psbt,
-                  hint: 'Paste a PSBT',
-                  onChanged: cubit.tryParsePsbt,
-                ),
-                if (state.psbt.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  BBButton.big(
-                    label: 'Broadcast',
-                    bgColor: context.colour.secondary,
-                    textColor: context.colour.onPrimary,
-                    onPressed: () {
-                      cubit.broadcastTransaction();
-                      context.goNamed(WalletRoute.walletHome.name);
-                    },
-                  ),
+                  if (state.psbt.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    BBButton.big(
+                      label: 'Broadcast',
+                      bgColor: context.colour.secondary,
+                      textColor: context.colour.onPrimary,
+                      onPressed: cubit.broadcastTransaction,
+                    ),
+                  ],
                 ],
-              ],
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

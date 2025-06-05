@@ -46,13 +46,13 @@ class ScanSignedPsbtCubit extends Cubit<ScanSignedPsbtState> {
 
   Future<void> broadcastTransaction() async {
     try {
-      final txId = await _broadcastBitcoinTransactionUsecase.execute(
+      final txid = await _broadcastBitcoinTransactionUsecase.execute(
         state.psbt,
       );
-
-      debugPrint('txId: $txId');
+      emit(state.copyWith(txid: txid));
+      debugPrint('txid: $txid');
     } catch (e) {
-      debugPrint('error: $e');
+      emit(state.copyWith(error: e.toString()));
     }
   }
 }
