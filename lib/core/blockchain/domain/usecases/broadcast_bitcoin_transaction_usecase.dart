@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 
 class BroadcastBitcoinTransactionUsecase {
@@ -8,8 +8,8 @@ class BroadcastBitcoinTransactionUsecase {
   BroadcastBitcoinTransactionUsecase({
     required BitcoinBlockchainRepository bitcoinBlockchainRepository,
     required SettingsRepository settingsRepository,
-  })  : _bitcoinBlockchain = bitcoinBlockchainRepository,
-        _settingsRepository = settingsRepository;
+  }) : _bitcoinBlockchain = bitcoinBlockchainRepository,
+       _settingsRepository = settingsRepository;
 
   Future<String> execute(String psbt) async {
     try {
