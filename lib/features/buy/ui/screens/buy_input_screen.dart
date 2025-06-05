@@ -16,6 +16,9 @@ class BuyInputScreen extends StatelessWidget {
     final canCreateOrder = context.select(
       (BuyBloc bloc) => bloc.state.canCreateOrder,
     );
+    final isCreatingOrder = context.select(
+      (BuyBloc bloc) => bloc.state.isCreatingOrder,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -53,7 +56,7 @@ class BuyInputScreen extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: BBButton.big(
             label: 'Continue',
-            disabled: !canCreateOrder,
+            disabled: !canCreateOrder || isCreatingOrder,
             onPressed: () {
               context.read<BuyBloc>().add(const BuyEvent.createOrder());
             },

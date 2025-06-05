@@ -126,15 +126,10 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         orderAmount: orderAmount,
         network: network,
         isOwner: isOwner,
+        address: toAddress,
       );
 
-      final order = orderModel.toEntity();
-
-      if (order is! BuyOrder) {
-        throw Exception(
-          'Expected BuyOrder but received a different order type',
-        );
-      }
+      final order = orderModel.toEntity() as BuyOrder;
 
       return order;
     } catch (e) {

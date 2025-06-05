@@ -32,15 +32,14 @@ class AppRouter {
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
-          final isSuperuser = context.select(
-            (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-          );
           return Scaffold(
             body: navigationShell,
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: navigationShell.currentIndex,
               onTap: (index) {
                 // Only supersusers can navigate to the exchange tab
+                final isSuperuser =
+                    context.read<SettingsCubit>().state.isSuperuser ?? false;
                 if (index == 1 && !isSuperuser) {
                   return;
                 }

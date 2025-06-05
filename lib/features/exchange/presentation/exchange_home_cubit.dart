@@ -135,7 +135,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
   Future<void> _checkForAPIKeyAndLoadDetails() async {
     try {
       // Uncomment to delete API key for testing purposes
-      // await _deleteExchangeApiKeyUsecase.execute();
+      //await _deleteExchangeApiKeyUsecase.execute();
       try {
         final user = await _getExchangeUserSummaryUsecase.execute();
         emit(state.copyWith(showLoginSuccessDialog: true, userSummary: user));

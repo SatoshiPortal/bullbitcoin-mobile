@@ -1,15 +1,15 @@
-import 'package:bb_mobile/core/exchange/data/datasources/bull_bitcoin_user_datasource.dart';
+import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const apiKey =
-      'bbak-c668c543468f722d83213a3d80a662b36f22fd53f8f8501a75845c92107c2ad9';
+      'bbak-de07e93fb1c55947c0962278fcad7e82d8c3fc45d63d7757601a47f782518147';
   final dio = Dio(BaseOptions(baseUrl: 'https://api05.bullbitcoin.dev'));
-  final datasource = BullBitcoinUserDatasource(bullBitcoinHttpClient: dio);
+  final datasource = BullbitcoinApiDatasource(bullbitcoinApiHttpClient: dio);
 
   test('getUserSummary returns UserSummaryModel', () async {
     final result = await datasource.getUserSummary(apiKey);
-    expect(result?.email, 'apiKeyUser@test.com');
+    expect(result?.email, 'k147@k147.k147');
   });
 }

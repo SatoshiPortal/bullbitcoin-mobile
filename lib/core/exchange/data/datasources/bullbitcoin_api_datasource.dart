@@ -106,11 +106,13 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     required OrderAmount orderAmount,
     required Network network,
     required bool isOwner,
+    required String address,
   }) async {
-    final Map<String, dynamic> params = {
+    final params = {
       'fiatCurrency': fiatCurrency.code,
       'network': network.value,
-      'isOwner': isOwner.toString(),
+      'isOwner': isOwner,
+      'address': address,
     };
 
     if (orderAmount.isFiat) {
