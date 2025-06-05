@@ -274,10 +274,10 @@ class SwapCubit extends Cubit<SwapState> {
     await loadSwapLimits();
     emit(
       state.copyWith(
-        fromWallets: bitcoinWallets,
-        toWallets: liquidWallets,
-        fromWalletId: defaultBitcoinWallet.id,
-        toWalletId: liquidWallets.first.id,
+        fromWallets: liquidWallets,
+        toWallets: bitcoinWallets,
+        fromWalletId: liquidWallets.first.id,
+        toWalletId: defaultBitcoinWallet.id,
         loadingWallets: false,
         bitcoinUnit: bitcoinUnit,
         fiatCurrencyCodes: currencies,
