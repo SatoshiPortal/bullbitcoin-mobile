@@ -31,10 +31,17 @@ class ExperimentalSettingsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                   tileColor: Colors.transparent,
-                  title: const Text('Import Watch Only'),
+                  title: const Text('Scan Watch Only'),
                   onTap:
                       () => context.pushNamed(ImportWatchOnlyRoutes.scan.name),
                   trailing: const Icon(Icons.remove_red_eye),
+                ),
+                ListTile(
+                  title: const Text('Paste Watch Only'),
+                  onTap:
+                      () =>
+                          context.pushNamed(ImportWatchOnlyRoutes.import.name),
+                  trailing: const Icon(Icons.copy),
                 ),
               ],
             ),

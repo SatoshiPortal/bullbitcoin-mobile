@@ -1,5 +1,5 @@
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/extended_public_key_entity.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_router.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/features/experimental/scanner/scanner_widget.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -29,7 +29,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
             onScanned: (data) {
               setState(() => _scanned = data);
               try {
-                final pub = ExtendedPublicKeyEntity.from(data);
+                final pub = WatchOnlyWalletEntity.from(data);
                 context.replaceNamed(
                   ImportWatchOnlyRoutes.import.name,
                   extra: pub,
