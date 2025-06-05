@@ -6,7 +6,7 @@ abstract class ExchangeOrderRepository {
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required Network network,
-    required String isOwner,
+    required bool isOwner,
   });
   Future<BuyOrder> confirmBuyOrder(String orderId);
   Future<BuyOrder> refreshBuyOrder(String orderId);

@@ -1,6 +1,6 @@
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
-import 'package:bb_mobile/features/buy/ui/screens/buy_amount_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_confirm_screen.dart';
+import 'package:bb_mobile/features/buy/ui/screens/buy_input_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_success_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +28,17 @@ class BuyRouter {
       GoRoute(
         name: BuyRoute.buy.name,
         path: BuyRoute.buy.path,
-        builder: (context, state) => const BuyAmountScreen(),
+        builder: (context, state) {
+          return BlocListener<BuyBloc, BuyState>(
+            listenWhen:
+                (previous, current) =>
+                    previous.buyOrder == null && current.buyOrder != null,
+            listener: (context, state) {
+              context.pushNamed(BuyRoute.buyConfirmation.name);
+            },
+            child: const BuyInputScreen(),
+          );
+        },
         routes: [
           GoRoute(
             name: BuyRoute.buyConfirmation.name,

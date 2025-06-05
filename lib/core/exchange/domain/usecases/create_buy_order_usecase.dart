@@ -14,7 +14,7 @@ class CreateBuyOrderUsecase {
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required Network network,
-    required String isOwner,
+    required bool isOwner,
   }) async {
     try {
       final order = await _exchangeOrderRepository.placeBuyOrder(

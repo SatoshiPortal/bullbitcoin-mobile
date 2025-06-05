@@ -103,7 +103,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required OrderAmount orderAmount,
     required FiatCurrency currency,
     required Network network,
-    required String isOwner,
+    required bool isOwner,
   }) async {
     try {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get();
@@ -125,7 +125,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         fiatCurrency: currency,
         orderAmount: orderAmount,
         network: network,
-        isOwner: isOwner == 'true',
+        isOwner: isOwner,
       );
 
       final order = orderModel.toEntity();

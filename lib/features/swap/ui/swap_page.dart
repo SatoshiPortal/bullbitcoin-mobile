@@ -409,7 +409,7 @@ class SwapFromToDropdown extends StatelessWidget {
             child: Center(
               child:
                   items.isEmpty
-                      ? const LoadingLineContent(width: double.infinity)
+                      ? const LoadingLineContent()
                       : DropdownButtonFormField(
                         value: id,
                         decoration: const InputDecoration(

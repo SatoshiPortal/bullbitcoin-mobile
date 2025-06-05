@@ -8,9 +8,14 @@ class GetExchangeUserSummaryUsecase {
     required ExchangeUserRepository exchangeUserRepository,
   }) : _exchangeUserRepository = exchangeUserRepository;
 
-  Future<UserSummary?> execute() async {
+  Future<UserSummary> execute() async {
     try {
       final userSummary = await _exchangeUserRepository.getUserSummary();
+
+      if (userSummary == null) {
+        throw GetExchangeUserSummaryException('User summary is null');
+      }
+
       return userSummary;
     } catch (e) {
       throw GetExchangeUserSummaryException('$e');

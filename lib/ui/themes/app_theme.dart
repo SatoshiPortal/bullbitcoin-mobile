@@ -21,6 +21,7 @@ class AppTheme {
       textTheme: fonts.textTheme,
       /* TODO: Add theme for inputs like TextField here and remove BBInputText
        Make sure to check impact on all different inputs in the app and adjust accordingly.
+       + do the same for other widgets like dropdowns, buttons, etc.
       inputDecorationTheme: InputDecorationTheme(
         hintStyle: fonts.textTheme.bodyLarge?.copyWith(
           color: colours.surfaceContainer,

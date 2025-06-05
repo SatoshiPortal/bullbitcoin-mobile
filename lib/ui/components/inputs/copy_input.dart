@@ -34,7 +34,7 @@ class CopyInput extends StatelessWidget {
           Expanded(
             child:
                 text.isEmpty
-                    ? const LoadingLineContent(width: double.infinity)
+                    ? const LoadingLineContent()
                     : BBText(
                       text,
                       style: context.font.bodyLarge,

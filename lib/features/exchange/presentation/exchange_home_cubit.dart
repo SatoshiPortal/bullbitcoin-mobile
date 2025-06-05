@@ -136,23 +136,17 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
     try {
       // Uncomment to delete API key for testing purposes
       // await _deleteExchangeApiKeyUsecase.execute();
-      final user = await _getExchangeUserSummaryUsecase.execute();
-      if (user == null) {
-        // TODO: Move this to bloc listener and execute if not loading anymore and
-        // no api key is found.
-        final Uri url = Uri.parse('https://${state.baseUrl}');
-        await webViewController.loadRequest(url);
-      } else {
+      try {
+        final user = await _getExchangeUserSummaryUsecase.execute();
         emit(state.copyWith(showLoginSuccessDialog: true, userSummary: user));
-        // final bbxUrl = dotenv.env['BBX_URL'];
-        // final Uri url = Uri.parse('https://$bbxUrl');
-        // webViewController.loadRequest(url);
-        // final user = await _getUserSummaryUseCase.execute(apiKey.key);
-        // if (user != null) {
-        //   emit(state.copyWith(userSummary: user));
-        // } else {
-        //   _setError(message: 'Failed to load user summary');
-        // }
+      } catch (e) {
+        if (e is GetExchangeUserSummaryException) {
+          // If the user summary is not available, we proceed to load the login page
+          final Uri url = Uri.parse('https://${state.baseUrl}');
+          await webViewController.loadRequest(url);
+        } else {
+          _setError(message: 'Unexpected error: $e');
+        }
       }
     } catch (e) {
       _setError(message: 'Failed to load the page: $e');

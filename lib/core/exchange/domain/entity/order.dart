@@ -2,11 +2,32 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'order.freezed.dart';
 
-enum FiatCurrency { cad, eur, mxn }
+enum FiatCurrency {
+  cad('CAD'),
+  eur('EUR'),
+  mxn('MXN');
 
-enum OrderType { buy, sell }
+  const FiatCurrency(this.code);
+  final String code;
 
-extension OrderTypeExtension on OrderType {
+  static FiatCurrency fromCode(String code) {
+    switch (code.toUpperCase()) {
+      case 'CAD':
+        return FiatCurrency.cad;
+      case 'EUR':
+        return FiatCurrency.eur;
+      case 'MXN':
+        return FiatCurrency.mxn;
+      default:
+        throw Exception('Unknown FiatCurrency: $code');
+    }
+  }
+}
+
+enum OrderType {
+  buy,
+  sell;
+
   String get value {
     switch (this) {
       case OrderType.buy:
@@ -28,35 +49,11 @@ extension OrderTypeExtension on OrderType {
   }
 }
 
-enum Network { lightning, bitcoin, liquid }
+enum Network {
+  lightning,
+  bitcoin,
+  liquid;
 
-extension FiatCurrencyExtension on FiatCurrency {
-  String get value {
-    switch (this) {
-      case FiatCurrency.cad:
-        return 'CAD';
-      case FiatCurrency.eur:
-        return 'EUR';
-      case FiatCurrency.mxn:
-        return 'MXN';
-    }
-  }
-
-  static FiatCurrency fromValue(String value) {
-    switch (value.toUpperCase()) {
-      case 'CAD':
-        return FiatCurrency.cad;
-      case 'EUR':
-        return FiatCurrency.eur;
-      case 'MXN':
-        return FiatCurrency.mxn;
-      default:
-        throw Exception('Unknown FiatCurrency: $value');
-    }
-  }
-}
-
-extension NetworkExtension on Network {
   String get value {
     switch (this) {
       case Network.lightning:

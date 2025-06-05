@@ -132,7 +132,7 @@ class OrderModel {
     'isPPBitcoinOutUpdatable': isPPBitcoinOutUpdatable,
     'payinAmountChanged': payinAmountChanged,
   };
-  
+
   Order toEntity() {
     Network network;
     if (payoutMethod.toLowerCase().contains('lightning')) {
@@ -152,7 +152,7 @@ class OrderModel {
       'indexRateAmount': indexRateAmount,
       'indexRateCurrency': indexRateCurrency,
       'payinAmount': payinAmount,
-      'payinCurrency': FiatCurrencyExtension.fromValue(payinCurrency),
+      'payinCurrency': FiatCurrency.fromCode(payinCurrency),
       'payoutAmount': payoutAmount,
       'payoutCurrency': payoutCurrency,
       'orderStatus': orderStatus,
@@ -160,8 +160,7 @@ class OrderModel {
       'payoutStatus': payoutStatus,
       'scheduledPayoutTime': scheduledPayoutTime,
       'createdAt': DateTime.parse(createdAt),
-      'completedAt':
-          completedAt != null ? DateTime.parse(completedAt!) : null,
+      'completedAt': completedAt != null ? DateTime.parse(completedAt!) : null,
       'message': message,
       'sentAt': sentAt != null ? DateTime.parse(sentAt!) : null,
       'payinMethod': payinMethod,

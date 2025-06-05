@@ -20,7 +20,11 @@ import 'package:go_router/go_router.dart';
 /// all the entry-level routes.
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
-      GlobalKey<NavigatorState>();
+      GlobalKey<NavigatorState>(debugLabel: 'rootNav');
+  static final GlobalKey<NavigatorState> _walletNavigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: 'wallletNav');
+  static final GlobalKey<NavigatorState> _exchangeNavigatorKey =
+      GlobalKey<NavigatorState>(debugLabel: 'exchangeNav');
 
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
@@ -60,8 +64,14 @@ class AppRouter {
           );
         },
         branches: [
-          StatefulShellBranch(routes: [WalletRouter.walletHomeRoute]),
-          StatefulShellBranch(routes: [ExchangeRouter.exchangeHomeRoute]),
+          StatefulShellBranch(
+            navigatorKey: _walletNavigatorKey,
+            routes: [WalletRouter.walletHomeRoute],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _exchangeNavigatorKey,
+            routes: [ExchangeRouter.exchangeHomeRoute],
+          ),
         ],
       ),
       OnboardingRouter.route,
