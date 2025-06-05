@@ -1,3 +1,5 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+
 class OrderModel {
   final String orderId;
   final String orderType;
@@ -130,4 +132,120 @@ class OrderModel {
     'isPPBitcoinOutUpdatable': isPPBitcoinOutUpdatable,
     'payinAmountChanged': payinAmountChanged,
   };
+  
+  Order toEntity() {
+    Network network;
+    if (payoutMethod.toLowerCase().contains('lightning')) {
+      network = Network.lightning;
+    } else if (payoutMethod.toLowerCase().contains('liquid')) {
+      network = Network.liquid;
+    } else {
+      network = Network.bitcoin;
+    }
+
+    final params = {
+      'orderId': orderId,
+      'orderSubtype': orderSubtype,
+      'orderNumber': orderNumber,
+      'exchangeRateAmount': exchangeRateAmount,
+      'exchangeRateCurrency': exchangeRateCurrency,
+      'indexRateAmount': indexRateAmount,
+      'indexRateCurrency': indexRateCurrency,
+      'payinAmount': payinAmount,
+      'payinCurrency': FiatCurrencyExtension.fromValue(payinCurrency),
+      'payoutAmount': payoutAmount,
+      'payoutCurrency': payoutCurrency,
+      'orderStatus': orderStatus,
+      'payinStatus': payinStatus,
+      'payoutStatus': payoutStatus,
+      'scheduledPayoutTime': scheduledPayoutTime,
+      'createdAt': DateTime.parse(createdAt),
+      'completedAt':
+          completedAt != null ? DateTime.parse(completedAt!) : null,
+      'message': message,
+      'sentAt': sentAt != null ? DateTime.parse(sentAt!) : null,
+      'payinMethod': payinMethod,
+      'payoutMethod': payoutMethod,
+      'triggerType': triggerType,
+      'confirmationDeadline': DateTime.parse(confirmationDeadline),
+      'unbatchedBuyOnchainFees': unbatchedBuyOnchainFees,
+      'bitcoinTransactionId': bitcoinTransactionId,
+      'lnUrl': lnUrl,
+      'lightningVoucherExpiresAt':
+          lightningVoucherExpiresAt != null
+              ? DateTime.parse(lightningVoucherExpiresAt!)
+              : null,
+      'isPPBitcoinOutUpdatable': isPPBitcoinOutUpdatable,
+      'payinAmountChanged': payinAmountChanged,
+      'network': network,
+    };
+
+    return orderType.toLowerCase() == 'buy'
+        ? Order.buy(
+          orderId: params['orderId'] as String,
+          orderSubtype: params['orderSubtype'] as String,
+          orderNumber: params['orderNumber'] as int,
+          exchangeRateAmount: params['exchangeRateAmount'] as double,
+          exchangeRateCurrency: params['exchangeRateCurrency'] as String,
+          indexRateAmount: params['indexRateAmount'] as double,
+          indexRateCurrency: params['indexRateCurrency'] as String,
+          payinAmount: params['payinAmount'] as double,
+          payinCurrency: params['payinCurrency'] as FiatCurrency,
+          payoutAmount: params['payoutAmount'] as double,
+          payoutCurrency: params['payoutCurrency'] as String,
+          orderStatus: params['orderStatus'] as String,
+          payinStatus: params['payinStatus'] as String,
+          payoutStatus: params['payoutStatus'] as String,
+          scheduledPayoutTime: params['scheduledPayoutTime'] as String?,
+          createdAt: params['createdAt'] as DateTime,
+          completedAt: params['completedAt'] as DateTime?,
+          message: params['message'] as Map<String, dynamic>?,
+          sentAt: params['sentAt'] as DateTime?,
+          payinMethod: params['payinMethod'] as String,
+          payoutMethod: params['payoutMethod'] as String,
+          triggerType: params['triggerType'] as String,
+          confirmationDeadline: params['confirmationDeadline'] as DateTime,
+          unbatchedBuyOnchainFees: params['unbatchedBuyOnchainFees'],
+          bitcoinTransactionId: params['bitcoinTransactionId'] as String?,
+          lnUrl: params['lnUrl'] as String?,
+          lightningVoucherExpiresAt:
+              params['lightningVoucherExpiresAt'] as DateTime?,
+          isPPBitcoinOutUpdatable: params['isPPBitcoinOutUpdatable'] as bool,
+          payinAmountChanged: params['payinAmountChanged'],
+          network: params['network'] as Network,
+        )
+        : Order.sell(
+          orderId: params['orderId'] as String,
+          orderSubtype: params['orderSubtype'] as String,
+          orderNumber: params['orderNumber'] as int,
+          exchangeRateAmount: params['exchangeRateAmount'] as double,
+          exchangeRateCurrency: params['exchangeRateCurrency'] as String,
+          indexRateAmount: params['indexRateAmount'] as double,
+          indexRateCurrency: params['indexRateCurrency'] as String,
+          payinAmount: params['payinAmount'] as double,
+          payinCurrency: params['payinCurrency'] as FiatCurrency,
+          payoutAmount: params['payoutAmount'] as double,
+          payoutCurrency: params['payoutCurrency'] as String,
+          orderStatus: params['orderStatus'] as String,
+          payinStatus: params['payinStatus'] as String,
+          payoutStatus: params['payoutStatus'] as String,
+          scheduledPayoutTime: params['scheduledPayoutTime'] as String?,
+          createdAt: params['createdAt'] as DateTime,
+          completedAt: params['completedAt'] as DateTime?,
+          message: params['message'] as Map<String, dynamic>?,
+          sentAt: params['sentAt'] as DateTime?,
+          payinMethod: params['payinMethod'] as String,
+          payoutMethod: params['payoutMethod'] as String,
+          triggerType: params['triggerType'] as String,
+          confirmationDeadline: params['confirmationDeadline'] as DateTime,
+          unbatchedBuyOnchainFees: params['unbatchedBuyOnchainFees'],
+          bitcoinTransactionId: params['bitcoinTransactionId'] as String?,
+          lnUrl: params['lnUrl'] as String?,
+          lightningVoucherExpiresAt:
+              params['lightningVoucherExpiresAt'] as DateTime?,
+          isPPBitcoinOutUpdatable: params['isPPBitcoinOutUpdatable'] as bool,
+          payinAmountChanged: params['payinAmountChanged'],
+          network: params['network'] as Network,
+        );
+  }
 }

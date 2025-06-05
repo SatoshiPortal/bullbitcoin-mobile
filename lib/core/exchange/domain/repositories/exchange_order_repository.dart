@@ -8,6 +8,8 @@ abstract class ExchangeOrderRepository {
     required Network network,
     required String isOwner,
   });
+  Future<BuyOrder> confirmBuyOrder(String orderId);
+  Future<BuyOrder> refreshBuyOrder(String orderId);
   Future<Order> getOrder(String orderId);
   Future<List<Order>> getOrders({int? limit, int? offset, OrderType? type});
 }
