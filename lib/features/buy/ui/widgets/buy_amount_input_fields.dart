@@ -82,19 +82,9 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            BBText(
-              'Balance:',
-              style: context.font.labelSmall,
-              color: context.colour.outline,
-            ),
-            const Gap(4),
-            if (balance == null)
-              const Flexible(
-                child: LoadingLineContent(padding: EdgeInsets.zero),
-              )
-            else
+            if (balance != null)
               BBText(
-                '$balance',
+                'Balance: $balance',
                 style: context.font.labelSmall,
                 color: context.colour.outline,
               ),
