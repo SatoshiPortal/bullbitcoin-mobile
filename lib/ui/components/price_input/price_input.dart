@@ -12,7 +12,9 @@ class PriceInput extends StatefulWidget {
     required this.availableCurrencies,
     required this.onCurrencyChanged,
     required this.onNoteChanged,
+    required this.amountController,
     this.error,
+    this.focusNode,
   });
 
   final String amount;
@@ -21,59 +23,33 @@ class PriceInput extends StatefulWidget {
   final List<String> availableCurrencies;
   final Function(String) onCurrencyChanged;
   final Function(String) onNoteChanged;
+  final TextEditingController amountController;
   final String? error;
+  final FocusNode? focusNode;
+
   @override
   State<PriceInput> createState() => _PriceInputState();
 }
 
 class _PriceInputState extends State<PriceInput> {
-  late TextEditingController _amountController;
+  late FocusNode _focusNode;
 
   @override
   void initState() {
     super.initState();
-    _amountController = TextEditingController(text: widget.amount);
-  }
-
-  @override
-  void didUpdateWidget(PriceInput oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.amount != _amountController.text) {
-      _amountController.value = TextEditingValue(
-        text: widget.amount,
-        selection: TextSelection.collapsed(offset: widget.amount.length),
-      );
-    }
+    _focusNode = widget.focusNode ?? FocusNode();
   }
 
   @override
   void dispose() {
-    _amountController.dispose();
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
     super.dispose();
-  }
-
-  Future<String?> _openPopup(BuildContext context, String selected) async {
-    final c = await showModalBottomSheet<String?>(
-      useRootNavigator: true,
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: context.colour.secondaryFixedDim,
-      builder: (context) {
-        return CurrencyBottomSheet(
-          availableCurrencies: widget.availableCurrencies,
-          selectedValue: widget.currency,
-        );
-      },
-    );
-
-    return c;
   }
 
   @override
   Widget build(BuildContext context) {
-    // Needed to position the currency dropdown underneat it.
-    final equivalentKey = GlobalKey();
-
     return Column(
       children: [
         BBText(
@@ -83,8 +59,6 @@ class _PriceInputState extends State<PriceInput> {
               widget.error != null ? context.colour.error : Colors.transparent,
           maxLines: 2,
         ),
-        // ),
-        // ],
         const Gap(8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +72,8 @@ class _PriceInputState extends State<PriceInput> {
                   children: [
                     IntrinsicWidth(
                       child: TextField(
-                        controller: _amountController,
+                        controller: widget.amountController,
+                        focusNode: _focusNode,
                         keyboardType: TextInputType.none,
                         showCursor: true,
                         readOnly: true,
@@ -150,7 +125,6 @@ class _PriceInputState extends State<PriceInput> {
         const Gap(14),
         BBText(
           '~${widget.amountEquivalent}',
-          key: equivalentKey,
           style: context.font.bodyLarge,
           color: context.colour.surfaceContainer,
         ),
@@ -181,6 +155,23 @@ class _PriceInputState extends State<PriceInput> {
         ),
       ],
     );
+  }
+
+  Future<String?> _openPopup(BuildContext context, String selected) async {
+    final c = await showModalBottomSheet<String?>(
+      useRootNavigator: true,
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: context.colour.secondaryFixedDim,
+      builder: (context) {
+        return CurrencyBottomSheet(
+          availableCurrencies: widget.availableCurrencies,
+          selectedValue: selected,
+        );
+      },
+    );
+
+    return c;
   }
 }
 
