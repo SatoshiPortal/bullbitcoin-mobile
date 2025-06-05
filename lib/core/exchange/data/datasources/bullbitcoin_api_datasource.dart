@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
@@ -102,22 +103,29 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
   Future<OrderModel> createBuyOrder({
     required String apiKey,
     required FiatCurrency fiatCurrency,
-    required double fiatAmount,
+    required OrderAmount orderAmount,
     required Network network,
     required bool isOwner,
   }) async {
+    final params = {
+      'fiatCurrency': fiatCurrency.value,
+      'network': network.value,
+      'isOwner': isOwner,
+    };
+    
+    if (orderAmount.isFiat) {
+      params['fiatAmount'] = orderAmount.amount;
+    } else if (orderAmount.isBitcoin) {
+      params['bitcoinAmount'] = orderAmount.amount;
+    }
+    
     final resp = await _http.post(
       _ordersPath,
       data: {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'createOrderBuy',
-        'params': {
-          'fiatCurrency': fiatCurrency.apiValue,
-          'fiatAmount': fiatAmount,
-          'network': network.apiValue,
-          'isOwner': isOwner,
-        },
+        'params': params,
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );
