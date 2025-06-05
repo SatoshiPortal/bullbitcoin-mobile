@@ -9,9 +9,7 @@ class ConfirmBuyOrderUsecase {
     required ExchangeOrderRepository exchangeOrderRepository,
   }) : _exchangeOrderRepository = exchangeOrderRepository;
 
-  Future<BuyOrder> execute({
-    required String orderId,
-  }) async {
+  Future<BuyOrder> execute({required String orderId}) async {
     try {
       final order = await _exchangeOrderRepository.confirmBuyOrder(orderId);
       return order;

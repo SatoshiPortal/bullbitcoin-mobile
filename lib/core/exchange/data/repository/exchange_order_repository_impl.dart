@@ -37,7 +37,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return orderModel.toEntity();
     } catch (e) {
-      throw Exception('Failed to get order: ${e.toString()}');
+      throw Exception('Failed to get order: $e');
     }
   }
 
@@ -74,10 +74,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         switch (type) {
           case OrderType.buy:
             orders = orders.whereType<BuyOrder>().toList();
-            break;
           case OrderType.sell:
             orders = orders.whereType<SellOrder>().toList();
-            break;
         }
       }
 
@@ -95,7 +93,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return orders;
     } catch (e) {
-      throw Exception('Failed to get orders: ${e.toString()}');
+      throw Exception('Failed to get orders: $e');
     }
   }
 
@@ -140,7 +138,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return order;
     } catch (e) {
-      throw Exception('Failed to place buy order: ${e.toString()}');
+      throw Exception('Failed to place buy order: $e');
     }
   }
 
@@ -176,7 +174,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return order;
     } catch (e) {
-      throw Exception('Failed to confirm buy order: ${e.toString()}');
+      throw Exception('Failed to confirm buy order: $e');
     }
   }
 
@@ -212,7 +210,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return order;
     } catch (e) {
-      throw Exception('Failed to refresh buy order: ${e.toString()}');
+      throw Exception('Failed to refresh buy order: $e');
     }
   }
 }

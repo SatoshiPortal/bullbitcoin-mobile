@@ -1,22 +1,39 @@
+// ignore_for_file: unused_field
+
+import 'package:bb_mobile/core/exchange/domain/usecases/confirm_buy_order_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/create_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/refresh_buy_order_usecase.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'buy_bloc.freezed.dart';
 part 'buy_event.dart';
 part 'buy_state.dart';
-
-part 'buy_bloc.freezed.dart';
 
 class BuyBloc extends Bloc<BuyEvent, BuyState> {
   BuyBloc({
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
+    required ConfirmBuyOrderUsecase confirmBuyOrderUsecase,
+    required CreateBuyOrderUsecase createBuyOrderUsecase,
+    required GetOrderUsecase getOrderUsecase,
+    required RefreshBuyOrderUsecase refreshBuyOrderUsecase,
   }) : _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
+       _confirmBuyOrderUsecase = confirmBuyOrderUsecase,
+       _createBuyOrderUsecase = createBuyOrderUsecase,
+       _getOrderUsecase = getOrderUsecase,
+       _refreshBuyOrderUsecase = refreshBuyOrderUsecase,
        super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
   }
 
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
+  final ConfirmBuyOrderUsecase _confirmBuyOrderUsecase;
+  final CreateBuyOrderUsecase _createBuyOrderUsecase;
+  final GetOrderUsecase _getOrderUsecase;
+  final RefreshBuyOrderUsecase _refreshBuyOrderUsecase;
 
   Future<void> _onStarted(_BuyStarted event, Emitter<BuyState> emit) async {
     try {

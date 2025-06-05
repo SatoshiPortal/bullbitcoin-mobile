@@ -5,13 +5,10 @@ import 'package:flutter/foundation.dart';
 class GetOrderUsecase {
   final ExchangeOrderRepository _exchangeOrderRepository;
 
-  GetOrderUsecase({
-    required ExchangeOrderRepository exchangeOrderRepository,
-  }) : _exchangeOrderRepository = exchangeOrderRepository;
+  GetOrderUsecase({required ExchangeOrderRepository exchangeOrderRepository})
+    : _exchangeOrderRepository = exchangeOrderRepository;
 
-  Future<Order> execute({
-    required String orderId,
-  }) async {
+  Future<Order> execute({required String orderId}) async {
     try {
       final order = await _exchangeOrderRepository.getOrder(orderId);
       return order;
