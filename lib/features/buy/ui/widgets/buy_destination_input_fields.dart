@@ -66,7 +66,7 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
             borderRadius: BorderRadius.circular(4.0),
             child: Center(
               child: DropdownButtonFormField<String>(
-                alignment: Alignment.center,
+                alignment: Alignment.centerLeft,
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
