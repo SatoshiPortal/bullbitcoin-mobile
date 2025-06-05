@@ -5,11 +5,13 @@ import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_o
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
+import 'package:bb_mobile/ui/components/inputs/paste_input.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
 class ImportWatchOnlyScreen extends StatelessWidget {
@@ -84,17 +86,11 @@ class _ImportScreenContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BBInputText(
-          onlyPaste: true,
-          onChanged: cubit.updateLabel,
-          value: cubit.state.publicKey,
-          maxLines: 1,
-          maxLength: 111,
-        ),
-        const SizedBox(height: 8),
-        const BBText(
-          'Enter a valid extended public key (xpub / ypub / zpub) that is 111 characters long',
-          style: null,
+        PasteInput(
+          text: cubit.state.publicKey,
+          hint:
+              'Enter a valid extended public key (xpub / ypub / zpub) that is 111 characters long',
+          onChanged: cubit.parseExtendedPublicKey,
         ),
       ],
     );
@@ -113,29 +109,16 @@ class _ImportScreenContent extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                BBText('Extended Public Key', style: context.font.titleMedium),
+                const Gap(8),
                 BBText(wallet.pubkey, style: null),
-                BBText(wallet.fingerprint, style: null),
+                const Gap(16),
+                BBText('Type', style: context.font.titleMedium),
+                const Gap(8),
                 BBText(wallet.type.name, style: null),
-                BBText(wallet.label, style: null),
-
-                // Text('Extended Public Key', style: context.font.titleMedium),
-                // const SizedBox(height: 8),
-                // Text(wallet.pubkey, style: context.font.bodyMedium),
-                // const SizedBox(height: 16),
-                // Text('Type', style: context.font.titleMedium),
-                // const SizedBox(height: 8),
-                // Text(wallet.type.name, style: context.font.bodyMedium),
-                // const SizedBox(height: 16),
-                // Text('Label', style: context.font.titleMedium),
-                // const SizedBox(height: 8),
-                BBInputText(
-                  onChanged: cubit.updateLabel,
-                  value: wallet.label,
-                  hint: 'label (optional)',
-                  maxLines: 1,
-                  maxLength: 111,
-                ),
-
+                const Gap(16),
+                BBText('Fingerprint', style: context.font.titleMedium),
+                const Gap(8),
                 BBInputText(
                   onChanged: cubit.overrideFingerprint,
                   value: wallet.fingerprint,
@@ -143,11 +126,20 @@ class _ImportScreenContent extends StatelessWidget {
                   hint: 'fingerprint',
                   maxLength: 8,
                 ),
+                const Gap(16),
+                BBText('Label', style: context.font.titleMedium),
+                const Gap(8),
+                BBInputText(
+                  onChanged: cubit.updateLabel,
+                  value: wallet.label,
+                  hint: 'label (optional)',
+                  maxLines: 1,
+                ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const Gap(16),
         BBButton.big(
           onPressed: cubit.import,
           label: 'Import',
