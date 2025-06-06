@@ -1270,6 +1270,7 @@ class SendCubit extends Cubit<SendState> {
         } else {
           final txId = await _broadcastBitcoinTxUsecase.execute(
             state.signedBitcoinPsbt!,
+            isPsbt: true,
           );
           emit(state.copyWith(txId: txId));
         }
