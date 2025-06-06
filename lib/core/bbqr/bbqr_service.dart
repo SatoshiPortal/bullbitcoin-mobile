@@ -20,7 +20,7 @@ class BbqrService {
     if (!BbqrOptions.isValid(payload)) {
       try {
         await bdk.Transaction.fromBytes(transactionBytes: hex.decode(payload));
-        return (format: TxFormat.psbt, data: payload);
+        return (format: TxFormat.hex, data: payload);
       } catch (e) {
         debugPrint('e: $e');
         return null;
