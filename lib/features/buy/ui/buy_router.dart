@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/buy/ui/screens/buy_confirm_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_input_screen.dart';
 import 'package:bb_mobile/features/buy/ui/screens/buy_success_screen.dart';
 import 'package:bb_mobile/locator.dart';
+import 'package:bb_mobile/router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -34,7 +35,7 @@ class BuyRouter {
                 (previous, current) =>
                     previous.buyOrder == null && current.buyOrder != null,
             listener: (context, state) {
-              context.pushNamed(BuyRoute.buyConfirmation.name);
+              context.pushReplacementNamed(BuyRoute.buyConfirmation.name);
             },
             child: const BuyInputScreen(),
           );
@@ -50,16 +51,27 @@ class BuyRouter {
                         previous.buyOrder?.isPayinCompleted != true &&
                         current.buyOrder?.isPayinCompleted == true,
                 listener: (context, state) {
-                  context.goNamed(BuyRoute.buySuccess.name);
+                  context.pushReplacementNamed(
+                    BuyRoute.buySuccess.name,
+                    extra: context.read<BuyBloc>(),
+                  );
                 },
                 child: const BuyConfirmScreen(),
               );
             },
           ),
           GoRoute(
+            parentNavigatorKey: AppRouter.rootNavigatorKey,
             name: BuyRoute.buySuccess.name,
             path: BuyRoute.buySuccess.path,
-            builder: (context, state) => const BuySuccessScreen(),
+            builder: (context, state) {
+              final buyBloc = state.extra! as BuyBloc;
+
+              return BlocProvider.value(
+                value: buyBloc,
+                child: const BuySuccessScreen(),
+              );
+            },
           ),
         ],
       ),

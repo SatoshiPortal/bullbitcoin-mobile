@@ -148,6 +148,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         _startMonitoringSwap(swapId, walletId: wallet.id);
       }
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(isLoading: false, err: e));
     }
   }

@@ -100,8 +100,8 @@ abstract class TransactionsState with _$TransactionsState {
                       tx.isPayjoin &&
                           (!isOutgoingChainSwap ||
                               walletId == tx.walletTransaction?.walletId),
-                    TransactionsFilter.sell => false,
-                    TransactionsFilter.buy => false,
+                    TransactionsFilter.sell => tx.isSellOrder,
+                    TransactionsFilter.buy => tx.isBuyOrder,
                   };
             }).toList(),
     };

@@ -1,7 +1,9 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -35,29 +37,26 @@ class GetTransactionsUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final environment = settings.environment;
-
-      // Fetch wallet transactions
-      final walletTransactions = await _walletTransactionRepository
-          .getWalletTransactions(
-            walletId: walletId,
-            sync: sync,
-            environment: environment,
-          );
-
-      // Fetch payjoin transactions
-      final payjoins = await _payjoinRepository.getPayjoins(
-        walletId: walletId,
-        environment: environment,
-      );
-
-      // Fetch orders
-      final orders = await _orderRepository.getOrders();
-
-      // Fetch swaps
-      final swaps =
+      final swapRepository =
           environment.isTestnet
-              ? await _testnetSwapRepository.getAllSwaps(walletId: walletId)
-              : await _mainnetSwapRepository.getAllSwaps(walletId: walletId);
+              ? _testnetSwapRepository
+              : _mainnetSwapRepository;
+
+      // Fetch wallet transactions, payjoins, orders and swaps
+      final (walletTransactions, payjoins, orders, swaps) =
+          await (
+            _walletTransactionRepository.getWalletTransactions(
+              walletId: walletId,
+              sync: sync,
+              environment: environment,
+            ),
+            _payjoinRepository.getPayjoins(
+              walletId: walletId,
+              environment: environment,
+            ),
+            _orderRepository.getOrders(),
+            swapRepository.getAllSwaps(walletId: walletId),
+          ).wait;
 
       // Add related payjoins, swaps and orders to the broadcasted wallet transactions
       //  as they should be linked and form a single Transaction entity.
@@ -69,43 +68,52 @@ class GetTransactionsUsecase {
       //  swap or order and payjoin is not possible currently.
       final broadcastedTransactions =
           walletTransactions.map((wt) {
-            final swap =
-                swaps
-                    .where(
-                      (swap) =>
-                          (wt.isOutgoing && swap.sendTxId == wt.txId) ||
-                          (wt.isIncoming && swap.receiveTxId == wt.txId),
-                    )
-                    .firstOrNull;
-            final payjoin =
-                payjoins
-                    .where(
-                      (pj) =>
-                          [pj.txId, pj.originalTxId].contains(wt.txId) &&
-                          // Make sure to match the direction of the payjoin, since
-                          //  both a sender and receiver payjoin can exist for the
-                          //  same transaction if it was done between two wallets in
-                          //  the app.
-                          wt.isOutgoing == pj is PayjoinSender,
-                    )
-                    .firstOrNull;
-            if (payjoin != null) {
+            Swap? swap;
+            try {
+              swap = swaps.firstWhere(
+                (s) =>
+                    (wt.isOutgoing && s.sendTxId == wt.txId) ||
+                    (wt.isIncoming && s.receiveTxId == wt.txId),
+              );
+            } catch (_) {
+              // If no swap is found, it means the transaction is not a swap
+              swap = null;
+            }
+            Payjoin? payjoin;
+            try {
+              payjoin = payjoins.firstWhere(
+                (pj) =>
+                    [pj.txId, pj.originalTxId].contains(wt.txId) &&
+                    // Make sure to match the direction of the payjoin, since
+                    //  both a sender and receiver payjoin can exist for the
+                    //  same transaction if it was done between two wallets in
+                    //  the app.
+                    wt.isOutgoing == pj is PayjoinSender,
+              );
               // Remove the payjoin from the list of payjoins to avoid duplication
               //  since it's already included in the broadcasted transaction
               payjoins.remove(payjoin);
+            } catch (_) {
+              // If no payjoin is found, it means the transaction is not a payjoin
+              payjoin = null;
             }
-            final order =
-                orders.where((o) => o.transactionId == wt.txId).firstOrNull;
-            if (order != null) {
+
+            Order? order;
+            try {
+              order = orders.firstWhere((o) => o.transactionId == wt.txId);
               // Remove the order from the list of orders to avoid duplication
               //  since it's already included in the broadcasted transaction
               orders.remove(order);
+            } catch (_) {
+              // If no order is found, it means the transaction is not an order
+              order = null;
             }
 
             return Transaction(
               walletTransaction: wt,
               swap: swap,
               payjoin: payjoin,
+              order: order,
             );
           }).toList();
 

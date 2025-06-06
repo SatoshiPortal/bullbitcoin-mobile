@@ -97,10 +97,7 @@ class OrderModel {
       orderNumber: json['orderNumber'] as int,
       exchangeRateAmount: (json['exchangeRateAmount'] as num).toDouble(),
       exchangeRateCurrency: json['exchangeRateCurrency'] as String,
-      indexRateAmount:
-          json['indexRateAmount'] != null
-              ? (json['indexRateAmount'] as num?)?.toDouble()
-              : null,
+      indexRateAmount: (json['indexRateAmount'] as num?)?.toDouble(),
       indexRateCurrency: json['indexRateCurrency'] as String?,
       payinAmount: (json['payinAmount'] as num).toDouble(),
       payinCurrency: json['payinCurrency'] as String,
@@ -112,27 +109,17 @@ class OrderModel {
       scheduledPayoutTime: json['scheduledPayoutTime'] as String?,
       createdAt: json['createdAt'] as String,
       completedAt: json['completedAt'] as String?,
-      message:
-          json['message'] != null && json['message'] is Map<String, dynamic>
-              ? json['message'] as Map<String, dynamic>?
-              : null,
+      message: json['message'] as Map<String, dynamic>?,
       sentAt: json['sentAt'] as String?,
       payinMethod: json['payinMethod'] as String,
       payoutMethod: json['payoutMethod'] as String,
       triggerType: json['triggerType'] as String,
       confirmationDeadline: json['confirmationDeadline'] as String,
-
       bitcoinTransactionId: json['bitcoinTransactionId'] as String?,
       lnUrl: json['lnUrl'] as String?,
       lightningVoucherExpiresAt: json['lightningVoucherExpiresAt'] as String?,
-      isPPBitcoinOutUpdatable:
-          json['isPPBitcoinOutUpdatable'] is bool
-              ? json['isPPBitcoinOutUpdatable'] as bool
-              : null,
-      payinAmountChanged:
-          json.containsKey('payinAmountChanged')
-              ? json['payinAmountChanged']
-              : null,
+      isPPBitcoinOutUpdatable: json['isPPBitcoinOutUpdatable'] as bool?,
+      payinAmountChanged: json['payinAmountChanged'] as Map<String, dynamic>?,
       lightningInvoice: json['lightningInvoice'] as String?,
       bitcoinAddress: json['bitcoinAddress'] as String?,
       liquidAddress: json['liquidAddress'] as String?,
@@ -146,10 +133,7 @@ class OrderModel {
       securityQuestion: json['securityQuestion'] as String?,
       securityAnswer: json['securityAnswer'] as String?,
       paymentDescription: json['paymentDescription'] as String?,
-      unbatchedBuyOnchainFees:
-          json.containsKey('payinAmountChanged')
-              ? json['unbatchedBuyOnchainFees'] as double
-              : null,
+      unbatchedBuyOnchainFees: json['unbatchedBuyOnchainFees'] as double?,
     );
   }
 

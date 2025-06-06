@@ -3,7 +3,6 @@ import 'dart:collection';
 
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -20,27 +19,25 @@ class TransactionsCubit extends Cubit<TransactionsState> {
     required GetTransactionsUsecase getTransactionsUsecase,
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
-    required CheckWalletSyncingUsecase checkWalletSyncingUsecase,
   }) : _getTransactionsUsecase = getTransactionsUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
        _watchFinishedWalletSyncsUsecase = watchFinishedWalletSyncsUsecase,
-       _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        super(TransactionsState(walletId: walletId)) {
     _startedSyncSubscription = _watchStartedWalletSyncsUsecase
         .execute(walletId: walletId)
         .listen((_) => emit(state.copyWith(isSyncing: true)));
     _finishedSyncSubscription = _watchFinishedWalletSyncsUsecase
         .execute(walletId: walletId)
-        .listen((_) => loadTxs());
+        .listen((_) => _onSyncFinished());
   }
 
   final GetTransactionsUsecase _getTransactionsUsecase;
   final WatchStartedWalletSyncsUsecase _watchStartedWalletSyncsUsecase;
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
-  final CheckWalletSyncingUsecase _checkWalletSyncingUsecase;
 
   StreamSubscription? _startedSyncSubscription;
   StreamSubscription? _finishedSyncSubscription;
+  Timer? _debounceTimer;
 
   @override
   Future<void> close() async {
@@ -53,21 +50,17 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   Future<void> loadTxs() async {
     try {
+      if (state.isSyncing) {
+        return; // Already syncing, no need to fetch again
+      }
+
       emit(state.copyWith(isSyncing: true));
       final transactions = await _getTransactionsUsecase.execute(
         walletId: state.walletId,
       );
 
-      final isSyncing = _checkWalletSyncingUsecase.execute(
-        walletId: state.walletId,
-      );
-
       emit(
-        state.copyWith(
-          transactions: transactions,
-          isSyncing: isSyncing,
-          err: null,
-        ),
+        state.copyWith(transactions: transactions, isSyncing: false, err: null),
       );
     } catch (e) {
       if (!isClosed) {
@@ -78,5 +71,12 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   void setFilter(TransactionsFilter filter) {
     emit(state.copyWith(filter: filter));
+  }
+
+  Future<void> _onSyncFinished() async {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(seconds: 3), () {
+      loadTxs();
+    });
   }
 }

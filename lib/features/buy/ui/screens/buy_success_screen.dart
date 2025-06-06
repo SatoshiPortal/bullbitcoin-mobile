@@ -9,6 +9,7 @@ import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class BuySuccessScreen extends StatelessWidget {
   const BuySuccessScreen({super.key});
@@ -29,79 +30,68 @@ class BuySuccessScreen extends StatelessWidget {
             : FormatAmount.btc(buyOrder.payoutAmount);
     final payoutTime = buyOrder.scheduledPayoutTime;
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) {
-          return;
-        }
-        // Pop off the buy shellroute by using the root navigator
-        Navigator.of(context, rootNavigator: true).pop();
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Buy Bitcoin'),
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                // Pop off the buy shellroute by using the root navigator
-                Navigator.of(context, rootNavigator: true).pop();
-              },
-            ),
-          ],
-        ),
-        body: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.check_circle, size: 100, color: Colors.green),
-                const SizedBox(height: 20),
-                Text(
-                  'You bought $formattedPayOutAmount',
-                  style: context.font.titleLarge,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Buy Bitcoin'),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () {
+              context.pop();
+            },
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.check_circle, size: 100, color: Colors.green),
+              const SizedBox(height: 20),
+              Text(
+                'You bought $formattedPayOutAmount',
+                style: context.font.titleLarge,
+              ),
+              const SizedBox(height: 10),
+              if (payoutTime != null)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Your payout will be sent in ',
+                      style: context.font.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    const Gap(4),
+                    Countdown(
+                      until: payoutTime,
+                      onTimeout: () {
+                        // TODO: Maybe fetch the order again or notify the user
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                if (payoutTime != null)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Your payout will be sent in ',
-                        style: context.font.bodyMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                      const Gap(4),
-                      Countdown(
-                        until: payoutTime,
-                        onTimeout: () {
-                          // TODO: Maybe fetch the order again or notify the user
-                        },
-                      ),
-                    ],
-                  ),
-              ],
-            ),
+            ],
           ),
         ),
-        bottomNavigationBar: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                BBButton.big(
-                  label: 'View details',
-                  onPressed: () {
-                    //context.pushNamed(TransactionsRoute.transactionDetails.name,extra: );
-                  },
-                  bgColor: context.colour.secondary,
-                  textColor: context.colour.onPrimary,
-                ),
-              ],
-            ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              BBButton.big(
+                label: 'View details',
+                onPressed: () {
+                  //context.pushNamed(TransactionsRoute.transactionDetails.name,extra: );
+                },
+                bgColor: context.colour.secondary,
+                textColor: context.colour.onPrimary,
+              ),
+            ],
           ),
         ),
       ),

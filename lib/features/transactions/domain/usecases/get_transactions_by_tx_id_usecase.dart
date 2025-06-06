@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
@@ -55,10 +56,15 @@ class GetTransactionsByTxIdUsecase {
         return walletTransactions.map((walletTransaction) {
           // Both a send and a receive transaction can exist for the same txId,
           // so we take the one with the matching walletId.
-          final payjoin =
-              payjoins
-                  .where((pj) => pj.walletId == walletTransaction.walletId)
-                  .firstOrNull;
+          Payjoin? payjoin;
+          try {
+            payjoin = payjoins.firstWhere(
+              (pj) => pj.walletId == walletTransaction.walletId,
+            );
+          } catch (_) {
+            // If no payjoin is found for this wallet transaction, we set it to null.
+            payjoin = null;
+          }
 
           return Transaction(
             walletTransaction: walletTransaction,

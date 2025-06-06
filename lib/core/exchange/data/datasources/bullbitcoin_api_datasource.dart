@@ -176,7 +176,9 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
         'jsonrpc': '2.0',
         'id': '0',
         'method': 'listOrderSummaries',
-        'params': {},
+        'params': {
+          "sortBy": {"id": "createdAt", "sort": "desc"},
+        },
       },
       options: Options(headers: {'X-API-Key': apiKey}),
     );

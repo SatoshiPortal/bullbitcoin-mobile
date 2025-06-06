@@ -1,8 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 
@@ -76,20 +78,27 @@ class GetSwapCounterpartTransactionUsecase {
 
       // Compose the counterpart transaction from the fetched data
       if (walletTransactionsWithCounterpartyTxId.isNotEmpty) {
-        final walletTransactionWithCounterpartyWallet =
-            walletTransactionsWithCounterpartyTxId
-                .where((tx) => tx.walletId == counterpartyWalletId)
-                .firstOrNull;
-
-        if (walletTransactionWithCounterpartyWallet == null) {
-          // No wallet transaction found for the counterparty wallet ID.
+        WalletTransaction? walletTransactionWithCounterpartyWallet;
+        try {
+          // Find the wallet transaction that matches the counterparty wallet ID
+          walletTransactionWithCounterpartyWallet =
+              walletTransactionsWithCounterpartyTxId.firstWhere(
+                (tx) => tx.walletId == counterpartyWalletId,
+              );
+        } catch (e) {
+          // If no transaction is found, return null
           return null;
         }
 
-        final payjoinWithCounterpartyWallet =
-            payjoinsWithCounterpartyTxId
-                .where((pj) => pj.walletId == counterpartyWalletId)
-                .firstOrNull;
+        Payjoin? payjoinWithCounterpartyWallet;
+        try {
+          // Find the payjoin that matches the counterparty wallet ID
+          payjoinWithCounterpartyWallet = payjoinsWithCounterpartyTxId
+              .firstWhere((pj) => pj.walletId == counterpartyWalletId);
+        } catch (e) {
+          // If no payjoin is found, it will be null
+          payjoinWithCounterpartyWallet = null;
+        }
 
         return Transaction(
           walletTransaction: walletTransactionWithCounterpartyWallet,
