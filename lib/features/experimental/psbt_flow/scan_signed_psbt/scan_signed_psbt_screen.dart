@@ -70,18 +70,18 @@ class _ScanSignedPsbtView extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (state.psbt.isEmpty)
+                  if (state.transaction == null)
                     Expanded(
                       child: Center(
                         child: ScannerWidget(onScanned: cubit.tryCollectPsbt),
                       ),
                     ),
                   PasteInput(
-                    text: state.psbt,
+                    text: state.transaction?.data ?? '',
                     hint: 'Paste a PSBT',
-                    onChanged: cubit.tryParsePsbt,
+                    onChanged: cubit.tryParseTransaction,
                   ),
-                  if (state.psbt.isNotEmpty) ...[
+                  if (state.transaction != null) ...[
                     const SizedBox(height: 16),
                     BBButton.big(
                       label: 'Broadcast',

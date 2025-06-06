@@ -2,7 +2,7 @@ import 'package:bb_mobile/core/bbqr/bbqr_service.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/scan_signed_psbt/scan_signed_psbt_state.dart';
 import 'package:bdk_flutter/bdk_flutter.dart';
-import 'package:flutter/material.dart';
+import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ScanSignedPsbtCubit extends Cubit<ScanSignedPsbtState> {
@@ -20,11 +20,10 @@ class ScanSignedPsbtCubit extends Cubit<ScanSignedPsbtState> {
   Future<void> tryCollectPsbt(String payload) async {
     try {
       emit(state.copyWith(error: null));
-      final psbt = await bbqrService.collectPsbt(payload);
 
-      if (psbt != null) {
-        emit(state.copyWith(psbt: psbt, error: null));
-      }
+      final tx = await bbqrService.scanTransaction(payload);
+
+      if (tx != null) emit(state.copyWith(transaction: tx));
 
       if (bbqrService.parts.isNotEmpty) {
         emit(state.copyWith(parts: Map.from(bbqrService.parts)));
@@ -34,23 +33,42 @@ class ScanSignedPsbtCubit extends Cubit<ScanSignedPsbtState> {
     }
   }
 
-  Future<void> tryParsePsbt(String psbt) async {
+  Future<void> tryParseTransaction(String input) async {
+    emit(state.copyWith(error: null));
     try {
-      emit(state.copyWith(error: null));
-      final parsedPsbt = await PartiallySignedTransaction.fromString(psbt);
-      emit(state.copyWith(psbt: parsedPsbt.toString(), error: null));
+      final parsedPsbt = await PartiallySignedTransaction.fromString(input);
+      emit(
+        state.copyWith(
+          transaction: (format: TxFormat.psbt, data: parsedPsbt.toString()),
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      try {
+        final parsedTx = await Transaction.fromBytes(
+          transactionBytes: hex.decode(input),
+        );
+        emit(
+          state.copyWith(
+            transaction: (format: TxFormat.hex, data: parsedTx.toString()),
+          ),
+        );
+      } catch (e) {
+        emit(
+          state.copyWith(error: 'input is not a valid PSBT or transaction hex'),
+        );
+      }
     }
   }
 
   Future<void> broadcastTransaction() async {
     try {
+      if (state.transaction == null) return;
+
       final txid = await _broadcastBitcoinTransactionUsecase.execute(
-        state.psbt,
+        state.transaction!.data,
+        isPsbt: state.transaction!.format == TxFormat.psbt,
       );
       emit(state.copyWith(txid: txid));
-      debugPrint('txid: $txid');
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
