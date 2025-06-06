@@ -250,7 +250,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
           'Expected BuyOrder but received a different order type',
         );
       }
-      ;
+
       return order;
     } catch (e) {
       throw Exception('Failed to dequeue and pay order: $e');

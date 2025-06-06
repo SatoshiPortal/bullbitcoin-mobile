@@ -521,4 +521,15 @@ sealed class Order with _$Order {
     }
     return 0;
   }
+
+  String? get transactionId {
+    switch (this) {
+      case final BuyOrder buyOrder:
+        return buyOrder.bitcoinTransactionId ?? buyOrder.liquidTransactionId;
+      case final SellOrder sellOrder:
+        return sellOrder.bitcoinTransactionId ?? sellOrder.liquidTransactionId;
+      case _:
+        return null;
+    }
+  }
 }

@@ -59,6 +59,14 @@ class GetTransactionsUsecase {
               ? await _testnetSwapRepository.getAllSwaps(walletId: walletId)
               : await _mainnetSwapRepository.getAllSwaps(walletId: walletId);
 
+      // Add related payjoins, swaps and orders to the broadcasted wallet transactions
+      //  as they should be linked and form a single Transaction entity.
+      // In the future if swaps or orders can also be payjoins, we should do the same
+      //  as with wallet transactions with the remaining payjoins and swaps
+      //  that are not broadcasted yet. Currently this is not the case yet and so
+      //  the only combination we need to handle is that a wallet transaction can
+      //  have a payjoin, swap or order associated with it. A combination of a
+      //  swap or order and payjoin is not possible currently.
       final broadcastedTransactions =
           walletTransactions.map((wt) {
             final swap =
@@ -85,6 +93,13 @@ class GetTransactionsUsecase {
               // Remove the payjoin from the list of payjoins to avoid duplication
               //  since it's already included in the broadcasted transaction
               payjoins.remove(payjoin);
+            }
+            final order =
+                orders.where((o) => o.transactionId == wt.txId).firstOrNull;
+            if (order != null) {
+              // Remove the order from the list of orders to avoid duplication
+              //  since it's already included in the broadcasted transaction
+              orders.remove(order);
             }
 
             return Transaction(
