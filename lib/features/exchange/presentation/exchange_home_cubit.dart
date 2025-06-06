@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
@@ -20,9 +21,11 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
     required SaveExchangeApiKeyUsecase saveExchangeApiKeyUsecase,
     required DeleteExchangeApiKeyUsecase deleteExchangeApiKeyUsecase,
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
+    required AccelerateBuyOrderUsecase accelerateBuyOrderUsecase,
   }) : _saveExchangeApiKeyUsecase = saveExchangeApiKeyUsecase,
        _deleteExchangeApiKeyUsecase = deleteExchangeApiKeyUsecase,
        _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
+       _accelerateBuyOrderUsecase = accelerateBuyOrderUsecase,
        super(const ExchangeHomeState()) {
     _checkForAPIKeyAndLoadDetails();
   }
@@ -31,6 +34,8 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
   // ignore: unused_field
   final DeleteExchangeApiKeyUsecase _deleteExchangeApiKeyUsecase;
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
+  // ignore: unused_field
+  final AccelerateBuyOrderUsecase _accelerateBuyOrderUsecase;
 
   WebViewController? webViewController;
   Timer? _cookieCheckTimer;

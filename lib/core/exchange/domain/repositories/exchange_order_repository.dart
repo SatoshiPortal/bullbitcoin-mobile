@@ -10,6 +10,7 @@ abstract class ExchangeOrderRepository {
   });
   Future<BuyOrder> confirmBuyOrder(String orderId);
   Future<BuyOrder> refreshBuyOrder(String orderId);
+  Future<BuyOrder> accelerateBuyOrder(String orderId);
   Future<Order> getOrder(String orderId);
   Future<List<Order>> getOrders({int? limit, int? offset, OrderType? type});
 }

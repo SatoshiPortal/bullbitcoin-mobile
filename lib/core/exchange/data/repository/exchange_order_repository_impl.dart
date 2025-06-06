@@ -221,4 +221,39 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       throw Exception('Failed to refresh buy order: $e');
     }
   }
+
+  @override
+  Future<BuyOrder> accelerateBuyOrder(String orderId) async {
+    try {
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get();
+
+      if (apiKeyModel == null) {
+        throw Exception(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
+      }
+
+      if (!apiKeyModel.isActive) {
+        throw Exception(
+          'API key is inactive. Please login again to your Bull Bitcoin account.',
+        );
+      }
+
+      final orderModel = await _bullbitcoinApiDatasource.dequeueAndPay(
+        apiKey: apiKeyModel.key,
+        orderId: orderId,
+      );
+
+      final order = orderModel.toEntity();
+      if (order is! BuyOrder) {
+        throw Exception(
+          'Expected BuyOrder but received a different order type',
+        );
+      }
+      ;
+      return order;
+    } catch (e) {
+      throw Exception('Failed to dequeue and pay order: $e');
+    }
+  }
 }

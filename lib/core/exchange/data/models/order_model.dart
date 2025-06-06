@@ -25,7 +25,6 @@ class OrderModel {
   final String payoutMethod;
   final String triggerType;
   final String confirmationDeadline;
-  final dynamic unbatchedBuyOnchainFees;
   final String? bitcoinTransactionId;
   final String? lnUrl;
   final String? lightningVoucherExpiresAt;
@@ -43,6 +42,7 @@ class OrderModel {
   final String? securityQuestion;
   final String? securityAnswer;
   final String? paymentDescription;
+  final double? unbatchedBuyOnchainFees;
 
   OrderModel({
     required this.orderId,
@@ -69,7 +69,6 @@ class OrderModel {
     required this.payoutMethod,
     required this.triggerType,
     required this.confirmationDeadline,
-    this.unbatchedBuyOnchainFees,
     this.bitcoinTransactionId,
     this.lnUrl,
     this.lightningVoucherExpiresAt,
@@ -87,6 +86,7 @@ class OrderModel {
     this.securityQuestion,
     this.securityAnswer,
     this.paymentDescription,
+    this.unbatchedBuyOnchainFees,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -121,10 +121,7 @@ class OrderModel {
       payoutMethod: json['payoutMethod'] as String,
       triggerType: json['triggerType'] as String,
       confirmationDeadline: json['confirmationDeadline'] as String,
-      unbatchedBuyOnchainFees:
-          json.containsKey('unbatchedBuyOnchainFees')
-              ? json['unbatchedBuyOnchainFees']
-              : null,
+
       bitcoinTransactionId: json['bitcoinTransactionId'] as String?,
       lnUrl: json['lnUrl'] as String?,
       lightningVoucherExpiresAt: json['lightningVoucherExpiresAt'] as String?,
@@ -149,6 +146,10 @@ class OrderModel {
       securityQuestion: json['securityQuestion'] as String?,
       securityAnswer: json['securityAnswer'] as String?,
       paymentDescription: json['paymentDescription'] as String?,
+      unbatchedBuyOnchainFees:
+          json.containsKey('payinAmountChanged')
+              ? json['unbatchedBuyOnchainFees'] as double
+              : null,
     );
   }
 
@@ -177,7 +178,6 @@ class OrderModel {
     'payoutMethod': payoutMethod,
     'triggerType': triggerType,
     'confirmationDeadline': confirmationDeadline,
-    'unbatchedBuyOnchainFees': unbatchedBuyOnchainFees,
     'bitcoinTransactionId': bitcoinTransactionId,
     'lnUrl': lnUrl,
     'lightningVoucherExpiresAt': lightningVoucherExpiresAt,
@@ -195,6 +195,7 @@ class OrderModel {
     'securityQuestion': securityQuestion,
     'securityAnswer': securityAnswer,
     'paymentDescription': paymentDescription,
+    'unbatchedBuyOnchainFees': unbatchedBuyOnchainFees,
   };
 
   Order toEntity() {
@@ -276,6 +277,7 @@ class OrderModel {
           indexRateAmount: indexRateAmount,
           indexRateCurrency: indexRateCurrency,
           lightningVoucherExpiresAt: lightningVoucherExpiresAtDt,
+          unbatchedBuyOnchainFees: unbatchedBuyOnchainFees,
         );
       case OrderType.sell:
         return Order.sell(

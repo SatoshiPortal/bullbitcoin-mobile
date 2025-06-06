@@ -209,4 +209,24 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
     }
     return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
   }
+
+  Future<OrderModel> dequeueAndPay({
+    required String apiKey,
+    required String orderId,
+  }) async {
+    final resp = await _http.post(
+      _ordersPath,
+      data: {
+        'jsonrpc': '2.0',
+        'id': '0',
+        'method': 'unbatchAndExpressOrder',
+        'params': {'orderId': orderId},
+      },
+      options: Options(headers: {'X-API-Key': apiKey}),
+    );
+    if (resp.statusCode != 200) {
+      throw Exception('Failed to refresh order summary');
+    }
+    return OrderModel.fromJson(resp.data['result'] as Map<String, dynamic>);
+  }
 }

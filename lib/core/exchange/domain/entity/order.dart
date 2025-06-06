@@ -248,6 +248,7 @@ sealed class Order with _$Order {
     double? indexRateAmount,
     String? indexRateCurrency,
     DateTime? lightningVoucherExpiresAt,
+    double? unbatchedBuyOnchainFees,
   }) = BuyOrder;
 
   const factory Order.sell({
@@ -510,5 +511,14 @@ sealed class Order with _$Order {
     } else {
       return (payoutAmount, payoutCurrency);
     }
+  }
+
+  double absoluteUnbatchedBuyOnchainFees() {
+    if (this is BuyOrder) {
+      return (this as BuyOrder).unbatchedBuyOnchainFees != null
+          ? (this as BuyOrder).unbatchedBuyOnchainFees! * 140.0
+          : 0;
+    }
+    return 0;
   }
 }

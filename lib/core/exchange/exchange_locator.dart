@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_rep
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_currency_to_sats_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
@@ -139,6 +140,12 @@ class ExchangeLocator {
 
     locator.registerFactory<ListAllOrdersUsecase>(
       () => ListAllOrdersUsecase(
+        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
+      ),
+    );
+
+    locator.registerFactory<AccelerateBuyOrderUsecase>(
+      () => AccelerateBuyOrderUsecase(
         exchangeOrderRepository: locator<ExchangeOrderRepository>(),
       ),
     );
