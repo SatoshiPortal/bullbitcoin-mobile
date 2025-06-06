@@ -25,6 +25,10 @@ class SettingsScreen extends StatelessWidget {
     final appVersion = context.select(
       (SettingsCubit cubit) => cubit.state.appVersion,
     );
+    final hasLegacySeeds = context.select(
+      (SettingsCubit cubit) => cubit.state.hasLegacySeeds ?? false,
+    );
+
     return Scaffold(
       appBar: AppBar(title: Text(context.loc.settingsScreenTitle)),
       body: SafeArea(
@@ -124,17 +128,18 @@ class SettingsScreen extends StatelessWidget {
                   },
                   trailing: const Icon(Icons.chevron_right),
                 ),
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
+                if (hasLegacySeeds)
+                  ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
+                    title: const Text('Legacy Seeds'),
+                    onTap: () {
+                      context.pushNamed(SettingsRoute.legacySeeds.name);
+                    },
+                    trailing: const Icon(Icons.chevron_right),
                   ),
-                  tileColor: Colors.transparent,
-                  title: const Text('Legacy Seeds'),
-                  onTap: () {
-                    context.pushNamed(SettingsRoute.legacySeeds.name);
-                  },
-                  trailing: const Icon(Icons.chevron_right),
-                ),
               ],
             ),
           ),
