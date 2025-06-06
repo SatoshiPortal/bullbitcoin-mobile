@@ -55,6 +55,7 @@ class TransactionsLocator {
                   .boltzTestnetSwapRepositoryInstanceName,
         ),
         payjoinRepository: locator<PayjoinRepository>(),
+        orderRepository: locator<ExchangeOrderRepository>(),
       ),
     );
 
@@ -72,6 +73,7 @@ class TransactionsLocator {
                   .boltzTestnetSwapRepositoryInstanceName,
         ),
         payjoinRepository: locator<PayjoinRepository>(),
+        orderRepository: locator<ExchangeOrderRepository>(),
       ),
     );
   }

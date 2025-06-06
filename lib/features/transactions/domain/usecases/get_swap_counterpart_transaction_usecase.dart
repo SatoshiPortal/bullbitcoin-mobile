@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -11,6 +12,7 @@ class GetSwapCounterpartTransactionUsecase {
   final SwapRepository _mainnetSwapRepository;
   final SwapRepository _testnetSwapRepository;
   final PayjoinRepository _payjoinRepository;
+  final ExchangeOrderRepository _orderRepository;
 
   GetSwapCounterpartTransactionUsecase({
     required SettingsRepository settingsRepository,
@@ -18,11 +20,13 @@ class GetSwapCounterpartTransactionUsecase {
     required SwapRepository mainnetSwapRepository,
     required SwapRepository testnetSwapRepository,
     required PayjoinRepository payjoinRepository,
+    required ExchangeOrderRepository orderRepository,
   }) : _settingsRepository = settingsRepository,
        _walletTransactionRepository = walletTransactionRepository,
        _mainnetSwapRepository = mainnetSwapRepository,
        _testnetSwapRepository = testnetSwapRepository,
-       _payjoinRepository = payjoinRepository;
+       _payjoinRepository = payjoinRepository,
+       _orderRepository = orderRepository;
 
   Future<Transaction?> execute(Transaction chainSwapTransaction) async {
     try {
@@ -60,12 +64,14 @@ class GetSwapCounterpartTransactionUsecase {
         walletTransactionsWithCounterpartyTxId,
         swapWithCounterpartyTxId,
         payjoinsWithCounterpartyTxId,
+        orderWithCounterpartyTxId,
       ) = await (
             _walletTransactionRepository.getWalletTransactions(
               txId: counterpartyTxId,
             ),
             swapRepository.getSwapByTxId(counterpartyTxId),
             _payjoinRepository.getPayjoinsByTxId(counterpartyTxId),
+            _orderRepository.getOrderByTxId(counterpartyTxId),
           ).wait;
 
       // Compose the counterpart transaction from the fetched data
@@ -89,6 +95,7 @@ class GetSwapCounterpartTransactionUsecase {
           walletTransaction: walletTransactionWithCounterpartyWallet,
           swap: swapWithCounterpartyTxId,
           payjoin: payjoinWithCounterpartyWallet,
+          order: orderWithCounterpartyTxId,
         );
       } else if (swapWithCounterpartyTxId != null) {
         return Transaction(swap: swap);

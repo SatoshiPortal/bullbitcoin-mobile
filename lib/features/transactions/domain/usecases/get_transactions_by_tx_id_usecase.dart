@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
@@ -18,6 +19,7 @@ class GetTransactionsByTxIdUsecase {
   final SwapRepository _mainnetSwapRepository;
   final SwapRepository _testnetSwapRepository;
   final PayjoinRepository _payjoinRepository;
+  final ExchangeOrderRepository _orderRepository;
 
   GetTransactionsByTxIdUsecase({
     required SettingsRepository settingsRepository,
@@ -25,11 +27,13 @@ class GetTransactionsByTxIdUsecase {
     required SwapRepository mainnetSwapRepository,
     required SwapRepository testnetSwapRepository,
     required PayjoinRepository payjoinRepository,
+    required ExchangeOrderRepository orderRepository,
   }) : _settingsRepository = settingsRepository,
        _walletTransactionRepository = walletTransactionRepository,
        _mainnetSwapRepository = mainnetSwapRepository,
        _testnetSwapRepository = testnetSwapRepository,
-       _payjoinRepository = payjoinRepository;
+       _payjoinRepository = payjoinRepository,
+       _orderRepository = orderRepository;
 
   Future<List<Transaction>> execute(String txId) async {
     try {
@@ -39,11 +43,12 @@ class GetTransactionsByTxIdUsecase {
       final swapRepository =
           isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
       // Fetch wallet transactions, swap and payjoins by txId
-      final (walletTransactions, swap, payjoins) =
+      final (walletTransactions, swap, payjoins, order) =
           await (
             _walletTransactionRepository.getWalletTransactions(txId: txId),
             swapRepository.getSwapByTxId(txId),
             _payjoinRepository.getPayjoinsByTxId(txId),
+            _orderRepository.getOrderByTxId(txId),
           ).wait;
 
       if (walletTransactions.isNotEmpty) {
@@ -59,12 +64,15 @@ class GetTransactionsByTxIdUsecase {
             walletTransaction: walletTransaction,
             swap: swap,
             payjoin: payjoin,
+            order: order,
           );
         }).toList();
       } else if (swap != null) {
         return [Transaction(swap: swap)];
       } else if (payjoins.isNotEmpty) {
         return payjoins.map((pj) => Transaction(payjoin: pj)).toList();
+      } else if (order != null) {
+        return [Transaction(order: order)];
       } else {
         return []; // No transaction found
       }
