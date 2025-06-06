@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:convert/convert.dart';
@@ -27,7 +25,7 @@ class BroadcastBitcoinTransactionUsecase {
         );
       } else {
         txid = await _bitcoinBlockchain.broadcastTransaction(
-          Uint8List.fromList(hex.decode(transaction)),
+          hex.decode(transaction),
           isTestnet: environment.isTestnet,
         );
       }

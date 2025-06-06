@@ -35,7 +35,7 @@ class BitcoinBlockchainRepository {
   }
 
   Future<String> broadcastTransaction(
-    Uint8List transaction, {
+    List<int> transaction, {
     required bool isTestnet,
   }) async {
     final electrumServerModel = await _electrumServerStorage
@@ -47,7 +47,7 @@ class BitcoinBlockchainRepository {
         );
 
     return _blockchain.broadcastTransaction(
-      transaction,
+      Uint8List.fromList(transaction),
       electrumServer: electrumServerModel,
     );
   }
