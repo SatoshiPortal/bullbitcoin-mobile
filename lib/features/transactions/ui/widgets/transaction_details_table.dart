@@ -76,6 +76,99 @@ class TransactionDetailsTable extends StatelessWidget {
 
     return DetailsTable(
       items: [
+        if (abbreviatedTxId.isNotEmpty)
+          DetailsTableItem(
+            label: 'Transaction ID',
+            displayValue: abbreviatedTxId,
+            copyValue: txId,
+            displayWidget:
+                txId.isEmpty
+                    ? null
+                    : GestureDetector(
+                      onTap: () async {
+                        final url =
+                            walletTransaction?.isLiquid == true
+                                ? MempoolUrl.liquidTxidUrl(unblindedUrl ?? '')
+                                : MempoolUrl.bitcoinTxidUrl(txId);
+                        await launchUrl(Uri.parse(url));
+                      },
+                      child: Text(
+                        abbreviatedTxId,
+                        style: TextStyle(color: context.colour.primary),
+                        textAlign: TextAlign.end,
+                      ),
+                    ),
+          ),
+        if (labels.isNotEmpty)
+          DetailsTableItem(label: 'Transaction notes', displayValue: labels),
+        if (walletLabel.isNotEmpty && !isOrderType)
+          DetailsTableItem(
+            label: tx.isIncoming ? 'To wallet' : 'From wallet',
+            displayValue: walletLabel,
+          ),
+        if (!tx.isSwap &&
+            counterpartWalletLabel != null &&
+            counterpartWalletLabel.isNotEmpty)
+          DetailsTableItem(
+            label: tx.isOutgoing ? 'To wallet' : 'From wallet',
+            displayValue: counterpartWalletLabel,
+          ),
+        if (abbreviatedAddress.isNotEmpty)
+          DetailsTableItem(
+            label: 'Address',
+            displayValue: abbreviatedAddress,
+            copyValue: address,
+          ),
+        if (addressLabels.isNotEmpty)
+          DetailsTableItem(label: 'Address notes', displayValue: addressLabels),
+        // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
+        // to be able to use the CurrencyText widget instead of having to format the amount here.
+        if (!isOrderType)
+          DetailsTableItem(
+            label: tx.isIncoming ? 'Amount received' : 'Amount sent',
+            displayValue:
+                bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(amountSat).toUpperCase()
+                    : FormatAmount.btc(
+                      ConvertAmount.satsToBtc(amountSat),
+                    ).toUpperCase(),
+          ),
+        if (walletTransaction != null) ...[
+          if (walletTransaction.isToSelf == true)
+            DetailsTableItem(
+              label: 'Amount received',
+              displayValue:
+                  bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(amountSat).toUpperCase()
+                      : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(amountSat),
+                      ).toUpperCase(),
+            ),
+          if (tx.isOutgoing == true)
+            DetailsTableItem(
+              label: 'Transaction Fee',
+              displayValue:
+                  bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(
+                        walletTransaction.feeSat,
+                      ).toUpperCase()
+                      : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(walletTransaction.feeSat),
+                      ).toUpperCase(),
+            ),
+          DetailsTableItem(
+            label: 'Status',
+            displayValue: walletTransaction.status.displayName,
+          ),
+          if (walletTransaction.confirmationTime != null)
+            DetailsTableItem(
+              label: 'Confirmation time',
+              displayValue: DateFormat(
+                'MMM d, y, h:mm a',
+              ).format(walletTransaction.confirmationTime!),
+            ),
+        ],
+        // Order info
         if (tx.isOrder && tx.order != null) ...[
           ...(() {
             final order = tx.order!;
@@ -573,98 +666,6 @@ class TransactionDetailsTable extends StatelessWidget {
               ];
             }
           })(),
-        ],
-        if (abbreviatedTxId.isNotEmpty)
-          DetailsTableItem(
-            label: 'Transaction ID',
-            displayValue: abbreviatedTxId,
-            copyValue: txId,
-            displayWidget:
-                txId.isEmpty
-                    ? null
-                    : GestureDetector(
-                      onTap: () async {
-                        final url =
-                            walletTransaction?.isLiquid == true
-                                ? MempoolUrl.liquidTxidUrl(unblindedUrl ?? '')
-                                : MempoolUrl.bitcoinTxidUrl(txId);
-                        await launchUrl(Uri.parse(url));
-                      },
-                      child: Text(
-                        abbreviatedTxId,
-                        style: TextStyle(color: context.colour.primary),
-                        textAlign: TextAlign.end,
-                      ),
-                    ),
-          ),
-        if (labels.isNotEmpty)
-          DetailsTableItem(label: 'Transaction notes', displayValue: labels),
-        if (walletLabel.isNotEmpty && !isOrderType)
-          DetailsTableItem(
-            label: tx.isIncoming ? 'To wallet' : 'From wallet',
-            displayValue: walletLabel,
-          ),
-        if (!tx.isSwap &&
-            counterpartWalletLabel != null &&
-            counterpartWalletLabel.isNotEmpty)
-          DetailsTableItem(
-            label: tx.isOutgoing ? 'To wallet' : 'From wallet',
-            displayValue: counterpartWalletLabel,
-          ),
-        if (abbreviatedAddress.isNotEmpty)
-          DetailsTableItem(
-            label: 'Address',
-            displayValue: abbreviatedAddress,
-            copyValue: address,
-          ),
-        if (addressLabels.isNotEmpty)
-          DetailsTableItem(label: 'Address notes', displayValue: addressLabels),
-        // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
-        // to be able to use the CurrencyText widget instead of having to format the amount here.
-        if (!isOrderType)
-          DetailsTableItem(
-            label: tx.isIncoming ? 'Amount received' : 'Amount sent',
-            displayValue:
-                bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(amountSat).toUpperCase()
-                    : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(amountSat),
-                    ).toUpperCase(),
-          ),
-        if (walletTransaction != null) ...[
-          if (walletTransaction.isToSelf == true)
-            DetailsTableItem(
-              label: 'Amount received',
-              displayValue:
-                  bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(amountSat).toUpperCase()
-                      : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(amountSat),
-                      ).toUpperCase(),
-            ),
-          if (tx.isOutgoing == true)
-            DetailsTableItem(
-              label: 'Transaction Fee',
-              displayValue:
-                  bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(
-                        walletTransaction.feeSat,
-                      ).toUpperCase()
-                      : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(walletTransaction.feeSat),
-                      ).toUpperCase(),
-            ),
-          DetailsTableItem(
-            label: 'Status',
-            displayValue: walletTransaction.status.displayName,
-          ),
-          if (walletTransaction.confirmationTime != null)
-            DetailsTableItem(
-              label: 'Confirmation time',
-              displayValue: DateFormat(
-                'MMM d, y, h:mm a',
-              ).format(walletTransaction.confirmationTime!),
-            ),
         ],
         // Swap info
         if (swap != null) ...[
