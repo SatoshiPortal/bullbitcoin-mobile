@@ -3,6 +3,8 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/timers/countdown.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -86,7 +88,10 @@ class BuySuccessScreen extends StatelessWidget {
               BBButton.big(
                 label: 'View details',
                 onPressed: () {
-                  //context.pushNamed(TransactionsRoute.transactionDetails.name,extra: );
+                  context.pushNamed(
+                    TransactionsRoute.transactionDetails.name,
+                    extra: Transaction(order: buyOrder),
+                  );
                 },
                 bgColor: context.colour.secondary,
                 textColor: context.colour.onPrimary,
