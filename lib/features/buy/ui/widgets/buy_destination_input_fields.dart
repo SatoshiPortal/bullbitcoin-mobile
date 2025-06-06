@@ -90,7 +90,9 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                   }),
                   DropdownMenuItem(
                     child: BBText(
-                      externalBitcoinWalletLabel,
+                      // To not show the external wallet label before the wallets
+                      //  are loaded return an empty string if not started up.
+                      !isStarted ? '' : externalBitcoinWalletLabel,
                       style: context.font.headlineSmall,
                     ),
                   ),
@@ -125,11 +127,9 @@ class _BuyDestinationInputFieldsState extends State<BuyDestinationInputFields> {
                   textAlignVertical: TextAlignVertical.center,
                   style: context.font.headlineSmall,
                   decoration: InputDecoration(
-                    hint: BBText(
-                      'BC1QYL7J673H...6Y6ALV70M0',
-                      style: context.font.headlineSmall?.copyWith(
-                        color: context.colour.outline,
-                      ),
+                    hintText: 'BC1QYL7J673H...6Y6ALV70M0',
+                    hintStyle: context.font.headlineSmall?.copyWith(
+                      color: context.colour.outline,
                     ),
                     border: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(

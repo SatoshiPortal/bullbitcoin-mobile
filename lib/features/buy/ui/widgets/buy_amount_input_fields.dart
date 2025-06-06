@@ -56,25 +56,27 @@ class _BuyAmountInputFieldsState extends State<BuyAmountInputFields> {
             color: context.colour.onPrimary,
             borderRadius: BorderRadius.circular(2.0),
             child: Center(
-              child: TextFormField(
-                controller: _amountController,
-                enabled: currencyCode.isNotEmpty,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                style: context.font.headlineMedium,
-                decoration: InputDecoration(
-                  hint:
-                      currencyCode.isEmpty
-                          ? const LoadingLineContent()
-                          : Text('0 $currencyCode'),
-                  hintStyle: context.font.headlineMedium?.copyWith(
-                    color: context.colour.outline,
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0),
-                ),
-              ),
+              child:
+                  currencyCode.isEmpty
+                      ? const LoadingLineContent()
+                      : TextFormField(
+                        controller: _amountController,
+                        enabled: currencyCode.isNotEmpty,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        style: context.font.headlineMedium,
+                        decoration: InputDecoration(
+                          hintText: '0 $currencyCode',
+                          hintStyle: context.font.headlineMedium?.copyWith(
+                            color: context.colour.outline,
+                          ),
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                          ),
+                        ),
+                      ),
             ),
           ),
         ),
