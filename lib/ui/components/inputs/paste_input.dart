@@ -5,10 +5,17 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 
 class PasteInput extends StatelessWidget {
-  const PasteInput({super.key, required this.text, required this.onChanged});
+  const PasteInput({
+    super.key,
+    required this.text,
+    required this.onChanged,
+    this.hint = 'Paste a payment address or invoice',
+  });
 
   final String text;
+  final String hint;
   final Function(String) onChanged;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,7 +32,7 @@ class PasteInput extends StatelessWidget {
             child:
                 text.isEmpty
                     ? BBText(
-                      'Paste a payment address or invoice',
+                      hint,
                       style: context.font.labelSmall,
                       color: context.colour.surfaceContainer,
                     )

@@ -18,7 +18,9 @@ abstract class WalletRepository {
     required Network network,
     required ScriptType scriptType,
     required String label,
+    String? overrideFingerprint,
   });
+
   Future<Wallet?> getWallet(String walletId, {bool sync = false});
   // These should also sync the wallets before returning them
   Future<List<Wallet>> getWallets({

@@ -4,11 +4,13 @@ import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/experimental/psbt_flow/psbt_router.dart';
 import 'package:bb_mobile/features/scan/ui/scan_widget.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -22,6 +24,7 @@ import 'package:bb_mobile/ui/components/price_input/price_input.dart';
 import 'package:bb_mobile/ui/components/segment/segmented_full.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -729,6 +732,13 @@ class _BottomButtons extends StatelessWidget {
     final isBitcoinWallet = context.select(
       (SendCubit cubit) => !cubit.state.selectedWallet!.isLiquid,
     );
+    final wallet = context.select(
+      (SendCubit cubit) => cubit.state.selectedWallet,
+    );
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
+    final isSuperuserDebug = isSuperuser && kDebugMode;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -757,7 +767,10 @@ class _BottomButtons extends StatelessWidget {
             ),
             const Gap(12),
           ],
-          const ConfirmSendButton(),
+          if (wallet != null && wallet.isWatchOnly && isSuperuserDebug)
+            const ShowPsbtButton()
+          else
+            const ConfirmSendButton(),
         ],
       ),
     );
@@ -1577,6 +1590,26 @@ class SendSucessScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class ShowPsbtButton extends StatelessWidget {
+  const ShowPsbtButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final unsignedPsbt = context.select(
+      (SendCubit cubit) => cubit.state.unsignedPsbt,
+    );
+
+    return BBButton.big(
+      label: 'Show PSBT',
+      onPressed: () {
+        context.pushNamed(PsbtFlowRoutes.show.name, extra: unsignedPsbt);
+      },
+      bgColor: context.colour.secondary,
+      textColor: context.colour.onSecondary,
     );
   }
 }

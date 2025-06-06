@@ -14,7 +14,7 @@ class ScannerWidget extends StatefulWidget {
     super.key,
     required this.onScanned,
     this.isModal = false,
-    this.resolution = ResolutionPreset.low,
+    this.resolution = ResolutionPreset.max,
     this.enableAudio = false,
   });
 

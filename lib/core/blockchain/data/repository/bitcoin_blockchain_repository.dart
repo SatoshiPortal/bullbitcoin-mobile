@@ -1,19 +1,19 @@
+import 'dart:typed_data';
+
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
-import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
-class BitcoinBlockchainRepositoryImpl implements BitcoinBlockchainRepository {
+class BitcoinBlockchainRepository {
   final BdkBitcoinBlockchainDatasource _blockchain;
   final ElectrumServerStorageDatasource _electrumServerStorage;
 
-  const BitcoinBlockchainRepositoryImpl({
+  const BitcoinBlockchainRepository({
     required BdkBitcoinBlockchainDatasource blockchainDatasource,
     required ElectrumServerStorageDatasource electrumServerStorageDatasource,
   }) : _blockchain = blockchainDatasource,
        _electrumServerStorage = electrumServerStorageDatasource;
 
-  @override
   Future<String> broadcastPsbt(
     String finalizedPsbt, {
     required bool isTestnet,
@@ -30,6 +30,24 @@ class BitcoinBlockchainRepositoryImpl implements BitcoinBlockchainRepository {
 
     return _blockchain.broadcastPsbt(
       finalizedPsbt,
+      electrumServer: electrumServerModel,
+    );
+  }
+
+  Future<String> broadcastTransaction(
+    List<int> transaction, {
+    required bool isTestnet,
+  }) async {
+    final electrumServerModel = await _electrumServerStorage
+        .fetchPrioritizedServer(
+          network: Network.fromEnvironment(
+            isTestnet: isTestnet,
+            isLiquid: false,
+          ),
+        );
+
+    return _blockchain.broadcastTransaction(
+      Uint8List.fromList(transaction),
       electrumServer: electrumServerModel,
     );
   }

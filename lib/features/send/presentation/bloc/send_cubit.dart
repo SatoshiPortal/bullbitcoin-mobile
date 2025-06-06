@@ -1132,20 +1132,30 @@ class SendCubit extends Cubit<SendState> {
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
-        final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
-          psbt: unsignedPsbtAndTxSize.unsignedPsbt,
-          walletId: state.selectedWallet!.id,
-        );
-        // sign transaction and use signed psbt to calculate absolute fees
 
-        emit(
-          state.copyWith(
-            unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
-            signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
-            bitcoinTxSize: signedPsbtAndTxSize.txSize,
-            buildingTransaction: false,
-          ),
-        );
+        if (state.selectedWallet!.isWatchOnly) {
+          emit(
+            state.copyWith(
+              unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
+              buildingTransaction: false,
+            ),
+          );
+        } else {
+          final signedPsbtAndTxSize = await _signBitcoinTxUsecase.execute(
+            psbt: unsignedPsbtAndTxSize.unsignedPsbt,
+            walletId: state.selectedWallet!.id,
+          );
+          // sign transaction and use signed psbt to calculate absolute fees
+
+          emit(
+            state.copyWith(
+              unsignedPsbt: unsignedPsbtAndTxSize.unsignedPsbt,
+              signedBitcoinPsbt: signedPsbtAndTxSize.signedPsbt,
+              bitcoinTxSize: signedPsbtAndTxSize.txSize,
+              buildingTransaction: false,
+            ),
+          );
+        }
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -1260,6 +1270,7 @@ class SendCubit extends Cubit<SendState> {
         } else {
           final txId = await _broadcastBitcoinTxUsecase.execute(
             state.signedBitcoinPsbt!,
+            isPsbt: true,
           );
           emit(state.copyWith(txId: txId));
         }

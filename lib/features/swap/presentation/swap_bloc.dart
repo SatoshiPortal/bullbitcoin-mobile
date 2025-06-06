@@ -609,6 +609,7 @@ class SwapCubit extends Cubit<SwapState> {
         }
         final txid = await _broadcastBitcoinTxUsecase.execute(
           state.signedBitcoinPsbt!,
+          isPsbt: true,
         );
         await _updatePaidChainSwapUsecase.execute(
           txid: txid,
