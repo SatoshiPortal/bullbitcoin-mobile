@@ -77,6 +77,18 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
             orders = orders.whereType<BuyOrder>().toList();
           case OrderType.sell:
             orders = orders.whereType<SellOrder>().toList();
+          case OrderType.fiatPayment:
+            orders = orders.whereType<FiatPaymentOrder>().toList();
+          case OrderType.funding:
+            orders = orders.whereType<FundingOrder>().toList();
+          case OrderType.withdraw:
+            orders = orders.whereType<WithdrawOrder>().toList();
+          case OrderType.reward:
+            orders = orders.whereType<RewardOrder>().toList();
+          case OrderType.refund:
+            orders = orders.whereType<RefundOrder>().toList();
+          case OrderType.balanceAdjustment:
+            orders = orders.whereType<BalanceAdjustmentOrder>().toList();
         }
       }
 

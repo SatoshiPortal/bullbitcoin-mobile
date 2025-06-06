@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -11,6 +12,7 @@ class GetTransactionsUsecase {
   final SwapRepository _mainnetSwapRepository;
   final SwapRepository _testnetSwapRepository;
   final PayjoinRepository _payjoinRepository;
+  final ExchangeOrderRepository _orderRepository;
 
   GetTransactionsUsecase({
     required SettingsRepository settingsRepository,
@@ -18,11 +20,13 @@ class GetTransactionsUsecase {
     required SwapRepository mainnetSwapRepository,
     required SwapRepository testnetSwapRepository,
     required PayjoinRepository payjoinRepository,
+    required ExchangeOrderRepository orderRepository,
   }) : _settingsRepository = settingsRepository,
        _walletTransactionRepository = walletTransactionRepository,
        _mainnetSwapRepository = mainnetSwapRepository,
        _testnetSwapRepository = testnetSwapRepository,
-       _payjoinRepository = payjoinRepository;
+       _payjoinRepository = payjoinRepository,
+       _orderRepository = orderRepository;
 
   Future<List<Transaction>> execute({
     String? walletId,
@@ -45,6 +49,9 @@ class GetTransactionsUsecase {
         walletId: walletId,
         environment: environment,
       );
+
+      // Fetch orders
+      final orders = await _orderRepository.getOrders();
 
       // Fetch swaps
       final swaps =
@@ -106,6 +113,7 @@ class GetTransactionsUsecase {
         ...broadcastedTransactions,
         ...swaps.map((s) => Transaction(swap: s)),
         ...payjoins.map((p) => Transaction(payjoin: p)),
+        ...orders.map((o) => Transaction(order: o)),
       ];
     } catch (e) {
       throw Exception('Failed to fetch transactions: $e');

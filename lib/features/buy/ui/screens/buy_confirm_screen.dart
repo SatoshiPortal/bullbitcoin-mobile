@@ -20,7 +20,7 @@ class BuyConfirmScreen extends StatelessWidget {
     final buyOrder = context.select((BuyBloc bloc) => bloc.state.buyOrder!);
     final formattedPayInAmount = FormatAmount.fiat(
       buyOrder.payinAmount,
-      buyOrder.payinCurrency.code,
+      buyOrder.payinCurrency,
     );
     final bitcoinUnit = context.select(
       (SettingsCubit cubit) => cubit.state.bitcoinUnit,
@@ -34,8 +34,8 @@ class BuyConfirmScreen extends StatelessWidget {
             ? FormatAmount.sats(payoutAmountSat)
             : FormatAmount.btc(buyOrder.payoutAmount);
     final formattedExchangeRate = FormatAmount.fiat(
-      buyOrder.exchangeRateAmount,
-      buyOrder.exchangeRateCurrency,
+      buyOrder.exchangeRateAmount!,
+      buyOrder.exchangeRateCurrency!,
     );
     const externalBitcoinWalletLabel = 'External Bitcoin wallet';
     const secureBitcoinWalletLabel = 'Secure Bitcoin Wallet';

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
@@ -11,6 +12,7 @@ sealed class Transaction with _$Transaction {
     WalletTransaction? walletTransaction,
     Swap? swap,
     Payjoin? payjoin,
+    Order? order,
   }) = _Transaction;
   const Transaction._();
 
@@ -25,7 +27,7 @@ sealed class Transaction with _$Transaction {
       isOngoingPayjoin && payjoin is PayjoinReceiver;
   bool get isOngoingPayjoinSender =>
       isOngoingPayjoin && payjoin is PayjoinSender;
-
+  bool get isOrder => order != null;
   bool get isOutgoing =>
       walletTransaction != null
           ? walletTransaction!.isOutgoing

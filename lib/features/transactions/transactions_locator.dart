@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
@@ -36,6 +37,7 @@ class TransactionsLocator {
                   .boltzTestnetSwapRepositoryInstanceName,
         ),
         payjoinRepository: locator<PayjoinRepository>(),
+        orderRepository: locator<ExchangeOrderRepository>(),
       ),
     );
 

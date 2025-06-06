@@ -27,10 +27,7 @@ class BuySuccessScreen extends StatelessWidget {
         bitcoinUnit == BitcoinUnit.sats
             ? FormatAmount.sats(payoutAmountSat)
             : FormatAmount.btc(buyOrder.payoutAmount);
-    final payoutTime =
-        buyOrder.scheduledPayoutTime != null
-            ? DateTime.tryParse(buyOrder.scheduledPayoutTime!)
-            : null;
+    final payoutTime = buyOrder.scheduledPayoutTime;
 
     return PopScope(
       canPop: false,
