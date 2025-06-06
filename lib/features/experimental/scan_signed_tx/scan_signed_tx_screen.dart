@@ -35,7 +35,7 @@ class _ScanSignedTxView extends StatelessWidget {
     return Scaffold(
       backgroundColor: context.colour.surface,
       appBar: AppBar(
-        title: const Text('PSBT'),
+        title: const Text('Scan / paste a transaction'),
         backgroundColor: context.colour.surface,
       ),
       body: BlocListener<ScanSignedTxCubit, ScanSignedTxState>(
