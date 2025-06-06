@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/experimental/psbt_flow/scan_signed_psbt/scan_signed_psbt_cubit.dart';
-import 'package:bb_mobile/features/experimental/psbt_flow/scan_signed_psbt/scan_signed_psbt_state.dart';
+import 'package:bb_mobile/features/experimental/scan_signed_tx/scan_signed_tx_cubit.dart';
+import 'package:bb_mobile/features/experimental/scan_signed_tx/scan_signed_tx_state.dart';
 import 'package:bb_mobile/features/experimental/scanner/scanner_widget.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -11,24 +11,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class ScanSignedPsbtScreen extends StatelessWidget {
-  const ScanSignedPsbtScreen({super.key});
+class ScanSignedTxScreen extends StatelessWidget {
+  const ScanSignedTxScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create:
-          (_) => ScanSignedPsbtCubit(
+          (_) => ScanSignedTxCubit(
             broadcastBitcoinTransactionUsecase:
                 locator<BroadcastBitcoinTransactionUsecase>(),
           ),
-      child: const _ScanSignedPsbtView(),
+      child: const _ScanSignedTxView(),
     );
   }
 }
 
-class _ScanSignedPsbtView extends StatelessWidget {
-  const _ScanSignedPsbtView();
+class _ScanSignedTxView extends StatelessWidget {
+  const _ScanSignedTxView();
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +38,15 @@ class _ScanSignedPsbtView extends StatelessWidget {
         title: const Text('PSBT'),
         backgroundColor: context.colour.surface,
       ),
-      body: BlocListener<ScanSignedPsbtCubit, ScanSignedPsbtState>(
+      body: BlocListener<ScanSignedTxCubit, ScanSignedTxState>(
         listener: (context, state) {
           if (state.txid.isNotEmpty) {
             context.goNamed(WalletRoute.walletHome.name);
           }
         },
-        child: BlocBuilder<ScanSignedPsbtCubit, ScanSignedPsbtState>(
+        child: BlocBuilder<ScanSignedTxCubit, ScanSignedTxState>(
           builder: (context, state) {
-            final cubit = context.read<ScanSignedPsbtCubit>();
+            final cubit = context.read<ScanSignedTxCubit>();
 
             return Padding(
               padding: const EdgeInsets.all(16.0),
@@ -73,12 +73,12 @@ class _ScanSignedPsbtView extends StatelessWidget {
                   if (state.transaction == null)
                     Expanded(
                       child: Center(
-                        child: ScannerWidget(onScanned: cubit.tryCollectPsbt),
+                        child: ScannerWidget(onScanned: cubit.tryCollectTx),
                       ),
                     ),
                   PasteInput(
                     text: state.transaction?.data ?? '',
-                    hint: 'Paste a PSBT',
+                    hint: 'Paste a PSBT or transaction HEX',
                     onChanged: cubit.tryParseTransaction,
                   ),
                   if (state.transaction != null) ...[

@@ -1,23 +1,23 @@
 import 'package:bb_mobile/core/bbqr/bbqr_service.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
-import 'package:bb_mobile/features/experimental/psbt_flow/scan_signed_psbt/scan_signed_psbt_state.dart';
+import 'package:bb_mobile/features/experimental/scan_signed_tx/scan_signed_tx_state.dart';
 import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:convert/convert.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ScanSignedPsbtCubit extends Cubit<ScanSignedPsbtState> {
+class ScanSignedTxCubit extends Cubit<ScanSignedTxState> {
   final BbqrService bbqrService;
 
   final BroadcastBitcoinTransactionUsecase _broadcastBitcoinTransactionUsecase;
 
-  ScanSignedPsbtCubit({
+  ScanSignedTxCubit({
     required BroadcastBitcoinTransactionUsecase
     broadcastBitcoinTransactionUsecase,
   }) : bbqrService = BbqrService(),
        _broadcastBitcoinTransactionUsecase = broadcastBitcoinTransactionUsecase,
-       super(const ScanSignedPsbtState());
+       super(const ScanSignedTxState());
 
-  Future<void> tryCollectPsbt(String payload) async {
+  Future<void> tryCollectTx(String payload) async {
     try {
       emit(state.copyWith(error: null));
 
@@ -36,10 +36,10 @@ class ScanSignedPsbtCubit extends Cubit<ScanSignedPsbtState> {
   Future<void> tryParseTransaction(String input) async {
     emit(state.copyWith(error: null));
     try {
-      final parsedPsbt = await PartiallySignedTransaction.fromString(input);
+      final parsedTx = await PartiallySignedTransaction.fromString(input);
       emit(
         state.copyWith(
-          transaction: (format: TxFormat.psbt, data: parsedPsbt.toString()),
+          transaction: (format: TxFormat.psbt, data: parsedTx.toString()),
         ),
       );
     } catch (e) {

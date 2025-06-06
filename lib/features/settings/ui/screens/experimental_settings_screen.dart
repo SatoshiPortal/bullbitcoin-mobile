@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_router.dart';
-import 'package:bb_mobile/features/experimental/psbt_flow/psbt_router.dart';
+import 'package:bb_mobile/features/experimental/scan_signed_tx/scan_signed_tx_router.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -53,10 +53,8 @@ class ExperimentalSettingsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                   tileColor: Colors.transparent,
-                  title: const Text('Scan BBQR PSBT'),
-                  onTap:
-                      () =>
-                          context.pushNamed(PsbtFlowRoutes.scanSignedPsbt.name),
+                  title: const Text('Scan / Paste Transaction'),
+                  onTap: () => context.pushNamed(ScanSignedTxRoutes.go.name),
                   trailing: const Icon(Icons.qr_code_scanner),
                 ),
               ],
