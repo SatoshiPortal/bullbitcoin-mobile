@@ -66,6 +66,7 @@ class TransactionDetailsScreen extends StatelessWidget {
           isOrderIncoming = true;
         case OrderType.sell:
         case OrderType.withdraw:
+        case OrderType.fiatPayment:
           isOrderIncoming = false;
         default:
           isOrderIncoming = isIncoming;

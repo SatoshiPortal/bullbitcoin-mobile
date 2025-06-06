@@ -50,7 +50,12 @@ class TxListItem extends StatelessWidget {
         tx.walletTransaction != null && tx.walletTransaction!.labels.isNotEmpty
             ? tx.walletTransaction!.labels.first
             : null;
-    final date = tx.timestamp != null ? timeago.format(tx.timestamp!) : null;
+    final date =
+        tx.timestamp != null
+            ? timeago.format(tx.timestamp!)
+            : isOrderType && tx.order!.completedAt != null
+            ? timeago.format(tx.order!.createdAt)
+            : null;
     final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =
         isOrderType &&
