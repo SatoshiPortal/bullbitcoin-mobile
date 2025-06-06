@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
 
@@ -18,6 +19,9 @@ class GetExchangeUserSummaryUsecase {
 
       return userSummary;
     } catch (e) {
+      if (e is ApiKeyException) {
+        rethrow;
+      }
       throw GetExchangeUserSummaryException('$e');
     }
   }

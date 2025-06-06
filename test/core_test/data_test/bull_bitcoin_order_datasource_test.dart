@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const buyAddress = 'mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt';
   const apiKey =
-      'bbak-de07e93fb1c55947c0962278fcad7e82d8c3fc45d63d7757601a47f782518147';
+      'bbak-c693dad066366dfb5c8d48af8f46cd4bb5b65f218fe31eb6ed2510cee80435f6';
   final dio = Dio(BaseOptions(baseUrl: 'https://api05.bullbitcoin.dev'));
   final datasource = BullbitcoinApiDatasource(bullbitcoinApiHttpClient: dio);
 

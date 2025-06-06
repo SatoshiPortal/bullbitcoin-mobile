@@ -36,8 +36,15 @@ class BullbitcoinWebview extends StatelessWidget {
               onRetry: () => Navigator.of(context).pop(),
             )
           else
-            WebViewWidget(
-              controller: context.read<ExchangeHomeCubit>().webViewController,
+            Builder(
+              builder: (context) {
+                final controller =
+                    context.read<ExchangeHomeCubit>().webViewController;
+                if (controller == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return WebViewWidget(controller: controller);
+              },
             ),
           if (isLoading && !hasError) const SizedBox.shrink(),
           if (apiKeyGenerating)

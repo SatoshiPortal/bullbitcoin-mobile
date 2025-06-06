@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/mappers/user_summary_mapper.dart';
@@ -21,7 +22,9 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
       final apiKey = await _bullbitcoinApiKeyDatasource.get();
       if (apiKey == null) {
         debugPrint('No API key found');
-        return null;
+        throw ApiKeyException(
+          'API key not found. Please login to your Bull Bitcoin account.',
+        );
       }
       final userSummaryModel = await _bullbitcoinApiDatasource.getUserSummary(
         apiKey.key,

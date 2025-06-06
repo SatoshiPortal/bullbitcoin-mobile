@@ -78,12 +78,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
           'method': 'getUserSummary',
           'params': {},
         },
-        options: Options(
-          headers: {
-            // 'Authorization': 'Bearer $apiKey',
-            'X-API-Key': apiKey,
-          },
-        ),
+        options: Options(headers: {'X-API-Key': apiKey}),
       );
 
       if (resp.statusCode == null || resp.statusCode != 200) {

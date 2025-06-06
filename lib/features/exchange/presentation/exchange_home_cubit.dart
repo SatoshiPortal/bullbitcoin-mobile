@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
@@ -23,7 +24,6 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
        _deleteExchangeApiKeyUsecase = deleteExchangeApiKeyUsecase,
        _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        super(const ExchangeHomeState()) {
-    _initController();
     _checkForAPIKeyAndLoadDetails();
   }
 
@@ -32,7 +32,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
   final DeleteExchangeApiKeyUsecase _deleteExchangeApiKeyUsecase;
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
 
-  late final WebViewController webViewController;
+  WebViewController? webViewController;
   Timer? _cookieCheckTimer;
 
   @override
@@ -122,28 +122,33 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
 
     if (Platform.isAndroid) {
       AndroidWebViewController.enableDebugging(false);
-      final androidController =
-          webViewController.platform as AndroidWebViewController;
-      androidController.setMediaPlaybackRequiresUserGesture(false);
+      final platformController = webViewController?.platform;
+      if (platformController is AndroidWebViewController) {
+        platformController.setMediaPlaybackRequiresUserGesture(false);
+      }
     } else if (Platform.isIOS) {
-      final iosController =
-          webViewController.platform as WebKitWebViewController;
-      iosController.setAllowsBackForwardNavigationGestures(true);
+      final platformController = webViewController?.platform;
+      if (platformController is WebKitWebViewController) {
+        platformController.setAllowsBackForwardNavigationGestures(true);
+      }
     }
   }
 
   Future<void> _checkForAPIKeyAndLoadDetails() async {
     try {
       // Uncomment to delete API key for testing purposes
-      //await _deleteExchangeApiKeyUsecase.execute();
+      // await _deleteExchangeApiKeyUsecase.execute();
       try {
         final user = await _getExchangeUserSummaryUsecase.execute();
         emit(state.copyWith(showLoginSuccessDialog: true, userSummary: user));
       } catch (e) {
-        if (e is GetExchangeUserSummaryException) {
-          // If the user summary is not available, we proceed to load the login page
+        if (e is ApiKeyException) {
+          _initController();
           final Uri url = Uri.parse('https://${state.baseUrl}');
-          await webViewController.loadRequest(url);
+          await webViewController?.loadRequest(url);
+        }
+        if (e is GetExchangeUserSummaryException) {
+          _setError(message: e.message);
         } else {
           _setError(message: 'Unexpected error: $e');
         }
@@ -221,11 +226,11 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
     if (state.apiKeyGenerating) return;
     _setApiKeyGenerating(true);
     try {
-      await webViewController.runJavaScript(
+      await webViewController?.runJavaScript(
         'console.log("Preparing to generate API key...");',
       );
       await Future.delayed(const Duration(milliseconds: 500));
-      final result = await webViewController.runJavaScriptReturningResult('''
+      final result = await webViewController?.runJavaScriptReturningResult('''
         (function() {
           var xhr = new XMLHttpRequest();
           xhr.open('POST', 'https://accounts05.bullbitcoin.dev/api/generate-api-key', false);
@@ -243,7 +248,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
           }
         })();
       ''');
-      String jsonString = result.toString();
+      String jsonString = result?.toString() ?? '';
       if (jsonString.startsWith('"') && jsonString.endsWith('"')) {
         jsonString = jsonString
             .substring(1, jsonString.length - 1)
@@ -271,7 +276,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
 
   Future<void> _tryAlternativeApiKeyGeneration() async {
     try {
-      await webViewController.runJavaScript('''
+      await webViewController?.runJavaScript('''
         (function() {
           var iframe = document.createElement('iframe');
           iframe.style.display = 'none';

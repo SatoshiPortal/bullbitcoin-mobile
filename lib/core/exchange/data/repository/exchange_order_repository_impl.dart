@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
@@ -109,13 +110,13 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       final apiKeyModel = await _bullbitcoinApiKeyDatasource.get();
 
       if (apiKeyModel == null) {
-        throw Exception(
+        throw ApiKeyException(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
       }
 
       if (!apiKeyModel.isActive) {
-        throw Exception(
+        throw ApiKeyException(
           'API key is inactive. Please login again to your Bull Bitcoin account.',
         );
       }
