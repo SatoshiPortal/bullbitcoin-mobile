@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
@@ -47,6 +48,31 @@ class TransactionDetailsScreen extends StatelessWidget {
           (TransactionDetailsCubit bloc) => bloc.state.isOngoingPayjoin,
         ) &&
         tx.isOutgoing == true;
+    final isOrderType = tx.isOrder && tx.order != null;
+    final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
+    final showOrderInFiat =
+        isOrderType &&
+        (tx.order is FiatPaymentOrder ||
+            tx.order is BalanceAdjustmentOrder ||
+            tx.order is WithdrawOrder);
+
+    bool isOrderIncoming = false;
+    if (isOrderType) {
+      switch (tx.order!.orderType) {
+        case OrderType.buy:
+        case OrderType.funding:
+        case OrderType.balanceAdjustment:
+        case OrderType.refund:
+          isOrderIncoming = true;
+        case OrderType.sell:
+        case OrderType.withdraw:
+          isOrderIncoming = false;
+        default:
+          isOrderIncoming = isIncoming;
+      }
+    } else {
+      isOrderIncoming = isIncoming;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -70,10 +96,12 @@ class TransactionDetailsScreen extends StatelessWidget {
           child: Center(
             child: Column(
               children: [
-                TransactionDirectionBadge(isIncoming: isIncoming),
+                TransactionDirectionBadge(isIncoming: isOrderIncoming),
                 const Gap(24),
                 BBText(
-                  isOngoingSenderPayjoin
+                  isOrderType
+                      ? tx.order!.orderType.value
+                      : isOngoingSenderPayjoin
                       ? 'Payjoin requested'
                       : isIncoming
                       ? 'Payment received'
@@ -81,13 +109,28 @@ class TransactionDetailsScreen extends StatelessWidget {
                   style: context.font.headlineLarge,
                 ),
                 const Gap(8),
-                CurrencyText(
-                  amountSat,
-                  showFiat: false,
-                  style: context.font.displaySmall?.copyWith(
-                    color: theme.colorScheme.outlineVariant,
-                    fontWeight: FontWeight.w500,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CurrencyText(
+                      isOrderType && !showOrderInFiat
+                          ? orderAmountAndCurrency!.$1.toInt()
+                          : amountSat,
+                      showFiat: false,
+                      style: context.font.displaySmall?.copyWith(
+                        color: theme.colorScheme.outlineVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      fiatAmount:
+                          isOrderType && showOrderInFiat
+                              ? orderAmountAndCurrency!.$1.toDouble()
+                              : null,
+                      fiatCurrency:
+                          isOrderType && showOrderInFiat
+                              ? orderAmountAndCurrency!.$2
+                              : null,
+                    ),
+                  ],
                 ),
                 const Gap(24),
                 const TransactionDetailsTable(),

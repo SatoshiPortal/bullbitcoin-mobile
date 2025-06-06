@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
@@ -18,16 +19,25 @@ class TxListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLnSwap = tx.isLnSwap;
     final isChainSwap = tx.isChainSwap;
+    final isOrderType = tx.isOrder && tx.order != null;
     final icon =
-        isChainSwap
+        isOrderType
+            ? Icons.payments
+            : isChainSwap
             ? Icons.swap_vert_rounded
             : tx.isOutgoing
             ? Icons.arrow_upward
             : Icons.arrow_downward;
     final walletColor =
-        tx.isBitcoin ? context.colour.onTertiary : context.colour.tertiary;
+        isOrderType
+            ? context.colour.secondaryFixedDim
+            : tx.isBitcoin
+            ? context.colour.onTertiary
+            : context.colour.tertiary;
     final networkLabel =
-        isLnSwap
+        isOrderType
+            ? tx.order!.orderType.value
+            : isLnSwap
             ? 'Lightning'
             : isChainSwap
             ? tx.swap!.type == SwapType.liquidToBitcoin
@@ -41,7 +51,12 @@ class TxListItem extends StatelessWidget {
             ? tx.walletTransaction!.labels.first
             : null;
     final date = tx.timestamp != null ? timeago.format(tx.timestamp!) : null;
-
+    final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
+    final showOrderInFiat =
+        isOrderType &&
+        (tx.order is FiatPaymentOrder ||
+            tx.order is BalanceAdjustmentOrder ||
+            tx.order is WithdrawOrder);
     return InkWell(
       onTap: () {
         context.pushNamed(TransactionsRoute.transactionDetails.name, extra: tx);
@@ -70,10 +85,29 @@ class TxListItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CurrencyText(
-                    tx.amountSat,
-                    showFiat: false,
-                    style: context.font.bodyLarge,
+                  Row(
+                    children: [
+                      CurrencyText(
+                        isOrderType && !showOrderInFiat
+                            ? orderAmountAndCurrency!.$1.toInt()
+                            : tx.amountSat,
+                        showFiat: false,
+                        style: context.font.bodyLarge,
+                        fiatAmount:
+                            isOrderType && showOrderInFiat
+                                ? orderAmountAndCurrency!.$1.toDouble()
+                                : null,
+                        fiatCurrency:
+                            isOrderType && showOrderInFiat
+                                ? orderAmountAndCurrency!.$2
+                                : null,
+                      ),
+                      if (label != null)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: BBText(label, style: context.font.bodyLarge),
+                        ),
+                    ],
                   ),
                   if (label != null)
                     BBText(

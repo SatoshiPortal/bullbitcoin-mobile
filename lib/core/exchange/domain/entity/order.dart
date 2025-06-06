@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'order.freezed.dart';
@@ -500,4 +501,14 @@ sealed class Order with _$Order {
   bool isCancelled() => orderStatus == OrderStatus.canceled;
   bool isExpired() => orderStatus == OrderStatus.expired;
   bool isPending() => orderStatus == OrderStatus.awaitingConfirmation;
+
+  (num, String) amountAndCurrencyToDisplay() {
+    if (orderType == OrderType.buy) {
+      return (ConvertAmount.btcToSats(payoutAmount), 'sats');
+    } else if (orderType == OrderType.sell) {
+      return (ConvertAmount.btcToSats(payinAmount), 'sats');
+    } else {
+      return (payoutAmount, payoutCurrency);
+    }
+  }
 }

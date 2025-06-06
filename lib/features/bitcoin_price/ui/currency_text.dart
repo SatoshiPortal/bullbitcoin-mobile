@@ -15,21 +15,26 @@ class CurrencyText extends StatelessWidget {
     this.style,
     this.color,
     this.textAlign,
+    this.fiatAmount,
+    this.fiatCurrency,
   });
 
   final int satsAmount;
   final bool showFiat;
-
   final int maxLines;
   final TextStyle? style;
   final Color? color;
   final TextAlign? textAlign;
+  final double? fiatAmount;
+  final String? fiatCurrency;
 
   @override
   Widget build(BuildContext context) {
     String text = '';
 
-    if (showFiat) {
+    if (fiatAmount != null) {
+      text = '${fiatAmount!.toStringAsFixed(2)} $fiatCurrency';
+    } else if (showFiat) {
       final price = context.select(
         (BitcoinPriceBloc bloc) => bloc.state.calculateFiatPrice(satsAmount),
       );

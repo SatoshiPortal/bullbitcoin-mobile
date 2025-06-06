@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -73,6 +74,152 @@ class TransactionDetailsTable extends StatelessWidget {
 
     return DetailsTable(
       items: [
+        if (tx.isOrder && tx.order != null) ...[
+          ...(() {
+                final order = tx.order!;
+                if (order is BuyOrder) {
+                  return [
+                    DetailsTableItem(
+                      label: 'Order Type',
+                      displayValue: order.orderType.value,
+                    ),
+                    DetailsTableItem(
+                      label: 'Order Number',
+                      displayValue: order.orderNumber.toString(),
+                    ),
+                    DetailsTableItem(
+                      label: 'Payin amount',
+                      displayValue:
+                          '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                    ),
+                    DetailsTableItem(
+                      label: 'Payout amount',
+                      displayValue:
+                          '${order.payoutAmount} ${order.payoutCurrency}',
+                    ),
+                    if (order.exchangeRateAmount != null &&
+                        order.exchangeRateCurrency != null)
+                      DetailsTableItem(
+                        label: 'Exchange rate',
+                        displayValue:
+                            '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                      ),
+                    DetailsTableItem(
+                      label: 'Payin method',
+                      displayValue: order.payinMethod.value,
+                    ),
+                    DetailsTableItem(
+                      label: 'Payout method',
+                      displayValue: order.payoutMethod.value,
+                    ),
+                    DetailsTableItem(
+                      label: 'Payin Status',
+                      displayValue: order.payinStatus.value,
+                    ),
+                    DetailsTableItem(
+                      label: 'Order Status',
+                      displayValue: order.orderStatus.value,
+                    ),
+                    DetailsTableItem(
+                      label: 'Payout Status',
+                      displayValue: order.payoutStatus.value,
+                    ),
+                    if (order.bitcoinTransactionId != null)
+                      DetailsTableItem(
+                        label: 'Transaction ID',
+                        displayValue: StringFormatting.truncateMiddle(
+                          order.bitcoinTransactionId!,
+                        ),
+                        copyValue: order.bitcoinTransactionId,
+                      ),
+                    DetailsTableItem(
+                      label: 'Created at',
+                      displayValue: DateFormat(
+                        'MMM d, y, h:mm a',
+                      ).format(order.createdAt),
+                    ),
+                    if (order.completedAt != null)
+                      DetailsTableItem(
+                        label: 'Completed at',
+                        displayValue: DateFormat(
+                          'MMM d, y, h:mm a',
+                        ).format(order.completedAt!),
+                      ),
+                  ];
+                } else if (order is SellOrder) {
+                  return [
+                    DetailsTableItem(
+                      label: 'Order Type',
+                      displayValue: order.orderType.value,
+                    ),
+                    DetailsTableItem(
+                      label: 'Order Number',
+                      displayValue: order.orderNumber.toString(),
+                    ),
+                    DetailsTableItem(
+                      label: 'Payin amount',
+                      displayValue:
+                          '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                    ),
+                    DetailsTableItem(
+                      label: 'Payout amount',
+                      displayValue:
+                          '${order.payoutAmount} ${order.payoutCurrency}',
+                    ),
+                    if (order.exchangeRateAmount != null &&
+                        order.exchangeRateCurrency != null)
+                      DetailsTableItem(
+                        label: 'Exchange rate',
+                        displayValue:
+                            '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                      ),
+                    DetailsTableItem(
+                      label: 'Payin method',
+                      displayValue: order.payinMethod.value,
+                    ),
+                    DetailsTableItem(
+                      label: 'Payout method',
+                      displayValue: order.payoutMethod.value,
+                    ),
+                    DetailsTableItem(
+                      label: 'Payin Status',
+                      displayValue: order.payinStatus.value,
+                    ),
+                    DetailsTableItem(
+                      label: 'Order Status',
+                      displayValue: order.orderStatus.value,
+                    ),
+                    DetailsTableItem(
+                      label: 'Payout Status',
+                      displayValue: order.payoutStatus.value,
+                    ),
+                    if (order.bitcoinTransactionId != null)
+                      DetailsTableItem(
+                        label: 'Transaction ID',
+                        displayValue: StringFormatting.truncateMiddle(
+                          order.bitcoinTransactionId!,
+                        ),
+                        copyValue: order.bitcoinTransactionId,
+                      ),
+                    DetailsTableItem(
+                      label: 'Created at',
+                      displayValue: DateFormat(
+                        'MMM d, y, h:mm a',
+                      ).format(order.createdAt),
+                    ),
+                    if (order.completedAt != null)
+                      DetailsTableItem(
+                        label: 'Completed at',
+                        displayValue: DateFormat(
+                          'MMM d, y, h:mm a',
+                        ).format(order.completedAt!),
+                      ),
+                  ];
+                }
+                return [];
+              })()
+              as List<DetailsTableItem>,
+        ],
         if (abbreviatedTxId.isNotEmpty)
           DetailsTableItem(
             label: 'Transaction ID',
