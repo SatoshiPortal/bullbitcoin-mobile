@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'exchange_home_state.freezed.dart';
@@ -23,6 +22,7 @@ abstract class ExchangeHomeState with _$ExchangeHomeState {
     UserSummary? userSummary,
     @Default(false) bool isFetchingUserSummary,
     Object? error,
+    String? bbAuthUrl,
   }) = _ExchangeHomeState;
 
   const ExchangeHomeState._();
@@ -40,10 +40,6 @@ abstract class ExchangeHomeState with _$ExchangeHomeState {
   String get loginUrlPattern => 'login';
   String get verificationUrlPattern => 'verification';
   String get registrationUrlPattern => 'registration';
-
   String get targetAuthCookie => 'bb_session';
-  String get baseAuthUrl => ApiServiceConstants.bbAuthUrl;
-  String get baseAuthTestUrl => ApiServiceConstants.bbAuthTestUrl;
-
   bool get hasUserSummary => userSummary != null;
 }

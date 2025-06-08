@@ -30,6 +30,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
        _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _accelerateBuyOrderUsecase = accelerateBuyOrderUsecase,
        super(const ExchangeHomeState()) {
+    _initUrls();
     _checkForAPIKeyAndLoadDetails();
   }
 
@@ -142,6 +143,16 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
     }
   }
 
+  Future<void> _initUrls() async {
+    final settings = await locator<SettingsRepository>().fetch();
+    final isTestnet = settings.environment.isTestnet;
+    final bbAuthUrl =
+        isTestnet
+            ? ApiServiceConstants.bbAuthTestUrl
+            : ApiServiceConstants.bbAuthUrl;
+    emit(state.copyWith(bbAuthUrl: bbAuthUrl));
+  }
+
   Future<void> _checkForAPIKeyAndLoadDetails() async {
     try {
       // Uncomment to delete API key for testing purposes
@@ -152,13 +163,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
       } catch (e) {
         if (e is ApiKeyException) {
           _initController();
-          final settings = await locator<SettingsRepository>().fetch();
-          final isTestnet = settings.environment.isTestnet;
-          final urlString =
-              isTestnet
-                  ? ApiServiceConstants.bbAuthTestUrl
-                  : ApiServiceConstants.bbAuthUrl;
-          final Uri url = Uri.parse(urlString);
+          final Uri url = Uri.parse(state.bbAuthUrl ?? '');
           await webViewController?.loadRequest(url);
         }
         if (e is GetExchangeUserSummaryException) {
@@ -214,9 +219,8 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
   Future<bool> _checkNativeCookies() async {
     try {
       final cookieManager = WebviewCookieManager();
-      final nativeCookies = await cookieManager.getCookies(
-        'https://${state.baseAuthUrl}',
-      );
+      final urlString = state.bbAuthUrl ?? '';
+      final nativeCookies = await cookieManager.getCookies(urlString);
       final Map<String, String> cookieMap = {};
       for (final cookie in nativeCookies) {
         cookieMap[cookie.name] = cookie.value;
@@ -244,10 +248,11 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
         'console.log("Preparing to generate API key...");',
       );
       await Future.delayed(const Duration(milliseconds: 500));
+      final accountsUrl = state.bbAuthUrl ?? '';
       final result = await webViewController?.runJavaScriptReturningResult('''
         (function() {
           var xhr = new XMLHttpRequest();
-          xhr.open('POST', 'https://accounts05.bullbitcoin.dev/api/generate-api-key', false);
+          xhr.open('POST', '" + $accountsUrl + "/api/generate-api-key', false);
           xhr.setRequestHeader('Content-Type', 'application/json');
           xhr.withCredentials = true;
           try {
@@ -290,6 +295,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
 
   Future<void> _tryAlternativeApiKeyGeneration() async {
     try {
+      final accountsUrl = state.bbAuthUrl ?? '';
       await webViewController?.runJavaScript('''
         (function() {
           var iframe = document.createElement('iframe');
@@ -297,7 +303,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
           document.body.appendChild(iframe);
           var form = document.createElement('form');
           form.method = 'POST';
-          form.action = 'https://accounts05.bullbitcoin.dev/api/generate-api-key';
+          form.action = '" + $accountsUrl + "/api/generate-api-key';
           form.target = iframe.name;
           var input = document.createElement('input');
           input.type = 'hidden';
