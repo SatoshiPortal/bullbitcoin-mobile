@@ -185,9 +185,13 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
         debugPrint('No API key response available to store');
         return;
       }
-      await _saveExchangeApiKeyUsecase.execute(jsonString);
+      final settings = await locator<SettingsRepository>().fetch();
+      final isTestnet = settings.environment.isTestnet;
+      await _saveExchangeApiKeyUsecase.execute(
+        apiKeyResponseJson: jsonString,
+        isTestnet: isTestnet,
+      );
       debugPrint('API key successfully stored');
-
       await _checkForAPIKeyAndLoadDetails();
     } catch (e) {
       debugPrint('Error in storeApiKey: $e');

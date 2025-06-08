@@ -9,17 +9,22 @@ import 'package:flutter/cupertino.dart';
 class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
   final BullbitcoinApiDatasource _bullbitcoinApiDatasource;
   final BullbitcoinApiKeyDatasource _bullbitcoinApiKeyDatasource;
+  final bool _isTestnet;
 
   ExchangeUserRepositoryImpl({
     required BullbitcoinApiDatasource bullbitcoinApiDatasource,
     required BullbitcoinApiKeyDatasource bullbitcoinApiKeyDatasource,
+    required bool isTestnet,
   }) : _bullbitcoinApiDatasource = bullbitcoinApiDatasource,
-       _bullbitcoinApiKeyDatasource = bullbitcoinApiKeyDatasource;
+       _bullbitcoinApiKeyDatasource = bullbitcoinApiKeyDatasource,
+       _isTestnet = isTestnet;
 
   @override
   Future<UserSummary?> getUserSummary() async {
     try {
-      final apiKey = await _bullbitcoinApiKeyDatasource.get();
+      final apiKey = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
       if (apiKey == null) {
         debugPrint('No API key found');
         throw ApiKeyException(

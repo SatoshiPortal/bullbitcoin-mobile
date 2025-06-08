@@ -10,12 +10,18 @@ class SaveExchangeApiKeyUsecase {
     required ExchangeApiKeyRepository exchangeApiKeyRepository,
   }) : _exchangeApiKeyRepository = exchangeApiKeyRepository;
 
-  Future<void> execute(String apiKeyResponseJson) async {
+  Future<void> execute({
+    required String apiKeyResponseJson,
+    required bool isTestnet,
+  }) async {
     try {
       final Map<String, dynamic> responseData =
           json.decode(apiKeyResponseJson) as Map<String, dynamic>;
 
-      await _exchangeApiKeyRepository.saveApiKey(responseData);
+      await _exchangeApiKeyRepository.saveApiKey(
+        responseData,
+        isTestnet: isTestnet,
+      );
 
       debugPrint('API key saved successfully');
     } catch (e) {

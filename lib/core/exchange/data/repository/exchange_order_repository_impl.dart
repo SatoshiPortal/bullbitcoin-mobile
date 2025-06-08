@@ -8,17 +8,22 @@ import 'package:flutter/widgets.dart';
 class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   final BullbitcoinApiDatasource _bullbitcoinApiDatasource;
   final BullbitcoinApiKeyDatasource _bullbitcoinApiKeyDatasource;
+  final bool _isTestnet;
 
   ExchangeOrderRepositoryImpl({
     required BullbitcoinApiDatasource bullbitcoinApiDatasource,
     required BullbitcoinApiKeyDatasource bullbitcoinApiKeyDatasource,
+    required bool isTestnet,
   }) : _bullbitcoinApiDatasource = bullbitcoinApiDatasource,
-       _bullbitcoinApiKeyDatasource = bullbitcoinApiKeyDatasource;
+       _bullbitcoinApiKeyDatasource = bullbitcoinApiKeyDatasource,
+       _isTestnet = isTestnet;
 
   @override
   Future<Order> getOrder(String orderId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get();
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
 
       if (apiKeyModel == null) {
         throw Exception(
@@ -46,7 +51,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<Order?> getOrderByTxId(String txId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get();
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
 
       if (apiKeyModel == null) {
         throw Exception(
@@ -85,7 +92,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     OrderType? type,
   }) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get();
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
 
       if (apiKeyModel == null) {
         throw Exception(
@@ -155,7 +164,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
     required bool isOwner,
   }) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get();
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
 
       if (apiKeyModel == null) {
         throw ApiKeyException(
@@ -189,7 +200,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<BuyOrder> confirmBuyOrder(String orderId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get();
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
 
       if (apiKeyModel == null) {
         throw Exception(
@@ -225,7 +238,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<BuyOrder> refreshBuyOrder(String orderId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get();
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
 
       if (apiKeyModel == null) {
         throw Exception(
@@ -261,7 +276,9 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   @override
   Future<BuyOrder> accelerateBuyOrder(String orderId) async {
     try {
-      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get();
+      final apiKeyModel = await _bullbitcoinApiKeyDatasource.get(
+        isTestnet: _isTestnet,
+      );
 
       if (apiKeyModel == null) {
         throw Exception(

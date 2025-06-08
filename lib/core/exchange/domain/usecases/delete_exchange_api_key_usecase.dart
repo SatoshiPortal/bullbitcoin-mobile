@@ -8,9 +8,9 @@ class DeleteExchangeApiKeyUsecase {
     required ExchangeApiKeyRepository exchangeApiKeyRepository,
   }) : _exchangeApiKeyRepository = exchangeApiKeyRepository;
 
-  Future<void> execute() async {
+  Future<void> execute({required bool isTestnet}) async {
     try {
-      await _exchangeApiKeyRepository.deleteApiKey();
+      await _exchangeApiKeyRepository.deleteApiKey(isTestnet: isTestnet);
     } catch (e) {
       debugPrint('Error in DeleteExchangeApiKeyUsecase: $e');
       throw DeleteExchangeApiKeyException('$e');

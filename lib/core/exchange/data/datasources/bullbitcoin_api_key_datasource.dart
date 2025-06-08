@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 
 class BullbitcoinApiKeyDatasource {
   static const String _apiKeyStorageKey = 'exchange_api_key';
+  static const String _apiKeyTestnetStorageKey = 'exchange_api_key_testnet';
 
   final KeyValueStorageDatasource<String> _secureStorage;
 
@@ -13,10 +14,14 @@ class BullbitcoinApiKeyDatasource {
     required KeyValueStorageDatasource<String> secureStorage,
   }) : _secureStorage = secureStorage;
 
-  Future<void> store(ExchangeApiKeyModel apiKey) async {
+  Future<void> store(
+    ExchangeApiKeyModel apiKey, {
+    required bool isTestnet,
+  }) async {
     try {
       final jsonString = jsonEncode(apiKey.toJson());
-      await _secureStorage.saveValue(key: _apiKeyStorageKey, value: jsonString);
+      final key = isTestnet ? _apiKeyTestnetStorageKey : _apiKeyStorageKey;
+      await _secureStorage.saveValue(key: key, value: jsonString);
       debugPrint('API key stored successfully');
     } catch (e) {
       debugPrint('Error storing API key: $e');
@@ -24,9 +29,10 @@ class BullbitcoinApiKeyDatasource {
     }
   }
 
-  Future<ExchangeApiKeyModel?> get() async {
+  Future<ExchangeApiKeyModel?> get({required bool isTestnet}) async {
     try {
-      final jsonString = await _secureStorage.getValue(_apiKeyStorageKey);
+      final key = isTestnet ? _apiKeyTestnetStorageKey : _apiKeyStorageKey;
+      final jsonString = await _secureStorage.getValue(key);
 
       if (jsonString == null || jsonString.isEmpty) {
         debugPrint('No API key found in storage');
@@ -41,9 +47,10 @@ class BullbitcoinApiKeyDatasource {
     }
   }
 
-  Future<void> delete() async {
+  Future<void> delete({required bool isTestnet}) async {
     try {
-      await _secureStorage.deleteValue(_apiKeyStorageKey);
+      final key = isTestnet ? _apiKeyTestnetStorageKey : _apiKeyStorageKey;
+      await _secureStorage.deleteValue(key);
       debugPrint('API key deleted successfully');
     } catch (e) {
       debugPrint('Error deleting API key: $e');

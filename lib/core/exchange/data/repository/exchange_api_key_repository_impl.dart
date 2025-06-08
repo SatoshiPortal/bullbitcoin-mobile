@@ -10,7 +10,10 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
   }) : _bullbitcoinApiKeyDatasource = bullbitcoinApiKeyDatasource;
 
   @override
-  Future<void> saveApiKey(Map<String, dynamic> apiKeyResponseData) async {
+  Future<void> saveApiKey(
+    Map<String, dynamic> apiKeyResponseData, {
+    required bool isTestnet,
+  }) async {
     Map<String, dynamic> apiKeyData;
 
     // Check various formats the API might return
@@ -35,14 +38,17 @@ class ExchangeApiKeyRepositoryImpl implements ExchangeApiKeyRepository {
     final apiKeyModel = ExchangeApiKeyModel.fromJson(apiKeyData);
 
     try {
-      await _bullbitcoinApiKeyDatasource.store(apiKeyModel);
+      await _bullbitcoinApiKeyDatasource.store(
+        apiKeyModel,
+        isTestnet: isTestnet,
+      );
     } catch (e) {
       throw Exception('Failed to save API key: $e');
     }
   }
 
   @override
-  Future<void> deleteApiKey() async {
-    await _bullbitcoinApiKeyDatasource.delete();
+  Future<void> deleteApiKey({required bool isTestnet}) async {
+    await _bullbitcoinApiKeyDatasource.delete(isTestnet: isTestnet);
   }
 }

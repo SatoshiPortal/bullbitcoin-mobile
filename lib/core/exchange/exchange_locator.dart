@@ -86,6 +86,7 @@ class ExchangeLocator {
           instanceName: 'mainnetExchangeApiDatasource',
         ),
         bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: false,
       ),
       instanceName: 'mainnetExchangeUserRepository',
     );
@@ -95,6 +96,7 @@ class ExchangeLocator {
           instanceName: 'testnetExchangeApiDatasource',
         ),
         bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: true,
       ),
       instanceName: 'testnetExchangeUserRepository',
     );
@@ -105,6 +107,7 @@ class ExchangeLocator {
           instanceName: 'mainnetExchangeApiDatasource',
         ),
         bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: false,
       ),
       instanceName: 'mainnetExchangeOrderRepository',
     );
@@ -114,6 +117,7 @@ class ExchangeLocator {
           instanceName: 'testnetExchangeApiDatasource',
         ),
         bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: true,
       ),
       instanceName: 'testnetExchangeOrderRepository',
     );
