@@ -7,7 +7,10 @@ import 'package:bb_mobile/core/exchange/domain/usecases/accelerate_buy_order_use
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_home_state.dart';
+import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -149,7 +152,13 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
       } catch (e) {
         if (e is ApiKeyException) {
           _initController();
-          final Uri url = Uri.parse('https://${state.baseUrl}');
+          final settings = await locator<SettingsRepository>().fetch();
+          final isTestnet = settings.environment.isTestnet;
+          final urlString =
+              isTestnet
+                  ? ApiServiceConstants.bbAuthTestUrl
+                  : ApiServiceConstants.bbAuthUrl;
+          final Uri url = Uri.parse(urlString);
           await webViewController?.loadRequest(url);
         }
         if (e is GetExchangeUserSummaryException) {
@@ -206,7 +215,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
     try {
       final cookieManager = WebviewCookieManager();
       final nativeCookies = await cookieManager.getCookies(
-        'https://${state.baseUrl}',
+        'https://${state.baseAuthUrl}',
       );
       final Map<String, String> cookieMap = {};
       for (final cookie in nativeCookies) {

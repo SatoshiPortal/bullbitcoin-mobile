@@ -83,8 +83,12 @@ class ApiServiceConstants {
       'http://o7rwmpnfkzdcay2gotla6sbrviu27wcgck7nsjrq77nqhtwbjvwcraad.onion';
   static String bbApiUrl =
       dotenv.env['BB_API_URL'] ?? 'https://api.bullbitcoin.com';
+  static String bbApiTestUrl =
+      dotenv.env['BB_API_TEST_URL'] ?? 'https://api05.bullbitcoin.com';
   static String bbAuthUrl =
       '${dotenv.env['BB_AUTH_URL']}/en/registration?${dotenv.env['APIKEY_QUERY_PARAM']}';
+  static String bbAuthTestUrl =
+      '${dotenv.env['BB_AUTH_TEST_URL']}/en/registration?${dotenv.env['APIKEY_QUERY_PARAM']}';
 }
 
 class LocatorInstanceNameConstants {

@@ -37,13 +37,13 @@ abstract class ExchangeHomeState with _$ExchangeHomeState {
     'hl',
   ];
 
-  String get baseAccountsUrl => 'https://accounts05.bullbitcoin.dev';
   String get loginUrlPattern => 'login';
   String get verificationUrlPattern => 'verification';
   String get registrationUrlPattern => 'registration';
 
   String get targetAuthCookie => 'bb_session';
-  String get baseUrl => ApiServiceConstants.bbAuthUrl;
+  String get baseAuthUrl => ApiServiceConstants.bbAuthUrl;
+  String get baseAuthTestUrl => ApiServiceConstants.bbAuthTestUrl;
 
   bool get hasUserSummary => userSummary != null;
 }

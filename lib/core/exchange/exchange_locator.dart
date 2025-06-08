@@ -43,14 +43,35 @@ class ExchangeLocator {
           BaseOptions(baseUrl: ApiServiceConstants.bbApiUrl),
         ),
       ),
+      instanceName: 'mainnetExchangeApiDatasource',
+    );
+
+    locator.registerLazySingleton<BullbitcoinApiDatasource>(
+      () => BullbitcoinApiDatasource(
+        bullbitcoinApiHttpClient: Dio(
+          BaseOptions(baseUrl: ApiServiceConstants.bbApiTestUrl),
+        ),
+      ),
+      instanceName: 'testnetExchangeApiDatasource',
     );
   }
 
   static void registerRepositories() {
     locator.registerLazySingleton<ExchangeRateRepository>(
       () => ExchangeRateRepositoryImpl(
-        bitcoinPriceDatasource: locator<BullbitcoinApiDatasource>(),
+        bitcoinPriceDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'mainnetExchangeApiDatasource',
+        ),
       ),
+      instanceName: 'mainnetExchangeRateRepository',
+    );
+    locator.registerLazySingleton<ExchangeRateRepository>(
+      () => ExchangeRateRepositoryImpl(
+        bitcoinPriceDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'testnetExchangeApiDatasource',
+        ),
+      ),
+      instanceName: 'testnetExchangeRateRepository',
     );
 
     locator.registerLazySingleton<ExchangeApiKeyRepository>(
@@ -61,37 +82,77 @@ class ExchangeLocator {
 
     locator.registerLazySingleton<ExchangeUserRepository>(
       () => ExchangeUserRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(),
+        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'mainnetExchangeApiDatasource',
+        ),
         bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
       ),
+      instanceName: 'mainnetExchangeUserRepository',
+    );
+    locator.registerLazySingleton<ExchangeUserRepository>(
+      () => ExchangeUserRepositoryImpl(
+        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'testnetExchangeApiDatasource',
+        ),
+        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+      ),
+      instanceName: 'testnetExchangeUserRepository',
     );
 
     locator.registerLazySingleton<ExchangeOrderRepository>(
       () => ExchangeOrderRepositoryImpl(
-        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(),
+        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'mainnetExchangeApiDatasource',
+        ),
         bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
       ),
+      instanceName: 'mainnetExchangeOrderRepository',
+    );
+    locator.registerLazySingleton<ExchangeOrderRepository>(
+      () => ExchangeOrderRepositoryImpl(
+        bullbitcoinApiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'testnetExchangeApiDatasource',
+        ),
+        bullbitcoinApiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+      ),
+      instanceName: 'testnetExchangeOrderRepository',
     );
   }
 
   static void registerUseCases() {
     locator.registerFactory<ConvertCurrencyToSatsAmountUsecase>(
       () => ConvertCurrencyToSatsAmountUsecase(
-        exchangeRateRepository: locator<ExchangeRateRepository>(),
+        mainnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'mainnetExchangeRateRepository',
+        ),
+        testnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'testnetExchangeRateRepository',
+        ),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
     locator.registerFactory<ConvertSatsToCurrencyAmountUsecase>(
       () => ConvertSatsToCurrencyAmountUsecase(
-        exchangeRateRepository: locator<ExchangeRateRepository>(),
+        mainnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'mainnetExchangeRateRepository',
+        ),
+        testnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'testnetExchangeRateRepository',
+        ),
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
     locator.registerFactory<GetAvailableCurrenciesUsecase>(
       () => GetAvailableCurrenciesUsecase(
-        exchangeRateRepository: locator<ExchangeRateRepository>(),
+        mainnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'mainnetExchangeRateRepository',
+        ),
+        testnetExchangeRateRepository: locator<ExchangeRateRepository>(
+          instanceName: 'testnetExchangeRateRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
@@ -109,44 +170,85 @@ class ExchangeLocator {
 
     locator.registerFactory<GetExchangeUserSummaryUsecase>(
       () => GetExchangeUserSummaryUsecase(
-        exchangeUserRepository: locator<ExchangeUserRepository>(),
+        mainnetExchangeUserRepository: locator<ExchangeUserRepository>(
+          instanceName: 'mainnetExchangeUserRepository',
+        ),
+        testnetExchangeUserRepository: locator<ExchangeUserRepository>(
+          instanceName: 'testnetExchangeUserRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
-    // Order usecases
     locator.registerFactory<CreateBuyOrderUsecase>(
       () => CreateBuyOrderUsecase(
-        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
     locator.registerFactory<ConfirmBuyOrderUsecase>(
       () => ConfirmBuyOrderUsecase(
-        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
     locator.registerFactory<RefreshBuyOrderUsecase>(
       () => RefreshBuyOrderUsecase(
-        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
     locator.registerFactory<GetOrderUsecase>(
       () => GetOrderUsecase(
-        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
     locator.registerFactory<ListAllOrdersUsecase>(
       () => ListAllOrdersUsecase(
-        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
     locator.registerFactory<AccelerateBuyOrderUsecase>(
       () => AccelerateBuyOrderUsecase(
-        exchangeOrderRepository: locator<ExchangeOrderRepository>(),
+        mainnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'mainnetExchangeOrderRepository',
+        ),
+        testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
+          instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
   }
