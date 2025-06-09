@@ -156,7 +156,8 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
   Future<void> _checkForAPIKeyAndLoadDetails() async {
     try {
       // Uncomment to delete API key for testing purposes
-      // await _deleteExchangeApiKeyUsecase.execute();
+      // await _deleteExchangeApiKeyUsecase.execute(isTestnet: false);
+      // await _deleteExchangeApiKeyUsecase.execute(isTestnet: true);
       try {
         final user = await _getExchangeUserSummaryUsecase.execute();
         emit(state.copyWith(showLoginSuccessDialog: true, userSummary: user));
@@ -164,11 +165,13 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
         if (e is ApiKeyException) {
           _initController();
           final Uri url = Uri.parse(state.bbAuthUrl ?? '');
+          await Future.delayed(const Duration(seconds: 2));
           await webViewController?.loadRequest(url);
         }
         if (e is GetExchangeUserSummaryException) {
           _setError(message: e.message);
-        } else {
+        } else if (e is! GetExchangeUserSummaryException &&
+            e is! ApiKeyException) {
           _setError(message: 'Unexpected error: $e');
         }
       }

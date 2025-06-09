@@ -31,18 +31,28 @@ class ExchangeUserRepositoryImpl implements ExchangeUserRepository {
           'API key not found. Please login to your Bull Bitcoin account.',
         );
       }
-      final userSummaryModel = await _bullbitcoinApiDatasource.getUserSummary(
-        apiKey.key,
-      );
-      if (userSummaryModel == null) {
-        debugPrint('User summary not found for API key: ${apiKey.key}');
-        return null;
-      }
-      final userSummary = UserSummaryMapper.fromModelToEntity(userSummaryModel);
+      try {
+        final userSummaryModel = await _bullbitcoinApiDatasource.getUserSummary(
+          apiKey.key,
+        );
+        if (userSummaryModel == null) {
+          debugPrint('User summary not found for API key: ${apiKey.key}');
+          return null;
+        }
+        final userSummary = UserSummaryMapper.fromModelToEntity(
+          userSummaryModel,
+        );
 
-      return userSummary;
+        return userSummary;
+      } catch (e) {
+        throw Exception('Failed to fetch user summary: $e');
+      }
     } catch (e) {
-      throw Exception('Failed to fetch user summary: $e');
+      if (e is ApiKeyException) {
+        rethrow;
+      } else {
+        throw Exception('Failed to fetch user summary: $e');
+      }
     }
   }
 }
