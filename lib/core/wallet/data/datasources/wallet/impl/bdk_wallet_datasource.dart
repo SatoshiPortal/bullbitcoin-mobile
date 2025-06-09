@@ -90,10 +90,12 @@ class BdkWalletDatasource implements WalletDatasource {
   }) {
     // putIfAbsent ensures only one sync starts for each wallet ID,
     //  all others await the same Future.
-    debugPrint('Sync requested for wallet: ${wallet.id}');
+    // TODO: if needed, add these debugPrint to a filterable logger.debug
+    // TODO: to avoid spamming the terminal with recurring prints
+    // debugPrint('Sync requested for wallet: ${wallet.id}');
     return _activeSyncs.putIfAbsent(wallet.id, () async {
       try {
-        debugPrint('New sync started for wallet: ${wallet.id}');
+        // debugPrint('New sync started for wallet: ${wallet.id}');
         // Notify that the wallet is syncing through a stream for other
         // parts of the app to listen to so they can show a syncing indicator
         _walletSyncStartedController.add(wallet.id);
@@ -116,9 +118,9 @@ class BdkWalletDatasource implements WalletDatasource {
         );
 
         await bdkWallet.sync(blockchain: blockchain);
-        debugPrint('Sync completed for wallet: ${wallet.id}');
+        // debugPrint('Sync completed for wallet: ${wallet.id}');
       } catch (e) {
-        debugPrint('Sync error for wallet ${wallet.id}: $e');
+        // debugPrint('Sync error for wallet ${wallet.id}: $e');
         rethrow;
       } finally {
         // Notify that the wallet has been synced through a stream for other

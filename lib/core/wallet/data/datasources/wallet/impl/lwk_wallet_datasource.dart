@@ -75,10 +75,12 @@ class LwkWalletDatasource implements WalletDatasource {
     required ElectrumServerModel electrumServer,
   }) {
     try {
-      debugPrint('Sync requested for wallet: ${wallet.id}');
+      // TODO: if needed, add these debugPrint to a filterable logger.debug
+      // TODO: to avoid spamming the terminal with recurring prints
+      // debugPrint('Sync requested for wallet: ${wallet.id}');
       return _activeSyncs.putIfAbsent(wallet.id, () async {
         try {
-          debugPrint('New sync started for wallet: ${wallet.id}');
+          // debugPrint('New sync started for wallet: ${wallet.id}');
           _walletSyncStartedController.add(wallet.id);
           syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
           final lwkWallet = await _createPublicWallet(wallet);
@@ -86,7 +88,7 @@ class LwkWalletDatasource implements WalletDatasource {
             electrumUrl: electrumServer.url,
             validateDomain: electrumServer.validateDomain,
           );
-          debugPrint('Sync completed for wallet: ${wallet.id}');
+          // debugPrint('Sync completed for wallet: ${wallet.id}');
         } catch (e) {
           if (e is lwk.LwkError) {
             throw e.msg;
