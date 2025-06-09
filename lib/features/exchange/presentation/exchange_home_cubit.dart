@@ -259,7 +259,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
       final result = await webViewController?.runJavaScriptReturningResult('''
         (function() {
           var xhr = new XMLHttpRequest();
-          xhr.open('POST', '" + $accountsUrl + "/api/generate-api-key', false);
+          xhr.open('POST', '$accountsUrl/api/generate-api-key', false);
           xhr.setRequestHeader('Content-Type', 'application/json');
           xhr.withCredentials = true;
           try {
@@ -310,7 +310,7 @@ class ExchangeHomeCubit extends Cubit<ExchangeHomeState> {
           document.body.appendChild(iframe);
           var form = document.createElement('form');
           form.method = 'POST';
-          form.action = '" + $accountsUrl + "/api/generate-api-key';
+          form.action = '$accountsUrl/api/generate-api-key';
           form.target = iframe.name;
           var input = document.createElement('input');
           input.type = 'hidden';
