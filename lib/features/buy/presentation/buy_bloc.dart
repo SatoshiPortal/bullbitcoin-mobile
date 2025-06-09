@@ -1,5 +1,6 @@
 // ignore_for_file: unused_field
 
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/confirm_buy_order_usecase.dart';
@@ -59,6 +60,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       emit(
         state.copyWith(
           userSummary: summary,
+          apiKeyException: null,
           getUserSummaryException: null,
           currencyInput: summary.currency,
         ),
@@ -73,6 +75,10 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       );
     } catch (e) {
       debugPrint('[BuyBloc] _onStarted error: $e');
+      if (e is ApiKeyException) {
+        // If the API key is invalid, we should not proceed with the buy flow.
+        emit(state.copyWith(apiKeyException: e));
+      }
       if (e is GetExchangeUserSummaryException) {
         emit(state.copyWith(getUserSummaryException: e));
       } else if (e is GetWalletsException) {

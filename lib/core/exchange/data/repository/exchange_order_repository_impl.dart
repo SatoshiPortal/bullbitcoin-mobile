@@ -97,15 +97,17 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null) {
-        throw Exception(
+        debugPrint(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
+        return [];
       }
 
       if (!apiKeyModel.isActive) {
-        throw Exception(
+        debugPrint(
           'API key is inactive. Please login again to your Bull Bitcoin account.',
         );
+        return [];
       }
 
       final orderModels = await _bullbitcoinApiDatasource.listOrderSummaries(
@@ -151,7 +153,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return orders;
     } catch (e) {
-      throw Exception('Failed to get orders: $e');
+      debugPrint('Error fetching orders: $e');
+      return [];
     }
   }
 

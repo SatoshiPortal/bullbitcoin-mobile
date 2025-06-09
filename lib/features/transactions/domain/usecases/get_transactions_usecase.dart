@@ -143,7 +143,16 @@ class GetTransactionsUsecase {
         ...broadcastedTransactions,
         ...swaps.map((s) => Transaction(swap: s)),
         ...payjoins.map((p) => Transaction(payjoin: p)),
-        ...orders.map((o) => Transaction(order: o)),
+        // If walletId is not null, the orders should be linked to a wallet transaction.
+        // TODO: We could still check on the address of the order to see if it
+        // is related to the wallet id, even without a wallet transaction yet.
+        //  Another option is to persist order data and include the wallet id
+        //  there already so it can be linked easily. The latter might be the
+        //  most efficient and robust way for the future. But for now we assume that
+        //  orders without a wallet transaction are not relevant for a specific wallet yet.
+        ...(walletId == null
+            ? orders.map((o) => Transaction(order: o))
+            : <Transaction>[]),
       ];
     } catch (e) {
       throw Exception('Failed to fetch transactions: $e');

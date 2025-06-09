@@ -32,6 +32,8 @@ class GetExchangeUserSummaryUsecase {
 
       return userSummary;
     } catch (e) {
+      // TODO: Check if we really need a specific exception for this instead
+      // of just using GetEchangeUserSummaryException also for ApiKeyException
       if (e is ApiKeyException) {
         rethrow;
       }
