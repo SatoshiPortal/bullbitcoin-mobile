@@ -151,7 +151,11 @@ class _TopNav extends StatelessWidget {
           visualDensity: VisualDensity.compact,
           iconSize: 24,
           color: context.colour.onPrimary,
-          icon: const Icon(Icons.bar_chart, blendMode: BlendMode.overlay),
+          icon: const Icon(
+            Icons.bar_chart,
+            color: Colors.transparent,
+            blendMode: BlendMode.overlay,
+          ),
         ),
         const Gap(24 + 42),
         const Spacer(),
