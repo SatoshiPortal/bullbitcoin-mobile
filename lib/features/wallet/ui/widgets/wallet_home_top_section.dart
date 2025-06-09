@@ -145,9 +145,7 @@ class _TopNav extends StatelessWidget {
       children: [
         const Gap(8),
         IconButton(
-          onPressed: () {
-            context.read<WalletHomeBloc>().add(const CheckAllWarnings());
-          },
+          onPressed: () {},
           visualDensity: VisualDensity.compact,
           iconSize: 24,
           color: context.colour.onPrimary,
@@ -156,6 +154,11 @@ class _TopNav extends StatelessWidget {
             color: Colors.transparent,
             blendMode: BlendMode.overlay,
           ),
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+          hoverColor: Colors.transparent,
+          disabledColor: Colors.transparent,
+          tooltip: '',
         ),
         const Gap(24 + 42),
         const Spacer(),
