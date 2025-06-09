@@ -34,14 +34,14 @@ class _PriceInputState extends State<PriceInput> {
   @override
   void initState() {
     super.initState();
-    _focusNode = widget.focusNode ?? FocusNode();
+    widget.focusNode.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
-    if (widget.focusNode == null) {
-      _focusNode.dispose();
-    }
+    widget.focusNode.removeListener(() {});
     super.dispose();
   }
 
@@ -70,7 +70,7 @@ class _PriceInputState extends State<PriceInput> {
                     IntrinsicWidth(
                       child: TextField(
                         controller: widget.amountController,
-                        focusNode: _focusNode,
+                        focusNode: widget.focusNode,
                         keyboardType: TextInputType.none,
                         showCursor: true,
                         readOnly: true,
@@ -86,7 +86,7 @@ class _PriceInputState extends State<PriceInput> {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                           isDense: false,
-                          hintText: "0",
+                          hintText: widget.focusNode.hasFocus ? null : "0",
                           hintStyle: context.font.displaySmall!.copyWith(
                             fontSize: 36,
                             color: context.colour.outlineVariant,
