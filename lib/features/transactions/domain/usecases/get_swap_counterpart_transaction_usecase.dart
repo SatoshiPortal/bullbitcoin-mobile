@@ -14,7 +14,8 @@ class GetSwapCounterpartTransactionUsecase {
   final SwapRepository _mainnetSwapRepository;
   final SwapRepository _testnetSwapRepository;
   final PayjoinRepository _payjoinRepository;
-  final ExchangeOrderRepository _orderRepository;
+  final ExchangeOrderRepository _mainnetOrderRepository;
+  final ExchangeOrderRepository _testnetOrderRepository;
 
   GetSwapCounterpartTransactionUsecase({
     required SettingsRepository settingsRepository,
@@ -22,13 +23,15 @@ class GetSwapCounterpartTransactionUsecase {
     required SwapRepository mainnetSwapRepository,
     required SwapRepository testnetSwapRepository,
     required PayjoinRepository payjoinRepository,
-    required ExchangeOrderRepository orderRepository,
+    required ExchangeOrderRepository mainnetOrderRepository,
+    required ExchangeOrderRepository testnetOrderRepository,
   }) : _settingsRepository = settingsRepository,
        _walletTransactionRepository = walletTransactionRepository,
        _mainnetSwapRepository = mainnetSwapRepository,
        _testnetSwapRepository = testnetSwapRepository,
        _payjoinRepository = payjoinRepository,
-       _orderRepository = orderRepository;
+       _mainnetOrderRepository = mainnetOrderRepository,
+       _testnetOrderRepository = testnetOrderRepository;
 
   Future<Transaction?> execute(Transaction chainSwapTransaction) async {
     try {
@@ -60,6 +63,8 @@ class GetSwapCounterpartTransactionUsecase {
       final isTestnet = settings.environment.isTestnet;
       final swapRepository =
           isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
+      final orderRepository =
+          isTestnet ? _testnetOrderRepository : _mainnetOrderRepository;
 
       // Get the wallet transactions, swap and payjoins with the counterparty txId
       final (
@@ -73,7 +78,7 @@ class GetSwapCounterpartTransactionUsecase {
             ),
             swapRepository.getSwapByTxId(counterpartyTxId),
             _payjoinRepository.getPayjoinsByTxId(counterpartyTxId),
-            _orderRepository.getOrderByTxId(counterpartyTxId),
+            orderRepository.getOrderByTxId(counterpartyTxId),
           ).wait;
 
       // Compose the counterpart transaction from the fetched data

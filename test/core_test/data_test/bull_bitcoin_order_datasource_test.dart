@@ -14,7 +14,7 @@ void main() {
   String? createdOrderId;
 
   test('createBuyOrder returns OrderModel', () async {
-    final order = await datasource.createBuyOrder(
+    final order = await datasource.createBuyOrer(
       apiKey: apiKey,
       fiatCurrency: FiatCurrency.cad,
       network: Network.bitcoin,

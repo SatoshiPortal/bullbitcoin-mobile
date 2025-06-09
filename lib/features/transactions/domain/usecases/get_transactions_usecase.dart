@@ -14,7 +14,8 @@ class GetTransactionsUsecase {
   final SwapRepository _mainnetSwapRepository;
   final SwapRepository _testnetSwapRepository;
   final PayjoinRepository _payjoinRepository;
-  final ExchangeOrderRepository _orderRepository;
+  final ExchangeOrderRepository _mainnetOrderRepository;
+  final ExchangeOrderRepository _testnetOrderRepository;
 
   GetTransactionsUsecase({
     required SettingsRepository settingsRepository,
@@ -22,13 +23,15 @@ class GetTransactionsUsecase {
     required SwapRepository mainnetSwapRepository,
     required SwapRepository testnetSwapRepository,
     required PayjoinRepository payjoinRepository,
-    required ExchangeOrderRepository orderRepository,
+    required ExchangeOrderRepository mainnetOrderRepository,
+    required ExchangeOrderRepository testnetOrderRepository,
   }) : _settingsRepository = settingsRepository,
        _walletTransactionRepository = walletTransactionRepository,
        _mainnetSwapRepository = mainnetSwapRepository,
        _testnetSwapRepository = testnetSwapRepository,
        _payjoinRepository = payjoinRepository,
-       _orderRepository = orderRepository;
+       _mainnetOrderRepository = mainnetOrderRepository,
+       _testnetOrderRepository = testnetOrderRepository;
 
   Future<List<Transaction>> execute({
     String? walletId,
@@ -41,6 +44,10 @@ class GetTransactionsUsecase {
           environment.isTestnet
               ? _testnetSwapRepository
               : _mainnetSwapRepository;
+      final orderRepository =
+          environment.isTestnet
+              ? _testnetOrderRepository
+              : _mainnetOrderRepository;
 
       // Fetch wallet transactions, payjoins, orders and swaps
       final (walletTransactions, payjoins, orders, swaps) =
@@ -54,7 +61,7 @@ class GetTransactionsUsecase {
               walletId: walletId,
               environment: environment,
             ),
-            _orderRepository.getOrders(),
+            orderRepository.getOrders(),
             swapRepository.getAllSwaps(walletId: walletId),
           ).wait;
 

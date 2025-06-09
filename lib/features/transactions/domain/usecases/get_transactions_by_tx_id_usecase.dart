@@ -20,7 +20,8 @@ class GetTransactionsByTxIdUsecase {
   final SwapRepository _mainnetSwapRepository;
   final SwapRepository _testnetSwapRepository;
   final PayjoinRepository _payjoinRepository;
-  final ExchangeOrderRepository _orderRepository;
+  final ExchangeOrderRepository _mainnetOrderRepository;
+  final ExchangeOrderRepository _testnetOrderRepository;
 
   GetTransactionsByTxIdUsecase({
     required SettingsRepository settingsRepository,
@@ -28,13 +29,15 @@ class GetTransactionsByTxIdUsecase {
     required SwapRepository mainnetSwapRepository,
     required SwapRepository testnetSwapRepository,
     required PayjoinRepository payjoinRepository,
-    required ExchangeOrderRepository orderRepository,
+    required ExchangeOrderRepository mainnetOrderRepository,
+    required ExchangeOrderRepository testnetOrderRepository,
   }) : _settingsRepository = settingsRepository,
        _walletTransactionRepository = walletTransactionRepository,
        _mainnetSwapRepository = mainnetSwapRepository,
        _testnetSwapRepository = testnetSwapRepository,
        _payjoinRepository = payjoinRepository,
-       _orderRepository = orderRepository;
+       _mainnetOrderRepository = mainnetOrderRepository,
+       _testnetOrderRepository = testnetOrderRepository;
 
   Future<List<Transaction>> execute(String txId) async {
     try {
@@ -43,13 +46,15 @@ class GetTransactionsByTxIdUsecase {
       final isTestnet = settings.environment.isTestnet;
       final swapRepository =
           isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
+      final orderRepository =
+          isTestnet ? _testnetOrderRepository : _mainnetOrderRepository;
       // Fetch wallet transactions, swap and payjoins by txId
       final (walletTransactions, swap, payjoins, order) =
           await (
             _walletTransactionRepository.getWalletTransactions(txId: txId),
             swapRepository.getSwapByTxId(txId),
             _payjoinRepository.getPayjoinsByTxId(txId),
-            _orderRepository.getOrderByTxId(txId),
+            orderRepository.getOrderByTxId(txId),
           ).wait;
 
       if (walletTransactions.isNotEmpty) {
