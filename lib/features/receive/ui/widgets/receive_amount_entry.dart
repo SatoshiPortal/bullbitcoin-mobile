@@ -10,11 +10,11 @@ class ReceiveAmountEntry extends StatefulWidget {
   const ReceiveAmountEntry({
     super.key,
     required this.amountController,
-    this.focusNode,
+    required this.focusNode,
   });
 
   final TextEditingController amountController;
-  final FocusNode? focusNode;
+  final FocusNode focusNode;
 
   @override
   State<ReceiveAmountEntry> createState() => _ReceiveAmountEntryState();
@@ -23,9 +23,6 @@ class ReceiveAmountEntry extends StatefulWidget {
 class _ReceiveAmountEntryState extends State<ReceiveAmountEntry> {
   @override
   Widget build(BuildContext context) {
-    final amount = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.inputAmount,
-    );
     final inputCurrency = context.select<ReceiveBloc, String>(
       (bloc) => bloc.state.inputAmountCurrencyCode,
     );
@@ -46,7 +43,6 @@ class _ReceiveAmountEntryState extends State<ReceiveAmountEntry> {
     );
 
     return PriceInput(
-      amount: amount,
       currency: inputCurrency,
       amountEquivalent: amountEquivalent,
       availableCurrencies: availableInputCurrencies,

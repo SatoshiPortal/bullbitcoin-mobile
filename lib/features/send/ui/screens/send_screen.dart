@@ -355,7 +355,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                       const NetworkDisplay(),
                       const Gap(24),
                       PriceInput(
-                        amount: state.amount,
                         currency: inputCurrency,
                         amountEquivalent: state.formattedAmountInputEquivalent,
                         availableCurrencies: availableInputCurrencies,

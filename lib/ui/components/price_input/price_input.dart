@@ -6,7 +6,7 @@ import 'package:gap/gap.dart';
 class PriceInput extends StatefulWidget {
   const PriceInput({
     super.key,
-    required this.amount,
+
     required this.currency,
     required this.amountEquivalent,
     required this.availableCurrencies,
@@ -14,10 +14,9 @@ class PriceInput extends StatefulWidget {
     required this.onNoteChanged,
     required this.amountController,
     this.error,
-    this.focusNode,
+    required this.focusNode,
   });
 
-  final String amount;
   final String currency;
   final String amountEquivalent;
   final List<String> availableCurrencies;
@@ -25,15 +24,13 @@ class PriceInput extends StatefulWidget {
   final Function(String) onNoteChanged;
   final TextEditingController amountController;
   final String? error;
-  final FocusNode? focusNode;
+  final FocusNode focusNode;
 
   @override
   State<PriceInput> createState() => _PriceInputState();
 }
 
 class _PriceInputState extends State<PriceInput> {
-  late FocusNode _focusNode;
-
   @override
   void initState() {
     super.initState();
