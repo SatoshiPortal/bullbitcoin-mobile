@@ -1,8 +1,7 @@
-// ignore_for_file: unused_field
-
 import 'package:bb_mobile/core/errors/exchange_errors.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -28,6 +27,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required CreateBuyOrderUsecase createBuyOrderUsecase,
     required GetOrderUsecase getOrderUsecase,
     required RefreshBuyOrderUsecase refreshBuyOrderUsecase,
+    required AccelerateBuyOrderUsecase accelerateBuyOrderUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _getReceiveAddressUsecase = getReceiveAddressUsecase,
        _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
@@ -35,6 +35,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
        _createBuyOrderUsecase = createBuyOrderUsecase,
        _getOrderUsecase = getOrderUsecase,
        _refreshBuyOrderUsecase = refreshBuyOrderUsecase,
+       _accelerateBuyOrderUsecase = accelerateBuyOrderUsecase,
        super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
     on<_BuyAmountInputChanged>(_onAmountInputChanged);
@@ -44,6 +45,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     on<_BuyCreateOrder>(_onCreateOrder);
     on<_BuyRefreshOrder>(_onRefreshOrder);
     on<_BuyConfirmOrder>(_onConfirmOrder);
+    on<_BuyReloadOrder>(_onReloadOrder);
+    on<_BuyAccelerateOrder>(_onAccelerateOrder);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -53,6 +56,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   final CreateBuyOrderUsecase _createBuyOrderUsecase;
   final GetOrderUsecase _getOrderUsecase;
   final RefreshBuyOrderUsecase _refreshBuyOrderUsecase;
+  final AccelerateBuyOrderUsecase _accelerateBuyOrderUsecase;
 
   Future<void> _onStarted(_BuyStarted event, Emitter<BuyState> emit) async {
     try {
@@ -232,6 +236,53 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
       }
     } finally {
       emit(state.copyWith(isConfirmingOrder: false));
+    }
+  }
+
+  Future<void> _onReloadOrder(
+    _BuyReloadOrder event,
+    Emitter<BuyState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(isReloadingOrder: true, getOrderException: null));
+
+      final order = await _getOrderUsecase.execute(orderId: event.orderId);
+
+      emit(state.copyWith(buyOrder: order as BuyOrder));
+    } catch (e) {
+      debugPrint('[BuyBloc] _onReloadOrder error: $e');
+      if (e is GetOrderException) {
+        emit(state.copyWith(getOrderException: e));
+      }
+    } finally {
+      emit(state.copyWith(isReloadingOrder: false));
+    }
+  }
+
+  Future<void> _onAccelerateOrder(
+    _BuyAccelerateOrder event,
+    Emitter<BuyState> emit,
+  ) async {
+    try {
+      emit(
+        state.copyWith(
+          isAcceleratingOrder: true,
+          accelerateBuyOrderException: null,
+        ),
+      );
+
+      final order = await _accelerateBuyOrderUsecase.execute(
+        state.buyOrder!.orderId,
+      );
+
+      emit(state.copyWith(buyOrder: order));
+    } catch (e) {
+      debugPrint('[BuyBloc] _onAccelerateOrder error: $e');
+      if (e is AccelerateBuyOrderException) {
+        emit(state.copyWith(accelerateBuyOrderException: e));
+      }
+    } finally {
+      emit(state.copyWith(isAcceleratingOrder: false));
     }
   }
 }

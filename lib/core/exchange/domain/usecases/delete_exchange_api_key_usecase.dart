@@ -1,15 +1,21 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class DeleteExchangeApiKeyUsecase {
   final ExchangeApiKeyRepository _exchangeApiKeyRepository;
+  final SettingsRepository _settingsRepository;
 
   DeleteExchangeApiKeyUsecase({
     required ExchangeApiKeyRepository exchangeApiKeyRepository,
-  }) : _exchangeApiKeyRepository = exchangeApiKeyRepository;
+    required SettingsRepository settingsRepository,
+  }) : _exchangeApiKeyRepository = exchangeApiKeyRepository,
+       _settingsRepository = settingsRepository;
 
-  Future<void> execute({required bool isTestnet}) async {
+  Future<void> execute() async {
     try {
+      final settings = await _settingsRepository.fetch();
+      final isTestnet = settings.environment.isTestnet;
       await _exchangeApiKeyRepository.deleteApiKey(isTestnet: isTestnet);
     } catch (e) {
       debugPrint('Error in DeleteExchangeApiKeyUsecase: $e');

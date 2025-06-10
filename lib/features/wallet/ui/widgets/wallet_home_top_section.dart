@@ -162,15 +162,7 @@ class _TopNav extends StatelessWidget {
         ),
         const Gap(24 + 42),
         const Spacer(),
-        TopBarBullLogo(
-          playAnimation: context.select(
-            (WalletHomeBloc bloc) => bloc.state.isSyncing,
-          ),
-          onTap: () {
-            context.read<WalletHomeBloc>().add(const WalletHomeRefreshed());
-          },
-          enableSuperuserTapUnlocker: true,
-        ),
+        const TopBarBullLogo(enableSuperuserTapUnlocker: true),
         const Spacer(),
         const Gap(20),
         IconButton(

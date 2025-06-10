@@ -1,4 +1,4 @@
-import 'package:bb_mobile/features/exchange/presentation/exchange_home_cubit.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/ui/components/cards/balance_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,7 +10,7 @@ class ExchangeHomeBalanceCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final balances = context.select(
-      (ExchangeHomeCubit cubit) => cubit.state.userSummary?.balances ?? [],
+      (ExchangeCubit cubit) => cubit.state.userSummary?.balances ?? [],
     );
 
     return Padding(

@@ -21,6 +21,10 @@ sealed class BuyState with _$BuyState {
     @Default(false) bool isConfirmingOrder,
     ConfirmBuyOrderException? confirmBuyOrderException,
     BuyOrder? buyOrder,
+    @Default(false) bool isReloadingOrder,
+    GetOrderException? getOrderException,
+    @Default(false) bool isAcceleratingOrder,
+    AccelerateBuyOrderException? accelerateBuyOrderException,
   }) = _BuyState;
   const BuyState._();
 

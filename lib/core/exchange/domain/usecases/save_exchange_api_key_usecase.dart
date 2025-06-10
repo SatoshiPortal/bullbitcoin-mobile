@@ -1,25 +1,26 @@
-import 'dart:convert';
-
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
+import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class SaveExchangeApiKeyUsecase {
   final ExchangeApiKeyRepository _exchangeApiKeyRepository;
+  final SettingsRepository _settingsRepository;
 
   SaveExchangeApiKeyUsecase({
     required ExchangeApiKeyRepository exchangeApiKeyRepository,
-  }) : _exchangeApiKeyRepository = exchangeApiKeyRepository;
+    required SettingsRepository settingsRepository,
+  }) : _settingsRepository = settingsRepository,
+       _exchangeApiKeyRepository = exchangeApiKeyRepository;
 
   Future<void> execute({
-    required String apiKeyResponseJson,
-    required bool isTestnet,
+    required Map<String, dynamic> apiKeyResponseData,
   }) async {
     try {
-      final Map<String, dynamic> responseData =
-          json.decode(apiKeyResponseJson) as Map<String, dynamic>;
+      final settings = await _settingsRepository.fetch();
+      final isTestnet = settings.environment.isTestnet;
 
       await _exchangeApiKeyRepository.saveApiKey(
-        responseData,
+        apiKeyResponseData,
         isTestnet: isTestnet,
       );
 

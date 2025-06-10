@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
-import 'package:bb_mobile/features/exchange/presentation/exchange_home_cubit.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
@@ -23,7 +23,7 @@ class ExchangeHomeTopSection extends StatelessWidget {
       (SettingsCubit settings) => settings.state.currencyCode,
     );
     final balances = context.select(
-      (ExchangeHomeCubit cubit) =>
+      (ExchangeCubit cubit) =>
           cubit.state.userSummary?.balances ??
           (defaultCurrency != null
               ? [UserBalance(amount: 0, currencyCode: defaultCurrency)]
@@ -96,28 +96,17 @@ class _TopNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Gap(8),
-        IconButton(
-          onPressed: () {},
-          visualDensity: VisualDensity.compact,
-          iconSize: 24,
-          color: context.colour.onPrimary,
-          icon: const Icon(Icons.bar_chart),
-        ),
-        const Gap(24 + 42),
+        const Gap(142),
         const Spacer(),
         TopBarBullLogo(
-          playAnimation: context.select(
-            (ExchangeHomeCubit cubit) => cubit.state.isFetchingUserSummary,
-          ),
           onTap: () {
-            context.read<ExchangeHomeCubit>().fetchUserSummary();
+            context.read<ExchangeCubit>().fetchUserSummary();
           },
           enableSuperuserTapUnlocker: true,
         ),
         const Spacer(),
-        const Gap(20),
         IconButton(
+          padding: EdgeInsets.zero,
           onPressed: () {
             context.pushNamed(TransactionsRoute.transactions.name);
           },
@@ -127,7 +116,6 @@ class _TopNav extends StatelessWidget {
           icon: const Icon(Icons.history),
         ),
         const Gap(8),
-
         InkWell(
           onTap: () => context.pushNamed(SettingsRoute.settings.name),
           child: Image.asset(
@@ -137,13 +125,17 @@ class _TopNav extends StatelessWidget {
             color: context.colour.onPrimary,
           ),
         ),
-        // IconButton(
-        //   visualDensity: VisualDensity.compact,
-        //   onPressed: () {},
-        //   iconSize: 24,
-        //   color: context.colour.onPrimary,
-        //   icon: const Icon(Icons.bolt),
-        // ),
+        const Gap(8),
+        IconButton(
+          padding: EdgeInsets.zero,
+          visualDensity: VisualDensity.compact,
+          onPressed: () {
+            context.read<ExchangeCubit>().logout();
+          },
+          iconSize: 24,
+          color: context.colour.onPrimary,
+          icon: const Icon(Icons.logout),
+        ),
         const Gap(16),
       ],
     );

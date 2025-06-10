@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/exchange/domain/usecases/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/confirm_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
@@ -23,6 +24,7 @@ class BuyLocator {
         createBuyOrderUsecase: locator<CreateBuyOrderUsecase>(),
         getOrderUsecase: locator<GetOrderUsecase>(),
         refreshBuyOrderUsecase: locator<RefreshBuyOrderUsecase>(),
+        accelerateBuyOrderUsecase: locator<AccelerateBuyOrderUsecase>(),
       ),
     );
   }

@@ -300,12 +300,8 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
         orderId: orderId,
       );
 
-      final order = orderModel.toEntity();
-      if (order is! BuyOrder) {
-        throw Exception(
-          'Expected BuyOrder but received a different order type',
-        );
-      }
+      final order = orderModel.toEntity() as BuyOrder;
+
       return order;
     } catch (e) {
       throw Exception('Failed to dequeue and pay order: $e');

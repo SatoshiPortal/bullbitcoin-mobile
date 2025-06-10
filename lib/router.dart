@@ -69,7 +69,8 @@ class AppRouter {
           ),
           StatefulShellBranch(
             navigatorKey: _exchangeNavigatorKey,
-            routes: [ExchangeRouter.exchangeHomeRoute],
+            routes: [ExchangeRouter.route],
+            initialLocation: ExchangeRoute.exchangeHome.path,
           ),
         ],
       ),
@@ -82,7 +83,7 @@ class AppRouter {
       ReceiveRouter.route,
       SendRouter.route,
       SwapRouter.route,
-      BuyRouter.route,
+      ...BuyRouter.routes,
       SellRouter.route,
       KeyServerRouter.route,
     ],
