@@ -1,12 +1,15 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
+import 'package:bb_mobile/features/send/request_identifier/request_identifier_cubit.dart';
+import 'package:bb_mobile/features/send/request_identifier/request_identifier_screen.dart';
 import 'package:bb_mobile/features/send/ui/screens/send_screen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum SendRoute {
-  send('/send');
+  send('/send'),
+  requestIdentifier('request-identifier');
 
   const SendRoute(this.path);
 
@@ -29,5 +32,15 @@ class SendRouter {
         child: const SendScreen(),
       );
     },
+    routes: [
+      GoRoute(
+        name: SendRoute.requestIdentifier.name,
+        path: SendRoute.requestIdentifier.path,
+        builder: (context, state) => BlocProvider(
+          create: (_) => RequestIdentifierCubit(),
+          child: const RequestIdentifierScreen(),
+        ),
+      ),
+    ],
   );
 }
