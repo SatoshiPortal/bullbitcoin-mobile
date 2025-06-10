@@ -130,8 +130,9 @@ class SwapCubit extends Cubit<SwapState> {
 
   Future<void> sendMaxClicked() async {
     try {
-      clearAllExceptions();
+      if (state.loadingWallets) return;
 
+      clearAllExceptions();
       final fromWallet = state.fromWallet;
       if (fromWallet == null) return;
 
@@ -254,6 +255,7 @@ class SwapCubit extends Cubit<SwapState> {
   }
 
   Future<void> init() async {
+    emit(state.copyWith(loadingWallets: true));
     final wallets = await _getWalletsUsecase.execute();
     final settings = await _getSettingsUsecase.execute();
     final bitcoinUnit = settings.bitcoinUnit;
@@ -276,6 +278,8 @@ class SwapCubit extends Cubit<SwapState> {
       state.copyWith(
         fromWallets: liquidWallets,
         toWallets: bitcoinWallets,
+        fromWalletNetwork: WalletNetwork.liquid,
+        toWalletNetwork: WalletNetwork.bitcoin,
         fromWalletId: liquidWallets.first.id,
         toWalletId: defaultBitcoinWallet.id,
         loadingWallets: false,
