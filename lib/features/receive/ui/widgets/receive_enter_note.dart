@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
@@ -30,6 +31,9 @@ class ReceiveEnterNote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentNote = context.select((ReceiveBloc bloc) => bloc.state.note);
+    final error = context.select((ReceiveBloc bloc) => bloc.state.error);
+
     return Padding(
       padding: EdgeInsets.fromLTRB(
         16,
@@ -63,18 +67,32 @@ class ReceiveEnterNote extends StatelessWidget {
             hintStyle: context.font.bodyLarge?.copyWith(
               color: context.colour.surfaceContainer,
             ),
-            value: context.select((ReceiveBloc bloc) => bloc.state.note),
+            value: currentNote,
+            maxLength: NoteValidator.maxNoteLength,
             onChanged: (note) {
               context.read<ReceiveBloc>().add(ReceiveNoteChanged(note));
             },
           ),
+          if (error != null) ...[
+            const Gap(8),
+            BBText(
+              error.toString(),
+              style: context.font.labelSmall?.copyWith(
+                color: context.colour.error,
+              ),
+            ),
+          ],
           const Gap(25),
           const SizedBox(height: 16),
           BBButton.big(
             label: 'Save',
+            disabled: error != null || currentNote.trim().isEmpty,
             onPressed: () {
-              context.read<ReceiveBloc>().add(const ReceiveNoteSaved());
-              context.pop();
+              final validation = NoteValidator.validate(currentNote);
+              if (validation.isValid) {
+                context.read<ReceiveBloc>().add(const ReceiveNoteSaved());
+                context.pop();
+              }
             },
             bgColor: context.colour.secondary,
             textColor: context.colour.onSecondary,

@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_address.dart';
@@ -610,7 +611,13 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     ReceiveNoteChanged event,
     Emitter<ReceiveState> emit,
   ) async {
-    emit(state.copyWith(note: event.note));
+    final validationResult = NoteValidator.validate(event.note);
+
+    if (validationResult.isValid) {
+      emit(state.copyWith(note: event.note.trim(), error: null));
+    } else {
+      emit(state.copyWith(error: validationResult.errorMessage));
+    }
   }
 
   Future<void> _onNoteSaved(

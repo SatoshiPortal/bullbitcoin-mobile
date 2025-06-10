@@ -234,30 +234,37 @@ class ReceiveInfoDetails extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BBText(
-                        'Note',
-                        style: context.font.labelSmall,
-                        color: context.colour.outline,
-                      ),
-                      const Gap(4),
-                      BBText(
-                        note.isNotEmpty ? note : 'Enter here...',
-                        style: context.font.bodyMedium,
-                      ),
-                    ],
+                  Expanded(
+                    flex: 6,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        BBText(
+                          'Note',
+                          style: context.font.labelSmall,
+                          color: context.colour.outline,
+                        ),
+                        const Gap(4),
+                        BBText(
+                          note.isNotEmpty ? note : 'Enter here...',
+                          style: context.font.bodyMedium,
+                          maxLines: 4,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
-                  const Spacer(),
+
                   if (!isLn)
-                    IconButton(
-                      onPressed: () async {
-                        await ReceiveEnterNote.showBottomSheet(context);
-                      },
-                      visualDensity: VisualDensity.compact,
-                      iconSize: 20,
-                      icon: const Icon(Icons.edit),
+                    Expanded(
+                      child: IconButton(
+                        onPressed: () async {
+                          await ReceiveEnterNote.showBottomSheet(context);
+                        },
+                        visualDensity: VisualDensity.compact,
+                        iconSize: 20,
+                        icon: const Icon(Icons.edit),
+                      ),
                     ),
                 ],
               ),
