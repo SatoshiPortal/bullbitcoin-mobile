@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/features/key_server/data/services/backup_key_service.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart'
     show KeyServerError;
@@ -14,8 +14,8 @@ class StoreBackupKeyIntoServerUsecase {
   StoreBackupKeyIntoServerUsecase({
     required RecoverBullRepository recoverBullRepository,
     required BackupKeyService backupService,
-  })  : _recoverBullRepository = recoverBullRepository,
-        _backupKeyService = backupService;
+  }) : _recoverBullRepository = recoverBullRepository,
+       _backupKeyService = backupService;
 
   Future<void> execute({
     required String password,

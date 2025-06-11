@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/recoverbull/domain/repositories/file_system_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/google_drive_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
+import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
+import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
@@ -24,19 +24,14 @@ class BackupWalletLocator {
       ),
     );
     locator.registerFactory<SaveToFileSystemUsecase>(
-      () => SaveToFileSystemUsecase(
-        locator<FileSystemRepository>(),
-      ),
+      () => SaveToFileSystemUsecase(locator<FileSystemRepository>()),
     );
     locator.registerFactory<SaveToGoogleDriveUsecase>(
-      () => SaveToGoogleDriveUsecase(
-        locator<GoogleDriveRepository>(),
-      ),
+      () => SaveToGoogleDriveUsecase(locator<GoogleDriveRepository>()),
     );
     locator.registerFactory<FetchLatestGoogleDriveBackupUsecase>(
-      () => FetchLatestGoogleDriveBackupUsecase(
-        locator<GoogleDriveRepository>(),
-      ),
+      () =>
+          FetchLatestGoogleDriveBackupUsecase(locator<GoogleDriveRepository>()),
     );
     // Blocs
     locator.registerFactory<BackupWalletBloc>(

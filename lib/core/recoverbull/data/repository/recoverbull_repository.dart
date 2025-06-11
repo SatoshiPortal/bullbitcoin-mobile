@@ -2,39 +2,32 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_local_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/tor/domain/repositories/tor_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 
-class RecoverBullRepositoryImpl implements RecoverBullRepository {
+class RecoverBullRepository {
   final RecoverBullRemoteDatasource remoteDatasource;
   final TorRepository torRepository;
 
-  RecoverBullRepositoryImpl({
+  RecoverBullRepository({
     required this.remoteDatasource,
     required this.torRepository,
   });
 
-  @override
-  String createBackupFile(
-    String backupKey,
-    String plaintext,
-  ) {
+  String createBackupFile(String backupKey, String plaintext) {
     final backupKeyBytes = HEX.decode(backupKey);
     final plaintextBytes = utf8.encode(plaintext);
 
-    final jsonBackup =
-        RecoverBullDatasource.create(plaintextBytes, backupKeyBytes);
+    final jsonBackup = RecoverBullDatasource.create(
+      plaintextBytes,
+      backupKeyBytes,
+    );
 
     return jsonBackup;
   }
 
-  @override
-  String restoreBackupFile(
-    String backupFile,
-    String backupKey,
-  ) {
+  String restoreBackupFile(String backupFile, String backupKey) {
     try {
       final decryptedBytes = RecoverBullDatasource.restore(
         backupFile,
@@ -48,7 +41,6 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     }
   }
 
-  @override
   Future<void> storeBackupKey(
     String identifier,
     String password,
@@ -66,7 +58,6 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     );
   }
 
-  @override
   Future<String> fetchBackupKey(
     String identifier,
     String password,
@@ -82,7 +73,6 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     return HEX.encode(backupKey);
   }
 
-  @override
   Future<void> trashBackupKey(
     String identifier,
     String password,
@@ -97,7 +87,6 @@ class RecoverBullRepositoryImpl implements RecoverBullRepository {
     );
   }
 
-  @override
   Future<void> checkKeyServerConnectionWithTor() async {
     if (!torRepository.isStarted) {
       debugPrint('Starting Tor');

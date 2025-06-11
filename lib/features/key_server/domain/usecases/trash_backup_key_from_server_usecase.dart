@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
 import 'package:flutter/foundation.dart';
 
@@ -11,10 +11,7 @@ class TrashBackupKeyFromServerUsecase {
     required RecoverBullRepository recoverBullRepository,
   }) : _recoverBullRepository = recoverBullRepository;
 
-  Future<void> execute({
-    required String password,
-    required String backupFile,
-  }) {
+  Future<void> execute({required String password, required String backupFile}) {
     try {
       final backupInfo = BackupInfo(backupFile: backupFile);
       if (backupInfo.isCorrupted) {

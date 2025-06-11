@@ -1,9 +1,9 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
@@ -20,9 +20,9 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
     required RecoverBullRepository recoverBullRepository,
     required WalletRepository walletRepository,
     required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
-  })  : _recoverBull = recoverBullRepository,
-        _walletRepository = walletRepository,
-        _createDefaultWallets = createDefaultWalletsUsecase;
+  }) : _recoverBull = recoverBullRepository,
+       _walletRepository = walletRepository,
+       _createDefaultWallets = createDefaultWalletsUsecase;
 
   Future<void> execute({
     required String backupFile,
@@ -37,8 +37,9 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
       final plaintext = _recoverBull.restoreBackupFile(backupFile, backupKey);
 
       final decodedPlaintext = json.decode(plaintext) as Map<String, dynamic>;
-      final decodedRecoverbullWallets =
-          RecoverBullWallet.fromJson(decodedPlaintext);
+      final decodedRecoverbullWallets = RecoverBullWallet.fromJson(
+        decodedPlaintext,
+      );
 
       final availableWallets = await _walletRepository.getWallets(
         onlyDefaults: true,

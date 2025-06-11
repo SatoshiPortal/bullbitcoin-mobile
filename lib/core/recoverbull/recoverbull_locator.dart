@@ -1,12 +1,9 @@
 import 'package:bb_mobile/core/recoverbull/data/datasources/file_storage_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/google_drive_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
-import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository_impl.dart';
-import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository_impl.dart';
+import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
+import 'package:bb_mobile/core/recoverbull/data/repository/google_drive_repository.dart';
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/file_system_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/google_drive_repository.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/complete_physical_backup_verification_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/fetch_backup_from_file_system_usecase.dart';
@@ -46,19 +43,15 @@ class RecoverbullLocator {
 
   static Future<void> registerRepositories() async {
     locator.registerLazySingleton<GoogleDriveRepository>(
-      () => GoogleDriveRepositoryImpl(
-        locator<GoogleDriveAppDatasource>(),
-      ),
+      () => GoogleDriveRepository(locator<GoogleDriveAppDatasource>()),
     );
 
     locator.registerLazySingleton<FileSystemRepository>(
-      () => FileSystemRepositoryImpl(
-        locator<FileStorageDatasource>(),
-      ),
+      () => FileSystemRepository(locator<FileStorageDatasource>()),
     );
 
     locator.registerSingletonWithDependencies<RecoverBullRepository>(
-      () => RecoverBullRepositoryImpl(
+      () => RecoverBullRepository(
         remoteDatasource: locator<RecoverBullRemoteDatasource>(),
         torRepository: locator<TorRepository>(),
       ),
