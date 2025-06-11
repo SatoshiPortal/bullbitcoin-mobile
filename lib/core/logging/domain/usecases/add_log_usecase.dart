@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/logging/data/repositories/log_repository.dart';
 import 'package:bb_mobile/core/logging/domain/entities/log.dart';
-import 'package:bb_mobile/core/logging/domain/repositories/log_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class AddLogUsecase {

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
-import 'package:bb_mobile/core/logging/domain/repositories/log_repository.dart';
+import 'package:bb_mobile/core/logging/data/repositories/log_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
