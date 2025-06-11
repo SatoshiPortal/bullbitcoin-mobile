@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_local_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
-import 'package:bb_mobile/core/tor/domain/repositories/tor_repository.dart';
+import 'package:bb_mobile/core/tor/data/repository/tor_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 
