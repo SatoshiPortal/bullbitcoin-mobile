@@ -15,7 +15,7 @@ class RecoverBullRepository {
     required this.torRepository,
   });
 
-  String createBackupFile(String backupKey, String plaintext) {
+  String createBackupJson(String backupKey, String plaintext) {
     final backupKeyBytes = HEX.decode(backupKey);
     final plaintextBytes = utf8.encode(plaintext);
 
@@ -27,7 +27,7 @@ class RecoverBullRepository {
     return jsonBackup;
   }
 
-  String restoreBackupFile(String backupFile, String backupKey) {
+  String restoreBackupJson(String backupFile, String backupKey) {
     try {
       final decryptedBytes = RecoverBullDatasource.restore(
         backupFile,

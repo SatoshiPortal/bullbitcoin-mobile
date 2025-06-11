@@ -34,7 +34,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
         throw const KeyServerError.invalidBackupFile();
       }
 
-      final plaintext = _recoverBull.restoreBackupFile(backupFile, backupKey);
+      final plaintext = _recoverBull.restoreBackupJson(backupFile, backupKey);
 
       final decodedPlaintext = json.decode(plaintext) as Map<String, dynamic>;
       final decodedRecoverbullWallets = RecoverBullWallet.fromJson(

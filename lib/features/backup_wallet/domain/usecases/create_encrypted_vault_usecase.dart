@@ -71,7 +71,7 @@ class CreateEncryptedVaultUsecase {
       );
 
       // Create an encrypted backup file
-      final encryptedBackup = _recoverBullRepository.createBackupFile(
+      final encryptedBackup = _recoverBullRepository.createBackupJson(
         backupKey,
         plaintext,
       );
