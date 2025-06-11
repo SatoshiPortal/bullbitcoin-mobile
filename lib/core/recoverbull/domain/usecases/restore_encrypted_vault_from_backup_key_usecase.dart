@@ -40,11 +40,14 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
       final decodedRecoverbullWallets = RecoverBullWallet.fromJson(
         decodedPlaintext,
       );
+      // check if the wallet already exists
 
       final availableWallets = await _walletRepository.getWallets(
         onlyDefaults: true,
         environment: Environment.mainnet,
       );
+      // in onboarding there will never be available wallets
+      // this is mainly for test flows
       for (final defaultWallet in availableWallets) {
         if (defaultWallet.masterFingerprint ==
             decodedRecoverbullWallets.masterFingerprint) {
@@ -52,9 +55,10 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
             DateTime.now(),
             walletId: defaultWallet.id,
           );
-          throw const DefaultWalletAlreadyExistsError();
+          // These are only cases for test flows.
+          throw const TestFlowDefaultWalletAlreadyExistsError();
         } else {
-          throw const WalletMismatchError();
+          throw const TestFlowWalletMismatchError();
         }
       }
 
