@@ -96,7 +96,6 @@ class SendCubit extends Cubit<SendState> {
        _createChainSwapToExternalUsecase = createChainSwapToExternalUsecase,
        _watchWalletTransactionByTxIdUsecase =
            watchWalletTransactionByTxIdUsecase,
-
        super(const SendState());
 
   // ignore: unused_field
@@ -501,24 +500,6 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  // void updateSwapLockupFees() {
-  //   // final absFees = state.absoluteFees;
-  //   // if (absFees == null) return;
-
-  //   // if (state.lightningSwap != null) {
-  //   //   final swap = state.lightningSwap!;
-  //   //   final updatedFees = swap.fees?.copyWith(lockupFee: absFees);
-  //   //   emit(state.copyWith(lightningSwap: swap.copyWith(fees: updatedFees)));
-  //   //   return;
-  //   // }
-  //   // if (state.chainSwap != null) {
-  //   //   final swap = state.chainSwap!;
-  //   //   final updatedFees = swap.fees?.copyWith(lockupFee: absFees);
-  //   //   emit(state.copyWith(chainSwap: swap.copyWith(fees: updatedFees)));
-  //   //   return;
-  //   // }
-  // }
-
   Future<void> loadSwapLimits() async {
     final paymentRequest = state.paymentRequest;
     final loadLnSwapLimits =
@@ -795,26 +776,6 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(loadingBestWallet: false));
     }
   }
-
-  // Future<void> updateUpdatedWalletSyncSubscription(
-  //   String previousSelectedWalletId,
-  // ) async {
-  //   try {
-  //     if (state.selectedWallet!.id != previousSelectedWalletId) {
-  //       toggleSwapLimitsForWallet();
-  //       await _selectedWalletSyncingSubscription?.cancel();
-  //       _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
-  //           .execute(walletId: state.selectedWallet!.id)
-  //           .listen((wallet) async {
-  //             emit(state.copyWith(selectedWallet: wallet));
-  //             await loadFees();
-  //             await loadUtxos();
-  //           });
-  //     }
-  //   } catch (e) {
-  //     emit(state.copyWith(loadingBestWallet: false));
-  //   }
-  // }
 
   Future<void> onAmountConfirmed() async {
     clearAllExceptions();
@@ -1364,19 +1325,6 @@ class SendCubit extends Cubit<SendState> {
 
     emit(state.copyWith(exchangeRate: exchangeRate));
   }
-
-  // Future<void> updateFiatApproximatedAmount() async {
-  //   double btcAmount;
-  //   switch (state.bitcoinUnit) {
-  //     case BitcoinUnit.btc:
-  //       btcAmount = double.parse(state.amount);
-  //     case BitcoinUnit.sats:
-  //       btcAmount = approximateBtcFromSats(BigInt.parse(state.amount));
-  //   }
-
-  //   final approximatedValue = btcAmount * state.exchangeRate;
-  //   emit(state.copyWith(fiatApproximatedAmount: approximatedValue.toString()));
-  // }
 
   void onNumberPressed(String n) {
     amountChanged(state.amount + n);
