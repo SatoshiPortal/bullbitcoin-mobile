@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:flutter/foundation.dart';
 
 class CheckForTorInitializationOnStartupUsecase {
   final WalletRepository _wallet;
@@ -16,13 +17,11 @@ class CheckForTorInitializationOnStartupUsecase {
         environment: Environment.mainnet,
       );
 
-      if (defaultWallets.isEmpty) {
-        return false;
-      }
+      if (defaultWallets.isEmpty) return false;
 
       return defaultWallets[0].latestEncryptedBackup != null;
     } catch (e) {
-      // Handle any exceptions that may occur
+      debugPrint('CheckForTorInitializationOnStartupUsecase: $e');
       return false;
     }
   }
