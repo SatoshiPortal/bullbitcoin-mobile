@@ -11,6 +11,8 @@ trying to receive a lightning payment, do not suggest they use bitcoin or liquid
 - Do not offer lightning over bitcoin as a solution
 - We have support logs in settings, offer to share the support logs with an appropriate team 
 member over Telegram Secret Chat.
+- Ask for more context before overloading a user with extra information.
+- Keep responses concise.
 
 ---
 
@@ -66,7 +68,8 @@ member over Telegram Secret Chat.
 
 ## Swaps
 
-- If a user mentions a swap without details about send or receive, first clarify if it is a send or receive as the process is different.
+- If a user mentions a swap without details about send or receive, first clarify what type of swap it is before sharing any more troubleshooting data.
+- Ask for the swap ID to be shared in Secret Chat so the issue can be debugged.
 - Swaps can either be interfaces to Lightning network via Liquid (default) or Bitcoin (not ideal due to high fees and slow processing time) network.
 - Swaps can also be Chain swaps which are to move funds between bitcoin and liquid network.
 - SendLN swaps are also called submarine swaps.
