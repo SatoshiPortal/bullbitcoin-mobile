@@ -1,8 +1,8 @@
 import 'package:bb_mobile/core/logging/data/datasources/log_datasource.dart';
 import 'package:bb_mobile/core/logging/data/models/log_model.dart';
+import 'package:bb_mobile/core/logging/domain/entities/log.dart';
 import 'package:bb_mobile/core/logging/domain/repositories/log_repository.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-//import 'package:bb_mobile/core/settings/data/settings_datasource.dart';
 
 class LogRepositoryImpl implements LogRepository {
   final LogDatasource _logDatasource;
@@ -21,12 +21,13 @@ class LogRepositoryImpl implements LogRepository {
     required String logger,
     Map<String, dynamic>? context,
   }) async {
-    final log = LogModel.trace(
+    final log = LogModel.generic(
       message: message,
       timestamp: DateTime.now().toUtc(),
       logger: logger,
       appVersion: await _appVersion,
       context: context,
+      level: LogLevel.trace,
     );
     await _logDatasource.addLog(log);
   }
@@ -37,12 +38,13 @@ class LogRepositoryImpl implements LogRepository {
     required String logger,
     Map<String, dynamic>? context,
   }) async {
-    final log = LogModel.debug(
+    final log = LogModel.generic(
       message: message,
       timestamp: DateTime.now().toUtc(),
       logger: logger,
       appVersion: await _appVersion,
       context: context,
+      level: LogLevel.debug,
     );
     await _logDatasource.addLog(log);
   }
@@ -53,12 +55,13 @@ class LogRepositoryImpl implements LogRepository {
     required String logger,
     Map<String, dynamic>? context,
   }) async {
-    final log = LogModel.info(
+    final log = LogModel.generic(
       message: message,
       timestamp: DateTime.now().toUtc(),
       logger: logger,
       appVersion: await _appVersion,
       context: context,
+      level: LogLevel.info,
     );
 
     await _logDatasource.addLog(log);
