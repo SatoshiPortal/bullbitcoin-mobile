@@ -28,7 +28,7 @@ class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
     required WatchFinishedWalletSyncsUsecase watchFinishedWalletSyncsUsecase,
     required RestartSwapWatcherUsecase restartSwapWatcherUsecase,
     required InitializeTorUsecase initializeTorUsecase,
-    required CheckForTorInitializationOnStartupUsecase
+    required CheckTorRequiredOnStartupUsecase
     checkForTorInitializationOnStartupUsecase,
     required GetPrioritizedServerUsecase getBestAvailableServerUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
@@ -56,7 +56,7 @@ class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
   final WatchFinishedWalletSyncsUsecase _watchFinishedWalletSyncsUsecase;
   final RestartSwapWatcherUsecase _restartSwapWatcherUsecase;
   final InitializeTorUsecase _initializeTorUsecase;
-  final CheckForTorInitializationOnStartupUsecase
+  final CheckTorRequiredOnStartupUsecase
   _checkForTorInitializationOnStartupUsecase;
   final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
 

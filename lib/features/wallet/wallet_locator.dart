@@ -25,7 +25,7 @@ class WalletLocator {
         restartSwapWatcherUsecase: locator<RestartSwapWatcherUsecase>(),
         initializeTorUsecase: locator<InitializeTorUsecase>(),
         checkForTorInitializationOnStartupUsecase:
-            locator<CheckForTorInitializationOnStartupUsecase>(),
+            locator<CheckTorRequiredOnStartupUsecase>(),
         getBestAvailableServerUsecase: locator<GetPrioritizedServerUsecase>(),
       ),
     );

@@ -34,8 +34,8 @@ class TorLocator {
       () => InitializeTorUsecase(locator<TorRepository>()),
     );
 
-    locator.registerFactory<CheckForTorInitializationOnStartupUsecase>(
-      () => CheckForTorInitializationOnStartupUsecase(
+    locator.registerFactory<CheckTorRequiredOnStartupUsecase>(
+      () => CheckTorRequiredOnStartupUsecase(
         walletRepository: locator<WalletRepository>(),
       ),
     );

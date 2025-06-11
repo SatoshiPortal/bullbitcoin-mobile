@@ -2,12 +2,11 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:flutter/foundation.dart';
 
-class CheckForTorInitializationOnStartupUsecase {
+class CheckTorRequiredOnStartupUsecase {
   final WalletRepository _wallet;
 
-  CheckForTorInitializationOnStartupUsecase({
-    required WalletRepository walletRepository,
-  }) : _wallet = walletRepository;
+  CheckTorRequiredOnStartupUsecase({required WalletRepository walletRepository})
+    : _wallet = walletRepository;
 
   Future<bool> execute() async {
     try {
@@ -21,7 +20,7 @@ class CheckForTorInitializationOnStartupUsecase {
 
       return defaultWallets[0].latestEncryptedBackup != null;
     } catch (e) {
-      debugPrint('CheckForTorInitializationOnStartupUsecase: $e');
+      debugPrint('CheckTorRequiredOnStartupUsecase: $e');
       return false;
     }
   }
