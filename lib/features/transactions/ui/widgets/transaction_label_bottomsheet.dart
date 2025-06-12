@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
@@ -34,6 +35,8 @@ class _TransactionLabelBottomsheetState
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<TransactionDetailsCubit>().state;
+
     return Padding(
       padding: EdgeInsets.fromLTRB(
         16,
@@ -68,19 +71,31 @@ class _TransactionLabelBottomsheetState
             hintStyle: context.font.bodyLarge?.copyWith(
               color: context.colour.surfaceContainer,
             ),
-            value: '',
+            value: state.note ?? '',
+            maxLength: NoteValidator.maxNoteLength,
             onChanged: (note) {
-              // No need to handle note changes here, as we will save it on button press
+              context.read<TransactionDetailsCubit>().onNoteChanged(note);
             },
           ),
+          if (context.read<TransactionDetailsCubit>().state.err != null) ...[
+            const Gap(8),
+            BBText(
+              state.err!.toString(),
+              style: context.font.bodySmall?.copyWith(color: Colors.red),
+            ),
+          ],
           const Gap(40),
           BBButton.big(
             label: 'Save',
+            disabled: state.err != null || _controller.text.trim().isEmpty,
             onPressed: () {
-              context.read<TransactionDetailsCubit>().saveTransactionNote(
-                _controller.text,
-              );
-              context.pop();
+              final validation = NoteValidator.validate(_controller.text);
+              if (validation.isValid) {
+                context.read<TransactionDetailsCubit>().saveTransactionNote(
+                  _controller.text.trim(),
+                );
+                context.pop();
+              }
             },
             bgColor: context.colour.secondary,
             textColor: context.colour.onSecondary,

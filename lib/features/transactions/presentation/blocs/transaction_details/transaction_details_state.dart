@@ -6,6 +6,7 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     @Default(true) bool isLoading,
     required Transaction transaction,
     Wallet? wallet,
+    String? note,
     Wallet? counterpartWallet,
     Transaction? swapCounterpartTransaction,
     @Default(false) bool isBroadcastingPayjoinOriginalTx,

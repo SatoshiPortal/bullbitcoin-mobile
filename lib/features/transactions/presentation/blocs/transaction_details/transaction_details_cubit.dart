@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transa
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
+import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
@@ -153,16 +154,25 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
   }
 
+  Future<void> onNoteChanged(String note) async {
+    final validation = NoteValidator.validate(note);
+    if (!validation.isValid) {
+      emit(state.copyWith(err: validation.errorMessage, note: note));
+    } else {
+      emit(state.copyWith(note: note.trim(), err: null));
+    }
+  }
+
   Future<void> saveTransactionNote(String note) async {
     // TODO: Permit multiple labels && labels for payjoin txs, so not only wallet txs (for example set on the original tx)
     //  I think the entity should be changed to Transaction instead of WalletTransaction for that
-    final walletTransaction = state.walletTransaction;
-    if (walletTransaction == null) return;
+
+    if (state.walletTransaction == null || state.note == null) return;
 
     await _createLabelUsecase.execute<WalletTransaction>(
       origin: state.wallet!.origin,
-      entity: walletTransaction,
-      label: note,
+      entity: state.walletTransaction!,
+      label: state.note!,
     );
 
     final updatedWalletransaction = state.transaction.walletTransaction
