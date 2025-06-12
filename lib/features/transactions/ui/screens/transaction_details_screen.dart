@@ -18,23 +18,6 @@ import 'package:go_router/go_router.dart';
 class TransactionDetailsScreen extends StatelessWidget {
   const TransactionDetailsScreen({super.key});
 
-  Future<void> showTransactionLabelBottomSheet(BuildContext context) async {
-    final receive = context.read<TransactionDetailsCubit>();
-
-    await showModalBottomSheet(
-      context: context,
-      useRootNavigator: true,
-      isScrollControlled: true,
-      backgroundColor: context.colour.onPrimary,
-      builder: (context) {
-        return BlocProvider.value(
-          value: receive,
-          child: const TransactionLabelBottomsheet(),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
