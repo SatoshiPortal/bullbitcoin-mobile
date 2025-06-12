@@ -7,10 +7,10 @@ import 'package:bb_mobile/core/exchange/domain/usecases/create_buy_order_usecase
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/refresh_buy_order_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -78,7 +78,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         ),
       );
     } catch (e) {
-      debugPrint('[BuyBloc] _onStarted error: $e');
+      log.severe('[BuyBloc] _onStarted error: $e');
       if (e is ApiKeyException) {
         // If the API key is invalid, we should not proceed with the buy flow.
         emit(state.copyWith(apiKeyException: e));
@@ -100,7 +100,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       emit(state.copyWith(amountInput: event.amount));
     } catch (e) {
-      debugPrint('[BuyBloc] _onAmountInputChanged error: $e');
+      log.severe('[BuyBloc] _onAmountInputChanged error: $e');
     }
   }
 
@@ -111,7 +111,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       emit(state.copyWith(currencyInput: event.currencyCode));
     } catch (e) {
-      debugPrint('[BuyBloc] _onCurrencyInputChanged error: $e');
+      log.severe('[BuyBloc] _onCurrencyInputChanged error: $e');
     }
   }
 
@@ -122,7 +122,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       emit(state.copyWith(selectedWallet: event.wallet));
     } catch (e) {
-      debugPrint('[BuyBloc] _onSelectedWalletChanged error: $e');
+      log.severe('[BuyBloc] _onSelectedWalletChanged error: $e');
       if (e is GetReceiveAddressException) {
         emit(state.copyWith(getReceiveAddressException: e));
       }
@@ -136,7 +136,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     try {
       emit(state.copyWith(bitcoinAddressInput: event.bitcoinAddress));
     } catch (e) {
-      debugPrint('[BuyBloc] _onBitcoinAddressInputChanged error: $e');
+      log.severe('[BuyBloc] _onBitcoinAddressInputChanged error: $e');
     }
   }
 
@@ -206,7 +206,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
-      debugPrint('[BuyBloc] _onRefreshOrder error: $e');
+      log.severe('[BuyBloc] _onRefreshOrder error: $e');
       if (e is RefreshBuyOrderException) {
         emit(state.copyWith(refreshBuyOrderException: e));
       }
@@ -230,7 +230,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
-      debugPrint('[BuyBloc] _onConfirmOrder error: $e');
+      log.severe('[BuyBloc] _onConfirmOrder error: $e');
       if (e is ConfirmBuyOrderException) {
         emit(state.copyWith(confirmBuyOrderException: e));
       }
@@ -250,7 +250,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order as BuyOrder));
     } catch (e) {
-      debugPrint('[BuyBloc] _onReloadOrder error: $e');
+      log.severe('[BuyBloc] _onReloadOrder error: $e');
       if (e is GetOrderException) {
         emit(state.copyWith(getOrderException: e));
       }
@@ -277,7 +277,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
-      debugPrint('[BuyBloc] _onAccelerateOrder error: $e');
+      log.severe('[BuyBloc] _onAccelerateOrder error: $e');
       if (e is AccelerateBuyOrderException) {
         emit(state.copyWith(accelerateBuyOrderException: e));
       }

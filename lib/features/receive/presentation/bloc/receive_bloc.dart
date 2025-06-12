@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -25,7 +26,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_address_usecase.dart';
 import 'package:bb_mobile/features/receive/domain/usecases/create_receive_swap_use_case.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -200,7 +200,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
           // The payjoin receiver is created, now we can watch it for updates
           _watchPayjoin(payjoin.id);
         } catch (e) {
-          debugPrint('Payjoin receiver creation failed: $e');
+          log.severe('Payjoin receiver creation failed: $e');
           error = e;
         }
 
@@ -597,7 +597,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
         address: swap.receiveAddress!,
       );
     } catch (e) {
-      debugPrint('Swap creation failed: $e');
+      log.severe('Swap creation failed: $e');
       error = e;
       emit(state.copyWith(error: error, creatingSwap: false));
     }
@@ -694,7 +694,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
               // The payjoin receiver is created, now we can watch it for updates
               _watchPayjoin(payjoin.id);
             } catch (e) {
-              debugPrint('Payjoin receiver creation failed: $e');
+              log.severe('Payjoin receiver creation failed: $e');
               error = e;
             }
           }
@@ -786,7 +786,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     _payjoinSubscription = _watchPayjoinUsecase.execute(ids: [payjoinId]).listen((
       updatedPayjoin,
     ) {
-      debugPrint(
+      log.info(
         '[ReceiveBloc] Watched payjoin ${updatedPayjoin.id} updated: ${updatedPayjoin.status}',
       );
       add(ReceivePayjoinUpdated(updatedPayjoin));
@@ -802,7 +802,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     _walletTransactionSubscription = _watchWalletTransactionByAddressUsecase
         .execute(walletId: walletId, toAddress: address)
         .listen((tx) {
-          debugPrint(
+          log.info(
             '[ReceiveBloc] Watched transaction ${tx.txId} updated: ${tx.status}',
           );
           add(ReceiveTransactionReceived(tx));
@@ -813,7 +813,7 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
     // Cancel the previous subscription if it exists
     _swapSubscription?.cancel();
     _swapSubscription = _watchSwapUsecase.execute(swapId).listen((updatedSwap) {
-      debugPrint(
+      log.info(
         '[ReceiveBloc] Watched swap ${updatedSwap.id} updated: ${updatedSwap.status}',
       );
       if (updatedSwap is LnReceiveSwap) {

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:recoverbull/recoverbull.dart';
@@ -27,7 +27,7 @@ class GoogleDriveAppDatasource {
 
       _driveApi = drive.DriveApi(client);
     } catch (e) {
-      debugPrint('Google Sign-in error: $e');
+      log.severe('Google Sign-in error: $e');
       await disconnect();
       rethrow;
     }

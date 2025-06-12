@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
-import 'package:flutter/widgets.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class CheckPayjoinRelayHealthUsecase {
   final PayjoinRepository _repository;
@@ -12,7 +12,7 @@ class CheckPayjoinRelayHealthUsecase {
     try {
       return await _repository.checkOhttpRelayHealth();
     } catch (e) {
-      debugPrint('Error checking Payjoin relay health: $e');
+      log.warning('Error checking Payjoin relay health: $e');
       return false;
     }
   }

@@ -3,7 +3,7 @@ import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasou
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
-import 'package:flutter/widgets.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
   final BullbitcoinApiDatasource _bullbitcoinApiDatasource;
@@ -80,7 +80,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return orderModel.toEntity();
     } catch (e) {
-      debugPrint('Error fetching order by txId: $e');
+      log.severe('Error fetching order by txId: $e');
       return null;
     }
   }
@@ -97,14 +97,14 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
       );
 
       if (apiKeyModel == null) {
-        debugPrint(
+        log.info(
           'API key not found. Please login to your Bull Bitcoin account.',
         );
         return [];
       }
 
       if (!apiKeyModel.isActive) {
-        debugPrint(
+        log.info(
           'API key is inactive. Please login again to your Bull Bitcoin account.',
         );
         return [];
@@ -153,7 +153,7 @@ class ExchangeOrderRepositoryImpl implements ExchangeOrderRepository {
 
       return orders;
     } catch (e) {
-      debugPrint('Error fetching orders: $e');
+      log.severe('Error fetching orders: $e');
       return [];
     }
   }

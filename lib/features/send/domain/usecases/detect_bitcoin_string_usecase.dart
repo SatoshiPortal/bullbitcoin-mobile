@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:flutter/foundation.dart';
 
 class DetectBitcoinStringUsecase {
   DetectBitcoinStringUsecase();
@@ -8,7 +8,7 @@ class DetectBitcoinStringUsecase {
     try {
       return await PaymentRequest.parse(data);
     } catch (e) {
-      debugPrint(e.toString());
+      log.severe(e.toString());
       rethrow;
     }
   }

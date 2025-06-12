@@ -4,8 +4,8 @@ import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.d
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart' as swap_entity;
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:boltz/boltz.dart';
-import 'package:flutter/material.dart';
 
 class BoltzDatasource {
   final String _baseUrl;
@@ -466,8 +466,8 @@ class BoltzDatasource {
   }) async {
     try {
       final lbtcLnSwap = await _boltzStore.fetchLbtcLnSwap(swapId);
-      debugPrint(lbtcLnSwap.id);
-      debugPrint(lbtcLnSwap.network.toString());
+      log.info(lbtcLnSwap.id);
+      log.info(lbtcLnSwap.network.toString());
       return lbtcLnSwap.refund(
         outAddress: refundAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
@@ -843,7 +843,7 @@ class BoltzDatasource {
           try {
             final swapModel = await _boltzStore.fetch(swapId);
             if (swapModel == null) {
-              debugPrint('No swap found for id: $swapId');
+              log.info('No swap found for id: $swapId');
               return;
             }
             // Check if swap is already in terminal state
@@ -1098,44 +1098,44 @@ class BoltzDatasource {
             // Update storage and emit event if status changed
             if (updatedSwapModel != null) {
               await _boltzStore.store(updatedSwapModel);
-              debugPrint(
+              log.info(
                 'Updated swap $swapId from ${swapModel.status} to ${updatedSwapModel.status}',
               );
               _swapUpdatesController.add(updatedSwapModel);
             }
           } catch (e) {
-            debugPrint('Error processing swap status update: $e');
+            log.info('Error processing swap status update: $e');
           }
         },
         onError: (error) {
-          debugPrint('Boltz WebSocket error: $error');
+          log.info('Boltz WebSocket error: $error');
           _swapUpdatesController.addError(error.toString());
         },
         onDone: () {},
       );
 
-      debugPrint('Started Boltz WebSocket');
+      log.info('Started Boltz WebSocket');
     } catch (e) {
-      debugPrint('Error initializing BoltzWebSocket: $e');
+      log.info('Error initializing BoltzWebSocket: $e');
       // Don't rethrow here to allow for graceful recovery
     }
   }
 
   Future<void> reconnect() async {
     try {
-      debugPrint('Attempting to reconnect to Boltz WebSocket...');
+      log.info('Attempting to reconnect to Boltz WebSocket...');
       resetStream();
     } catch (e) {
-      debugPrint('Failed to reconnect: $e');
+      log.info('Failed to reconnect: $e');
     }
   }
 
   void resetStream() {
     try {
       _boltzWebSocket.dispose();
-      debugPrint('Boltz WebSocket connection closed');
+      log.info('Boltz WebSocket connection closed');
     } catch (e) {
-      debugPrint('Error disposing WebSocket: $e');
+      log.info('Error disposing WebSocket: $e');
     }
     // _swapUpdatesController.close();
     _initializeBoltzWebSocket();
@@ -1145,7 +1145,7 @@ class BoltzDatasource {
     try {
       _boltzWebSocket.subscribe(swapIds);
     } catch (e) {
-      debugPrint('Error subscribing to swaps: $e');
+      log.info('Error subscribing to swaps: $e');
     }
   }
 
@@ -1153,7 +1153,7 @@ class BoltzDatasource {
     try {
       _boltzWebSocket.unsubscribe(swapIds);
     } catch (e) {
-      debugPrint('Error unsubscribing from swaps: $e');
+      log.info('Error unsubscribing from swaps: $e');
     }
   }
 

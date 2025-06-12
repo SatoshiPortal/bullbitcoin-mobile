@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class AccelerateBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
@@ -27,7 +27,7 @@ class AccelerateBuyOrderUsecase {
       final order = await repo.accelerateBuyOrder(orderId);
       return order;
     } catch (e) {
-      debugPrint('Error in AccelerateBuyOrderUsecase: $e');
+      log.severe('Error in AccelerateBuyOrderUsecase: $e');
       throw AccelerateBuyOrderException('$e');
     }
   }

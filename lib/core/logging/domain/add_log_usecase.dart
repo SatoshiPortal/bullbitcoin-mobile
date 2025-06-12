@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/logging/data/log_repository.dart';
 import 'package:bb_mobile/core/logging/domain/log_entity.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bb_mobile/core/utils/logger.dart' as logging;
 
 class AddLogUsecase {
   final LogRepository _logRepository;
@@ -39,7 +39,7 @@ class AddLogUsecase {
           );
       }
     } catch (e) {
-      debugPrint('[AddLogUsecase]: $e');
+      logging.log.info('[AddLogUsecase]: $e');
       throw AddLogUsecaseException('$e');
     }
   }

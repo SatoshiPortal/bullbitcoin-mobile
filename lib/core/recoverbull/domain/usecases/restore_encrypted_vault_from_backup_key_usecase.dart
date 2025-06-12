@@ -5,10 +5,10 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
 import 'package:bb_mobile/core/recoverbull/domain/errors/recover_wallet_error.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/create_default_wallets_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
-import 'package:flutter/foundation.dart';
 
 /// If the key server is down
 class RestoreEncryptedVaultFromBackupKeyUsecase {
@@ -65,7 +65,7 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
       final restoredWallets = await _createDefaultWallets.execute(
         mnemonicWords: decodedRecoverbullWallets.mnemonic,
       );
-      debugPrint('Default wallets created');
+      log.fine('Default wallets created');
       for (final wallet in restoredWallets) {
         await _walletRepository.updateBackupInfo(
           isEncryptedVaultTested: true,
@@ -77,9 +77,9 @@ class RestoreEncryptedVaultFromBackupKeyUsecase {
         );
       }
 
-      debugPrint('Default wallets updated');
+      log.info('Default wallets updated');
     } catch (e) {
-      debugPrint('$RestoreEncryptedVaultFromBackupKeyUsecase: $e');
+      log.severe('$RestoreEncryptedVaultFromBackupKeyUsecase: $e');
       rethrow;
     }
   }

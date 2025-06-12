@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/settings/domain/watch_currency_changes_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -33,7 +34,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     // Watch for currency changes and emit a new state when the currency changes
     _currencyChangeSubscription = _watchCurrencyChangesUsecase.execute().listen(
       (currencyCode) {
-        debugPrint('Currency changed to $currencyCode');
+        log.info('Currency changed to $currencyCode');
         add(BitcoinPriceCurrencyChanged(currencyCode: currencyCode));
       },
     );
@@ -55,7 +56,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     BitcoinPriceStarted event,
     Emitter<BitcoinPriceState> emit,
   ) async {
-    debugPrint('FiatCurrenciesStarted');
+    log.info('FiatCurrenciesStarted');
 
     try {
       final settings = await _getSettingsUsecase.execute();
@@ -75,7 +76,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
         ),
       );
     } catch (e) {
-      debugPrint(e.toString());
+      log.severe(e.toString());
       emit(state.copyWith(error: e));
     }
   }
@@ -84,7 +85,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     BitcoinPriceFetched event,
     Emitter<BitcoinPriceState> emit,
   ) async {
-    debugPrint('BitcoinPriceFetched');
+    log.info('BitcoinPriceFetched');
 
     try {
       final currency = state.currency;
@@ -97,7 +98,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
         emit(state.copyWith(bitcoinPrice: price));
       }
     } catch (e) {
-      debugPrint(e.toString());
+      log.severe(e.toString());
       // TODO: would it make sense to not emit a failure state here, but keep the
       //  previous success state as to be able to show an exchange rate allthough
       //  not the most recent one? If that makes sense, we can add the error directly
@@ -112,7 +113,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
     BitcoinPriceCurrencyChanged event,
     Emitter<BitcoinPriceState> emit,
   ) async {
-    debugPrint('BitcoinPriceCurrencyChanged to ${event.currencyCode}');
+    log.info('BitcoinPriceCurrencyChanged to ${event.currencyCode}');
 
     try {
       // The state should be in the success state, otherwise try to start the bloc
@@ -126,7 +127,7 @@ class BitcoinPriceBloc extends Bloc<BitcoinPriceEvent, BitcoinPriceState> {
 
       emit(state.copyWith(currency: currency, bitcoinPrice: price));
     } catch (e) {
-      debugPrint(e.toString());
+      log.severe(e.toString());
       emit(state.copyWith(error: e));
     }
   }

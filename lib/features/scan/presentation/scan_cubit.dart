@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/scan/data/scan_service.dart';
 import 'package:bb_mobile/features/scan/domain/entity/bbqr_options.dart';
@@ -9,7 +10,6 @@ import 'package:bb_mobile/features/scan/presentation/scan_state.dart';
 import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:camera/camera.dart';
 import 'package:dart_bbqr/bbqr.dart' as bbqr show Joined;
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ScanCubit extends Cubit<ScanState> {
@@ -41,7 +41,7 @@ class ScanCubit extends Cubit<ScanState> {
             final pr = await PaymentRequest.parse(psbt);
             if (pr is PsbtPaymentRequest) {
               emit(state.copyWith(data: (pr.psbt, pr)));
-              debugPrint('SCAN PSBT: ${pr.psbt}');
+              log.info('SCAN PSBT: ${pr.psbt}');
             }
           }
         } else {
@@ -49,16 +49,16 @@ class ScanCubit extends Cubit<ScanState> {
             try {
               final pr = await PaymentRequest.parse(qr);
               emit(state.copyWith(data: (qr, pr)));
-              debugPrint('SCAN PaymentRequest: ${pr.runtimeType}');
+              log.info('SCAN PaymentRequest: ${pr.runtimeType}');
             } catch (e) {
-              debugPrint('$PaymentRequest not found $e');
+              log.warning('$PaymentRequest not found $e');
             }
           }
 
           emit(state.copyWith(data: (qr, null)));
         }
       } catch (e) {
-        debugPrint('Error decoding QR: $e');
+        log.severe('Error decoding QR: $e');
       }
       emit(state.copyWith(processingImage: false));
     });

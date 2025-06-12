@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class SaveExchangeApiKeyUsecase {
   final ExchangeApiKeyRepository _exchangeApiKeyRepository;
@@ -24,9 +24,9 @@ class SaveExchangeApiKeyUsecase {
         isTestnet: isTestnet,
       );
 
-      debugPrint('API key saved successfully');
+      log.fine('API key saved successfully');
     } catch (e) {
-      debugPrint('Error in SaveApiKeyUsecase: $e');
+      log.severe('Error in SaveApiKeyUsecase: $e');
       throw SaveExchangeApiKeyException('$e');
     }
   }

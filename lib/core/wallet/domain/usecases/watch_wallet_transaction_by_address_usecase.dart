@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 class WatchWalletTransactionByAddressUsecase {
@@ -24,7 +24,7 @@ class WatchWalletTransactionByAddressUsecase {
         .where((wallet) => wallet.id == walletId)
         .asyncMap((wallet) async {
           try {
-            debugPrint(
+            log.info(
               'Fetching transactions to address $toAddress'
               ' for wallet: $walletId',
             );
@@ -35,13 +35,13 @@ class WatchWalletTransactionByAddressUsecase {
                   toAddress: toAddress,
                 );
 
-            debugPrint(
+            log.info(
               'Fetched ${txs.length} transactions to address $toAddress'
               ' for wallet: $walletId',
             );
 
             if (txs.isEmpty) {
-              debugPrint(
+              log.info(
                 'No transactions found for wallet: $walletId and address $toAddress',
               );
               return null;
@@ -49,7 +49,7 @@ class WatchWalletTransactionByAddressUsecase {
 
             return txs.last;
           } catch (e) {
-            debugPrint('WatchWalletTransactionByAddressUsecase exception: $e');
+            log.severe('WatchWalletTransactionByAddressUsecase exception: $e');
             return null;
           }
         })

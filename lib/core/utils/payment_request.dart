@@ -1,10 +1,10 @@
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/liquid_bip21.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:boltz/boltz.dart' as boltz;
 import 'package:dart_bip21/dart_bip21.dart';
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
@@ -107,7 +107,7 @@ sealed class PaymentRequest with _$PaymentRequest {
 
       throw 'Invalid payment request';
     } catch (e) {
-      debugPrint(e.toString());
+      log.severe(e.toString());
       rethrow;
     }
   }
@@ -245,7 +245,7 @@ sealed class PaymentRequest with _$PaymentRequest {
         isTestnet: network == lwk.Network.testnet,
       );
     } catch (e) {
-      debugPrint(e.toString());
+      log.warning(e.toString());
     }
 
     return null;
@@ -270,7 +270,7 @@ sealed class PaymentRequest with _$PaymentRequest {
         isTestnet: invoice.network != 'bitcoin',
       );
     } catch (e) {
-      debugPrint(e.toString());
+      log.warning(e.toString());
     }
 
     return null;
@@ -293,7 +293,7 @@ sealed class PaymentRequest with _$PaymentRequest {
 
       return PaymentRequest.lnAddress(address: data);
     } catch (e) {
-      debugPrint(e.toString());
+      log.warning(e.toString());
     }
 
     return null;
@@ -304,7 +304,7 @@ sealed class PaymentRequest with _$PaymentRequest {
       final psbt = await bdk.PartiallySignedTransaction.fromString(psbtBase64);
       return PaymentRequest.psbt(psbt: psbt.toString());
     } catch (e) {
-      debugPrint(e.toString());
+      log.warning(e.toString());
     }
     return null;
   }

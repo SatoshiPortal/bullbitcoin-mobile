@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart' show PayjoinConstants;
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet_metadata_datasource.dart';
@@ -19,7 +20,6 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_utxo_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:flutter/foundation.dart';
 import 'package:synchronized/synchronized.dart';
 
 class PayjoinRepositoryImpl implements PayjoinRepository {
@@ -239,7 +239,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
         );
         model = await _localPayjoinDatasource.fetchSender(payjoin.id);
       }
-      debugPrint(
+      log.info(
         'Original transaction broadcasted: ${payjoin.id} with txId: ${payjoin.originalTxId}',
       );
 
@@ -253,13 +253,13 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
 
       return completedModel.toEntity();
     } catch (e) {
-      debugPrint('Error broadcasting original transaction: $e');
+      log.severe('Error broadcasting original transaction: $e');
       return null;
     }
   }
 
   Future<void> _processPayjoinRequest(PayjoinReceiverModel model) async {
-    debugPrint('Processing payjoin request: ${model.id}');
+    log.info('Processing payjoin request: ${model.id}');
     // Update the local database with the new payjoin request
     await _localPayjoinDatasource.update(model);
 
@@ -275,7 +275,7 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
       final unspentUtxos = await _bdkWallet.getUtxos(wallet: wallet);
       result = await _proposePayjoin(model, wallet, unspentUtxos);
     } catch (e) {
-      debugPrint('Error processing payjoin request: $e');
+      log.severe('Error processing payjoin request: $e');
       result =
           (await tryBroadcastOriginalTransaction(payjoin)) as PayjoinReceiver?;
     }
@@ -308,11 +308,11 @@ class PayjoinRepositoryImpl implements PayjoinRepository {
                 ? Network.bitcoinTestnet
                 : Network.bitcoinMainnet,
       );
-      debugPrint(
+      log.info(
         'Payjoin proposal broadcasted: ${payjoin.id} with txId: ${result.txId}',
       );
     } catch (e) {
-      debugPrint('Error broadcasting payjoin proposal: $e');
+      log.severe('Error broadcasting payjoin proposal: $e');
       // TODO: Handle this, maybe by sending the original transaction instead
     }
 

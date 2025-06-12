@@ -16,6 +16,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
@@ -35,7 +36,6 @@ import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/update_paid_send_swap_usecase.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SendCubit extends Cubit<SendState> {
@@ -1122,7 +1122,7 @@ class SendCubit extends Cubit<SendState> {
         }
       }
     } catch (e) {
-      debugPrint(e.toString());
+      log.severe(e.toString());
       if (e is PrepareBitcoinSendException) {
         emit(
           state.copyWith(
@@ -1293,7 +1293,7 @@ class SendCubit extends Cubit<SendState> {
       // Sync the wallet so the transaction is picked up by the watcher
       await _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
     } catch (e) {
-      debugPrint(e.toString());
+      log.severe(e.toString());
     }
   }
 
@@ -1347,7 +1347,7 @@ class SendCubit extends Cubit<SendState> {
     // Cancel the previous subscription if it exists
     _swapSubscription?.cancel();
     _swapSubscription = _watchSwapUsecase.execute(swapId).listen((updatedSwap) {
-      debugPrint(
+      log.info(
         '[SendCubit] Watched swap ${updatedSwap.id} updated: ${updatedSwap.status}',
       );
       if (updatedSwap is LnSendSwap) {
@@ -1379,7 +1379,7 @@ class SendCubit extends Cubit<SendState> {
     _txSubscription = _watchWalletTransactionByTxIdUsecase
         .execute(walletId: walletId, txId: txId)
         .listen((tx) {
-          debugPrint(
+          log.info(
             '[SendBloc] Watched transaction ${tx.txId} updated: ${tx.status}',
           );
           emit(state.copyWith(walletTransaction: tx));

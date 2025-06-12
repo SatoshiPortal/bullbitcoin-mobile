@@ -6,9 +6,9 @@ import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
-import 'package:flutter/foundation.dart';
 
 class SwapWatcherServiceImpl implements SwapWatcherService {
   final BoltzSwapRepositoryImpl _boltzRepo;
@@ -54,15 +54,15 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         await _processSwap(swap);
       },
       onError: (error) {
-        debugPrint('Swap stream error in watcher: $error');
+        log.severe('Swap stream error in watcher: $error');
       },
       onDone: () {
-        debugPrint('Swap stream done in watcher.');
+        log.info('Swap stream done in watcher.');
       },
       cancelOnError: false,
     );
 
-    debugPrint('Swap watcher started and listening');
+    log.info('Swap watcher started and listening');
   }
 
   @override

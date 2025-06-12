@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/key_server/data/services/backup_key_service.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart'
     show KeyServerError;
-import 'package:flutter/foundation.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 /// Stores a backup key on the server with password protection
@@ -43,11 +43,11 @@ class StoreBackupKeyIntoServerUsecase {
         backupKey,
       );
     } on KeyServerException catch (e) {
-      debugPrint('$StoreBackupKeyIntoServerUsecase: $e');
+      log.severe('$StoreBackupKeyIntoServerUsecase: $e');
       throw KeyServerError.fromException(e);
     } catch (e) {
       if (e is! KeyServerError) {
-        debugPrint('$StoreBackupKeyIntoServerUsecase: $e');
+        log.severe('$StoreBackupKeyIntoServerUsecase: $e');
       }
       rethrow;
     }

@@ -2,9 +2,9 @@ import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_va
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:boltz/boltz.dart';
 import 'package:drift/drift.dart';
-import 'package:flutter/material.dart';
 
 class BoltzStorageDatasource {
   final SqliteDatabase _localSwapStorage;
@@ -127,7 +127,7 @@ class BoltzStorageDatasource {
       final lbtcLnSwap = await LbtcLnSwap.fromJson(jsonStr: jsonSwap);
       return lbtcLnSwap;
     } catch (e) {
-      debugPrint('Error getting LbtcLnSwap: $e');
+      log.severe('Error getting LbtcLnSwap: $e');
       throw 'Error parsing LbtcLnSwap: $e';
     }
   }

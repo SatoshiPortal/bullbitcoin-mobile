@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/tor/data/datasources/tor_datasource.dart';
-import 'package:flutter/rendering.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 class TorRepository {
@@ -30,12 +30,12 @@ class TorRepository {
 
   Future<void> start() async {
     await _torDatasource.enable();
-    debugPrint('Tor started at port: ${_torDatasource.port}');
+    log.info('Tor started at port: ${_torDatasource.port}');
   }
 
   Future<void> stop() async {
     await _torDatasource.disable();
-    debugPrint('Tor stopped');
+    log.info('Tor stopped');
   }
 
   bool get isStarted => _torDatasource.isEnabled;

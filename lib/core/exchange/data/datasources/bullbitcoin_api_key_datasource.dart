@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bb_mobile/core/exchange/data/models/api_key_model.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class BullbitcoinApiKeyDatasource {
   static const String _apiKeyStorageKey = 'exchange_api_key';
@@ -22,9 +22,9 @@ class BullbitcoinApiKeyDatasource {
       final jsonString = jsonEncode(apiKey.toJson());
       final key = isTestnet ? _apiKeyTestnetStorageKey : _apiKeyStorageKey;
       await _secureStorage.saveValue(key: key, value: jsonString);
-      debugPrint('API key stored successfully');
+      log.fine('API key stored successfully');
     } catch (e) {
-      debugPrint('Error storing API key: $e');
+      log.severe('Error storing API key: $e');
       rethrow;
     }
   }
@@ -35,14 +35,14 @@ class BullbitcoinApiKeyDatasource {
       final jsonString = await _secureStorage.getValue(key);
 
       if (jsonString == null || jsonString.isEmpty) {
-        debugPrint('No API key found in storage');
+        log.info('No API key found in storage');
         return null;
       }
 
       final json = jsonDecode(jsonString) as Map<String, dynamic>;
       return ExchangeApiKeyModel.fromJson(json);
     } catch (e) {
-      debugPrint('Error retrieving API key: $e');
+      log.severe('Error retrieving API key: $e');
       return null;
     }
   }
@@ -51,9 +51,9 @@ class BullbitcoinApiKeyDatasource {
     try {
       final key = isTestnet ? _apiKeyTestnetStorageKey : _apiKeyStorageKey;
       await _secureStorage.deleteValue(key);
-      debugPrint('API key deleted successfully');
+      log.fine('API key deleted successfully');
     } catch (e) {
-      debugPrint('Error deleting API key: $e');
+      log.severe('Error deleting API key: $e');
       rethrow;
     }
   }

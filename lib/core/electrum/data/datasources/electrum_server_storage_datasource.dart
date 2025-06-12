@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:drift/drift.dart';
-import 'package:flutter/material.dart';
 
 class ElectrumServerStorageDatasource {
   final SqliteDatabase _sqlite;
@@ -31,7 +31,7 @@ class ElectrumServerStorageDatasource {
               )
               .delete();
 
-      debugPrint(
+      log.fine(
         'Deleted $networkDeleted existing custom servers for this network',
       );
 
@@ -43,11 +43,11 @@ class ElectrumServerStorageDatasource {
           network: server.toEntity().network,
         );
         if (checkServer != null) {
-          debugPrint('Confirmed server was stored: ${checkServer.url}');
+          log.fine('Confirmed server was stored: ${checkServer.url}');
           return true;
         }
       } catch (e) {
-        debugPrint('Failed to store new server: $e');
+        log.severe('Failed to store new server: $e');
         return false;
       }
 

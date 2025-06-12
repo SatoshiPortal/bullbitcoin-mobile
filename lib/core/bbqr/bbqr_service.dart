@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:bb_mobile/core/bbqr/bbqr_options.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bdk_flutter/bdk_flutter.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:convert/convert.dart';
 import 'package:dart_bbqr/bbqr.dart' as bbqr;
-import 'package:flutter/foundation.dart';
 
 enum TxFormat { psbt, hex }
 
@@ -22,7 +22,7 @@ class BbqrService {
         await bdk.Transaction.fromBytes(transactionBytes: hex.decode(payload));
         return (format: TxFormat.hex, data: payload);
       } catch (e) {
-        debugPrint('e: $e');
+        log.severe('e: $e');
         return null;
       }
     } else {

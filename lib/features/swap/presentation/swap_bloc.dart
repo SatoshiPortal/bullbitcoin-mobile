@@ -17,6 +17,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_utxos_usecase.dart';
@@ -29,7 +30,6 @@ import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usec
 import 'package:bb_mobile/features/send/domain/usecases/sign_bitcoin_tx_usecase.dart';
 import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_state.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SwapCubit extends Cubit<SwapState> {
@@ -168,7 +168,7 @@ class SwapCubit extends Cubit<SwapState> {
           feeRate: networkFee.value as double,
         );
 
-        debugPrint("Absolute fees: $absoluteFees");
+        log.info("Absolute fees: $absoluteFees");
         emit(state.copyWith(bitcoinAbsoluteFees: absoluteFees));
       } else {
         if (state.lbtcToBtcSwapLimitsAndFees == null) {
@@ -192,7 +192,7 @@ class SwapCubit extends Cubit<SwapState> {
           pset: signedPset,
           walletId: fromWallet.id,
         );
-        debugPrint("Absolute fees: $absoluteFees");
+        log.info("Absolute fees: $absoluteFees");
 
         emit(state.copyWith(liquidAbsoluteFees: absoluteFees));
       }
@@ -206,7 +206,7 @@ class SwapCubit extends Cubit<SwapState> {
       // ensure that maxAmount is in the correct currency code
 
       // Ensure the amount is within swap limits
-      debugPrint('Max amount: $maxAmount');
+      log.info('Max amount: $maxAmount');
       // If max amount is below minimum swap limit, show error
       emit(
         state.copyWith(
@@ -720,7 +720,7 @@ class SwapCubit extends Cubit<SwapState> {
     // Cancel the previous subscription if it exists
     _swapSubscription?.cancel();
     _swapSubscription = _watchSwapUsecase.execute(swapId).listen((updatedSwap) {
-      debugPrint(
+      log.info(
         '[SwapCubit] Watched swap ${updatedSwap.id} updated: ${updatedSwap.status}',
       );
       if (updatedSwap is ChainSwap) {

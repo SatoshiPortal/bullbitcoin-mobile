@@ -5,6 +5,7 @@ import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/data/repository/electrum_server_repository_impl.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/utils/address_script_conversions.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
@@ -253,9 +254,9 @@ class BdkWalletDatasource implements WalletDatasource {
       ),
     );
     if (!isFinalized) {
-      debugPrint('Signed PSBT is not finalized');
+      log.info('Signed PSBT is not finalized');
     } else {
-      debugPrint('Signed PSBT is finalized');
+      log.info('Signed PSBT is finalized');
     }
 
     return psbt.asString();

@@ -1,10 +1,10 @@
-import 'dart:math';
+import 'dart:math' show pow;
 
 import 'package:bb_mobile/core/exchange/data/models/order_model.dart';
 import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 
 abstract class BitcoinPriceDatasource {
   Future<List<String>> get availableCurrencies;
@@ -46,7 +46,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
       );
 
       if (resp.statusCode == null || resp.statusCode != 200) {
-        debugPrint('Pricer error');
+        log.warning('Pricer error');
         return 0.0;
       }
       // Parse the response data correctly
@@ -63,7 +63,7 @@ class BullbitcoinApiDatasource implements BitcoinPriceDatasource {
 
       return rate;
     } catch (e) {
-      debugPrint(e.toString());
+      log.warning(e.toString());
       return 0.0;
     }
   }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
@@ -444,7 +445,7 @@ class LwkWalletDatasource implements WalletDatasource {
       if (networkFee.isAbsolute) {
         throw Exception('Absolute fee is not supported for liquid yet!');
       }
-      debugPrint(networkFee.value.toDouble().toString());
+      log.info(networkFee.value.toDouble().toString());
       final pset = await lwkWallet.buildLbtcTx(
         sats: BigInt.from(amountSat ?? 0),
         outAddress: address,
@@ -452,7 +453,7 @@ class LwkWalletDatasource implements WalletDatasource {
         drain: drain,
       );
       final decoded = await lwkWallet.decodeTx(pset: pset);
-      debugPrint(decoded.absoluteFees.toString());
+      log.info(decoded.absoluteFees.toString());
       return pset;
     } catch (e) {
       if (e is lwk.LwkError) {

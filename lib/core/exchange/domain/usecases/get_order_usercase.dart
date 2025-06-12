@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class GetOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
@@ -27,7 +27,7 @@ class GetOrderUsecase {
       final order = await repo.getOrder(orderId);
       return order;
     } catch (e) {
-      debugPrint('Error in GetOrderUsecase: $e');
+      log.severe('Error in GetOrderUsecase: $e');
       throw GetOrderException('$e');
     }
   }

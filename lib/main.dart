@@ -94,23 +94,23 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     }
   }
 
-  void _onDetached() => debugPrint('detached');
+  void _onDetached() => log.info('detached');
 
   Future<void> _onResumed() async {
-    debugPrint('resumed');
+    log.info('resumed');
     try {
       await locator<RestartSwapWatcherUsecase>().execute();
-      debugPrint('Restarted Swap Watcher!');
+      log.info('Restarted Swap Watcher!');
     } catch (e) {
-      debugPrint('Error during app resume: $e');
+      log.severe('Error during app resume: $e');
     }
   }
 
-  void _onInactive() => debugPrint('inactive');
+  void _onInactive() => log.info('inactive');
 
-  void _onHidden() => debugPrint('hidden');
+  void _onHidden() => log.info('hidden');
 
-  void _onPaused() => debugPrint('paused');
+  void _onPaused() => log.info('paused');
 
   @override
   Widget build(BuildContext context) {

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/logging/data/log_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bb_mobile/core/utils/logger.dart' as logging;
 import 'package:path_provider/path_provider.dart';
 
 abstract class LogDatasource {
@@ -23,7 +23,7 @@ class LocalFileLogDatasource implements LogDatasource {
       await file.writeAsString('$encoded\n', mode: FileMode.append);
     } catch (e) {
       // Logging failures are not fatal
-      debugPrint('Logging to file failed: $e');
+      logging.log.warning('Logging to file failed: $e');
     }
   }
 
@@ -51,7 +51,7 @@ class LocalFileLogDatasource implements LogDatasource {
 
       await file.writeAsString('${filteredLines.join('\n')}\n');
     } catch (e) {
-      debugPrint('Truncating log file failed: $e');
+      logging.log.warning('Truncating log file failed: $e');
     }
   }
 
@@ -63,7 +63,7 @@ class LocalFileLogDatasource implements LogDatasource {
         await file.delete();
       }
     } catch (e) {
-      debugPrint('Removing log file failed: $e');
+      logging.log.severe('Removing log file failed: $e');
     }
   }
 

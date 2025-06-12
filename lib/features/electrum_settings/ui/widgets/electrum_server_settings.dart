@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/electrum_settings/presentation/bloc/electrum_settings_bloc.dart';
 import 'package:bb_mobile/features/electrum_settings/ui/widgets/privacy_notice.dart';
@@ -54,7 +55,7 @@ class _ElectrumServerSettingsContentState
               previous.status != current.status,
       listener: (context, state) {
         if (state.saveSuccessful) {
-          debugPrint('Settings saved successfully');
+          log.fine('Settings saved successfully');
         }
       },
       buildWhen:

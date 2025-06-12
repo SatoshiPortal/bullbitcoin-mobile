@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_generator.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
-import 'package:flutter/material.dart';
 
 class CreateDefaultWalletsUsecase {
   final SeedRepository _seedRepository;
@@ -64,7 +64,7 @@ class CreateDefaultWalletsUsecase {
         ),
       ]);
 
-      debugPrint('Default wallets created');
+      log.fine('Default wallets created');
 
       return defaultWallets;
     } catch (e) {

@@ -4,8 +4,8 @@ import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server_provider.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:flutter/foundation.dart';
 
 class ElectrumServerRepository {
   final ElectrumServerStorageDatasource _electrumServerStorage;
@@ -55,12 +55,12 @@ class ElectrumServerRepository {
             return ElectrumServerStatus.online;
           })
           .catchError((error) {
-            debugPrint('Socket connection error: $error');
+            log.severe('Socket connection error: $error');
             return ElectrumServerStatus.offline;
           });
       return socket;
     } catch (e) {
-      debugPrint('Error checking server connectivity: $e');
+      log.severe('Error checking server connectivity: $e');
       return ElectrumServerStatus.offline;
     }
   }

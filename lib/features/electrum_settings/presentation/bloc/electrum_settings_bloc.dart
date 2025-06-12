@@ -7,6 +7,7 @@ import 'package:bb_mobile/core/electrum/domain/usecases/get_all_electrum_servers
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/store_electrum_server_settings_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/update_electrum_server_settings_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' show Network;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -95,7 +96,7 @@ class ElectrumSettingsBloc
 
       add(ToggleSelectedProvider(prioritizedServer.electrumServerProvider));
     } catch (e) {
-      debugPrint('Error loading servers: $e');
+      log.severe('Error loading servers: $e');
       emit(
         state.copyWith(
           status: ElectrumSettingsStatus.error,
@@ -155,7 +156,7 @@ class ElectrumSettingsBloc
         }
       });
     } catch (e) {
-      debugPrint('Error checking server status: $e');
+      log.severe('Error checking server status: $e');
       emit(
         state.copyWith(
           status: ElectrumSettingsStatus.error,
@@ -231,7 +232,7 @@ class ElectrumSettingsBloc
           );
         }
       } catch (e) {
-        debugPrint('Error checking server connectivity: $e');
+        log.severe('Error checking server connectivity: $e');
       }
     }
 
@@ -812,7 +813,7 @@ class ElectrumSettingsBloc
           // Get previous URL from our state map
           final serverKey = "custom_${stagedServer.network.name}";
           final previousUrl = state.previousUrls[serverKey];
-          debugPrint(
+          log.info(
             'Previous URL for ${stagedServer.network.name}: $previousUrl, stagedServer.url: ${stagedServer.url}',
           );
           // Use update method if previousUrl is available
@@ -859,7 +860,7 @@ class ElectrumSettingsBloc
         ),
       );
     } catch (e) {
-      debugPrint('Error saving server changes: $e');
+      log.severe('Error saving server changes: $e');
       emit(
         state.copyWith(
           status: ElectrumSettingsStatus.error,
@@ -1076,7 +1077,7 @@ class ElectrumSettingsBloc
           timeout: 1,
         );
       } catch (e) {
-        debugPrint('Error checking server status: $e');
+        log.severe('Error checking server status: $e');
         return ElectrumServerStatus.offline;
       }
     }

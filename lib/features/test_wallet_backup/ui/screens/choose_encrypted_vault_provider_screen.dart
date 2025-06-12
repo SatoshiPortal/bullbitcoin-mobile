@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -44,7 +45,7 @@ class _Screen extends StatelessWidget {
           const SelectFileSystemBackupTes(),
         );
       case BackupProviderType.iCloud:
-        debugPrint('iCloud, not supported yet');
+        log.info('iCloud, not supported yet');
     }
   }
 

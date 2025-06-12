@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
           onUrlChange: (UrlChange change) async {
             final url = change.url;
             if (url == null) return;
-            debugPrint('Url change to ${change.url}');
+            log.info('Url change to ${change.url}');
 
             // Check if the URL contains the bb_session cookie
             final bbSessionCookie = await _tryGetBBSessionCookie(change.url!);
@@ -54,14 +55,14 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
 
             // If the bb_session cookie is found, the user is logged in and
             //  we can proceed to try to generate and save the API key.
-            debugPrint('Found bb_session cookie: $bbSessionCookie');
+            log.info('Found bb_session cookie: $bbSessionCookie');
 
             try {
               // Set the flag to indicate that we are generating the API key
               setState(() => _isGeneratingApiKey = true);
 
               final apiKeyData = await _generateApiKey();
-              debugPrint('Generated API key: $apiKeyData');
+              log.info('Generated API key: $apiKeyData');
 
               // Clear cache and cookies after successful login for future
               //  requests
@@ -79,7 +80,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
                 throw saveApiKeyException;
               }
             } catch (e) {
-              debugPrint('Error generating or saving API key: $e');
+              log.severe('Error generating or saving API key: $e');
               await _handleLoginError();
             } finally {
               // Reset the flag after the API key generation process is done
@@ -91,15 +92,15 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
           },
           onNavigationRequest: (NavigationRequest request) {
             if (request.url.startsWith('https://accounts')) {
-              debugPrint('allowing navigation to ${request.url}');
+              log.info('allowing navigation to ${request.url}');
               return NavigationDecision.navigate;
             }
 
-            debugPrint('blocking navigation to ${request.url}');
+            log.info('blocking navigation to ${request.url}');
             return NavigationDecision.prevent;
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
-            debugPrint(
+            log.info(
               'HTTP Auth request for ${request.host} with realm ${request.realm}',
             );
             request.onProceed(

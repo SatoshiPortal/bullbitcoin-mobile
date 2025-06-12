@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_local_datasource.dart';
 import 'package:bb_mobile/core/recoverbull/data/datasources/recoverbull_remote_datasource.dart';
 import 'package:bb_mobile/core/tor/data/repository/tor_repository.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:hex/hex.dart';
 
 class RecoverBullRepository {
@@ -36,7 +36,7 @@ class RecoverBullRepository {
 
       return utf8.decode(decryptedBytes);
     } catch (e) {
-      debugPrint('Error restoring backup: $e');
+      log.severe('Error restoring backup: $e');
       rethrow;
     }
   }
@@ -89,14 +89,13 @@ class RecoverBullRepository {
 
   Future<void> checkKeyServerConnectionWithTor() async {
     if (!torRepository.isStarted) {
-      debugPrint('Starting Tor');
+      log.info('Starting Tor');
       await torRepository.start();
     }
     final isTorReady = await torRepository.isTorReady;
-    debugPrint('isTorReady: $isTorReady');
-    if (!isTorReady) {
-      throw Exception('Tor is not ready');
-    }
+    log.info('isTorReady: $isTorReady');
+    if (!isTorReady) throw Exception('Tor is not ready');
+
     final socket = await torRepository.createSocket();
     await remoteDatasource.info(socket);
   }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:bb_mobile/features/experimental/scanner/scanner_widget.dart';
@@ -35,7 +36,7 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
                   extra: pub,
                 );
               } catch (e) {
-                debugPrint(e.toString());
+                log.warning(e.toString());
               }
             },
           ),

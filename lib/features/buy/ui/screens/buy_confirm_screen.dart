@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -128,7 +129,7 @@ class BuyConfirmScreen extends StatelessWidget {
                     Countdown(
                       until: buyOrder.confirmationDeadline,
                       onTimeout: () {
-                        debugPrint('Confirmation deadline reached');
+                        log.info('Confirmation deadline reached');
                         context.read<BuyBloc>().add(
                           const BuyEvent.refreshOrder(),
                         );

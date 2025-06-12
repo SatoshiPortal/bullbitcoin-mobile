@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
@@ -105,7 +106,7 @@ class ReceiveBroadcastPayjoinButton extends StatelessWidget {
           BBButton.big(
             label: 'Receive payment normally',
             onPressed: () {
-              debugPrint('Receive payment normally');
+              log.info('Receive payment normally');
               context.read<ReceiveBloc>().add(
                 const ReceivePayjoinOriginalTxBroadcasted(),
               );

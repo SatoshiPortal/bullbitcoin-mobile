@@ -1,7 +1,6 @@
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-
-import 'package:flutter/foundation.dart';
 
 class SelectBestWalletUsecase {
   SelectBestWalletUsecase();
@@ -77,7 +76,7 @@ class SelectBestWalletUsecase {
 
       throw NotEnoughFundsException();
     } catch (e) {
-      debugPrint(e.toString());
+      log.severe(e.toString());
       rethrow;
     }
   }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_unlock/ui/pin_code_unlock_screen.dart';
 import 'package:bb_mobile/features/pin_code/presentation/bloc/pin_code_setting_bloc.dart';
 import 'package:bb_mobile/features/pin_code/ui/screens/choose_pin_code_screen.dart';
@@ -19,10 +20,10 @@ class PinCodeSettingFlow extends StatelessWidget {
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
           if (state.status == PinCodeSettingStatus.success) {
-            debugPrint('Pin Code Set Successfully');
+            log.info('Pin Code Set Successfully');
             context.pop();
           } else if (state.status == PinCodeSettingStatus.failure) {
-            debugPrint('Pin Code Set Failed');
+            log.info('Pin Code Set Failed');
           }
         },
         child: BlocSelector<

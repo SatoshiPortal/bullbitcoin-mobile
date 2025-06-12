@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
-import 'package:flutter/foundation.dart';
 
 class CheckTorRequiredOnStartupUsecase {
   final WalletRepository _wallet;
@@ -20,7 +20,7 @@ class CheckTorRequiredOnStartupUsecase {
 
       return defaultWallets[0].latestEncryptedBackup != null;
     } catch (e) {
-      debugPrint('CheckTorRequiredOnStartupUsecase: $e');
+      log.severe('CheckTorRequiredOnStartupUsecase: $e');
       return false;
     }
   }

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class CreateBuyOrderUsecase {
   final ExchangeOrderRepository _mainnetExchangeOrderRepository;
@@ -39,7 +39,7 @@ class CreateBuyOrderUsecase {
       );
       return order;
     } catch (e) {
-      debugPrint('Error in CreateBuyOrderUsecase: $e');
+      log.severe('Error in CreateBuyOrderUsecase: $e');
       throw CreateBuyOrderException('$e');
     }
   }
