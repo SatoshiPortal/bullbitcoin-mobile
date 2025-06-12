@@ -18,8 +18,6 @@ import 'package:crypto/crypto.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
 Future<void> doMigration0_1to0_2() async {
-  final print = locator<Logger>();
-
   try {
     final secureStorageDatasource = MigrationSecureStorageDatasource();
     final hiveDatasource = locator<OldHiveDatasource>();
@@ -106,7 +104,7 @@ Future<void> doMigration0_1to0_2() async {
       value: '0.2.0',
     ); // gets overwritten by the exact 0.2.* version later}
   } catch (e) {
-    print.log('Legacy Migration Failed: $e');
+    log.severe('Legacy Migration Failed: $e');
   }
 }
 

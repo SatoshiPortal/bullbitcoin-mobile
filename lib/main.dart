@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
@@ -36,6 +36,7 @@ Future main() async {
         dotenv.load(isOptional: true),
         LibBbqr.init(),
       ]);
+      log = await Logger.init();
 
       // The Locator setup might depend on the initialization of the libraries above
       //  so it's important to call it after the initialization
@@ -45,7 +46,7 @@ Future main() async {
       runApp(const BullBitcoinWalletApp());
     },
     (error, stack) {
-      log('\n\nError: $error \nStack: $stack\n\n');
+      log.severe(error, trace: stack);
     },
   );
 }
