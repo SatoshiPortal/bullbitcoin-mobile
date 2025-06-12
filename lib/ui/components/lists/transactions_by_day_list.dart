@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
+import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:bb_mobile/ui/themes/fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -62,7 +63,7 @@ class TransactionsByDayList extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              BBText(
                 date.compareTo(today) > 0
                     ? 'Pending'
                     : date == today
@@ -72,7 +73,7 @@ class TransactionsByDayList extends StatelessWidget {
                     : date.year == DateTime.now().year
                     ? DateFormat.MMMMd().format(date)
                     : DateFormat.yMMMMd().format(date),
-                style: AppFonts.textTheme.textTheme.titleSmall?.copyWith(
+                style: context.font.titleSmall?.copyWith(
                   color: theme.colorScheme.onSurface,
                 ),
               ),
