@@ -1451,10 +1451,10 @@ packages:
     dependency: transitive
     description:
       name: sqlite3_flutter_libs
-      sha256: "7986c26234c0a5cf4fd83ff4ee39d4195b1f47cdb50a949ec7987ede4dcbdc2a"
+      sha256: e07232b998755fe795655c56d1f5426e0190c9c435e1752d39e7b1cd33699c71
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.33"
+    version: "0.5.34"
   sqlparser:
     dependency: transitive
     description:
@@ -1572,10 +1572,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "66c62b1f3b332b2e2fd506e07786a70fc53ab7f4"
+      resolved-ref: "440a2d2207da26683893bf8a2440499f4b43f019"
       url: "https://github.com/Foundation-Devices/tor"
     source: git
-    version: "0.0.8"
+    version: "0.0.9"
   typed_data:
     dependency: transitive
     description:
@@ -1596,10 +1596,10 @@ packages:
     dependency: transitive
     description:
       name: unorm_dart
-      sha256: "23d8bf65605401a6a32cff99435fed66ef3dab3ddcad3454059165df46496a3b"
+      sha256: "8e3870a1caa60bde8352f9597dd3535d8068613269444f8e35ea8925ec84c1f5"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.0"
+    version: "0.3.1+1"
   url_launcher:
     dependency: "direct main"
     description:
@@ -1708,10 +1708,10 @@ packages:
     dependency: transitive
     description:
       name: watcher
-      sha256: "69da27e49efa56a15f8afe8f4438c4ec02eff0a117df1b22ea4aad194fe1c104"
+      sha256: "0b7fd4a0bbc4b92641dbf20adfd7e3fd1398fe17102d94b674234563e110088a"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.1"
+    version: "1.1.2"
   web:
     dependency: transitive
     description:
