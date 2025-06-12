@@ -1,6 +1,6 @@
-import 'package:bb_mobile/core/logging/data/datasources/log_datasource.dart';
-import 'package:bb_mobile/core/logging/data/models/log_model.dart';
-import 'package:bb_mobile/core/logging/domain/entities/log.dart';
+import 'package:bb_mobile/core/logging/data/log_datasource.dart';
+import 'package:bb_mobile/core/logging/data/log_model.dart';
+import 'package:bb_mobile/core/logging/domain/log_entity.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class LogRepository {

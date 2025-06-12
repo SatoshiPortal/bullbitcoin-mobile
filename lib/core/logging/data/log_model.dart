@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/logging/domain/entities/log.dart';
+import 'package:bb_mobile/core/logging/domain/log_entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'log_model.freezed.dart';

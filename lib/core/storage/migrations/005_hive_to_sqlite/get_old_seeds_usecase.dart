@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/logging/domain/entities/log.dart';
-import 'package:bb_mobile/core/logging/domain/usecases/add_log_usecase.dart';
+import 'package:bb_mobile/core/logging/domain/add_log_usecase.dart';
+import 'package:bb_mobile/core/logging/domain/log_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_seed.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_wallet.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
@@ -33,7 +33,7 @@ class GetOldSeedsUsecase {
               )
               .toList();
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.debug,
           message:
               'PROGRESS: Found  ${oldMainnetDefaultWallets.length} defaultOldSignerWallets',
@@ -50,7 +50,7 @@ class GetOldSeedsUsecase {
               .toList();
 
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.debug,
           message:
               'PROGRESS: Found ${oldMainnetExternalSignerWallets.length} externalOldSignerWallets',
@@ -70,7 +70,7 @@ class GetOldSeedsUsecase {
       return oldSeeds;
     } catch (e) {
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.error,
           message: 'Migration failed',
           logger: 'MigrateToV5HiveToSqliteUsecase',

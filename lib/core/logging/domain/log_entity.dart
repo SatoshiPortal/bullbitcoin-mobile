@@ -1,12 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'log.freezed.dart';
+part 'log_entity.freezed.dart';
 
 enum LogLevel { trace, debug, info, error }
 
 @freezed
-sealed class Log with _$Log {
-  const factory Log.new({
+sealed class LogEntity with _$LogEntity {
+  const factory LogEntity.new({
     required LogLevel level,
     required String message,
     required String logger,
@@ -14,8 +14,9 @@ sealed class Log with _$Log {
     // Only used for LogLevel.error
     Object? exception,
     StackTrace? stackTrace,
-  }) = NewLog;
-  const factory Log.complete({
+  }) = NewLogEntity;
+
+  const factory LogEntity.complete({
     required LogLevel level,
     required String message,
     required String logger,
@@ -24,6 +25,6 @@ sealed class Log with _$Log {
     StackTrace? stackTrace,
     required DateTime timestamp,
     required String appVersion,
-  }) = CompleteLog;
-  const Log._();
+  }) = CompleteLogEntity;
+  const LogEntity._();
 }

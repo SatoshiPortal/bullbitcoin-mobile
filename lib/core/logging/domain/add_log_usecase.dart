@@ -1,5 +1,5 @@
-import 'package:bb_mobile/core/logging/data/repositories/log_repository.dart';
-import 'package:bb_mobile/core/logging/domain/entities/log.dart';
+import 'package:bb_mobile/core/logging/data/log_repository.dart';
+import 'package:bb_mobile/core/logging/domain/log_entity.dart';
 import 'package:flutter/foundation.dart';
 
 class AddLogUsecase {
@@ -8,7 +8,7 @@ class AddLogUsecase {
   AddLogUsecase({required LogRepository logRepository})
     : _logRepository = logRepository;
 
-  Future<void> execute(NewLog log) {
+  Future<void> execute(NewLogEntity log) {
     try {
       switch (log.level) {
         case LogLevel.trace:

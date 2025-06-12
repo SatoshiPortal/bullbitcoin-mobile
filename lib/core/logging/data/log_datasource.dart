@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bb_mobile/core/logging/data/models/log_model.dart';
+import 'package:bb_mobile/core/logging/data/log_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
