@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/transactions/presentation/blocs/transactions_cubit.dart';
-import 'package:bb_mobile/features/wallet/presentation/blocs/detail/wallet_detail_bloc.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_balance_card.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_detail_txs_list.dart';
@@ -11,11 +11,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
 class WalletDetailScreen extends StatelessWidget {
-  const WalletDetailScreen({super.key});
+  const WalletDetailScreen({super.key, required this.walletId});
+
+  final String walletId;
 
   @override
   Widget build(BuildContext context) {
-    final wallet = context.select((WalletDetailBloc bloc) => bloc.state.wallet);
+    final wallet = context.select((WalletBloc bloc) {
+      try {
+        return bloc.state.wallets.firstWhere((w) => w.id == walletId);
+      } catch (e) {
+        return null;
+      }
+    });
     final walletName =
         wallet != null
             ? wallet.isDefault
@@ -42,7 +50,7 @@ class WalletDetailScreen extends StatelessWidget {
             BlocProvider<TransactionsCubit>(
               create:
                   (_) =>
-                      locator<TransactionsCubit>(param1: wallet.id)..loadTxs(),
+                      locator<TransactionsCubit>(param1: walletId)..loadTxs(),
               child: Column(
                 children: [
                   WalletDetailBalanceCard(

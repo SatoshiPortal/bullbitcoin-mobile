@@ -7,7 +7,9 @@ import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecas
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
@@ -123,22 +125,46 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
               (_) =>
                   locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
         ),
+        // Make the wallet bloc available to the whole app so environment changes
+        // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
+        BlocProvider(
+          create:
+              (_) =>
+                  locator<WalletBloc>()
+                    ..add(const WalletStarted())
+                    ..add(const CheckAllWarnings()),
+        ),
+        // Make the exchange cubit available to the whole app so redirects
+        // can use it to check if the user is authenticated and also to fetch
+        // the user summary when the environment changes from anywhere in the app.
+        BlocProvider(
+          create: (_) => locator<ExchangeCubit>()..fetchUserSummary(),
+        ),
       ],
-      child: BlocSelector<SettingsCubit, SettingsState, Language?>(
-        selector: (settings) => settings.language,
-        builder:
-            (context, language) => MaterialApp.router(
-              title: 'BullBitcoin Wallet',
-              debugShowCheckedModeBanner: false,
-              routerConfig: AppRouter.router,
-              theme: AppTheme.themeData(AppThemeType.light),
-              locale: language?.locale,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              builder: (_, child) {
-                return AppStartupWidget(app: child!);
-              },
-            ),
+      child: BlocListener<SettingsCubit, SettingsState>(
+        listenWhen:
+            (previous, current) => previous.environment != current.environment,
+        listener: (context, settings) async {
+          // Re-fetch user summary (re-init exchange bloc) when environment changes
+          context.read<WalletBloc>().add(const WalletStarted());
+          await context.read<ExchangeCubit>().fetchUserSummary();
+        },
+        child: BlocSelector<SettingsCubit, SettingsState, Language?>(
+          selector: (settings) => settings.language,
+          builder:
+              (context, language) => MaterialApp.router(
+                title: 'BullBitcoin Wallet',
+                debugShowCheckedModeBanner: false,
+                routerConfig: AppRouter.router,
+                theme: AppTheme.themeData(AppThemeType.light),
+                locale: language?.locale,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                builder: (_, child) {
+                  return AppStartupWidget(app: child!);
+                },
+              ),
+        ),
       ),
     );
   }

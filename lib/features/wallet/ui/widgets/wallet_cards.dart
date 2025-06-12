@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
-import 'package:bb_mobile/features/wallet/presentation/blocs/home/wallet_home_bloc.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/ui/components/cards/wallet_card.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -29,7 +29,7 @@ class HomeWalletCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wallets = context.select((WalletHomeBloc bloc) => bloc.state.wallets);
+    final wallets = context.select((WalletBloc bloc) => bloc.state.wallets);
 
     return Padding(
       padding: const EdgeInsets.all(13.0),

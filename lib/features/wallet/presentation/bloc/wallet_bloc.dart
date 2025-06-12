@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
-import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
@@ -16,12 +15,12 @@ import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'wallet_home_bloc.freezed.dart';
-part 'wallet_home_event.dart';
-part 'wallet_home_state.dart';
+part 'wallet_bloc.freezed.dart';
+part 'wallet_event.dart';
+part 'wallet_state.dart';
 
-class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
-  WalletHomeBloc({
+class WalletBloc extends Bloc<WalletEvent, WalletState> {
+  WalletBloc({
     required GetWalletsUsecase getWalletsUsecase,
     required CheckWalletSyncingUsecase checkWalletSyncingUsecase,
     required WatchStartedWalletSyncsUsecase watchStartedWalletSyncsUsecase,
@@ -41,11 +40,11 @@ class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
            checkForTorInitializationOnStartupUsecase,
        _getPrioritizedServerUsecase = getBestAvailableServerUsecase,
 
-       super(const WalletHomeState()) {
-    on<WalletHomeStarted>(_onStarted);
-    on<WalletHomeRefreshed>(_onRefreshed);
-    on<WalletHomeWalletSyncStarted>(_onWalletSyncStarted);
-    on<WalletHomeWalletSyncFinished>(_onWalletSyncFinished);
+       super(const WalletState()) {
+    on<WalletStarted>(_onStarted);
+    on<WalletRefreshed>(_onRefreshed);
+    on<WalletSyncStarted>(_onWalletSyncStarted);
+    on<WalletSyncFinished>(_onWalletSyncFinished);
     on<StartTorInitialization>(_onStartTorInitialization);
     on<CheckAllWarnings>(_onCheckAllWarnings);
   }
@@ -71,8 +70,8 @@ class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
   }
 
   Future<void> _onStarted(
-    WalletHomeStarted event,
-    Emitter<WalletHomeState> emit,
+    WalletStarted event,
+    Emitter<WalletState> emit,
   ) async {
     try {
       // Don't sync the wallets here so the wallet list is shown immediately
@@ -81,15 +80,15 @@ class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
       final isSyncing = _checkWalletSyncingUsecase.execute();
 
       emit(
-        WalletHomeState(
-          status: WalletHomeStatus.success,
+        WalletState(
+          status: WalletStatus.success,
           wallets: wallets,
           isSyncing: isSyncing,
         ),
       );
 
       // Now that the wallets are loaded, we can sync them as done by the refresh
-      add(const WalletHomeRefreshed());
+      add(const WalletRefreshed());
 
       // Now subscribe to syncs starts and finishes to update the UI with the syncing indicator
       await _startedSyncsSubscription
@@ -98,18 +97,18 @@ class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
           ?.cancel(); // cancel any previous subscription
       _startedSyncsSubscription = _watchStartedWalletSyncsUsecase
           .execute()
-          .listen((wallet) => add(WalletHomeWalletSyncStarted(wallet)));
+          .listen((wallet) => add(WalletSyncStarted(wallet)));
       _finishedSyncsSubscription = _watchFinishedWalletSyncsUsecase
           .execute()
-          .listen((wallet) => add(WalletHomeWalletSyncFinished(wallet)));
+          .listen((wallet) => add(WalletSyncFinished(wallet)));
     } catch (e) {
-      emit(WalletHomeState(status: WalletHomeStatus.failure, error: e));
+      emit(WalletState(status: WalletStatus.failure, error: e));
     }
   }
 
   Future<void> _onRefreshed(
-    WalletHomeRefreshed event,
-    Emitter<WalletHomeState> emit,
+    WalletRefreshed event,
+    Emitter<WalletState> emit,
   ) async {
     try {
       emit(state.copyWith(isSyncing: true));
@@ -119,7 +118,7 @@ class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
       emit(
         state.copyWith(
           isSyncing: false,
-          status: WalletHomeStatus.success,
+          status: WalletStatus.success,
           wallets: wallets,
           error: null,
         ),
@@ -133,7 +132,7 @@ class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
       emit(
         state.copyWith(
           isSyncing: false,
-          status: WalletHomeStatus.failure,
+          status: WalletStatus.failure,
           error: e,
         ),
       );
@@ -141,16 +140,16 @@ class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
   }
 
   Future<void> _onWalletSyncStarted(
-    WalletHomeWalletSyncStarted event,
-    Emitter<WalletHomeState> emit,
+    WalletSyncStarted event,
+    Emitter<WalletState> emit,
   ) async {
     // Do nothing for now, since we only want to show the syncing indicator
     // when the user itself refreshes the wallets.
   }
 
   Future<void> _onWalletSyncFinished(
-    WalletHomeWalletSyncFinished event,
-    Emitter<WalletHomeState> emit,
+    WalletSyncFinished event,
+    Emitter<WalletState> emit,
   ) async {
     try {
       //final walletId = event.walletId;
@@ -165,21 +164,21 @@ class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
 
       emit(
         state.copyWith(
-          status: WalletHomeStatus.success,
+          status: WalletStatus.success,
           wallets: wallets,
           //isSyncing: isAnyOtherWalletSyncing,
         ),
       );
     } catch (e) {
-      emit(state.copyWith(status: WalletHomeStatus.failure, error: e));
+      emit(state.copyWith(status: WalletStatus.failure, error: e));
     }
   }
 
   Future<void> _onStartTorInitialization(
     StartTorInitialization event,
-    Emitter<WalletHomeState> emit,
+    Emitter<WalletState> emit,
   ) async {
-    emit(state.copyWith(status: WalletHomeStatus.loading));
+    emit(state.copyWith(status: WalletStatus.loading));
     final isTorIniatizationEnabled =
         await _checkForTorInitializationOnStartupUsecase.execute();
 
@@ -190,7 +189,7 @@ class WalletHomeBloc extends Bloc<WalletHomeEvent, WalletHomeState> {
 
   Future<void> _onCheckAllWarnings(
     CheckAllWarnings event,
-    Emitter<WalletHomeState> emit,
+    Emitter<WalletState> emit,
   ) async {
     final defaultWallets = await _getWalletsUsecase.execute(onlyDefaults: true);
     if (defaultWallets.isEmpty) {

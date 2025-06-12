@@ -1,20 +1,19 @@
-part of 'wallet_home_bloc.dart';
+part of 'wallet_bloc.dart';
 
-enum WalletHomeStatus { initial, loading, success, failure }
+enum WalletStatus { initial, loading, success, failure }
 
-enum WalletHomeTabs { wallets, exchange }
+enum WalletTabs { wallets, exchange }
 
 @freezed
-sealed class WalletHomeState with _$WalletHomeState {
-  const factory WalletHomeState({
-    @Default(WalletHomeStatus.initial) WalletHomeStatus status,
+sealed class WalletState with _$WalletState {
+  const factory WalletState({
+    @Default(WalletStatus.initial) WalletStatus status,
     @Default([]) List<Wallet> wallets,
     @Default([]) List<WalletWarning> warnings,
     @Default(false) bool isSyncing,
     @Default(null) Object? error,
-    UserSummaryModel? userSummary,
-  }) = _WalletHomeState;
-  const WalletHomeState._();
+  }) = _WalletState;
+  const WalletState._();
 
   Wallet? defaultLiquidWallet() =>
       wallets.isEmpty

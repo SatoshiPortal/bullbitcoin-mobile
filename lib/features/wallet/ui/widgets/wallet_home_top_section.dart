@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
-import 'package:bb_mobile/features/wallet/presentation/blocs/home/wallet_home_bloc.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -111,7 +111,7 @@ class _BtcTotalAmt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final btcTotal = context.select(
-      (WalletHomeBloc bloc) => bloc.state.totalBalance(),
+      (WalletBloc bloc) => bloc.state.totalBalance(),
     );
 
     return CurrencyText(
@@ -129,7 +129,7 @@ class _FiatAmt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totalBal = context.select(
-      (WalletHomeBloc bloc) => bloc.state.totalBalance(),
+      (WalletBloc bloc) => bloc.state.totalBalance(),
     );
 
     return HomeFiatBalance(balanceSat: totalBal);

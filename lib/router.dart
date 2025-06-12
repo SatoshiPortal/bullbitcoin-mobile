@@ -21,21 +21,22 @@ import 'package:go_router/go_router.dart';
 class AppRouter {
   static final GlobalKey<NavigatorState> rootNavigatorKey =
       GlobalKey<NavigatorState>(debugLabel: 'rootNav');
-  static final GlobalKey<NavigatorState> _walletNavigatorKey =
-      GlobalKey<NavigatorState>(debugLabel: 'wallletNav');
-  static final GlobalKey<NavigatorState> _exchangeNavigatorKey =
-      GlobalKey<NavigatorState>(debugLabel: 'exchangeNav');
 
   static final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: WalletRoute.walletHome.path,
     routes: [
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
+      ShellRoute(
+        builder: (context, state, child) {
+          final location = state.uri.toString();
+          final tabIndex =
+              location.startsWith(ExchangeRoute.exchangeHome.path) ? 1 : 0;
+
           return Scaffold(
-            body: navigationShell,
+            body: child,
+
             bottomNavigationBar: BottomNavigationBar(
-              currentIndex: navigationShell.currentIndex,
+              currentIndex: tabIndex,
               onTap: (index) {
                 // Only supersusers can navigate to the exchange tab
                 final isSuperuser =
@@ -44,10 +45,12 @@ class AppRouter {
                   return;
                 }
 
-                navigationShell.goBranch(
-                  index,
-                  initialLocation: navigationShell.currentIndex == index,
-                );
+                final goNamed =
+                    index == 0
+                        ? WalletRoute.walletHome.name
+                        : ExchangeRoute.exchangeHome.name;
+
+                context.goNamed(goNamed);
               },
               items: const [
                 BottomNavigationBarItem(
@@ -62,17 +65,7 @@ class AppRouter {
             ),
           );
         },
-        branches: [
-          StatefulShellBranch(
-            navigatorKey: _walletNavigatorKey,
-            routes: [WalletRouter.walletHomeRoute],
-          ),
-          StatefulShellBranch(
-            navigatorKey: _exchangeNavigatorKey,
-            routes: [ExchangeRouter.route],
-            initialLocation: ExchangeRoute.exchangeHome.path,
-          ),
-        ],
+        routes: [WalletRouter.walletHomeRoute, ...ExchangeRouter.routes],
       ),
       OnboardingRouter.route,
       AppUnlockRouter.route,

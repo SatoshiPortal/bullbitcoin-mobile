@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/backup_settings/ui/backup_settings_router.dart';
-import 'package:bb_mobile/features/wallet/presentation/blocs/home/wallet_home_bloc.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/ui/components/cards/backup_card.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -13,7 +13,7 @@ class HomeWarnings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WalletHomeBloc, WalletHomeState>(
+    return BlocBuilder<WalletBloc, WalletState>(
       buildWhen:
           (previous, current) =>
               previous.showBackupWarning() != current.showBackupWarning() ||

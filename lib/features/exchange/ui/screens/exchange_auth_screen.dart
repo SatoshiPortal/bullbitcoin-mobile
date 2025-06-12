@@ -21,21 +21,16 @@ class ExchangeAuthScreen extends StatefulWidget {
 }
 
 class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
-  late final String _bbAuthUrl;
   late final WebViewController _controller = WebViewController();
   late final WebviewCookieManager _cookieManager = WebviewCookieManager();
   bool _isGeneratingApiKey = false;
+  late Environment? _env;
 
   @override
   void initState() {
     super.initState();
 
-    final isTestnet =
-        context.read<SettingsCubit>().state.environment == Environment.testnet;
-    _bbAuthUrl =
-        isTestnet
-            ? ApiServiceConstants.bbAuthTestUrl
-            : ApiServiceConstants.bbAuthUrl;
+    _env = context.read<SettingsCubit>().state.environment;
 
     _controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -115,7 +110,7 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
       ..setUserAgent(
         'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15.0 Safari/604.1',
       )
-      ..loadRequest(Uri.parse(_bbAuthUrl));
+      ..loadRequest(Uri.parse(_getBBAuthUrlForEnv(_env)));
 
     if (Platform.isAndroid) {
       AndroidWebViewController.enableDebugging(false);
@@ -132,12 +127,36 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final env = context.watch<SettingsCubit>().state.environment;
+
+    if (_env != env) {
+      _env = env;
+      final url = _getBBAuthUrlForEnv(env);
+      _clearCacheAndCookies().then((_) {
+        _controller.loadRequest(Uri.parse(url));
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child:
-          _isGeneratingApiKey
-              ? const Center(child: CircularProgressIndicator())
-              : WebViewWidget(controller: _controller),
+    return BlocListener<SettingsCubit, SettingsState>(
+      listenWhen: (prev, curr) => prev.environment != curr.environment,
+      listener: (context, state) async {
+        _env = state.environment;
+        final url = _getBBAuthUrlForEnv(_env);
+        // clear before reloading for fresh session
+        await _clearCacheAndCookies();
+        await _controller.loadRequest(Uri.parse(url));
+      },
+      child: SafeArea(
+        child:
+            _isGeneratingApiKey
+                ? const Center(child: CircularProgressIndicator())
+                : WebViewWidget(controller: _controller),
+      ),
     );
   }
 
@@ -153,12 +172,20 @@ class _ExchangeAuthScreenState extends State<ExchangeAuthScreen> {
     return bbSessionCookie;
   }
 
+  String _getBBAuthUrlForEnv(Environment? env) {
+    return env == Environment.testnet
+        ? ApiServiceConstants.bbAuthTestUrl
+        : ApiServiceConstants.bbAuthUrl;
+  }
+
   Future<Map<String, dynamic>> _generateApiKey() async {
+    final url = '${_getBBAuthUrlForEnv(_env)}/api/generate-api-key';
+
     final result =
         await _controller.runJavaScriptReturningResult('''
         (function() {
           var xhr = new XMLHttpRequest();
-          xhr.open('POST', '$_bbAuthUrl/api/generate-api-key', false);
+          xhr.open('POST', '$url', false);
           xhr.setRequestHeader('Content-Type', 'application/json');
           xhr.withCredentials = true;
           try {
