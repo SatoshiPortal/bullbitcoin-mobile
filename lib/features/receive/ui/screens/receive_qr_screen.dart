@@ -85,7 +85,7 @@ class ReceiveQRDetails extends StatelessWidget {
             child:
                 qrData.isNotEmpty
                     ? QrImageView(data: qrData)
-                    : const LoadingBoxContent(size: 200),
+                    : const LoadingBoxContent(height: 200),
           ),
         ),
         if (isPayjoinAvailable) ...[

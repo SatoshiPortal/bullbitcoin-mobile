@@ -1,6 +1,7 @@
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/buy/ui/buy_router.dart';
 import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/receive/ui/receive_router.dart';
@@ -81,6 +82,7 @@ class AppRouter {
       SendRouter.route,
       SwapRouter.route,
       ...BuyRouter.routes,
+      FundExchangeRouter.route,
       SellRouter.route,
       KeyServerRouter.route,
     ],

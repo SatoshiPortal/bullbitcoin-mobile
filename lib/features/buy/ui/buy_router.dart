@@ -49,7 +49,7 @@ class BuyRouter {
                       (previous, current) =>
                           previous.buyOrder == null && current.buyOrder != null,
                   listener: (context, state) {
-                    context.pushReplacementNamed(BuyRoute.buyConfirmation.name);
+                    context.pushNamed(BuyRoute.buyConfirmation.name);
                   },
                 ),
               ],

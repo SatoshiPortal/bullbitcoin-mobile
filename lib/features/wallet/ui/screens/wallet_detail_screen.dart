@@ -45,7 +45,7 @@ class WalletDetailScreen extends StatelessWidget {
         alignment: Alignment.bottomCenter,
         children: [
           if (wallet == null)
-            const LoadingBoxContent(size: 100)
+            const LoadingBoxContent(height: 100)
           else
             BlocProvider<TransactionsCubit>(
               create:
