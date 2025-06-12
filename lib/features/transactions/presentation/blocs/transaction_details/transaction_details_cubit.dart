@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
+import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
@@ -32,6 +33,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required WatchSwapUsecase watchSwapUsecase,
     required WatchPayjoinUsecase watchPayjoinUsecase,
     required CreateLabelUsecase createLabelUsecase,
+    required DeleteLabelUsecase deleteLabelUsecase,
     required BroadcastOriginalTransactionUsecase
     broadcastOriginalTransactionUsecase,
   }) : _getWalletUsecase = getWalletUsecase,
@@ -43,6 +45,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
        _watchSwapUsecase = watchSwapUsecase,
        _watchPayjoinUsecase = watchPayjoinUsecase,
        _createLabelUsecase = createLabelUsecase,
+       _deleteLabelUsecase = deleteLabelUsecase,
        _broadcastOriginalTransactionUsecase =
            broadcastOriginalTransactionUsecase,
        _walletTransactionSubscriptions = {},
@@ -58,6 +61,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   final WatchSwapUsecase _watchSwapUsecase;
   final WatchPayjoinUsecase _watchPayjoinUsecase;
   final CreateLabelUsecase _createLabelUsecase;
+  final DeleteLabelUsecase _deleteLabelUsecase;
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
 
@@ -280,5 +284,32 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         );
       }
     });
+  }
+
+  Future<void> deleteTransactionNote(String note) async {
+    final walletTransaction = state.walletTransaction;
+    if (walletTransaction == null) return;
+
+    try {
+      await _deleteLabelUsecase.execute<WalletTransaction>(
+        entity: walletTransaction,
+        label: note,
+      );
+
+      final updatedLabels = [...?state.transaction.walletTransaction?.labels];
+      updatedLabels.remove(note);
+
+      final updatedWalletTransaction = state.transaction.walletTransaction
+          ?.copyWith(labels: updatedLabels);
+      emit(
+        state.copyWith(
+          transaction: state.transaction.copyWith(
+            walletTransaction: updatedWalletTransaction,
+          ),
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(err: e));
+    }
   }
 }
