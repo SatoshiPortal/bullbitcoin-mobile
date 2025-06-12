@@ -312,4 +312,38 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
       emit(state.copyWith(err: e));
     }
   }
+
+  Future<void> editTransactionNote(String oldNote, String newNote) async {
+    final walletTransaction = state.walletTransaction;
+    if (walletTransaction == null) return;
+
+    try {
+      await _deleteLabelUsecase.execute<WalletTransaction>(
+        entity: walletTransaction,
+        label: oldNote,
+      );
+
+      await _createLabelUsecase.execute<WalletTransaction>(
+        origin: state.wallet!.origin,
+        entity: walletTransaction,
+        label: newNote,
+      );
+
+      final updatedLabels = [...?state.transaction.walletTransaction?.labels];
+      updatedLabels.remove(oldNote);
+      updatedLabels.add(newNote);
+
+      final updatedWalletTransaction = state.transaction.walletTransaction
+          ?.copyWith(labels: updatedLabels);
+      emit(
+        state.copyWith(
+          transaction: state.transaction.copyWith(
+            walletTransaction: updatedWalletTransaction,
+          ),
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(err: e));
+    }
+  }
 }

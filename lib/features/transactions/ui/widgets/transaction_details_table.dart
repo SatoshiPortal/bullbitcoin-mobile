@@ -8,6 +8,7 @@ import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/transaction_notes_table_item.dart';
 import 'package:bb_mobile/ui/components/tables/details_table.dart';
 import 'package:bb_mobile/ui/components/tables/details_table_item.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -63,7 +64,8 @@ class TransactionDetailsTable extends StatelessWidget {
             ? StringFormatting.truncateMiddle(swapCounterpartTransaction!.txId!)
             : '';
 
-    final labels = tx.labels?.join(', ') ?? '';
+    final labels = tx.labels ?? [];
+
     final address = walletTransaction?.toAddress ?? '';
     final txId = tx.txId ?? '';
     final abbreviatedAddress = StringFormatting.truncateMiddle(address);
@@ -99,8 +101,7 @@ class TransactionDetailsTable extends StatelessWidget {
                       ),
                     ),
           ),
-        if (labels.isNotEmpty)
-          DetailsTableItem(label: 'Transaction notes', displayValue: labels),
+        if (labels.isNotEmpty) TransactionNotesTableItem(notes: labels),
         if (walletLabel.isNotEmpty && !isOrderType)
           DetailsTableItem(
             label: tx.isIncoming ? 'To wallet' : 'From wallet',
