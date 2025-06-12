@@ -1,17 +1,13 @@
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/settings/ui/settings_router.dart';
-import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/cards/action_card.dart';
-import 'package:bb_mobile/ui/components/navbar/top_bar_bull_logo.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 
 class WalletHomeTopSection extends StatelessWidget {
   const WalletHomeTopSection({super.key});
@@ -71,7 +67,6 @@ class _UIState extends State<_UI> {
       children: [
         Transform.rotate(angle: 3.141, child: image),
         const _Amounts(),
-        const Positioned(top: 54, left: 0, right: 0, child: _TopNav()),
       ],
     );
   }
@@ -133,67 +128,5 @@ class _FiatAmt extends StatelessWidget {
     );
 
     return HomeFiatBalance(balanceSat: totalBal);
-  }
-}
-
-class _TopNav extends StatelessWidget {
-  const _TopNav();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Gap(8),
-        IconButton(
-          onPressed: () {},
-          visualDensity: VisualDensity.compact,
-          iconSize: 24,
-          color: context.colour.onPrimary,
-          icon: const Icon(
-            Icons.bar_chart,
-            color: Colors.transparent,
-            blendMode: BlendMode.overlay,
-          ),
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-          disabledColor: Colors.transparent,
-          tooltip: '',
-        ),
-        const Gap(24 + 42),
-        const Spacer(),
-        const TopBarBullLogo(enableSuperuserTapUnlocker: true),
-        const Spacer(),
-        const Gap(20),
-        IconButton(
-          onPressed: () {
-            context.pushNamed(TransactionsRoute.transactions.name);
-          },
-          visualDensity: VisualDensity.compact,
-          color: context.colour.onPrimary,
-          iconSize: 24,
-          icon: const Icon(Icons.history),
-        ),
-        const Gap(8),
-
-        InkWell(
-          onTap: () => context.pushNamed(SettingsRoute.settings.name),
-          child: Image.asset(
-            Assets.icons.settingsLine.path,
-            width: 24,
-            height: 24,
-            color: context.colour.onPrimary,
-          ),
-        ),
-        // IconButton(
-        //   visualDensity: VisualDensity.compact,
-        //   onPressed: () {},
-        //   iconSize: 24,
-        //   color: context.colour.onPrimary,
-        //   icon: const Icon(Icons.bolt),
-        // ),
-        const Gap(16),
-      ],
-    );
   }
 }

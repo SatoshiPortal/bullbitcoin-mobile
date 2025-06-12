@@ -127,13 +127,7 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
         ),
         // Make the wallet bloc available to the whole app so environment changes
         // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
-        BlocProvider(
-          create:
-              (_) =>
-                  locator<WalletBloc>()
-                    ..add(const WalletStarted())
-                    ..add(const CheckAllWarnings()),
-        ),
+        BlocProvider(create: (_) => locator<WalletBloc>()),
         // Make the exchange cubit available to the whole app so redirects
         // can use it to check if the user is authenticated and also to fetch
         // the user summary when the environment changes from anywhere in the app.
@@ -141,14 +135,33 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
           create: (_) => locator<ExchangeCubit>()..fetchUserSummary(),
         ),
       ],
-      child: BlocListener<SettingsCubit, SettingsState>(
-        listenWhen:
-            (previous, current) => previous.environment != current.environment,
-        listener: (context, settings) async {
-          // Re-fetch user summary (re-init exchange bloc) when environment changes
-          context.read<WalletBloc>().add(const WalletStarted());
-          await context.read<ExchangeCubit>().fetchUserSummary();
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<AppStartupBloc, AppStartupState>(
+            listenWhen:
+                (previous, current) =>
+                    previous != current &&
+                    current is AppStartupSuccess &&
+                    current.hasDefaultWallets,
+            listener: (context, settings) {
+              // If wallets exist and the app has started successfully,
+              // we can start the wallet bloc to fetch the wallets.
+              context.read<WalletBloc>().add(const WalletStarted());
+              context.read<WalletBloc>().add(const CheckAllWarnings());
+            },
+          ),
+          BlocListener<SettingsCubit, SettingsState>(
+            listenWhen:
+                (previous, current) =>
+                    previous.environment != current.environment,
+            listener: (context, settings) async {
+              // Re-fetch user summary (re-init exchange bloc) and wallets
+              //  when environment changes
+              context.read<WalletBloc>().add(const WalletStarted());
+              await context.read<ExchangeCubit>().fetchUserSummary();
+            },
+          ),
+        ],
         child: BlocSelector<SettingsCubit, SettingsState, Language?>(
           selector: (settings) => settings.language,
           builder:

@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
+import 'package:bb_mobile/features/wallet/ui/widgets/wallet_home_app_bar.dart';
 import 'package:bb_mobile/ui/screens/route_error_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,8 +34,11 @@ class AppRouter {
               location.startsWith(ExchangeRoute.exchangeHome.path) ? 1 : 0;
 
           return Scaffold(
+            // The app bar of the exchange tab is done with a sliver app bar
+            // on the ExchangeHomeScreen itself.
+            appBar: tabIndex == 0 ? const WalletHomeAppBar() : null,
+            extendBodyBehindAppBar: true,
             body: child,
-
             bottomNavigationBar: BottomNavigationBar(
               currentIndex: tabIndex,
               onTap: (index) {

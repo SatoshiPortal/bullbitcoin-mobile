@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_rec
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_recovery_success.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/recover_options.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,10 @@ class OnboardingRouter {
                           previous.createSuccess() != current.createSuccess() &&
                           current.createSuccess(),
                   listener: (context, state) {
+                    // Restart the wallet bloc to ensure it reflects the new wallet state
+                    // with the recently created or recovered wallet before
+                    // navigating to the wallet home screen.
+                    context.read<WalletBloc>().add(const WalletStarted());
                     context.goNamed(WalletRoute.walletHome.name);
                   },
                 ),
