@@ -230,6 +230,8 @@ class SendCubit extends Cubit<SendState> {
     try {
       emit(state.copyWith(loadingBestWallet: true, invoiceHasMrh: false));
 
+      await unifiedBip21Prioritization();
+
       if (!state.hasValidPaymentRequest) {
         emit(
           state.copyWith(
@@ -1382,5 +1384,29 @@ class SendCubit extends Cubit<SendState> {
           );
           emit(state.copyWith(walletTransaction: tx));
         });
+  }
+
+  Future<void> unifiedBip21Prioritization() async {
+    final request = state.paymentRequest;
+    if (request == null) return;
+    if (request is! Bip21PaymentRequest) return;
+    if (request.lightning.isEmpty) return;
+
+    try {
+      final lightning = await PaymentRequest.parse(request.lightning);
+      final wallet = _bestWalletUsecase.execute(
+        wallets: state.wallets,
+        request: lightning,
+        amountSat: lightning.amountSat,
+      );
+      emit(state.copyWith(selectedWallet: wallet, paymentRequest: lightning));
+    } catch (_) {
+      final wallet = _bestWalletUsecase.execute(
+        wallets: state.wallets,
+        request: request,
+        amountSat: request.amountSat,
+      );
+      emit(state.copyWith(selectedWallet: wallet, paymentRequest: request));
+    }
   }
 }
