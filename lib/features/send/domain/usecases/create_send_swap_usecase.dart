@@ -37,7 +37,7 @@ class CreateSendSwapUsecase {
         throw Exception('Amount must be provided if lnAddress is used');
       }
       final finalInvoice =
-          invoice ??
+          invoice?.toLowerCase() ??
           await invoiceFromLnAddress(
             lnAddress: lnAddress!,
             amountSat: amountSat!,

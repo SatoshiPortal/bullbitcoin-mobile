@@ -183,9 +183,13 @@ class SwapCubit extends Cubit<SwapState> {
           networkFee: networkFee,
           drain: true,
         );
+        final signedPset = await _signLiquidTxUsecase.execute(
+          walletId: fromWallet.id,
+          pset: pset,
+        );
 
         absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
-          pset: pset,
+          pset: signedPset,
           walletId: fromWallet.id,
         );
         debugPrint("Absolute fees: $absoluteFees");
@@ -557,8 +561,12 @@ class SwapCubit extends Cubit<SwapState> {
           networkFee: state.feesList!.fastest,
           drain: state.sendMax,
         );
-        final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
+        final signedPsbt = await _signLiquidTxUsecase.execute(
+          walletId: liquidWalletId,
           pset: psbt,
+        );
+        final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
+          pset: signedPsbt,
           walletId: liquidWalletId,
         );
         emit(
@@ -569,10 +577,6 @@ class SwapCubit extends Cubit<SwapState> {
           ),
         );
 
-        final signedPsbt = await _signLiquidTxUsecase.execute(
-          walletId: liquidWalletId,
-          psbt: psbt,
-        );
         emit(
           state.copyWith(signingTransaction: false, signedLiquidTx: signedPsbt),
         );
@@ -586,7 +590,23 @@ class SwapCubit extends Cubit<SwapState> {
         );
         return;
       }
+      if (e is CalculateBitcoinAbsoluteFeesException) {
+        emit(
+          state.copyWith(
+            confirmTransactionException: ConfirmTransactionException(e.message),
+          ),
+        );
+        return;
+      }
       if (e is PrepareLiquidSendException) {
+        emit(
+          state.copyWith(
+            confirmTransactionException: ConfirmTransactionException(e.message),
+          ),
+        );
+        return;
+      }
+      if (e is CalculateLiquidAbsoluteFeesException) {
         emit(
           state.copyWith(
             confirmTransactionException: ConfirmTransactionException(e.message),

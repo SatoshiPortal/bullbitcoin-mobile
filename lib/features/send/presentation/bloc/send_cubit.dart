@@ -1155,7 +1155,7 @@ class SendCubit extends Cubit<SendState> {
 
       if (state.selectedWallet!.network.isLiquid) {
         final signedPset = await _signLiquidTxUsecase.execute(
-          psbt: state.unsignedPsbt!,
+          pset: state.unsignedPsbt!,
           walletId: state.selectedWallet!.id,
         );
 

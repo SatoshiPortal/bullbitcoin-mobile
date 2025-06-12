@@ -586,7 +586,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         continue;
       }
       if (swap is LnSendSwap &&
-          swap.invoice == invoice &&
+          swap.invoice.toLowerCase() == invoice.toLowerCase() &&
           (swap.status == SwapStatus.pending)) {
         return swap;
       }

@@ -9,7 +9,7 @@ Future<String> invoiceFromLnAddress({
     final invoice = await lnurl.fetchInvoice(
       msats: BigInt.from(amountSat * 1000),
     );
-    return invoice;
+    return invoice.toLowerCase();
   } catch (e) {
     if (e is BoltzError) {
       throw Exception(e.message);
