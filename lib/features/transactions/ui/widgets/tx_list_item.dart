@@ -108,9 +108,16 @@ class TxListItem extends StatelessWidget {
                                 : null,
                       ),
                       if (label != null)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 4.0),
-                          child: BBText(label, style: context.font.bodyLarge),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 4.0),
+                            child: BBText(
+                              label,
+                              style: context.font.bodyLarge,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
                         ),
                     ],
                   ),
