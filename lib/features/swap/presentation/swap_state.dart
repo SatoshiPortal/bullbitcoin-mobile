@@ -201,7 +201,7 @@ abstract class SwapState with _$SwapState {
   }
 
   String get displayFromCurrencyCode {
-    if (fromWallet?.isLiquid ?? false) {
+    if (fromWallet?.isLiquid ?? true) {
       if (selectedFromCurrencyCode == BitcoinUnit.sats.code) {
         return 'L-sats';
       } else if (selectedFromCurrencyCode == BitcoinUnit.btc.code) {

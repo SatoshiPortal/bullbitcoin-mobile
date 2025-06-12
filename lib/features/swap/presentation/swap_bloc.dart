@@ -197,7 +197,9 @@ class SwapCubit extends Cubit<SwapState> {
       // balance - absolute fees - swap.lockupFees
       final balance = fromWallet.balanceSat.toInt();
       // final lockupFees = swapFees!.lockupFee!;
+
       final maxAmount = balance - absoluteFees;
+      // ensure that maxAmount is in the correct currency code
 
       // Ensure the amount is within swap limits
       debugPrint('Max amount: $maxAmount');
@@ -257,15 +259,6 @@ class SwapCubit extends Cubit<SwapState> {
   Future<void> init() async {
     emit(state.copyWith(loadingWallets: true));
     final wallets = await _getWalletsUsecase.execute();
-    final settings = await _getSettingsUsecase.execute();
-    final bitcoinUnit = settings.bitcoinUnit;
-    final currencies = await _getAvailableCurrenciesUsecase.execute();
-    final selectedFiatCurrencyCode = settings.currencyCode;
-
-    final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
-      currencyCode: selectedFiatCurrencyCode,
-    );
-
     final liquidWallets = wallets.where((w) => w.isLiquid).toList();
     final bitcoinWallets =
         wallets.where((w) => !w.isLiquid && !w.isWatchOnly).toList();
@@ -273,22 +266,36 @@ class SwapCubit extends Cubit<SwapState> {
       (w) => w.isDefault,
       orElse: () => bitcoinWallets.first,
     );
+    final settings = await _getSettingsUsecase.execute();
+    final bitcoinUnit = settings.bitcoinUnit;
+    emit(
+      state.copyWith(
+        fromWalletNetwork: WalletNetwork.liquid,
+        toWalletNetwork: WalletNetwork.bitcoin,
+        fromWalletId: liquidWallets.first.id,
+        toWalletId: defaultBitcoinWallet.id,
+        bitcoinUnit: bitcoinUnit,
+        selectedFromCurrencyCode: bitcoinUnit.code,
+        selectedToCurrencyCode: bitcoinUnit.code,
+      ),
+    );
+
+    final currencies = await _getAvailableCurrenciesUsecase.execute();
+    final selectedFiatCurrencyCode = settings.currencyCode;
+
+    final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
+      currencyCode: selectedFiatCurrencyCode,
+    );
+
     await loadSwapLimits();
     emit(
       state.copyWith(
         fromWallets: liquidWallets,
         toWallets: bitcoinWallets,
-        fromWalletNetwork: WalletNetwork.liquid,
-        toWalletNetwork: WalletNetwork.bitcoin,
-        fromWalletId: liquidWallets.first.id,
-        toWalletId: defaultBitcoinWallet.id,
         loadingWallets: false,
-        bitcoinUnit: bitcoinUnit,
         fiatCurrencyCodes: currencies,
         fiatCurrencyCode: selectedFiatCurrencyCode,
         exchangeRate: exchangeRate,
-        selectedFromCurrencyCode: bitcoinUnit.code,
-        selectedToCurrencyCode: bitcoinUnit.code,
       ),
     );
   }
@@ -464,7 +471,8 @@ class SwapCubit extends Cubit<SwapState> {
         bitcoinWalletId: bitcoinWalletId!,
         liquidWalletId: liquidWalletId!,
         type: swapType,
-        amountSat: state.fromAmountSat,
+        amountSat:
+            state.sendMax ? state.confirmedFromAmountSat : state.fromAmountSat,
       );
 
       _watchChainSwap(swap.id);
@@ -472,7 +480,10 @@ class SwapCubit extends Cubit<SwapState> {
       emit(
         state.copyWith(
           amountConfirmedClicked: false,
-          confirmedFromAmountSat: state.fromAmountSat,
+          confirmedFromAmountSat:
+              state.sendMax
+                  ? state.confirmedFromAmountSat
+                  : state.fromAmountSat,
           step: SwapPageStep.confirm,
           swap: swap,
           creatingSwap: false,
@@ -543,10 +554,7 @@ class SwapCubit extends Cubit<SwapState> {
           walletId: liquidWalletId!,
           address: swap.paymentAddress,
           amountSat: swap.paymentAmount,
-          networkFee:
-              state.liquidAbsoluteFees != null
-                  ? NetworkFee.absolute(state.absoluteFees!)
-                  : state.feesList!.fastest,
+          networkFee: state.feesList!.fastest,
         );
         final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: psbt,
