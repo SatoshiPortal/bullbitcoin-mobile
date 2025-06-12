@@ -555,6 +555,7 @@ class SwapCubit extends Cubit<SwapState> {
           address: swap.paymentAddress,
           amountSat: swap.paymentAmount,
           networkFee: state.feesList!.fastest,
+          drain: state.sendMax,
         );
         final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: psbt,
