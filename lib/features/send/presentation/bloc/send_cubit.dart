@@ -624,8 +624,6 @@ class SendCubit extends Cubit<SendState> {
         return wallet.balanceSat.toInt() > totalPayable;
 
       default:
-        // does not consider fees yet
-        // we will only consider fee estimate at this stage
         return wallet.balanceSat.toInt() >=
             (state.inputAmountSat + (state.absoluteFees ?? 0));
     }
@@ -776,6 +774,15 @@ class SendCubit extends Cubit<SendState> {
       emit(state.copyWith(loadingBestWallet: false));
     }
   }
+
+  void onMaxPressed() {
+    if (state.selectedWallet == null) return;
+    clearAllExceptions();
+
+    emit(state.copyWith(amount: '0', sendMax: true));
+  }
+
+  void noteChanged(String note) => emit(state.copyWith(label: note));
 
   Future<void> onAmountConfirmed() async {
     clearAllExceptions();
@@ -940,33 +947,6 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  void onMaxPressed() {
-    if (state.selectedWallet == null) return;
-
-    String maxAmount = '';
-
-    if (state.selectedUtxos.isNotEmpty) {
-      // Todo: utxo.value should be non-null again when the frozen utxo stuff is fixed
-      // then we can remove the fallback to BigInt.zero on utxo.value
-      final totalSats = state.selectedUtxos.fold<BigInt>(
-        BigInt.zero,
-        (sum, utxo) => sum + (utxo.amountSat),
-      );
-      maxAmount = totalSats.toString();
-    } else {
-      maxAmount = state.selectedWallet!.balanceSat.toString();
-    }
-    if (state.bitcoinUnit == BitcoinUnit.btc) {
-      final btcAmount = ConvertAmount.satsToBtc(
-        state.selectedWallet!.balanceSat.toInt(),
-      );
-      maxAmount = btcAmount.toString();
-    }
-    emit(state.copyWith(amount: maxAmount, sendMax: true));
-  }
-
-  void noteChanged(String note) => emit(state.copyWith(label: note));
-
   Future<void> loadUtxos() async {
     if (state.selectedWallet == null) return;
 
@@ -1082,6 +1062,17 @@ class SendCubit extends Cubit<SendState> {
             buildingTransaction: false,
           ),
         );
+        if (state.sendMax) {
+          final maxAmountSat =
+              state.selectedWallet!.balanceSat.toInt() -
+              (state.absoluteFees ?? 0);
+          // convert to btc or fiat based on selected currency
+          final maxAmount =
+              state.bitcoinUnit == BitcoinUnit.btc
+                  ? ConvertAmount.satsToBtc(maxAmountSat)
+                  : ConvertAmount.satsToFiat(maxAmountSat, state.exchangeRate);
+          emit(state.copyWith(amount: maxAmount.toString()));
+        }
       } else {
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
           walletId: state.selectedWallet!.id,
@@ -1116,6 +1107,16 @@ class SendCubit extends Cubit<SendState> {
               buildingTransaction: false,
             ),
           );
+        }
+        if (state.sendMax) {
+          final maxAmountSat =
+              state.selectedWallet!.balanceSat.toInt() -
+              (state.absoluteFees ?? 0);
+          final maxAmount =
+              state.bitcoinUnit == BitcoinUnit.btc
+                  ? ConvertAmount.satsToBtc(maxAmountSat)
+                  : ConvertAmount.satsToFiat(maxAmountSat, state.exchangeRate);
+          emit(state.copyWith(amount: maxAmount.toString()));
         }
       }
     } catch (e) {

@@ -15,6 +15,7 @@ class PriceInput extends StatefulWidget {
     required this.amountController,
     this.error,
     required this.focusNode,
+    this.readOnly = false,
   });
 
   final String currency;
@@ -25,6 +26,7 @@ class PriceInput extends StatefulWidget {
   final TextEditingController amountController;
   final String? error;
   final FocusNode focusNode;
+  final bool readOnly;
 
   @override
   State<PriceInput> createState() => _PriceInputState();
@@ -73,7 +75,7 @@ class _PriceInputState extends State<PriceInput> {
                         focusNode: widget.focusNode,
                         keyboardType: TextInputType.none,
                         showCursor: true,
-                        readOnly: true,
+                        readOnly: widget.readOnly,
                         cursorColor: context.colour.outline,
                         cursorOpacityAnimates: true,
                         cursorHeight: 30,

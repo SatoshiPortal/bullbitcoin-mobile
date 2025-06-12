@@ -250,11 +250,11 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   @override
   void initState() {
     super.initState();
-    final initialAmount = context.read<SendCubit>().state.amount;
+    final displayAmount = context.read<SendCubit>().state.displayAmount;
     _amountController = TextEditingController.fromValue(
       TextEditingValue(
-        text: initialAmount,
-        selection: TextSelection.collapsed(offset: initialAmount.length),
+        text: displayAmount,
+        selection: TextSelection.collapsed(offset: displayAmount.length),
       ),
     );
     _amountFocusNode = FocusNode();
@@ -263,16 +263,17 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   @override
   void didUpdateWidget(SendAmountScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final amount = context.read<SendCubit>().state.amount;
-    if (_amountController.text != amount) {
+    final state = context.read<SendCubit>().state;
+    final displayAmount = state.displayAmount;
+    if (_amountController.text != displayAmount) {
       final currentPosition = _amountController.selection.baseOffset;
       _amountController.value = TextEditingValue(
-        text: amount,
+        text: displayAmount,
         selection: TextSelection.collapsed(
           offset:
-              currentPosition <= amount.length
+              currentPosition <= displayAmount.length
                   ? currentPosition
-                  : amount.length,
+                  : displayAmount.length,
         ),
       );
     }
@@ -297,14 +298,15 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
       body: BlocListener<SendCubit, SendState>(
         listenWhen:
             (previous, current) =>
-                previous.amount != current.amount &&
-                _amountController.text != current.amount,
+                previous.displayAmount != current.displayAmount &&
+                _amountController.text != current.displayAmount,
         listener: (context, state) {
+          final displayAmount = state.displayAmount;
           final currentCursor = _amountController.selection.baseOffset;
-          final safePosition = math.min(currentCursor, state.amount.length);
+          final safePosition = math.min(currentCursor, displayAmount.length);
 
           _amountController.value = TextEditingValue(
-            text: state.amount,
+            text: displayAmount,
             selection: TextSelection.collapsed(offset: safePosition),
           );
         },
@@ -374,6 +376,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
                                 ? swapLimitsError.toString()
                                 : swapCreationError?.toString(),
                         focusNode: _amountFocusNode,
+                        readOnly: state.sendMax,
                       ),
                       const Gap(48),
                       Divider(
