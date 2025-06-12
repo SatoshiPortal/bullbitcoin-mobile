@@ -99,9 +99,9 @@ PODS:
   - payjoin_flutter (0.20.0)
   - PromisesObjC (2.4.0)
   - ScreenProtectorKit (1.3.1)
-  - SDWebImage (5.21.0):
-    - SDWebImage/Core (= 5.21.0)
-  - SDWebImage/Core (5.21.0)
+  - SDWebImage (5.21.1):
+    - SDWebImage/Core (= 5.21.1)
+  - SDWebImage/Core (5.21.1)
   - share_plus (0.0.1):
     - Flutter
   - sqlite3 (3.50.1):
@@ -250,7 +250,7 @@ SPEC CHECKSUMS:
   payjoin_flutter: 6397d7b698cdad6453be4949ab6aca1863f6c5e5
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   ScreenProtectorKit: 83a6281b02c7a5902ee6eac4f5045f674e902ae4
-  SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
+  SDWebImage: f29024626962457f3470184232766516dee8dfea
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   sqlite3: 1d85290c3321153511f6e900ede7a1608718bbd5
   sqlite3_flutter_libs: e7fc8c9ea2200ff3271f08f127842131746b70e2

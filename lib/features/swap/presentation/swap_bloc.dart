@@ -580,9 +580,15 @@ class SwapCubit extends Cubit<SwapState> {
       if (e is PrepareBitcoinSendException) {
         emit(
           state.copyWith(
-            confirmTransactionException: ConfirmTransactionException(
-              'Could not build transaction. Likely due to insufficient funds to cover fees and amount.',
-            ),
+            confirmTransactionException: ConfirmTransactionException(e.message),
+          ),
+        );
+        return;
+      }
+      if (e is PrepareLiquidSendException) {
+        emit(
+          state.copyWith(
+            confirmTransactionException: ConfirmTransactionException(e.message),
           ),
         );
         return;
