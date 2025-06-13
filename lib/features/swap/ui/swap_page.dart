@@ -237,6 +237,9 @@ class SwapChangeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = context.select(
+      (SwapCubit cubit) => cubit.state.loadingWallets,
+    );
     return Padding(
       padding: const EdgeInsets.only(right: 16),
       child: Material(
@@ -252,6 +255,7 @@ class SwapChangeButton extends StatelessWidget {
             icon: const Icon(Icons.swap_vert),
             iconSize: 32,
             onPressed: () {
+              if (isLoading) return;
               context.read<SwapCubit>().switchFromAndToWallets();
             },
           ),
