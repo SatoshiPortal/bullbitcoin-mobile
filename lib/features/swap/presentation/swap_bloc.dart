@@ -176,22 +176,17 @@ class SwapCubit extends Cubit<SwapState> {
           await loadSwapLimits();
         }
         swapLimits = state.lbtcToBtcSwapLimitsAndFees!.$1;
-
-        final pset = await _prepareLiquidSendUsecase.execute(
+        const String dummySwapAddress =
+            "lq1pqw6essa2zr9apk7ae35jz74enf6q5mzxkdlh7z2f93fvfv2smv9xmpv468ss69zl89tndk6tcss2vnftkcgl0xzqpgng7d9knk6fq4kznq7hvgqes503";
+        final dummyPset = await _prepareLiquidSendUsecase.execute(
           walletId: fromWallet.id,
-          address:
-              "lq1qqv8enp5npmqngglxmgmgny2kr5snjyerfdsmvu04q6746sh365yf6k5yzhq4dddgcf69pahn47yxm0sh4zjs7hf3tlqgkkhtw", // Dummy address, won't be used
+          address: dummySwapAddress, // Dummy address, won't be used
           networkFee: networkFee,
           drain: true,
         );
 
-        final signedPset = await _signLiquidTxUsecase.execute(
-          walletId: fromWallet.id,
-          pset: pset,
-        );
-
         absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
-          pset: signedPset,
+          pset: dummyPset,
         );
         log.info("Absolute fees: $absoluteFees");
 
