@@ -136,17 +136,15 @@ class SwapCubit extends Cubit<SwapState> {
       final fromWallet = state.fromWallet;
       if (fromWallet == null) return;
 
-      // Get swap limits and fees
       SwapLimits? swapLimits;
 
-      // Load network fees if not already available
       if (state.feesList == null) {
         await loadFees();
       }
 
       final networkFee = state.feesList!.fastest;
 
-      // Create a drain transaction to calculate the absolute fees
+      // Create a dummy drain transaction to calculate the absolute fees
       int absoluteFees;
       if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
         if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
@@ -155,17 +153,18 @@ class SwapCubit extends Cubit<SwapState> {
           }
           swapLimits = state.btcToLbtcSwapLimitsAndFees!.$1;
         }
+        const String dummySwapAddress =
+            "bc1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskq9pj5n4";
 
-        final drainTxInfo = await _prepareBitcoinSendUsecase.execute(
+        final dummyDrainTxInfo = await _prepareBitcoinSendUsecase.execute(
           walletId: fromWallet.id,
-          address:
-              "bc1qzthmksfy8qg7l3uznrcst2xpa3yfms0tc3e4j6", // Dummy address, won't be used
+          address: dummySwapAddress,
           networkFee: networkFee,
           drain: true,
         );
 
         absoluteFees = await _calculateBitcoinAbsoluteFeesUsecase.execute(
-          psbt: drainTxInfo.unsignedPsbt,
+          psbt: dummyDrainTxInfo.unsignedPsbt,
           feeRate: networkFee.value as double,
         );
 
@@ -180,7 +179,7 @@ class SwapCubit extends Cubit<SwapState> {
             "lq1pqw6essa2zr9apk7ae35jz74enf6q5mzxkdlh7z2f93fvfv2smv9xmpv468ss69zl89tndk6tcss2vnftkcgl0xzqpgng7d9knk6fq4kznq7hvgqes503";
         final dummyPset = await _prepareLiquidSendUsecase.execute(
           walletId: fromWallet.id,
-          address: dummySwapAddress, // Dummy address, won't be used
+          address: dummySwapAddress,
           networkFee: networkFee,
           drain: true,
         );
@@ -193,17 +192,8 @@ class SwapCubit extends Cubit<SwapState> {
         emit(state.copyWith(liquidAbsoluteFees: absoluteFees));
       }
 
-      // Calculate the maximum amount that can be swapped
-      // balance - absolute fees - swap.lockupFees
       final balance = fromWallet.balanceSat.toInt();
-      // final lockupFees = swapFees!.lockupFee!;
-
       final maxAmount = balance - absoluteFees;
-      // ensure that maxAmount is in the correct currency code
-
-      // Ensure the amount is within swap limits
-      log.info('Max amount: $maxAmount');
-      // If max amount is below minimum swap limit, show error
       emit(
         state.copyWith(
           swapLimitsException: SwapLimitsException(
