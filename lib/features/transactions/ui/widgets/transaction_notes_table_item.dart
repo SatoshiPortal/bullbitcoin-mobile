@@ -59,7 +59,7 @@ class TransactionNotesTableItem extends StatelessWidget {
     await showTransactionLabelBottomSheet(
       context,
       initialNote: currentNote,
-      onSave: (String newNote) {
+      onEditComplete: (String newNote) {
         if (newNote != currentNote) {
           cubit.editTransactionNote(currentNote, newNote);
         }

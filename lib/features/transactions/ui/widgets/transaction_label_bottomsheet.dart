@@ -12,7 +12,7 @@ import 'package:go_router/go_router.dart';
 Future<void> showTransactionLabelBottomSheet(
   BuildContext context, {
   String? initialNote,
-  Function(String)? onSave,
+  Function(String)? onEditComplete,
 }) async {
   final detailsCubit = context.read<TransactionDetailsCubit>();
 
@@ -26,7 +26,7 @@ Future<void> showTransactionLabelBottomSheet(
         value: detailsCubit,
         child: TransactionLabelBottomsheet(
           initialNote: initialNote,
-          onSave: onSave,
+          onEditComplete: onEditComplete,
         ),
       );
     },
@@ -34,10 +34,14 @@ Future<void> showTransactionLabelBottomSheet(
 }
 
 class TransactionLabelBottomsheet extends StatefulWidget {
-  const TransactionLabelBottomsheet({super.key, this.initialNote, this.onSave});
+  const TransactionLabelBottomsheet({
+    super.key,
+    this.initialNote,
+    this.onEditComplete,
+  });
 
   final String? initialNote;
-  final Function(String)? onSave;
+  final Function(String)? onEditComplete;
 
   @override
   State<TransactionLabelBottomsheet> createState() =>
@@ -127,13 +131,10 @@ class _TransactionLabelBottomsheetState
             onPressed: () {
               final validation = NoteValidator.validate(_controller.text);
               if (validation.isValid) {
-                final noteText = _controller.text.trim();
-                if (widget.onSave != null) {
-                  widget.onSave!(noteText);
+                if (widget.onEditComplete != null) {
+                  widget.onEditComplete!(_controller.text.trim());
                 } else {
-                  context.read<TransactionDetailsCubit>().saveTransactionNote(
-                    noteText,
-                  );
+                  context.read<TransactionDetailsCubit>().saveTransactionNote();
                 }
                 context.pop();
               }
