@@ -132,6 +132,16 @@ sealed class Swap with _$Swap {
   bool get isLnSendSwap => this is LnSendSwap;
   bool get isChainSwap => this is ChainSwap;
 
+  bool get requiresAction => switch (this) {
+    LnReceiveSwap(:final status) => status == SwapStatus.claimable,
+    LnSendSwap(:final status) =>
+      status == SwapStatus.canCoop ||
+          status == SwapStatus.failed ||
+          status == SwapStatus.refundable,
+    ChainSwap(:final status) =>
+      status == SwapStatus.claimable || status == SwapStatus.refundable,
+  };
+
   String? get txId => switch (this) {
     LnReceiveSwap(:final receiveTxid) => receiveTxid,
     LnSendSwap(:final sendTxid) => sendTxid,

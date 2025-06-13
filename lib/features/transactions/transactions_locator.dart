@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transa
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
@@ -120,6 +121,7 @@ class TransactionsLocator {
         deleteLabelUsecase: locator<DeleteLabelUsecase>(),
         broadcastOriginalTransactionUsecase:
             locator<BroadcastOriginalTransactionUsecase>(),
+        processSwapUsecase: locator<ProcessSwapUsecase>(),
       ),
     );
   }

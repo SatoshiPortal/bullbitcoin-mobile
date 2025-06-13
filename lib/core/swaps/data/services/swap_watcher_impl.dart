@@ -51,7 +51,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         // Notify the rest of the app about the swap update before processing it
         // which changes the status of the swap again
         _swapStreamController.add(swap);
-        await _processSwap(swap);
+        await processSwap(swap);
       },
       onError: (error) {
         log.severe('Swap stream error in watcher: $error');
@@ -85,7 +85,8 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
     startWatching();
   }
 
-  Future<void> _processSwap(Swap swap) async {
+  @override
+  Future<void> processSwap(Swap swap) async {
     switch (swap.status) {
       case SwapStatus.claimable:
         switch (swap.type) {

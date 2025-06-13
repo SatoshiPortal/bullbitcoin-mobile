@@ -10,6 +10,7 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     Wallet? counterpartWallet,
     Transaction? swapCounterpartTransaction,
     @Default(false) bool isBroadcastingPayjoinOriginalTx,
+    @Default(false) bool retryingSwap,
     Object? err,
   }) = _TransactionDetailsState;
   const TransactionDetailsState._();

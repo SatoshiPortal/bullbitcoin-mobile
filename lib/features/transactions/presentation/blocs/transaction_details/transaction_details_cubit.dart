@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
@@ -36,6 +37,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     required DeleteLabelUsecase deleteLabelUsecase,
     required BroadcastOriginalTransactionUsecase
     broadcastOriginalTransactionUsecase,
+    required ProcessSwapUsecase processSwapUsecase,
   }) : _getWalletUsecase = getWalletUsecase,
        _getSwapCounterpartTransactionUsecase =
            getSwapCounterpartTransactionUsecase,
@@ -48,6 +50,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
        _deleteLabelUsecase = deleteLabelUsecase,
        _broadcastOriginalTransactionUsecase =
            broadcastOriginalTransactionUsecase,
+       _processSwapUsecase = processSwapUsecase,
        _walletTransactionSubscriptions = {},
        super(TransactionDetailsState(transaction: transaction));
 
@@ -64,6 +67,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
   final DeleteLabelUsecase _deleteLabelUsecase;
   final BroadcastOriginalTransactionUsecase
   _broadcastOriginalTransactionUsecase;
+  final ProcessSwapUsecase _processSwapUsecase;
 
   final Map<String, StreamSubscription> _walletTransactionSubscriptions;
   StreamSubscription? _payjoinSubscription;
@@ -345,5 +349,11 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     } catch (e) {
       emit(state.copyWith(err: e));
     }
+  }
+
+  Future<void> processSwap(Swap swap) async {
+    emit(state.copyWith(retryingSwap: true));
+    await _processSwapUsecase.execute(swap);
+    emit(state.copyWith(retryingSwap: false));
   }
 }

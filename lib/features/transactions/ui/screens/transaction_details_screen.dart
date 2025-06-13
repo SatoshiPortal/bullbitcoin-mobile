@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
@@ -58,6 +59,20 @@ class TransactionDetailsScreen extends StatelessWidget {
       isOrderIncoming = isIncoming;
     }
 
+    final swap = context.select(
+      (TransactionDetailsCubit bloc) => bloc.state.swap,
+    );
+    final swapAction =
+        swap == null
+            ? ''
+            : swap.status == SwapStatus.claimable
+            ? 'Claim'
+            : swap.status == SwapStatus.canCoop
+            ? 'Close'
+            : 'Refund';
+    final retryingSwap = context.select(
+      (TransactionDetailsCubit bloc) => bloc.state.retryingSwap,
+    );
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -117,6 +132,20 @@ class TransactionDetailsScreen extends StatelessWidget {
                   ],
                 ),
                 const Gap(24),
+                if (swap != null && (swap.requiresAction)) ...[
+                  BBButton.big(
+                    disabled: retryingSwap,
+                    label: 'Retry Swap $swapAction',
+                    onPressed: () async {
+                      await context.read<TransactionDetailsCubit>().processSwap(
+                        swap,
+                      );
+                    },
+                    bgColor: theme.colorScheme.primary,
+                    textColor: theme.colorScheme.onPrimary,
+                  ),
+                  const Gap(24),
+                ],
                 const TransactionDetailsTable(),
                 if (isOngoingSenderPayjoin) ...[
                   const Gap(24),
