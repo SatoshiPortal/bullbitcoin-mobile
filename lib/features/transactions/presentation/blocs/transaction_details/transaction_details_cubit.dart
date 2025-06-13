@@ -200,6 +200,7 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         );
     emit(
       state.copyWith(
+        note: null,
         transaction: state.transaction.copyWith(
           walletTransaction: updatedWalletransaction,
         ),
@@ -219,11 +220,18 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
         state.copyWith(
           transaction: state.transaction.copyWith(payjoin: updatedPayjoin),
           err: null,
+          note: null,
           isBroadcastingPayjoinOriginalTx: false,
         ),
       );
     } catch (e) {
-      emit(state.copyWith(err: e, isBroadcastingPayjoinOriginalTx: false));
+      emit(
+        state.copyWith(
+          err: e,
+          note: null,
+          isBroadcastingPayjoinOriginalTx: false,
+        ),
+      );
     }
   }
 
