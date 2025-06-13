@@ -485,14 +485,15 @@ class LwkWalletDatasource implements WalletDatasource {
     }
   }
 
-  Future<(int, int)> decodePsbtAmounts({
-    required WalletModel wallet,
-    required String pset,
-  }) async {
+  Future<(int, int)> decodeAbsoluteFeesFromPset(String pset) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
-      final decoded = await lwkWallet.decodeTx(pset: pset);
-      return (decoded.balances.first.value, decoded.absoluteFees.toInt());
+      final decoded = await lwk.getSizeAndAbsoluteFees(pset: pset);
+      debugPrint(decoded.absoluteFees.toString());
+      // final decoded = await lwkWallet.decodeTx(pset: pset);
+      return (
+        decoded.discountedVsize.toInt(),
+        decoded.absoluteFees.first.value,
+      );
     } catch (e) {
       if (e is lwk.LwkError) {
         throw e.msg;

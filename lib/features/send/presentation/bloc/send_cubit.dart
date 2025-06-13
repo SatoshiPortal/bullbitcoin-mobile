@@ -1053,9 +1053,12 @@ class SendCubit extends Cubit<SendState> {
           // ignore: avoid_bool_literals_in_conditional_expressions
           drain: state.lightningSwap != null ? false : state.sendMax,
         );
+        // final signedPset = await _signLiquidTxUsecase.execute(
+        //   walletId: state.selectedWallet!.id,
+        //   pset: pset,
+        // );
         final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: pset,
-          walletId: state.selectedWallet!.id,
         );
         emit(
           state.copyWith(

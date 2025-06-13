@@ -1028,7 +1028,7 @@ packages:
     description:
       path: "."
       ref: develop
-      resolved-ref: "0410eaab3d1a177cc53872caac3ba362f37964a4"
+      resolved-ref: "07c7ae9775259f4a06807c52d1cdc50d4b900a9c"
       url: "https://github.com/SatoshiPortal/lwk-dart.git"
     source: git
     version: "0.2.0"

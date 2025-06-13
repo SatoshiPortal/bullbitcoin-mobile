@@ -138,12 +138,6 @@ class SwapCubit extends Cubit<SwapState> {
 
       // Get swap limits and fees
       SwapLimits? swapLimits;
-      if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
-        if (state.btcToLbtcSwapLimitsAndFees == null) {
-          await loadSwapLimits();
-        }
-        swapLimits = state.btcToLbtcSwapLimitsAndFees!.$1;
-      }
 
       // Load network fees if not already available
       if (state.feesList == null) {
@@ -155,6 +149,13 @@ class SwapCubit extends Cubit<SwapState> {
       // Create a drain transaction to calculate the absolute fees
       int absoluteFees;
       if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
+        if (state.fromWalletNetwork == WalletNetwork.bitcoin) {
+          if (state.btcToLbtcSwapLimitsAndFees == null) {
+            await loadSwapLimits();
+          }
+          swapLimits = state.btcToLbtcSwapLimitsAndFees!.$1;
+        }
+
         final drainTxInfo = await _prepareBitcoinSendUsecase.execute(
           walletId: fromWallet.id,
           address:
@@ -183,6 +184,7 @@ class SwapCubit extends Cubit<SwapState> {
           networkFee: networkFee,
           drain: true,
         );
+
         final signedPset = await _signLiquidTxUsecase.execute(
           walletId: fromWallet.id,
           pset: pset,
@@ -190,7 +192,6 @@ class SwapCubit extends Cubit<SwapState> {
 
         absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: signedPset,
-          walletId: fromWallet.id,
         );
         log.info("Absolute fees: $absoluteFees");
 
@@ -567,7 +568,6 @@ class SwapCubit extends Cubit<SwapState> {
         );
         final absoluteFees = await _calculateLiquidAbsoluteFeesUsecase.execute(
           pset: signedPsbt,
-          walletId: liquidWalletId,
         );
         emit(
           state.copyWith(
