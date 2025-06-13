@@ -153,6 +153,9 @@ class SwapCubit extends Cubit<SwapState> {
           }
           swapLimits = state.btcToLbtcSwapLimitsAndFees!.$1;
         }
+        // we cannot use a wallet address for this
+        // the swap script address is larger than a wallet single sig (by ~12 vb)
+        // this leads to a fee estimation error by 1 sat
         const String dummySwapAddress =
             "bc1p0e9sutev5p0whwkdqdzy6gw03m6g66zuullc4erh80u7qezneskq9pj5n4";
 
@@ -175,6 +178,10 @@ class SwapCubit extends Cubit<SwapState> {
           await loadSwapLimits();
         }
         swapLimits = state.lbtcToBtcSwapLimitsAndFees!.$1;
+
+        // we cannot use a wallet address for this
+        // the swap script address is larger than a wallet single sig (by ~12 vb)
+        // this leads to a fee estimation error by 1 sat
         const String dummySwapAddress =
             "lq1pqw6essa2zr9apk7ae35jz74enf6q5mzxkdlh7z2f93fvfv2smv9xmpv468ss69zl89tndk6tcss2vnftkcgl0xzqpgng7d9knk6fq4kznq7hvgqes503";
         final dummyPset = await _prepareLiquidSendUsecase.execute(
