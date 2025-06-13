@@ -159,10 +159,12 @@ class TransactionDetailsScreen extends StatelessWidget {
 
                 BBButton.big(
                   label: 'Add note',
-                  disabled: state.walletTransaction!.labels.length >= 10,
+                  disabled: !(state.walletTransaction!.labels.length < 10),
+
                   onPressed: () async {
                     if (state.walletTransaction!.labels.length < 10) {
                       await showTransactionLabelBottomSheet(context);
+                    } else {
                       log.warning(
                         'A transaction can have up to 10 labels, current length: ${state.walletTransaction!.labels.length}',
                       );
