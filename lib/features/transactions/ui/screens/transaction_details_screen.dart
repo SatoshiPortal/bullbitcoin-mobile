@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
@@ -25,6 +26,7 @@ class TransactionDetailsScreen extends StatelessWidget {
     final tx = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
     );
+    final state = context.select((TransactionDetailsCubit bloc) => bloc.state);
     final amountSat = tx.amountSat;
     final isIncoming = tx.isIncoming;
     final isOngoingSenderPayjoin =
@@ -154,10 +156,17 @@ class TransactionDetailsScreen extends StatelessWidget {
                 ] else ...[
                   const Gap(64),
                 ],
+
                 BBButton.big(
                   label: 'Add note',
+                  disabled: state.walletTransaction!.labels.length >= 10,
                   onPressed: () async {
-                    await showTransactionLabelBottomSheet(context);
+                    if (state.walletTransaction!.labels.length < 10) {
+                      await showTransactionLabelBottomSheet(context);
+                      log.warning(
+                        'A transaction can have up to 10 labels, current length: ${state.walletTransaction!.labels.length}',
+                      );
+                    }
                   },
                   bgColor: Colors.transparent,
                   textColor: theme.colorScheme.secondary,

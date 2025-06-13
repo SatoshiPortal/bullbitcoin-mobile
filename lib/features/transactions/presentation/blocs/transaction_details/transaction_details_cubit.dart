@@ -171,11 +171,19 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
     }
   }
 
-  Future<void> saveTransactionNote(String note) async {
+  Future<void> saveTransactionNote() async {
     // TODO: Permit multiple labels && labels for payjoin txs, so not only wallet txs (for example set on the original tx)
     //  I think the entity should be changed to Transaction instead of WalletTransaction for that
 
-    if (state.walletTransaction == null || state.note == null) return;
+    if (state.walletTransaction == null ||
+        state.note == null ||
+        state.walletTransaction!.labels.contains(state.note)) {
+      return;
+    }
+    if (state.walletTransaction!.labels.length >= 10) {
+      emit(state.copyWith(err: 'You can only have up to 10 labels'));
+      return;
+    }
 
     await _createLabelUsecase.execute<WalletTransaction>(
       origin: state.wallet!.origin,
@@ -185,7 +193,10 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
 
     final updatedWalletransaction = state.transaction.walletTransaction
         ?.copyWith(
-          labels: [...?state.transaction.walletTransaction?.labels, note],
+          labels: [
+            ...?state.transaction.walletTransaction?.labels,
+            state.note!,
+          ],
         );
     emit(
       state.copyWith(
