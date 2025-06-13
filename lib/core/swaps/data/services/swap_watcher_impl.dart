@@ -543,7 +543,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
           'function': '_processChainLiquidToBitcoinRefund',
         },
       );
-      rethrow;
     }
   }
 }

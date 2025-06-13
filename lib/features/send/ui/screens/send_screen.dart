@@ -1526,7 +1526,39 @@ class SendSucessScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const Gap(8),
-                  if (isLnSwap &&
+                  if (lnSwap?.status == SwapStatus.failed ||
+                      lnSwap?.status == SwapStatus.expired ||
+                      lnSwap?.status == SwapStatus.refundable ||
+                      chainSwap?.status == SwapStatus.failed ||
+                      chainSwap?.status == SwapStatus.expired ||
+                      chainSwap?.status == SwapStatus.refundable) ...[
+                    BBText(
+                      'Swap Refund In Progress',
+                      style: context.font.headlineLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    BBText(
+                      'The swap failed. Your refund will be processed shortly.',
+                      style: context.font.headlineLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                  ] else if ((isLnSwap &&
+                          lnSwap.status == SwapStatus.completed &&
+                          lnSwap.refundTxid != null) ||
+                      (isChainSwap &&
+                          chainSwap.status == SwapStatus.completed &&
+                          chainSwap.refundTxid != null)) ...[
+                    BBText(
+                      'Swap Refund Completed',
+                      style: context.font.headlineLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    BBText(
+                      'Your refund has been processed.',
+                      style: context.font.headlineLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                  ] else if (isLnSwap &&
                       (lnSwap.status == SwapStatus.completed ||
                           lnSwap.status == SwapStatus.canCoop))
                     BBText('Invoice Paid', style: context.font.headlineLarge)

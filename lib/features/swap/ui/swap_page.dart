@@ -1,5 +1,6 @@
 // ignore_for_file: dead_code
 
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_bloc.dart';
 import 'package:bb_mobile/features/swap/presentation/swap_state.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -554,6 +555,8 @@ class SwapProgressPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final swap = context.select((SwapCubit cubit) => cubit.state.swap!);
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -574,24 +577,62 @@ class SwapProgressPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  Gif(
-                    autostart: Autostart.loop,
-                    height: 123,
-                    image: AssetImage(Assets.images2.cubesLoading.path),
-                  ),
-
-                  const Gap(8),
-                  BBText('Sending...', style: context.font.headlineLarge),
-                  const Gap(8),
-                  BBText(
-                    'The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.',
-                    style: context.font.bodyMedium,
-                    maxLines: 4,
-                    textAlign: TextAlign.center,
-                  ),
+                  if (swap.status == SwapStatus.pending ||
+                      swap.status == SwapStatus.paid) ...[
+                    Gif(
+                      autostart: Autostart.loop,
+                      height: 123,
+                      image: AssetImage(Assets.images2.cubesLoading.path),
+                    ),
+                    const Gap(8),
+                    BBText('Sending...', style: context.font.headlineLarge),
+                    const Gap(8),
+                    BBText(
+                      'The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.',
+                      style: context.font.bodyMedium,
+                      maxLines: 4,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                  if (swap.status == SwapStatus.completed &&
+                      swap.refundTxid == null) ...[
+                    BBText('Swap completed', style: context.font.headlineLarge),
+                    const Gap(8),
+                    BBText(
+                      'Wow, you waited! The swap has completed sucessfully.',
+                      style: context.font.bodyMedium,
+                      maxLines: 4,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                  if (swap.status == SwapStatus.refundable) ...[
+                    BBText(
+                      'Swap Refund In Progress',
+                      style: context.font.headlineLarge,
+                    ),
+                    const Gap(8),
+                    BBText(
+                      'There was an error with the swap. Your refund is in progress.',
+                      style: context.font.bodyMedium,
+                      maxLines: 4,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                  if (swap.status == SwapStatus.completed &&
+                      swap.refundTxid != null) ...[
+                    BBText('Swap Refunded', style: context.font.headlineLarge),
+                    const Gap(8),
+                    BBText(
+                      'The swap has been sucessfully refunded.',
+                      style: context.font.bodyMedium,
+                      maxLines: 4,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ],
               ),
             ),
+
             const Spacer(flex: 2),
             BBButton.big(
               label: 'Go home',

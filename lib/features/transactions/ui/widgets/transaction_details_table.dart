@@ -675,6 +675,22 @@ class TransactionDetailsTable extends StatelessWidget {
             displayValue: swap.id,
             copyValue: swap.id,
           ),
+          DetailsTableItem(
+            label: 'Swap status',
+            displayValue:
+                (swap.isChainSwap && (swap as ChainSwap).refundTxid == null ||
+                        swap.isLnSendSwap &&
+                            (swap as LnSendSwap).refundTxid == null)
+                    ? swap.status.displayName
+                    : 'Refunded',
+            expandableChild: BBText(
+              swap.getDisplayMessage(),
+              style: context.font.bodySmall?.copyWith(
+                color: context.colour.secondary,
+              ),
+              maxLines: 5,
+            ),
+          ),
           if (counterpartWalletLabel != null &&
               counterpartWalletLabel.isNotEmpty)
             DetailsTableItem(
@@ -714,17 +730,7 @@ class TransactionDetailsTable extends StatelessWidget {
                 ],
               ),
             ),
-          DetailsTableItem(
-            label: 'Swap status',
-            displayValue: swap.status.displayName,
-            expandableChild: BBText(
-              swap.getDisplayMessage(),
-              style: context.font.bodySmall?.copyWith(
-                color: context.colour.secondary,
-              ),
-              maxLines: 5,
-            ),
-          ),
+
           if (swap.completionTime != null)
             DetailsTableItem(
               label: 'Swap time received',
