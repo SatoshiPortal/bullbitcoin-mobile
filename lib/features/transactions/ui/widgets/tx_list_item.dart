@@ -90,37 +90,22 @@ class TxListItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      CurrencyText(
-                        isOrderType && !showOrderInFiat
-                            ? orderAmountAndCurrency!.$1.toInt()
-                            : tx.amountSat,
-                        showFiat: false,
-                        style: context.font.bodyLarge,
-                        fiatAmount:
-                            isOrderType && showOrderInFiat
-                                ? orderAmountAndCurrency!.$1.toDouble()
-                                : null,
-                        fiatCurrency:
-                            isOrderType && showOrderInFiat
-                                ? orderAmountAndCurrency!.$2
-                                : null,
-                      ),
-                      if (label != null)
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 4.0),
-                            child: BBText(
-                              label,
-                              style: context.font.bodyLarge,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                        ),
-                    ],
+                  CurrencyText(
+                    isOrderType && !showOrderInFiat
+                        ? orderAmountAndCurrency!.$1.toInt()
+                        : tx.amountSat,
+                    showFiat: false,
+                    style: context.font.bodyLarge,
+                    fiatAmount:
+                        isOrderType && showOrderInFiat
+                            ? orderAmountAndCurrency!.$1.toDouble()
+                            : null,
+                    fiatCurrency:
+                        isOrderType && showOrderInFiat
+                            ? orderAmountAndCurrency!.$2
+                            : null,
                   ),
+
                   if (label != null)
                     BBText(
                       label,
