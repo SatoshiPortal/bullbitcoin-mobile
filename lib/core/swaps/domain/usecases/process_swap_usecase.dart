@@ -10,7 +10,6 @@ class ProcessSwapUsecase {
   Future<void> execute(Swap swap) async {
     try {
       await _watcher.processSwap(swap);
-      await Future.delayed(const Duration(seconds: 10));
     } catch (e) {
       throw ProcessSwapException(e.toString());
     }
