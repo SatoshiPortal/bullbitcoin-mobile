@@ -678,11 +678,11 @@ class TransactionDetailsTable extends StatelessWidget {
           DetailsTableItem(
             label: 'Swap status',
             displayValue:
-                (swap.isChainSwap && (swap as ChainSwap).refundTxid == null ||
+                (swap.isChainSwap && (swap as ChainSwap).refundTxid != null ||
                         swap.isLnSendSwap &&
-                            (swap as LnSendSwap).refundTxid == null)
-                    ? swap.status.displayName
-                    : 'Refunded',
+                            (swap as LnSendSwap).refundTxid != null)
+                    ? 'Refunded'
+                    : swap.status.displayName,
             expandableChild: BBText(
               swap.getDisplayMessage(),
               style: context.font.bodySmall?.copyWith(
