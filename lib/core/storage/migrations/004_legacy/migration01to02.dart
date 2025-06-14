@@ -28,11 +28,14 @@ Future<void> doMigration0_1to0_2() async {
 
     final walletIds = jsonDecode(walletIdsRaw)['wallets'] as List<dynamic>;
     if (walletIds.isEmpty) throw 'No Wallets found';
+    log.info('0.1.*: Found ${walletIds.length} wallets');
 
     final List<OldWallet> wallets = [];
 
     OldSeed? liquidMainnetSeed;
     bool isDefault = true;
+    log.info('0.1.*: Found ${walletIds.length} wallets');
+
     for (final walletId in walletIds) {
       final jsn = hiveDatasource.getValue(walletId as String);
       if (jsn == null) throw 'Abort';
@@ -40,7 +43,6 @@ Future<void> doMigration0_1to0_2() async {
       Map<String, dynamic> walletObj = jsonDecode(jsn) as Map<String, dynamic>;
 
       final mnemonicFingerprint = walletObj['mnemonicFingerprint'] as String;
-
       final seed = await oldSeedRepository.fetch(
         fingerprint: mnemonicFingerprint,
       );
@@ -51,10 +53,11 @@ Future<void> doMigration0_1to0_2() async {
         isDefault = false;
       }
 
-      walletObj = await addIsLiquid(walletObj);
+      walletObj = await addIsLiquidFalse(walletObj);
 
       final w = OldWallet.fromJson(walletObj);
       wallets.add(w);
+      // this loop only adds bitcoin wallets
     }
 
     if (liquidMainnetSeed == null) {
@@ -64,24 +67,24 @@ Future<void> doMigration0_1to0_2() async {
 
     wallets.addAll([liqWallet]);
 
-    final mainWalletIdx = wallets.indexWhere(
-      (w) => !w.isTestnet() && w.isSecure(),
-    );
+    // final mainWalletIdx = wallets.indexWhere(
+    //   (w) => !w.isTestnet() && w.isSecure(),
+    // );
 
-    final liqMainnetIdx = wallets.indexWhere(
-      (w) => !w.isTestnet() && w.isInstant(),
-    );
+    // final liqMainnetIdx = wallets.indexWhere(
+    //   (w) => !w.isTestnet() && w.isInstant(),
+    // );
 
-    if (mainWalletIdx != -1 && liqMainnetIdx != -1) {
-      if (wallets.length > 2) {
-        final tempMain = wallets[mainWalletIdx];
-        final tempLiq = wallets[liqMainnetIdx];
-        wallets.removeAt(mainWalletIdx);
-        wallets.removeAt(liqMainnetIdx - 1);
-        wallets.insert(0, tempLiq);
-        wallets.insert(1, tempMain);
-      }
-    }
+    // if (mainWalletIdx != -1 && liqMainnetIdx != -1) {
+    //   if (wallets.length > 2) {
+    //     final tempMain = wallets[mainWalletIdx];
+    //     final tempLiq = wallets[liqMainnetIdx];
+    //     wallets.removeAt(mainWalletIdx);
+    //     wallets.removeAt(liqMainnetIdx - 1);
+    //     wallets.insert(0, tempLiq);
+    //     wallets.insert(1, tempMain);
+    //   }
+    // }
 
     final walletObjs = wallets.map((w) => w.toJson()).toList();
     final List<String> ids = [];
@@ -98,6 +101,16 @@ Future<void> doMigration0_1to0_2() async {
       key: OldStorageKeys.wallets.name,
       value: idsJsn,
     );
+
+    final walletIdsRawPost = hiveDatasource.getValue(
+      OldStorageKeys.wallets.name,
+    );
+    if (walletIdsRawPost == null) throw 'No Wallets found';
+
+    final walletIdsPost =
+        jsonDecode(walletIdsRawPost)['wallets'] as List<dynamic>;
+    if (walletIdsPost.isEmpty) throw 'No Wallets found';
+    log.info('0.1.*: Updated Wallets-> ${walletIdsPost.length} wallets');
 
     await secureStorageDatasource.store(
       key: OldStorageKeys.version.name,
@@ -128,10 +141,13 @@ updateWalletObj(
         walletObj['mainWallet'] = true;
 
         liquidMainnetSeed = seed;
-      } else if (walletObj['type'] == 'newSeed') {
+      } else {
         walletObj['type'] = 'words';
         walletObj['mainWallet'] = false;
       }
+    } else {
+      walletObj['type'] = 'words';
+      walletObj['mainWallet'] = false;
     }
 
     if (walletObj['type'] == 'xpub' || walletObj['type'] == 'coldcard') {
@@ -148,7 +164,9 @@ updateWalletObj(
   return res;
 }
 
-Future<Map<String, dynamic>> addIsLiquid(Map<String, dynamic> walletObj) async {
+Future<Map<String, dynamic>> addIsLiquidFalse(
+  Map<String, dynamic> walletObj,
+) async {
   walletObj['transactions'] =
       walletObj['transactions']
           .map((tx) => tx as Map<String, dynamic>)

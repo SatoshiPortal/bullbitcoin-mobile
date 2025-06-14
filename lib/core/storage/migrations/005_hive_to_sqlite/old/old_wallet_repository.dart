@@ -24,9 +24,9 @@ class OldWalletRepository {
 
       final walletMetadata = hiveDatasource.getValue(walletId);
       if (walletMetadata == null) continue;
-
       final walletMetadataJson =
           json.decode(walletMetadata) as Map<String, dynamic>;
+      if (walletMetadataJson['network'] == 'Testnet') continue;
       final walletObj = OldWallet.fromJson(walletMetadataJson);
       walletMetadatas.add(walletObj);
     }
