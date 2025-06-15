@@ -136,11 +136,12 @@ class TxListItem extends StatelessWidget {
                   ),
                 ),
                 const Gap(4.0),
-                if (date != null)
+                if ((tx.isSwap && tx.swap?.status == SwapStatus.completed) ||
+                    (!tx.isSwap && date != null))
                   Row(
                     children: [
                       BBText(
-                        date,
+                        date!,
                         style: context.font.labelSmall?.copyWith(
                           color: context.colour.outline,
                         ),
