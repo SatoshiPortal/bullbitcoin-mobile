@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -44,7 +43,8 @@ class TransactionDetailsScreen extends StatelessWidget {
 
     bool isOrderIncoming = false;
     if (isOrderType) {
-      switch (tx.order!.orderType) {
+      final orderType = tx.order?.orderType;
+      switch (orderType) {
         case OrderType.buy:
         case OrderType.funding:
         case OrderType.balanceAdjustment:
@@ -64,14 +64,8 @@ class TransactionDetailsScreen extends StatelessWidget {
     final swap = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.swap,
     );
-    final swapAction =
-        swap == null
-            ? ''
-            : swap.status == SwapStatus.claimable
-            ? 'Claim'
-            : swap.status == SwapStatus.canCoop
-            ? 'Close'
-            : 'Refund';
+    final swapAction = swap?.swapAction ?? '';
+    final isChainSwap = swap?.isChainSwap ?? false;
     final retryingSwap = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.retryingSwap,
     );
@@ -97,10 +91,25 @@ class TransactionDetailsScreen extends StatelessWidget {
           child: Center(
             child: Column(
               children: [
-                TransactionDirectionBadge(isIncoming: isOrderIncoming),
+                TransactionDirectionBadge(
+                  isIncoming: isOrderIncoming,
+                  isSwap: isChainSwap,
+                ),
                 const Gap(24),
                 BBText(
-                  isOrderType
+                  (swap != null && swap.swapCompleted && swap.isChainSwap)
+                      ? 'Swap Completed'
+                      : (swap != null &&
+                          swap.swapInProgress &&
+                          swap.isChainSwap)
+                      ? 'Swap In Progress'
+                      : (swap != null &&
+                          swap.swapInProgress &&
+                          (swap.isLnSendSwap || swap.isLnReceiveSwap))
+                      ? 'Payment In Progress'
+                      : swap != null && swap.swapRefunded
+                      ? 'Payment Refunded'
+                      : isOrderType && tx.order != null
                       ? tx.order!.orderType.value
                       : isOngoingSenderPayjoin
                       ? 'Payjoin requested'
@@ -114,8 +123,10 @@ class TransactionDetailsScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CurrencyText(
-                      isOrderType && !showOrderInFiat
-                          ? orderAmountAndCurrency!.$1.toInt()
+                      isOrderType &&
+                              !showOrderInFiat &&
+                              orderAmountAndCurrency != null
+                          ? orderAmountAndCurrency.$1.toInt()
                           : amountSat,
                       showFiat: false,
                       style: context.font.displaySmall?.copyWith(
@@ -123,12 +134,16 @@ class TransactionDetailsScreen extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                       fiatAmount:
-                          isOrderType && showOrderInFiat
-                              ? orderAmountAndCurrency!.$1.toDouble()
+                          isOrderType &&
+                                  showOrderInFiat &&
+                                  orderAmountAndCurrency != null
+                              ? orderAmountAndCurrency.$1.toDouble()
                               : null,
                       fiatCurrency:
-                          isOrderType && showOrderInFiat
-                              ? orderAmountAndCurrency!.$2
+                          isOrderType &&
+                                  showOrderInFiat &&
+                                  orderAmountAndCurrency != null
+                              ? orderAmountAndCurrency.$2
                               : null,
                     ),
                   ],
@@ -159,14 +174,16 @@ class TransactionDetailsScreen extends StatelessWidget {
 
                 BBButton.big(
                   label: 'Add note',
-                  disabled: !(state.walletTransaction!.labels.length < 10),
-
+                  disabled:
+                      !(state.walletTransaction?.labels.length != null &&
+                          state.walletTransaction!.labels.length < 10),
                   onPressed: () async {
-                    if (state.walletTransaction!.labels.length < 10) {
+                    if (state.walletTransaction?.labels.length != null &&
+                        state.walletTransaction!.labels.length < 10) {
                       await showTransactionLabelBottomSheet(context);
                     } else {
                       log.warning(
-                        'A transaction can have up to 10 labels, current length: ${state.walletTransaction!.labels.length}',
+                        'A transaction can have up to 10 labels, current length: ${state.walletTransaction?.labels.length}',
                       );
                     }
                   },

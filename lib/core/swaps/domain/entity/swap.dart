@@ -237,6 +237,34 @@ sealed class Swap with _$Swap {
     LnSendSwap(:final sendWalletId) => sendWalletId,
     ChainSwap(:final sendWalletId) => sendWalletId,
   };
+
+  bool get swapInProgress =>
+      status == SwapStatus.paid ||
+      status == SwapStatus.canCoop ||
+      status == SwapStatus.claimable ||
+      status == SwapStatus.refundable;
+
+  bool get swapRefunded =>
+      status == SwapStatus.completed &&
+      ((this is ChainSwap && (this as ChainSwap).refundTxid != null) ||
+          (this is LnSendSwap && (this as LnSendSwap).refundTxid != null));
+
+  bool get isChainSwapInternal =>
+      this is ChainSwap && (this as ChainSwap).receiveWalletId != null;
+
+  bool get isChainSwapExternal =>
+      this is ChainSwap && (this as ChainSwap).receiveWalletId == null;
+
+  String get swapAction =>
+      status == SwapStatus.claimable
+          ? 'Claim'
+          : status == SwapStatus.canCoop
+          ? 'Close'
+          : status == SwapStatus.refundable
+          ? 'Refund'
+          : '';
+
+  bool get swapCompleted => status == SwapStatus.completed;
 }
 
 extension SwapFeePercent on Swap {

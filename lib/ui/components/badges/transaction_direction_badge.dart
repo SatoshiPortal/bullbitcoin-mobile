@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
 class TransactionDirectionBadge extends StatelessWidget {
-  const TransactionDirectionBadge({super.key, required this.isIncoming});
+  const TransactionDirectionBadge({
+    super.key,
+    required this.isIncoming,
+    this.isSwap = false,
+  });
 
   final bool isIncoming;
-
+  final bool isSwap;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -25,7 +29,11 @@ class TransactionDirectionBadge extends StatelessWidget {
         ],
       ),
       child: Icon(
-        isIncoming ? Icons.south_east : Icons.north_east,
+        isSwap
+            ? Icons.swap_vert
+            : isIncoming
+            ? Icons.south_east
+            : Icons.north_east,
         color: theme.colorScheme.secondary,
       ),
     );

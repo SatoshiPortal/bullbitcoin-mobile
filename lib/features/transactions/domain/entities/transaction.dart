@@ -43,15 +43,17 @@ sealed class Transaction with _$Transaction {
               swap?.isChainSwap == true ||
               payjoin is PayjoinReceiver;
   bool get isBitcoin =>
-      walletTransaction != null
-          ? walletTransaction!.isBitcoin
-          : payjoin != null ||
-              [
-                SwapType.bitcoinToLightning,
-                SwapType.bitcoinToLiquid,
-                SwapType.lightningToBitcoin,
-                SwapType.liquidToBitcoin,
-              ].contains(swap?.type);
+      (walletTransaction != null &&
+          walletTransaction!.isBitcoin &&
+          swap == null) ||
+      payjoin != null ||
+      [
+        SwapType.bitcoinToLightning,
+        SwapType.lightningToBitcoin,
+      ].contains(swap?.type) ||
+      swap != null &&
+          swap?.type == SwapType.liquidToBitcoin &&
+          swap?.isChainSwapInternal == true;
   bool get isLiquid =>
       walletTransaction != null
           ? walletTransaction!.isLiquid

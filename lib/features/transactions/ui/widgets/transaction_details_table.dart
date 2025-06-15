@@ -722,7 +722,7 @@ class TransactionDetailsTable extends StatelessWidget {
                   _feeRow(
                     context,
                     'Network Fee',
-                    swap.fees!.lockupFee! + swap.fees!.claimFee!,
+                    (swap.fees?.lockupFee ?? 0) + (swap.fees?.claimFee ?? 0),
                   ),
 
                   _feeRow(context, 'Boltz Swap Fee', swap.fees?.boltzFee ?? 0),
@@ -731,9 +731,15 @@ class TransactionDetailsTable extends StatelessWidget {
               ),
             ),
 
+          DetailsTableItem(
+            label: 'Created at',
+            displayValue: DateFormat(
+              'MMM d, y, h:mm a',
+            ).format(swap.creationTime),
+          ),
           if (swap.completionTime != null)
             DetailsTableItem(
-              label: 'Swap time received',
+              label: 'Completed at',
               displayValue: DateFormat(
                 'MMM d, y, h:mm a',
               ).format(swap.completionTime!),

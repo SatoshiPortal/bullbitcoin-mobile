@@ -51,10 +51,16 @@ class TxListItem extends StatelessWidget {
             ? tx.walletTransaction!.labels.first
             : null;
     final date =
-        tx.timestamp != null
-            ? timeago.format(tx.timestamp!)
-            : isOrderType && tx.order!.completedAt != null
-            ? timeago.format(tx.order!.createdAt)
+        tx.isSwap
+            ? (tx.swap?.completionTime != null
+                ? timeago.format(tx.swap!.completionTime!)
+                : null)
+            : isOrderType
+            ? (tx.order?.completedAt != null
+                ? timeago.format(tx.order!.completedAt!)
+                : null)
+            : (tx.isBitcoin || tx.isLiquid)
+            ? (tx.timestamp != null ? timeago.format(tx.timestamp!) : null)
             : null;
     final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =
@@ -136,12 +142,11 @@ class TxListItem extends StatelessWidget {
                   ),
                 ),
                 const Gap(4.0),
-                if ((tx.isSwap && tx.swap?.status == SwapStatus.completed) ||
-                    (!tx.isSwap && date != null))
+                if (date != null)
                   Row(
                     children: [
                       BBText(
-                        date!,
+                        date,
                         style: context.font.labelSmall?.copyWith(
                           color: context.colour.outline,
                         ),
