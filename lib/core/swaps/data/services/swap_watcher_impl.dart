@@ -87,52 +87,57 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
 
   @override
   Future<void> processSwap(Swap swap) async {
-    switch (swap.status) {
-      case SwapStatus.claimable:
-        switch (swap.type) {
-          case SwapType.lightningToBitcoin:
-            await _processReceiveLnToBitcoinClaim(swap: swap as LnReceiveSwap);
-          case SwapType.lightningToLiquid:
-            await _processReceiveLnToLiquidClaim(swap: swap as LnReceiveSwap);
-          case SwapType.liquidToBitcoin:
-            await _processChainLiquidToBitcoinClaim(swap: swap as ChainSwap);
-          case SwapType.bitcoinToLiquid:
-            await _processChainBitcoinToLiquidClaim(swap: swap as ChainSwap);
-          default:
-            return;
-        }
-      case SwapStatus.refundable:
-        switch (swap.type) {
-          case SwapType.bitcoinToLightning:
-            await _processSendBitcoinToLnRefund(swap: swap as LnSendSwap);
-          case SwapType.liquidToLightning:
-            await _processSendLiquidToLnRefund(swap: swap as LnSendSwap);
-          case SwapType.liquidToBitcoin:
-            await _processChainLiquidToBitcoinRefund(swap: swap as ChainSwap);
-          case SwapType.bitcoinToLiquid:
-            await _processChainBitcoinToLiquidRefund(swap: swap as ChainSwap);
-          default:
-            return;
-        }
+    try {
+      switch (swap.status) {
+        case SwapStatus.claimable:
+          switch (swap.type) {
+            case SwapType.lightningToBitcoin:
+              await _processReceiveLnToBitcoinClaim(
+                swap: swap as LnReceiveSwap,
+              );
+            case SwapType.lightningToLiquid:
+              await _processReceiveLnToLiquidClaim(swap: swap as LnReceiveSwap);
+            case SwapType.liquidToBitcoin:
+              await _processChainLiquidToBitcoinClaim(swap: swap as ChainSwap);
+            case SwapType.bitcoinToLiquid:
+              await _processChainBitcoinToLiquidClaim(swap: swap as ChainSwap);
+            default:
+              return;
+          }
+        case SwapStatus.refundable:
+          switch (swap.type) {
+            case SwapType.bitcoinToLightning:
+              await _processSendBitcoinToLnRefund(swap: swap as LnSendSwap);
+            case SwapType.liquidToLightning:
+              await _processSendLiquidToLnRefund(swap: swap as LnSendSwap);
+            case SwapType.liquidToBitcoin:
+              await _processChainLiquidToBitcoinRefund(swap: swap as ChainSwap);
+            case SwapType.bitcoinToLiquid:
+              await _processChainBitcoinToLiquidRefund(swap: swap as ChainSwap);
+            default:
+              return;
+          }
 
-      case SwapStatus.canCoop:
-        switch (swap.type) {
-          case SwapType.bitcoinToLightning:
-            await _processSendBitcoinToLnCoopSign(swap: swap as LnSendSwap);
-          case SwapType.liquidToLightning:
-            await _processSendLiquidToLnCoopSign(swap: swap as LnSendSwap);
-          default:
-            return;
-        }
+        case SwapStatus.canCoop:
+          switch (swap.type) {
+            case SwapType.bitcoinToLightning:
+              await _processSendBitcoinToLnCoopSign(swap: swap as LnSendSwap);
+            case SwapType.liquidToLightning:
+              await _processSendLiquidToLnCoopSign(swap: swap as LnSendSwap);
+            default:
+              return;
+          }
 
-      case SwapStatus.pending:
-      case SwapStatus.paid:
-      case SwapStatus.completed:
-      case SwapStatus.expired:
-      case SwapStatus.failed:
-        // No processing needed for these statuses anymore
-        return;
-    }
+        case SwapStatus.pending:
+        case SwapStatus.paid:
+        case SwapStatus.completed:
+        case SwapStatus.expired:
+        case SwapStatus.failed:
+          // No processing needed for these statuses anymore
+          return;
+      }
+      // ignore: empty_catches
+    } catch (e) {}
   }
 
   Future<void> _processReceiveLnToBitcoinClaim({

@@ -6,6 +6,7 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart' as swap_entity;
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:boltz/boltz.dart';
+import 'package:flutter/material.dart';
 
 class BoltzDatasource {
   final String _baseUrl;
@@ -840,6 +841,9 @@ class BoltzDatasource {
         (event) async {
           final swapId = event.id;
           final boltzStatus = event.status;
+          debugPrint(
+            'Recieved Boltz Socket Notification: ID: $swapId, Status: $boltzStatus',
+          );
           try {
             final swapModel = await _boltzStore.fetch(swapId);
             if (swapModel == null) {

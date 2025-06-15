@@ -569,7 +569,6 @@ class SwapProgressPage extends StatelessWidget {
           title: 'Swap',
           actionIcon: Icons.help_outline,
           onAction: () {},
-          onBack: () => null,
         ),
       ),
       body: Padding(
