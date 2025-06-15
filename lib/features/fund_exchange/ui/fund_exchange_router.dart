@@ -5,6 +5,8 @@ import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_account_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_bank_transfer_wire_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_canada_post_screen.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_cr_iban_crc_screen.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_cr_iban_usd_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_email_e_transfer_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_online_bill_payment_screen.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/screens/fund_exchange_sepa_transfer_screen.dart';
@@ -22,7 +24,9 @@ enum FundExchangeRoute {
   fundExchangeOnlineBillPayment('online-bill-payment'),
   fundExchangeCanadaPost('canada-post'),
   fundExchangeSepaTransfer('sepa-transfer'),
-  fundExchangeSpeiTransfer('spei-transfer');
+  fundExchangeSpeiTransfer('spei-transfer'),
+  fundExchangeCostaRicaIbanCrc('cr-iban-crc'),
+  fundExchangeCostaRicaIbanUsd('cr-iban-usd');
 
   final String path;
 
@@ -33,10 +37,7 @@ class FundExchangeRouter {
   static final route = ShellRoute(
     builder: (context, state, child) {
       return BlocProvider(
-        create:
-            (_) =>
-                locator<FundExchangeBloc>()
-                  ..add(const FundExchangeEvent.started()),
+        create: (_) => locator<FundExchangeBloc>(),
         child: child,
       );
     },
@@ -89,7 +90,9 @@ class FundExchangeRouter {
             path: FundExchangeRoute.fundExchangeEmailETransfer.path,
             builder: (context, state) {
               context.read<FundExchangeBloc>().add(
-                const FundExchangeEvent.emailETransferRequested(),
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: FundingMethod.emailETransfer,
+                ),
               );
               return const FundExchangeEmailETransferScreen();
             },
@@ -99,7 +102,9 @@ class FundExchangeRouter {
             path: FundExchangeRoute.fundExchangeBankTransferWire.path,
             builder: (context, state) {
               context.read<FundExchangeBloc>().add(
-                const FundExchangeEvent.bankTransferWireRequested(),
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: FundingMethod.bankTransferWire,
+                ),
               );
               return const FundExchangeBankTransferWireScreen();
             },
@@ -109,7 +114,9 @@ class FundExchangeRouter {
             path: FundExchangeRoute.fundExchangeOnlineBillPayment.path,
             builder: (context, state) {
               context.read<FundExchangeBloc>().add(
-                const FundExchangeEvent.onlineBillPaymentRequested(),
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: FundingMethod.onlineBillPayment,
+                ),
               );
               return const FundExchangeOnlineBillPaymentScreen();
             },
@@ -120,7 +127,9 @@ class FundExchangeRouter {
             path: FundExchangeRoute.fundExchangeCanadaPost.path,
             builder: (context, state) {
               context.read<FundExchangeBloc>().add(
-                const FundExchangeEvent.canadaPostRequested(),
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: FundingMethod.canadaPost,
+                ),
               );
               return const FundExchangeCanadaPostScreen();
             },
@@ -130,7 +139,9 @@ class FundExchangeRouter {
             path: FundExchangeRoute.fundExchangeSepaTransfer.path,
             builder: (context, state) {
               context.read<FundExchangeBloc>().add(
-                const FundExchangeEvent.sepaTransferRequested(),
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: FundingMethod.sepaTransfer,
+                ),
               );
               return const FundExchangeSepaTransferScreen();
             },
@@ -140,9 +151,35 @@ class FundExchangeRouter {
             path: FundExchangeRoute.fundExchangeSpeiTransfer.path,
             builder: (context, state) {
               context.read<FundExchangeBloc>().add(
-                const FundExchangeEvent.speiTransferRequested(),
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: FundingMethod.speiTransfer,
+                ),
               );
               return const FundExchangeSpeiTransferScreen();
+            },
+          ),
+          GoRoute(
+            name: FundExchangeRoute.fundExchangeCostaRicaIbanCrc.name,
+            path: FundExchangeRoute.fundExchangeCostaRicaIbanCrc.path,
+            builder: (context, state) {
+              context.read<FundExchangeBloc>().add(
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: FundingMethod.crIbanCrc,
+                ),
+              );
+              return const FundExchangeCrIbanCrcScreen();
+            },
+          ),
+          GoRoute(
+            name: FundExchangeRoute.fundExchangeCostaRicaIbanUsd.name,
+            path: FundExchangeRoute.fundExchangeCostaRicaIbanUsd.path,
+            builder: (context, state) {
+              context.read<FundExchangeBloc>().add(
+                const FundExchangeEvent.fundingDetailsRequested(
+                  fundingMethod: FundingMethod.crIbanUsd,
+                ),
+              );
+              return const FundExchangeCrIbanUsdScreen();
             },
           ),
         ],

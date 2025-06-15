@@ -14,7 +14,7 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final loadhubQrCode = context.select(
-      (FundExchangeBloc bloc) => bloc.state.canadaPostLoadhubQRCode,
+      (FundExchangeBloc bloc) => bloc.state.fundingDetails?.code,
     );
     return Scaffold(
       appBar: AppBar(title: const Text('Funding')),

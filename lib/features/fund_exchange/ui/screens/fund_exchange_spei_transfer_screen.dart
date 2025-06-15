@@ -14,7 +14,7 @@ class FundExchangeSpeiTransferScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final memo = context.select(
-      (FundExchangeBloc bloc) => bloc.state.speiTransferMemo,
+      (FundExchangeBloc bloc) => bloc.state.fundingDetails?.code,
     );
     return Scaffold(
       appBar: AppBar(title: const Text('Funding')),

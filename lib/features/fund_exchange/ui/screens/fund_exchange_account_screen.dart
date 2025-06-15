@@ -1,8 +1,9 @@
-import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_country.dart';
+import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_jurisdiction.dart';
 import 'package:bb_mobile/features/fund_exchange/domain/entities/funding_method.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_canada_methods.dart';
-import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_country_dropdown.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_costa_rica_methods.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_jurisdiction_dropdown.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_method_list_tile.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +17,8 @@ class FundExchangeAccountScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final fundingCountry = context.select(
-      (FundExchangeBloc bloc) => bloc.state.fundingCountry,
+    final jurisdiction = context.select(
+      (FundExchangeBloc bloc) => bloc.state.jurisdiction,
     );
 
     return Scaffold(
@@ -58,20 +59,22 @@ class FundExchangeAccountScreen extends StatelessWidget {
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(24.0),
-              const FundExchangeCountryDropdown(),
+              const FundExchangeJurisdictionDropdown(),
               const Gap(24.0),
-              switch (fundingCountry) {
-                FundingCountry.canada => const FundExchangeCanadaMethods(),
-                FundingCountry.europe => const FundExchangeMethodListTile(
+              switch (jurisdiction) {
+                FundingJurisdiction.canada => const FundExchangeCanadaMethods(),
+                FundingJurisdiction.europe => const FundExchangeMethodListTile(
                   method: FundingMethod.sepaTransfer,
                   title: 'SEPA transfer',
                   subtitle: 'Send a SEPA transfer from your bank',
                 ),
-                FundingCountry.mexico => const FundExchangeMethodListTile(
+                FundingJurisdiction.mexico => const FundExchangeMethodListTile(
                   method: FundingMethod.speiTransfer,
                   title: 'SPEI transfer',
                   subtitle: 'Transfer funds using your CLABE',
                 ),
+                FundingJurisdiction.costaRica =>
+                  const FundExchangeCostaRicaMethods(),
               },
             ],
           ),

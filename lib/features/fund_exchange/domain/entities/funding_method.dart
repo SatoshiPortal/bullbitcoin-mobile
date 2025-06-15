@@ -4,7 +4,9 @@ enum FundingMethod {
   onlineBillPayment(queryParam: 'online-bill-payment'),
   canadaPost(queryParam: 'canada-post'),
   sepaTransfer(queryParam: 'sepa-transfer'),
-  speiTransfer(queryParam: 'spei-transfer');
+  speiTransfer(queryParam: 'spei-transfer'),
+  crIbanCrc(queryParam: 'cr-iban-crc'),
+  crIbanUsd(queryParam: 'cr-iban-usd');
 
   final String queryParam;
   const FundingMethod({required this.queryParam});

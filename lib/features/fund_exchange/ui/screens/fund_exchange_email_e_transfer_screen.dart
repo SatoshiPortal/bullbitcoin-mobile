@@ -13,10 +13,10 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final secretQuestion = context.select(
-      (FundExchangeBloc bloc) => bloc.state.emailETransferSecretQuestion,
+      (FundExchangeBloc bloc) => bloc.state.fundingDetails?.code,
     );
     final secretAnswer = context.select(
-      (FundExchangeBloc bloc) => bloc.state.emailETransferSecretAnswer,
+      (FundExchangeBloc bloc) => bloc.state.fundingDetails?.code,
     );
     return Scaffold(
       appBar: AppBar(title: const Text('Funding')),

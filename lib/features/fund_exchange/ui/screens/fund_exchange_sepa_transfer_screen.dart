@@ -14,7 +14,7 @@ class FundExchangeSepaTransferScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final code = context.select(
-      (FundExchangeBloc bloc) => bloc.state.sepaTransferCode,
+      (FundExchangeBloc bloc) => bloc.state.fundingDetails?.code,
     );
     return Scaffold(
       appBar: AppBar(title: const Text('Funding')),

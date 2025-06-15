@@ -137,6 +137,14 @@ class FundExchangeWarningScreen extends StatelessWidget {
                   context.pushReplacementNamed(
                     FundExchangeRoute.fundExchangeSpeiTransfer.name,
                   );
+                case FundingMethod.crIbanCrc:
+                  context.pushReplacementNamed(
+                    FundExchangeRoute.fundExchangeCostaRicaIbanCrc.name,
+                  );
+                case FundingMethod.crIbanUsd:
+                  context.pushReplacementNamed(
+                    FundExchangeRoute.fundExchangeCostaRicaIbanUsd.name,
+                  );
               }
             },
             bgColor: theme.colorScheme.primary,
