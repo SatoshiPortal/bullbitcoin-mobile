@@ -9,6 +9,7 @@ import 'package:bb_mobile/ui/components/loading/loading_box_content.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
@@ -307,8 +308,13 @@ class ReceiveLnInfoDetails extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          const Gap(12),
+          const ReceiveLnSwapID(),
+          const Gap(12),
+
+          Container(color: context.colour.surface, height: 1),
           Padding(
-            padding: const EdgeInsets.only(top: 24, bottom: 10),
+            padding: const EdgeInsets.only(top: 10, bottom: 12),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -361,6 +367,41 @@ class ReceiveLnInfoDetails extends StatelessWidget {
             ),
           ],
           const ReceiveLnFeesDetails(),
+        ],
+      ),
+    );
+  }
+}
+
+class ReceiveLnSwapID extends StatelessWidget {
+  const ReceiveLnSwapID({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final swap = context.select((ReceiveBloc bloc) => bloc.state.getSwap);
+    if (swap == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          BBText(
+            'Swap ID',
+            style: context.font.bodySmall,
+            color: context.colour.surfaceContainer,
+          ),
+          const Spacer(),
+          BBText(
+            swap.id,
+            style: context.font.bodyLarge,
+            textAlign: TextAlign.end,
+          ),
+          const Gap(4),
+          InkWell(
+            child: Icon(Icons.copy, color: context.colour.primary, size: 16),
+            onTap: () {
+              Clipboard.setData(ClipboardData(text: swap.id));
+            },
+          ),
         ],
       ),
     );
