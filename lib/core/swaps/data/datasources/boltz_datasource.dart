@@ -54,13 +54,13 @@ class BoltzDatasource {
       _swapUpdatesController;
 
   Future<swap_entity.SwapFees> getSwapFees(swap_entity.SwapType type) async {
-    if (_reverseFeesAndLimits == null) {
+    if (type.isReverse && _reverseFeesAndLimits == null) {
       await updateFees(swapType: type);
     }
-    if (_submarineFeesAndLimits == null) {
+    if (type.isSubmarine && _submarineFeesAndLimits == null) {
       await updateFees(swapType: type);
     }
-    if (_chainFeesAndLimits == null) {
+    if (!type.isChain && !type.isSubmarine && _chainFeesAndLimits == null) {
       await updateFees(swapType: type);
     }
     switch (type) {

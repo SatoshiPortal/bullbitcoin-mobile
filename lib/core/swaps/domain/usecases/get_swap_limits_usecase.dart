@@ -15,12 +15,16 @@ class GetSwapLimitsUsecase {
   Future<(SwapLimits, SwapFees)> execute({
     required SwapType type,
     bool isTestnet = false,
+    bool updateLimitsAndFees = true,
   }) async {
     try {
       final swapRepository =
           isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
-      await swapRepository.updateSwapLimitsAndFees(type);
-      return await swapRepository.getSwapLimitsAndFees(type);
+      if (updateLimitsAndFees) {
+        await swapRepository.updateSwapLimitsAndFees(type);
+      }
+      final result = await swapRepository.getSwapLimitsAndFees(type);
+      return result;
     } catch (e) {
       log.severe('[GetSwapLimitsUsecase] Error getting swap limits: $e');
       throw GetSwapLimitsException(e.toString());

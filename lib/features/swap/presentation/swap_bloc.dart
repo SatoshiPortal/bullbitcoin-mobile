@@ -258,7 +258,9 @@ class SwapCubit extends Cubit<SwapState> {
 
   Future<void> init() async {
     emit(state.copyWith(loadingWallets: true));
+
     final wallets = await _getWalletsUsecase.execute();
+
     final liquidWallets = wallets.where((w) => w.isLiquid).toList();
     final bitcoinWallets =
         wallets.where((w) => !w.isLiquid && !w.isWatchOnly).toList();
@@ -266,7 +268,9 @@ class SwapCubit extends Cubit<SwapState> {
       (w) => w.isDefault,
       orElse: () => bitcoinWallets.first,
     );
+
     final settings = await _getSettingsUsecase.execute();
+
     final bitcoinUnit = settings.bitcoinUnit;
     emit(
       state.copyWith(
@@ -281,6 +285,7 @@ class SwapCubit extends Cubit<SwapState> {
     );
 
     final currencies = await _getAvailableCurrenciesUsecase.execute();
+
     final selectedFiatCurrencyCode = settings.currencyCode;
 
     final exchangeRate = await _convertSatsToCurrencyAmountUsecase.execute(
@@ -288,6 +293,7 @@ class SwapCubit extends Cubit<SwapState> {
     );
 
     await loadSwapLimits();
+
     emit(
       state.copyWith(
         fromWallets: liquidWallets,
@@ -312,6 +318,7 @@ class SwapCubit extends Cubit<SwapState> {
       final btcToLbtcSwapLimits = await _getSwapLimitsUsecase.execute(
         type: SwapType.bitcoinToLiquid,
         isTestnet: isTestnet,
+        updateLimitsAndFees: false, // chain fees are already updated
       );
       emit(state.copyWith(btcToLbtcSwapLimitsAndFees: btcToLbtcSwapLimits));
     } catch (e) {

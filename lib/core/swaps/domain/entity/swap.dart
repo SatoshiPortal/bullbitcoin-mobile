@@ -17,6 +17,17 @@ enum SwapType {
   bitcoinToLiquid,
 }
 
+extension SwapTypeX on SwapType {
+  bool get isReverse =>
+      this == SwapType.lightningToBitcoin || this == SwapType.lightningToLiquid;
+
+  bool get isSubmarine =>
+      this == SwapType.bitcoinToLightning || this == SwapType.liquidToLightning;
+
+  bool get isChain =>
+      this == SwapType.bitcoinToLiquid || this == SwapType.liquidToBitcoin;
+}
+
 enum SwapStatus {
   pending,
   paid,
