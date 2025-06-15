@@ -28,7 +28,21 @@ enum SwapStatus {
   failed;
 
   String get displayName {
-    return name.substring(0, 1).toUpperCase() + name.substring(1);
+    switch (this) {
+      case SwapStatus.pending:
+        return 'Pending';
+      case SwapStatus.paid:
+      case SwapStatus.claimable:
+      case SwapStatus.refundable:
+      case SwapStatus.canCoop:
+        return 'In Progress';
+      case SwapStatus.completed:
+        return 'Completed';
+      case SwapStatus.expired:
+        return 'Expired';
+      case SwapStatus.failed:
+        return 'Failed';
+    }
   }
 }
 
