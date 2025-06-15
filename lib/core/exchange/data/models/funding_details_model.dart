@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_annotation_target
+
 import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
