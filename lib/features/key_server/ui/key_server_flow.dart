@@ -8,7 +8,6 @@ import 'package:bb_mobile/features/key_server/ui/screens/enter_screen.dart';
 import 'package:bb_mobile/features/key_server/ui/screens/recover_with_backup_key_screen.dart';
 import 'package:bb_mobile/features/key_server/ui/screens/recover_with_secret_screen.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
-import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -64,9 +63,6 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
           listeners: [
             BlocListener<KeyServerCubit, KeyServerState>(
               listener: _handleKeyServerStateChange,
-            ),
-            BlocListener<OnboardingBloc, OnboardingState>(
-              listener: _handleOnboardingStateChange,
             ),
             BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
               listener: _handleTestBackupStateChange,
@@ -232,15 +228,6 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
       context.goNamed(BackupWalletSubroute.backupSuccess.name);
     } else if (state.secretStatus == SecretStatus.recovered) {
       _handleRecoverySuccess(context, state);
-    }
-  }
-
-  void _handleOnboardingStateChange(
-    BuildContext context,
-    OnboardingState state,
-  ) {
-    if (state.onboardingStepStatus == OnboardingStepStatus.success) {
-      context.goNamed(OnboardingRoute.recoverSuccess.name);
     }
   }
 

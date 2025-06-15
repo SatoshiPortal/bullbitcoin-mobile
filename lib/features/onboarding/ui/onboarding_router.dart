@@ -50,14 +50,17 @@ class OnboardingRouter {
                 BlocListener<OnboardingBloc, OnboardingState>(
                   listenWhen:
                       (previous, current) =>
-                          previous.createSuccess() != current.createSuccess() &&
-                          current.createSuccess(),
+                          !previous.isSuccess && current.isSuccess,
                   listener: (context, state) {
-                    // Restart the wallet bloc to ensure it reflects the new wallet state
-                    // with the recently created or recovered wallet before
-                    // navigating to the wallet home screen.
+                    // Restart the wallet bloc to ensure it reflects the new wallets state
+                    // with the recently created or recovered wallets before
+                    // navigating.
                     context.read<WalletBloc>().add(const WalletStarted());
-                    context.goNamed(WalletRoute.walletHome.name);
+                    if (state.step == OnboardingStep.create) {
+                      context.goNamed(WalletRoute.walletHome.name);
+                    } else if (state.step == OnboardingStep.recover) {
+                      context.goNamed(OnboardingRoute.recoverSuccess.name);
+                    }
                   },
                 ),
               ],

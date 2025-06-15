@@ -106,8 +106,7 @@ class _Button extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasAllValidWords = context.select(
-      (OnboardingBloc onboardingBloc) =>
-          onboardingBloc.state.hasAllValidWords(),
+      (OnboardingBloc onboardingBloc) => onboardingBloc.state.hasAllValidWords,
     );
 
     final loading = context.select(
