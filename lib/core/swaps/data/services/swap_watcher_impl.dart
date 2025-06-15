@@ -20,6 +20,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
   final StreamController<Swap> _swapStreamController =
       StreamController<Swap>.broadcast();
   StreamSubscription<Swap>? _swapStreamSubscription;
+
   SwapWatcherServiceImpl({
     required BoltzSwapRepositoryImpl boltzRepo,
     required WalletAddressRepository walletAddressRepository,
@@ -31,12 +32,13 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
        _feesRepository = feesRepository,
        _settingsRepository = settingsRepository,
        _logRepository = logRepository {
-    startWatching();
+    unawaited(startWatching());
   }
   @override
   Stream<Swap> get swapStream => _swapStreamController.stream;
 
-  void startWatching() {
+  Future<void> startWatching() async {
+    await _swapStreamSubscription?.cancel();
     _swapStreamSubscription = _boltzRepo.swapUpdatesStream.listen(
       (swap) async {
         await _logRepository.logInfo(
@@ -48,8 +50,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
             'function': 'startWatching',
           },
         );
-        // Notify the rest of the app about the swap update before processing it
-        // which changes the status of the swap again
         _swapStreamController.add(swap);
         await processSwap(swap);
       },
@@ -61,28 +61,16 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       },
       cancelOnError: false,
     );
-
     log.info('Swap watcher started and listening');
   }
 
   @override
   Future<void> restartWatcherWithOngoingSwaps() async {
     await _swapStreamSubscription?.cancel();
-
     final swaps = await _boltzRepo.getOngoingSwaps();
     final swapIdsToWatch = swaps.map((swap) => swap.id).toList();
-    if (swapIdsToWatch.isNotEmpty) {
-      await _logRepository.logInfo(
-        message: 'Watching Swaps',
-        logger: 'SwapWatcherService',
-        context: {
-          'swapIds': swapIdsToWatch.join(', '),
-          'function': 'restartWatcherWithOngoingSwaps',
-        },
-      );
-    }
     await _boltzRepo.reinitializeStreamWithSwaps(swapIds: swapIdsToWatch);
-    startWatching();
+    await startWatching();
   }
 
   @override
@@ -133,7 +121,6 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         case SwapStatus.completed:
         case SwapStatus.expired:
         case SwapStatus.failed:
-          // No processing needed for these statuses anymore
           return;
       }
       // ignore: empty_catches
