@@ -13,6 +13,7 @@ import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
@@ -1511,7 +1512,7 @@ class SendSucessScreen extends StatelessWidget {
         flexibleSpace: TopBar(
           title: 'Send',
           actionIcon: Icons.close,
-          onAction: context.pop,
+          onAction: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
       body: Padding(
