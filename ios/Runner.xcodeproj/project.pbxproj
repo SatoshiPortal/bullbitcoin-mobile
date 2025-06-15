@@ -488,7 +488,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 51;
 				DEVELOPMENT_TEAM = BX99T32YGS;
 				ENABLE_BITCODE = NO;
 				FLUTTER_BUILD_NAME = 5.0.6;
@@ -500,7 +500,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.0.6;
+				MARKETING_VERSION = 5.0.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bullbitcoin.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -678,7 +678,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 51;
 				DEVELOPMENT_TEAM = BX99T32YGS;
 				ENABLE_BITCODE = NO;
 				FLUTTER_BUILD_NAME = 5.0.6;
@@ -690,7 +690,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.0.6;
+				MARKETING_VERSION = 5.0.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bullbitcoin.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
@@ -706,7 +706,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 50;
+				CURRENT_PROJECT_VERSION = 51;
 				DEVELOPMENT_TEAM = BX99T32YGS;
 				ENABLE_BITCODE = NO;
 				FLUTTER_BUILD_NAME = 5.0.6;
@@ -718,7 +718,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.0.6;
+				MARKETING_VERSION = 5.0.7;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bullbitcoin.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
