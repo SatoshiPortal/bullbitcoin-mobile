@@ -502,10 +502,27 @@ class CommonChainSwapSendInfoSection extends StatelessWidget {
           _divider(context),
           CommonInfoRow(
             title: 'Swap ID',
-            details: BBText(
-              swap.id,
-              style: context.font.bodyLarge,
-              textAlign: TextAlign.end,
+            details: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BBText(
+                  swap.id,
+                  style: context.font.bodyLarge,
+                  textAlign: TextAlign.end,
+                ),
+                const Gap(4),
+                InkWell(
+                  child: Icon(
+                    Icons.copy,
+                    color: context.colour.primary,
+                    size: 16,
+                  ),
+                  onTap: () {
+                    Clipboard.setData(ClipboardData(text: swap.id));
+                  },
+                ),
+              ],
             ),
           ),
           _divider(context),
