@@ -100,7 +100,6 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     log.info('resumed');
     try {
       await locator<RestartSwapWatcherUsecase>().execute();
-      log.info('Restarted Swap Watcher!');
     } catch (e) {
       log.severe('Error during app resume: $e');
     }
