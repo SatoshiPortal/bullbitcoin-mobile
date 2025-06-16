@@ -1,4 +1,6 @@
+import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:bb_mobile/ui/components/loading/loading_box_content.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -13,8 +15,11 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final loadhubQrCode = context.select(
-      (FundExchangeBloc bloc) => bloc.state.fundingDetails?.code,
+    final details = context.select(
+      (FundExchangeBloc bloc) => bloc.state.fundingDetails,
+    );
+    final failedToLoadFundingDetails = context.select(
+      (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
     );
     return Scaffold(
       appBar: AppBar(title: const Text('Funding')),
@@ -41,24 +46,29 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                 ),
               ),
               const Gap(24.0),
-
-              Center(
-                child: Column(
-                  children: [
-                    BBText(
-                      "Loadhub QR code",
-                      style: theme.textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                    const Gap(8.0),
-                    if (loadhubQrCode == null)
-                      const LoadingBoxContent(height: 250.0, width: 250.0)
-                    else
-                      QrImageView(size: 250, data: loadhubQrCode),
-                    const Gap(24.0),
-                  ],
+              if (failedToLoadFundingDetails ||
+                  details is! CanadaPostFundingDetails?) ...[
+                const FundExchangeDetailsErrorCard(),
+                const Gap(24.0),
+              ] else ...[
+                Center(
+                  child: Column(
+                    children: [
+                      BBText(
+                        "Loadhub QR code",
+                        style: theme.textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                      const Gap(8.0),
+                      if (details?.code == null)
+                        const LoadingBoxContent(height: 250.0, width: 250.0)
+                      else
+                        QrImageView(size: 250, data: details!.code),
+                      const Gap(24.0),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),

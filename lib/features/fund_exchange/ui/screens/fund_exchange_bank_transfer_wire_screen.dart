@@ -1,5 +1,7 @@
+import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_detail.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -13,9 +15,13 @@ class FundExchangeBankTransferWireScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final code = context.select(
-      (FundExchangeBloc bloc) => bloc.state.fundingDetails?.code,
+    final details = context.select(
+      (FundExchangeBloc bloc) => bloc.state.fundingDetails,
     );
+    final failedToLoadFundingDetails = context.select(
+      (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
+    );
+
     return Scaffold(
       appBar: AppBar(title: const Text('Funding')),
       body: SafeArea(
@@ -40,65 +46,71 @@ class FundExchangeBankTransferWireScreen extends StatelessWidget {
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(24.0),
-              const FundExchangeDetail(
-                label: 'Beneficiary name',
-                helpText:
-                    'Use our official corporate name. Do not use "Bull Bitcoin".',
-                value: 'Satoshi Portal Inc.',
-              ),
-              const Gap(24.0),
-              FundExchangeDetail(
-                label: 'Transfer code (add this as a payment description)',
-                helpText: 'Add this as the reason for the transfer',
-                value: code,
-              ),
-              const Gap(16.0),
-              InfoCard(
-                bgColor: theme.colorScheme.inverseSurface.withValues(
-                  alpha: 0.1,
+              if (failedToLoadFundingDetails ||
+                  details is! WireFundingDetails?) ...[
+                const FundExchangeDetailsErrorCard(),
+                const Gap(24.0),
+              ] else ...[
+                FundExchangeDetail(
+                  label: 'Beneficiary name',
+                  helpText:
+                      'Use our official corporate name. Do not use "Bull Bitcoin".',
+                  value: details?.beneficiaryName,
                 ),
-                tagColor: theme.colorScheme.secondary,
-                description:
-                    'You must add the transfer code as the "message" or "reason" when making the payment.',
-              ),
-              const Gap(24.0),
-              const FundExchangeDetail(
-                label: 'Bank account details',
-                value: '899-66439-86731649741',
-              ),
-              const Gap(24.0),
-              const FundExchangeDetail(
-                label: 'SWIFT code',
-                value: 'CUCXCATTCAL',
-              ),
-              const Gap(24.0),
-              const FundExchangeDetail(
-                label: 'Institution number',
-                value: '899',
-              ),
-              const Gap(24.0),
-              const FundExchangeDetail(label: 'Transit number', value: '66439'),
-              const Gap(24.0),
-              const FundExchangeDetail(
-                label: 'Routing number',
-                value: '89966439',
-              ),
-              const Gap(24.0),
-              const FundExchangeDetail(
-                label: 'Beneficiary address',
-                value: '4004 8 St SE, Calgary, AB T2G 2W3',
-              ),
-              const Gap(24.0),
-              const FundExchangeDetail(
-                label: 'Bank name',
-                value: 'SERVUS CREDIT UNION LTD',
-              ),
-              const Gap(24.0),
-              const FundExchangeDetail(
-                label: 'Address of our bank',
-                value: '102, 420 2nd Street SW, Calgary, Alberta T2P3K4',
-              ),
-              const Gap(24.0),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Transfer code (add this as a payment description)',
+                  helpText: 'Add this as the reason for the transfer',
+                  value: details?.code,
+                ),
+                const Gap(16.0),
+                InfoCard(
+                  bgColor: theme.colorScheme.inverseSurface.withValues(
+                    alpha: 0.1,
+                  ),
+                  tagColor: theme.colorScheme.secondary,
+                  description:
+                      'You must add the transfer code as the "message" or "reason" when making the payment.',
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Bank account details',
+                  value: details?.bankAccountDetails,
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(label: 'SWIFT code', value: details?.swift),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Institution number',
+                  value: details?.institutionNumber,
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Transit number',
+                  value: details?.transitNumber,
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Routing number',
+                  value: details?.routingNumber,
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Beneficiary address',
+                  value: details?.beneficiaryAddress,
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Bank name',
+                  value: details?.bankName,
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Address of our bank',
+                  value: details?.bankAddress,
+                ),
+                const Gap(24.0),
+              ],
             ],
           ),
         ),

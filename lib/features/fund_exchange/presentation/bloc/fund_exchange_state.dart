@@ -9,4 +9,7 @@ sealed class FundExchangeState with _$FundExchangeState {
     GetExchangeFundingDetailsException? getExchangeFundingDetailsException,
   }) = _FundExchangeState;
   const FundExchangeState._();
+
+  bool get failedToLoadFundingDetails =>
+      getExchangeFundingDetailsException != null;
 }

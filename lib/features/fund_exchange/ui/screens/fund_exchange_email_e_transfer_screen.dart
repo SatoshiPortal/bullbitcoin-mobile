@@ -1,5 +1,7 @@
+import 'package:bb_mobile/core/exchange/domain/entity/funding_details.dart';
 import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange_bloc.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_detail.dart';
+import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +14,11 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final secretQuestion = context.select(
-      (FundExchangeBloc bloc) => bloc.state.fundingDetails?.code,
+    final details = context.select(
+      (FundExchangeBloc bloc) => bloc.state.fundingDetails,
     );
-    final secretAnswer = context.select(
-      (FundExchangeBloc bloc) => bloc.state.fundingDetails?.code,
+    final failedToLoadFundingDetails = context.select(
+      (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
     );
     return Scaffold(
       appBar: AppBar(title: const Text('Funding')),
@@ -34,22 +36,27 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(24.0),
-              const FundExchangeDetail(
-                label: 'Use this as the E-transfer beneficiary name',
-                value: 'Satoshi Portal Inc.',
-              ),
-              const Gap(24.0),
-              const FundExchangeDetail(
-                label: 'Send the E-transfer to this email',
-                value: 'funding@bullaccount.com',
-              ),
-              const Gap(24.0),
-              FundExchangeDetail(
-                label: 'Secret question',
-                value: secretQuestion,
-              ),
-              const Gap(24.0),
-              FundExchangeDetail(label: 'Secret answer', value: secretAnswer),
+              if (failedToLoadFundingDetails ||
+                  details is! ETransferFundingDetails?) ...[
+                const FundExchangeDetailsErrorCard(),
+                const Gap(24.0),
+              ] else ...[
+                FundExchangeDetail(
+                  label: 'Use this as the E-transfer beneficiary name',
+                  value: details?.beneficiaryName,
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Send the E-transfer to this email',
+                  value: details?.beneficiaryEmail,
+                ),
+                const Gap(24.0),
+                FundExchangeDetail(
+                  label: 'Transfer code',
+                  value: details?.code,
+                ),
+                const Gap(24.0),
+              ],
             ],
           ),
         ),

@@ -4,12 +4,17 @@ part 'funding_details.freezed.dart';
 
 @freezed
 sealed class FundingDetails with _$FundingDetails {
-  const factory FundingDetails.eTransfer({required String code}) =
-      ETransferFundingDetails;
+  const factory FundingDetails.eTransfer({
+    required String code,
+    required String beneficiaryName,
+    required String beneficiaryEmail,
+  }) = ETransferFundingDetails;
   const factory FundingDetails.canadaPost({required String code}) =
       CanadaPostFundingDetails;
-  const factory FundingDetails.billPayment({required String code}) =
-      BillPaymentFundingDetails;
+  const factory FundingDetails.billPayment({
+    required String code,
+    required String billerName,
+  }) = BillPaymentFundingDetails;
   const factory FundingDetails.instantSepa({
     required String code,
     required String iban,
@@ -20,10 +25,26 @@ sealed class FundingDetails with _$FundingDetails {
   }) = InstantSepaFundingDetails;
   const factory FundingDetails.regularSepa({required String code}) =
       RegularSepaFundingDetails;
-  const factory FundingDetails.wire({required String code}) =
-      WireFundingDetails;
-  const factory FundingDetails.spei({required String code}) =
-      SpeiFundingDetails;
+  const factory FundingDetails.wire({
+    required String code,
+    required String beneficiaryName,
+    required String bankAccountDetails,
+    required String iban,
+    required String swift,
+    required String institutionNumber,
+    required String transitNumber,
+    required String accountNumber,
+    required String routingNumber,
+    required String beneficiaryAddress,
+    required String bankAddress,
+    required String bankName,
+  }) = WireFundingDetails;
+  const factory FundingDetails.spei({
+    required String code,
+    required String bankName,
+    required String beneficiaryName,
+    required String clabe,
+  }) = SpeiFundingDetails;
   const factory FundingDetails.crIbanCrc({required String code}) =
       CrIbanCrcFundingDetails;
   const factory FundingDetails.crIbanUsd({required String code}) =

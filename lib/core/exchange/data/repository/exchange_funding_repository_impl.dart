@@ -59,7 +59,7 @@ class ExchangeFundingRepositoryImpl implements ExchangeFundingRepository {
         fundingDetailsRequestParams: fundingDetailsRequestParams,
       );
 
-      return fundingDetailsModel.toEntity();
+      return fundingDetailsModel.toEntity(method: fundingMethod);
     } catch (e) {
       // Log the error or handle it as needed
       throw Exception('Failed to fetch funding details: $e');
