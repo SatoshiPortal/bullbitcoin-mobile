@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 
-class FundExchangeEmailETransferScreen extends StatelessWidget {
-  const FundExchangeEmailETransferScreen({super.key});
+class FundExchangeCrIbanUsdScreen extends StatelessWidget {
+  const FundExchangeCrIbanUsdScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +20,7 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
     final failedToLoadFundingDetails = context.select(
       (FundExchangeBloc bloc) => bloc.state.failedToLoadFundingDetails,
     );
+
     return Scaffold(
       appBar: AppBar(title: const Text('Funding')),
       body: SafeArea(
@@ -29,32 +30,22 @@ class FundExchangeEmailETransferScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              BBText('E-Transfer details', style: theme.textTheme.displaySmall),
-              const Gap(16.0),
               BBText(
-                'Any amount you send from your bank via Email E-Transfer using the information below will be credited to your Bull Bitcoin account balance within a few minutes.',
+                'Costa Rica IBAN (USD)',
+                style: theme.textTheme.displaySmall,
+              ),
+              const Gap(16.0),
+              Text(
+                "Transfer funds in US Dollars (USD)",
                 style: theme.textTheme.headlineSmall,
               ),
               const Gap(24.0),
               if (failedToLoadFundingDetails ||
-                  details is! ETransferFundingDetails?) ...[
+                  details is! CrIbanUsdFundingDetails?) ...[
                 const FundExchangeDetailsErrorCard(),
                 const Gap(24.0),
               ] else ...[
-                FundExchangeDetail(
-                  label: 'Use this as the E-transfer beneficiary name',
-                  value: details?.beneficiaryName,
-                ),
-                const Gap(24.0),
-                FundExchangeDetail(
-                  label: 'Send the E-transfer to this email',
-                  value: details?.beneficiaryEmail,
-                ),
-                const Gap(24.0),
-                FundExchangeDetail(
-                  label: 'Transfer code',
-                  value: details?.code,
-                ),
+                const FundExchangeDetail(label: ''),
                 const Gap(24.0),
               ],
             ],

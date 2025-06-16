@@ -112,6 +112,8 @@ class FundExchangeWarningScreen extends StatelessWidget {
             label: 'Continue',
             disabled: !hasConfirmedNoCoercion,
             onPressed: () {
+              // To not go back to the warning but directly go to payment method selection
+              // screen we use `pushReplacementNamed` instead of `pushNamed` here.
               switch (fundingMethod) {
                 case FundingMethod.emailETransfer:
                   context.pushReplacementNamed(
@@ -136,6 +138,14 @@ class FundExchangeWarningScreen extends StatelessWidget {
                 case FundingMethod.speiTransfer:
                   context.pushReplacementNamed(
                     FundExchangeRoute.fundExchangeSpeiTransfer.name,
+                  );
+                case FundingMethod.crIbanCrc:
+                  context.pushReplacementNamed(
+                    FundExchangeRoute.fundExchangeCostaRicaIbanCrc.name,
+                  );
+                case FundingMethod.crIbanUsd:
+                  context.pushReplacementNamed(
+                    FundExchangeRoute.fundExchangeCostaRicaIbanUsd.name,
                   );
               }
             },

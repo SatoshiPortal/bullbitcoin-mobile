@@ -45,6 +45,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         const Gap(12),
+                        /*
                         SwitchListTile(
                           value: false,
                           onChanged: (value) {},
@@ -63,6 +64,7 @@ class ExchangeHomeScreen extends StatelessWidget {
                           trailing: const Icon(Icons.arrow_forward),
                         ),
                         const Gap(12),
+                        */
                         ListTile(
                           title: const Text('Fund your account'),
                           onTap: () {

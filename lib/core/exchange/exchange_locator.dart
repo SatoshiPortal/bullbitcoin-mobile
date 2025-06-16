@@ -1,10 +1,12 @@
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/datasources/bullbitcoin_api_key_datasource.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_api_key_repository_impl.dart';
+import 'package:bb_mobile/core/exchange/data/repository/exchange_funding_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_order_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_rate_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/data/repository/exchange_user_repository_impl.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_api_key_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/repositories/exchange_funding_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_repository.dart';
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_user_repository.dart';
@@ -15,6 +17,7 @@ import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency
 import 'package:bb_mobile/core/exchange/domain/usecases/create_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_available_currencies_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_funding_details_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/list_all_orders_usecase.dart';
@@ -120,6 +123,27 @@ class ExchangeLocator {
         isTestnet: true,
       ),
       instanceName: 'testnetExchangeOrderRepository',
+    );
+
+    locator.registerLazySingleton<ExchangeFundingRepository>(
+      () => ExchangeFundingRepositoryImpl(
+        apiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'mainnetExchangeApiDatasource',
+        ),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: false,
+      ),
+      instanceName: 'mainnetExchangeFundingRepository',
+    );
+    locator.registerLazySingleton<ExchangeFundingRepository>(
+      () => ExchangeFundingRepositoryImpl(
+        apiDatasource: locator<BullbitcoinApiDatasource>(
+          instanceName: 'testnetExchangeApiDatasource',
+        ),
+        apiKeyDatasource: locator<BullbitcoinApiKeyDatasource>(),
+        isTestnet: true,
+      ),
+      instanceName: 'testnetExchangeFundingRepository',
     );
   }
 
@@ -253,6 +277,18 @@ class ExchangeLocator {
         ),
         testnetExchangeOrderRepository: locator<ExchangeOrderRepository>(
           instanceName: 'testnetExchangeOrderRepository',
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
+    locator.registerFactory<GetExchangeFundingDetailsUsecase>(
+      () => GetExchangeFundingDetailsUsecase(
+        mainnetExchangeFundingRepository: locator<ExchangeFundingRepository>(
+          instanceName: 'mainnetExchangeFundingRepository',
+        ),
+        testnetExchangeFundingRepository: locator<ExchangeFundingRepository>(
+          instanceName: 'testnetExchangeFundingRepository',
         ),
         settingsRepository: locator<SettingsRepository>(),
       ),

@@ -3,20 +3,13 @@ part of 'fund_exchange_bloc.dart';
 @freezed
 sealed class FundExchangeState with _$FundExchangeState {
   const factory FundExchangeState({
-    UserSummary? userSummary,
-    GetExchangeUserSummaryException? getUserSummaryException,
-    @Default(FundingCountry.canada) FundingCountry fundingCountry,
+    @Default(FundingJurisdiction.canada) FundingJurisdiction jurisdiction,
     @Default(false) bool hasConfirmedNoCoercion,
-    String? emailETransferSecretQuestion,
-    String? emailETransferSecretAnswer,
-    String? bankTransferWireCode,
-    String? canadaPostLoadhubQRCode,
-    String? onlineBillPaymentAccountNumber,
-    String? sepaTransferCode,
-    String? speiTransferMemo,
+    FundingDetails? fundingDetails,
+    GetExchangeFundingDetailsException? getExchangeFundingDetailsException,
   }) = _FundExchangeState;
   const FundExchangeState._();
 
-  bool get isFetchingUserSummary =>
-      getUserSummaryException == null && userSummary == null;
+  bool get failedToLoadFundingDetails =>
+      getExchangeFundingDetailsException != null;
 }
