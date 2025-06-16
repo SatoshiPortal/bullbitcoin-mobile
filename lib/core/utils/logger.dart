@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
 import 'package:path_provider/path_provider.dart';
@@ -10,44 +11,57 @@ import 'package:path_provider/path_provider.dart';
 late Logger log;
 
 class Logger {
+  final session = <String>[];
   final String? encryptionKey;
-  final String logPath;
+  final String path;
   final dep.LoggerColorful logger;
-  Logger._(this.encryptionKey, this.logPath, this.logger);
+
+  Logger._(this.encryptionKey, this.path, this.logger) {
+    dep.Logger.root.level = dep.Level.ALL;
+
+    dep.Logger.root.onRecord.listen((record) {
+      final now = DateTime.now().toUtc().toIso8601String();
+      final content = [now, record.level.name, record.message];
+
+      if (record.stackTrace != null) content.add(record.stackTrace.toString());
+
+      final tsvLine = content.join('\t');
+
+      // We don't want to keep the info session in memory, they should be written to file
+      if (record.level != dep.Level.INFO) session.add(tsvLine);
+
+      if (kDebugMode) {
+        content.removeAt(0); // remove the time
+        debugPrint(content.join('\t'));
+      }
+    });
+  }
 
   static Future<Logger> init({
     String? encryptionKey,
     String name = 'Logger',
   }) async {
-    dep.Logger.root.level = dep.Level.ALL;
-    dep.Logger.root.onRecord.listen((record) {
-      String message = '${record.level.name}\t${record.message}';
-      if (record.stackTrace != null) message += '\t${record.stackTrace}';
-      debugPrint(message);
-    });
-
     final dir = await getApplicationDocumentsDirectory();
-    final logPath = '${dir.path}/bull.txt';
     // android dir: "/data/user/0/com.bullbitcoin.mobile/app_flutter"
     // ios dir: "/var/mobile/Library/Application Support/com.bullbitcoin.mobile/app_flutter"
 
+    final path = '${dir.path}/${SettingsConstants.sessionLogFileName}';
+
     return Logger._(
       encryptionKey,
-      logPath,
+      path,
       // iOS emulator doesn't support colors –> https://github.com/flutter/flutter/issues/20663
       // We don't want colors in release mode either
       dep.LoggerColorful(name, disabledColors: Platform.isIOS || kReleaseMode),
     );
   }
 
-  Future<void> logToFile(String message) async {
-    final now = DateTime.now().toUtc().toIso8601String();
-    final tsvContent = '$now\t$message\n';
-    if (encryptionKey != null && encryptionKey!.isNotEmpty) {
-      // handle file encryption
-    }
-    final file = File(logPath);
-    await file.writeAsString(tsvContent, mode: FileMode.append);
+  Future<void> dumpSessionToFile() async {
+    await File(path).writeAsString(session.join('\n'));
+  }
+
+  Future<void> appendToFile(String message) async {
+    await File(path).writeAsString('$message\n', mode: FileMode.append);
   }
 
   void info(Object? message, {Object? error, StackTrace? trace}) {
