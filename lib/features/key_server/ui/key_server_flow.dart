@@ -29,11 +29,11 @@ class KeyServerFlow extends StatefulWidget {
     super.key,
     this.backupFile,
     this.currentFlow,
-    this.fromOnboarding = false,
+    this.onboardingBloc,
   });
   final String? backupFile;
   final String? currentFlow;
-  final bool fromOnboarding;
+  final OnboardingBloc? onboardingBloc;
 
   @override
   State<KeyServerFlow> createState() => _KeyServerFlowState();
@@ -55,7 +55,8 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
                   ),
                 ),
           ),
-          BlocProvider.value(value: locator<OnboardingBloc>()),
+          if (widget.onboardingBloc != null)
+            BlocProvider.value(value: widget.onboardingBloc!),
           BlocProvider.value(value: locator<BackupWalletBloc>()),
           BlocProvider.value(value: locator<TestWalletBackupBloc>()),
         ],
@@ -104,13 +105,13 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
                   return const ConfirmScreen();
                 case CurrentKeyServerFlow.recovery:
                   return RecoverWithSecretScreen(
-                    fromOnboarding: widget.fromOnboarding,
+                    fromOnboarding: widget.onboardingBloc != null,
                   );
                 case CurrentKeyServerFlow.delete:
                   return const EnterScreen();
                 case CurrentKeyServerFlow.recoveryWithBackupKey:
                   return RecoverWithBackupKeyScreen(
-                    fromOnboarding: widget.fromOnboarding,
+                    fromOnboarding: widget.onboardingBloc != null,
                   );
               }
             },
@@ -201,7 +202,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     final onBoardingState = context.read<OnboardingBloc>().state;
     final testWalletBackupState = context.read<TestWalletBackupBloc>().state;
 
-    if (widget.fromOnboarding &&
+    if (widget.onboardingBloc != null &&
         onBoardingState.onboardingStepStatus == OnboardingStepStatus.none) {
       context.read<OnboardingBloc>().add(
         StartWalletRecovery(
@@ -211,7 +212,7 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
       );
     } else if (!(testWalletBackupState.status ==
             TestWalletBackupStatus.success) &&
-        !widget.fromOnboarding) {
+        widget.onboardingBloc == null) {
       context.read<TestWalletBackupBloc>().add(
         StartVaultBackupTesting(
           backupKey: state.backupKey,

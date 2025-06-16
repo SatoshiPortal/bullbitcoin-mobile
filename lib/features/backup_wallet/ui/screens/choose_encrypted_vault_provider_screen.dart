@@ -71,7 +71,7 @@ class _Screen extends StatelessWidget {
                 extra: (
                   state.backupFile,
                   CurrentKeyServerFlow.enter.toString(),
-                  false,
+                  null,
                 ),
               )
               .then((_) {

@@ -66,7 +66,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                       extra: (
                         encryptedInfo.backupFile,
                         CurrentKeyServerFlow.recoveryWithBackupKey.name,
-                        false,
+                        null,
                       ),
                     ),
                 bgColor: Colors.transparent,
@@ -83,7 +83,7 @@ class FetchedBackupInfoScreen extends StatelessWidget {
                     extra: (
                       encryptedInfo.backupFile,
                       CurrentKeyServerFlow.recovery.name,
-                      false,
+                      null,
                     ),
                   ),
               bgColor: context.colour.secondary,
