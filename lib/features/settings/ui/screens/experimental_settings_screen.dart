@@ -1,4 +1,3 @@
-import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/experimental/scan_signed_tx/scan_signed_tx_router.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -27,27 +26,6 @@ class ExperimentalSettingsScreen extends StatelessWidget {
           child: Center(
             child: Column(
               children: [
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  tileColor: Colors.transparent,
-                  title: const Text('Scan Watch Only'),
-                  onTap:
-                      () => context.pushNamed(ImportWatchOnlyRoutes.scan.name),
-                  trailing: const Icon(Icons.qr_code_scanner),
-                ),
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  tileColor: Colors.transparent,
-                  title: const Text('Paste Watch Only'),
-                  onTap:
-                      () =>
-                          context.pushNamed(ImportWatchOnlyRoutes.import.name),
-                  trailing: const Icon(Icons.copy),
-                ),
                 ListTile(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),
