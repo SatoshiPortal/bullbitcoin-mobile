@@ -93,16 +93,16 @@ class _ScannerState extends State<ScannerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (_controller == null) {
+    if (_controller != null) {
+      return AspectRatio(
+        aspectRatio: _controller!.value.aspectRatio,
+        child: CameraPreview(_controller!),
+      );
+    } else {
       return const Scaffold(
         backgroundColor: Colors.black,
         body: Center(child: CircularProgressIndicator()),
       );
     }
-
-    return AspectRatio(
-      aspectRatio: _controller!.value.aspectRatio,
-      child: CameraPreview(_controller!),
-    );
   }
 }
