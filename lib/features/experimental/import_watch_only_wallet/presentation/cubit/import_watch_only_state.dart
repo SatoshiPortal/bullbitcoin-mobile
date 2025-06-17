@@ -10,6 +10,8 @@ abstract class ImportWatchOnlyState with _$ImportWatchOnlyState {
     WatchOnlyWalletEntity? watchOnlyWallet,
     Wallet? importedWallet,
     @Default('') String publicKey,
+    @Default('') String externalDescriptor,
+    @Default('') String internalDescriptor,
     @Default('') String error,
   }) = _ImportWatchOnlyState;
 

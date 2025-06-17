@@ -20,6 +20,14 @@ abstract class WalletRepository {
     required String label,
     String? overrideFingerprint,
   });
+  Future<Wallet> importWatchOnlyWalletFromDescriptors({
+    required String externalDescriptor,
+    required String internalDescriptor,
+    required Network network,
+    required ScriptType scriptType,
+    required String label,
+    String? masterFingerprint,
+  });
 
   Future<Wallet?> getWallet(String walletId, {bool sync = false});
   // These should also sync the wallets before returning them

@@ -86,11 +86,43 @@ class _ImportScreenContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        BBText(
+          'Import from Extended Public Key',
+          style: context.font.titleMedium,
+        ),
+        const Gap(8),
         PasteInput(
           text: cubit.state.publicKey,
           hint:
               'Enter a valid extended public key (xpub / ypub / zpub) that is 111 characters long',
           onChanged: cubit.parseExtendedPublicKey,
+        ),
+        const Gap(24),
+        BBText('Or Import from Descriptors', style: context.font.titleMedium),
+        const Gap(8),
+        BBText('External Descriptor', style: context.font.titleSmall),
+        const Gap(4),
+        PasteInput(
+          text: cubit.state.externalDescriptor,
+          hint:
+              'Enter the external descriptor (e.g., wpkh([fingerprint/84h/0h/0h]xpub...)',
+          onChanged: cubit.updateExternalDescriptor,
+        ),
+        const Gap(16),
+        BBText('Internal Descriptor', style: context.font.titleSmall),
+        const Gap(4),
+        PasteInput(
+          text: cubit.state.internalDescriptor,
+          hint:
+              'Enter the internal descriptor (e.g., wpkh([fingerprint/84h/0h/1h]xpub...)',
+          onChanged: cubit.updateInternalDescriptor,
+        ),
+        const Gap(16),
+        BBButton.big(
+          onPressed: cubit.importFromDescriptors,
+          label: 'Import from Descriptors',
+          bgColor: context.colour.primary,
+          textColor: context.colour.onPrimary,
         ),
       ],
     );

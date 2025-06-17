@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_usecase.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
@@ -41,6 +42,30 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     }
   }
 
+  Future<void> importFromDescriptors() async {
+    if (state.externalDescriptor.isEmpty || state.internalDescriptor.isEmpty) {
+      emit(
+        state.copyWith(
+          error: 'Both external and internal descriptors are required',
+        ),
+      );
+      return;
+    }
+
+    try {
+      final wallet = await _importWatchOnlyUsecase.fromDescriptors(
+        externalDescriptor: state.externalDescriptor,
+        internalDescriptor: state.internalDescriptor,
+        scriptType: ScriptType.bip84, // Default to native segwit
+        label: state.watchOnlyWallet?.label ?? '',
+        masterFingerprint: state.watchOnlyWallet?.fingerprint,
+      );
+      emit(state.copyWith(importedWallet: wallet));
+    } catch (e) {
+      emit(state.copyWith(error: e.toString()));
+    }
+  }
+
   void parseExtendedPublicKey(String value) {
     emit(state.copyWith(publicKey: value));
     if (value.length == 111) {
@@ -58,5 +83,13 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
     } else {
       emit(state.copyWith(publicKey: value, watchOnlyWallet: null));
     }
+  }
+
+  void updateExternalDescriptor(String value) {
+    emit(state.copyWith(externalDescriptor: value));
+  }
+
+  void updateInternalDescriptor(String value) {
+    emit(state.copyWith(internalDescriptor: value));
   }
 }

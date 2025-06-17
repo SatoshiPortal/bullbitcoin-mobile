@@ -215,6 +215,52 @@ class WalletMetadataService {
       isDefault: false,
     );
   }
+
+  static Future<WalletMetadataModel> deriveFromDescriptors({
+    required String externalDescriptor,
+    required String internalDescriptor,
+    required Network network,
+    required ScriptType scriptType,
+    String label = '',
+    String? masterFingerprint,
+  }) async {
+    if (network.isLiquid) {
+      throw UnimplementedError(
+        'Importing descriptors for Liquid network is not supported',
+      );
+    }
+
+    // Extract fingerprint from descriptor
+    final fingerprint =
+        masterFingerprint ??
+        _extractFingerprintFromDescriptor(externalDescriptor);
+
+    return WalletMetadataModel(
+      id: encodeOrigin(
+        fingerprint: fingerprint,
+        network: network,
+        scriptType: scriptType,
+      ),
+      xpubFingerprint: fingerprint,
+      source: WalletSource.descriptors,
+      xpub: '', // Not needed for descriptor-based wallets
+      externalPublicDescriptor: externalDescriptor,
+      internalPublicDescriptor: internalDescriptor,
+      label: label,
+      masterFingerprint: masterFingerprint ?? '',
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
+      isDefault: false,
+    );
+  }
+
+  static String _extractFingerprintFromDescriptor(String descriptor) {
+    final match = RegExp(r'\[([a-fA-F0-9]+)/').firstMatch(descriptor);
+    if (match == null) {
+      throw Exception('Invalid descriptor format: $descriptor');
+    }
+    return match.group(1)!;
+  }
 }
 
 class MnemonicSeedNeededException implements Exception {

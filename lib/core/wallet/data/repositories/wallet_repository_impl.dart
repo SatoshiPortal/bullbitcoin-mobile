@@ -165,6 +165,56 @@ class WalletRepositoryImpl implements WalletRepository {
   }
 
   @override
+  Future<Wallet> importWatchOnlyWalletFromDescriptors({
+    required String externalDescriptor,
+    required String internalDescriptor,
+    required Network network,
+    required ScriptType scriptType,
+    required String label,
+    String? masterFingerprint,
+  }) async {
+    final metadata = await WalletMetadataService.deriveFromDescriptors(
+      externalDescriptor: externalDescriptor,
+      internalDescriptor: internalDescriptor,
+      network: network,
+      scriptType: scriptType,
+      label: label,
+      masterFingerprint: masterFingerprint,
+    );
+
+    await _walletMetadataDatasource.store(metadata);
+
+    // Fetch the balance
+    final balance = await _getBalance(metadata);
+
+    final allWallets = await getWallets(onlyDefaults: true);
+    for (final wallet in allWallets) {
+      if (wallet.id == metadata.id) {
+        throw Exception('Wallet already exists');
+      }
+    }
+
+    // Return the created wallet entity
+    return Wallet(
+      origin: metadata.id,
+      label: metadata.label,
+      network: Network.fromEnvironment(
+        isTestnet: metadata.isTestnet,
+        isLiquid: metadata.isLiquid,
+      ),
+      isDefault: metadata.isDefault,
+      masterFingerprint: metadata.masterFingerprint,
+      xpubFingerprint: metadata.xpubFingerprint,
+      scriptType: metadata.scriptType,
+      xpub: metadata.xpub,
+      externalPublicDescriptor: metadata.externalPublicDescriptor,
+      internalPublicDescriptor: metadata.internalPublicDescriptor,
+      source: WalletSource.descriptors,
+      balanceSat: balance.totalSat,
+    );
+  }
+
+  @override
   Future<Wallet?> getWallet(String walletId, {bool sync = false}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 

@@ -40,6 +40,36 @@ class ImportWatchOnlyUsecase {
       throw ImportWatchOnlyException(e.toString());
     }
   }
+
+  Future<Wallet> fromDescriptors({
+    required String externalDescriptor,
+    required String internalDescriptor,
+    required ScriptType scriptType,
+    String label = '',
+    String? masterFingerprint,
+  }) async {
+    try {
+      final settings = await _settings.fetch();
+      final environment = settings.environment;
+      final bitcoinNetwork =
+          environment == Environment.mainnet
+              ? Network.bitcoinMainnet
+              : Network.bitcoinTestnet;
+
+      final wallet = await _wallet.importWatchOnlyWalletFromDescriptors(
+        externalDescriptor: externalDescriptor,
+        internalDescriptor: internalDescriptor,
+        network: bitcoinNetwork,
+        scriptType: scriptType,
+        label: label,
+        masterFingerprint: masterFingerprint,
+      );
+
+      return wallet;
+    } catch (e) {
+      throw ImportWatchOnlyException(e.toString());
+    }
+  }
 }
 
 class ImportWatchOnlyException implements Exception {
