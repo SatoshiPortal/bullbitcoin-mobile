@@ -607,23 +607,24 @@ class SendConfirmScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(24),
-            const SendConfirmTopArea(),
-            const Gap(40),
-            if (isLnSwap)
-              const _LnSwapSendInfoSection()
-            else if (isChainSwap)
-              const _ChainSwapSendInfoSection()
-            else
-              const _OnchainSendInfoSection(),
-            const Spacer(),
-            // const _Warning(),
-            const _SendError(),
-            const _BottomButtons(),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Gap(24),
+              const SendConfirmTopArea(),
+              const Gap(40),
+              if (isLnSwap)
+                const _LnSwapSendInfoSection()
+              else if (isChainSwap)
+                const _ChainSwapSendInfoSection()
+              else
+                const _OnchainSendInfoSection(),
+              const Gap(40),
+              const _SendError(),
+              const _BottomButtons(),
+            ],
+          ),
         ),
       ),
     );
