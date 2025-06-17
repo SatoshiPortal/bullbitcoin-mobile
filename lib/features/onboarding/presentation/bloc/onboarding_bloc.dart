@@ -181,7 +181,12 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
         backupFile: event.backupFile,
         backupKey: event.backupKey,
       );
-      emit(state.copyWith(onboardingStepStatus: OnboardingStepStatus.success));
+      emit(
+        state.copyWith(
+          onboardingStepStatus: OnboardingStepStatus.success,
+          step: OnboardingStep.recover,
+        ),
+      );
       return;
     } catch (e) {
       await _handleError(

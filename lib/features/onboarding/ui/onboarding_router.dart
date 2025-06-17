@@ -58,8 +58,6 @@ class OnboardingRouter {
                     context.read<WalletBloc>().add(const WalletStarted());
                     if (state.step == OnboardingStep.create) {
                       context.goNamed(WalletRoute.walletHome.name);
-                    } else if (state.step == OnboardingStep.recover) {
-                      context.goNamed(OnboardingRoute.recoverSuccess.name);
                     }
                   },
                 ),

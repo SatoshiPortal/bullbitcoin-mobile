@@ -8,8 +8,10 @@ import 'package:bb_mobile/features/key_server/ui/screens/enter_screen.dart';
 import 'package:bb_mobile/features/key_server/ui/screens/recover_with_backup_key_screen.dart';
 import 'package:bb_mobile/features/key_server/ui/screens/recover_with_secret_screen.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_router.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/loading/status_screen.dart';
 import 'package:flutter/material.dart';
@@ -66,6 +68,9 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
             ),
             BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
               listener: _handleTestBackupStateChange,
+            ),
+            BlocListener<OnboardingBloc, OnboardingState>(
+              listener: _handleOnboardingStateChange,
             ),
           ],
           child: Builder(
@@ -194,6 +199,16 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
     }
     if (mounted && context.mounted) {
       Navigator.of(context).pop();
+    }
+  }
+
+  void _handleOnboardingStateChange(
+    BuildContext context,
+    OnboardingState state,
+  ) {
+    if (state.onboardingStepStatus == OnboardingStepStatus.success) {
+      context.read<WalletBloc>().add(const WalletStarted());
+      context.goNamed(OnboardingRoute.recoverSuccess.name);
     }
   }
 
