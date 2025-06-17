@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/create_backup_key_from_default_seed_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/check_key_server_connection_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/derive_backup_key_from_default_wallet_usecase.dart';
@@ -8,7 +9,6 @@ import 'package:bb_mobile/features/key_server/domain/usecases/restore_backup_key
 import 'package:bb_mobile/features/key_server/domain/usecases/store_backup_key_into_server_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/usecases/trash_backup_key_from_server_usecase.dart';
 import 'package:bb_mobile/features/key_server/domain/validators/password_validator.dart';
-import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -22,11 +22,11 @@ class KeyServerCubit extends Cubit<KeyServerState> {
   final StoreBackupKeyIntoServerUsecase storeBackupKeyIntoServerUsecase;
   final TrashBackupKeyFromServerUsecase trashKeyFromServerUsecase;
   final DeriveBackupKeyFromDefaultWalletUsecase
-      deriveBackupKeyFromDefaultWalletUsecase;
+  deriveBackupKeyFromDefaultWalletUsecase;
   final RestoreBackupKeyFromPasswordUsecase restoreBackupKeyFromPasswordUsecase;
   final CheckKeyServerConnectionUsecase checkServerConnectionUsecase;
   final CreateBackupKeyFromDefaultSeedUsecase
-      createBackupKeyFromDefaultSeedUsecase;
+  createBackupKeyFromDefaultSeedUsecase;
   KeyServerCubit({
     required this.checkServerConnectionUsecase,
     required this.createBackupKeyFromDefaultSeedUsecase,
@@ -67,9 +67,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
   void clearError() =>
       _emitOperationStatus(const KeyServerOperationStatus.initial());
-  void clearSensitive() => updateKeyServerState(
-        password: '',
-      );
+  void clearSensitive() => updateKeyServerState(password: '');
   Future<void> confirmKey() async {
     if (!state.canProceed) return;
 
@@ -101,10 +99,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     try {
       await checkConnection();
       await _handleServerOperation(
-        () => trashKeyFromServerUsecase.execute(
-          password: '',
-          backupFile: '',
-        ),
+        () => trashKeyFromServerUsecase.execute(password: '', backupFile: ''),
         'Delete Key',
       );
       emit(state.copyWith(secretStatus: SecretStatus.deleted));
@@ -129,20 +124,20 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
   void enterKey(String value) {
     updateKeyServerState(
-      password: state.authInputType == AuthInputType.pin
-          ? state.password + value
-          : value,
+      password:
+          state.authInputType == AuthInputType.pin
+              ? state.password + value
+              : value,
     );
   }
 
   Future<void> autoFetchKey() async {
     try {
       emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
-      final backupInfo = BackupInfo(
-        backupFile: state.backupFile,
+      final backupInfo = BackupInfo(backupFile: state.backupFile);
+      final backupKey = await createBackupKeyFromDefaultSeedUsecase.execute(
+        backupInfo.path ?? '',
       );
-      final backupKey = await createBackupKeyFromDefaultSeedUsecase
-          .execute(backupInfo.path ?? '');
 
       if (backupKey.isNotEmpty) {
         updateKeyServerState(
@@ -151,7 +146,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
         );
       }
     } catch (e) {
-      debugPrint('Generate key error: $e');
+      log.severe('Generate key error: $e');
       emit(
         state.copyWith(
           status: const KeyServerOperationStatus.failure(
@@ -239,11 +234,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     if (!state.canProceed || !state.arePasswordsMatching) return;
 
     try {
-      emit(
-        state.copyWith(
-          status: const KeyServerOperationStatus.loading(),
-        ),
-      );
+      emit(state.copyWith(status: const KeyServerOperationStatus.loading()));
 
       await checkConnection();
 
@@ -331,16 +322,18 @@ class KeyServerCubit extends Cubit<KeyServerState> {
     }
 
     // Don't reset backupKey if it's a state change during backup flow
-    final isBackupFlow = flow == CurrentKeyServerFlow.enter ||
+    final isBackupFlow =
+        flow == CurrentKeyServerFlow.enter ||
         flow == CurrentKeyServerFlow.confirm;
     final shouldKeepBackupKey = isBackupFlow && state.backupKey.isNotEmpty;
 
     emit(
       state.copyWith(
         password: resetState ? '' : (password ?? state.password),
-        backupKey: shouldKeepBackupKey
-            ? state.backupKey
-            : (resetState ? '' : (backupKey ?? state.backupKey)),
+        backupKey:
+            shouldKeepBackupKey
+                ? state.backupKey
+                : (resetState ? '' : (backupKey ?? state.backupKey)),
         currentFlow: flow ?? state.currentFlow,
         authInputType: authInputType ?? state.authInputType,
         backupFile: backupFile ?? state.backupFile,
@@ -369,24 +362,21 @@ class KeyServerCubit extends Cubit<KeyServerState> {
 
     try {
       if (operation == checkServerConnectionUsecase.execute) {
-        // Only retry for connection checks
-        for (var attempt = 0; attempt < maxRetries; attempt++) {
+        // Only retry failed connection checks
+
+        for (
+          var attempt = 0;
+          (attempt < maxRetries && state.torStatus != TorStatus.online);
+          attempt++
+        ) {
           try {
             final result = await operation();
-            emit(
-              state.copyWith(
-                torStatus: TorStatus.online,
-              ),
-            );
+            emit(state.copyWith(torStatus: TorStatus.online));
             return result;
           } catch (e) {
             final isLastAttempt = attempt == maxRetries - 1;
             if (isLastAttempt) {
-              emit(
-                state.copyWith(
-                  torStatus: TorStatus.offline,
-                ),
-              );
+              emit(state.copyWith(torStatus: TorStatus.offline));
               throw const KeyServerError.failedToConnect();
             }
             await Future.delayed(retryDelay);
@@ -404,7 +394,7 @@ class KeyServerCubit extends Cubit<KeyServerState> {
         return result;
       }
     } catch (e) {
-      debugPrint('$operationName failed: ${(e as KeyServerError).message}');
+      log.severe('$operationName failed: ${(e as KeyServerError).message}');
       rethrow;
     }
     throw Exception('Unexpected error in $operationName');

@@ -1,16 +1,14 @@
+import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/key_server/domain/errors/key_server_error.dart';
-import 'package:flutter/foundation.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 /// If the key server is up
 class RestoreBackupKeyFromPasswordUsecase {
   final RecoverBullRepository recoverBullRepository;
 
-  RestoreBackupKeyFromPasswordUsecase({
-    required this.recoverBullRepository,
-  });
+  RestoreBackupKeyFromPasswordUsecase({required this.recoverBullRepository});
 
   Future<String> execute({
     required String backupFile,
@@ -32,7 +30,7 @@ class RestoreBackupKeyFromPasswordUsecase {
     } on KeyServerException catch (e) {
       throw KeyServerError.fromException(e);
     } catch (e) {
-      debugPrint('$RestoreBackupKeyFromPasswordUsecase: $e');
+      log.severe('$RestoreBackupKeyFromPasswordUsecase: $e');
       rethrow;
     }
   }

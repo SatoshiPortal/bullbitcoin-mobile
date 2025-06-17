@@ -2,14 +2,17 @@ import 'package:bb_mobile/core/exchange/domain/repositories/exchange_rate_reposi
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 
 class ConvertCurrencyToSatsAmountUsecase {
-  final ExchangeRateRepository _exchangeRate;
+  final ExchangeRateRepository _mainnetExchangeRateRepository;
+  final ExchangeRateRepository _testnetExchangeRateRepository;
   final SettingsRepository _settingsRepository;
 
   ConvertCurrencyToSatsAmountUsecase({
-    required ExchangeRateRepository exchangeRateRepository,
+    required ExchangeRateRepository mainnetExchangeRateRepository,
+    required ExchangeRateRepository testnetExchangeRateRepository,
     required SettingsRepository settingsRepository,
-  })  : _exchangeRate = exchangeRateRepository,
-        _settingsRepository = settingsRepository;
+  }) : _mainnetExchangeRateRepository = mainnetExchangeRateRepository,
+       _testnetExchangeRateRepository = testnetExchangeRateRepository,
+       _settingsRepository = settingsRepository;
 
   Future<BigInt> execute({
     required double amountFiat,
@@ -18,16 +21,18 @@ class ConvertCurrencyToSatsAmountUsecase {
     try {
       final settings = await _settingsRepository.fetch();
       final currency = settings.currencyCode;
-      final availableCurrencies = await _exchangeRate.availableCurrencies;
+      final isTestnet = settings.environment.isTestnet;
+      final repo =
+          isTestnet
+              ? _testnetExchangeRateRepository
+              : _mainnetExchangeRateRepository;
+      final availableCurrencies = await repo.availableCurrencies;
 
       if (!availableCurrencies.contains(currency)) {
         throw ConvertCurrencyToSatsAmountException('Currency not available');
       }
 
-      return _exchangeRate.getSatsValue(
-        amountFiat: amountFiat,
-        currency: currency,
-      );
+      return repo.getSatsValue(amountFiat: amountFiat, currency: currency);
     } catch (e) {
       throw ConvertCurrencyToSatsAmountException('$e');
     }

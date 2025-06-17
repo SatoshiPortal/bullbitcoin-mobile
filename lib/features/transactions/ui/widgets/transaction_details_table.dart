@@ -1,11 +1,14 @@
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
+import 'package:bb_mobile/core/utils/mempool_url.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/transaction_notes_table_item.dart';
 import 'package:bb_mobile/ui/components/tables/details_table.dart';
 import 'package:bb_mobile/ui/components/tables/details_table_item.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -14,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TransactionDetailsTable extends StatelessWidget {
   const TransactionDetailsTable({super.key});
@@ -24,88 +28,91 @@ class TransactionDetailsTable extends StatelessWidget {
     final tx = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.transaction,
     );
-    final amountSat = tx?.amountSat ?? 0;
+    final walletTransaction = tx.walletTransaction;
+    final swap = tx.swap;
+    final payjoin = tx.payjoin;
+    final amountSat = tx.amountSat;
+
     final wallet = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.wallet,
     );
-    final swap = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.swap,
+    final walletLabel =
+        wallet?.label ??
+        (wallet?.isLiquid == true ? 'Instant Payments' : 'Secure Bitcoin');
+    final counterpartWallet = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.counterpartWallet,
     );
+    final counterpartWalletLabel =
+        counterpartWallet != null
+            ? counterpartWallet.label ??
+                (counterpartWallet.isLiquid == true
+                    ? 'Instant Payments'
+                    : 'Secure Bitcoin')
+            : null;
+
+    final isOrderType = tx.isOrder && tx.order != null;
+
     final swapFees =
         (swap?.fees?.claimFee ?? 0) +
         (swap?.fees?.boltzFee ?? 0) +
         (swap?.fees?.lockupFee ?? 0);
-    final payjoin = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.payjoin,
+    final swapCounterpartTransaction = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTransaction,
     );
+    final abbreviatedSwapCounterpartTransactionTxId =
+        swapCounterpartTransaction?.txId != null
+            ? StringFormatting.truncateMiddle(swapCounterpartTransaction!.txId!)
+            : '';
 
-    final labels = tx?.labels.join(', ') ?? '';
-    final address = tx?.toAddress ?? '';
-    final txId = tx?.txId ?? '';
+    final labels = tx.labels ?? [];
+
+    final address = walletTransaction?.toAddress ?? '';
+    final txId = tx.txId ?? '';
     final abbreviatedAddress = StringFormatting.truncateMiddle(address);
-    final addressLabels = tx?.toAddressLabels?.join(', ') ?? '';
+    final addressLabels = walletTransaction?.toAddressLabels?.join(', ') ?? '';
     final abbreviatedTxId = StringFormatting.truncateMiddle(txId);
     final bitcoinUnit = context.select(
       (SettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
+    final unblindedUrl = walletTransaction?.unblindedUrl;
 
     return DetailsTable(
       items: [
-        // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
-        // to be able to use the CurrencyText widget instead of having to format the amount here.
-        DetailsTableItem(
-          label:
-              tx?.isIncoming != null
-                  ? tx!.isIncoming
-                      ? 'Amount received'
-                      : 'Amount sent'
-                  : 'Amount',
-          displayValue:
-              bitcoinUnit == BitcoinUnit.sats
-                  ? FormatAmount.sats(amountSat).toUpperCase()
-                  : FormatAmount.btc(
-                    ConvertAmount.satsToBtc(amountSat),
-                  ).toUpperCase(),
-        ),
-        if (tx?.isToSelf == true)
+        if (abbreviatedTxId.isNotEmpty)
           DetailsTableItem(
-            label: 'Amount received',
-            displayValue:
-                bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(amountSat).toUpperCase()
-                    : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(amountSat),
-                    ).toUpperCase(),
+            label: 'Transaction ID',
+            displayValue: abbreviatedTxId,
+            copyValue: txId,
+            displayWidget:
+                txId.isEmpty
+                    ? null
+                    : GestureDetector(
+                      onTap: () async {
+                        final url =
+                            walletTransaction?.isLiquid == true
+                                ? MempoolUrl.liquidTxidUrl(unblindedUrl ?? '')
+                                : MempoolUrl.bitcoinTxidUrl(txId);
+                        await launchUrl(Uri.parse(url));
+                      },
+                      child: Text(
+                        abbreviatedTxId,
+                        style: TextStyle(color: context.colour.primary),
+                        textAlign: TextAlign.end,
+                      ),
+                    ),
           ),
-        if (tx?.isOutgoing == true)
+        if (labels.isNotEmpty) TransactionNotesTableItem(notes: labels),
+        if (walletLabel.isNotEmpty && !isOrderType)
           DetailsTableItem(
-            label: 'Transaction Fee',
-            displayValue:
-                bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(tx?.feeSat ?? 0).toUpperCase()
-                    : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(tx?.feeSat ?? 0),
-                    ).toUpperCase(),
+            label: tx.isIncoming ? 'To wallet' : 'From wallet',
+            displayValue: walletLabel,
           ),
-        DetailsTableItem(
-          label: 'Wallet',
-          displayValue:
-              wallet != null
-                  ? wallet.isLiquid
-                      ? 'Instant Payments'
-                      : 'Secure Bitcoin'
-                  : '',
-        ),
-        DetailsTableItem(
-          label: 'Status',
-          displayValue: tx?.status.displayName ?? '',
-        ),
-        if (tx?.confirmationTime != null)
+        if (!tx.isSwap &&
+            counterpartWalletLabel != null &&
+            counterpartWalletLabel.isNotEmpty)
           DetailsTableItem(
-            label: 'Confirmation time',
-            displayValue: DateFormat(
-              'MMM d, y, h:mm a',
-            ).format(tx!.confirmationTime!),
+            label: tx.isOutgoing ? 'To wallet' : 'From wallet',
+            displayValue: counterpartWalletLabel,
           ),
         if (abbreviatedAddress.isNotEmpty)
           DetailsTableItem(
@@ -115,13 +122,553 @@ class TransactionDetailsTable extends StatelessWidget {
           ),
         if (addressLabels.isNotEmpty)
           DetailsTableItem(label: 'Address notes', displayValue: addressLabels),
-        DetailsTableItem(
-          label: 'Transaction ID',
-          displayValue: abbreviatedTxId,
-          copyValue: txId,
-        ),
-        if (labels.isNotEmpty)
-          DetailsTableItem(label: 'Transaction notes', displayValue: labels),
+        // TODO(kumulynja): Make the value of the DetailsTableItem be a widget instead of a string
+        // to be able to use the CurrencyText widget instead of having to format the amount here.
+        if (!isOrderType)
+          DetailsTableItem(
+            label: tx.isIncoming ? 'Amount received' : 'Amount sent',
+            displayValue:
+                bitcoinUnit == BitcoinUnit.sats
+                    ? FormatAmount.sats(amountSat).toUpperCase()
+                    : FormatAmount.btc(
+                      ConvertAmount.satsToBtc(amountSat),
+                    ).toUpperCase(),
+          ),
+        if (walletTransaction != null) ...[
+          if (walletTransaction.isToSelf == true)
+            DetailsTableItem(
+              label: 'Amount received',
+              displayValue:
+                  bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(amountSat).toUpperCase()
+                      : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(amountSat),
+                      ).toUpperCase(),
+            ),
+          if (tx.isOutgoing == true)
+            DetailsTableItem(
+              label: 'Transaction Fee',
+              displayValue:
+                  bitcoinUnit == BitcoinUnit.sats
+                      ? FormatAmount.sats(
+                        walletTransaction.feeSat,
+                      ).toUpperCase()
+                      : FormatAmount.btc(
+                        ConvertAmount.satsToBtc(walletTransaction.feeSat),
+                      ).toUpperCase(),
+            ),
+          DetailsTableItem(
+            label: 'Status',
+            displayValue: walletTransaction.status.displayName,
+          ),
+          if (walletTransaction.confirmationTime != null)
+            DetailsTableItem(
+              label: 'Confirmation time',
+              displayValue: DateFormat(
+                'MMM d, y, h:mm a',
+              ).format(walletTransaction.confirmationTime!),
+            ),
+        ],
+        // Order info
+        if (tx.isOrder && tx.order != null) ...[
+          ...(() {
+            final order = tx.order!;
+            if (order is BuyOrder) {
+              return [
+                DetailsTableItem(
+                  label: 'Order Type',
+                  displayValue: order.orderType.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Number',
+                  displayValue: order.orderNumber.toString(),
+                ),
+                DetailsTableItem(
+                  label: 'Payin amount',
+                  displayValue:
+                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                ),
+                DetailsTableItem(
+                  label: 'Payout amount',
+                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                ),
+                if (order.exchangeRateAmount != null &&
+                    order.exchangeRateCurrency != null)
+                  DetailsTableItem(
+                    label: 'Exchange rate',
+                    displayValue:
+                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                  ),
+                DetailsTableItem(
+                  label: 'Payin method',
+                  displayValue: order.payinMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout method',
+                  displayValue: order.payoutMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payin Status',
+                  displayValue: order.payinStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Status',
+                  displayValue: order.orderStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout Status',
+                  displayValue: order.payoutStatus.value,
+                ),
+                if (order.bitcoinTransactionId != null)
+                  DetailsTableItem(
+                    label: 'Transaction ID',
+                    displayValue: StringFormatting.truncateMiddle(
+                      order.bitcoinTransactionId!,
+                    ),
+                    copyValue: order.bitcoinTransactionId,
+                  ),
+                DetailsTableItem(
+                  label: 'Created at',
+                  displayValue: DateFormat(
+                    'MMM d, y, h:mm a',
+                  ).format(order.createdAt),
+                ),
+                if (order.completedAt != null)
+                  DetailsTableItem(
+                    label: 'Completed at',
+                    displayValue: DateFormat(
+                      'MMM d, y, h:mm a',
+                    ).format(order.completedAt!),
+                  ),
+              ];
+            } else if (order is SellOrder) {
+              return [
+                DetailsTableItem(
+                  label: 'Order Type',
+                  displayValue: order.orderType.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Number',
+                  displayValue: order.orderNumber.toString(),
+                ),
+                DetailsTableItem(
+                  label: 'Payin amount',
+                  displayValue:
+                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                ),
+                DetailsTableItem(
+                  label: 'Payout amount',
+                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                ),
+                if (order.exchangeRateAmount != null &&
+                    order.exchangeRateCurrency != null)
+                  DetailsTableItem(
+                    label: 'Exchange rate',
+                    displayValue:
+                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                  ),
+                DetailsTableItem(
+                  label: 'Payin method',
+                  displayValue: order.payinMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout method',
+                  displayValue: order.payoutMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payin Status',
+                  displayValue: order.payinStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Status',
+                  displayValue: order.orderStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout Status',
+                  displayValue: order.payoutStatus.value,
+                ),
+                if (order.bitcoinTransactionId != null)
+                  DetailsTableItem(
+                    label: 'Transaction ID',
+                    displayValue: StringFormatting.truncateMiddle(
+                      order.bitcoinTransactionId!,
+                    ),
+                    copyValue: order.bitcoinTransactionId,
+                  ),
+                DetailsTableItem(
+                  label: 'Created at',
+                  displayValue: DateFormat(
+                    'MMM d, y, h:mm a',
+                  ).format(order.createdAt),
+                ),
+                if (order.completedAt != null)
+                  DetailsTableItem(
+                    label: 'Completed at',
+                    displayValue: DateFormat(
+                      'MMM d, y, h:mm a',
+                    ).format(order.completedAt!),
+                  ),
+              ];
+            } else if (order is FiatPaymentOrder) {
+              return [
+                DetailsTableItem(
+                  label: 'Order Type',
+                  displayValue: order.orderType.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Number',
+                  displayValue: order.orderNumber.toString(),
+                ),
+
+                DetailsTableItem(
+                  label: 'Payout amount',
+                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                ),
+                if (order.exchangeRateAmount != null &&
+                    order.exchangeRateCurrency != null)
+                  DetailsTableItem(
+                    label: 'Exchange rate',
+                    displayValue:
+                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                  ),
+                DetailsTableItem(
+                  label: 'Payin method',
+                  displayValue: order.payinMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout method',
+                  displayValue: order.payoutMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payin Status',
+                  displayValue: order.payinStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Status',
+                  displayValue: order.orderStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout Status',
+                  displayValue: order.payoutStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Created at',
+                  displayValue: DateFormat(
+                    'MMM d, y, h:mm a',
+                  ).format(order.createdAt),
+                ),
+                if (order.completedAt != null)
+                  DetailsTableItem(
+                    label: 'Completed at',
+                    displayValue: DateFormat(
+                      'MMM d, y, h:mm a',
+                    ).format(order.completedAt!),
+                  ),
+              ];
+            } else if (order is FundingOrder) {
+              return [
+                DetailsTableItem(
+                  label: 'Order Type',
+                  displayValue: order.orderType.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Number',
+                  displayValue: order.orderNumber.toString(),
+                ),
+                DetailsTableItem(
+                  label: 'Payin amount',
+                  displayValue:
+                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                ),
+                DetailsTableItem(
+                  label: 'Payout amount',
+                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                ),
+                DetailsTableItem(
+                  label: 'Payin method',
+                  displayValue: order.payinMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout method',
+                  displayValue: order.payoutMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payin Status',
+                  displayValue: order.payinStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Status',
+                  displayValue: order.orderStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout Status',
+                  displayValue: order.payoutStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Created at',
+                  displayValue: DateFormat(
+                    'MMM d, y, h:mm a',
+                  ).format(order.createdAt),
+                ),
+                if (order.completedAt != null)
+                  DetailsTableItem(
+                    label: 'Completed at',
+                    displayValue: DateFormat(
+                      'MMM d, y, h:mm a',
+                    ).format(order.completedAt!),
+                  ),
+              ];
+            } else if (order is WithdrawOrder) {
+              return [
+                DetailsTableItem(
+                  label: 'Order Type',
+                  displayValue: order.orderType.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Number',
+                  displayValue: order.orderNumber.toString(),
+                ),
+                DetailsTableItem(
+                  label: 'Payin amount',
+                  displayValue:
+                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                ),
+                DetailsTableItem(
+                  label: 'Payout amount',
+                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                ),
+                if (order.exchangeRateAmount != null &&
+                    order.exchangeRateCurrency != null)
+                  DetailsTableItem(
+                    label: 'Exchange rate',
+                    displayValue:
+                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                  ),
+                DetailsTableItem(
+                  label: 'Payin method',
+                  displayValue: order.payinMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout method',
+                  displayValue: order.payoutMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payin Status',
+                  displayValue: order.payinStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Status',
+                  displayValue: order.orderStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout Status',
+                  displayValue: order.payoutStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Created at',
+                  displayValue: DateFormat(
+                    'MMM d, y, h:mm a',
+                  ).format(order.createdAt),
+                ),
+                if (order.completedAt != null)
+                  DetailsTableItem(
+                    label: 'Completed at',
+                    displayValue: DateFormat(
+                      'MMM d, y, h:mm a',
+                    ).format(order.completedAt!),
+                  ),
+              ];
+            } else if (order is RewardOrder) {
+              return [
+                DetailsTableItem(
+                  label: 'Order Type',
+                  displayValue: order.orderType.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Number',
+                  displayValue: order.orderNumber.toString(),
+                ),
+                DetailsTableItem(
+                  label: 'Payin amount',
+                  displayValue:
+                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                ),
+                DetailsTableItem(
+                  label: 'Payout amount',
+                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                ),
+                if (order.exchangeRateAmount != null &&
+                    order.exchangeRateCurrency != null)
+                  DetailsTableItem(
+                    label: 'Exchange rate',
+                    displayValue:
+                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                  ),
+                DetailsTableItem(
+                  label: 'Payin method',
+                  displayValue: order.payinMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout method',
+                  displayValue: order.payoutMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payin Status',
+                  displayValue: order.payinStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Status',
+                  displayValue: order.orderStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout Status',
+                  displayValue: order.payoutStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Created at',
+                  displayValue: DateFormat(
+                    'MMM d, y, h:mm a',
+                  ).format(order.createdAt),
+                ),
+                if (order.completedAt != null)
+                  DetailsTableItem(
+                    label: 'Completed at',
+                    displayValue: DateFormat(
+                      'MMM d, y, h:mm a',
+                    ).format(order.completedAt!),
+                  ),
+              ];
+            } else if (order is RefundOrder) {
+              return [
+                DetailsTableItem(
+                  label: 'Order Type',
+                  displayValue: order.orderType.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Number',
+                  displayValue: order.orderNumber.toString(),
+                ),
+                DetailsTableItem(
+                  label: 'Payin amount',
+                  displayValue:
+                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                ),
+                DetailsTableItem(
+                  label: 'Payout amount',
+                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                ),
+                if (order.exchangeRateAmount != null &&
+                    order.exchangeRateCurrency != null)
+                  DetailsTableItem(
+                    label: 'Exchange rate',
+                    displayValue:
+                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                  ),
+                DetailsTableItem(
+                  label: 'Payin method',
+                  displayValue: order.payinMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout method',
+                  displayValue: order.payoutMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payin Status',
+                  displayValue: order.payinStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Status',
+                  displayValue: order.orderStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout Status',
+                  displayValue: order.payoutStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Created at',
+                  displayValue: DateFormat(
+                    'MMM d, y, h:mm a',
+                  ).format(order.createdAt),
+                ),
+                if (order.completedAt != null)
+                  DetailsTableItem(
+                    label: 'Completed at',
+                    displayValue: DateFormat(
+                      'MMM d, y, h:mm a',
+                    ).format(order.completedAt!),
+                  ),
+              ];
+            } else if (order is BalanceAdjustmentOrder) {
+              return [
+                DetailsTableItem(
+                  label: 'Order Type',
+                  displayValue: order.orderType.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Number',
+                  displayValue: order.orderNumber.toString(),
+                ),
+                DetailsTableItem(
+                  label: 'Payin amount',
+                  displayValue:
+                      '${order.payinAmount.toStringAsFixed(2)} ${order.payinCurrency}',
+                ),
+                DetailsTableItem(
+                  label: 'Payout amount',
+                  displayValue: '${order.payoutAmount} ${order.payoutCurrency}',
+                ),
+                if (order.exchangeRateAmount != null &&
+                    order.exchangeRateCurrency != null)
+                  DetailsTableItem(
+                    label: 'Exchange rate',
+                    displayValue:
+                        '${order.exchangeRateAmount} ${order.exchangeRateCurrency}',
+                  ),
+                DetailsTableItem(
+                  label: 'Payin method',
+                  displayValue: order.payinMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout method',
+                  displayValue: order.payoutMethod.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payin Status',
+                  displayValue: order.payinStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Order Status',
+                  displayValue: order.orderStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Payout Status',
+                  displayValue: order.payoutStatus.value,
+                ),
+                DetailsTableItem(
+                  label: 'Created at',
+                  displayValue: DateFormat(
+                    'MMM d, y, h:mm a',
+                  ).format(order.createdAt),
+                ),
+                if (order.completedAt != null)
+                  DetailsTableItem(
+                    label: 'Completed at',
+                    displayValue: DateFormat(
+                      'MMM d, y, h:mm a',
+                    ).format(order.completedAt!),
+                  ),
+              ];
+            } else {
+              return [
+                DetailsTableItem(
+                  label: 'Order Type',
+                  displayValue: order.orderType.value,
+                ),
+              ];
+            }
+          })(),
+        ],
+        // Swap info
         if (swap != null) ...[
           DetailsTableItem(
             label: 'Swap ID',
@@ -130,7 +677,12 @@ class TransactionDetailsTable extends StatelessWidget {
           ),
           DetailsTableItem(
             label: 'Swap status',
-            displayValue: swap.status.displayName,
+            displayValue:
+                (swap.isChainSwap && (swap as ChainSwap).refundTxid != null ||
+                        swap.isLnSendSwap &&
+                            (swap as LnSendSwap).refundTxid != null)
+                    ? 'Refunded'
+                    : swap.status.displayName,
             expandableChild: BBText(
               swap.getDisplayMessage(),
               style: context.font.bodySmall?.copyWith(
@@ -139,13 +691,20 @@ class TransactionDetailsTable extends StatelessWidget {
               maxLines: 5,
             ),
           ),
-
-          if (swap.completionTime != null)
+          if (counterpartWalletLabel != null &&
+              counterpartWalletLabel.isNotEmpty)
             DetailsTableItem(
-              label: 'Swap time received',
-              displayValue: DateFormat(
-                'MMM d, y, h:mm a',
-              ).format(swap.completionTime!),
+              label: tx.isOutgoing ? 'To wallet' : 'From wallet',
+              displayValue: counterpartWalletLabel,
+            ),
+          if (swapCounterpartTransaction != null)
+            DetailsTableItem(
+              label:
+                  swapCounterpartTransaction.isBitcoin
+                      ? 'Bitcoin transaction ID'
+                      : 'Liquid transaction ID',
+              displayValue: abbreviatedSwapCounterpartTransactionTxId,
+              copyValue: swapCounterpartTransaction.txId,
             ),
           if (swap.fees != null)
             DetailsTableItem(
@@ -163,13 +722,27 @@ class TransactionDetailsTable extends StatelessWidget {
                   _feeRow(
                     context,
                     'Network Fee',
-                    swap.fees!.lockupFee! + swap.fees!.claimFee!,
+                    (swap.fees?.lockupFee ?? 0) + (swap.fees?.claimFee ?? 0),
                   ),
 
                   _feeRow(context, 'Boltz Swap Fee', swap.fees?.boltzFee ?? 0),
                   const Gap(4),
                 ],
               ),
+            ),
+
+          DetailsTableItem(
+            label: 'Created at',
+            displayValue: DateFormat(
+              'MMM d, y, h:mm a',
+            ).format(swap.creationTime),
+          ),
+          if (swap.completionTime != null)
+            DetailsTableItem(
+              label: 'Completed at',
+              displayValue: DateFormat(
+                'MMM d, y, h:mm a',
+              ).format(swap.completionTime!),
             ),
         ],
         if (payjoin != null) ...[

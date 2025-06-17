@@ -1,9 +1,9 @@
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/impl/bdk_wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_utxo.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/bitcoin_wallet_repository.dart';
-import 'package:flutter/foundation.dart';
 
 class PrepareBitcoinSendUsecase {
   final PayjoinRepository _payjoin;
@@ -35,7 +35,7 @@ class PrepareBitcoinSendUsecase {
         // For Bitcoin, check for ongoing Payjoin inputs
         unspendableUtxos = await _payjoin.getUtxosFrozenByOngoingPayjoins();
 
-        debugPrint(
+        log.info(
           'Bitcoin wallet id $walletId building psbt. Unspendable utxos: $unspendableUtxos',
         );
       }

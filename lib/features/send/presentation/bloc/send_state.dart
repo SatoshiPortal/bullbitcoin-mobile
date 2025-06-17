@@ -57,7 +57,9 @@ abstract class SendState with _$SendState {
   const factory SendState({
     @Default(SendStep.address) SendStep step,
     @Default(SendType.lightning) SendType sendType,
-    @Default(('', null)) (String, PaymentRequest?) paymentRequestData,
+    @Default('') String scannedRawPaymentRequest,
+    @Default('') String copiedRawPaymentRequest,
+    PaymentRequest? paymentRequest,
     @Default([]) List<Wallet> wallets,
     Wallet? selectedWallet,
     @Default('') String amount,
@@ -66,7 +68,6 @@ abstract class SendState with _$SendState {
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('CAD') String fiatCurrencyCode,
     @Default('') String inputAmountCurrencyCode,
-
     @Default(0) double exchangeRate,
     @Default('') String label,
     @Default([]) List<WalletUtxo> utxos,
@@ -88,7 +89,7 @@ abstract class SendState with _$SendState {
     // confirm
     String? txId,
     PayjoinSender? payjoinSender,
-    WalletTransaction? transaction,
+    WalletTransaction? walletTransaction,
     Object? error,
     @Default(false) bool sendMax,
     @Default(false) bool amountConfirmedClicked,
@@ -106,12 +107,16 @@ abstract class SendState with _$SendState {
     ConfirmTransactionException? confirmTransactionException,
 
     // swapLimits
-    SwapLimits? bitcoinSwapLimits,
-    SwapLimits? liquidSwapLimits,
+    SwapLimits? bitcoinLnSwapLimits,
+    SwapLimits? liquidLnSwapLimits,
+    SwapLimits? btcToLbtcChainSwapLimits,
+    SwapLimits? lbtcToBtcChainSwapLimits,
     SwapLimits? selectedSwapLimits,
 
-    SwapFees? bitcoinSwapFees,
-    SwapFees? liquidSwapFees,
+    SwapFees? bitcoinLnSwapFees,
+    SwapFees? liquidLnSwapFees,
+    SwapFees? btcToLbtcChainSwapFees,
+    SwapFees? lbtcToBtcChainSwapFees,
     SwapFees? selectedSwapFees,
   }) = _SendState;
   const SendState._();
@@ -120,19 +125,29 @@ abstract class SendState with _$SendState {
     return [BitcoinUnit.btc.code, BitcoinUnit.sats.code, ...fiatCurrencyCodes];
   }
 
+  /// Whether we have a valid payment request
+  bool get hasValidPaymentRequest => paymentRequest != null;
+
   String get paymentRequestAddress {
-    if (paymentRequest == null) return '';
+    if (paymentRequest == null) {
+      return copiedRawPaymentRequest.isNotEmpty
+          ? copiedRawPaymentRequest
+          : scannedRawPaymentRequest;
+    }
 
     if (paymentRequest!.isBip21) {
       if (invoiceHasMrh) {
-        return addressOrInvoice;
+        // Return the raw string instead of the payment request
+        return copiedRawPaymentRequest.isNotEmpty
+            ? copiedRawPaymentRequest
+            : scannedRawPaymentRequest;
       }
       final bip21PaymentRequest = paymentRequest! as Bip21PaymentRequest;
       return bip21PaymentRequest.address;
     }
     if (paymentRequest!.isBolt11) {
-      final bip21PaymentRequest = paymentRequest! as Bolt11PaymentRequest;
-      return bip21PaymentRequest.invoice;
+      final bolt11PaymentRequest = paymentRequest! as Bolt11PaymentRequest;
+      return bolt11PaymentRequest.invoice;
     }
     if (paymentRequest!.isLnAddress) {
       final lnAddressPaymentRequest =
@@ -147,7 +162,9 @@ abstract class SendState with _$SendState {
       final liquidPaymentRequest = paymentRequest! as LiquidPaymentRequest;
       return liquidPaymentRequest.address;
     }
-    return addressOrInvoice;
+    return copiedRawPaymentRequest.isNotEmpty
+        ? copiedRawPaymentRequest
+        : scannedRawPaymentRequest;
   }
 
   bool get isInputAmountFiat =>
@@ -391,14 +408,16 @@ abstract class SendState with _$SendState {
     return lightningSwap!.fees?.totalFees(lightningSwap!.paymentAmount) ?? 0;
   }
 
-  /// The raw text input from either scanner or paste
-  String get addressOrInvoice => paymentRequestData.$1;
+  bool get isSlowPayment =>
+      // ignore: avoid_bool_literals_in_conditional_expressions
+      selectedWallet == null
+          ? false
+          // ignore: avoid_bool_literals_in_conditional_expressions
+          : selectedWallet!.isLiquid
+          ? false
+          : true;
 
-  /// The parsed payment request, if valid
-  PaymentRequest? get paymentRequest => paymentRequestData.$2;
-
-  /// Whether we have a valid payment request
-  bool get hasValidPaymentRequest => paymentRequest != null;
+  String get displayAmount => sendMax ? 'MAX' : amount;
 }
 
 extension SendStateFeePercent on SendState {

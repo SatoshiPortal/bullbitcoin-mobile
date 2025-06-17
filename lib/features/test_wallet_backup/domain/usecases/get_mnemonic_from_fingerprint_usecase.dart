@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
-import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class GetMnemonicFromFingerprintUsecase {
   final SeedRepository _seedRepository;
@@ -23,7 +23,7 @@ class GetMnemonicFromFingerprintUsecase {
 
       return (mnemonicWords, passphrase);
     } catch (e) {
-      debugPrint('GetMnemonicFromFingerprintUsecase: $e');
+      log.severe('GetMnemonicFromFingerprintUsecase: $e');
       rethrow;
     }
   }

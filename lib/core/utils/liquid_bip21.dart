@@ -2,13 +2,14 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 
+// TODO: Support asset_id when reading - required for L-USDT
 class LiquidBip21 {
   static PaymentRequest decode(String url) {
     final uri = Uri.parse(url);
     final urnScheme = uri.scheme;
     final address = uri.path;
     Network network;
-    if (urnScheme == 'liquidnetwork') {
+    if (urnScheme == 'liquidnetwork' || urnScheme == 'liquid') {
       network = Network.liquidMainnet;
     } else if (urnScheme == 'liquidtestnet') {
       network = Network.liquidTestnet;

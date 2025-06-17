@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class GetSwapLimitsUsecase {
   final SwapRepository _mainnetSwapRepository;
@@ -9,20 +9,24 @@ class GetSwapLimitsUsecase {
   GetSwapLimitsUsecase({
     required SwapRepository mainnetSwapRepository,
     required SwapRepository testnetSwapRepository,
-  })  : _mainnetSwapRepository = mainnetSwapRepository,
-        _testnetSwapRepository = testnetSwapRepository;
+  }) : _mainnetSwapRepository = mainnetSwapRepository,
+       _testnetSwapRepository = testnetSwapRepository;
 
   Future<(SwapLimits, SwapFees)> execute({
     required SwapType type,
     bool isTestnet = false,
+    bool updateLimitsAndFees = true,
   }) async {
     try {
       final swapRepository =
           isTestnet ? _testnetSwapRepository : _mainnetSwapRepository;
-
-      return await swapRepository.getSwapLimitsAndFees(type: type);
+      if (updateLimitsAndFees) {
+        await swapRepository.updateSwapLimitsAndFees(type);
+      }
+      final result = await swapRepository.getSwapLimitsAndFees(type);
+      return result;
     } catch (e) {
-      debugPrint('[GetSwapLimitsUsecase] Error getting swap limits: $e');
+      log.severe('[GetSwapLimitsUsecase] Error getting swap limits: $e');
       throw GetSwapLimitsException(e.toString());
     }
   }

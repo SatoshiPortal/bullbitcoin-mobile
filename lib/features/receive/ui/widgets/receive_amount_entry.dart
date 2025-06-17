@@ -6,14 +6,23 @@ import 'package:bb_mobile/ui/components/price_input/price_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ReceiveAmountEntry extends StatelessWidget {
-  const ReceiveAmountEntry({super.key});
+class ReceiveAmountEntry extends StatefulWidget {
+  const ReceiveAmountEntry({
+    super.key,
+    required this.amountController,
+    required this.focusNode,
+  });
+
+  final TextEditingController amountController;
+  final FocusNode focusNode;
 
   @override
+  State<ReceiveAmountEntry> createState() => _ReceiveAmountEntryState();
+}
+
+class _ReceiveAmountEntryState extends State<ReceiveAmountEntry> {
+  @override
   Widget build(BuildContext context) {
-    final amount = context.select<ReceiveBloc, String>(
-      (bloc) => bloc.state.inputAmount,
-    );
     final inputCurrency = context.select<ReceiveBloc, String>(
       (bloc) => bloc.state.inputAmountCurrencyCode,
     );
@@ -34,10 +43,11 @@ class ReceiveAmountEntry extends StatelessWidget {
     );
 
     return PriceInput(
-      amount: amount,
       currency: inputCurrency,
       amountEquivalent: amountEquivalent,
       availableCurrencies: availableInputCurrencies,
+      amountController: widget.amountController,
+      focusNode: widget.focusNode,
       onNoteChanged: (note) {
         context.read<ReceiveBloc>().add(ReceiveNoteChanged(note));
       },

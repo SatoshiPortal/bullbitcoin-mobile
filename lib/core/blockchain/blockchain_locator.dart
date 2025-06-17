@@ -1,8 +1,7 @@
 import 'package:bb_mobile/core/blockchain/data/datasources/bdk_bitcoin_blockchain_datasource.dart';
 import 'package:bb_mobile/core/blockchain/data/datasources/lwk_liquid_blockchain_datasource.dart';
-import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository_impl.dart';
+import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/core/blockchain/data/repository/liquid_blockchain_repository_impl.dart';
-import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_bitcoin_transaction_usecase.dart';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
@@ -23,7 +22,7 @@ class BlockchainLocator {
 
   static void registerRepositories() {
     locator.registerLazySingleton<BitcoinBlockchainRepository>(
-      () => BitcoinBlockchainRepositoryImpl(
+      () => BitcoinBlockchainRepository(
         blockchainDatasource: locator<BdkBitcoinBlockchainDatasource>(),
         electrumServerStorageDatasource:
             locator<ElectrumServerStorageDatasource>(),

@@ -11,6 +11,8 @@ class LanguageOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+      tileColor: Colors.transparent,
       selected: context.watch<SettingsCubit>().state.language == language,
       title: Text(
         '${language.languageCode}${language.countryCode != null ? ' (${language.countryCode})' : ''}',

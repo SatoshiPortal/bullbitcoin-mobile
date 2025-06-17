@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/blockchain/domain/repositories/bitcoin_blockchain_repository.dart';
+import 'package:bb_mobile/core/blockchain/data/repository/bitcoin_blockchain_repository.dart';
 
 class BroadcastBitcoinUsecase {
   final BitcoinBlockchainRepository _bitcoinBlockchainRepository;

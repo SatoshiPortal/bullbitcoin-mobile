@@ -1,45 +1,28 @@
-import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
-import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/errors/exchange_errors.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/delete_exchange_api_key_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/save_exchange_api_key_usecase.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'exchange_state.freezed.dart';
 
-// Exchange State using Freezed
 @freezed
 abstract class ExchangeState with _$ExchangeState {
   const factory ExchangeState({
-    @Default(true) bool isLoading,
-    @Default(false) bool hasError,
-    @Default('') String errorMessage,
-    @Default(false) bool authenticated,
-    String? previousUrl,
-    @Default('') String currentUrl,
-    @Default({}) Map<String, String> allCookies,
-    @Default(false) bool apiKeyGenerating,
-    String? apiKeyResponse,
-    @Default(0) int cookieCheckAttempts,
-    @Default(30) int maxCookieCheckAttempts,
-    @Default(false) bool showLoginSuccessDialog,
-    UserSummaryModel? userSummary,
+    UserSummary? userSummary,
+    ApiKeyException? apiKeyException,
+    GetExchangeUserSummaryException? getUserSummaryException,
+    SaveExchangeApiKeyException? saveApiKeyException,
+    DeleteExchangeApiKeyException? deleteApiKeyException,
   }) = _ExchangeState;
 
   const ExchangeState._();
 
-  static List<String> ignoredCookies = [
-    'i18n',
-    'i18n-lng',
-    'i18next',
-    'django_language',
-    'language',
-    'locale',
-    'hl',
-  ];
-
-  String get baseAccountsUrl => 'https://accounts05.bullbitcoin.dev';
-  String get loginUrlPattern => 'login';
-  String get verificationUrlPattern => 'verification';
-  String get registrationUrlPattern => 'registration';
-
-  String get targetAuthCookie => 'bb_session';
-  String get baseUrl => ApiServiceConstants.bbAuthUrl;
+  bool get isFetchingUserSummary =>
+      userSummary == null &&
+      getUserSummaryException == null &&
+      apiKeyException == null;
+  bool get isApiKeyInvalid => apiKeyException != null;
+  bool get hasUser => userSummary != null;
 }

@@ -1,5 +1,5 @@
 import 'package:bb_mobile/features/app_unlock/presentation/bloc/app_unlock_bloc.dart';
-import 'package:bb_mobile/features/home/ui/home_router.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
@@ -28,7 +28,7 @@ class PinCodeUnlockScreen extends StatelessWidget {
             // If onSuccess is provided, call it, otherwise go to home as default
             onSuccess != null
                 ? onSuccess!()
-                : context.goNamed(HomeRoute.home.name);
+                : context.goNamed(WalletRoute.walletHome.name);
           } else if (state.timeoutSeconds > 0) {
             await Future.delayed(const Duration(seconds: 1), () {
               if (context.mounted) {

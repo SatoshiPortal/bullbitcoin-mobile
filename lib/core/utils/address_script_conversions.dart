@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/foundation.dart';
 
@@ -14,7 +15,7 @@ class AddressScriptConversions {
 
       return address.asString();
     } catch (e) {
-      debugPrint('error converting scriptPubkey to address: $e');
+      log.severe('error converting scriptPubkey to address: $e');
       return null;
     }
   }

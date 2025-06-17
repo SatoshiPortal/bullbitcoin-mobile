@@ -5,6 +5,7 @@ sealed class SettingsState with _$SettingsState {
   const factory SettingsState({
     SettingsEntity? storedSettings,
     String? appVersion,
+    bool? hasLegacySeeds,
   }) = _SettingsState;
   const SettingsState._();
 

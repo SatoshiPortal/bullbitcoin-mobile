@@ -1,13 +1,15 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:bb_mobile/bloc_observer.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_startup/ui/app_startup_widget.dart';
 import 'package:bb_mobile/features/bitcoin_price/presentation/bloc/bitcoin_price_bloc.dart';
+import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/generated/l10n/localization.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
@@ -34,6 +36,7 @@ Future main() async {
         dotenv.load(isOptional: true),
         LibBbqr.init(),
       ]);
+      log = await Logger.init();
 
       // The Locator setup might depend on the initialization of the libraries above
       //  so it's important to call it after the initialization
@@ -43,7 +46,7 @@ Future main() async {
       runApp(const BullBitcoinWalletApp());
     },
     (error, stack) {
-      log('\n\nError: $error \nStack: $stack\n\n');
+      log.severe(error, trace: stack);
     },
   );
 }
@@ -91,23 +94,22 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
     }
   }
 
-  void _onDetached() => debugPrint('detached');
+  void _onDetached() => log.info('detached');
 
   Future<void> _onResumed() async {
-    debugPrint('resumed');
+    log.info('resumed');
     try {
       await locator<RestartSwapWatcherUsecase>().execute();
-      debugPrint('Restarted Swap Watcher!');
     } catch (e) {
-      debugPrint('Error during app resume: $e');
+      log.severe('Error during app resume: $e');
     }
   }
 
-  void _onInactive() => debugPrint('inactive');
+  void _onInactive() => log.info('inactive');
 
-  void _onHidden() => debugPrint('hidden');
+  void _onHidden() => log.info('hidden');
 
-  void _onPaused() => debugPrint('paused');
+  void _onPaused() => log.info('paused');
 
   @override
   Widget build(BuildContext context) {
@@ -123,22 +125,59 @@ class _BullBitcoinWalletAppState extends State<BullBitcoinWalletApp> {
               (_) =>
                   locator<BitcoinPriceBloc>()..add(const BitcoinPriceStarted()),
         ),
+        // Make the wallet bloc available to the whole app so environment changes
+        // from anywhere (wallet or exchange tab) can trigger a re-fetch of the wallets.
+        BlocProvider(create: (_) => locator<WalletBloc>()),
+        // Make the exchange cubit available to the whole app so redirects
+        // can use it to check if the user is authenticated and also to fetch
+        // the user summary when the environment changes from anywhere in the app.
+        BlocProvider(
+          create: (_) => locator<ExchangeCubit>()..fetchUserSummary(),
+        ),
       ],
-      child: BlocSelector<SettingsCubit, SettingsState, Language?>(
-        selector: (settings) => settings.language,
-        builder:
-            (context, language) => MaterialApp.router(
-              title: 'BullBitcoin Wallet',
-              debugShowCheckedModeBanner: false,
-              routerConfig: AppRouter.router,
-              theme: AppTheme.themeData(AppThemeType.light),
-              locale: language?.locale,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              builder: (_, child) {
-                return AppStartupWidget(app: child!);
-              },
-            ),
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<AppStartupBloc, AppStartupState>(
+            listenWhen:
+                (previous, current) =>
+                    previous != current &&
+                    current is AppStartupSuccess &&
+                    current.hasDefaultWallets,
+            listener: (context, settings) {
+              // If wallets exist and the app has started successfully,
+              // we can start the wallet bloc to fetch the wallets.
+              context.read<WalletBloc>().add(const WalletStarted());
+              context.read<WalletBloc>().add(const CheckAllWarnings());
+            },
+          ),
+          BlocListener<SettingsCubit, SettingsState>(
+            listenWhen:
+                (previous, current) =>
+                    previous.environment != current.environment,
+            listener: (context, settings) async {
+              // Re-fetch user summary (re-init exchange bloc) and wallets
+              //  when environment changes
+              context.read<WalletBloc>().add(const WalletStarted());
+              await context.read<ExchangeCubit>().fetchUserSummary();
+            },
+          ),
+        ],
+        child: BlocSelector<SettingsCubit, SettingsState, Language?>(
+          selector: (settings) => settings.language,
+          builder:
+              (context, language) => MaterialApp.router(
+                title: 'BullBitcoin Wallet',
+                debugShowCheckedModeBanner: false,
+                routerConfig: AppRouter.router,
+                theme: AppTheme.themeData(AppThemeType.light),
+                locale: language?.locale,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                builder: (_, child) {
+                  return AppStartupWidget(app: child!);
+                },
+              ),
+        ),
       ),
     );
   }

@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 
 class WatchWalletTransactionByTxIdUsecase {
@@ -23,7 +23,7 @@ class WatchWalletTransactionByTxIdUsecase {
     return _walletRepository.walletSyncFinishedStream
         .where((wallet) => wallet.id == walletId)
         .asyncMap((wallet) async {
-          debugPrint(
+          log.info(
             'Fetching transaction with txId $txId'
             ' for wallet: $walletId',
           );
@@ -34,12 +34,12 @@ class WatchWalletTransactionByTxIdUsecase {
               walletId: walletId,
             );
 
-            debugPrint(
+            log.info(
               'Fetched transaction with txId $txId for wallet: $walletId',
             );
             return tx;
           } catch (e) {
-            debugPrint('WatchWalletTransactionByTxIdUsecase exception: $e');
+            log.severe('WatchWalletTransactionByTxIdUsecase exception: $e');
             return null;
           }
         })

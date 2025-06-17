@@ -1,8 +1,11 @@
+import 'package:bb_mobile/features/buy/ui/buy_router.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/swap/ui/swap_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
@@ -39,6 +42,9 @@ class _ActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
     return Material(
       elevation: 2,
       color: Colors.transparent,
@@ -50,10 +56,10 @@ class _ActionRow extends StatelessWidget {
               icon: Assets.icons.btc.path,
               label: 'Buy',
               onPressed: () {
-                // context.pushNamed(AppRoute.buy.name);
+                context.pushNamed(BuyRoute.buy.name);
               },
               position: _ButtonPosition.first,
-              disabled: true,
+              disabled: !isSuperuser,
             ),
             const Gap(1),
             _ActionButton(
@@ -117,7 +123,7 @@ class _ActionButton extends StatelessWidget {
 
     return Expanded(
       child: InkWell(
-        onTap: () => onPressed(),
+        onTap: disabled ? null : () => onPressed(),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           decoration: BoxDecoration(

@@ -24,12 +24,14 @@ class BackupProviderSelector extends StatelessWidget {
           BBText(description!, style: context.font.bodySmall),
           const Gap(20),
         ],
-        for (final provider in BackupProviderType.values) ...[
+        for (final provider in BackupProviderType.values.where(
+          (p) => p != BackupProviderType.iCloud,
+        )) ...[
           ProviderCard(
             provider: provider,
             onTap: () => onProviderSelected(provider),
           ),
-          if (provider != BackupProviderType.values.last) const Gap(16),
+          const Gap(16),
         ],
       ],
     );

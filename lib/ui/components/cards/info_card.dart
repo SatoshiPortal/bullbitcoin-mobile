@@ -6,14 +6,14 @@ import 'package:gap/gap.dart';
 class InfoCard extends StatelessWidget {
   const InfoCard({
     super.key,
-    required this.title,
+    this.title,
     required this.description,
     required this.tagColor,
     required this.bgColor,
     this.onTap,
   });
 
-  final String title;
+  final String? title;
   final String description;
   final Color tagColor;
   final Color bgColor;
@@ -31,37 +31,45 @@ class InfoCard extends StatelessWidget {
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(width: 4, height: 75, color: tagColor),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.info_outline_rounded, size: 24, color: tagColor),
-                  const Gap(12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      BBText(
-                        title,
-                        style: context.font.bodyLarge,
-                        color: tagColor,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.info_outline_rounded, size: 24, color: tagColor),
+                    const Gap(12),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (title != null && title!.isNotEmpty) ...[
+                            BBText(
+                              title!,
+                              style: context.font.bodyLarge,
+                              color: tagColor,
+                            ),
+                            const Gap(4),
+                          ],
+                          Container(
+                            constraints: const BoxConstraints(maxWidth: 280),
+                            child: BBText(
+                              description,
+                              style: context.font.bodyMedium,
+                              color: context.colour.secondary,
+                              maxLines: 5,
+                            ),
+                          ),
+                        ],
                       ),
-                      const Gap(4),
-                      Container(
-                        constraints: const BoxConstraints(maxWidth: 280),
-                        child: BBText(
-                          description,
-                          style: context.font.bodyMedium,
-                          color: context.colour.secondary,
-                          maxLines: 5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

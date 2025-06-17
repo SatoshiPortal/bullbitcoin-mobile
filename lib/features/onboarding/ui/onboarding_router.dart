@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
-import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/fetched_backup_info_screen.dart';
@@ -7,6 +6,8 @@ import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_physical_rec
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_recovery_success.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/onboarding_splash.dart';
 import 'package:bb_mobile/features/onboarding/ui/screens/recover_options.dart';
+import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,10 +50,15 @@ class OnboardingRouter {
                 BlocListener<OnboardingBloc, OnboardingState>(
                   listenWhen:
                       (previous, current) =>
-                          previous.createSuccess() != current.createSuccess() &&
-                          current.createSuccess(),
+                          !previous.isSuccess && current.isSuccess,
                   listener: (context, state) {
-                    context.goNamed(HomeRoute.home.name);
+                    // Restart the wallet bloc to ensure it reflects the new wallets state
+                    // with the recently created or recovered wallets before
+                    // navigating.
+                    context.read<WalletBloc>().add(const WalletStarted());
+                    if (state.step == OnboardingStep.create) {
+                      context.goNamed(WalletRoute.walletHome.name);
+                    }
                   },
                 ),
               ],

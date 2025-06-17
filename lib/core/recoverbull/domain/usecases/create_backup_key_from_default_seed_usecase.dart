@@ -2,8 +2,8 @@ import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/bip85_derivation.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
-import 'package:flutter/foundation.dart';
 
 class CreateBackupKeyFromDefaultSeedUsecase {
   final SeedRepository _seed;
@@ -12,8 +12,8 @@ class CreateBackupKeyFromDefaultSeedUsecase {
   CreateBackupKeyFromDefaultSeedUsecase({
     required SeedRepository seedRepository,
     required WalletRepository walletRepository,
-  })  : _seed = seedRepository,
-        _wallet = walletRepository;
+  }) : _seed = seedRepository,
+       _wallet = walletRepository;
 
   Future<String> execute(String derivationPath) async {
     try {
@@ -37,12 +37,14 @@ class CreateBackupKeyFromDefaultSeedUsecase {
         defaultWallet.network,
       );
 
-      final backupKey =
-          Bip85Derivation.deriveBackupKey(defaultXprv, derivationPath);
+      final backupKey = Bip85Derivation.deriveBackupKey(
+        defaultXprv,
+        derivationPath,
+      );
 
       return backupKey;
     } catch (e) {
-      debugPrint('$CreateBackupKeyFromDefaultSeedUsecase: $e');
+      log.severe('$CreateBackupKeyFromDefaultSeedUsecase: $e');
       throw CreateBackupKeyFromDefaultSeedException(e.toString());
     }
   }

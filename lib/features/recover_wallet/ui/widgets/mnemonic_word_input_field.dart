@@ -24,35 +24,30 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
   void initState() {
     super.initState();
 
-    _controller.addListener(
-      () {
-        final word = context
-                .read<RecoverWalletBloc>()
-                .state
-                .validWords[widget.wordIndex] ??
-            '';
-        if (word != _controller.text) {
-          context.read<RecoverWalletBloc>().add(
-                RecoverWalletWordChanged(
-                  index: widget.wordIndex,
-                  word: _controller.text,
-                  tapped: true,
-                ),
-              );
-        }
-      },
-    );
-    _focusNode.addListener(
-      () {
-        final hintWords =
-            context.read<RecoverWalletBloc>().state.hintWords[widget.wordIndex];
-        if (_focusNode.hasFocus && hintWords != null && hintWords.isNotEmpty) {
-          _showOverlay();
-        } else {
-          _removeOverlay();
-        }
-      },
-    );
+    _controller.addListener(() {
+      final word =
+          context.read<RecoverWalletBloc>().state.validWords[widget
+              .wordIndex] ??
+          '';
+      if (word != _controller.text) {
+        context.read<RecoverWalletBloc>().add(
+          RecoverWalletWordChanged(
+            index: widget.wordIndex,
+            word: _controller.text,
+            tapped: true,
+          ),
+        );
+      }
+    });
+    _focusNode.addListener(() {
+      final hintWords =
+          context.read<RecoverWalletBloc>().state.hintWords[widget.wordIndex];
+      if (_focusNode.hasFocus && hintWords != null && hintWords.isNotEmpty) {
+        _showOverlay();
+      } else {
+        _removeOverlay();
+      }
+    });
 
     final wordAtIdx =
         context.read<RecoverWalletBloc>().state.validWords[widget.wordIndex];
@@ -85,34 +80,40 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
 
     final hintWords =
         context.read<RecoverWalletBloc>().state.hintWords[widget.wordIndex] ??
-            [];
+        [];
 
     return OverlayEntry(
-      builder: (context) => Positioned(
-        width: size.width - 24,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          offset: Offset(24, size.height),
-          child: Material(
-            elevation: 2,
-            child: ListView(
-              padding: EdgeInsets.zero,
-              shrinkWrap: true,
-              children: hintWords.map((hint) {
-                return ListTile(
-                  title: Text(hint),
-                  onTap: () {
-                    _controller.text = hint;
-                    _removeOverlay();
-                    _focusNode.nextFocus();
-                  },
-                );
-              }).toList(),
+      builder:
+          (context) => Positioned(
+            width: size.width - 24,
+            child: CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              offset: Offset(24, size.height),
+              child: Material(
+                elevation: 2,
+                child: ListView(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  children:
+                      hintWords.map((hint) {
+                        return ListTile(
+                          tileColor: Colors.transparent,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(2)),
+                          ),
+                          title: Text(hint),
+                          onTap: () {
+                            _controller.text = hint;
+                            _removeOverlay();
+                            _focusNode.nextFocus();
+                          },
+                        );
+                      }).toList(),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
     );
   }
 
@@ -131,9 +132,10 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<RecoverWalletBloc, RecoverWalletState>(
-      listenWhen: (previous, current) =>
-          previous.hintWords[widget.wordIndex] !=
-          current.hintWords[widget.wordIndex],
+      listenWhen:
+          (previous, current) =>
+              previous.hintWords[widget.wordIndex] !=
+              current.hintWords[widget.wordIndex],
       listener: (context, state) {
         final hintWords = state.hintWords[widget.wordIndex] ?? [];
         if (_focusNode.hasFocus && hintWords.isNotEmpty) {
@@ -149,9 +151,7 @@ class MnemonicWordInputFieldState extends State<MnemonicWordInputField> {
             padding: const EdgeInsets.all(3),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              border: Border.all(
-                color: context.colour.secondary,
-              ),
+              border: Border.all(color: context.colour.secondary),
             ),
             height: 41,
             child: Row(

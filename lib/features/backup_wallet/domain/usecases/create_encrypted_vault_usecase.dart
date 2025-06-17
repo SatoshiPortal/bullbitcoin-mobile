@@ -1,13 +1,13 @@
 import 'dart:convert';
 
+import 'package:bb_mobile/core/recoverbull/data/repository/recoverbull_repository.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/recoverbull_wallet.dart';
-import 'package:bb_mobile/core/recoverbull/domain/repositories/recoverbull_repository.dart';
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/bip85_derivation.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
-import 'package:flutter/foundation.dart';
 
 class CreateEncryptedVaultUsecase {
   final RecoverBullRepository _recoverBullRepository;
@@ -71,7 +71,7 @@ class CreateEncryptedVaultUsecase {
       );
 
       // Create an encrypted backup file
-      final encryptedBackup = _recoverBullRepository.createBackupFile(
+      final encryptedBackup = _recoverBullRepository.createBackupJson(
         backupKey,
         plaintext,
       );
@@ -81,7 +81,7 @@ class CreateEncryptedVaultUsecase {
 
       return json.encode(mapBackup);
     } catch (e) {
-      debugPrint('$CreateEncryptedVaultUsecase: $e');
+      log.severe('$CreateEncryptedVaultUsecase: $e');
       throw CreateEncryptedVaultException(e.toString());
     }
   }

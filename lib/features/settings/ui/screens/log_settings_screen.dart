@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -10,39 +13,73 @@ class LogSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSuperuser = context.select(
+      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
+    );
+
     return Scaffold(
       appBar: AppBar(title: const Text('Logs')),
       body: SafeArea(
-        child: Column(
-          children: [
-            ListTile(
-              title: const Text('Download / share logs'),
-              onTap: () async {
-                await _shareLogs(context);
-              },
-              trailing: const Icon(Icons.share),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: [
+              ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(2),
+                ),
+                tileColor: Colors.transparent,
+                title: const Text('Download / share logs'),
+                onTap: () => _shareLogs(context),
+                trailing: const Icon(Icons.share),
+              ),
+              if (isSuperuser)
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
+                  title: const Text('Share session logs (experimental)'),
+                  onTap: () => _shareSessionLogs(context),
+                  trailing: const Icon(Icons.share_sharp),
+                ),
+            ],
+          ),
         ),
       ),
     );
   }
-}
 
-Future<void> _shareLogs(BuildContext context) async {
-  try {
-    final dir = await getApplicationDocumentsDirectory();
-    final logFile = File(
-      '${dir.path}/${SettingsConstants.logFileName}',
-    ); // Adjust to your filename
+  Future<void> _shareLogs(BuildContext context) async {
+    if (!context.mounted) return;
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      if (!context.mounted) return;
+      final logFile = File('${dir.path}/${SettingsConstants.logFileName}');
+      await _shareFile(context, logFile);
+    } catch (e) {
+      if (!context.mounted) return;
+      _showErrorSnackbar(context, e.toString());
+    }
+  }
 
-    if (!await logFile.exists()) {
-      // ignore: use_build_context_synchronously
-      final theme = Theme.of(context);
-      ScaffoldMessenger.of(
-        // ignore: use_build_context_synchronously
-        context,
-      ).showSnackBar(
+  Future<void> _shareSessionLogs(BuildContext context) async {
+    try {
+      await log.dumpSessionToFile();
+      final logFile = File(log.path);
+      if (!context.mounted) return;
+      await _shareFile(context, logFile);
+    } catch (e) {
+      if (!context.mounted) return;
+      _showErrorSnackbar(context, e.toString());
+    }
+  }
+
+  Future<void> _shareFile(BuildContext context, File file) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final theme = Theme.of(context);
+    if (!await file.exists()) {
+      messenger.showSnackBar(
         SnackBar(
           content: const Text(
             'No log file found.',
@@ -62,21 +99,25 @@ Future<void> _shareLogs(BuildContext context) async {
       );
       return;
     }
+    await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
+  }
 
-    await SharePlus.instance.share(ShareParams(files: [XFile(logFile.path)]));
-  } catch (e) {
-    // ignore: use_build_context_synchronously
-    final theme = Theme.of(context);
-    ScaffoldMessenger.of(
-      // ignore: use_build_context_synchronously
+  void _showErrorSnackbar(BuildContext context, String error) {
+    _showSnackbar(
       context,
-    ).showSnackBar(
+      Text(
+        'Error sharing logs: $error',
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 14, color: Colors.white),
+      ),
+    );
+  }
+
+  void _showSnackbar(BuildContext context, Widget content) {
+    final theme = Theme.of(context);
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          'Error sharing logs: $e',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 14, color: Colors.white),
-        ),
+        content: content,
         duration: const Duration(seconds: 2),
         backgroundColor: theme.colorScheme.onSurface.withAlpha(204),
         behavior: SnackBarBehavior.floating,

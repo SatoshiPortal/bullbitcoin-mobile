@@ -1,18 +1,18 @@
-import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:recoverbull/recoverbull.dart';
 
 class RecoverBullRemoteDatasource {
   final KeyServer _keyServer;
 
   RecoverBullRemoteDatasource({required Uri address})
-      : _keyServer = KeyServer(address: address);
+    : _keyServer = KeyServer(address: address);
 
   Future<void> info(SOCKSSocket socket) async {
     try {
       final info = await _keyServer.infos(socks: socket);
-      debugPrint('KeyServer connection success: ${info.canary}');
+      log.info('KeyServer connection success: ${info.canary}');
     } on Exception catch (e) {
-      debugPrint('serverinfo error: $e');
+      log.severe('serverinfo error: $e');
       rethrow;
     }
   }
@@ -33,7 +33,7 @@ class RecoverBullRemoteDatasource {
         socks: socket,
       );
     } catch (e) {
-      debugPrint('storeBackupKey error: $e');
+      log.severe('storeBackupKey error: $e');
       rethrow;
     }
   }
@@ -52,7 +52,7 @@ class RecoverBullRemoteDatasource {
         socks: socket,
       );
     } catch (e) {
-      debugPrint('fetchBackupKey error: $e');
+      log.severe('fetchBackupKey error: $e');
       rethrow;
     }
   }
@@ -71,7 +71,7 @@ class RecoverBullRemoteDatasource {
         socks: socket,
       );
     } catch (e) {
-      debugPrint('trashBackupKey error: $e');
+      log.severe('trashBackupKey error: $e');
       rethrow;
     }
   }

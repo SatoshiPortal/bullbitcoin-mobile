@@ -1,17 +1,13 @@
-import 'package:bb_mobile/core/exchange/data/models/user_summary_model.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class BalanceCard extends StatelessWidget {
-  const BalanceCard({
-    super.key,
-    required this.balance,
-    required this.onTap,
-  });
+  const BalanceCard({super.key, required this.balance, required this.onTap});
 
-  final UserBalanceModel balance;
+  final UserBalance balance;
 
   final Function onTap;
 
@@ -43,9 +39,7 @@ class BalanceCard extends StatelessWidget {
               ),
               const Spacer(),
               BBText(
-                '${_removeTrailingFiatZeros(
-                  balance.amount.toStringAsFixed(2),
-                )} ${balance.currencyCode.toUpperCase()}',
+                '${_removeTrailingFiatZeros(balance.amount.toStringAsFixed(2))} ${balance.currencyCode.toUpperCase()}',
                 style: context.font.bodyLarge,
                 color: context.colour.secondary,
               ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/data/models/electrum_server_model.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/data/datasources/wallet/wallet_datasource.dart';
 import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/transaction_input_model.dart';
@@ -75,10 +76,12 @@ class LwkWalletDatasource implements WalletDatasource {
     required ElectrumServerModel electrumServer,
   }) {
     try {
-      debugPrint('Sync requested for wallet: ${wallet.id}');
+      // TODO: if needed, add these debugPrint to a filterable logger.debug
+      // TODO: to avoid spamming the terminal with recurring prints
+      // debugPrint('Sync requested for wallet: ${wallet.id}');
       return _activeSyncs.putIfAbsent(wallet.id, () async {
         try {
-          debugPrint('New sync started for wallet: ${wallet.id}');
+          // debugPrint('New sync started for wallet: ${wallet.id}');
           _walletSyncStartedController.add(wallet.id);
           syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
           final lwkWallet = await _createPublicWallet(wallet);
@@ -86,7 +89,7 @@ class LwkWalletDatasource implements WalletDatasource {
             electrumUrl: electrumServer.url,
             validateDomain: electrumServer.validateDomain,
           );
-          debugPrint('Sync completed for wallet: ${wallet.id}');
+          // debugPrint('Sync completed for wallet: ${wallet.id}');
         } catch (e) {
           if (e is lwk.LwkError) {
             throw e.msg;
@@ -405,7 +408,7 @@ class LwkWalletDatasource implements WalletDatasource {
                   : isIncoming
                   ? finalBalance
                   : finalBalance.abs() - tx.fee.toInt();
-          return WalletTransactionModel.liquid(
+          return WalletTransactionModel(
             txId: tx.txid,
             isIncoming: isIncoming,
             amountSat: netAmountSat,
@@ -414,6 +417,9 @@ class LwkWalletDatasource implements WalletDatasource {
             isToSelf: isToSelf,
             inputs: inputs,
             outputs: outputs,
+            isLiquid: true,
+            isTestnet: wallet.isTestnet,
+            unblindedUrl: tx.unblindedUrl,
           );
         }),
       );
@@ -439,7 +445,7 @@ class LwkWalletDatasource implements WalletDatasource {
       if (networkFee.isAbsolute) {
         throw Exception('Absolute fee is not supported for liquid yet!');
       }
-      debugPrint(networkFee.value.toDouble().toString());
+      log.info(networkFee.value.toDouble().toString());
       final pset = await lwkWallet.buildLbtcTx(
         sats: BigInt.from(amountSat ?? 0),
         outAddress: address,
@@ -447,7 +453,7 @@ class LwkWalletDatasource implements WalletDatasource {
         drain: drain,
       );
       final decoded = await lwkWallet.decodeTx(pset: pset);
-      debugPrint(decoded.absoluteFees.toString());
+      log.info(decoded.absoluteFees.toString());
       return pset;
     } catch (e) {
       if (e is lwk.LwkError) {
@@ -479,14 +485,15 @@ class LwkWalletDatasource implements WalletDatasource {
     }
   }
 
-  Future<(int, int)> decodePsbtAmounts({
-    required WalletModel wallet,
-    required String pset,
-  }) async {
+  Future<(int, int)> decodeAbsoluteFeesFromPset(String pset) async {
     try {
-      final lwkWallet = await _createPublicWallet(wallet);
-      final decoded = await lwkWallet.decodeTx(pset: pset);
-      return (decoded.balances.first.value, decoded.absoluteFees.toInt());
+      final decoded = await lwk.getSizeAndAbsoluteFees(pset: pset);
+      debugPrint(decoded.absoluteFees.toString());
+      // final decoded = await lwkWallet.decodeTx(pset: pset);
+      return (
+        decoded.discountedVsize.toInt(),
+        decoded.absoluteFees.first.value,
+      );
     } catch (e) {
       if (e is lwk.LwkError) {
         throw e.msg;

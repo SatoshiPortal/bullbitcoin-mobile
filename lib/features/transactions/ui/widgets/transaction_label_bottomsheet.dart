@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
@@ -8,8 +9,39 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 
+Future<void> showTransactionLabelBottomSheet(
+  BuildContext context, {
+  String? initialNote,
+  Function(String)? onEditComplete,
+}) async {
+  final detailsCubit = context.read<TransactionDetailsCubit>();
+
+  await showModalBottomSheet(
+    context: context,
+    useRootNavigator: true,
+    backgroundColor: context.colour.onPrimary,
+    isScrollControlled: true,
+    builder: (context) {
+      return BlocProvider.value(
+        value: detailsCubit,
+        child: TransactionLabelBottomsheet(
+          initialNote: initialNote,
+          onEditComplete: onEditComplete,
+        ),
+      );
+    },
+  );
+}
+
 class TransactionLabelBottomsheet extends StatefulWidget {
-  const TransactionLabelBottomsheet({super.key});
+  const TransactionLabelBottomsheet({
+    super.key,
+    this.initialNote,
+    this.onEditComplete,
+  });
+
+  final String? initialNote;
+  final Function(String)? onEditComplete;
 
   @override
   State<TransactionLabelBottomsheet> createState() =>
@@ -23,7 +55,12 @@ class _TransactionLabelBottomsheetState
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _controller = TextEditingController(text: widget.initialNote ?? '');
+    if (widget.initialNote != null) {
+      context.read<TransactionDetailsCubit>().onNoteChanged(
+        widget.initialNote!,
+      );
+    }
   }
 
   @override
@@ -34,6 +71,9 @@ class _TransactionLabelBottomsheetState
 
   @override
   Widget build(BuildContext context) {
+    final state = context.watch<TransactionDetailsCubit>().state;
+    final isEditing = widget.initialNote != null;
+
     return Padding(
       padding: EdgeInsets.fromLTRB(
         16,
@@ -50,7 +90,10 @@ class _TransactionLabelBottomsheetState
             children: [
               const Gap(22),
               const Spacer(),
-              BBText('Add note', style: context.font.headlineMedium),
+              BBText(
+                isEditing ? 'Edit note' : 'Add note',
+                style: context.font.headlineMedium,
+              ),
               const Spacer(),
               IconButton(
                 onPressed: () {
@@ -68,19 +111,33 @@ class _TransactionLabelBottomsheetState
             hintStyle: context.font.bodyLarge?.copyWith(
               color: context.colour.surfaceContainer,
             ),
-            value: '',
+            value: state.note ?? widget.initialNote ?? '',
+            maxLength: NoteValidator.maxNoteLength,
             onChanged: (note) {
-              // No need to handle note changes here, as we will save it on button press
+              context.read<TransactionDetailsCubit>().onNoteChanged(note);
             },
           ),
+          if (state.err != null) ...[
+            const Gap(8),
+            BBText(
+              state.err!.toString(),
+              style: context.font.bodySmall?.copyWith(color: Colors.red),
+            ),
+          ],
           const Gap(40),
           BBButton.big(
-            label: 'Save',
+            label: isEditing ? 'Update' : 'Save',
+            disabled: state.err != null || _controller.text.trim().isEmpty,
             onPressed: () {
-              context.read<TransactionDetailsCubit>().saveTransactionNote(
-                _controller.text,
-              );
-              context.pop();
+              final validation = NoteValidator.validate(_controller.text);
+              if (validation.isValid) {
+                if (widget.onEditComplete != null) {
+                  widget.onEditComplete!(_controller.text.trim());
+                } else {
+                  context.read<TransactionDetailsCubit>().saveTransactionNote();
+                }
+                context.pop();
+              }
             },
             bgColor: context.colour.secondary,
             textColor: context.colour.onSecondary,

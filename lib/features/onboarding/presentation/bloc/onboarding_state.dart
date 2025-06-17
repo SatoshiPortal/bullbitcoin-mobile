@@ -1,11 +1,6 @@
 part of 'onboarding_bloc.dart';
 
-enum OnboardingStepStatus {
-  none,
-  loading,
-  success,
-  error,
-}
+enum OnboardingStepStatus { none, loading, success, error }
 
 enum OnboardingStep { splash, create, recover }
 
@@ -24,15 +19,17 @@ sealed class OnboardingState with _$OnboardingState {
   }) = _OnboardingState;
   const OnboardingState._();
 
-  bool hasAllValidWords() =>
+  bool get hasAllValidWords =>
       validWords.length == 12 &&
       onboardingStepStatus != OnboardingStepStatus.loading;
 
-  bool loadingCreate() =>
+  bool get loadingCreate =>
       step == OnboardingStep.create ||
       onboardingStepStatus == OnboardingStepStatus.loading;
 
-  bool createSuccess() =>
-      step == OnboardingStep.create &&
-      onboardingStepStatus == OnboardingStepStatus.success;
+  bool get isSuccess => onboardingStepStatus == OnboardingStepStatus.success;
+
+  bool get isCreation => step == OnboardingStep.create;
+
+  bool get isRecovery => step == OnboardingStep.recover;
 }

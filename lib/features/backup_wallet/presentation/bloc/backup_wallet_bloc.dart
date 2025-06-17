@@ -5,10 +5,10 @@ import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/connect_
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/disconnect_google_drive_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/google_drive/fetch_latest_google_drive_backup_usecase.dart';
 import 'package:bb_mobile/core/recoverbull/domain/usecases/select_folder_path_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/backup_wallet/domain/usecases/create_encrypted_vault_usecase.dart';
 import 'package:bb_mobile/features/backup_wallet/domain/usecases/save_to_file_system_usecase.dart';
 import 'package:bb_mobile/features/backup_wallet/domain/usecases/save_to_google_drive_usecase.dart';
-import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -106,7 +106,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
       // Then start the backup process
       await _startBackup(emit);
     } catch (e) {
-      debugPrint('Error connecting to Google Drive: $e');
+      log.severe('Error connecting to Google Drive: $e');
       emit(
         state.copyWith(
           status: BackupWalletStatus.error,
@@ -136,7 +136,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
 
       emit(state.copyWith(status: BackupWalletStatus.success));
     } catch (e) {
-      debugPrint('Failed to save the backup: $e');
+      log.severe('Failed to save the backup: $e');
       emit(
         state.copyWith(
           status: BackupWalletStatus.error,
@@ -157,7 +157,7 @@ class BackupWalletBloc extends Bloc<BackupWalletEvent, BackupWalletState> {
     OnICloudDriveBackupSelected event,
     Emitter<BackupWalletState> emit,
   ) async {
-    debugPrint('iCloud backup not implemented');
+    log.severe('iCloud backup not implemented');
     return;
   }
 }

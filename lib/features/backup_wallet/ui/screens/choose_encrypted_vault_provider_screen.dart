@@ -4,6 +4,7 @@ import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart'
     show CurrentKeyServerFlow;
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/backup_wallet/presentation/bloc/backup_wallet_bloc.dart';
 import 'package:bb_mobile/features/backup_wallet/ui/widgets/how_to_decide.dart';
 import 'package:bb_mobile/features/key_server/ui/key_server_router.dart';
@@ -51,7 +52,7 @@ class _Screen extends StatelessWidget {
           const OnFileSystemBackupSelected(),
         );
       case BackupProviderType.iCloud:
-        debugPrint('iCloud, not supported yet');
+        log.info('iCloud, not supported yet');
     }
   }
 

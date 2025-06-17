@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/key_server.dart';
-import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/key_server/presentation/bloc/key_server_cubit.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
@@ -29,7 +29,7 @@ class RecoverWithSecretScreen extends StatelessWidget {
               () =>
                   fromOnboarding
                       ? context.pop()
-                      : context.go(HomeRoute.home.path),
+                      : context.go(WalletRoute.walletHome.path),
           title:
               "Enter your ${fromOnboarding ? '' : 'backup'} ${state.authInputType == AuthInputType.pin ? 'PIN' : 'password'}",
         ),

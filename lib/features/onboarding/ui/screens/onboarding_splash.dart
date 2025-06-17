@@ -85,7 +85,7 @@ class _Actions extends StatelessWidget {
     bool creating = false;
     if (!loading) {
       creating = context.select(
-        (OnboardingBloc bloc) => bloc.state.loadingCreate(),
+        (OnboardingBloc bloc) => bloc.state.loadingCreate,
       );
     }
 

@@ -1,7 +1,7 @@
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
-import 'package:bb_mobile/features/home/ui/home_router.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
-import 'package:bb_mobile/features/receive/ui/receive_router.dart';
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
+import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -20,7 +20,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return; // Don't allow back navigation
-        context.go(HomeRoute.home.path);
+        context.go(WalletRoute.walletHome.path);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -29,7 +29,7 @@ class ReceivePaymentReceivedScreen extends StatelessWidget {
           flexibleSpace: TopBar(
             title: 'Receive',
             actionIcon: Icons.close,
-            onAction: () => context.go(HomeRoute.home.path),
+            onAction: () => context.go(WalletRoute.walletHome.path),
           ),
         ),
         body: const PaymentReceivedPage(),
@@ -90,11 +90,9 @@ class ReceiveDetailsButton extends StatelessWidget {
       child: BBButton.big(
         label: 'Details',
         onPressed: () {
-          // We need to pass the bloc to the details screen since it is outside
-          // of the Shellroute where the bloc is created.
-          context.go(
-            '${GoRouterState.of(context).matchedLocation}/${ReceiveRoute.details.path}',
-            extra: context.read<ReceiveBloc>(),
+          context.pushNamed(
+            TransactionsRoute.transactionDetails.name,
+            extra: context.read<ReceiveBloc>().state.transaction,
           );
         },
         bgColor: context.colour.secondary,

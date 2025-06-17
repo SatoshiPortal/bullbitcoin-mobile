@@ -6,6 +6,9 @@ class TorDatasource {
   TorDatasource._(this._tor);
 
   static Future<TorDatasource> init() async {
+    // enable: false
+    // ensures that the Tor service is not started automatically
+    // used in the locator
     await Tor.init(enabled: false);
     final instance = Tor.instance;
     return TorDatasource._(instance);

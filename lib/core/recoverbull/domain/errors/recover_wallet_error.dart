@@ -9,16 +9,14 @@ class RecoverWalletError implements Exception {
   }
 }
 
-class DefaultWalletAlreadyExistsError extends RecoverWalletError {
-  const DefaultWalletAlreadyExistsError()
-      : super(
-          'A default wallet already exists. Please delete it before restoring from backup.',
-        );
+class TestFlowDefaultWalletAlreadyExistsError extends RecoverWalletError {
+  const TestFlowDefaultWalletAlreadyExistsError()
+    : super('This wallet already exists.');
 }
 
-class WalletMismatchError extends RecoverWalletError {
-  const WalletMismatchError()
-      : super(
-          'The default wallet does not match the one in the backup.',
-        );
+class TestFlowWalletMismatchError extends RecoverWalletError {
+  const TestFlowWalletMismatchError()
+    : super(
+        'A different default wallet already exists. You can only have one default wallet.',
+      );
 }

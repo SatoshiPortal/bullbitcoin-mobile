@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/recoverbull/domain/repositories/file_system_repository.dart';
+import 'package:bb_mobile/core/recoverbull/data/repository/file_system_repository.dart';
 
 class SelectFolderPathUsecase {
   final FileSystemRepository _fileRepository;

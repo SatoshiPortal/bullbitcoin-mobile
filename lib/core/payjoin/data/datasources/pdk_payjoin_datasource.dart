@@ -1,13 +1,14 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_input_pair_model.dart';
 import 'package:bb_mobile/core/payjoin/data/models/payjoin_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart' as logger;
 import 'package:bb_mobile/core/utils/transaction_parsing.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:payjoin_flutter/bitcoin_ffi.dart';
 import 'package:payjoin_flutter/common.dart';
 import 'package:payjoin_flutter/receive.dart';
@@ -96,7 +97,7 @@ class PdkPayjoinDatasource {
       final imp = InMemoryReceiverPersister();
       final noOpPersister = DartReceiverPersister(
         save: (receiver) async {
-          debugPrint('SAVING RECEIVER');
+          logger.log.info('SAVING RECEIVER');
           final token = await imp.save(receiver: receiver);
           return token;
         },
@@ -269,7 +270,9 @@ class PdkPayjoinDatasource {
         candidateInputs: candidateInputs,
       );
     } catch (e) {
-      debugPrint('Failed to preserve privacy: $e. Using first input pair.');
+      logger.log.severe(
+        'Failed to preserve privacy: $e. Using first input pair.',
+      );
     }
 
     final inputsContributed = await committedOutputs.contributeInputs(
@@ -295,7 +298,7 @@ class PdkPayjoinDatasource {
       txId: await TransactionParsing.getTxIdFromPsbt(proposalPsbt),
     );
 
-    debugPrint(
+    logger.log.info(
       'Payjoin request processed and proposal sent for ${receiver.id()}: $proposalPsbt',
     );
 
@@ -331,7 +334,7 @@ class PdkPayjoinDatasource {
         _receiversIsolatePort = message;
         _receiversIsolateReady.complete();
       } else if (message is Map<String, dynamic>) {
-        debugPrint(
+        logger.log.info(
           'Received message of found payjoin request in main isolate: $message',
         );
         final model = PayjoinReceiverModel.fromJson(message);
@@ -347,7 +350,7 @@ class PdkPayjoinDatasource {
       }
     });
 
-    debugPrint('Spawning receivers isolate');
+    logger.log.info('Spawning receivers isolate');
     // Spawn the isolate
     _receiversIsolate = await Isolate.spawn(
       _receiversIsolateEntryPoint,
@@ -379,7 +382,7 @@ class PdkPayjoinDatasource {
       }
     });
 
-    debugPrint('Spawning senders isolate');
+    logger.log.info('Spawning senders isolate');
     _sendersIsolate = await Isolate.spawn(
       _sendersIsolateEntryPoint,
       receivePort.sendPort,
@@ -751,7 +754,7 @@ class InMemoryReceiverPersister {
   }
 
   Future<Receiver> load({required ReceiverToken token}) async {
-    debugPrint('LOADING RECEIVER ${token.toBytes()}');
+    logger.log.info('LOADING RECEIVER ${token.toBytes()}');
     final receiver = _store[token.toBytes().toString()];
     if (receiver == null) {
       throw Exception('Receiver not found for the provided token.');
@@ -765,13 +768,13 @@ class InMemorySenderPersister implements DartSenderPersister {
 
   Future<SenderToken> save({required Sender sender}) async {
     final token = sender.key();
-    debugPrint('TOKEN SAVE: ${token.toBytes()}');
+    logger.log.info('TOKEN SAVE: ${token.toBytes()}');
     _store[token.toBytes().toString()] = sender;
     return token;
   }
 
   Future<Sender> load({required SenderToken token}) async {
-    debugPrint('TOKEN LOAD: ${token.toBytes()}');
+    logger.log.info('TOKEN LOAD: ${token.toBytes()}');
     final sender = _store[token.toBytes().toString()];
     if (sender == null) {
       throw Exception('Sender not found for the provided token.');

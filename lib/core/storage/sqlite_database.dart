@@ -8,11 +8,10 @@ import 'package:bb_mobile/core/storage/tables/swaps_table.dart';
 import 'package:bb_mobile/core/storage/tables/transactions_table.dart';
 import 'package:bb_mobile/core/storage/tables/wallet_metadata_table.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-
-import 'package:flutter/foundation.dart';
 
 part 'sqlite_database.g.dart';
 
@@ -63,7 +62,7 @@ class SqliteDatabase extends _$SqliteDatabase {
   }
 
   Future<void> _seedDefaultSettings() async {
-    debugPrint('[SqliteDatabase] seeding default settings...');
+    log.info('[SqliteDatabase] seeding default settings...');
     await into(settings).insert(
       SettingsRow(
         id: 1,

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -52,7 +53,7 @@ enum Language {
     try {
       return Language.values.firstWhere((language) => language.name == name);
     } catch (e) {
-      debugPrint('unsupported language fallback on default');
+      log.warning('unsupported language fallback on default');
       return Language.unitedStatesEnglish;
     }
   }

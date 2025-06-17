@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/swap/ui/swap_page.dart';
 import 'package:go_router/go_router.dart';
 
 enum SwapRoute {
-  swap('swap');
+  swap('/swap');
 
   final String path;
 

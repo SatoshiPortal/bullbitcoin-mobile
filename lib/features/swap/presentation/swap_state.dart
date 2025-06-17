@@ -23,8 +23,8 @@ abstract class SwapState with _$SwapState {
     @Default(true) bool loadingWallets,
     @Default([]) List<Wallet> fromWallets,
     @Default([]) List<Wallet> toWallets,
-    @Default(WalletNetwork.bitcoin) WalletNetwork fromWalletNetwork,
-    @Default(WalletNetwork.liquid) WalletNetwork toWalletNetwork,
+    @Default(WalletNetwork.liquid) WalletNetwork fromWalletNetwork,
+    @Default(WalletNetwork.bitcoin) WalletNetwork toWalletNetwork,
     String? fromWalletId,
     String? toWalletId,
     @Default('') String fromAmount,
@@ -201,7 +201,7 @@ abstract class SwapState with _$SwapState {
   }
 
   String get displayFromCurrencyCode {
-    if (fromWallet?.isLiquid ?? false) {
+    if (fromWallet?.isLiquid ?? true) {
       if (selectedFromCurrencyCode == BitcoinUnit.sats.code) {
         return 'L-sats';
       } else if (selectedFromCurrencyCode == BitcoinUnit.btc.code) {
@@ -371,9 +371,9 @@ abstract class SwapState with _$SwapState {
     if (fromWalletBalance == 0) return false;
     if (fromWalletNetwork == WalletNetwork.bitcoin &&
         toWalletNetwork == WalletNetwork.liquid) {
-      return fromWalletBalance >= fromAmountSat + estimatedBtcToLbtcSwapFees;
+      return fromWalletBalance >= fromAmountSat + (absoluteFees ?? 0);
     } else {
-      return fromWalletBalance >= fromAmountSat + estimatedLbtcToBtcSwapFees;
+      return fromWalletBalance >= fromAmountSat + (liquidAbsoluteFees ?? 0);
     }
   }
 

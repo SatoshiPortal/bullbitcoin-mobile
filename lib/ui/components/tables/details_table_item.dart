@@ -10,6 +10,7 @@ class DetailsTableItem extends StatefulWidget {
     this.copyValue,
     this.isUnderline = false,
     this.expandableChild,
+    this.displayWidget,
   });
 
   final String label;
@@ -17,6 +18,7 @@ class DetailsTableItem extends StatefulWidget {
   final String? copyValue;
   final bool isUnderline;
   final Widget? expandableChild;
+  final Widget? displayWidget;
 
   @override
   State<DetailsTableItem> createState() => _DetailsTableItemState();
@@ -54,18 +56,20 @@ class _DetailsTableItemState extends State<DetailsTableItem> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Flexible(
-                      child: Text(
-                        widget.displayValue,
-                        textAlign: TextAlign.end,
-                        overflow: TextOverflow.clip,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.outlineVariant,
-                          decoration:
-                              widget.isUnderline
-                                  ? TextDecoration.underline
-                                  : TextDecoration.none,
-                        ),
-                      ),
+                      child:
+                          widget.displayWidget ??
+                          Text(
+                            widget.displayValue,
+                            textAlign: TextAlign.end,
+                            overflow: TextOverflow.clip,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: theme.colorScheme.outlineVariant,
+                              decoration:
+                                  widget.isUnderline
+                                      ? TextDecoration.underline
+                                      : TextDecoration.none,
+                            ),
+                          ),
                     ),
                     const Gap(8),
                     if (widget.copyValue != null &&

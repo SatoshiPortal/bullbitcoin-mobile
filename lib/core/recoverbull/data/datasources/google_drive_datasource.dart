@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:extension_google_sign_in_as_googleapis_auth/extension_google_sign_in_as_googleapis_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:googleapis/drive/v3.dart' as drive;
 import 'package:recoverbull/recoverbull.dart';
@@ -19,23 +19,15 @@ class GoogleDriveAppDatasource {
 
   Future<void> connect() async {
     try {
-      GoogleSignInAccount? account = await _google.signIn();
-
-      if (account == null) {
-        debugPrint('Silent sign-in failed, attempting interactive sign-in...');
-        account = await _google.signIn();
-      }
-
-      if (account == null) {
-        throw 'Sign-in failed';
-      }
+      final account = await _google.signIn();
+      if (account == null) throw 'Sign-in failed';
 
       final client = await _google.authenticatedClient();
       if (client == null) throw 'Failed to get authenticated client';
 
       _driveApi = drive.DriveApi(client);
     } catch (e) {
-      debugPrint('Google Sign-in error: $e');
+      log.severe('Google Sign-in error: $e');
       await disconnect();
       rethrow;
     }
@@ -59,10 +51,12 @@ class GoogleDriveAppDatasource {
 
   Future<List<int>> fetchContent(String fileId) async {
     _checkConnection();
-    final media = await _driveApi!.files.get(
-      fileId,
-      downloadOptions: drive.DownloadOptions.fullMedia,
-    ) as drive.Media;
+    final media =
+        await _driveApi!.files.get(
+              fileId,
+              downloadOptions: drive.DownloadOptions.fullMedia,
+            )
+            as drive.Media;
 
     final bytes = await media.stream.fold<List<int>>(
       <int>[],
@@ -82,10 +76,7 @@ class GoogleDriveAppDatasource {
     final fileId = files.files?.firstOrNull?.id;
     if (fileId == null) throw "Backup file not found";
 
-    await _driveApi!.files.update(
-      drive.File()..trashed = true,
-      fileId,
-    );
+    await _driveApi!.files.update(drive.File()..trashed = true, fileId);
   }
 
   Future<void> store(String content) async {
@@ -94,10 +85,11 @@ class GoogleDriveAppDatasource {
     final filename =
         '${DateTime.now().millisecondsSinceEpoch}_${backup.id}.json';
 
-    final file = drive.File()
-      ..name = filename
-      ..mimeType = 'application/json'
-      ..parents = ['appDataFolder'];
+    final file =
+        drive.File()
+          ..name = filename
+          ..mimeType = 'application/json'
+          ..parents = ['appDataFolder'];
 
     final jsonBackup = backup.toJson();
 

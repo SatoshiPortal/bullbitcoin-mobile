@@ -9,6 +9,7 @@ class BBText extends StatelessWidget {
     this.maxLines,
     this.color,
     this.textAlign,
+    this.overflow,
   });
 
   final String text;
@@ -16,16 +17,17 @@ class BBText extends StatelessWidget {
   final TextStyle? style;
   final Color? color;
   final TextAlign? textAlign;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return AutoSizeText(
       text,
-      style: style!.copyWith(color: color),
+      style: style?.copyWith(color: color),
       maxLines: maxLines,
       textAlign: textAlign,
       softWrap: true,
-      overflow: TextOverflow.ellipsis,
+      overflow: overflow,
     );
   }
 }

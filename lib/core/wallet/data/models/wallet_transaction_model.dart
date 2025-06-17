@@ -6,25 +6,18 @@ part 'wallet_transaction_model.freezed.dart';
 
 @freezed
 sealed class WalletTransactionModel with _$WalletTransactionModel {
-  const factory WalletTransactionModel.bitcoin({
+  const factory WalletTransactionModel({
     required String txId,
     required bool isIncoming,
     required int amountSat,
     required int feeSat,
     required List<TransactionInputModel> inputs,
     required List<TransactionOutputModel> outputs,
+    required bool isLiquid,
+    required bool isTestnet,
     int? confirmationTimestamp,
+    String? unblindedUrl,
     @Default(false) bool isToSelf,
-  }) = BitcoinWalletTransactionModel;
-  const factory WalletTransactionModel.liquid({
-    required String txId,
-    required bool isIncoming,
-    required int amountSat,
-    required int feeSat,
-    required List<TransactionInputModel> inputs,
-    required List<TransactionOutputModel> outputs,
-    int? confirmationTimestamp,
-    @Default(false) bool isToSelf,
-  }) = LiquidWalletTransactionModel;
+  }) = _WalletTransactionModel;
   const WalletTransactionModel._();
 }

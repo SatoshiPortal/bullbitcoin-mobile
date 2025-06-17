@@ -172,7 +172,7 @@ class TestWalletBackupBloc
           ),
         );
       } catch (e) {
-        if (e is DefaultWalletAlreadyExistsError) {
+        if (e is TestFlowDefaultWalletAlreadyExistsError) {
           try {
             await _completeEncryptedVaultVerificationUsecase.execute();
             emit(state.copyWith(status: TestWalletBackupStatus.success));
@@ -184,7 +184,7 @@ class TestWalletBackupBloc
               ),
             );
           }
-        } else if (e is WalletMismatchError) {
+        } else if (e is TestFlowWalletMismatchError) {
           emit(
             state.copyWith(
               status: TestWalletBackupStatus.error,

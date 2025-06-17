@@ -2,7 +2,7 @@ import 'package:bb_mobile/features/key_server/ui/key_server_flow.dart';
 import 'package:go_router/go_router.dart';
 
 enum KeyServerRoute {
-  keyServerFlow('key-server-flow');
+  keyServerFlow('/key-server-flow');
 
   final String path;
 

@@ -8,9 +8,6 @@ abstract class LiquidWalletRepository {
     required NetworkFee networkFee,
     bool? drain,
   });
-  Future<(int, int)> getPsetAmountAndFees({
-    required String walletId,
-    required String pset,
-  });
+  Future<(int, int)> getPsetSizeAndAbsoluteFees({required String pset});
   Future<String> signPset({required String pset, required String walletId});
 }

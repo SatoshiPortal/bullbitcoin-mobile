@@ -2,7 +2,8 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 
 abstract class SwapRepository {
   // LIMITS
-  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees({required SwapType type});
+  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees(SwapType type);
+  Future<void> updateSwapLimitsAndFees(SwapType type);
 
   // RECEIVE SWAPS
   Future<LnReceiveSwap> createLightningToLiquidSwap({
@@ -133,7 +134,8 @@ abstract class SwapRepository {
   Future<Swap> getSwap({required String swapId});
   Future<LnSendSwap?> getSendSwapByInvoice({required String invoice});
   Future<List<Swap>> getOngoingSwaps();
-  Future<List<Swap>> getAllSwaps();
+  Future<List<Swap>> getAllSwaps({String? walletId});
+  Future<Swap?> getSwapByTxId(String txId);
 
   Future<void> updateSwap({required Swap swap});
 

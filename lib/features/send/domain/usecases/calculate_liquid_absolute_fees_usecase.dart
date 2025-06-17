@@ -7,17 +7,11 @@ class CalculateLiquidAbsoluteFeesUsecase {
     required LiquidWalletRepository liquidWalletRepository,
   }) : _liquidWalletRepository = liquidWalletRepository;
 
-  /// Returns (amount, absFees)
-  Future<int> execute({
-    required String walletId,
-    required String pset,
-  }) async {
+  /// Returns (size, absFees)
+  Future<int> execute({required String pset}) async {
     try {
-      final (amount, absFees) =
-          await _liquidWalletRepository.getPsetAmountAndFees(
-        walletId: walletId,
-        pset: pset,
-      );
+      final (discountedVsize, absFees) = await _liquidWalletRepository
+          .getPsetSizeAndAbsoluteFees(pset: pset);
       return absFees;
     } catch (e) {
       throw CalculateLiquidAbsoluteFeesException(e.toString());

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:async/async.dart';
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
-import 'package:bb_mobile/core/logging/domain/repositories/log_repository.dart';
+import 'package:bb_mobile/core/logging/data/log_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -15,6 +15,7 @@ import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
+import 'package:rxdart/transformers.dart';
 
 class WalletRepositoryImpl implements WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -41,12 +42,16 @@ class WalletRepositoryImpl implements WalletRepository {
   }
 
   @override
-  Stream<Wallet> get walletSyncStartedStream => _walletSyncStartedStream
-      .asyncMap((walletId) async => await getWallet(walletId));
+  Stream<Wallet> get walletSyncStartedStream =>
+      _walletSyncStartedStream
+          .asyncMap((walletId) async => await getWallet(walletId))
+          .whereType<Wallet>();
 
   @override
-  Stream<Wallet> get walletSyncFinishedStream => _walletSyncFinishedStream
-      .asyncMap((walletId) async => await getWallet(walletId));
+  Stream<Wallet> get walletSyncFinishedStream =>
+      _walletSyncFinishedStream
+          .asyncMap((walletId) async => await getWallet(walletId))
+          .whereType<Wallet>();
 
   @override
   bool isWalletSyncing({String? walletId}) =>
@@ -117,12 +122,14 @@ class WalletRepositoryImpl implements WalletRepository {
     required ScriptType scriptType,
     required String label,
     bool sync = false,
+    String? overrideFingerprint,
   }) async {
     final metadata = await WalletMetadataService.deriveFromXpub(
       xpub: xpub,
       network: network,
       scriptType: scriptType,
       label: label,
+      overrideFingerprint: overrideFingerprint,
     );
 
     await _walletMetadataDatasource.store(metadata);
@@ -158,11 +165,11 @@ class WalletRepositoryImpl implements WalletRepository {
   }
 
   @override
-  Future<Wallet> getWallet(String walletId, {bool sync = false}) async {
+  Future<Wallet?> getWallet(String walletId, {bool sync = false}) async {
     final metadata = await _walletMetadataDatasource.fetch(walletId);
 
     if (metadata == null) {
-      throw throw WalletNotFoundException(walletId);
+      return null;
     }
     // Get the balance
     final balance = await _getBalance(metadata, sync: sync);

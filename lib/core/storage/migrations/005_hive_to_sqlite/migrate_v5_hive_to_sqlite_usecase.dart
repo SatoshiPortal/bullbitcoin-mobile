@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:bb_mobile/core/logging/domain/entities/log.dart';
-import 'package:bb_mobile/core/logging/domain/usecases/add_log_usecase.dart';
+import 'package:bb_mobile/core/logging/domain/add_log_usecase.dart';
+import 'package:bb_mobile/core/logging/domain/log_entity.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
@@ -56,7 +56,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       // check if we are already on v5
       if (newMainnetDefaultWallets.length == 2) {
         await _addLogUsecase.execute(
-          const NewLog(
+          const NewLogEntity(
             level: LogLevel.debug,
             message: 'Migration Not Required: 2 Default Wallets Exist.',
             logger: 'MigrateToV5HiveToSqliteUsecase',
@@ -74,7 +74,7 @@ class MigrateToV5HiveToSqliteToUsecase {
               )
               .toList();
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.debug,
           message:
               'PROGRESS: Found  ${oldMainnetDefaultWallets.length} defaultOldSignerWallets',
@@ -101,7 +101,7 @@ class MigrateToV5HiveToSqliteToUsecase {
               .toList();
 
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.debug,
           message:
               'PROGRESS: Found ${oldMainnetExternalSignerWallets.length} externalOldSignerWallets',
@@ -115,7 +115,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       final seedsImported = await _storeNewSeeds(oldMainnetSignerWallets);
 
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.debug,
           message:
               'PROGRESS: Migrated ${seedsImported.length}/${oldMainnetSignerWallets.length} seeds',
@@ -148,7 +148,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         // debug print the number of swaps receoverd receoverSwaps/(total swaps = [mainWalletWithSwaps + externalWalletsWithSwaps].map through all the ongoingSwaps list and get their length summed)
 
         await _addLogUsecase.execute(
-          NewLog(
+          NewLogEntity(
             level: LogLevel.debug,
             message:
                 'PROGRESS: Migrated $recoveredSwaps/$totalSwapsLength ongoing swaps',
@@ -161,7 +161,7 @@ class MigrateToV5HiveToSqliteToUsecase {
         oldMainnetWatchOnlyWallets,
       );
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.info,
           message: 'SUCCESS: Migration completed',
           logger: 'MigrateToV5HiveToSqliteUsecase',
@@ -185,7 +185,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       return true;
     } catch (e) {
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.error,
           message: 'Migration failed',
           logger: 'MigrateToV5HiveToSqliteUsecase',
@@ -233,7 +233,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       return seeds;
     } catch (e) {
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.error,
           message: 'Errored during seed migration',
           logger: 'MigrateToV5HiveToSqliteUsecase',
@@ -327,7 +327,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       return recovered;
     } catch (e) {
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.error,
           message: 'Errored during default wallet migration',
           logger: 'MigrateToV5HiveToSqliteUsecase',
@@ -399,7 +399,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       return recovered;
     } catch (e) {
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.error,
           message: 'Errored during external wallet migration',
           logger: 'MigrateToV5HiveToSqliteUsecase',
@@ -454,7 +454,7 @@ class MigrateToV5HiveToSqliteToUsecase {
             count++;
           } catch (e) {
             await _addLogUsecase.execute(
-              NewLog(
+              NewLogEntity(
                 level: LogLevel.error,
                 message: 'Failed to create watch only wallet',
                 logger: 'MigrateToV5HiveToSqliteUsecase',
@@ -469,7 +469,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       return count;
     } catch (e) {
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.error,
           message: 'Errored during watch-only wallet migration',
           logger: 'MigrateToV5HiveToSqliteUsecase',
@@ -611,7 +611,7 @@ class MigrateToV5HiveToSqliteToUsecase {
       return count;
     } catch (e) {
       await _addLogUsecase.execute(
-        NewLog(
+        NewLogEntity(
           level: LogLevel.error,
           message: 'Errored during ongoing swap migration',
           logger: 'MigrateToV5HiveToSqliteUsecase',

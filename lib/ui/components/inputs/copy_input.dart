@@ -6,16 +6,23 @@ import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 
 class CopyInput extends StatelessWidget {
-  const CopyInput({super.key, required this.text, this.clipboardText});
+  const CopyInput({
+    super.key,
+    required this.text,
+    this.clipboardText,
+    this.maxLines,
+    this.overflow,
+  });
 
   final String text;
   // In case it should be different from the shown text
   final String? clipboardText;
+  final int? maxLines;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 48,
       decoration: BoxDecoration(
         color: context.colour.onPrimary,
         borderRadius: BorderRadius.circular(8),
@@ -27,12 +34,13 @@ class CopyInput extends StatelessWidget {
           Expanded(
             child:
                 text.isEmpty
-                    ? const LoadingLineContent(width: double.infinity)
+                    ? const LoadingLineContent()
                     : BBText(
                       text,
                       style: context.font.bodyLarge,
                       color: context.colour.secondary,
-                      maxLines: 1,
+                      maxLines: maxLines,
+                      overflow: overflow,
                     ),
           ),
           // Only show the copy button if there is something to copy

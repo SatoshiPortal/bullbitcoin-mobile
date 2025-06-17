@@ -17,6 +17,17 @@ enum SwapType {
   bitcoinToLiquid,
 }
 
+extension SwapTypeX on SwapType {
+  bool get isReverse =>
+      this == SwapType.lightningToBitcoin || this == SwapType.lightningToLiquid;
+
+  bool get isSubmarine =>
+      this == SwapType.bitcoinToLightning || this == SwapType.liquidToLightning;
+
+  bool get isChain =>
+      this == SwapType.bitcoinToLiquid || this == SwapType.liquidToBitcoin;
+}
+
 enum SwapStatus {
   pending,
   paid,
@@ -28,7 +39,21 @@ enum SwapStatus {
   failed;
 
   String get displayName {
-    return name.substring(0, 1).toUpperCase() + name.substring(1);
+    switch (this) {
+      case SwapStatus.pending:
+        return 'Pending';
+      case SwapStatus.paid:
+      case SwapStatus.claimable:
+      case SwapStatus.refundable:
+      case SwapStatus.canCoop:
+        return 'In Progress';
+      case SwapStatus.completed:
+        return 'Completed';
+      case SwapStatus.expired:
+        return 'Expired';
+      case SwapStatus.failed:
+        return 'Failed';
+    }
   }
 }
 
@@ -132,18 +157,20 @@ sealed class Swap with _$Swap {
   bool get isLnSendSwap => this is LnSendSwap;
   bool get isChainSwap => this is ChainSwap;
 
-  int get amountSat => switch (this) {
-    LnReceiveSwap(:final invoice) =>
-      (Bolt11PaymentRequest(invoice).amount *
-              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
-          .toBigInt()
-          .toInt(),
-    LnSendSwap(:final invoice) =>
-      (Bolt11PaymentRequest(invoice).amount *
-              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
-          .toBigInt()
-          .toInt(),
-    ChainSwap(:final paymentAmount) => paymentAmount,
+  bool get requiresAction => switch (this) {
+    LnReceiveSwap(:final status) => status == SwapStatus.claimable,
+    LnSendSwap(:final status) =>
+      status == SwapStatus.canCoop ||
+          status == SwapStatus.failed ||
+          status == SwapStatus.refundable,
+    ChainSwap(:final status) =>
+      status == SwapStatus.claimable || status == SwapStatus.refundable,
+  };
+
+  String? get txId => switch (this) {
+    LnReceiveSwap(:final receiveTxid) => receiveTxid,
+    LnSendSwap(:final sendTxid) => sendTxid,
+    ChainSwap(:final sendTxid) => sendTxid,
   };
 
   String get abbreviatedReceiveTxid => switch (this) {
@@ -189,6 +216,66 @@ sealed class Swap with _$Swap {
     LnSendSwap(:final fees) => fees,
     ChainSwap(:final fees) => fees,
   };
+
+  int get amountSat => switch (this) {
+    LnReceiveSwap(:final invoice) =>
+      (Bolt11PaymentRequest(invoice).amount *
+              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
+          .toBigInt()
+          .toInt(),
+    LnSendSwap(:final invoice) =>
+      (Bolt11PaymentRequest(invoice).amount *
+              Decimal.fromBigInt(ConversionConstants.satsAmountOfOneBitcoin))
+          .toBigInt()
+          .toInt(),
+    ChainSwap(:final paymentAmount) => paymentAmount,
+  };
+
+  String? get sendTxId => switch (this) {
+    LnReceiveSwap() => null,
+    LnSendSwap(:final sendTxid) => sendTxid,
+    ChainSwap(:final sendTxid) => sendTxid,
+  };
+
+  String? get receiveTxId => switch (this) {
+    LnReceiveSwap(:final receiveTxid) => receiveTxid,
+    LnSendSwap() => null,
+    ChainSwap(:final receiveTxid) => receiveTxid,
+  };
+
+  String get walletId => switch (this) {
+    LnReceiveSwap(:final receiveWalletId) => receiveWalletId,
+    LnSendSwap(:final sendWalletId) => sendWalletId,
+    ChainSwap(:final sendWalletId) => sendWalletId,
+  };
+
+  bool get swapInProgress =>
+      status == SwapStatus.paid ||
+      status == SwapStatus.canCoop ||
+      status == SwapStatus.claimable ||
+      status == SwapStatus.refundable;
+
+  bool get swapRefunded =>
+      status == SwapStatus.completed &&
+      ((this is ChainSwap && (this as ChainSwap).refundTxid != null) ||
+          (this is LnSendSwap && (this as LnSendSwap).refundTxid != null));
+
+  bool get isChainSwapInternal =>
+      this is ChainSwap && (this as ChainSwap).receiveWalletId != null;
+
+  bool get isChainSwapExternal =>
+      this is ChainSwap && (this as ChainSwap).receiveWalletId == null;
+
+  String get swapAction =>
+      status == SwapStatus.claimable
+          ? 'Claim'
+          : status == SwapStatus.canCoop
+          ? 'Close'
+          : status == SwapStatus.refundable
+          ? 'Refund'
+          : '';
+
+  bool get swapCompleted => status == SwapStatus.completed;
 }
 
 extension SwapFeePercent on Swap {

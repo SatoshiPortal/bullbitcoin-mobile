@@ -1,5 +1,7 @@
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
+import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -11,35 +13,61 @@ import 'package:timeago/timeago.dart' as timeago;
 class TxListItem extends StatelessWidget {
   const TxListItem({super.key, required this.tx});
 
-  final WalletTransaction tx;
+  final Transaction tx;
 
   @override
   Widget build(BuildContext context) {
-    // final isSwap = tx.isSwap;
     final isLnSwap = tx.isLnSwap;
     final isChainSwap = tx.isChainSwap;
+    final isOrderType = tx.isOrder && tx.order != null;
     final icon =
-        isChainSwap
+        isOrderType
+            ? Icons.payments
+            : isChainSwap
             ? Icons.swap_vert_rounded
-            : tx.direction == WalletTransactionDirection.outgoing
+            : tx.isOutgoing
             ? Icons.arrow_upward
             : Icons.arrow_downward;
     final walletColor =
-        tx is BitcoinWalletTransaction
+        isOrderType
+            ? context.colour.secondaryFixedDim
+            : tx.isBitcoin
             ? context.colour.onTertiary
             : context.colour.tertiary;
     final networkLabel =
-        isLnSwap
+        isOrderType
+            ? tx.order!.orderType.value
+            : isLnSwap
             ? 'Lightning'
-            : tx is BitcoinWalletTransaction
+            : isChainSwap
+            ? tx.swap!.type == SwapType.liquidToBitcoin
+                ? 'L-BTC -> BTC'
+                : 'BTC -> L-BTC'
+            : tx.isBitcoin
             ? 'Bitcoin'
             : 'Liquid';
-    final label = tx.labels.isNotEmpty ? tx.labels.first : null;
-    final date =
-        tx.confirmationTime != null
-            ? timeago.format(tx.confirmationTime!)
+    final label =
+        tx.walletTransaction != null && tx.walletTransaction!.labels.isNotEmpty
+            ? tx.walletTransaction!.labels.first
             : null;
-
+    final date =
+        tx.isSwap
+            ? (tx.swap?.completionTime != null
+                ? timeago.format(tx.swap!.completionTime!)
+                : null)
+            : isOrderType
+            ? (tx.order?.completedAt != null
+                ? timeago.format(tx.order!.completedAt!)
+                : null)
+            : (tx.isBitcoin || tx.isLiquid)
+            ? (tx.timestamp != null ? timeago.format(tx.timestamp!) : null)
+            : null;
+    final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
+    final showOrderInFiat =
+        isOrderType &&
+        (tx.order is FiatPaymentOrder ||
+            tx.order is BalanceAdjustmentOrder ||
+            tx.order is WithdrawOrder);
     return InkWell(
       onTap: () {
         context.pushNamed(TransactionsRoute.transactionDetails.name, extra: tx);
@@ -69,10 +97,21 @@ class TxListItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   CurrencyText(
-                    tx.amountSat,
+                    isOrderType && !showOrderInFiat
+                        ? orderAmountAndCurrency!.$1.toInt()
+                        : tx.amountSat,
                     showFiat: false,
                     style: context.font.bodyLarge,
+                    fiatAmount:
+                        isOrderType && showOrderInFiat
+                            ? orderAmountAndCurrency!.$1.toDouble()
+                            : null,
+                    fiatCurrency:
+                        isOrderType && showOrderInFiat
+                            ? orderAmountAndCurrency!.$2
+                            : null,
                   ),
+
                   if (label != null)
                     BBText(
                       label,

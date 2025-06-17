@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -13,7 +14,7 @@ class SenderBroadcastPayjoinOriginalTxButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final isBroadcastingPayjoinOriginalTx = context.select(
       (TransactionDetailsCubit bloc) =>
-          bloc.state.isBroadcastingPayjoinOriginalTx ?? false,
+          bloc.state.isBroadcastingPayjoinOriginalTx,
     );
     return Column(
       children: [
@@ -32,7 +33,7 @@ class SenderBroadcastPayjoinOriginalTxButton extends StatelessWidget {
                   : Icons.send,
           disabled: isBroadcastingPayjoinOriginalTx,
           onPressed: () {
-            debugPrint('Send without payjoin');
+            log.info('Send without payjoin');
             context
                 .read<TransactionDetailsCubit>()
                 .broadcastPayjoinOriginalTx();

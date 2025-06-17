@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 import 'package:flutter/foundation.dart';
 
@@ -6,7 +7,7 @@ class TransactionParsing {
     String psbt, {
     required bool isTestnet,
   }) async {
-    debugPrint('Extracting inputs from psbt: $psbt');
+    log.info('Extracting inputs from psbt: $psbt');
     final tx = await bdk.PartiallySignedTransaction.fromString(psbt);
     final inputs = tx.extractTx().input();
     final usedUtxos = inputs.map(
@@ -16,7 +17,7 @@ class TransactionParsing {
       ),
     );
 
-    debugPrint("Extracted utxo's: $usedUtxos");
+    log.info("Extracted utxo's: $usedUtxos");
 
     return usedUtxos.toList();
   }

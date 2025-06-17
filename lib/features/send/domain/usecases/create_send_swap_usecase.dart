@@ -17,10 +17,10 @@ class CreateSendSwapUsecase {
     required SwapRepository swapRepository,
     required SwapRepository swapRepositoryTestnet,
     required SeedRepository seedRepository,
-  })  : _walletRepository = walletRepository,
-        _swapRepository = swapRepository,
-        _swapRepositoryTestnet = swapRepositoryTestnet,
-        _seedRepository = seedRepository;
+  }) : _walletRepository = walletRepository,
+       _swapRepository = swapRepository,
+       _swapRepositoryTestnet = swapRepositoryTestnet,
+       _seedRepository = seedRepository;
 
   Future<LnSendSwap> execute({
     required String walletId,
@@ -36,12 +36,18 @@ class CreateSendSwapUsecase {
       if (amountSat == null && lnAddress != null) {
         throw Exception('Amount must be provided if lnAddress is used');
       }
-      final finalInvoice = invoice ??
+      final finalInvoice =
+          invoice?.toLowerCase() ??
           await invoiceFromLnAddress(
             lnAddress: lnAddress!,
             amountSat: amountSat!,
           );
       final wallet = await _walletRepository.getWallet(walletId);
+
+      if (wallet == null) {
+        throw Exception('Wallet not found');
+      }
+
       final swapRepository =
           wallet.network.isTestnet ? _swapRepositoryTestnet : _swapRepository;
 
@@ -64,13 +70,15 @@ class CreateSendSwapUsecase {
         );
       }
 
-      final btcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.bbElectrumTestUrl
-          : ApiServiceConstants.bbElectrumUrl;
+      final btcElectrumUrl =
+          wallet.network.isTestnet
+              ? ApiServiceConstants.bbElectrumTestUrl
+              : ApiServiceConstants.bbElectrumUrl;
 
-      final lbtcElectrumUrl = wallet.network.isTestnet
-          ? ApiServiceConstants.publicElectrumTestUrl
-          : ApiServiceConstants.bbLiquidElectrumUrlPath;
+      final lbtcElectrumUrl =
+          wallet.network.isTestnet
+              ? ApiServiceConstants.publicElectrumTestUrl
+              : ApiServiceConstants.bbLiquidElectrumUrlPath;
 
       switch (type) {
         case SwapType.bitcoinToLightning:
@@ -98,4 +106,5 @@ class CreateSendSwapUsecase {
     }
   }
 }
+
 // _$BoltzErrorImpl (BoltzError(kind: HTTP, message: "a swap with this invoice exists already"))

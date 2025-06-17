@@ -9,10 +9,11 @@ class SettingsConstants {
   //  table in sqlite and not be defined here as constants anymore.
   static const autoSyncIntervalSeconds = 5;
   static const logFileName = 'bb_mobile.log';
+  static const sessionLogFileName = 'bull_session_log.tsv';
 }
 
 class ConversionConstants {
-  static final satsAmountOfOneBitcoin = BigInt.from(100000000);
+  static final satsAmountOfOneBitcoin = BigInt.from(100_000_000);
   static final maxBitcoinAmount = BigInt.from(21_000_000); // 21 million BTC
   static final maxSatsAmount = maxBitcoinAmount * satsAmountOfOneBitcoin;
 }
@@ -32,6 +33,13 @@ class HiveBoxNameConstants {
   static const labelsByRef = 'labelsByRef';
 }
 
+class AssetConstants {
+  static const lbtcMainnet =
+      '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
+  static const lbtcTestnet =
+      '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49';
+}
+
 class PayjoinConstants {
   static const List<String> ohttpRelayUrls = [
     'https://ohttp.achow101.com',
@@ -48,12 +56,10 @@ class ApiServiceConstants {
   static const publicMempoolUrlPath = 'mempool.space';
 
   // Liquid mempool
+  static const bbLiquidMempoolUrlPath = 'liquid.bullbitcoin.com';
+  static const bbLiquidMempoolTestnetUrlPath = 'liquid.bullbitcoin.com/testnet';
   static const publicLiquidMempoolUrl = 'https://liquid.network';
   static const publicLiquidMempoolTestnetUrl = 'https://liquid.network/testnet';
-
-  // BullBitcoin Exchange
-  static const bbExchangeUrlPath = 'api.bullbitcoin.com/price';
-  // final bbExchangeUrlPath = 'pricer.bullbitcoin.dev/api';
 
   // Bitcoin Electrum servers
   static const bbElectrumUrl = 'ssl://wes.bullbitcoin.com:50002';
@@ -73,13 +79,15 @@ class ApiServiceConstants {
   static const boltzTestnetUrlPath = 'api.testnet.boltz.exchange/v2';
 
   // BullBitcoin API
-
   static final bullBitcoinKeyServerApiUrlPath =
       dotenv.env['KEY_SERVER'] ??
       'http://o7rwmpnfkzdcay2gotla6sbrviu27wcgck7nsjrq77nqhtwbjvwcraad.onion';
-
-  static String bbAuthUrl =
-      '${dotenv.env['BB_AUTH_URL']}/en/registration?${dotenv.env['APIKEY_QUERY_PARAM']}';
+  static String bbApiUrl =
+      dotenv.env['BB_API_URL'] ?? 'https://api.bullbitcoin.com';
+  static String bbApiTestUrl =
+      dotenv.env['BB_API_TEST_URL'] ?? 'https://api05.bullbitcoin.com';
+  static String bbAuthUrl = 'https://${dotenv.env['BB_AUTH_URL']}';
+  static String bbAuthTestUrl = 'https://${dotenv.env['BB_AUTH_TEST_URL']}';
 }
 
 class LocatorInstanceNameConstants {

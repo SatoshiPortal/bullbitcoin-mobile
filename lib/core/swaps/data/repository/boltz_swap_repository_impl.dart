@@ -502,35 +502,38 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   @override
   Future<List<Swap>> getOngoingSwaps() async {
     final allSwapModels = await _boltz.storage.fetchAll();
-    // final swapObject = await _boltz.storage.fetchBtcLnSwap(swapId);
 
-    // debugPrint('allSwapModels: ${allSwapModels.first.toEntity()}');
     final allSwaps =
         allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
     return allSwaps
         .where(
           (swap) =>
-              swap.status == SwapStatus.pending ||
-              swap.status == SwapStatus.paid ||
-              swap.status == SwapStatus.claimable ||
-              swap.status == SwapStatus.refundable ||
-              swap.status == SwapStatus.canCoop,
+              swap.status != SwapStatus.completed &&
+              swap.status != SwapStatus.failed &&
+              swap.status != SwapStatus.expired,
         )
         .toList();
   }
 
   @override
-  Future<List<Swap>> getAllSwaps() async {
-    final allSwapModels = await _boltz.storage.fetchAll();
+  Future<List<Swap>> getAllSwaps({String? walletId}) async {
+    final allSwapModels = await _boltz.storage.fetchAll(walletId: walletId);
     final allSwaps =
         allSwapModels.map((swapModel) => swapModel.toEntity()).toList();
     return allSwaps;
   }
 
   @override
-  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees({
-    required SwapType type,
-  }) async {
+  Future<Swap?> getSwapByTxId(String txId) async {
+    final swapModel = await _boltz.storage.fetchByTxId(txId);
+    if (swapModel == null) {
+      return null; // No swap found for the given txId
+    }
+    return swapModel.toEntity();
+  }
+
+  @override
+  Future<(SwapLimits, SwapFees)> getSwapLimitsAndFees(SwapType type) async {
     switch (type) {
       case SwapType.lightningToBitcoin:
         final (min, max) = await _boltz.getBtcReverseSwapLimits();
@@ -560,6 +563,11 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
+  Future<void> updateSwapLimitsAndFees(SwapType type) async {
+    await _boltz.updateFees(swapType: type);
+  }
+
+  @override
   Future<Invoice> decodeInvoice({required String invoice}) async {
     // TODO: implement decodeInvoice
     final (sats, expired, bip21) = await _boltz.decodeInvoice(invoice);
@@ -576,7 +584,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         continue;
       }
       if (swap is LnSendSwap &&
-          swap.invoice == invoice &&
+          swap.invoice.toLowerCase() == invoice.toLowerCase() &&
           (swap.status == SwapStatus.pending)) {
         return swap;
       }

@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider.dart';
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_provider_type.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
 import 'package:bb_mobile/locator.dart';
@@ -45,7 +46,7 @@ class _ScreenState extends State<_Screen> {
       case BackupProviderType.custom:
         context.read<OnboardingBloc>().add(const SelectFileSystemRecovery());
       case BackupProviderType.iCloud:
-        debugPrint('iCloud, not supported yet');
+        log.info('iCloud, not supported yet');
     }
   }
 

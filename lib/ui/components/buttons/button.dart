@@ -60,9 +60,10 @@ class BBButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = BorderRadius.circular(size == _ButtonSize.large ? 2 : 2);
 
-    final image = iconData != null
-        ? Icon(iconData, size: 20, color: textColor)
-        : icon != null
+    final image =
+        iconData != null
+            ? Icon(iconData, size: 20, color: textColor)
+            : icon != null
             ? Image.asset(icon!, width: 20, height: 20, color: textColor)
             : const SizedBox.shrink();
 
@@ -72,14 +73,15 @@ class BBButton extends StatelessWidget {
       child: IgnorePointer(
         ignoring: disabled,
         child: InkWell(
-          onTap: () => onPressed(),
+          onTap: () => disabled ? null : onPressed(),
           borderRadius: radius,
           child: Container(
             height: height ?? 52,
             width: width ?? (size == _ButtonSize.large ? null : 160),
-            padding: height != null
-                ? null
-                : const EdgeInsets.symmetric(vertical: 12),
+            padding:
+                height != null
+                    ? null
+                    : const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
               color: !outlined ? bgColor : Colors.transparent,
               border: outlined ? Border.all(color: textColor) : null,

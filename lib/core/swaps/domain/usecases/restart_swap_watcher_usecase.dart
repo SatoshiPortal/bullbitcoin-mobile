@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
-import 'package:flutter/foundation.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class RestartSwapWatcherUsecase {
   final SwapWatcherService? _swapWatcherService;
@@ -13,9 +13,9 @@ class RestartSwapWatcherUsecase {
       try {
         await _swapWatcherService.restartWatcherWithOngoingSwaps();
       } catch (e) {
-        debugPrint('Error restarting swap watcher: $e');
+        log.severe('Error restarting swap watcher: $e');
       }
     }
-    debugPrint('Restarted swap watcher');
+    log.info('Restarted swap watcher');
   }
 }

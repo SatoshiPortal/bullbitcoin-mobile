@@ -2,12 +2,12 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/receive/presentation/bloc/receive_bloc.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_amount_screen.dart';
-import 'package:bb_mobile/features/receive/ui/screens/receive_details_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_payjoin_in_progress_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_payment_in_progress_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_payment_received_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_qr_screen.dart';
 import 'package:bb_mobile/features/receive/ui/screens/receive_scaffold.dart';
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/router.dart';
 import 'package:flutter/material.dart';
@@ -15,15 +15,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum ReceiveRoute {
-  receiveBitcoin('/receive-bitcoin'),
-  receiveLightning('/receive-lightning'),
-  receiveLiquid('/receive-liquid'),
-  amount('amount'),
-  qr('qr'),
-  payjoinInProgress('payjoin-in-progress'),
-  paymentInProgress('payment-in-progress'),
-  paymentReceived('payment-received'),
-  details('details');
+  receiveBitcoin('/receive/bitcoin'),
+  receiveLightning('/receive/lightning'),
+  receiveLiquid('/receive/liquid'),
+  bitcoinAmount('amount'),
+  lightningAmount('amount'),
+  liquidAmount('amount'),
+  lightningQr('qr'),
+  payjoinInProgress('payjoin'),
+  lightningPaymentInProgress('in-progress'),
+  lightningPaymentReceived('received');
 
   final String path;
 
@@ -59,7 +60,6 @@ class ReceiveRouter {
                 listener: (context, state) {
                   final bloc = context.read<ReceiveBloc>();
                   final type = state.type;
-                  final location = GoRouter.of(context).state.matchedLocation;
 
                   // For a Payjoin or Lightning receive, show the payment in progress screen
                   //  when the payjoin is requested or swap is claimable.
@@ -68,13 +68,13 @@ class ReceiveRouter {
                   //  in the context. We need to pass it as an extra parameter.
                   if (type == ReceiveType.bitcoin &&
                       state.payjoin?.status == PayjoinStatus.requested) {
-                    context.go(
-                      '$location/${ReceiveRoute.payjoinInProgress.path}',
+                    context.goNamed(
+                      ReceiveRoute.payjoinInProgress.name,
                       extra: bloc,
                     );
                   } else if (type == ReceiveType.lightning) {
-                    context.go(
-                      '$location/${ReceiveRoute.paymentInProgress.path}',
+                    context.goNamed(
+                      ReceiveRoute.lightningPaymentInProgress.path,
                       extra: bloc,
                     );
                   }
@@ -87,20 +87,24 @@ class ReceiveRouter {
                         current.isPaymentReceived == true,
                 listener: (context, state) {
                   final bloc = context.read<ReceiveBloc>();
-                  final matched = GoRouter.of(context).state.matchedLocation;
                   final type = state.type;
 
-                  final path = switch (type) {
-                    ReceiveType.lightning =>
-                      matched
-                              .split('/')
-                              .contains(ReceiveRoute.paymentInProgress.path)
-                          ? '$matched/${ReceiveRoute.paymentReceived.path}'
-                          : '$matched/${ReceiveRoute.paymentInProgress.path}/${ReceiveRoute.paymentReceived.path}',
-                    _ => '$matched/${ReceiveRoute.details.path}',
-                  };
-
-                  context.go(path, extra: bloc);
+                  if (type == ReceiveType.lightning) {
+                    // For a Lightning receive, show the payment received screen
+                    //  when the payment is received.
+                    context.goNamed(
+                      ReceiveRoute.lightningPaymentReceived.name,
+                      extra: bloc,
+                    );
+                    return;
+                  } else {
+                    // For Bitcoin or Liquid, show the transaction details screen
+                    // when the payment is received.
+                    context.goNamed(
+                      TransactionsRoute.transactionDetails.name,
+                      extra: bloc.state.transaction,
+                    );
+                  }
                 },
               ),
             ],
@@ -112,6 +116,7 @@ class ReceiveRouter {
     routes: [
       // Bitcoin Receive
       GoRoute(
+        name: ReceiveRoute.receiveBitcoin.name,
         path: ReceiveRoute.receiveBitcoin.path,
         pageBuilder: (context, state) {
           // This is the entry route for the bitcoin receive flow when coming from
@@ -127,12 +132,14 @@ class ReceiveRouter {
         },
         routes: [
           GoRoute(
-            path: ReceiveRoute.amount.path,
+            name: ReceiveRoute.bitcoinAmount.name,
+            path: ReceiveRoute.bitcoinAmount.path,
             pageBuilder:
                 (context, state) =>
                     const NoTransitionPage(child: ReceiveAmountScreen()),
           ),
           GoRoute(
+            name: ReceiveRoute.payjoinInProgress.name,
             path: ReceiveRoute.payjoinInProgress.path,
             parentNavigatorKey: AppRouter.rootNavigatorKey,
             builder: (context, state) {
@@ -143,37 +150,12 @@ class ReceiveRouter {
                 child: const ReceivePayjoinInProgressScreen(),
               );
             },
-            routes: [
-              GoRoute(
-                path: ReceiveRoute.details.path,
-                parentNavigatorKey: AppRouter.rootNavigatorKey,
-                builder: (context, state) {
-                  final bloc = state.extra! as ReceiveBloc;
-
-                  return BlocProvider.value(
-                    value: bloc,
-                    child: const ReceiveDetailsScreen(),
-                  );
-                },
-              ),
-            ],
-          ),
-          GoRoute(
-            path: ReceiveRoute.details.path,
-            parentNavigatorKey: AppRouter.rootNavigatorKey,
-            builder: (context, state) {
-              final bloc = state.extra! as ReceiveBloc;
-
-              return BlocProvider.value(
-                value: bloc,
-                child: const ReceiveDetailsScreen(),
-              );
-            },
           ),
         ],
       ),
       // Lightning receive
       GoRoute(
+        name: ReceiveRoute.receiveLightning.name,
         path: ReceiveRoute.receiveLightning.path,
         pageBuilder: (context, state) {
           // This is the entry route for the lightning receive flow.
@@ -187,8 +169,8 @@ class ReceiveRouter {
           return NoTransitionPage(
             child: ReceiveAmountScreen(
               onContinueNavigation:
-                  () => context.push(
-                    '${state.matchedLocation}/${ReceiveRoute.qr.path}',
+                  () => context.pushNamed(
+                    ReceiveRoute.lightningQr.name,
                     extra: state.extra,
                   ),
             ),
@@ -196,7 +178,8 @@ class ReceiveRouter {
         },
         routes: [
           GoRoute(
-            path: ReceiveRoute.qr.path,
+            name: ReceiveRoute.lightningQr.name,
+            path: ReceiveRoute.lightningQr.path,
             pageBuilder: (context, state) {
               final wallet =
                   state.extra is Wallet ? state.extra! as Wallet : null;
@@ -204,13 +187,15 @@ class ReceiveRouter {
             },
             routes: [
               GoRoute(
-                path: ReceiveRoute.amount.path,
+                name: ReceiveRoute.lightningAmount.name,
+                path: ReceiveRoute.lightningAmount.path,
                 pageBuilder:
                     (context, state) =>
                         const NoTransitionPage(child: ReceiveAmountScreen()),
               ),
               GoRoute(
-                path: ReceiveRoute.paymentInProgress.path,
+                name: ReceiveRoute.lightningPaymentInProgress.name,
+                path: ReceiveRoute.lightningPaymentInProgress.path,
                 parentNavigatorKey: AppRouter.rootNavigatorKey,
                 builder: (context, state) {
                   final bloc = state.extra! as ReceiveBloc;
@@ -220,34 +205,19 @@ class ReceiveRouter {
                     child: const ReceivePaymentInProgressScreen(),
                   );
                 },
-                routes: [
-                  GoRoute(
-                    path: ReceiveRoute.paymentReceived.path,
-                    parentNavigatorKey: AppRouter.rootNavigatorKey,
-                    builder: (context, state) {
-                      final bloc = state.extra! as ReceiveBloc;
+              ),
+              GoRoute(
+                name: ReceiveRoute.lightningPaymentReceived.name,
+                path: ReceiveRoute.lightningPaymentReceived.path,
+                parentNavigatorKey: AppRouter.rootNavigatorKey,
+                builder: (context, state) {
+                  final bloc = state.extra! as ReceiveBloc;
 
-                      return BlocProvider.value(
-                        value: bloc,
-                        child: const ReceivePaymentReceivedScreen(),
-                      );
-                    },
-                    routes: [
-                      GoRoute(
-                        path: ReceiveRoute.details.path,
-                        parentNavigatorKey: AppRouter.rootNavigatorKey,
-                        builder: (context, state) {
-                          final bloc = state.extra! as ReceiveBloc;
-
-                          return BlocProvider.value(
-                            value: bloc,
-                            child: const ReceiveDetailsScreen(),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+                  return BlocProvider.value(
+                    value: bloc,
+                    child: const ReceivePaymentReceivedScreen(),
+                  );
+                },
               ),
             ],
           ),
@@ -255,6 +225,7 @@ class ReceiveRouter {
       ),
       // Liquid receive
       GoRoute(
+        name: ReceiveRoute.receiveLiquid.name,
         path: ReceiveRoute.receiveLiquid.path,
         pageBuilder: (context, state) {
           // This is the entry route for the liquid receive flow when coming from
@@ -271,22 +242,11 @@ class ReceiveRouter {
         },
         routes: [
           GoRoute(
-            path: ReceiveRoute.amount.path,
+            name: ReceiveRoute.liquidAmount.name,
+            path: ReceiveRoute.liquidAmount.path,
             pageBuilder:
                 (context, state) =>
                     const NoTransitionPage(child: ReceiveAmountScreen()),
-          ),
-          GoRoute(
-            path: ReceiveRoute.details.path,
-            parentNavigatorKey: AppRouter.rootNavigatorKey,
-            builder: (context, state) {
-              final bloc = state.extra! as ReceiveBloc;
-
-              return BlocProvider.value(
-                value: bloc,
-                child: const ReceiveDetailsScreen(),
-              );
-            },
           ),
         ],
       ),

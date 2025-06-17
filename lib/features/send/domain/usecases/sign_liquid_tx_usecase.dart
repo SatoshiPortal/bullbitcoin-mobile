@@ -7,12 +7,12 @@ class SignLiquidTxUsecase {
     : _liquidWalletRepository = liquidWalletRepository;
 
   Future<String> execute({
-    required String psbt,
+    required String pset,
     required String walletId,
   }) async {
     try {
       final signedPset = await _liquidWalletRepository.signPset(
-        pset: psbt,
+        pset: pset,
         walletId: walletId,
       );
 

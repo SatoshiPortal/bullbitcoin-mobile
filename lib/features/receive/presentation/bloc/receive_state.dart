@@ -20,6 +20,7 @@ abstract class ReceiveState with _$ReceiveState {
     WalletAddress? liquidAddress,
     @Default('') String note,
     PayjoinReceiver? payjoin,
+    ReceivePayjoinException? receivePayjoinException,
     @Default(false) bool isAddressOnly,
     WalletTransaction? tx,
     Object? error,
@@ -126,6 +127,10 @@ abstract class ReceiveState with _$ReceiveState {
           queryParameters: {
             if (confirmedAmountBtc > 0) 'amount': confirmedAmountBtc.toString(),
             if (note.isNotEmpty) 'message': note,
+            'assetid':
+                wallet != null && wallet!.network == Network.liquidMainnet
+                    ? AssetConstants.lbtcMainnet
+                    : AssetConstants.lbtcTestnet,
           },
         );
         return bip21Uri.toString();
@@ -224,7 +229,7 @@ abstract class ReceiveState with _$ReceiveState {
           !wallet!.isWatchOnly &&
           !isAddressOnly &&
           payjoin == null &&
-          error is! ReceivePayjoinException;
+          receivePayjoinException == null;
     }
     return false;
   }
@@ -283,6 +288,9 @@ abstract class ReceiveState with _$ReceiveState {
     _ => tx?.txId ?? '',
   };
   String get abbreviatedTxId => StringFormatting.truncateMiddle(txId);
+
+  Transaction get transaction =>
+      Transaction(walletTransaction: tx, swap: lightningSwap, payjoin: payjoin);
 }
 
 @freezed

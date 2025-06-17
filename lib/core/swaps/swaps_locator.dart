@@ -1,5 +1,5 @@
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
-import 'package:bb_mobile/core/logging/domain/repositories/log_repository.dart';
+import 'package:bb_mobile/core/logging/data/log_repository.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -15,6 +15,8 @@ import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.d
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
@@ -147,6 +149,21 @@ class SwapsLocator {
       ),
     );
 
+    locator.registerFactory<GetSwapsUsecase>(
+      () => GetSwapsUsecase(
+        mainnetSwapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        testnetSwapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
+        ),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
+    );
+
     locator.registerFactory<WatchSwapUsecase>(
       () => WatchSwapUsecase(
         watcherService: locator<SwapWatcherService>(
@@ -195,6 +212,14 @@ class SwapsLocator {
           instanceName:
               LocatorInstanceNameConstants
                   .boltzTestnetSwapRepositoryInstanceName,
+        ),
+      ),
+    );
+    locator.registerFactory<ProcessSwapUsecase>(
+      () => ProcessSwapUsecase(
+        watcherService: locator<SwapWatcherService>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
         ),
       ),
     );

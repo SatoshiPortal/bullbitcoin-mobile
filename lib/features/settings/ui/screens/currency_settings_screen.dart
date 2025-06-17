@@ -56,51 +56,62 @@ class CurrencySettingsScreen extends StatelessWidget {
       ),
       backgroundColor: theme.colorScheme.secondaryFixed,
       body: SafeArea(
-        child: Center(
-          child: Column(
-            children: [
-              ListTile(
-                title: BBText(
-                  context.loc.satsBitcoinUnitSettingsLabel,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.outlineVariant,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Center(
+            child: Column(
+              children: [
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                ),
-                trailing: const SatsBitcoinUnitSwitch(),
-              ),
-              ListTile(
-                title: BBText(
-                  'Default fiat currency',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.outlineVariant,
+                  tileColor: Colors.transparent,
+                  title: BBText(
+                    context.loc.satsBitcoinUnitSettingsLabel,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.outlineVariant,
+                    ),
                   ),
+                  trailing: const SatsBitcoinUnitSwitch(),
                 ),
-                onTap:
-                    currency == null ||
-                            availableCurrencies == null ||
-                            availableCurrencies.isEmpty
-                        ? null
-                        : () async {
-                          final selectedCurrency =
-                              await openCurrencyBottomSheet(
-                                context: context,
-                                availableCurrencies: availableCurrencies,
-                                selected: currency,
-                              );
-                          // If the user selected a different currency, update it
-                          // in the settings.
-                          if (selectedCurrency != null &&
-                              selectedCurrency != currency) {
-                            if (context.mounted) {
-                              await context
-                                  .read<SettingsCubit>()
-                                  .changeCurrency(selectedCurrency);
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
+                  title: BBText(
+                    'Default fiat currency',
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.outlineVariant,
+                    ),
+                  ),
+                  onTap:
+                      currency == null ||
+                              availableCurrencies == null ||
+                              availableCurrencies.isEmpty
+                          ? null
+                          : () async {
+                            final selectedCurrency =
+                                await openCurrencyBottomSheet(
+                                  context: context,
+                                  availableCurrencies: availableCurrencies,
+                                  selected: currency,
+                                );
+                            // If the user selected a different currency, update it
+                            // in the settings.
+                            if (selectedCurrency != null &&
+                                selectedCurrency != currency) {
+                              if (context.mounted) {
+                                await context
+                                    .read<SettingsCubit>()
+                                    .changeCurrency(selectedCurrency);
+                              }
                             }
-                          }
-                        },
-                trailing: const Icon(Icons.keyboard_arrow_down),
-              ),
-            ],
+                          },
+                  trailing: const Icon(Icons.keyboard_arrow_down),
+                ),
+              ],
+            ),
           ),
         ),
       ),

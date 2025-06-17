@@ -1,7 +1,8 @@
-import 'package:bb_mobile/core/logging/domain/entities/log.dart';
-import 'package:bb_mobile/core/logging/domain/usecases/add_log_usecase.dart';
+import 'package:bb_mobile/core/logging/domain/add_log_usecase.dart';
+import 'package:bb_mobile/core/logging/domain/log_entity.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
@@ -25,6 +26,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetHideAmountsUsecase setHideAmountsUsecase,
     required SetIsSuperuserUsecase setIsSuperuserUsecase,
     required AddLogUsecase addLogUsecase,
+    required GetOldSeedsUsecase getOldSeedsUsecase,
   }) : _setEnvironmentUsecase = setEnvironmentUsecase,
        _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
        _getSettingsUsecase = getSettingsUsecase,
@@ -33,6 +35,7 @@ class SettingsCubit extends Cubit<SettingsState> {
        _setHideAmountsUsecase = setHideAmountsUsecase,
        _setIsSuperuserUsecase = setIsSuperuserUsecase,
        _addLogUsecase = addLogUsecase,
+       _getOldSeedsUsecase = getOldSeedsUsecase,
        super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -43,6 +46,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetHideAmountsUsecase _setHideAmountsUsecase;
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
   final AddLogUsecase _addLogUsecase;
+  final GetOldSeedsUsecase _getOldSeedsUsecase;
 
   Future<void> init() async {
     final (storedSettings, appInfo) =
@@ -52,13 +56,14 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
     );
+    await checkHasLegacySeeds();
   }
 
   Future<void> toggleTestnetMode(bool active) async {
     final settings = state.storedSettings;
     // Log the action
     await _addLogUsecase.execute(
-      NewLog(
+      NewLogEntity(
         level: LogLevel.info,
         message: 'Testnet mode toggled: $active',
         logger: 'SettingsCubit',
@@ -78,7 +83,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     final settings = state.storedSettings;
     // Log the action
     await _addLogUsecase.execute(
-      NewLog(
+      NewLogEntity(
         level: LogLevel.info,
         message: 'Bitcoin unit toggled: $active',
         logger: 'SettingsCubit',
@@ -94,7 +99,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     final settings = state.storedSettings;
     // Log the action
     await _addLogUsecase.execute(
-      NewLog(
+      NewLogEntity(
         level: LogLevel.info,
         message: 'Language changed to: ${language.name}',
         logger: 'SettingsCubit',
@@ -111,7 +116,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     final settings = state.storedSettings;
     // Log the action
     await _addLogUsecase.execute(
-      NewLog(
+      NewLogEntity(
         level: LogLevel.info,
         message: 'Currency changed to: $currencyCode',
         logger: 'SettingsCubit',
@@ -130,7 +135,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     final settings = state.storedSettings;
     // Log the action
     await _addLogUsecase.execute(
-      NewLog(
+      NewLogEntity(
         level: LogLevel.info,
         message: 'Hide amounts toggled: $hide',
         logger: 'SettingsCubit',
@@ -145,7 +150,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     final settings = state.storedSettings;
     // Log the action
     await _addLogUsecase.execute(
-      NewLog(
+      NewLogEntity(
         level: LogLevel.info,
         message: 'Superuser mode toggled: $active',
         logger: 'SettingsCubit',
@@ -156,5 +161,10 @@ class SettingsCubit extends Cubit<SettingsState> {
     emit(
       state.copyWith(storedSettings: settings?.copyWith(isSuperuser: active)),
     );
+  }
+
+  Future<void> checkHasLegacySeeds() async {
+    final seeds = await _getOldSeedsUsecase.execute();
+    emit(state.copyWith(hasLegacySeeds: seeds.isNotEmpty));
   }
 }
