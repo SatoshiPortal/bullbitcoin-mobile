@@ -15,7 +15,6 @@ import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/loading/status_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'
     show
         BlocListener,
@@ -23,7 +22,7 @@ import 'package:flutter_bloc/flutter_bloc.dart'
         MultiBlocListener,
         MultiBlocProvider,
         ReadContext,
-        WatchContext;
+        SelectContext;
 import 'package:go_router/go_router.dart';
 
 class KeyServerFlow extends StatefulWidget {
@@ -75,42 +74,61 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
           ],
           child: Builder(
             builder: (context) {
-              final keyState = context.watch<KeyServerCubit>().state;
-              final onBoardingState = context.watch<OnboardingBloc>().state;
-              final testState = context.watch<TestWalletBackupBloc>().state;
+              final keyStatus = context.select(
+                (KeyServerCubit c) => c.state.status,
+              );
+              final keyFlow = context.select(
+                (KeyServerCubit c) => c.state.currentFlow,
+              );
+              final onboardingStatus = context.select(
+                (OnboardingBloc b) => b.state.onboardingStepStatus,
+              );
+              final onboardingError = context.select(
+                (OnboardingBloc b) => b.state.statusError,
+              );
+              final testStatus = context.select(
+                (TestWalletBackupBloc b) => b.state.status,
+              );
 
-              if (_isLoading(keyState, onBoardingState, testState) ||
-                  _hasError(keyState, onBoardingState, testState)) {
+              if (_isLoading(keyStatus, onboardingStatus, testStatus) ||
+                  _hasError(keyStatus, onboardingError, testStatus)) {
                 return StatusScreen(
-                  isLoading: _isLoading(keyState, onBoardingState, testState),
-                  hasError: _hasError(keyState, onBoardingState, testState),
-                  title: _getTitle(keyState, onBoardingState, testState),
+                  isLoading: _isLoading(
+                    keyStatus,
+                    onboardingStatus,
+                    testStatus,
+                  ),
+                  hasError: _hasError(keyStatus, onboardingError, testStatus),
+                  title: _getTitle(
+                    _hasError(keyStatus, onboardingError, testStatus),
+                  ),
                   description: _getMessage(
-                    keyState,
-                    onBoardingState,
-                    testState,
+                    _isLoading(keyStatus, onboardingStatus, testStatus),
                   ),
                   errorMessage: _getErrorMessage(
-                    keyState,
-                    onBoardingState,
-                    testState,
+                    keyStatus,
+                    onboardingError,
+                    testStatus,
                   ),
                   onTap:
-                      _hasError(keyState, onBoardingState, testState)
+                      _hasError(keyStatus, onboardingError, testStatus)
                           ? () => _handleError(context)
                           : null,
                 );
               }
 
-              switch (keyState.currentFlow) {
+              switch (keyFlow) {
                 case CurrentKeyServerFlow.enter:
                   return const EnterScreen();
                 case CurrentKeyServerFlow.confirm:
                   return const ConfirmScreen();
                 case CurrentKeyServerFlow.recovery:
-                  return RecoverWithSecretScreen(
-                    fromOnboarding: widget.fromOnboarding,
-                  );
+                  return onboardingStatus == OnboardingStepStatus.success ||
+                          testStatus == TestWalletBackupStatus.success
+                      ? const Scaffold()
+                      : RecoverWithSecretScreen(
+                        fromOnboarding: widget.fromOnboarding,
+                      );
                 case CurrentKeyServerFlow.delete:
                   return const EnterScreen();
                 case CurrentKeyServerFlow.recoveryWithBackupKey:
@@ -126,61 +144,53 @@ class _KeyServerFlowState extends State<KeyServerFlow> {
   }
 
   bool _isLoading(
-    KeyServerState k,
-    OnboardingState o,
-    TestWalletBackupState t,
+    KeyServerOperationStatus keyStatus,
+    OnboardingStepStatus onboardingStatus,
+    TestWalletBackupStatus testStatus,
   ) =>
-      k.status == const KeyServerOperationStatus.loading() ||
-      o.onboardingStepStatus == OnboardingStepStatus.loading ||
-      t.status == TestWalletBackupStatus.loading;
+      keyStatus == const KeyServerOperationStatus.loading() ||
+      onboardingStatus == OnboardingStepStatus.loading ||
+      testStatus == TestWalletBackupStatus.loading;
 
   bool _hasError(
-    KeyServerState k,
-    OnboardingState o,
-    TestWalletBackupState t,
+    KeyServerOperationStatus keyStatus,
+    String onboardingError,
+    TestWalletBackupStatus testStatus,
   ) =>
-      switch (k.status) {
+      switch (keyStatus) {
         KeyServerFailure _ => true,
         _ => false,
       } ||
-      o.statusError.isNotEmpty ||
-      t.status == TestWalletBackupStatus.error;
+      onboardingError.isNotEmpty ||
+      testStatus == TestWalletBackupStatus.error;
 
-  String? _getTitle(
-    KeyServerState k,
-    OnboardingState o,
-    TestWalletBackupState t,
-  ) {
-    if (_hasError(k, o, t)) return 'Oops! Something went wrong';
+  String? _getTitle(bool hasError) {
+    if (hasError) return 'Oops! Something went wrong';
     return null;
   }
 
-  String? _getMessage(
-    KeyServerState k,
-    OnboardingState o,
-    TestWalletBackupState t,
-  ) {
-    if (_isLoading(k, o, t)) {
+  String? _getMessage(bool isLoading) {
+    if (isLoading) {
       return 'Connecting to Key Server over Tor.\nThis can take upto a minute.';
     }
     return null;
   }
 
   String? _getErrorMessage(
-    KeyServerState k,
-    OnboardingState o,
-    TestWalletBackupState t,
+    KeyServerOperationStatus keyStatus,
+    String onboardingError,
+    TestWalletBackupStatus testStatus,
   ) {
-    if (!_hasError(k, o, t)) return null;
+    if (!_hasError(keyStatus, onboardingError, testStatus)) return null;
 
-    return switch (k.status) {
+    return switch (keyStatus) {
       KeyServerFailure(:final message) => message,
       _ =>
-        o.statusError.isNotEmpty
-            ? o.statusError
-            : t.statusError.isNotEmpty
-            ? t.statusError
-            : 'An error occurred',
+        onboardingError.isNotEmpty
+            ? onboardingError
+            : testStatus == TestWalletBackupStatus.error
+            ? 'An error occurred'
+            : null,
     };
   }
 
