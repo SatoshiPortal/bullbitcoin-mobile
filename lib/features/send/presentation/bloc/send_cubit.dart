@@ -285,7 +285,7 @@ class SendCubit extends Cubit<SendState> {
       final sendType = SendType.from(state.paymentRequest!);
 
       emit(state.copyWith(selectedWallet: wallet, sendType: sendType));
-
+      // TODO: why load swap limits if we are not creating a swap?
       await loadSwapLimits();
       final swapType =
           wallet.isLiquid
@@ -310,6 +310,13 @@ class SendCubit extends Cubit<SendState> {
         emit(
           state.copyWith(confirmedAmountSat: state.paymentRequest!.amountSat),
         );
+        await handleChainSwap();
+        if (state.swapAmountAboveLimit ||
+            state.swapAmountBelowLimit ||
+            state.swapCreationException != null) {
+          return;
+        }
+
         await createTransaction();
         emit(
           state.copyWith(
@@ -407,69 +414,12 @@ class SendCubit extends Cubit<SendState> {
         if (state.paymentRequest!.amountSat == null) {
           emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
         } else {
-          final isChainSwap =
-              (state.sendType == SendType.liquid &&
-                  !state.selectedWallet!.isLiquid) ||
-              state.sendType == SendType.bitcoin &&
-                  state.selectedWallet!.isLiquid;
-          if (isChainSwap) {
-            try {
-              final swapType =
-                  state.selectedWallet!.isLiquid
-                      ? SwapType.liquidToBitcoin
-                      : SwapType.bitcoinToLiquid;
-              toggleSwapLimitsForWallet();
-              if (state.swapAmountBelowLimit) {
-                emit(
-                  state.copyWith(
-                    swapLimitsException: SwapLimitsException(
-                      'Amount below minimum swap limit: ${state.selectedSwapLimits!.min} sats',
-                    ),
-                    amountConfirmedClicked: false,
-                  ),
-                );
-                return;
-              }
-              if (state.swapAmountAboveLimit) {
-                emit(
-                  state.copyWith(
-                    swapLimitsException: SwapLimitsException(
-                      'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
-                    ),
-                    amountConfirmedClicked: false,
-                  ),
-                );
-                return;
-              }
-              emit(state.copyWith(creatingSwap: true));
-
-              final swap = await _createChainSwapToExternalUsecase.execute(
-                sendWalletId: state.selectedWallet!.id,
-                receiveAddress: state.paymentRequestAddress,
-                type: swapType,
-                amountSat: state.paymentRequest!.amountSat,
-              );
-              _watchSendSwap(swap.id);
-
-              emit(state.copyWith(chainSwap: swap, creatingSwap: false));
-            } catch (e) {
-              emit(
-                state.copyWith(
-                  creatingSwap: false,
-                  swapCreationException: SwapCreationException(e.toString()),
-                  loadingBestWallet: false,
-                ),
-              );
-              return;
-            }
+          await handleChainSwap();
+          if (state.swapAmountAboveLimit ||
+              state.swapAmountBelowLimit ||
+              state.swapCreationException != null) {
+            return;
           }
-          emit(
-            state.copyWith(
-              confirmedAmountSat: state.paymentRequest!.amountSat,
-              step: SendStep.confirm,
-              loadingBestWallet: false,
-            ),
-          );
           await createTransaction();
         }
         return;
@@ -500,6 +450,72 @@ class SendCubit extends Cubit<SendState> {
         );
       }
     }
+  }
+
+  Future<void> handleChainSwap() async {
+    final isChainSwap =
+        (state.sendType == SendType.liquid &&
+            !state.selectedWallet!.isLiquid) ||
+        state.sendType == SendType.bitcoin && state.selectedWallet!.isLiquid ||
+        state.isChainSwap;
+    if (isChainSwap) {
+      try {
+        final swapType =
+            state.selectedWallet!.isLiquid
+                ? SwapType.liquidToBitcoin
+                : SwapType.bitcoinToLiquid;
+        toggleSwapLimitsForWallet();
+        if (state.swapAmountBelowLimit) {
+          emit(
+            state.copyWith(
+              swapLimitsException: SwapLimitsException(
+                'Amount below minimum swap limit: ${state.selectedSwapLimits!.min} sats',
+              ),
+              amountConfirmedClicked: false,
+            ),
+          );
+          return;
+        }
+        if (state.swapAmountAboveLimit) {
+          emit(
+            state.copyWith(
+              swapLimitsException: SwapLimitsException(
+                'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
+              ),
+              amountConfirmedClicked: false,
+            ),
+          );
+          return;
+        }
+        emit(state.copyWith(creatingSwap: true));
+
+        final swap = await _createChainSwapToExternalUsecase.execute(
+          sendWalletId: state.selectedWallet!.id,
+          receiveAddress: state.paymentRequestAddress,
+          type: swapType,
+          amountSat: state.paymentRequest!.amountSat,
+        );
+        _watchSendSwap(swap.id);
+
+        emit(state.copyWith(chainSwap: swap, creatingSwap: false));
+      } catch (e) {
+        emit(
+          state.copyWith(
+            creatingSwap: false,
+            swapCreationException: SwapCreationException(e.toString()),
+            loadingBestWallet: false,
+          ),
+        );
+        return;
+      }
+    }
+    emit(
+      state.copyWith(
+        confirmedAmountSat: state.paymentRequest!.amountSat,
+        step: SendStep.confirm,
+        loadingBestWallet: false,
+      ),
+    );
   }
 
   Future<void> loadSwapLimits() async {
@@ -856,69 +872,19 @@ class SendCubit extends Cubit<SendState> {
       }
       return;
     }
-    final isChainSwap =
-        (state.sendType == SendType.liquid &&
-            !state.selectedWallet!.isLiquid) ||
-        state.sendType == SendType.bitcoin && state.selectedWallet!.isLiquid;
-    if (isChainSwap) {
-      try {
-        final swapType =
-            state.selectedWallet!.isLiquid
-                ? SwapType.liquidToBitcoin
-                : SwapType.bitcoinToLiquid;
-        toggleSwapLimitsForWallet();
-        if (state.swapAmountBelowLimit) {
-          emit(
-            state.copyWith(
-              swapLimitsException: SwapLimitsException(
-                'Amount below minimum swap limit: ${state.selectedSwapLimits!.min} sats',
-              ),
-              amountConfirmedClicked: false,
-            ),
-          );
-          return;
-        }
-        if (state.swapAmountAboveLimit) {
-          emit(
-            state.copyWith(
-              swapLimitsException: SwapLimitsException(
-                'Amount above maximum swap limit: ${state.selectedSwapLimits!.max} sats',
-              ),
-              amountConfirmedClicked: false,
-            ),
-          );
-          return;
-        }
-        emit(state.copyWith(creatingSwap: true));
 
-        final swap = await _createChainSwapToExternalUsecase.execute(
-          sendWalletId: state.selectedWallet!.id,
-          receiveAddress: state.paymentRequestAddress,
-          type: swapType,
-          amountSat: state.inputAmountSat,
-        );
-        _watchSendSwap(swap.id);
-
-        emit(
-          state.copyWith(
-            amountConfirmedClicked: false,
-            step: SendStep.confirm,
-            chainSwap: swap,
-            creatingSwap: false,
-          ),
-        );
-        await createTransaction();
-        // updateSwapLockupFees();
-      } catch (e) {
-        emit(
-          state.copyWith(
-            creatingSwap: false,
-            swapCreationException: SwapCreationException(e.toString()),
-            amountConfirmedClicked: false,
-          ),
-        );
+    if (state.isChainSwap) {
+      await handleChainSwap();
+      if (state.swapAmountAboveLimit ||
+          state.swapAmountBelowLimit ||
+          state.swapCreationException != null) {
+        return;
       }
-    } else if (state.sendType == SendType.bitcoin ||
+      await createTransaction();
+      return;
+    }
+    // updateSwapLockupFees();
+    else if (state.sendType == SendType.bitcoin ||
         state.sendType == SendType.liquid) {
       await createTransaction();
     }
