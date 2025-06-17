@@ -25,7 +25,7 @@ class Logger {
 
       if (record.stackTrace != null) content.add(record.stackTrace.toString());
 
-      final tsvLine = content.join('\t');
+      final tsvLine = _sanitizeContent(content).join('\t');
 
       // We don't want to keep the info session in memory, they should be written to file
       if (record.level != dep.Level.INFO) session.add(tsvLine);
@@ -62,6 +62,16 @@ class Logger {
 
   Future<void> appendToFile(String message) async {
     await File(path).writeAsString('$message\n', mode: FileMode.append);
+  }
+
+  List<String> _sanitizeContent(List<String> content) {
+    final colors = RegExp(r'\x1B\[[0-9;]*[a-zA-Z]'); // ascii colors
+    final tabNewLine = RegExp(r'[\t\n]'); // no tabs or newlines
+    final sanitizedContent =
+        content
+            .map((e) => e.replaceAll(tabNewLine, ' ').replaceAll(colors, ''))
+            .toList();
+    return sanitizedContent;
   }
 
   void info(Object? message, {Object? error, StackTrace? trace}) {
