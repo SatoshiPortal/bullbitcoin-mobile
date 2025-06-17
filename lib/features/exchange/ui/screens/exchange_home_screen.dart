@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
+import 'package:bb_mobile/features/exchange/ui/exchange_router.dart';
 import 'package:bb_mobile/features/exchange/ui/widgets/exchange_home_top_section.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/fund_exchange_router.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
@@ -17,6 +18,7 @@ class ExchangeHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = context.theme;
     final isFetchingUserSummary = context.select(
       (ExchangeCubit cubit) => cubit.state.isFetchingUserSummary,
     );
@@ -44,6 +46,42 @@ class ExchangeHomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Column(
                       children: [
+                        const Gap(12),
+                        ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 16,
+                          ),
+                          tileColor: context.colour.secondary,
+                          leading: const Icon(
+                            Icons.person_outline_outlined,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                          title: Text(
+                            'Complete your KYC',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: context.colour.onPrimary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'To remove transaction limits',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: context.colour.surface,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          titleAlignment: ListTileTitleAlignment.center,
+                          onTap: () {
+                            context.pushNamed(ExchangeRoute.exchangeKyc.name);
+                          },
+                          trailing: const Icon(
+                            Icons.arrow_forward,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
                         const Gap(12),
                         /*
                         SwitchListTile(

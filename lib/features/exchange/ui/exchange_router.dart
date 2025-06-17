@@ -2,12 +2,14 @@ import 'package:bb_mobile/features/exchange/presentation/exchange_cubit.dart';
 import 'package:bb_mobile/features/exchange/presentation/exchange_state.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_auth_screen.dart';
 import 'package:bb_mobile/features/exchange/ui/screens/exchange_home_screen.dart';
+import 'package:bb_mobile/features/exchange/ui/screens/exchange_kyc_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum ExchangeRoute {
   exchangeHome('/exchange'),
-  exchangeAuth('/exchange/auth');
+  exchangeAuth('/exchange/auth'),
+  exchangeKyc('kyc');
 
   final String path;
 
@@ -43,6 +45,15 @@ class ExchangeRouter {
           ),
         );
       },
+      routes: [
+        GoRoute(
+          name: ExchangeRoute.exchangeKyc.name,
+          path: ExchangeRoute.exchangeKyc.path,
+          builder: (context, state) {
+            return const ExchangeKycScreen();
+          },
+        ),
+      ],
     ),
     GoRoute(
       name: ExchangeRoute.exchangeAuth.name,
