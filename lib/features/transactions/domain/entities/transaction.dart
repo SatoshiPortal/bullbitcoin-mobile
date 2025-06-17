@@ -52,8 +52,10 @@ sealed class Transaction with _$Transaction {
         SwapType.lightningToBitcoin,
       ].contains(swap?.type) ||
       swap != null &&
-          swap?.type == SwapType.liquidToBitcoin &&
-          swap?.isChainSwapInternal == true;
+          (swap?.type == SwapType.liquidToBitcoin &&
+                  swap?.isChainSwapInternal == true ||
+              swap?.type == SwapType.bitcoinToLiquid &&
+                  swap?.isChainSwapInternal == false);
   bool get isLiquid =>
       walletTransaction != null
           ? walletTransaction!.isLiquid
