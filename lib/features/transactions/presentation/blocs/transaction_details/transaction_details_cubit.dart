@@ -249,11 +249,14 @@ class TransactionDetailsCubit extends Cubit<TransactionDetailsState> {
               state.copyWith(
                 transaction: state.transaction.copyWith(
                   walletTransaction: walletTransaction,
-                  // If the tx has a payjoin, but the original tx was broadcasted,
+                  // If the tx has a payjoin, but the original tx was confirmed,
                   // instead of the payjoin transaction, we set the payjoin to null
                   // as a normal transaction was broadcasted then.
                   payjoin:
-                      payjoin != null && payjoin.originalTxId == txId
+                      payjoin != null &&
+                              payjoin.originalTxId == txId &&
+                              walletTransaction.status ==
+                                  WalletTransactionStatus.confirmed
                           ? null
                           : payjoin,
                 ),
