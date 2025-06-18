@@ -136,13 +136,13 @@ class _SaveButton extends StatelessWidget {
     final bloc = context.read<ElectrumSettingsBloc>();
 
     if (state.isCustomServerSelected) {
-      if (context.mounted) {
-        context.pop();
-      }
       // Show privacy notice and handle everything within the dialog callback
       PrivacyNoticeBottomSheet.show(context).then((result) {
         if (result == true) {
           bloc.add(const SaveElectrumServerChanges());
+          if (context.mounted) {
+            context.pop();
+          }
         }
       });
     } else {

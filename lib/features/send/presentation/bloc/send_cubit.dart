@@ -488,16 +488,23 @@ class SendCubit extends Cubit<SendState> {
           return;
         }
         emit(state.copyWith(creatingSwap: true));
-
+        final amountSat =
+            state.paymentRequest!.amountSat ?? state.inputAmountSat;
         final swap = await _createChainSwapToExternalUsecase.execute(
           sendWalletId: state.selectedWallet!.id,
           receiveAddress: state.paymentRequestAddress,
           type: swapType,
-          amountSat: state.paymentRequest!.amountSat,
+          amountSat: amountSat,
         );
         _watchSendSwap(swap.id);
 
-        emit(state.copyWith(chainSwap: swap, creatingSwap: false));
+        emit(
+          state.copyWith(
+            chainSwap: swap,
+            creatingSwap: false,
+            confirmedAmountSat: swap.paymentAmount,
+          ),
+        );
       } catch (e) {
         emit(
           state.copyWith(
@@ -881,13 +888,9 @@ class SendCubit extends Cubit<SendState> {
         return;
       }
       await createTransaction();
-      return;
     }
     // updateSwapLockupFees();
-    else if (state.sendType == SendType.bitcoin ||
-        state.sendType == SendType.liquid) {
-      await createTransaction();
-    }
+
     if (state.sendType == SendType.liquid ||
         state.sendType == SendType.bitcoin) {
       await createTransaction();

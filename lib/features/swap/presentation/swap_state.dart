@@ -115,12 +115,12 @@ abstract class SwapState with _$SwapState {
 
   int get estimatedBtcToLbtcSwapFees {
     if (btcToLbtcSwapLimitsAndFees == null) return 0;
-    return btcToLbtcSwapLimitsAndFees!.$2.totalFees(fromAmountSat) ?? 0;
+    return btcToLbtcSwapLimitsAndFees!.$2.totalFees(fromAmountSat);
   }
 
   int get estimatedLbtcToBtcSwapFees {
     if (lbtcToBtcSwapLimitsAndFees == null) return 0;
-    return lbtcToBtcSwapLimitsAndFees!.$2.totalFees(fromAmountSat) ?? 0;
+    return lbtcToBtcSwapLimitsAndFees!.$2.totalFees(fromAmountSat);
   }
 
   List<({String id, String label})> get fromWalletDropdownItems {
