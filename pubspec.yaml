@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 5.1.0+54
+version: 5.1.1+55
 
 environment:
   sdk: ">=3.7.0 <4.0.0"
