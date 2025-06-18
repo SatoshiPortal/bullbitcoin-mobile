@@ -48,7 +48,7 @@ class _FullScreenScannerState extends State<FullScreenScanner> {
     );
     _controller = CameraController(
       backCamera,
-      ResolutionPreset.high,
+      Platform.isIOS ? ResolutionPreset.medium : ResolutionPreset.high,
       fps: 30,
       enableAudio: false,
       imageFormatGroup:
