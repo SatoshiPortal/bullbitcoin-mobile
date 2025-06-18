@@ -26,7 +26,7 @@ class CreateChainSwapToExternalUsecase {
     required String receiveAddress,
     required SwapType type,
     bool drain = false,
-    int? amountSat,
+    required int amountSat,
   }) async {
     try {
       final sendWallet = await _walletRepository.getWallet(sendWalletId);
@@ -62,7 +62,7 @@ class CreateChainSwapToExternalUsecase {
           return await swapRepository.createBitcoinToLiquidSwap(
             sendWalletMnemonic: sendWalletMnemonic.mnemonicWords.join(' '),
             sendWalletId: sendWalletId,
-            amountSat: amountSat!,
+            amountSat: amountSat,
             isTestnet: isTestnet,
             btcElectrumUrl: btcElectrumUrl,
             lbtcElectrumUrl: lbtcElectrumUrl,
@@ -77,7 +77,7 @@ class CreateChainSwapToExternalUsecase {
           return await swapRepository.createLiquidToBitcoinSwap(
             sendWalletMnemonic: sendWalletMnemonic.mnemonicWords.join(' '),
             sendWalletId: sendWalletId,
-            amountSat: amountSat!,
+            amountSat: amountSat,
             isTestnet: isTestnet,
             btcElectrumUrl: btcElectrumUrl,
             lbtcElectrumUrl: lbtcElectrumUrl,

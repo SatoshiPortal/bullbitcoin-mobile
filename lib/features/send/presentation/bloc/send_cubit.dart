@@ -493,7 +493,7 @@ class SendCubit extends Cubit<SendState> {
           sendWalletId: state.selectedWallet!.id,
           receiveAddress: state.paymentRequestAddress,
           type: swapType,
-          amountSat: state.paymentRequest!.amountSat,
+          amountSat: state.paymentRequest!.amountSat ?? state.inputAmountSat,
         );
         _watchSendSwap(swap.id);
 
