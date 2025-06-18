@@ -6,7 +6,6 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/mempool_url.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -753,10 +752,7 @@ class TransactionDetailsTable extends StatelessWidget {
             displayValue:
                 payjoin.isCompleted ||
                         (payjoin.status == PayjoinStatus.proposed &&
-                            [
-                              WalletTransactionStatus.pending,
-                              WalletTransactionStatus.confirmed,
-                            ].contains(walletTransaction?.status))
+                            walletTransaction != null)
                     ? 'Completed'
                     : payjoin.isExpired
                     ? 'Expired'
