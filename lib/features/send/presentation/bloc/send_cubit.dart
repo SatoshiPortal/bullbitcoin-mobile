@@ -1041,8 +1041,15 @@ class SendCubit extends Cubit<SendState> {
           final maxAmount =
               state.bitcoinUnit == BitcoinUnit.btc
                   ? ConvertAmount.satsToBtc(maxAmountSat)
-                  : ConvertAmount.satsToFiat(maxAmountSat, state.exchangeRate);
-          emit(state.copyWith(amount: maxAmount.toString()));
+                  : state.isInputAmountFiat
+                  ? ConvertAmount.satsToFiat(maxAmountSat, state.exchangeRate)
+                  : maxAmountSat;
+          emit(
+            state.copyWith(
+              amount: maxAmount.toString(),
+              confirmedAmountSat: state.inputAmountSat,
+            ),
+          );
         }
       } else {
         final unsignedPsbtAndTxSize = await _prepareBitcoinSendUsecase.execute(
@@ -1086,8 +1093,15 @@ class SendCubit extends Cubit<SendState> {
           final maxAmount =
               state.bitcoinUnit == BitcoinUnit.btc
                   ? ConvertAmount.satsToBtc(maxAmountSat)
-                  : ConvertAmount.satsToFiat(maxAmountSat, state.exchangeRate);
-          emit(state.copyWith(amount: maxAmount.toString()));
+                  : state.isInputAmountFiat
+                  ? ConvertAmount.satsToFiat(maxAmountSat, state.exchangeRate)
+                  : maxAmountSat;
+          emit(
+            state.copyWith(
+              amount: maxAmount.toString(),
+              confirmedAmountSat: state.inputAmountSat,
+            ),
+          );
         }
       }
     } catch (e) {
