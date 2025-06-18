@@ -14,9 +14,9 @@ class ScanService {
     try {
       // Handle iOS and Android differently
       if (Platform.isIOS) {
-        return _decodeIOS(bytes, width, height);
+        return _decodeBgra888(bytes, width, height);
       } else {
-        return _decodeAndroid(bytes, width, height);
+        return _decodeYuv420(bytes, width, height);
       }
     } catch (e) {
       rethrow;
@@ -26,7 +26,7 @@ class ScanService {
   }
 
   // Decode for iOS - handles BGRA format
-  static String _decodeIOS(List<int> bytes, int width, int height) {
+  static String _decodeBgra888(List<int> bytes, int width, int height) {
     // Convert BGRA values to Int32List for QR processing
     final rgbBytes = Int32List(width * height);
 
@@ -61,7 +61,7 @@ class ScanService {
   }
 
   // Decode for Android - handles YUV format
-  static String _decodeAndroid(List<int> bytes, int width, int height) {
+  static String _decodeYuv420(List<int> bytes, int width, int height) {
     // Convert Y values to Int32List (grayscale, ARGB format)
     final rgbBytes = Int32List(width * height);
 
