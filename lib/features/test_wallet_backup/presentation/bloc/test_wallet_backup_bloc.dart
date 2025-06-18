@@ -314,15 +314,15 @@ class TestWalletBackupBloc
         (w) => w.isDefault,
         orElse: () => wallets.first,
       );
-      emit(
-        state.copyWith(
-          wallets: wallets,
-          selectedWallet: selected,
-          status: TestWalletBackupStatus.success,
-        ),
-      );
-      // Automatically load mnemonic for default wallet
-      add(LoadMnemonicForWallet(walletId: selected.id));
+      emit(state.copyWith(wallets: wallets, selectedWallet: selected));
+
+      // Delay mnemonic loading to ensure smooth UI transition
+      // The 300ms delay allows the loading indicator to show long enough
+      // for users to perceive a smooth transition, even though the actual
+      // mnemonic loading takes ~1000ms
+      Future.delayed(const Duration(milliseconds: 300), () {
+        add(LoadMnemonicForWallet(wallet: selected));
+      });
     } catch (e) {
       emit(
         state.copyWith(
@@ -339,13 +339,15 @@ class TestWalletBackupBloc
   ) async {
     try {
       emit(state.copyWith(status: TestWalletBackupStatus.loading));
-      final wallet = state.wallets.firstWhere((w) => w.id == event.walletId);
+
+      final wallet = event.wallet;
       final (
         mnemonicWords,
         passphrase,
       ) = await _getMnemonicFromFingerprintUsecase.execute(
         wallet.masterFingerprint,
       );
+
       emit(
         state.copyWith(
           selectedWallet: wallet,

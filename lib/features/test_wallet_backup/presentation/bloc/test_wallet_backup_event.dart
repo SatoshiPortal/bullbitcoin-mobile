@@ -47,6 +47,6 @@ class LoadWallets extends TestWalletBackupEvent {
 }
 
 class LoadMnemonicForWallet extends TestWalletBackupEvent {
-  const LoadMnemonicForWallet({required this.walletId});
-  final String walletId;
+  const LoadMnemonicForWallet({required this.wallet});
+  final Wallet wallet;
 }
