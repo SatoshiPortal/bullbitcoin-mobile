@@ -120,7 +120,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(isSyncing: true));
 
       final wallets = await _getWalletsUsecase.execute(sync: true);
-
+      // int unconfirmedIncomingBalance = 0;
+      // if (wallets.isNotEmpty) {
+      //   final walletIds = wallets.map((w) => w.id).toList();
+      //   unconfirmedIncomingBalance = await _getUnconfirmedIncomingBalanceUsecase
+      //       .execute(walletIds: walletIds);
+      //   emit(
+      //     state.copyWith(
+      //       unconfirmedIncomingBalance: unconfirmedIncomingBalance,
+      //     ),
+      //   );
+      // }
       emit(
         state.copyWith(
           isSyncing: false,
@@ -151,6 +161,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   ) async {
     // Do nothing for now, since we only want to show the syncing indicator
     // when the user itself refreshes the wallets.
+    final wallets = await _getWalletsUsecase.execute();
+
+    if (wallets.isNotEmpty) {
+      final walletIds = wallets.map((w) => w.id).toList();
+      final unconfirmedIncomingBalance =
+          await _getUnconfirmedIncomingBalanceUsecase.execute(
+            walletIds: walletIds,
+          );
+      emit(
+        state.copyWith(unconfirmedIncomingBalance: unconfirmedIncomingBalance),
+      );
+    }
   }
 
   Future<void> _onWalletSyncFinished(
@@ -159,19 +181,19 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   ) async {
     try {
       final wallets = await _getWalletsUsecase.execute();
-      int unconfirmedIncomingBalance = 0;
       if (wallets.isNotEmpty) {
         final walletIds = wallets.map((w) => w.id).toList();
-        unconfirmedIncomingBalance = await _getUnconfirmedIncomingBalanceUsecase
-            .execute(walletIds: walletIds);
+        final unconfirmedIncomingBalance =
+            await _getUnconfirmedIncomingBalanceUsecase.execute(
+              walletIds: walletIds,
+            );
+        emit(
+          state.copyWith(
+            unconfirmedIncomingBalance: unconfirmedIncomingBalance,
+          ),
+        );
       }
-      emit(
-        state.copyWith(
-          status: WalletStatus.success,
-          wallets: wallets,
-          unconfirmedIncomingBalance: unconfirmedIncomingBalance,
-        ),
-      );
+      emit(state.copyWith(status: WalletStatus.success, wallets: wallets));
     } catch (e) {
       emit(state.copyWith(status: WalletStatus.failure, error: e));
     }

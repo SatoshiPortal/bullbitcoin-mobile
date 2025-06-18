@@ -888,7 +888,6 @@ class SendCubit extends Cubit<SendState> {
         return;
       }
       await createTransaction();
-      return;
     }
     // updateSwapLockupFees();
 
