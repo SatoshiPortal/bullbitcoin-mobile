@@ -68,7 +68,7 @@ abstract class SwapFees with _$SwapFees {
 
   const SwapFees._();
 
-  int? totalFees(int? amount) {
+  int totalFees(int? amount) {
     int total = 0;
     if (boltzFee != null) total += boltzFee!;
     if (boltzFee == null) {
@@ -283,7 +283,7 @@ extension SwapFeePercent on Swap {
     final fees = this.fees;
     final amount = amountSat;
     if (fees == null || amount == 0) return 0.0;
-    final totalFees = fees.totalFees(amount) ?? 0;
+    final totalFees = fees.totalFees(amount);
     return calculatePercentage(amount, totalFees);
   }
 
