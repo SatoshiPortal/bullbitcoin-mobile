@@ -83,17 +83,10 @@ class ScanService {
     final reader = QRCodeReader();
 
     try {
-      // First try with HybridBinarizer
-      final bitmap = BinaryBitmap(HybridBinarizer(source));
-      return reader.decode(bitmap).text;
+      final bitmap2 = BinaryBitmap(GlobalHistogramBinarizer(source));
+      return reader.decode(bitmap2).text;
     } catch (_) {
-      try {
-        // If that fails, try with GlobalHistogramBinarizer
-        final bitmap2 = BinaryBitmap(GlobalHistogramBinarizer(source));
-        return reader.decode(bitmap2).text;
-      } catch (_) {
-        throw Exception('HybridBinarizer and GlobalHistogramBinarizer failed');
-      }
+      throw Exception('GlobalHistogramBinarizer failed');
     }
   }
 }
