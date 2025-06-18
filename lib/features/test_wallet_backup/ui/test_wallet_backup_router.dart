@@ -1,14 +1,10 @@
 import 'package:bb_mobile/core/recoverbull/domain/entity/backup_info.dart';
-import 'package:bb_mobile/features/test_wallet_backup/presentation/bloc/test_wallet_backup_bloc.dart'
-    hide TestPhysicalBackupFlow;
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/backup_test_success.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/choose_encrypted_vault_provider_screen.dart';
 // import 'package:bb_mobile/features/test_wallet_backup/ui/screens/choose_encrypted_vault_provider_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/fetched_backup_info_screen.dart';
 import 'package:bb_mobile/features/test_wallet_backup/ui/screens/test_physical_backup_screen.dart'
     show TestPhysicalBackupFlow;
-import 'package:bb_mobile/locator.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 enum TestWalletBackupSubroute {
@@ -48,11 +44,7 @@ class TestWalletBackupRouter {
     GoRoute(
       path: TestWalletBackupSubroute.testPhysicalBackup.path,
       name: TestWalletBackupSubroute.testPhysicalBackup.name,
-      builder:
-          (context, state) => BlocProvider(
-            create: (_) => locator<TestWalletBackupBloc>(),
-            child: const TestPhysicalBackupFlow(),
-          ),
+      builder: (context, state) => const TestPhysicalBackupFlow(),
     ),
   ];
 }
