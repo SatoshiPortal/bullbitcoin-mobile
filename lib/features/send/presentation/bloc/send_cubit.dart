@@ -884,10 +884,7 @@ class SendCubit extends Cubit<SendState> {
       return;
     }
     // updateSwapLockupFees();
-    else if (state.sendType == SendType.bitcoin ||
-        state.sendType == SendType.liquid) {
-      await createTransaction();
-    }
+
     if (state.sendType == SendType.liquid ||
         state.sendType == SendType.bitcoin) {
       await createTransaction();
