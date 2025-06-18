@@ -301,6 +301,7 @@ class SwapCubit extends Cubit<SwapState> {
         loadingWallets: false,
         fiatCurrencyCodes: currencies,
         fiatCurrencyCode: selectedFiatCurrencyCode,
+
         exchangeRate: exchangeRate,
       ),
     );
