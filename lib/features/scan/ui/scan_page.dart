@@ -3,12 +3,10 @@ import 'dart:io';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_cubit.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_state.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -48,7 +46,7 @@ class _FullScreenScannerState extends State<FullScreenScanner> {
     );
     _controller = CameraController(
       backCamera,
-      Platform.isIOS ? ResolutionPreset.medium : ResolutionPreset.high,
+      ResolutionPreset.high,
       fps: 30,
       enableAudio: false,
       imageFormatGroup:
