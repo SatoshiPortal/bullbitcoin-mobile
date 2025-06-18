@@ -72,9 +72,6 @@ class _FullScreenScannerState extends State<FullScreenScanner> {
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
 
     return BlocProvider(
       create: (_) => ScanCubit(controller: _controller!)..openCamera(),
@@ -117,49 +114,6 @@ class _FullScreenScannerState extends State<FullScreenScanner> {
                             state.data.$1.length > 30
                                 ? '${state.data.$1.substring(0, 10)}…${state.data.$1.substring(state.data.$1.length - 10)}'
                                 : state.data.$1,
-                        bgColor: Colors.transparent,
-                      ),
-                    ),
-                  if (state.isCollectingBbqr && state.bbqrOptions != null)
-                    Positioned(
-                      top: 60,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Column(
-                          children: [
-                            Text(
-                              'BBQR ${state.bbqr.keys.length}/${state.bbqrOptions!.total}',
-                              style: context.font.labelMedium?.copyWith(
-                                color: context.colour.onPrimary,
-                              ),
-                            ),
-                            CircularProgressIndicator(
-                              value:
-                                  state.bbqr.keys.length /
-                                  state.bbqrOptions!.total,
-                              strokeWidth: 6,
-                              backgroundColor: context.colour.onPrimary,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  if (isSuperuser && kDebugMode)
-                    Positioned(
-                      bottom: 150,
-                      right: 0,
-                      left: 0,
-                      child: BBButton.big(
-                        iconData:
-                            state.isCollectingBbqr
-                                ? Icons.check_box
-                                : Icons.disabled_by_default,
-                        textStyle: context.font.labelMedium,
-                        textColor:
-                            state.isCollectingBbqr ? Colors.green : Colors.red,
-                        onPressed: context.read<ScanCubit>().switchBbqr,
-                        label: 'BBQR',
                         bgColor: Colors.transparent,
                       ),
                     ),
