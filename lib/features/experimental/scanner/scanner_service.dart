@@ -12,11 +12,10 @@ class ScannerService {
 
     _isProcessing = true;
     try {
-      // Handle iOS and Android differently
       if (Platform.isIOS) {
-        return _decodeIOS(bytes, width, height);
+        return _decodeBgra888(bytes, width, height);
       } else {
-        return _decodeAndroid(bytes, width, height);
+        return _decodeYuv420(bytes, width, height);
       }
     } catch (e) {
       rethrow;
@@ -26,7 +25,7 @@ class ScannerService {
   }
 
   // Decode for iOS - handles BGRA format
-  static String _decodeIOS(List<int> bytes, int width, int height) {
+  static String _decodeBgra888(List<int> bytes, int width, int height) {
     // Convert BGRA values to Int32List for QR processing
     final rgbBytes = Int32List(width * height);
 
@@ -61,7 +60,7 @@ class ScannerService {
   }
 
   // Decode for Android - handles YUV format
-  static String _decodeAndroid(List<int> bytes, int width, int height) {
+  static String _decodeYuv420(List<int> bytes, int width, int height) {
     // Convert Y values to Int32List (grayscale, ARGB format)
     final rgbBytes = Int32List(width * height);
 
@@ -76,24 +75,15 @@ class ScannerService {
     return _attemptDecode(rgbBytes, width, height);
   }
 
-  // Try both binarizers for better results in different lighting conditions
   static String _attemptDecode(Int32List rgbBytes, int width, int height) {
-    // Create LuminanceSource from Int32List
     final source = RGBLuminanceSource(width, height, rgbBytes);
     final reader = QRCodeReader();
 
     try {
-      // First try with HybridBinarizer
-      final bitmap = BinaryBitmap(HybridBinarizer(source));
-      return reader.decode(bitmap).text;
+      final bitmap2 = BinaryBitmap(GlobalHistogramBinarizer(source));
+      return reader.decode(bitmap2).text;
     } catch (_) {
-      try {
-        // If that fails, try with GlobalHistogramBinarizer
-        final bitmap2 = BinaryBitmap(GlobalHistogramBinarizer(source));
-        return reader.decode(bitmap2).text;
-      } catch (_) {
-        throw Exception('HybridBinarizer and GlobalHistogramBinarizer failed');
-      }
+      throw Exception('GlobalHistogramBinarizer failed');
     }
   }
 }

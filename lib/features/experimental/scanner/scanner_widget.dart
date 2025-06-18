@@ -14,7 +14,7 @@ class ScannerWidget extends StatefulWidget {
     super.key,
     required this.onScanned,
     this.isModal = false,
-    this.resolution = ResolutionPreset.max,
+    this.resolution = ResolutionPreset.high,
     this.enableAudio = false,
   });
 
@@ -56,9 +56,7 @@ class _ScannerState extends State<ScannerWidget> {
     );
 
     await _controller?.initialize();
-
     if (mounted) _startImageStream();
-
     setState(() {});
   }
 
