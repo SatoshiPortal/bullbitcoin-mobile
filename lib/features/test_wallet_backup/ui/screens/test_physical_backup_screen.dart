@@ -36,9 +36,11 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
     return FutureBuilder(
       future: enableScreenPrivacy(),
       builder: (context, snapshot) {
-        return BlocProvider.value(
-          value: locator<TestWalletBackupBloc>()..add(const LoadWallets()),
-          child: BlocListener<TestWalletBackupBloc, TestWalletBackupState>(
+        return BlocProvider(
+          create:
+              (context) =>
+                  locator<TestWalletBackupBloc>()..add(const LoadWallets()),
+          child: BlocConsumer<TestWalletBackupBloc, TestWalletBackupState>(
             listener: (context, state) {
               if (state.status == TestWalletBackupStatus.error) {
               } else if (state.status == TestWalletBackupStatus.success &&
@@ -48,87 +50,68 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                 );
               }
             },
-            child: Builder(
-              builder: (context) {
-                final isVerifying = context.select(
-                  (TestWalletBackupBloc bloc) =>
-                      bloc.state.status == TestWalletBackupStatus.verifying,
-                );
-                final wallets = context.select(
-                  (TestWalletBackupBloc bloc) => bloc.state.wallets,
-                );
-                final selectedWallet = context.select(
-                  (TestWalletBackupBloc bloc) => bloc.state.selectedWallet,
-                );
-                final mnemonicWallets =
-                    wallets
-                        .where((w) => w.source == WalletSource.mnemonic)
-                        .toList();
-                final showDropdown = mnemonicWallets.length > 1;
-                final isLoading = context.select(
-                  (TestWalletBackupBloc bloc) =>
-                      bloc.state.status == TestWalletBackupStatus.loading,
-                );
+            builder: (context, state) {
+              final isVerifying =
+                  state.status == TestWalletBackupStatus.verifying;
 
-                String walletLabel = '';
-                if (selectedWallet != null) {
-                  walletLabel =
-                      selectedWallet.isDefault
-                          ? 'Default Wallets'
-                          : selectedWallet.getLabel() ?? '';
-                }
-                final title = 'Test $walletLabel';
+              final mnemonicWallets =
+                  state.wallets
+                      .where((w) => w.source == WalletSource.mnemonic)
+                      .toList();
 
-                return Scaffold(
-                  backgroundColor: context.colour.onSecondary,
-                  appBar: AppBar(
-                    automaticallyImplyLeading: false,
-                    flexibleSpace: TopBar(
-                      color: context.colour.onSecondary,
-                      onBack: () => context.pop(),
-                      title: title,
-                      actionIcon:
-                          showDropdown ? CupertinoIcons.chevron_down : null,
-                      onAction:
-                          showDropdown
-                              ? () async {
-                                final bloc =
-                                    context.read<TestWalletBackupBloc>();
-                                final selectedId = selectedWallet?.id;
-                                final selectedIndex = mnemonicWallets
-                                    .indexWhere((w) => w.id == selectedId);
+              final title =
+                  'Test ${state.selectedWallet?.isDefault ?? false ? 'Default Wallets' : state.selectedWallet?.getLabel() ?? ''}';
 
-                                final selectedWalletId =
-                                    await _showWalletPicker(
-                                      context: context,
-                                      wallets: mnemonicWallets,
-                                      initialIndex: selectedIndex,
-                                    );
+              return Scaffold(
+                backgroundColor: context.colour.onSecondary,
+                appBar: AppBar(
+                  automaticallyImplyLeading: false,
+                  flexibleSpace: TopBar(
+                    color: context.colour.onSecondary,
+                    onBack: () => context.pop(),
+                    title: title,
+                    actionIcon:
+                        mnemonicWallets.length > 1
+                            ? CupertinoIcons.chevron_down
+                            : null,
+                    onAction:
+                        mnemonicWallets.length > 1
+                            ? () async {
+                              final bloc = context.read<TestWalletBackupBloc>();
+                              final selectedId = state.selectedWallet?.id;
+                              final selectedIndex = mnemonicWallets.indexWhere(
+                                (w) => w.id == selectedId,
+                              );
 
-                                if (selectedWalletId != null && mounted) {
-                                  bloc.add(
-                                    LoadMnemonicForWallet(
-                                      walletId: selectedWalletId,
-                                    ),
-                                  );
-                                }
+                              final selectedWalletId = await _showWalletPicker(
+                                context: context,
+                                wallets: mnemonicWallets,
+                                initialIndex: selectedIndex,
+                              );
+
+                              if (selectedWalletId != null && mounted) {
+                                bloc.add(
+                                  LoadMnemonicForWallet(
+                                    wallet: state.selectedWallet!,
+                                  ),
+                                );
                               }
-                              : null,
-                    ),
+                            }
+                            : null,
                   ),
+                ),
 
-                  body: SafeArea(
-                    top: false,
-                    child:
-                        isLoading
-                            ? const LinearProgressIndicator()
-                            : !isVerifying
-                            ? const TestPhysicalBackupScreen()
-                            : const ShuffledMnemonicScreen(),
-                  ),
-                );
-              },
-            ),
+                body: SafeArea(
+                  top: false,
+                  child:
+                      state.status == TestWalletBackupStatus.loading
+                          ? const LinearProgressIndicator()
+                          : !isVerifying
+                          ? const TestPhysicalBackupScreen()
+                          : const ShuffledMnemonicScreen(),
+                ),
+              );
+            },
           ),
         );
       },
