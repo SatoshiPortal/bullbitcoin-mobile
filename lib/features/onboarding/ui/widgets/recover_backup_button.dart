@@ -10,7 +10,7 @@ class RecoverWalletButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BBButton.big(
-      label: 'Recover Wallet Backup',
+      label: 'Recover Wallet',
       bgColor: Colors.transparent,
       textColor: context.colour.onPrimary,
       iconData: Icons.history_edu,

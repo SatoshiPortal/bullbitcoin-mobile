@@ -14,6 +14,7 @@ import 'package:bb_mobile/core/wallet/data/models/balance_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:rxdart/transformers.dart';
@@ -315,6 +316,23 @@ class WalletRepositoryImpl implements WalletRepository {
         latestEncryptedBackup: latestEncryptedBackup?.millisecondsSinceEpoch,
         latestPhysicalBackup: latestPhysicalBackup?.millisecondsSinceEpoch,
       ),
+    );
+  }
+
+  @override
+  Future<WalletBalances> getWalletBalances({required String walletId}) async {
+    final metadata = await _walletMetadataDatasource.fetch(walletId);
+    if (metadata == null) {
+      throw WalletNotFoundException(walletId);
+    }
+    final balance = await _getBalance(metadata);
+    return WalletBalances(
+      immatureSat: balance.immatureSat.toInt(),
+      trustedPendingSat: balance.trustedPendingSat.toInt(),
+      untrustedPendingSat: balance.untrustedPendingSat.toInt(),
+      confirmedSat: balance.confirmedSat.toInt(),
+      spendableSat: balance.spendableSat.toInt(),
+      totalSat: balance.totalSat.toInt(),
     );
   }
 

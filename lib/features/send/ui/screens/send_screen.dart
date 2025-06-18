@@ -598,12 +598,7 @@ class SendConfirmScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Send',
-          actionIcon: Icons.help_outline,
-          onAction: () {},
-          onBack: () => context.pop(),
-        ),
+        flexibleSpace: TopBar(title: 'Send', onBack: () => context.pop()),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
@@ -1410,11 +1405,7 @@ class SendSendingScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Send',
-          actionIcon: Icons.help_outline,
-          onAction: () {},
-        ),
+        flexibleSpace: const TopBar(title: 'Send'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -1512,8 +1503,7 @@ class SendSucessScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: 'Send',
-          actionIcon: Icons.close,
-          onAction: () => context.goNamed(WalletRoute.walletHome.name),
+          onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
       body: Padding(

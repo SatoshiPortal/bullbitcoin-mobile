@@ -138,11 +138,11 @@ class SwapCubit extends Cubit<SwapState> {
 
       SwapLimits? swapLimits;
 
-      if (state.feesList == null) {
+      if (state.selectedFeeList == null) {
         await loadFees();
       }
 
-      final networkFee = state.feesList!.fastest;
+      final networkFee = state.selectedFeeList!.fastest;
 
       // Create a dummy drain transaction to calculate the absolute fees
       int absoluteFees;
@@ -328,16 +328,30 @@ class SwapCubit extends Cubit<SwapState> {
   }
 
   Future<void> loadFees() async {
-    if (state.fromWallet == null) return;
+    if (state.fromWallet == null && state.toWallet == null) return;
     try {
-      final fees = await _getNetworkFeesUsecase.execute(
+      final fromNetworkFees = await _getNetworkFeesUsecase.execute(
         network: state.fromWallet!.network,
       );
+      final toNetworkFees = await _getNetworkFeesUsecase.execute(
+        network: state.toWallet!.network,
+      );
+      FeeOptions? bitcoinFeeList;
+      FeeOptions? liquidFeeList;
+      if (state.fromWallet!.network == Network.bitcoinMainnet ||
+          state.fromWallet!.network == Network.bitcoinTestnet) {
+        bitcoinFeeList = fromNetworkFees;
+      } else if (state.fromWallet!.network == Network.liquidMainnet ||
+          state.fromWallet!.network == Network.liquidTestnet) {
+        liquidFeeList = toNetworkFees;
+      }
       emit(
         state.copyWith(
-          feesList: fees,
+          selectedFeeList: fromNetworkFees,
+          bitcoinFeeList: bitcoinFeeList,
+          liquidFeeList: liquidFeeList,
           customFee: null,
-          selectedFee: fees.fastest,
+          selectedFee: fromNetworkFees.fastest,
           selectedFeeOption: FeeSelection.fastest,
         ),
       );
@@ -347,6 +361,16 @@ class SwapCubit extends Cubit<SwapState> {
   }
 
   void switchFromAndToWallets() {
+    final newFromNetwork = state.toWalletNetwork;
+    FeeOptions? newSelectedFeeList;
+    NetworkFee? newSelectedFee;
+    if (newFromNetwork == WalletNetwork.bitcoin) {
+      newSelectedFeeList = state.bitcoinFeeList;
+      newSelectedFee = state.bitcoinFeeList?.fastest;
+    } else if (newFromNetwork == WalletNetwork.liquid) {
+      newSelectedFeeList = state.liquidFeeList;
+      newSelectedFee = state.liquidFeeList?.fastest;
+    }
     emit(
       state.copyWith(
         fromWallets: state.toWallets,
@@ -357,6 +381,8 @@ class SwapCubit extends Cubit<SwapState> {
         selectedToCurrencyCode: state.selectedFromCurrencyCode,
         fromWalletId: state.toWalletId,
         toWalletId: state.fromWalletId,
+        selectedFeeList: newSelectedFeeList,
+        selectedFee: newSelectedFee,
       ),
     );
   }
@@ -530,9 +556,9 @@ class SwapCubit extends Cubit<SwapState> {
           address: swap.paymentAddress,
           amountSat: swap.paymentAmount,
           networkFee:
-              state.absoluteFees != null
-                  ? NetworkFee.absolute(state.absoluteFees!)
-                  : state.feesList!.fastest,
+              state.bitcoinAbsoluteFees != null
+                  ? NetworkFee.absolute(state.bitcoinAbsoluteFees!)
+                  : state.selectedFeeList!.fastest,
         );
         emit(
           state.copyWith(buildingTransaction: false, signingTransaction: true),
@@ -545,7 +571,7 @@ class SwapCubit extends Cubit<SwapState> {
         final bitcoinAbsoluteFees = await _calculateBitcoinAbsoluteFeesUsecase
             .execute(
               psbt: signedPsbtAndTxSize.signedPsbt,
-              feeRate: state.feesList!.fastest.value as double,
+              feeRate: state.selectedFeeList!.fastest.value as double,
             );
 
         emit(
@@ -562,7 +588,7 @@ class SwapCubit extends Cubit<SwapState> {
           walletId: liquidWalletId!,
           address: swap.paymentAddress,
           amountSat: swap.paymentAmount,
-          networkFee: state.feesList!.fastest,
+          networkFee: state.selectedFeeList!.fastest,
           drain: state.sendMax,
         );
         final signedPsbt = await _signLiquidTxUsecase.execute(

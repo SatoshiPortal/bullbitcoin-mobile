@@ -41,7 +41,9 @@ abstract class SwapState with _$SwapState {
     @Default([]) List<WalletUtxo> utxos,
     @Default([]) List<WalletUtxo> selectedUtxos,
     @Default(false) bool replaceByFee,
-    FeeOptions? feesList,
+    FeeOptions? selectedFeeList,
+    FeeOptions? bitcoinFeeList,
+    FeeOptions? liquidFeeList,
     NetworkFee? selectedFee,
     // TODO: remove absFee and make usecases return size so abs fee can
     // be calculated from NetworkFee
