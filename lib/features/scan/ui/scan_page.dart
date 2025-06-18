@@ -3,12 +3,10 @@ import 'dart:io';
 import 'package:bb_mobile/core/utils/payment_request.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_cubit.dart';
 import 'package:bb_mobile/features/scan/presentation/scan_state.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -48,7 +46,8 @@ class _FullScreenScannerState extends State<FullScreenScanner> {
     );
     _controller = CameraController(
       backCamera,
-      Platform.isIOS ? ResolutionPreset.medium : ResolutionPreset.max,
+      ResolutionPreset.high,
+      fps: 30,
       enableAudio: false,
       imageFormatGroup:
           Platform.isIOS ? ImageFormatGroup.bgra8888 : ImageFormatGroup.yuv420,
@@ -71,9 +70,6 @@ class _FullScreenScannerState extends State<FullScreenScanner> {
         body: Center(child: CircularProgressIndicator()),
       );
     }
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
 
     return BlocProvider(
       create: (_) => ScanCubit(controller: _controller!)..openCamera(),
@@ -116,49 +112,6 @@ class _FullScreenScannerState extends State<FullScreenScanner> {
                             state.data.$1.length > 30
                                 ? '${state.data.$1.substring(0, 10)}…${state.data.$1.substring(state.data.$1.length - 10)}'
                                 : state.data.$1,
-                        bgColor: Colors.transparent,
-                      ),
-                    ),
-                  if (state.isCollectingBbqr && state.bbqrOptions != null)
-                    Positioned(
-                      top: 60,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Column(
-                          children: [
-                            Text(
-                              'BBQR ${state.bbqr.keys.length}/${state.bbqrOptions!.total}',
-                              style: context.font.labelMedium?.copyWith(
-                                color: context.colour.onPrimary,
-                              ),
-                            ),
-                            CircularProgressIndicator(
-                              value:
-                                  state.bbqr.keys.length /
-                                  state.bbqrOptions!.total,
-                              strokeWidth: 6,
-                              backgroundColor: context.colour.onPrimary,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  if (isSuperuser && kDebugMode)
-                    Positioned(
-                      bottom: 150,
-                      right: 0,
-                      left: 0,
-                      child: BBButton.big(
-                        iconData:
-                            state.isCollectingBbqr
-                                ? Icons.check_box
-                                : Icons.disabled_by_default,
-                        textStyle: context.font.labelMedium,
-                        textColor:
-                            state.isCollectingBbqr ? Colors.green : Colors.red,
-                        onPressed: context.read<ScanCubit>().switchBbqr,
-                        label: 'BBQR',
                         bgColor: Colors.transparent,
                       ),
                     ),

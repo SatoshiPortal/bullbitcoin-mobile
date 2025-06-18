@@ -598,32 +598,28 @@ class SendConfirmScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Send',
-          actionIcon: Icons.help_outline,
-          onAction: () {},
-          onBack: () => context.pop(),
-        ),
+        flexibleSpace: TopBar(title: 'Send', onBack: () => context.pop()),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Gap(24),
-            const SendConfirmTopArea(),
-            const Gap(40),
-            if (isLnSwap)
-              const _LnSwapSendInfoSection()
-            else if (isChainSwap)
-              const _ChainSwapSendInfoSection()
-            else
-              const _OnchainSendInfoSection(),
-            const Spacer(),
-            // const _Warning(),
-            const _SendError(),
-            const _BottomButtons(),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Gap(24),
+              const SendConfirmTopArea(),
+              const Gap(40),
+              if (isLnSwap)
+                const _LnSwapSendInfoSection()
+              else if (isChainSwap)
+                const _ChainSwapSendInfoSection()
+              else
+                const _OnchainSendInfoSection(),
+              const Gap(40),
+              const _SendError(),
+              const _BottomButtons(),
+            ],
+          ),
         ),
       ),
     );
@@ -1409,11 +1405,7 @@ class SendSendingScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Send',
-          actionIcon: Icons.help_outline,
-          onAction: () {},
-        ),
+        flexibleSpace: const TopBar(title: 'Send'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -1511,8 +1503,7 @@ class SendSucessScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
           title: 'Send',
-          actionIcon: Icons.close,
-          onAction: () => context.goNamed(WalletRoute.walletHome.name),
+          onBack: () => context.goNamed(WalletRoute.walletHome.name),
         ),
       ),
       body: Padding(

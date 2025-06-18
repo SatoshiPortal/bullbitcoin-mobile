@@ -25,4 +25,11 @@ abstract class ExchangeState with _$ExchangeState {
       apiKeyException == null;
   bool get isApiKeyInvalid => apiKeyException != null;
   bool get hasUser => userSummary != null;
+
+  bool get isFullyVerifiedKycLevel =>
+      userSummary?.groups.contains('KYC_IDENTITY_VERIFIED') ?? false;
+  bool get isLightKycLevel =>
+      userSummary?.groups.contains('KYC_LIGHT_VERIFICATION') ?? false;
+  bool get isLimitedKycLevel =>
+      userSummary?.groups.contains('KYC_LIMITED_VERIFICATION') ?? false;
 }

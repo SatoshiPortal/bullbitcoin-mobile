@@ -12,6 +12,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_sync
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
+import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -30,6 +31,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required CheckTorRequiredOnStartupUsecase
     checkForTorInitializationOnStartupUsecase,
     required GetPrioritizedServerUsecase getBestAvailableServerUsecase,
+    required GetUnconfirmedIncomingBalanceUsecase
+    getUnconfirmedIncomingBalanceUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -39,7 +42,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _checkForTorInitializationOnStartupUsecase =
            checkForTorInitializationOnStartupUsecase,
        _getPrioritizedServerUsecase = getBestAvailableServerUsecase,
-
+       _getUnconfirmedIncomingBalanceUsecase =
+           getUnconfirmedIncomingBalanceUsecase,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -58,6 +62,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final CheckTorRequiredOnStartupUsecase
   _checkForTorInitializationOnStartupUsecase;
   final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
+  final GetUnconfirmedIncomingBalanceUsecase
+  _getUnconfirmedIncomingBalanceUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -152,21 +158,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) async {
     try {
-      //final walletId = event.walletId;
-
-      // To simplify, we just get all wallets, which include the synced one
-      //  with the updated balance as well as the other wallets which may or
-      //  may not be synced as well.
       final wallets = await _getWalletsUsecase.execute();
-      // No need to check if any other wallet is syncing, since we don't want to
-      // show the syncing indicator for automatic syncs anymore.
-      //final isAnyOtherWalletSyncing = _checkWalletSyncingUsecase.execute();
-
+      int unconfirmedIncomingBalance = 0;
+      if (wallets.isNotEmpty) {
+        final walletIds = wallets.map((w) => w.id).toList();
+        unconfirmedIncomingBalance = await _getUnconfirmedIncomingBalanceUsecase
+            .execute(walletIds: walletIds);
+      }
       emit(
         state.copyWith(
           status: WalletStatus.success,
           wallets: wallets,
-          //isSyncing: isAnyOtherWalletSyncing,
+          unconfirmedIncomingBalance: unconfirmedIncomingBalance,
         ),
       );
     } catch (e) {

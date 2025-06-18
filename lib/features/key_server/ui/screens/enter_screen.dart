@@ -66,7 +66,7 @@ class EnterScreen extends StatelessWidget {
                     state.isPasswordObscured
                         ? const Icon(Icons.visibility_off_outlined)
                         : const Icon(Icons.visibility_outlined),
-                onlyNumbers: state.authInputType == AuthInputType.pin,
+                onlyPaste: state.authInputType == AuthInputType.pin,
                 onChanged: (String value) {
                   if (state.authInputType == AuthInputType.password) {
                     context.read<KeyServerCubit>().enterKey(value);

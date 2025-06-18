@@ -1,6 +1,5 @@
 import 'package:bb_mobile/core/electrum/data/datasources/electrum_server_storage_datasource.dart';
 import 'package:bb_mobile/core/labels/data/label_datasource.dart';
-import 'package:bb_mobile/core/logging/data/log_repository.dart';
 import 'package:bb_mobile/core/seed/data/datasources/seed_datasource.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/services/mnemonic_generator.dart';
@@ -79,7 +78,6 @@ class WalletLocator {
         lwkWalletDatasource: locator<LwkWalletDatasource>(),
         electrumServerStorageDatasource:
             locator<ElectrumServerStorageDatasource>(),
-        logRepository: locator<LogRepository>(),
       ),
     );
 

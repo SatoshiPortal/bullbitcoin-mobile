@@ -75,43 +75,35 @@ class LwkWalletDatasource implements WalletDatasource {
     required WalletModel wallet,
     required ElectrumServerModel electrumServer,
   }) {
-    try {
-      // TODO: if needed, add these debugPrint to a filterable logger.debug
-      // TODO: to avoid spamming the terminal with recurring prints
-      // debugPrint('Sync requested for wallet: ${wallet.id}');
-      return _activeSyncs.putIfAbsent(wallet.id, () async {
-        try {
-          // debugPrint('New sync started for wallet: ${wallet.id}');
-          _walletSyncStartedController.add(wallet.id);
-          syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
-          final lwkWallet = await _createPublicWallet(wallet);
-          await lwkWallet.sync_(
-            electrumUrl: electrumServer.url,
-            validateDomain: electrumServer.validateDomain,
-          );
-          // debugPrint('Sync completed for wallet: ${wallet.id}');
-        } catch (e) {
-          if (e is lwk.LwkError) {
-            throw e.msg;
-          } else {
-            rethrow;
-          }
-        } finally {
-          _walletSyncFinishedController.add(wallet.id);
-          // Remove the sync so future syncs can be triggered
-          // Do not await this, as it is not necessary and can cause deadlocks
-          // since it returns the Future from the map.
-          // ignore: unawaited_futures
-          _activeSyncs.remove(wallet.id);
+    // TODO: if needed, add these debugPrint to a filterable logger.debug
+    // TODO: to avoid spamming the terminal with recurring prints
+    //debugPrint('[Sync] Sync requested for wallet: ${wallet.id}');
+    return _activeSyncs.putIfAbsent(wallet.id, () async {
+      try {
+        //debugPrint('[Sync] New sync started for wallet: ${wallet.id}');
+        _walletSyncStartedController.add(wallet.id);
+        syncExecutions.update(wallet.id, (v) => v + 1, ifAbsent: () => 1);
+        final lwkWallet = await _createPublicWallet(wallet);
+        await lwkWallet.sync_(
+          electrumUrl: electrumServer.url,
+          validateDomain: electrumServer.validateDomain,
+        );
+        //debugPrint('[Sync] Sync completed for wallet: ${wallet.id}');
+      } catch (e) {
+        if (e is lwk.LwkError) {
+          throw e.msg;
+        } else {
+          rethrow;
         }
-      });
-    } catch (e) {
-      if (e is lwk.LwkError) {
-        throw e.msg;
-      } else {
-        rethrow;
+      } finally {
+        _walletSyncFinishedController.add(wallet.id);
+        // Remove the sync so future syncs can be triggered
+        // Do not await this, as it is not necessary and can cause deadlocks
+        // since it returns the Future from the map.
+        // ignore: unawaited_futures
+        _activeSyncs.remove(wallet.id);
       }
-    }
+    });
   }
 
   @override

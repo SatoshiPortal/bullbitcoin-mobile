@@ -507,12 +507,7 @@ class SwapConfirmPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Swap',
-          actionIcon: Icons.help_outline,
-          onAction: () {},
-          onBack: () => context.pop(),
-        ),
+        flexibleSpace: TopBar(title: 'Swap', onBack: () => context.pop()),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
@@ -565,11 +560,7 @@ class SwapProgressPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(
-          title: 'Swap',
-          actionIcon: Icons.help_outline,
-          onAction: () {},
-        ),
+        flexibleSpace: const TopBar(title: 'Swap'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

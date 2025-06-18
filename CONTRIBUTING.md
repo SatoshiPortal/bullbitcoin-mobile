@@ -6,11 +6,22 @@ TODO: Describe the branch structure, forking to a personal repository, pull requ
 
 ## Generated files
 
-This project uses flutter freezed. Freezed files are not checked into git and must be generated locally using:
+A `makefile` is available to assist you during the setup of the project and generate all needed files using the command `make setup`.
 
-```
-flutter pub run build_runner watch --delete-conflicting-outputs
-```
+
+## Guidelines
+
+- Keep it simple.
+
+- Write code that's easy to read and maintain think of your teammate who will read it next.
+
+- Suffix your files (`_datasource.dart` `_repository.dart` `_model.dart` `_usecase.dart` `_entity.dart` `_widget.dart` `_page.dart` )
+
+- Avoid creating unnecessary folders. Since most files have descriptive suffixes, only create a folder if you're placing multiple related files inside.
+
+- Avoid abstract classes unless there's a clear current need. Don’t preemptively abstract for hypothetical future cases, start concrete, and refactor when it becomes necessary.
+
+- Favor end-to-end and integration testing at the use case and widget level rather than relying on mocks. Since this is an app project, our priority is to catch real-world issues across layers. Mocking should be used only when necessary
 
 ## Adding a new feature
 

@@ -12,6 +12,7 @@ sealed class WalletState with _$WalletState {
     @Default([]) List<WalletWarning> warnings,
     @Default(false) bool isSyncing,
     @Default(null) Object? error,
+    @Default(0) int unconfirmedIncomingBalance,
   }) = _WalletState;
   const WalletState._();
 

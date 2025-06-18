@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 
 abstract class WalletRepository {
   Stream<Wallet> get walletSyncStartedStream;
@@ -45,4 +46,5 @@ abstract class WalletRepository {
     DateTime time, {
     required String walletId,
   });
+  Future<WalletBalances> getWalletBalances({required String walletId});
 }

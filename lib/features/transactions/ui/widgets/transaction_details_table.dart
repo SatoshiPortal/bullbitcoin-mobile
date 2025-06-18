@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
@@ -749,7 +750,9 @@ class TransactionDetailsTable extends StatelessWidget {
           DetailsTableItem(
             label: 'Payjoin status',
             displayValue:
-                payjoin.isCompleted
+                payjoin.isCompleted ||
+                        (payjoin.status == PayjoinStatus.proposed &&
+                            walletTransaction != null)
                     ? 'Completed'
                     : payjoin.isExpired
                     ? 'Expired'

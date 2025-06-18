@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/features/electrum_settings/ui/electrum_settings_router.dart';
+import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/settings/ui/widgets/testnet_mode_switch.dart';
@@ -139,6 +140,19 @@ class SettingsScreen extends StatelessWidget {
                       context.pushNamed(SettingsRoute.legacySeeds.name);
                     },
                     trailing: const Icon(Icons.chevron_right),
+                  ),
+                if (isSuperuser)
+                  ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
+                    title: const Text('Import watch-only (experimental)'),
+                    onTap:
+                        () => context.pushNamed(
+                          ImportWatchOnlyRoutes.import.name,
+                        ),
+                    trailing: const Icon(Icons.qr_code_2),
                   ),
               ],
             ),

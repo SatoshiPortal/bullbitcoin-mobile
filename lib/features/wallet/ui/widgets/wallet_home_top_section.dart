@@ -95,6 +95,8 @@ class _Amounts extends StatelessWidget {
         ),
         Gap(12),
         _FiatAmt(),
+        Gap(8),
+        _UnconfirmedIncomingBalance(),
       ],
     );
   }
@@ -128,5 +130,43 @@ class _FiatAmt extends StatelessWidget {
     );
 
     return HomeFiatBalance(balanceSat: totalBal);
+  }
+}
+
+class _UnconfirmedIncomingBalance extends StatelessWidget {
+  const _UnconfirmedIncomingBalance();
+
+  @override
+  Widget build(BuildContext context) {
+    final unconfirmed = context.select(
+      (WalletBloc bloc) => bloc.state.unconfirmedIncomingBalance,
+    );
+    if (unconfirmed == 0) return const SizedBox.shrink();
+    final color = context.colour.onPrimary;
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.arrow_downward, color: color, size: 20),
+              CurrencyText(
+                unconfirmed,
+                showFiat: false,
+                style: context.font.bodyLarge,
+                color: color,
+              ),
+            ],
+          ),
+          Align(
+            child: Text(
+              'In Progress',
+              style: context.font.bodyLarge?.copyWith(color: color),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
