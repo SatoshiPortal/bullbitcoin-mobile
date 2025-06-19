@@ -235,108 +235,143 @@ class _SwapProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Define the progress steps based on swap type
     final steps = _getProgressSteps();
     final currentStep = _getCurrentStep();
+    final isFailedOrExpired =
+        swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       child: Column(
         children: [
-          const Gap(8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(steps.length * 2 - 1, (index) {
-              // Even indices represent steps, odd indices represent connectors
-              if (index.isEven) {
-                final stepIndex = index ~/ 2;
-                final isCompleted = stepIndex < currentStep;
-                final isCurrent = stepIndex == currentStep;
+          SizedBox(
+            height: 100,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final double totalWidth = constraints.maxWidth;
+                final double stepWidth = totalWidth / steps.length;
 
-                return Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color:
-                        currentStep < 0
-                            ? context.colour.error
-                            : isCompleted
-                            ? context.colour.primary
-                            : isCurrent
-                            ? context.colour.secondary
-                            : context.colour.surfaceContainerHighest,
-                    shape: BoxShape.circle,
-                    border:
-                        isCurrent
-                            ? Border.all(
-                              color: context.colour.secondary,
-                              width: 2,
-                            )
-                            : null,
-                  ),
-                  child: Center(
-                    child:
-                        currentStep < 0
-                            ? Icon(
-                              Icons.error_outline,
-                              size: 16,
-                              color: context.colour.onError,
-                            )
-                            : isCompleted
-                            ? Icon(
-                              Icons.check,
-                              size: 16,
-                              color: context.colour.onPrimary,
-                            )
-                            : BBText(
-                              '${stepIndex + 1}',
-                              style: context.font.labelSmall?.copyWith(
-                                color:
-                                    isCurrent
-                                        ? context.colour.onSecondary
-                                        : context.colour.onSurfaceVariant,
-                                fontWeight: FontWeight.bold,
-                              ),
+                return Stack(
+                  children: [
+                    // Connector line background (gray line across entire width)
+                    Positioned(
+                      top: 20,
+                      left: stepWidth / 2,
+                      right: stepWidth / 2,
+                      child: Container(
+                        height: 5,
+                        color: context.colour.surfaceContainerHighest,
+                      ),
+                    ),
+
+                    // Active connector line (colored line up to current step)
+                    if (!isFailedOrExpired && currentStep > 0)
+                      Positioned(
+                        top: 20,
+                        left: stepWidth / 2,
+                        width: stepWidth * currentStep,
+                        child: Container(
+                          height: 5,
+                          color: context.colour.primary,
+                        ),
+                      ),
+
+                    // Step indicators and labels
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: List.generate(steps.length, (index) {
+                        final isCompleted =
+                            index <= currentStep && !isFailedOrExpired;
+                        final isCurrent =
+                            index == currentStep && !isFailedOrExpired;
+
+                        // Determine colors based on state
+                        final Color indicatorColor;
+                        if (isFailedOrExpired && index == 0) {
+                          indicatorColor = context.colour.error;
+                        } else if (isCompleted) {
+                          indicatorColor = context.colour.primary;
+                        } else {
+                          indicatorColor =
+                              context.colour.surfaceContainerHighest;
+                        }
+
+                        // Create indicator content
+                        Widget? indicatorChild;
+                        if (isFailedOrExpired && index == 0) {
+                          indicatorChild = Icon(
+                            Icons.error_outline,
+                            size: 15,
+                            color: context.colour.onError,
+                          );
+                        } else if (isCompleted) {
+                          indicatorChild = Icon(
+                            Icons.check,
+                            size: 20,
+                            color: context.colour.onPrimary,
+                          );
+                        } else {
+                          indicatorChild = Text(
+                            '${index + 1}',
+                            style: TextStyle(
+                              color: context.colour.onSurfaceVariant,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
                             ),
-                  ),
-                );
-              } else {
-                final prevStepIndex = index ~/ 2;
-                final isCompleted = prevStepIndex < currentStep;
+                          );
+                        }
 
-                return Container(
-                  width: 20,
-                  height: 2,
-                  color:
-                      isCompleted
-                          ? context.colour.primary
-                          : context.colour.surfaceContainerHighest,
+                        return Expanded(
+                          child: Column(
+                            children: [
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: indicatorColor,
+                                      shape: BoxShape.circle,
+                                      border:
+                                          isCurrent
+                                              ? Border.all(
+                                                color: context.colour.secondary,
+                                                width: 2,
+                                              )
+                                              : null,
+                                    ),
+                                    child: Center(child: indicatorChild),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                steps[index],
+                                style: TextStyle(
+                                  color: _getStepLabelColor(
+                                    context,
+                                    index,
+                                    currentStep,
+                                  ),
+                                  fontSize: 11,
+                                  fontWeight:
+                                      isCompleted
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
                 );
-              }
-            }),
-          ),
-          const Gap(8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(
-              steps.length,
-              (index) => Container(
-                width: 70,
-                alignment: Alignment.center,
-                child: BBText(
-                  steps[index],
-                  style: context.font.labelSmall?.copyWith(
-                    color:
-                        index <= currentStep
-                            ? context.colour.outlineVariant
-                            : context.colour.outline,
-                    fontSize: 10,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                ),
-              ),
+              },
             ),
           ),
         ],
@@ -348,8 +383,15 @@ class _SwapProgressIndicator extends StatelessWidget {
     if (swap is LnReceiveSwap) {
       return ['Initiated', 'Payment\nReceived', 'Funds\nClaimed'];
     } else if (swap is LnSendSwap) {
-      return ['Initiated', 'Funds\nLocked', 'Payment\nSent'];
+      // For Bitcoin/Liquid to Lightning swaps
+      // pending -> paid -> completed
+      // Initiated: Transaction created but not confirmed
+      // Transaction Confirmed: Transaction confirmed, funds are secured (paid status)
+      // Payment Sent: Lightning payment sent, swap completed (completed status)
+      return ['Initiated', 'Transaction\nConfirmed', 'Payment\nSent'];
     } else if (swap is ChainSwap) {
+      // For Bitcoin to Liquid or Liquid to Bitcoin swaps
+      // pending -> paid -> claimable -> completed
       return ['Initiated', 'Confirmed', 'Counterparty', 'Completed'];
     }
     return ['Initiated', 'In Progress', 'Completed'];
@@ -357,27 +399,33 @@ class _SwapProgressIndicator extends StatelessWidget {
 
   int _getCurrentStep() {
     if (swap.status == SwapStatus.failed || swap.status == SwapStatus.expired) {
-      // For failed/expired, mark with special status
-      return -1;
+      return -1; // Special case for failed/expired
     }
 
-    switch (swap.status) {
-      case SwapStatus.pending:
-        return 0;
-      case SwapStatus.paid:
-        return 1;
-      case SwapStatus.claimable:
-        return swap is ChainSwap ? 2 : 1;
-      case SwapStatus.refundable:
-        return swap is ChainSwap ? 2 : 1;
-      case SwapStatus.canCoop:
-        return 1;
-      case SwapStatus.completed:
-        if (swap is ChainSwap) return 3;
-        return 2;
-      default:
-        return 0;
+    return switch (swap.status) {
+      SwapStatus.pending => 0,
+      SwapStatus.paid => 1,
+      SwapStatus.claimable => swap is ChainSwap ? 2 : 1,
+      SwapStatus.refundable => swap is ChainSwap ? 2 : 1,
+      SwapStatus.canCoop => swap is ChainSwap ? 2 : 1,
+      SwapStatus.completed => swap is ChainSwap ? 3 : 2,
+      SwapStatus.failed || SwapStatus.expired => 0,
+    };
+  }
+
+  Color _getStepLabelColor(BuildContext context, int index, int currentStep) {
+    final isFailedOrExpired =
+        swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
+
+    if (isFailedOrExpired) {
+      return index == 0 ? context.colour.error : context.colour.outline;
     }
+
+    if (index <= currentStep) {
+      return context.colour.primary;
+    }
+
+    return context.colour.outline;
   }
 }
 
