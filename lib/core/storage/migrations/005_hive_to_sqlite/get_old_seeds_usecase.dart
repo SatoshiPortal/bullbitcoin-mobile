@@ -1,21 +1,17 @@
-import 'package:bb_mobile/core/logging/domain/add_log_usecase.dart';
-import 'package:bb_mobile/core/logging/domain/log_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_seed.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/entities/old_wallet.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_seed_repository.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/old/old_wallet_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 
 class GetOldSeedsUsecase {
   final OldSeedRepository _oldSeedRepository;
   final OldWalletRepository _oldWalletRepository;
-  final AddLogUsecase _addLogUsecase;
   GetOldSeedsUsecase({
     required OldSeedRepository oldSeedRepository,
     required OldWalletRepository oldWalletRepository,
-    required AddLogUsecase addLogUsecase,
   }) : _oldSeedRepository = oldSeedRepository,
-       _oldWalletRepository = oldWalletRepository,
-       _addLogUsecase = addLogUsecase;
+       _oldWalletRepository = oldWalletRepository;
   // true : successful migration
   // false: migration was not required / success
   // throw: errors
@@ -32,14 +28,13 @@ class GetOldSeedsUsecase {
                     e.network == OldBBNetwork.Mainnet,
               )
               .toList();
-      await _addLogUsecase.execute(
-        NewLogEntity(
-          level: LogLevel.debug,
-          message:
-              'PROGRESS: Found  ${oldMainnetDefaultWallets.length} defaultOldSignerWallets',
-          logger: 'MigrateToV5HiveToSqliteUsecase',
-        ),
+
+      await log.migration(
+        level: Level.INFO,
+        message:
+            'PROGRESS: Found  ${oldMainnetDefaultWallets.length} defaultOldSignerWallets',
       );
+
       final oldMainnetExternalSignerWallets =
           oldWallets
               .where(
@@ -49,13 +44,10 @@ class GetOldSeedsUsecase {
               )
               .toList();
 
-      await _addLogUsecase.execute(
-        NewLogEntity(
-          level: LogLevel.debug,
-          message:
-              'PROGRESS: Found ${oldMainnetExternalSignerWallets.length} externalOldSignerWallets',
-          logger: 'MigrateToV5HiveToSqliteUsecase',
-        ),
+      await log.migration(
+        level: Level.INFO,
+        message:
+            'PROGRESS: Found ${oldMainnetExternalSignerWallets.length} externalOldSignerWallets',
       );
 
       final oldMainnetSignerWallets =
@@ -69,14 +61,11 @@ class GetOldSeedsUsecase {
       }
       return oldSeeds;
     } catch (e) {
-      await _addLogUsecase.execute(
-        NewLogEntity(
-          level: LogLevel.error,
-          message: 'Migration failed',
-          logger: 'MigrateToV5HiveToSqliteUsecase',
-          exception: e,
-          stackTrace: StackTrace.current,
-        ),
+      await log.migration(
+        level: Level.SEVERE,
+        message: 'Migration failed',
+        exception: e,
+        stackTrace: StackTrace.current,
       );
       rethrow;
     }
