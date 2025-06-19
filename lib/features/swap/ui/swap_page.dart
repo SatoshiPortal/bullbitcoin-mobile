@@ -61,52 +61,59 @@ class SwapAmountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final amountConfirmedClicked = context.select(
+      (SwapCubit cubit) => cubit.state.amountConfirmedClicked,
+    );
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(title: 'Swap', onBack: () => context.pop()),
       ),
-      body: const SafeArea(
+      body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SwapFromToDropdown(type: _SwapDropdownType.from),
-                Gap(16),
-                SwapAvailableBalance(),
-                Gap(16),
-                SizedBox(
-                  height: 142 * 2,
-                  child: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: SwapCard(type: _SwapCardType.pay),
-                      ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: SwapCard(type: _SwapCardType.receive),
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: SwapChangeButton(),
-                      ),
-                    ],
+          child:
+              amountConfirmedClicked
+                  ? const LinearProgressIndicator()
+                  : const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        SwapFromToDropdown(type: _SwapDropdownType.from),
+                        Gap(16),
+                        SwapAvailableBalance(),
+                        Gap(16),
+                        SizedBox(
+                          height: 142 * 2,
+                          child: Stack(
+                            children: [
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: SwapCard(type: _SwapCardType.pay),
+                              ),
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: SwapCard(type: _SwapCardType.receive),
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: SwapChangeButton(),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Gap(16),
+                        SwapFeesInformation(),
+                        Gap(32),
+                        SwapFromToDropdown(type: _SwapDropdownType.to),
+                        Gap(32),
+                        SwapCreationError(),
+                        Gap(40),
+                      ],
+                    ),
                   ),
-                ),
-                Gap(16),
-                SwapFeesInformation(),
-                Gap(32),
-                SwapFromToDropdown(type: _SwapDropdownType.to),
-                Gap(32),
-                SwapCreationError(),
-                Gap(40),
-              ],
-            ),
-          ),
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -459,16 +466,22 @@ class SwapContinueWithAmountButton extends StatelessWidget {
     final disableContinueWithAmounts = context.select(
       (SwapCubit cubit) => cubit.state.disableContinueWithAmounts,
     );
-    return BBButton.big(
-      label: 'Continue',
-      bgColor: context.colour.secondary,
-      textColor: context.colour.onSecondary,
-      disabled: disableContinueWithAmounts,
-      onPressed: () {
-        if (disableContinueWithAmounts) return;
-        context.read<SwapCubit>().continueWithAmountsClicked();
-      },
+    final amountConfirmedClicked = context.select(
+      (SwapCubit cubit) => cubit.state.amountConfirmedClicked,
     );
+
+    return amountConfirmedClicked
+        ? const SizedBox.shrink()
+        : BBButton.big(
+          label: 'Continue',
+          bgColor: context.colour.secondary,
+          textColor: context.colour.onSecondary,
+          disabled: disableContinueWithAmounts,
+          onPressed: () {
+            if (disableContinueWithAmounts) return;
+            context.read<SwapCubit>().continueWithAmountsClicked();
+          },
+        );
   }
 }
 
@@ -579,7 +592,7 @@ class SwapProgressPage extends StatelessWidget {
                       image: AssetImage(Assets.images2.cubesLoading.path),
                     ),
                     const Gap(8),
-                    BBText('Sending...', style: context.font.headlineLarge),
+                    BBText('Swap Pending', style: context.font.headlineLarge),
                     const Gap(8),
                     BBText(
                       'The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.',
