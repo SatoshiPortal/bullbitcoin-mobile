@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
 import 'package:path_provider/path_provider.dart';
+export 'package:logging_colorful/logging_colorful.dart';
 
 // DONE: add a String encryptionKey to the Logger
 // Update the log method to take optional write to file param; if it is true it will write to a file. if an encryptionKey exists, it will encrypt the file.
