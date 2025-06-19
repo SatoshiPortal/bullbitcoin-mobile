@@ -1,5 +1,4 @@
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
-import 'package:bb_mobile/core/logging/data/log_repository.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
@@ -72,7 +71,6 @@ class SwapsLocator {
         walletAddressRepository: locator<WalletAddressRepository>(),
         settingsRepository: locator<SettingsRepository>(),
         feesRepository: locator<FeesRepository>(),
-        logRepository: locator<LogRepository>(),
       ),
       instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
     );
@@ -90,7 +88,6 @@ class SwapsLocator {
         walletAddressRepository: locator<WalletAddressRepository>(),
         settingsRepository: locator<SettingsRepository>(),
         feesRepository: locator<FeesRepository>(),
-        logRepository: locator<LogRepository>(),
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
