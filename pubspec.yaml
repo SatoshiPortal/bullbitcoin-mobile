@@ -74,8 +74,7 @@ dependencies:
       url: https://github.com/SatoshiPortal/recoverbull-client-dart.git
       ref: 334b5402d8b7b80b4736663861f7952020312831
   bip85: ^2.0.0
-  camera: ^0.11.1
-  zxing2: ^0.2.3
+  flutter_zxing: ^2.1.0
   webview_cookie_manager:
     git:
       url: https://github.com/fryette/webview_cookie_manager.git
