@@ -8,8 +8,6 @@ class SettingsConstants {
   //  a configurable setting, in which case they should be added to the Settings
   //  table in sqlite and not be defined here as constants anymore.
   static const autoSyncIntervalSeconds = 5;
-  static const logFileName = 'bb_mobile.log';
-  static const sessionLogFileName = 'bull_session_log.tsv';
 }
 
 class ConversionConstants {
