@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/ui/widgets/ongoing_swaps.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/tx_list_item.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -8,9 +9,14 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
 class TransactionsByDayList extends StatelessWidget {
-  const TransactionsByDayList({super.key, required this.transactionsByDay});
+  const TransactionsByDayList({
+    super.key,
+    required this.transactionsByDay,
+    this.ongoingSwaps,
+  });
 
   final Map<int, List<Transaction>>? transactionsByDay;
+  final List<Transaction>? ongoingSwaps;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +38,8 @@ class TransactionsByDayList extends StatelessWidget {
           ],
         ),
       );
-    } else if (transactionsByDay!.isEmpty) {
+    } else if (transactionsByDay!.isEmpty &&
+        (ongoingSwaps == null || ongoingSwaps!.isEmpty)) {
       return Center(
         child: Column(
           children: [
@@ -51,9 +58,21 @@ class TransactionsByDayList extends StatelessWidget {
     } else {
       return ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        itemCount: transactionsByDay!.entries.length,
+        itemCount:
+            transactionsByDay!.entries.length +
+            (ongoingSwaps != null && ongoingSwaps!.isNotEmpty ? 1 : 0),
         itemBuilder: (context, index) {
-          final entry = transactionsByDay!.entries.elementAt(index);
+          // Show ongoing swaps section at the top
+          if (ongoingSwaps != null && ongoingSwaps!.isNotEmpty && index == 0) {
+            return OngoingSwapsWidget(ongoingSwaps: ongoingSwaps!);
+          }
+
+          // Adjust index if we have ongoing swaps
+          final adjustedIndex =
+              ongoingSwaps != null && ongoingSwaps!.isNotEmpty
+                  ? index - 1
+                  : index;
+          final entry = transactionsByDay!.entries.elementAt(adjustedIndex);
           final date = DateTime.fromMillisecondsSinceEpoch(entry.key);
           final txs = entry.value;
           final now = DateTime.now();
@@ -66,9 +85,9 @@ class TransactionsByDayList extends StatelessWidget {
               BBText(
                 date.compareTo(today) > 0
                     ? 'Pending'
-                    : date == today
+                    : date.isAtSameMomentAs(today)
                     ? 'Today'
-                    : date == yesterday
+                    : date.isAtSameMomentAs(yesterday)
                     ? 'Yesterday'
                     : date.year == DateTime.now().year
                     ? DateFormat.MMMMd().format(date)
