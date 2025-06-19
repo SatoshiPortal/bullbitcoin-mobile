@@ -34,7 +34,7 @@ class TxListItem extends StatelessWidget {
         isOrderType
             ? context.colour.secondaryFixedDim
             : tx.isOngoingSwap
-            ? context.colour.secondary
+            ? context.colour.secondaryContainer.withValues(alpha: 0.3)
             : tx.isBitcoin
             ? context.colour.onTertiary
             : context.colour.tertiary;
