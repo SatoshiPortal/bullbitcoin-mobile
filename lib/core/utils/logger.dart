@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
 import 'package:path_provider/path_provider.dart';
@@ -13,16 +12,22 @@ late Logger log;
 class Logger {
   final session = <String>[];
   final String? encryptionKey;
-  final String path;
+  final Directory dir;
   final dep.LoggerColorful logger;
 
-  Logger._(this.encryptionKey, this.path, this.logger) {
+  static const _migrationFilename = 'bull_migration_logs.tsv';
+  static const _sessionFilename = 'bull_session_logs.tsv';
+  File get sessionLogs => File('${dir.path}/$_sessionFilename');
+  File get migrationLogs => File('${dir.path}/$_migrationFilename');
+
+  Logger._(this.encryptionKey, this.dir, this.logger) {
     dep.Logger.root.level = dep.Level.ALL;
 
     dep.Logger.root.onRecord.listen((record) {
-      final now = DateTime.now().toUtc().toIso8601String();
-      final content = [now, record.level.name, record.message];
+      final time = record.time.toIso8601String();
+      final content = [time, record.level.name, record.message];
 
+      if (record.error != null) content.add(record.error.toString());
       if (record.stackTrace != null) content.add(record.stackTrace.toString());
 
       final tsvLine = _sanitizeContent(content).join('\t');
@@ -45,11 +50,9 @@ class Logger {
     // android dir: "/data/user/0/com.bullbitcoin.mobile/app_flutter"
     // ios dir: "/var/mobile/Library/Application Support/com.bullbitcoin.mobile/app_flutter"
 
-    final path = '${dir.path}/${SettingsConstants.sessionLogFileName}';
-
     return Logger._(
       encryptionKey,
-      path,
+      dir,
       // iOS emulator doesn't support colors –> https://github.com/flutter/flutter/issues/20663
       // We don't want colors in release mode either
       dep.LoggerColorful(name, disabledColors: Platform.isIOS || kReleaseMode),
@@ -57,11 +60,7 @@ class Logger {
   }
 
   Future<void> dumpSessionToFile() async {
-    await File(path).writeAsString(session.join('\n'));
-  }
-
-  Future<void> appendToFile(String message) async {
-    await File(path).writeAsString('$message\n', mode: FileMode.append);
+    await sessionLogs.writeAsString(session.join('\n'));
   }
 
   List<String> _sanitizeContent(List<String> content) {
@@ -104,5 +103,27 @@ class Logger {
 
   void shout(Object? message, {Object? error, StackTrace? trace}) {
     logger.shout(message, error, trace);
+  }
+
+  Future<void> migration({
+    required dep.Level level,
+    required String message,
+    Map<String, dynamic>? context,
+    Object? exception,
+    StackTrace? stackTrace,
+  }) async {
+    final now = DateTime.now().toIso8601String();
+    final content = [now, level.name, message];
+    if (context != null) content.add(context.toString());
+    if (exception != null) content.add(exception.toString());
+    if (stackTrace != null) content.add(stackTrace.toString());
+
+    final sanitizedContent = _sanitizeContent(content);
+    final tsvLine = sanitizedContent.join('\t');
+    await appendToMigrationFile(tsvLine);
+  }
+
+  Future<void> appendToMigrationFile(String message) async {
+    await migrationLogs.writeAsString('$message\n', mode: FileMode.append);
   }
 }
