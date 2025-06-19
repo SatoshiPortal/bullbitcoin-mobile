@@ -111,10 +111,6 @@ dev_dependencies:
   flutter_gen_runner: any
   drift_dev: ^2.26.1
 
-dependency_overrides:
-  camera_avfoundation: 0.9.19+1
-  camera_android_camerax: 0.6.18
-
 flutter:
   generate: true # Needed for code generation, for example for internationalization
   uses-material-design: true
