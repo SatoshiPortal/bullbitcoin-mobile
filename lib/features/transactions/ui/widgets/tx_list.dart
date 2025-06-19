@@ -12,6 +12,13 @@ class TxList extends StatelessWidget {
       (TransactionsCubit cubit) => cubit.state.filteredTransactionsByDay,
     );
 
-    return TransactionsByDayList(transactionsByDay: txsByDay);
+    final ongoingSwaps = context.select(
+      (TransactionsCubit cubit) => cubit.state.ongoingSwaps,
+    );
+
+    return TransactionsByDayList(
+      transactionsByDay: txsByDay,
+      ongoingSwaps: ongoingSwaps,
+    );
   }
 }

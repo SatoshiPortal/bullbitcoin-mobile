@@ -25,12 +25,16 @@ class TxListItem extends StatelessWidget {
             ? Icons.payments
             : isChainSwap
             ? Icons.swap_vert_rounded
+            : isLnSwap
+            ? Icons.flash_on
             : tx.isOutgoing
             ? Icons.arrow_upward
             : Icons.arrow_downward;
     final walletColor =
         isOrderType
             ? context.colour.secondaryFixedDim
+            : tx.isOngoingSwap
+            ? context.colour.secondary
             : tx.isBitcoin
             ? context.colour.onTertiary
             : context.colour.tertiary;
@@ -38,11 +42,11 @@ class TxListItem extends StatelessWidget {
         isOrderType
             ? tx.order!.orderType.value
             : isLnSwap
-            ? 'Lightning'
+            ? 'Lightning Swap'
             : isChainSwap
             ? tx.swap!.type == SwapType.liquidToBitcoin
-                ? 'L-BTC -> BTC'
-                : 'BTC -> L-BTC'
+                ? 'L-BTC → BTC'
+                : 'BTC → L-BTC'
             : tx.isBitcoin
             ? 'Bitcoin'
             : 'Liquid';
@@ -85,11 +89,27 @@ class TxListItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: context.colour.onPrimary,
-                border: Border.all(color: context.colour.surface),
+                color:
+                    tx.isOngoingSwap
+                        ? context.colour.secondaryContainer.withValues(
+                          alpha: 0.3,
+                        )
+                        : context.colour.onPrimary,
+                border: Border.all(
+                  color:
+                      tx.isOngoingSwap
+                          ? context.colour.secondary.withValues(alpha: 0.5)
+                          : context.colour.surface,
+                ),
                 borderRadius: BorderRadius.circular(2.0),
               ),
-              child: Icon(icon, color: context.colour.secondary),
+              child: Icon(
+                icon,
+                color:
+                    tx.isOngoingSwap
+                        ? context.colour.secondary
+                        : context.colour.secondary,
+              ),
             ),
             const Gap(16.0),
             Expanded(
@@ -151,23 +171,43 @@ class TxListItem extends StatelessWidget {
                       BBText(
                         date,
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.outline,
+                          color:
+                              tx.isOngoingSwap
+                                  ? context.colour.secondary
+                                  : context.colour.outline,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
-                        Icons.check_circle,
+                        tx.isOngoingSwap ? Icons.sync : Icons.check_circle,
                         size: 12.0,
-                        color: context.colour.inverseSurface,
+                        color:
+                            tx.isOngoingSwap
+                                ? context.colour.secondary
+                                : context.colour.inverseSurface,
                       ),
                     ],
                   )
                 else ...[
-                  BBText(
-                    'Pending',
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.colour.outline,
-                    ),
+                  Row(
+                    children: [
+                      BBText(
+                        tx.isOngoingSwap ? 'In Progress' : 'Pending',
+                        style: context.font.labelSmall?.copyWith(
+                          color:
+                              tx.isOngoingSwap
+                                  ? context.colour.secondary
+                                  : context.colour.outline,
+                        ),
+                      ),
+                      const Gap(4.0),
+                      if (tx.isOngoingSwap)
+                        Icon(
+                          Icons.sync,
+                          size: 12.0,
+                          color: context.colour.secondary,
+                        ),
+                    ],
                   ),
                 ],
               ],
