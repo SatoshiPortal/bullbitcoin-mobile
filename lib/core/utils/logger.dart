@@ -28,17 +28,30 @@ class Logger {
       final time = record.time.toIso8601String();
       final content = [time, record.level.name, record.message];
 
-      if (record.error != null) content.add(record.error.toString());
-      if (record.stackTrace != null) content.add(record.stackTrace.toString());
+      String error = '';
+      String trace = '';
+      // standard record.error is a list containing [exception, stack trace, zone] default is [null, null, null]
+      if (record.error is List && (record.error! as List).isNotEmpty) {
+        final firstElement = (record.error! as List).first;
+        if (firstElement != null) error = firstElement.toString();
+        try {
+          final secondElement = (record.error! as List).elementAt(1);
+          if (secondElement != null) trace = secondElement.toString();
+        } catch (_) {}
+      }
+      content.add(error);
+      content.add(trace);
 
-      final tsvLine = _sanitizeContent(content).join('\t');
+      final sanitizedContent = _sanitizeContent(content);
+      final tsvLine = sanitizedContent.join('\t');
 
       // We don't want to keep the info session in memory, they should be written to file
       if (record.level != dep.Level.INFO) session.add(tsvLine);
 
       if (kDebugMode) {
-        content.removeAt(0); // remove the time
-        debugPrint(content.join('\t'));
+        // remove timestamp and errors
+        final debug = content.sublist(1, 3);
+        debugPrint(debug.join('\t'));
       }
     });
   }
@@ -115,9 +128,9 @@ class Logger {
   }) async {
     final now = DateTime.now().toIso8601String();
     final content = [now, level.name, message];
-    if (context != null) content.add(context.toString());
-    if (exception != null) content.add(exception.toString());
-    if (stackTrace != null) content.add(stackTrace.toString());
+    content.add(context?.toString() ?? '');
+    content.add(exception?.toString() ?? '');
+    content.add(stackTrace?.toString() ?? '');
 
     final sanitizedContent = _sanitizeContent(content);
     final tsvLine = sanitizedContent.join('\t');
