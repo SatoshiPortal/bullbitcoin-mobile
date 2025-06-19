@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 
 class LogSettingsScreen extends StatelessWidget {
@@ -11,10 +9,6 @@ class LogSettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSuperuser = context.select(
-      (SettingsCubit cubit) => cubit.state.isSuperuser ?? false,
-    );
-
     return Scaffold(
       appBar: AppBar(title: const Text('Logs')),
       body: SafeArea(
@@ -31,16 +25,15 @@ class LogSettingsScreen extends StatelessWidget {
                 onTap: () => _shareLogs(context),
                 trailing: const Icon(Icons.share),
               ),
-              if (isSuperuser)
-                ListTile(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                  tileColor: Colors.transparent,
-                  title: const Text('Share session logs'),
-                  onTap: () => _shareSessionLogs(context),
-                  trailing: const Icon(Icons.share_sharp),
+              ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(2),
                 ),
+                tileColor: Colors.transparent,
+                title: const Text('Share session logs'),
+                onTap: () => _shareSessionLogs(context),
+                trailing: const Icon(Icons.share_sharp),
+              ),
             ],
           ),
         ),
