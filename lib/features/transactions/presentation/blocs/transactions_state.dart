@@ -13,37 +13,61 @@ abstract class TransactionsState with _$TransactionsState {
   }) = _TransactionsState;
   const TransactionsState._();
 
-  Map<int, List<Transaction>>? get transactionsByDay {
-    if (transactions == null) {
-      return null;
+  /// Extracts ongoing swaps from transactions
+  List<Transaction>? get ongoingSwaps {
+    final txList = transactions;
+    if (txList == null) return null;
+
+    final ongoingList = <Transaction>[];
+    for (final tx in txList) {
+      if (tx.isOngoingSwap &&
+          tx.swap != null &&
+          tx.swap?.status != SwapStatus.expired &&
+          tx.swap?.status != SwapStatus.failed) {
+        ongoingList.add(tx);
+      }
     }
+
+    // Sort by timestamp, newest first
+    ongoingList.sort((a, b) {
+      final aTime = a.timestamp ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bTime = b.timestamp ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bTime.compareTo(aTime);
+    });
+
+    return ongoingList;
+  }
+
+  Map<int, List<Transaction>>? get transactionsByDay {
+    final txList = transactions;
+    if (txList == null) return null;
 
     final Map<int, List<Transaction>> grouped = {};
 
-    for (final tx in transactions!) {
-      int day;
-      if (tx.timestamp == null) {
-        // Pending transactions can't be assigned to a specific day yet, since
-        //  they are in the future we assign them to a day that is always
-        //  greater than any other day. This way they will always be at the top
-        //  of the list when sorted by date.
-        day = 8640000000000000; // Max milliseconds value for DateTime
-      } else {
-        final date = tx.timestamp!;
-        day = DateTime(date.year, date.month, date.day).millisecondsSinceEpoch;
-      }
-
+    for (final tx in txList) {
+      // Pending transactions can't be assigned to a specific day yet, since
+      // they are in the future we assign them to a day that is always
+      // greater than any other day. This way they will always be at the top
+      // of the list when sorted by date.
+      final day =
+          tx.timestamp == null
+              ? 8640000000000000 // Max milliseconds value for DateTime
+              : DateTime(
+                tx.timestamp!.year,
+                tx.timestamp!.month,
+                tx.timestamp!.day,
+              ).millisecondsSinceEpoch;
       grouped.putIfAbsent(day, () => []).add(tx);
     }
 
-    // Sort transactions inside each day
-    grouped.forEach((_, txs) {
+    // Sort transactions inside each day (newest first)
+    for (final txs in grouped.values) {
       txs.sort((a, b) {
         final aTime = a.timestamp ?? DateTime.fromMillisecondsSinceEpoch(0);
         final bTime = b.timestamp ?? DateTime.fromMillisecondsSinceEpoch(0);
         return bTime.compareTo(aTime); // descending
       });
-    });
+    }
 
     // Sort days in descending order and preserve order with LinkedHashMap
     final sorted = SplayTreeMap<int, List<Transaction>>.from(
@@ -55,64 +79,75 @@ abstract class TransactionsState with _$TransactionsState {
   }
 
   Map<int, List<Transaction>>? get filteredTransactionsByDay {
-    if (transactionsByDay == null) {
-      return null;
+    final txByDay = transactionsByDay;
+    if (txByDay == null) return null;
+
+    final filtered = <int, List<Transaction>>{};
+
+    for (final entry in txByDay.entries) {
+      final filteredTxs =
+          entry.value.where((tx) {
+            // Skip ongoing swaps as they will be shown in their own section
+            if (tx.isOngoingSwap) {
+              return false;
+            }
+
+            // We don't want to show:
+            // - receive payjoin transactions that didn't get a request from the sender yet.
+            // - expired or failed swaps.
+            final isReceivePayjoinWithoutRequest =
+                tx.isOngoingPayjoinReceiver &&
+                tx.payjoin!.status == PayjoinStatus.started;
+
+            final isExpiredOrFailedSwap =
+                tx.isSwap &&
+                [
+                  SwapStatus.pending,
+                  SwapStatus.expired,
+                  SwapStatus.failed,
+                ].contains(tx.swap!.status);
+
+            if (isReceivePayjoinWithoutRequest || isExpiredOrFailedSwap) {
+              return false;
+            }
+
+            // We also only want to show the incoming side of a chain swap,
+            // unless in specific sending wallet overview or with the 'send'
+            // filter selected.
+            final isOutgoingChainSwap =
+                tx.isChainSwap &&
+                tx.walletTransaction?.isOutgoing == true &&
+                tx.swap!.receiveTxId != null;
+
+            return switch (filter) {
+              TransactionsFilter.all =>
+                (!isOutgoingChainSwap ||
+                    walletId == tx.walletTransaction?.walletId),
+              TransactionsFilter.send => tx.isOutgoing,
+              TransactionsFilter.receive => tx.isIncoming,
+              TransactionsFilter.swap =>
+                tx.isSwap &&
+                    (!isOutgoingChainSwap ||
+                        walletId == tx.walletTransaction?.walletId),
+              TransactionsFilter.payjoin =>
+                tx.isPayjoin &&
+                    (!isOutgoingChainSwap ||
+                        walletId == tx.walletTransaction?.walletId),
+              TransactionsFilter.sell => tx.isSellOrder,
+              TransactionsFilter.buy => tx.isBuyOrder,
+            };
+          }).toList();
+
+      if (filteredTxs.isNotEmpty) {
+        filtered[entry.key] = filteredTxs;
+      }
     }
-
-    final filtered = {
-      for (final key in transactionsByDay!.keys)
-        key:
-            transactionsByDay![key]!.where((tx) {
-              // We don't want to show:
-              // - receive payjoin transactions that didn't get a request from the sender yet.
-              // - expired or failed swaps.
-              final isReceivePayjoinWithoutRequest =
-                  tx.isOngoingPayjoinReceiver &&
-                  tx.payjoin!.status == PayjoinStatus.started;
-              final isExpiredOrFailedSwap =
-                  tx.isSwap &&
-                  [
-                    SwapStatus.pending,
-                    SwapStatus.expired,
-                    SwapStatus.failed,
-                  ].contains(tx.swap!.status);
-              // We also only want to show the incoming side of a chain swap,
-              //  unless in specific sending wallet overview or with the 'send'
-              //  filter selected.
-              final isOutgoingChainSwap =
-                  tx.isChainSwap &&
-                  tx.walletTransaction?.isOutgoing == true &&
-                  tx.swap!.receiveTxId != null;
-
-              return !isReceivePayjoinWithoutRequest &&
-                  !isExpiredOrFailedSwap &&
-                  switch (filter) {
-                    TransactionsFilter.all =>
-                      (!isOutgoingChainSwap ||
-                          walletId == tx.walletTransaction?.walletId),
-                    TransactionsFilter.send => tx.isOutgoing,
-                    TransactionsFilter.receive => tx.isIncoming,
-                    TransactionsFilter.swap =>
-                      tx.isSwap &&
-                          (!isOutgoingChainSwap ||
-                              walletId == tx.walletTransaction?.walletId),
-                    TransactionsFilter.payjoin =>
-                      tx.isPayjoin &&
-                          (!isOutgoingChainSwap ||
-                              walletId == tx.walletTransaction?.walletId),
-                    TransactionsFilter.sell => tx.isSellOrder,
-                    TransactionsFilter.buy => tx.isBuyOrder,
-                  };
-            }).toList(),
-    };
-
-    filtered.removeWhere((key, value) => value.isEmpty);
 
     return filtered;
   }
 
   bool get hasNoTransactions {
-    return transactions != null || transactions!.isEmpty;
+    return transactions == null || transactions!.isEmpty;
   }
 }
 
