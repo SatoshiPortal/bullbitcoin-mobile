@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -28,6 +29,7 @@ class TransactionDetailsScreen extends StatelessWidget {
     final state = context.select((TransactionDetailsCubit bloc) => bloc.state);
     final amountSat = tx.amountSat;
     final isIncoming = tx.isIncoming;
+    final isOngoingSwap = tx.isOngoingSwap;
     final isOngoingSenderPayjoin =
         context.select(
           (TransactionDetailsCubit bloc) => bloc.state.isOngoingPayjoin,
@@ -74,7 +76,7 @@ class TransactionDetailsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: 'Transaction details',
+          title: isOngoingSwap ? 'Swap Progress' : 'Transaction details',
           actionIcon: Icons.close,
           onAction: () {
             if (context.canPop()) {
@@ -109,6 +111,12 @@ class TransactionDetailsScreen extends StatelessWidget {
                       ? 'Payment In Progress'
                       : swap != null && swap.swapRefunded
                       ? 'Payment Refunded'
+                      : swap != null &&
+                          (swap.status == SwapStatus.failed ||
+                              swap.status == SwapStatus.expired)
+                      ? swap.status == SwapStatus.failed
+                          ? 'Swap Failed'
+                          : 'Swap Expired'
                       : isOrderType && tx.order != null
                       ? tx.order!.orderType.value
                       : isOngoingSenderPayjoin
@@ -116,8 +124,21 @@ class TransactionDetailsScreen extends StatelessWidget {
                       : isIncoming
                       ? 'Payment received'
                       : 'Payment sent',
-                  style: context.font.headlineLarge,
+                  style: context.font.headlineLarge?.copyWith(
+                    color:
+                        swap != null &&
+                                (swap.status == SwapStatus.failed ||
+                                    swap.status == SwapStatus.expired)
+                            ? swap.status == SwapStatus.failed
+                                ? context.colour.error
+                                : context.colour.error.withValues(alpha: 0.7)
+                            : null,
+                  ),
                 ),
+                if (isOngoingSwap && swap != null) ...[
+                  const Gap(8),
+                  _SwapProgressIndicator(swap: swap),
+                ],
                 const Gap(8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -163,12 +184,17 @@ class TransactionDetailsScreen extends StatelessWidget {
                   ),
                   const Gap(24),
                 ],
+                if (isOngoingSwap && swap != null) ...[
+                  const Gap(16),
+                  _SwapStatusDescription(swap: swap),
+                  const Gap(16),
+                ],
                 const TransactionDetailsTable(),
                 if (isOngoingSenderPayjoin) ...[
                   const Gap(24),
                   const SenderBroadcastPayjoinOriginalTxButton(),
                   const Gap(24),
-                ] else ...[
+                ] else if (!isOngoingSwap) ...[
                   const Gap(64),
                 ],
 
@@ -199,5 +225,327 @@ class TransactionDetailsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _SwapProgressIndicator extends StatelessWidget {
+  const _SwapProgressIndicator({required this.swap});
+
+  final Swap swap;
+
+  @override
+  Widget build(BuildContext context) {
+    // Define the progress steps based on swap type
+    final steps = _getProgressSteps();
+    final currentStep = _getCurrentStep();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      child: Column(
+        children: [
+          const Gap(8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(steps.length * 2 - 1, (index) {
+              // Even indices represent steps, odd indices represent connectors
+              if (index.isEven) {
+                final stepIndex = index ~/ 2;
+                final isCompleted = stepIndex < currentStep;
+                final isCurrent = stepIndex == currentStep;
+
+                return Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color:
+                        currentStep < 0
+                            ? context.colour.error
+                            : isCompleted
+                            ? context.colour.primary
+                            : isCurrent
+                            ? context.colour.secondary
+                            : context.colour.surfaceContainerHighest,
+                    shape: BoxShape.circle,
+                    border:
+                        isCurrent
+                            ? Border.all(
+                              color: context.colour.secondary,
+                              width: 2,
+                            )
+                            : null,
+                  ),
+                  child: Center(
+                    child:
+                        currentStep < 0
+                            ? Icon(
+                              Icons.error_outline,
+                              size: 16,
+                              color: context.colour.onError,
+                            )
+                            : isCompleted
+                            ? Icon(
+                              Icons.check,
+                              size: 16,
+                              color: context.colour.onPrimary,
+                            )
+                            : BBText(
+                              '${stepIndex + 1}',
+                              style: context.font.labelSmall?.copyWith(
+                                color:
+                                    isCurrent
+                                        ? context.colour.onSecondary
+                                        : context.colour.onSurfaceVariant,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                  ),
+                );
+              } else {
+                final prevStepIndex = index ~/ 2;
+                final isCompleted = prevStepIndex < currentStep;
+
+                return Container(
+                  width: 20,
+                  height: 2,
+                  color:
+                      isCompleted
+                          ? context.colour.primary
+                          : context.colour.surfaceContainerHighest,
+                );
+              }
+            }),
+          ),
+          const Gap(8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(
+              steps.length,
+              (index) => Container(
+                width: 70,
+                alignment: Alignment.center,
+                child: BBText(
+                  steps[index],
+                  style: context.font.labelSmall?.copyWith(
+                    color:
+                        index <= currentStep
+                            ? context.colour.outlineVariant
+                            : context.colour.outline,
+                    fontSize: 10,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<String> _getProgressSteps() {
+    if (swap is LnReceiveSwap) {
+      return ['Initiated', 'Payment\nReceived', 'Funds\nClaimed'];
+    } else if (swap is LnSendSwap) {
+      return ['Initiated', 'Funds\nLocked', 'Payment\nSent'];
+    } else if (swap is ChainSwap) {
+      return ['Initiated', 'Confirmed', 'Counterparty', 'Completed'];
+    }
+    return ['Initiated', 'In Progress', 'Completed'];
+  }
+
+  int _getCurrentStep() {
+    if (swap.status == SwapStatus.failed || swap.status == SwapStatus.expired) {
+      // For failed/expired, mark with special status
+      return -1;
+    }
+
+    switch (swap.status) {
+      case SwapStatus.pending:
+        return 0;
+      case SwapStatus.paid:
+        return 1;
+      case SwapStatus.claimable:
+        return swap is ChainSwap ? 2 : 1;
+      case SwapStatus.refundable:
+        return swap is ChainSwap ? 2 : 1;
+      case SwapStatus.canCoop:
+        return 1;
+      case SwapStatus.completed:
+        if (swap is ChainSwap) return 3;
+        return 2;
+      default:
+        return 0;
+    }
+  }
+}
+
+class _SwapStatusDescription extends StatelessWidget {
+  const _SwapStatusDescription({required this.swap});
+
+  final Swap swap;
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isFailedOrExpired =
+        swap.status == SwapStatus.failed || swap.status == SwapStatus.expired;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color:
+            isFailedOrExpired
+                ? context.colour.errorContainer.withValues(alpha: 0.15)
+                : context.colour.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color:
+              isFailedOrExpired
+                  ? context.colour.error.withValues(alpha: 0.5)
+                  : context.colour.outline.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                swap.status == SwapStatus.failed ||
+                        swap.status == SwapStatus.expired
+                    ? Icons.warning_amber_rounded
+                    : Icons.info_outline,
+                size: 20,
+                color:
+                    swap.status == SwapStatus.failed ||
+                            swap.status == SwapStatus.expired
+                        ? context.colour.error
+                        : context.colour.secondary,
+              ),
+              const Gap(8),
+              BBText(
+                swap.status == SwapStatus.failed
+                    ? 'Swap Failed'
+                    : swap.status == SwapStatus.expired
+                    ? 'Swap Expired'
+                    : 'Swap Status',
+                style: context.font.titleSmall?.copyWith(
+                  color:
+                      swap.status == SwapStatus.failed ||
+                              swap.status == SwapStatus.expired
+                          ? context.colour.error
+                          : context.colour.secondary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const Gap(8),
+          BBText(
+            _getSwapStatusDescription(),
+            style: context.font.bodySmall?.copyWith(
+              color:
+                  swap.status == SwapStatus.failed ||
+                          swap.status == SwapStatus.expired
+                      ? context.colour.error
+                      : context.colour.onSurfaceVariant,
+            ),
+          ),
+          if (_getAdditionalInfo().isNotEmpty) ...[
+            const Gap(12),
+            BBText(
+              _getAdditionalInfo(),
+              style: context.font.bodySmall?.copyWith(
+                color:
+                    swap.status == SwapStatus.failed ||
+                            swap.status == SwapStatus.expired
+                        ? context.colour.error.withValues(alpha: 0.8)
+                        : context.colour.outline,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  String _getSwapStatusDescription() {
+    if (swap is LnReceiveSwap) {
+      switch (swap.status) {
+        case SwapStatus.pending:
+          return 'Your swap has been initiated. We are waiting for a payment to be received on the Lightning Network.';
+        case SwapStatus.paid:
+          return 'Payment has been received! We are now broadcasting the on-chain transaction to your wallet.';
+        case SwapStatus.claimable:
+          return 'The on-chain transaction has been confirmed. We are now claiming the funds to complete your swap.';
+        case SwapStatus.completed:
+          return 'Your swap has been completed successfully! The funds should now be available in your wallet.';
+        case SwapStatus.failed:
+          return 'There was an issue with your swap. Please contact support if funds have not been returned within 24 hours.';
+        case SwapStatus.expired:
+          return 'This swap has expired. Any funds sent will be automatically returned to the sender.';
+        default:
+          return 'Your swap is in progress. This process is automated and may take some time to complete.';
+      }
+    } else if (swap is LnSendSwap) {
+      switch (swap.status) {
+        case SwapStatus.pending:
+          return 'Your swap has been initiated. We are broadcasting the on-chain transaction to lock your funds.';
+        case SwapStatus.paid:
+          return 'Your on-chain transaction has been confirmed. We are now preparing to send the Lightning payment.';
+        case SwapStatus.completed:
+          return 'The Lightning payment has been sent successfully! Your swap is now complete.';
+        case SwapStatus.failed:
+          return 'There was an issue with your swap. Your funds will be returned to your wallet automatically.';
+        case SwapStatus.expired:
+          return 'This swap has expired. Your funds will be automatically returned to your wallet.';
+        default:
+          return 'Your swap is in progress. This process is automated and may take some time to complete.';
+      }
+    } else if (swap is ChainSwap) {
+      switch (swap.status) {
+        case SwapStatus.pending:
+          return swap.type == SwapType.bitcoinToLiquid
+              ? 'Your swap has been initiated. We are broadcasting your Bitcoin transaction to start the swap process.'
+              : 'Your swap has been initiated. We are broadcasting your Liquid transaction to start the swap process.';
+        case SwapStatus.paid:
+          return 'Your transaction has been confirmed. We are now waiting for the counterparty transaction to be detected.';
+        case SwapStatus.claimable:
+          return 'The counterparty transaction has been detected. We are now claiming the funds to complete your swap.';
+        case SwapStatus.refundable:
+          return 'The swap can be refunded. Your funds will be returned to your wallet automatically.';
+        case SwapStatus.completed:
+          return 'Your swap has been completed successfully! The funds should now be available in your wallet.';
+        case SwapStatus.failed:
+          return 'There was an issue with your swap. Please contact support if funds have not been returned within 24 hours.';
+        case SwapStatus.expired:
+          return 'This swap has expired. Your funds will be automatically returned to your wallet.';
+        default:
+          return 'Your swap is in progress. This process is automated and may take some time to complete.';
+      }
+    }
+    return 'Your swap is in progress. This process is automated and may take some time to complete.';
+  }
+
+  String _getAdditionalInfo() {
+    if (swap.status == SwapStatus.failed || swap.status == SwapStatus.expired) {
+      return 'If you have any questions or concerns, please contact support for assistance.';
+    }
+
+    if (swap is ChainSwap &&
+        (swap.status == SwapStatus.pending || swap.status == SwapStatus.paid)) {
+      return 'On-chain swaps may take some time to complete due to blockchain confirmation times. Please be patient.';
+    }
+
+    if (swap.status == SwapStatus.pending ||
+        swap.status == SwapStatus.paid ||
+        swap.status == SwapStatus.claimable) {
+      return 'You can safely close this screen. The swap will continue processing in the background.';
+    }
+
+    return '';
   }
 }
