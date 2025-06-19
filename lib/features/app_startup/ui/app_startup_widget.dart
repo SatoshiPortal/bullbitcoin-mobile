@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/app_startup/presentation/bloc/app_startup_bloc.dart';
 import 'package:bb_mobile/features/app_unlock/ui/app_unlock_router.dart';
 import 'package:bb_mobile/features/onboarding/ui/onboarding_router.dart';
@@ -11,7 +10,6 @@ import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -87,10 +85,7 @@ class AppStartupListener extends StatelessWidget {
 
 Future<void> _shareLogs(BuildContext context) async {
   try {
-    final dir = await getApplicationDocumentsDirectory();
-    final logFile = File(
-      '${dir.path}/${SettingsConstants.logFileName}',
-    ); // Adjust to your filename
+    final logFile = log.migrationLogs;
 
     if (!await logFile.exists()) {
       // ignore: use_build_context_synchronously
