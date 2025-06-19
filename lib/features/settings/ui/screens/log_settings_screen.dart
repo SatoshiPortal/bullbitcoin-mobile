@@ -1,11 +1,9 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class LogSettingsScreen extends StatelessWidget {
@@ -29,7 +27,7 @@ class LogSettingsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(2),
                 ),
                 tileColor: Colors.transparent,
-                title: const Text('Download / share logs'),
+                title: const Text('Share migration logs'),
                 onTap: () => _shareLogs(context),
                 trailing: const Icon(Icons.share),
               ),
@@ -39,7 +37,7 @@ class LogSettingsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                   tileColor: Colors.transparent,
-                  title: const Text('Share session logs (experimental)'),
+                  title: const Text('Share session logs'),
                   onTap: () => _shareSessionLogs(context),
                   trailing: const Icon(Icons.share_sharp),
                 ),
@@ -53,10 +51,8 @@ class LogSettingsScreen extends StatelessWidget {
   Future<void> _shareLogs(BuildContext context) async {
     if (!context.mounted) return;
     try {
-      final dir = await getApplicationDocumentsDirectory();
       if (!context.mounted) return;
-      final logFile = File('${dir.path}/${SettingsConstants.logFileName}');
-      await _shareFile(context, logFile);
+      await _shareFile(context, log.migrationLogs);
     } catch (e) {
       if (!context.mounted) return;
       _showErrorSnackbar(context, e.toString());
@@ -66,9 +62,8 @@ class LogSettingsScreen extends StatelessWidget {
   Future<void> _shareSessionLogs(BuildContext context) async {
     try {
       await log.dumpSessionToFile();
-      final logFile = File(log.path);
       if (!context.mounted) return;
-      await _shareFile(context, logFile);
+      await _shareFile(context, log.sessionLogs);
     } catch (e) {
       if (!context.mounted) return;
       _showErrorSnackbar(context, e.toString());
