@@ -3,11 +3,11 @@ import 'package:bb_mobile/features/fund_exchange/presentation/bloc/fund_exchange
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_details_error_card.dart';
 import 'package:bb_mobile/features/fund_exchange/ui/widgets/fund_exchange_done_bottom_navigation_bar.dart';
 import 'package:bb_mobile/ui/components/loading/loading_box_content.dart';
+import 'package:bb_mobile/ui/components/qr_code_widget.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class FundExchangeCanadaPostScreen extends StatelessWidget {
   const FundExchangeCanadaPostScreen({super.key});
@@ -61,9 +61,9 @@ class FundExchangeCanadaPostScreen extends StatelessWidget {
                       ),
                       const Gap(8.0),
                       if (details?.code == null)
-                        const LoadingBoxContent(height: 250.0, width: 250.0)
+                        const LoadingBoxContent(height: 200.0, width: 200.0)
                       else
-                        QrImageView(size: 250, data: details!.code),
+                        QrCodeWidget(data: details!.code),
                       const Gap(24.0),
                     ],
                   ),

@@ -28,7 +28,7 @@ dependencies:
     git:
       url: https://github.com/DanGould/payjoin-flutter
       ref: 322b61b9074be2c0170e44e589f6552917e58a2e
-  qr_flutter: ^4.1.0
+  image: ^4.5.4
   dio: ^5.2.1+1
   timeago: ^3.3.0
   flutter_native_splash: ^2.4.0

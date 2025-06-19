@@ -6,6 +6,7 @@ import 'package:bb_mobile/features/receive/ui/widgets/receive_enter_note.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/copy_input.dart';
 import 'package:bb_mobile/ui/components/loading/loading_box_content.dart';
+import 'package:bb_mobile/ui/components/qr_code_widget.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 class ReceiveQrPage extends StatelessWidget {
   const ReceiveQrPage({super.key, this.wallet});
@@ -85,7 +85,7 @@ class ReceiveQRDetails extends StatelessWidget {
             ),
             child:
                 qrData.isNotEmpty
-                    ? QrImageView(data: qrData)
+                    ? QrCodeWidget(data: qrData)
                     : const LoadingBoxContent(height: 200),
           ),
         ),
