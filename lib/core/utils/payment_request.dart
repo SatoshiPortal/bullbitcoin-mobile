@@ -78,11 +78,18 @@ sealed class PaymentRequest with _$PaymentRequest {
           final withoutPrefix = trimmed
               .replaceAll("lightning:", "")
               .replaceAll("LIGHTNING:", "");
-          final result = await _tryParseBolt11(withoutPrefix.toLowerCase());
+          if (withoutPrefix.toLowerCase().startsWith('lnurl') ||
+              withoutPrefix.contains('@')) {
+            final result = await _tryParseLnAddress(withoutPrefix);
+            if (result != null) return result;
+          } else {
+            final result = await _tryParseBolt11(withoutPrefix.toLowerCase());
+            if (result != null) return result;
+          }
+        } else {
+          final result = await _tryParseBolt11(trimmed.toLowerCase());
           if (result != null) return result;
         }
-        final result = await _tryParseBolt11(trimmed.toLowerCase());
-        if (result != null) return result;
       }
 
       if (trimmed.toLowerCase().startsWith('lnurl') || trimmed.contains('@')) {
