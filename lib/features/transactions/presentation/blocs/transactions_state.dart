@@ -20,10 +20,16 @@ abstract class TransactionsState with _$TransactionsState {
 
     final ongoingList = <Transaction>[];
     for (final tx in txList) {
-      if (tx.isOngoingSwap &&
+      // Show swaps where funds are truly in transit/locked up - not yet reached final outcome
+      if (tx.isSwap &&
           tx.swap != null &&
-          tx.swap?.status != SwapStatus.expired &&
-          tx.swap?.status != SwapStatus.failed) {
+          [
+            SwapStatus.pending,
+            SwapStatus.paid,
+            SwapStatus.claimable,
+            SwapStatus.refundable,
+            SwapStatus.canCoop,
+          ].contains(tx.swap?.status)) {
         ongoingList.add(tx);
       }
     }
@@ -97,15 +103,14 @@ abstract class TransactionsState with _$TransactionsState {
             // - expired or failed swaps.
             final isReceivePayjoinWithoutRequest =
                 tx.isOngoingPayjoinReceiver &&
-                tx.payjoin!.status == PayjoinStatus.started;
+                tx.payjoin?.status == PayjoinStatus.started;
 
             final isExpiredOrFailedSwap =
                 tx.isSwap &&
                 [
-                  SwapStatus.pending,
                   SwapStatus.expired,
                   SwapStatus.failed,
-                ].contains(tx.swap!.status);
+                ].contains(tx.swap?.status);
 
             if (isReceivePayjoinWithoutRequest || isExpiredOrFailedSwap) {
               return false;
@@ -117,7 +122,7 @@ abstract class TransactionsState with _$TransactionsState {
             final isOutgoingChainSwap =
                 tx.isChainSwap &&
                 tx.walletTransaction?.isOutgoing == true &&
-                tx.swap!.receiveTxId != null;
+                tx.swap?.receiveTxId != null;
 
             return switch (filter) {
               TransactionsFilter.all =>
