@@ -189,6 +189,7 @@ class SendCubit extends Cubit<SendState> {
     emit(
       state.copyWith(
         scannedRawPaymentRequest: scannedRawPaymentRequest,
+        copiedRawPaymentRequest: scannedRawPaymentRequest,
         paymentRequest: paymentRequest,
       ),
     );

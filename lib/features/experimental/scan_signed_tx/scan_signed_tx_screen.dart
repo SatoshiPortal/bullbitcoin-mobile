@@ -48,50 +48,96 @@ class _ScanSignedTxView extends StatelessWidget {
           builder: (context, state) {
             final cubit = context.read<ScanSignedTxCubit>();
 
-            return Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (state.parts.isNotEmpty)
-                    Text(
-                      'Parts collected: ${state.parts.length}',
-                      style: context.font.bodyMedium?.copyWith(
-                        color: context.colour.secondary,
+            return Stack(
+              children: [
+                // Full page scanner
+                if (state.transaction == null)
+                  ScannerWidget(onScanned: cubit.tryCollectTx),
+
+                // Overlay with status, paste input, and broadcast button
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          context.colour.surface.withAlpha(230),
+                          context.colour.surface,
+                        ],
                       ),
                     ),
-                  if (state.error != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        state.error!,
-                        style: context.font.bodyMedium?.copyWith(
-                          color: context.colour.error,
-                        ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Status section
+                          if (state.parts.isNotEmpty)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: context.colour.secondary.withAlpha(10),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'Parts collected: ${state.parts.length}',
+                                style: context.font.bodyMedium?.copyWith(
+                                  color: context.colour.secondary,
+                                ),
+                              ),
+                            ),
+                          if (state.error != null)
+                            Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.only(top: 8.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: context.colour.error.withAlpha(10),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                state.error!,
+                                style: context.font.bodyMedium?.copyWith(
+                                  color: context.colour.error,
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 16),
+
+                          // Paste input
+                          PasteInput(
+                            text: state.transaction?.data ?? '',
+                            hint: 'Paste a PSBT or transaction HEX',
+                            onChanged: cubit.tryParseTransaction,
+                          ),
+
+                          // Broadcast button
+                          if (state.transaction != null) ...[
+                            const SizedBox(height: 16),
+                            BBButton.big(
+                              label: 'Broadcast',
+                              bgColor: context.colour.secondary,
+                              textColor: context.colour.onPrimary,
+                              onPressed: cubit.broadcastTransaction,
+                            ),
+                          ],
+                        ],
                       ),
                     ),
-                  if (state.transaction == null)
-                    Expanded(
-                      child: Center(
-                        child: ScannerWidget(onScanned: cubit.tryCollectTx),
-                      ),
-                    ),
-                  PasteInput(
-                    text: state.transaction?.data ?? '',
-                    hint: 'Paste a PSBT or transaction HEX',
-                    onChanged: cubit.tryParseTransaction,
                   ),
-                  if (state.transaction != null) ...[
-                    const SizedBox(height: 16),
-                    BBButton.big(
-                      label: 'Broadcast',
-                      bgColor: context.colour.secondary,
-                      textColor: context.colour.onPrimary,
-                      onPressed: cubit.broadcastTransaction,
-                    ),
-                  ],
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),
