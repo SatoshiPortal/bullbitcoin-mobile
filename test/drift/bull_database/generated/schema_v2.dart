@@ -1,4 +1,5 @@
 // dart format width=80
+import 'dart:typed_data' as i2;
 // GENERATED CODE, DO NOT EDIT BY HAND.
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart';
@@ -585,752 +586,6 @@ class TransactionsCompanion extends UpdateCompanion<TransactionsData> {
   }
 }
 
-class V5MigrateWalletMetadatas extends Table
-    with TableInfo<V5MigrateWalletMetadatas, V5MigrateWalletMetadatasData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  V5MigrateWalletMetadatas(this.attachedDatabase, [this._alias]);
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  late final GeneratedColumn<String> masterFingerprint =
-      GeneratedColumn<String>(
-        'master_fingerprint',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-      );
-  late final GeneratedColumn<String> xpubFingerprint = GeneratedColumn<String>(
-    'xpub_fingerprint',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  late final GeneratedColumn<bool> isEncryptedVaultTested =
-      GeneratedColumn<bool>(
-        'is_encrypted_vault_tested',
-        aliasedName,
-        false,
-        type: DriftSqlType.bool,
-        requiredDuringInsert: true,
-        defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("is_encrypted_vault_tested" IN (0, 1))',
-        ),
-      );
-  late final GeneratedColumn<bool> isPhysicalBackupTested =
-      GeneratedColumn<bool>(
-        'is_physical_backup_tested',
-        aliasedName,
-        false,
-        type: DriftSqlType.bool,
-        requiredDuringInsert: true,
-        defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("is_physical_backup_tested" IN (0, 1))',
-        ),
-      );
-  late final GeneratedColumn<int> latestEncryptedBackup = GeneratedColumn<int>(
-    'latest_encrypted_backup',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  late final GeneratedColumn<int> latestPhysicalBackup = GeneratedColumn<int>(
-    'latest_physical_backup',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  late final GeneratedColumn<String> xpub = GeneratedColumn<String>(
-    'xpub',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  late final GeneratedColumn<String> externalPublicDescriptor =
-      GeneratedColumn<String>(
-        'external_public_descriptor',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-      );
-  late final GeneratedColumn<String> internalPublicDescriptor =
-      GeneratedColumn<String>(
-        'internal_public_descriptor',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-      );
-  late final GeneratedColumn<String> source = GeneratedColumn<String>(
-    'source',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
-    'is_default',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_default" IN (0, 1))',
-    ),
-  );
-  late final GeneratedColumn<String> label = GeneratedColumn<String>(
-    'label',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  late final GeneratedColumn<DateTime> syncedAt = GeneratedColumn<DateTime>(
-    'synced_at',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    masterFingerprint,
-    xpubFingerprint,
-    isEncryptedVaultTested,
-    isPhysicalBackupTested,
-    latestEncryptedBackup,
-    latestPhysicalBackup,
-    xpub,
-    externalPublicDescriptor,
-    internalPublicDescriptor,
-    source,
-    isDefault,
-    label,
-    syncedAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'v5_migrate_wallet_metadatas';
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  V5MigrateWalletMetadatasData map(
-    Map<String, dynamic> data, {
-    String? tablePrefix,
-  }) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return V5MigrateWalletMetadatasData(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}id'],
-          )!,
-      masterFingerprint:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}master_fingerprint'],
-          )!,
-      xpubFingerprint:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}xpub_fingerprint'],
-          )!,
-      isEncryptedVaultTested:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_encrypted_vault_tested'],
-          )!,
-      isPhysicalBackupTested:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_physical_backup_tested'],
-          )!,
-      latestEncryptedBackup: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}latest_encrypted_backup'],
-      ),
-      latestPhysicalBackup: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}latest_physical_backup'],
-      ),
-      xpub:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}xpub'],
-          )!,
-      externalPublicDescriptor:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}external_public_descriptor'],
-          )!,
-      internalPublicDescriptor:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}internal_public_descriptor'],
-          )!,
-      source:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}source'],
-          )!,
-      isDefault:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.bool,
-            data['${effectivePrefix}is_default'],
-          )!,
-      label:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}label'],
-          )!,
-      syncedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}synced_at'],
-      ),
-    );
-  }
-
-  @override
-  V5MigrateWalletMetadatas createAlias(String alias) {
-    return V5MigrateWalletMetadatas(attachedDatabase, alias);
-  }
-}
-
-class V5MigrateWalletMetadatasData extends DataClass
-    implements Insertable<V5MigrateWalletMetadatasData> {
-  final String id;
-  final String masterFingerprint;
-  final String xpubFingerprint;
-  final bool isEncryptedVaultTested;
-  final bool isPhysicalBackupTested;
-  final int? latestEncryptedBackup;
-  final int? latestPhysicalBackup;
-  final String xpub;
-  final String externalPublicDescriptor;
-  final String internalPublicDescriptor;
-  final String source;
-  final bool isDefault;
-  final String label;
-  final DateTime? syncedAt;
-  const V5MigrateWalletMetadatasData({
-    required this.id,
-    required this.masterFingerprint,
-    required this.xpubFingerprint,
-    required this.isEncryptedVaultTested,
-    required this.isPhysicalBackupTested,
-    this.latestEncryptedBackup,
-    this.latestPhysicalBackup,
-    required this.xpub,
-    required this.externalPublicDescriptor,
-    required this.internalPublicDescriptor,
-    required this.source,
-    required this.isDefault,
-    required this.label,
-    this.syncedAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['master_fingerprint'] = Variable<String>(masterFingerprint);
-    map['xpub_fingerprint'] = Variable<String>(xpubFingerprint);
-    map['is_encrypted_vault_tested'] = Variable<bool>(isEncryptedVaultTested);
-    map['is_physical_backup_tested'] = Variable<bool>(isPhysicalBackupTested);
-    if (!nullToAbsent || latestEncryptedBackup != null) {
-      map['latest_encrypted_backup'] = Variable<int>(latestEncryptedBackup);
-    }
-    if (!nullToAbsent || latestPhysicalBackup != null) {
-      map['latest_physical_backup'] = Variable<int>(latestPhysicalBackup);
-    }
-    map['xpub'] = Variable<String>(xpub);
-    map['external_public_descriptor'] = Variable<String>(
-      externalPublicDescriptor,
-    );
-    map['internal_public_descriptor'] = Variable<String>(
-      internalPublicDescriptor,
-    );
-    map['source'] = Variable<String>(source);
-    map['is_default'] = Variable<bool>(isDefault);
-    map['label'] = Variable<String>(label);
-    if (!nullToAbsent || syncedAt != null) {
-      map['synced_at'] = Variable<DateTime>(syncedAt);
-    }
-    return map;
-  }
-
-  V5MigrateWalletMetadatasCompanion toCompanion(bool nullToAbsent) {
-    return V5MigrateWalletMetadatasCompanion(
-      id: Value(id),
-      masterFingerprint: Value(masterFingerprint),
-      xpubFingerprint: Value(xpubFingerprint),
-      isEncryptedVaultTested: Value(isEncryptedVaultTested),
-      isPhysicalBackupTested: Value(isPhysicalBackupTested),
-      latestEncryptedBackup:
-          latestEncryptedBackup == null && nullToAbsent
-              ? const Value.absent()
-              : Value(latestEncryptedBackup),
-      latestPhysicalBackup:
-          latestPhysicalBackup == null && nullToAbsent
-              ? const Value.absent()
-              : Value(latestPhysicalBackup),
-      xpub: Value(xpub),
-      externalPublicDescriptor: Value(externalPublicDescriptor),
-      internalPublicDescriptor: Value(internalPublicDescriptor),
-      source: Value(source),
-      isDefault: Value(isDefault),
-      label: Value(label),
-      syncedAt:
-          syncedAt == null && nullToAbsent
-              ? const Value.absent()
-              : Value(syncedAt),
-    );
-  }
-
-  factory V5MigrateWalletMetadatasData.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return V5MigrateWalletMetadatasData(
-      id: serializer.fromJson<String>(json['id']),
-      masterFingerprint: serializer.fromJson<String>(json['masterFingerprint']),
-      xpubFingerprint: serializer.fromJson<String>(json['xpubFingerprint']),
-      isEncryptedVaultTested: serializer.fromJson<bool>(
-        json['isEncryptedVaultTested'],
-      ),
-      isPhysicalBackupTested: serializer.fromJson<bool>(
-        json['isPhysicalBackupTested'],
-      ),
-      latestEncryptedBackup: serializer.fromJson<int?>(
-        json['latestEncryptedBackup'],
-      ),
-      latestPhysicalBackup: serializer.fromJson<int?>(
-        json['latestPhysicalBackup'],
-      ),
-      xpub: serializer.fromJson<String>(json['xpub']),
-      externalPublicDescriptor: serializer.fromJson<String>(
-        json['externalPublicDescriptor'],
-      ),
-      internalPublicDescriptor: serializer.fromJson<String>(
-        json['internalPublicDescriptor'],
-      ),
-      source: serializer.fromJson<String>(json['source']),
-      isDefault: serializer.fromJson<bool>(json['isDefault']),
-      label: serializer.fromJson<String>(json['label']),
-      syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'masterFingerprint': serializer.toJson<String>(masterFingerprint),
-      'xpubFingerprint': serializer.toJson<String>(xpubFingerprint),
-      'isEncryptedVaultTested': serializer.toJson<bool>(isEncryptedVaultTested),
-      'isPhysicalBackupTested': serializer.toJson<bool>(isPhysicalBackupTested),
-      'latestEncryptedBackup': serializer.toJson<int?>(latestEncryptedBackup),
-      'latestPhysicalBackup': serializer.toJson<int?>(latestPhysicalBackup),
-      'xpub': serializer.toJson<String>(xpub),
-      'externalPublicDescriptor': serializer.toJson<String>(
-        externalPublicDescriptor,
-      ),
-      'internalPublicDescriptor': serializer.toJson<String>(
-        internalPublicDescriptor,
-      ),
-      'source': serializer.toJson<String>(source),
-      'isDefault': serializer.toJson<bool>(isDefault),
-      'label': serializer.toJson<String>(label),
-      'syncedAt': serializer.toJson<DateTime?>(syncedAt),
-    };
-  }
-
-  V5MigrateWalletMetadatasData copyWith({
-    String? id,
-    String? masterFingerprint,
-    String? xpubFingerprint,
-    bool? isEncryptedVaultTested,
-    bool? isPhysicalBackupTested,
-    Value<int?> latestEncryptedBackup = const Value.absent(),
-    Value<int?> latestPhysicalBackup = const Value.absent(),
-    String? xpub,
-    String? externalPublicDescriptor,
-    String? internalPublicDescriptor,
-    String? source,
-    bool? isDefault,
-    String? label,
-    Value<DateTime?> syncedAt = const Value.absent(),
-  }) => V5MigrateWalletMetadatasData(
-    id: id ?? this.id,
-    masterFingerprint: masterFingerprint ?? this.masterFingerprint,
-    xpubFingerprint: xpubFingerprint ?? this.xpubFingerprint,
-    isEncryptedVaultTested:
-        isEncryptedVaultTested ?? this.isEncryptedVaultTested,
-    isPhysicalBackupTested:
-        isPhysicalBackupTested ?? this.isPhysicalBackupTested,
-    latestEncryptedBackup:
-        latestEncryptedBackup.present
-            ? latestEncryptedBackup.value
-            : this.latestEncryptedBackup,
-    latestPhysicalBackup:
-        latestPhysicalBackup.present
-            ? latestPhysicalBackup.value
-            : this.latestPhysicalBackup,
-    xpub: xpub ?? this.xpub,
-    externalPublicDescriptor:
-        externalPublicDescriptor ?? this.externalPublicDescriptor,
-    internalPublicDescriptor:
-        internalPublicDescriptor ?? this.internalPublicDescriptor,
-    source: source ?? this.source,
-    isDefault: isDefault ?? this.isDefault,
-    label: label ?? this.label,
-    syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
-  );
-  V5MigrateWalletMetadatasData copyWithCompanion(
-    V5MigrateWalletMetadatasCompanion data,
-  ) {
-    return V5MigrateWalletMetadatasData(
-      id: data.id.present ? data.id.value : this.id,
-      masterFingerprint:
-          data.masterFingerprint.present
-              ? data.masterFingerprint.value
-              : this.masterFingerprint,
-      xpubFingerprint:
-          data.xpubFingerprint.present
-              ? data.xpubFingerprint.value
-              : this.xpubFingerprint,
-      isEncryptedVaultTested:
-          data.isEncryptedVaultTested.present
-              ? data.isEncryptedVaultTested.value
-              : this.isEncryptedVaultTested,
-      isPhysicalBackupTested:
-          data.isPhysicalBackupTested.present
-              ? data.isPhysicalBackupTested.value
-              : this.isPhysicalBackupTested,
-      latestEncryptedBackup:
-          data.latestEncryptedBackup.present
-              ? data.latestEncryptedBackup.value
-              : this.latestEncryptedBackup,
-      latestPhysicalBackup:
-          data.latestPhysicalBackup.present
-              ? data.latestPhysicalBackup.value
-              : this.latestPhysicalBackup,
-      xpub: data.xpub.present ? data.xpub.value : this.xpub,
-      externalPublicDescriptor:
-          data.externalPublicDescriptor.present
-              ? data.externalPublicDescriptor.value
-              : this.externalPublicDescriptor,
-      internalPublicDescriptor:
-          data.internalPublicDescriptor.present
-              ? data.internalPublicDescriptor.value
-              : this.internalPublicDescriptor,
-      source: data.source.present ? data.source.value : this.source,
-      isDefault: data.isDefault.present ? data.isDefault.value : this.isDefault,
-      label: data.label.present ? data.label.value : this.label,
-      syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('V5MigrateWalletMetadatasData(')
-          ..write('id: $id, ')
-          ..write('masterFingerprint: $masterFingerprint, ')
-          ..write('xpubFingerprint: $xpubFingerprint, ')
-          ..write('isEncryptedVaultTested: $isEncryptedVaultTested, ')
-          ..write('isPhysicalBackupTested: $isPhysicalBackupTested, ')
-          ..write('latestEncryptedBackup: $latestEncryptedBackup, ')
-          ..write('latestPhysicalBackup: $latestPhysicalBackup, ')
-          ..write('xpub: $xpub, ')
-          ..write('externalPublicDescriptor: $externalPublicDescriptor, ')
-          ..write('internalPublicDescriptor: $internalPublicDescriptor, ')
-          ..write('source: $source, ')
-          ..write('isDefault: $isDefault, ')
-          ..write('label: $label, ')
-          ..write('syncedAt: $syncedAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    masterFingerprint,
-    xpubFingerprint,
-    isEncryptedVaultTested,
-    isPhysicalBackupTested,
-    latestEncryptedBackup,
-    latestPhysicalBackup,
-    xpub,
-    externalPublicDescriptor,
-    internalPublicDescriptor,
-    source,
-    isDefault,
-    label,
-    syncedAt,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is V5MigrateWalletMetadatasData &&
-          other.id == this.id &&
-          other.masterFingerprint == this.masterFingerprint &&
-          other.xpubFingerprint == this.xpubFingerprint &&
-          other.isEncryptedVaultTested == this.isEncryptedVaultTested &&
-          other.isPhysicalBackupTested == this.isPhysicalBackupTested &&
-          other.latestEncryptedBackup == this.latestEncryptedBackup &&
-          other.latestPhysicalBackup == this.latestPhysicalBackup &&
-          other.xpub == this.xpub &&
-          other.externalPublicDescriptor == this.externalPublicDescriptor &&
-          other.internalPublicDescriptor == this.internalPublicDescriptor &&
-          other.source == this.source &&
-          other.isDefault == this.isDefault &&
-          other.label == this.label &&
-          other.syncedAt == this.syncedAt);
-}
-
-class V5MigrateWalletMetadatasCompanion
-    extends UpdateCompanion<V5MigrateWalletMetadatasData> {
-  final Value<String> id;
-  final Value<String> masterFingerprint;
-  final Value<String> xpubFingerprint;
-  final Value<bool> isEncryptedVaultTested;
-  final Value<bool> isPhysicalBackupTested;
-  final Value<int?> latestEncryptedBackup;
-  final Value<int?> latestPhysicalBackup;
-  final Value<String> xpub;
-  final Value<String> externalPublicDescriptor;
-  final Value<String> internalPublicDescriptor;
-  final Value<String> source;
-  final Value<bool> isDefault;
-  final Value<String> label;
-  final Value<DateTime?> syncedAt;
-  final Value<int> rowid;
-  const V5MigrateWalletMetadatasCompanion({
-    this.id = const Value.absent(),
-    this.masterFingerprint = const Value.absent(),
-    this.xpubFingerprint = const Value.absent(),
-    this.isEncryptedVaultTested = const Value.absent(),
-    this.isPhysicalBackupTested = const Value.absent(),
-    this.latestEncryptedBackup = const Value.absent(),
-    this.latestPhysicalBackup = const Value.absent(),
-    this.xpub = const Value.absent(),
-    this.externalPublicDescriptor = const Value.absent(),
-    this.internalPublicDescriptor = const Value.absent(),
-    this.source = const Value.absent(),
-    this.isDefault = const Value.absent(),
-    this.label = const Value.absent(),
-    this.syncedAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  V5MigrateWalletMetadatasCompanion.insert({
-    required String id,
-    required String masterFingerprint,
-    required String xpubFingerprint,
-    required bool isEncryptedVaultTested,
-    required bool isPhysicalBackupTested,
-    this.latestEncryptedBackup = const Value.absent(),
-    this.latestPhysicalBackup = const Value.absent(),
-    required String xpub,
-    required String externalPublicDescriptor,
-    required String internalPublicDescriptor,
-    required String source,
-    required bool isDefault,
-    required String label,
-    this.syncedAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       masterFingerprint = Value(masterFingerprint),
-       xpubFingerprint = Value(xpubFingerprint),
-       isEncryptedVaultTested = Value(isEncryptedVaultTested),
-       isPhysicalBackupTested = Value(isPhysicalBackupTested),
-       xpub = Value(xpub),
-       externalPublicDescriptor = Value(externalPublicDescriptor),
-       internalPublicDescriptor = Value(internalPublicDescriptor),
-       source = Value(source),
-       isDefault = Value(isDefault),
-       label = Value(label);
-  static Insertable<V5MigrateWalletMetadatasData> custom({
-    Expression<String>? id,
-    Expression<String>? masterFingerprint,
-    Expression<String>? xpubFingerprint,
-    Expression<bool>? isEncryptedVaultTested,
-    Expression<bool>? isPhysicalBackupTested,
-    Expression<int>? latestEncryptedBackup,
-    Expression<int>? latestPhysicalBackup,
-    Expression<String>? xpub,
-    Expression<String>? externalPublicDescriptor,
-    Expression<String>? internalPublicDescriptor,
-    Expression<String>? source,
-    Expression<bool>? isDefault,
-    Expression<String>? label,
-    Expression<DateTime>? syncedAt,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (masterFingerprint != null) 'master_fingerprint': masterFingerprint,
-      if (xpubFingerprint != null) 'xpub_fingerprint': xpubFingerprint,
-      if (isEncryptedVaultTested != null)
-        'is_encrypted_vault_tested': isEncryptedVaultTested,
-      if (isPhysicalBackupTested != null)
-        'is_physical_backup_tested': isPhysicalBackupTested,
-      if (latestEncryptedBackup != null)
-        'latest_encrypted_backup': latestEncryptedBackup,
-      if (latestPhysicalBackup != null)
-        'latest_physical_backup': latestPhysicalBackup,
-      if (xpub != null) 'xpub': xpub,
-      if (externalPublicDescriptor != null)
-        'external_public_descriptor': externalPublicDescriptor,
-      if (internalPublicDescriptor != null)
-        'internal_public_descriptor': internalPublicDescriptor,
-      if (source != null) 'source': source,
-      if (isDefault != null) 'is_default': isDefault,
-      if (label != null) 'label': label,
-      if (syncedAt != null) 'synced_at': syncedAt,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  V5MigrateWalletMetadatasCompanion copyWith({
-    Value<String>? id,
-    Value<String>? masterFingerprint,
-    Value<String>? xpubFingerprint,
-    Value<bool>? isEncryptedVaultTested,
-    Value<bool>? isPhysicalBackupTested,
-    Value<int?>? latestEncryptedBackup,
-    Value<int?>? latestPhysicalBackup,
-    Value<String>? xpub,
-    Value<String>? externalPublicDescriptor,
-    Value<String>? internalPublicDescriptor,
-    Value<String>? source,
-    Value<bool>? isDefault,
-    Value<String>? label,
-    Value<DateTime?>? syncedAt,
-    Value<int>? rowid,
-  }) {
-    return V5MigrateWalletMetadatasCompanion(
-      id: id ?? this.id,
-      masterFingerprint: masterFingerprint ?? this.masterFingerprint,
-      xpubFingerprint: xpubFingerprint ?? this.xpubFingerprint,
-      isEncryptedVaultTested:
-          isEncryptedVaultTested ?? this.isEncryptedVaultTested,
-      isPhysicalBackupTested:
-          isPhysicalBackupTested ?? this.isPhysicalBackupTested,
-      latestEncryptedBackup:
-          latestEncryptedBackup ?? this.latestEncryptedBackup,
-      latestPhysicalBackup: latestPhysicalBackup ?? this.latestPhysicalBackup,
-      xpub: xpub ?? this.xpub,
-      externalPublicDescriptor:
-          externalPublicDescriptor ?? this.externalPublicDescriptor,
-      internalPublicDescriptor:
-          internalPublicDescriptor ?? this.internalPublicDescriptor,
-      source: source ?? this.source,
-      isDefault: isDefault ?? this.isDefault,
-      label: label ?? this.label,
-      syncedAt: syncedAt ?? this.syncedAt,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (masterFingerprint.present) {
-      map['master_fingerprint'] = Variable<String>(masterFingerprint.value);
-    }
-    if (xpubFingerprint.present) {
-      map['xpub_fingerprint'] = Variable<String>(xpubFingerprint.value);
-    }
-    if (isEncryptedVaultTested.present) {
-      map['is_encrypted_vault_tested'] = Variable<bool>(
-        isEncryptedVaultTested.value,
-      );
-    }
-    if (isPhysicalBackupTested.present) {
-      map['is_physical_backup_tested'] = Variable<bool>(
-        isPhysicalBackupTested.value,
-      );
-    }
-    if (latestEncryptedBackup.present) {
-      map['latest_encrypted_backup'] = Variable<int>(
-        latestEncryptedBackup.value,
-      );
-    }
-    if (latestPhysicalBackup.present) {
-      map['latest_physical_backup'] = Variable<int>(latestPhysicalBackup.value);
-    }
-    if (xpub.present) {
-      map['xpub'] = Variable<String>(xpub.value);
-    }
-    if (externalPublicDescriptor.present) {
-      map['external_public_descriptor'] = Variable<String>(
-        externalPublicDescriptor.value,
-      );
-    }
-    if (internalPublicDescriptor.present) {
-      map['internal_public_descriptor'] = Variable<String>(
-        internalPublicDescriptor.value,
-      );
-    }
-    if (source.present) {
-      map['source'] = Variable<String>(source.value);
-    }
-    if (isDefault.present) {
-      map['is_default'] = Variable<bool>(isDefault.value);
-    }
-    if (label.present) {
-      map['label'] = Variable<String>(label.value);
-    }
-    if (syncedAt.present) {
-      map['synced_at'] = Variable<DateTime>(syncedAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('V5MigrateWalletMetadatasCompanion(')
-          ..write('id: $id, ')
-          ..write('masterFingerprint: $masterFingerprint, ')
-          ..write('xpubFingerprint: $xpubFingerprint, ')
-          ..write('isEncryptedVaultTested: $isEncryptedVaultTested, ')
-          ..write('isPhysicalBackupTested: $isPhysicalBackupTested, ')
-          ..write('latestEncryptedBackup: $latestEncryptedBackup, ')
-          ..write('latestPhysicalBackup: $latestPhysicalBackup, ')
-          ..write('xpub: $xpub, ')
-          ..write('externalPublicDescriptor: $externalPublicDescriptor, ')
-          ..write('internalPublicDescriptor: $internalPublicDescriptor, ')
-          ..write('source: $source, ')
-          ..write('isDefault: $isDefault, ')
-          ..write('label: $label, ')
-          ..write('syncedAt: $syncedAt, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class WalletMetadatas extends Table
     with TableInfo<WalletMetadatas, WalletMetadatasData> {
   @override
@@ -1438,9 +693,9 @@ class WalletMetadatas extends Table
   late final GeneratedColumn<String> label = GeneratedColumn<String>(
     'label',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   late final GeneratedColumn<DateTime> syncedAt = GeneratedColumn<DateTime>(
     'synced_at',
@@ -1535,11 +790,10 @@ class WalletMetadatas extends Table
             DriftSqlType.bool,
             data['${effectivePrefix}is_default'],
           )!,
-      label:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}label'],
-          )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      ),
       syncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}synced_at'],
@@ -1567,7 +821,7 @@ class WalletMetadatasData extends DataClass
   final String internalPublicDescriptor;
   final String source;
   final bool isDefault;
-  final String label;
+  final String? label;
   final DateTime? syncedAt;
   const WalletMetadatasData({
     required this.id,
@@ -1582,7 +836,7 @@ class WalletMetadatasData extends DataClass
     required this.internalPublicDescriptor,
     required this.source,
     required this.isDefault,
-    required this.label,
+    this.label,
     this.syncedAt,
   });
   @override
@@ -1608,7 +862,9 @@ class WalletMetadatasData extends DataClass
     );
     map['source'] = Variable<String>(source);
     map['is_default'] = Variable<bool>(isDefault);
-    map['label'] = Variable<String>(label);
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
     if (!nullToAbsent || syncedAt != null) {
       map['synced_at'] = Variable<DateTime>(syncedAt);
     }
@@ -1635,7 +891,8 @@ class WalletMetadatasData extends DataClass
       internalPublicDescriptor: Value(internalPublicDescriptor),
       source: Value(source),
       isDefault: Value(isDefault),
-      label: Value(label),
+      label:
+          label == null && nullToAbsent ? const Value.absent() : Value(label),
       syncedAt:
           syncedAt == null && nullToAbsent
               ? const Value.absent()
@@ -1673,7 +930,7 @@ class WalletMetadatasData extends DataClass
       ),
       source: serializer.fromJson<String>(json['source']),
       isDefault: serializer.fromJson<bool>(json['isDefault']),
-      label: serializer.fromJson<String>(json['label']),
+      label: serializer.fromJson<String?>(json['label']),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
     );
   }
@@ -1697,7 +954,7 @@ class WalletMetadatasData extends DataClass
       ),
       'source': serializer.toJson<String>(source),
       'isDefault': serializer.toJson<bool>(isDefault),
-      'label': serializer.toJson<String>(label),
+      'label': serializer.toJson<String?>(label),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
     };
   }
@@ -1715,7 +972,7 @@ class WalletMetadatasData extends DataClass
     String? internalPublicDescriptor,
     String? source,
     bool? isDefault,
-    String? label,
+    Value<String?> label = const Value.absent(),
     Value<DateTime?> syncedAt = const Value.absent(),
   }) => WalletMetadatasData(
     id: id ?? this.id,
@@ -1740,7 +997,7 @@ class WalletMetadatasData extends DataClass
         internalPublicDescriptor ?? this.internalPublicDescriptor,
     source: source ?? this.source,
     isDefault: isDefault ?? this.isDefault,
-    label: label ?? this.label,
+    label: label.present ? label.value : this.label,
     syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
   );
   WalletMetadatasData copyWithCompanion(WalletMetadatasCompanion data) {
@@ -1857,7 +1114,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   final Value<String> internalPublicDescriptor;
   final Value<String> source;
   final Value<bool> isDefault;
-  final Value<String> label;
+  final Value<String?> label;
   final Value<DateTime?> syncedAt;
   final Value<int> rowid;
   const WalletMetadatasCompanion({
@@ -1890,7 +1147,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     required String internalPublicDescriptor,
     required String source,
     required bool isDefault,
-    required String label,
+    this.label = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -1902,8 +1159,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
        externalPublicDescriptor = Value(externalPublicDescriptor),
        internalPublicDescriptor = Value(internalPublicDescriptor),
        source = Value(source),
-       isDefault = Value(isDefault),
-       label = Value(label);
+       isDefault = Value(isDefault);
   static Insertable<WalletMetadatasData> custom({
     Expression<String>? id,
     Expression<String>? masterFingerprint,
@@ -1959,7 +1215,7 @@ class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
     Value<String>? internalPublicDescriptor,
     Value<String>? source,
     Value<bool>? isDefault,
-    Value<String>? label,
+    Value<String?>? label,
     Value<DateTime?>? syncedAt,
     Value<int>? rowid,
   }) {
@@ -2427,6 +1683,16 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
       'CHECK ("hide_amounts" IN (0, 1))',
     ),
   );
+  late final GeneratedColumn<bool> isSuperuser = GeneratedColumn<bool>(
+    'is_superuser',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_superuser" IN (0, 1))',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -2435,6 +1701,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     language,
     currency,
     hideAmounts,
+    isSuperuser,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2477,6 +1744,11 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
             DriftSqlType.bool,
             data['${effectivePrefix}hide_amounts'],
           )!,
+      isSuperuser:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_superuser'],
+          )!,
     );
   }
 
@@ -2493,6 +1765,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final String language;
   final String currency;
   final bool hideAmounts;
+  final bool isSuperuser;
   const SettingsData({
     required this.id,
     required this.environment,
@@ -2500,6 +1773,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.language,
     required this.currency,
     required this.hideAmounts,
+    required this.isSuperuser,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2510,6 +1784,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['language'] = Variable<String>(language);
     map['currency'] = Variable<String>(currency);
     map['hide_amounts'] = Variable<bool>(hideAmounts);
+    map['is_superuser'] = Variable<bool>(isSuperuser);
     return map;
   }
 
@@ -2521,6 +1796,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       language: Value(language),
       currency: Value(currency),
       hideAmounts: Value(hideAmounts),
+      isSuperuser: Value(isSuperuser),
     );
   }
 
@@ -2536,6 +1812,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       language: serializer.fromJson<String>(json['language']),
       currency: serializer.fromJson<String>(json['currency']),
       hideAmounts: serializer.fromJson<bool>(json['hideAmounts']),
+      isSuperuser: serializer.fromJson<bool>(json['isSuperuser']),
     );
   }
   @override
@@ -2548,6 +1825,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'language': serializer.toJson<String>(language),
       'currency': serializer.toJson<String>(currency),
       'hideAmounts': serializer.toJson<bool>(hideAmounts),
+      'isSuperuser': serializer.toJson<bool>(isSuperuser),
     };
   }
 
@@ -2558,6 +1836,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     String? language,
     String? currency,
     bool? hideAmounts,
+    bool? isSuperuser,
   }) => SettingsData(
     id: id ?? this.id,
     environment: environment ?? this.environment,
@@ -2565,6 +1844,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     language: language ?? this.language,
     currency: currency ?? this.currency,
     hideAmounts: hideAmounts ?? this.hideAmounts,
+    isSuperuser: isSuperuser ?? this.isSuperuser,
   );
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
@@ -2577,6 +1857,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       currency: data.currency.present ? data.currency.value : this.currency,
       hideAmounts:
           data.hideAmounts.present ? data.hideAmounts.value : this.hideAmounts,
+      isSuperuser:
+          data.isSuperuser.present ? data.isSuperuser.value : this.isSuperuser,
     );
   }
 
@@ -2588,7 +1870,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('bitcoinUnit: $bitcoinUnit, ')
           ..write('language: $language, ')
           ..write('currency: $currency, ')
-          ..write('hideAmounts: $hideAmounts')
+          ..write('hideAmounts: $hideAmounts, ')
+          ..write('isSuperuser: $isSuperuser')
           ..write(')'))
         .toString();
   }
@@ -2601,6 +1884,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     language,
     currency,
     hideAmounts,
+    isSuperuser,
   );
   @override
   bool operator ==(Object other) =>
@@ -2611,7 +1895,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.bitcoinUnit == this.bitcoinUnit &&
           other.language == this.language &&
           other.currency == this.currency &&
-          other.hideAmounts == this.hideAmounts);
+          other.hideAmounts == this.hideAmounts &&
+          other.isSuperuser == this.isSuperuser);
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -2621,6 +1906,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<String> language;
   final Value<String> currency;
   final Value<bool> hideAmounts;
+  final Value<bool> isSuperuser;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.environment = const Value.absent(),
@@ -2628,6 +1914,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.language = const Value.absent(),
     this.currency = const Value.absent(),
     this.hideAmounts = const Value.absent(),
+    this.isSuperuser = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -2636,11 +1923,13 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     required String language,
     required String currency,
     required bool hideAmounts,
+    required bool isSuperuser,
   }) : environment = Value(environment),
        bitcoinUnit = Value(bitcoinUnit),
        language = Value(language),
        currency = Value(currency),
-       hideAmounts = Value(hideAmounts);
+       hideAmounts = Value(hideAmounts),
+       isSuperuser = Value(isSuperuser);
   static Insertable<SettingsData> custom({
     Expression<int>? id,
     Expression<String>? environment,
@@ -2648,6 +1937,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<String>? language,
     Expression<String>? currency,
     Expression<bool>? hideAmounts,
+    Expression<bool>? isSuperuser,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2656,6 +1946,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (language != null) 'language': language,
       if (currency != null) 'currency': currency,
       if (hideAmounts != null) 'hide_amounts': hideAmounts,
+      if (isSuperuser != null) 'is_superuser': isSuperuser,
     });
   }
 
@@ -2666,6 +1957,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<String>? language,
     Value<String>? currency,
     Value<bool>? hideAmounts,
+    Value<bool>? isSuperuser,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -2674,6 +1966,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       language: language ?? this.language,
       currency: currency ?? this.currency,
       hideAmounts: hideAmounts ?? this.hideAmounts,
+      isSuperuser: isSuperuser ?? this.isSuperuser,
     );
   }
 
@@ -2698,6 +1991,9 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (hideAmounts.present) {
       map['hide_amounts'] = Variable<bool>(hideAmounts.value);
     }
+    if (isSuperuser.present) {
+      map['is_superuser'] = Variable<bool>(isSuperuser.value);
+    }
     return map;
   }
 
@@ -2709,7 +2005,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('bitcoinUnit: $bitcoinUnit, ')
           ..write('language: $language, ')
           ..write('currency: $currency, ')
-          ..write('hideAmounts: $hideAmounts')
+          ..write('hideAmounts: $hideAmounts, ')
+          ..write('isSuperuser: $isSuperuser')
           ..write(')'))
         .toString();
   }
@@ -3418,8 +2715,8 @@ class PayjoinReceivers extends Table
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  late final GeneratedColumn<Uint8List> originalTxBytes =
-      GeneratedColumn<Uint8List>(
+  late final GeneratedColumn<i2.Uint8List> originalTxBytes =
+      GeneratedColumn<i2.Uint8List>(
         'original_tx_bytes',
         aliasedName,
         true,
@@ -3599,7 +2896,7 @@ class PayjoinReceiversData extends DataClass
   final BigInt maxFeeRateSatPerVb;
   final int createdAt;
   final int expireAfterSec;
-  final Uint8List? originalTxBytes;
+  final i2.Uint8List? originalTxBytes;
   final String? originalTxId;
   final int? amountSat;
   final String? proposalPsbt;
@@ -3637,7 +2934,7 @@ class PayjoinReceiversData extends DataClass
     map['created_at'] = Variable<int>(createdAt);
     map['expire_after_sec'] = Variable<int>(expireAfterSec);
     if (!nullToAbsent || originalTxBytes != null) {
-      map['original_tx_bytes'] = Variable<Uint8List>(originalTxBytes);
+      map['original_tx_bytes'] = Variable<i2.Uint8List>(originalTxBytes);
     }
     if (!nullToAbsent || originalTxId != null) {
       map['original_tx_id'] = Variable<String>(originalTxId);
@@ -3706,7 +3003,9 @@ class PayjoinReceiversData extends DataClass
       ),
       createdAt: serializer.fromJson<int>(json['createdAt']),
       expireAfterSec: serializer.fromJson<int>(json['expireAfterSec']),
-      originalTxBytes: serializer.fromJson<Uint8List?>(json['originalTxBytes']),
+      originalTxBytes: serializer.fromJson<i2.Uint8List?>(
+        json['originalTxBytes'],
+      ),
       originalTxId: serializer.fromJson<String?>(json['originalTxId']),
       amountSat: serializer.fromJson<int?>(json['amountSat']),
       proposalPsbt: serializer.fromJson<String?>(json['proposalPsbt']),
@@ -3728,7 +3027,7 @@ class PayjoinReceiversData extends DataClass
       'maxFeeRateSatPerVb': serializer.toJson<BigInt>(maxFeeRateSatPerVb),
       'createdAt': serializer.toJson<int>(createdAt),
       'expireAfterSec': serializer.toJson<int>(expireAfterSec),
-      'originalTxBytes': serializer.toJson<Uint8List?>(originalTxBytes),
+      'originalTxBytes': serializer.toJson<i2.Uint8List?>(originalTxBytes),
       'originalTxId': serializer.toJson<String?>(originalTxId),
       'amountSat': serializer.toJson<int?>(amountSat),
       'proposalPsbt': serializer.toJson<String?>(proposalPsbt),
@@ -3748,7 +3047,7 @@ class PayjoinReceiversData extends DataClass
     BigInt? maxFeeRateSatPerVb,
     int? createdAt,
     int? expireAfterSec,
-    Value<Uint8List?> originalTxBytes = const Value.absent(),
+    Value<i2.Uint8List?> originalTxBytes = const Value.absent(),
     Value<String?> originalTxId = const Value.absent(),
     Value<int?> amountSat = const Value.absent(),
     Value<String?> proposalPsbt = const Value.absent(),
@@ -3888,7 +3187,7 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
   final Value<BigInt> maxFeeRateSatPerVb;
   final Value<int> createdAt;
   final Value<int> expireAfterSec;
-  final Value<Uint8List?> originalTxBytes;
+  final Value<i2.Uint8List?> originalTxBytes;
   final Value<String?> originalTxId;
   final Value<int?> amountSat;
   final Value<String?> proposalPsbt;
@@ -3954,7 +3253,7 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     Expression<BigInt>? maxFeeRateSatPerVb,
     Expression<int>? createdAt,
     Expression<int>? expireAfterSec,
-    Expression<Uint8List>? originalTxBytes,
+    Expression<i2.Uint8List>? originalTxBytes,
     Expression<String>? originalTxId,
     Expression<int>? amountSat,
     Expression<String>? proposalPsbt,
@@ -3995,7 +3294,7 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     Value<BigInt>? maxFeeRateSatPerVb,
     Value<int>? createdAt,
     Value<int>? expireAfterSec,
-    Value<Uint8List?>? originalTxBytes,
+    Value<i2.Uint8List?>? originalTxBytes,
     Value<String?>? originalTxId,
     Value<int?>? amountSat,
     Value<String?>? proposalPsbt,
@@ -4058,7 +3357,7 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
       map['expire_after_sec'] = Variable<int>(expireAfterSec.value);
     }
     if (originalTxBytes.present) {
-      map['original_tx_bytes'] = Variable<Uint8List>(originalTxBytes.value);
+      map['original_tx_bytes'] = Variable<i2.Uint8List>(originalTxBytes.value);
     }
     if (originalTxId.present) {
       map['original_tx_id'] = Variable<String>(originalTxId.value);
@@ -5640,11 +4939,247 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
   }
 }
 
+class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  AutoSwap(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
+    'enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("enabled" IN (0, 1))',
+    ),
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<int> amountThreshold = GeneratedColumn<int>(
+    'amount_threshold',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<int> feeThreshold = GeneratedColumn<int>(
+    'fee_threshold',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    enabled,
+    amountThreshold,
+    feeThreshold,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'auto_swap';
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  AutoSwapData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AutoSwapData(
+      enabled:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}enabled'],
+          )!,
+      amountThreshold:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}amount_threshold'],
+          )!,
+      feeThreshold:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}fee_threshold'],
+          )!,
+    );
+  }
+
+  @override
+  AutoSwap createAlias(String alias) {
+    return AutoSwap(attachedDatabase, alias);
+  }
+}
+
+class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
+  final bool enabled;
+  final int amountThreshold;
+  final int feeThreshold;
+  const AutoSwapData({
+    required this.enabled,
+    required this.amountThreshold,
+    required this.feeThreshold,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['enabled'] = Variable<bool>(enabled);
+    map['amount_threshold'] = Variable<int>(amountThreshold);
+    map['fee_threshold'] = Variable<int>(feeThreshold);
+    return map;
+  }
+
+  AutoSwapCompanion toCompanion(bool nullToAbsent) {
+    return AutoSwapCompanion(
+      enabled: Value(enabled),
+      amountThreshold: Value(amountThreshold),
+      feeThreshold: Value(feeThreshold),
+    );
+  }
+
+  factory AutoSwapData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AutoSwapData(
+      enabled: serializer.fromJson<bool>(json['enabled']),
+      amountThreshold: serializer.fromJson<int>(json['amountThreshold']),
+      feeThreshold: serializer.fromJson<int>(json['feeThreshold']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'enabled': serializer.toJson<bool>(enabled),
+      'amountThreshold': serializer.toJson<int>(amountThreshold),
+      'feeThreshold': serializer.toJson<int>(feeThreshold),
+    };
+  }
+
+  AutoSwapData copyWith({
+    bool? enabled,
+    int? amountThreshold,
+    int? feeThreshold,
+  }) => AutoSwapData(
+    enabled: enabled ?? this.enabled,
+    amountThreshold: amountThreshold ?? this.amountThreshold,
+    feeThreshold: feeThreshold ?? this.feeThreshold,
+  );
+  AutoSwapData copyWithCompanion(AutoSwapCompanion data) {
+    return AutoSwapData(
+      enabled: data.enabled.present ? data.enabled.value : this.enabled,
+      amountThreshold:
+          data.amountThreshold.present
+              ? data.amountThreshold.value
+              : this.amountThreshold,
+      feeThreshold:
+          data.feeThreshold.present
+              ? data.feeThreshold.value
+              : this.feeThreshold,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AutoSwapData(')
+          ..write('enabled: $enabled, ')
+          ..write('amountThreshold: $amountThreshold, ')
+          ..write('feeThreshold: $feeThreshold')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(enabled, amountThreshold, feeThreshold);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AutoSwapData &&
+          other.enabled == this.enabled &&
+          other.amountThreshold == this.amountThreshold &&
+          other.feeThreshold == this.feeThreshold);
+}
+
+class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
+  final Value<bool> enabled;
+  final Value<int> amountThreshold;
+  final Value<int> feeThreshold;
+  final Value<int> rowid;
+  const AutoSwapCompanion({
+    this.enabled = const Value.absent(),
+    this.amountThreshold = const Value.absent(),
+    this.feeThreshold = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AutoSwapCompanion.insert({
+    this.enabled = const Value.absent(),
+    required int amountThreshold,
+    required int feeThreshold,
+    this.rowid = const Value.absent(),
+  }) : amountThreshold = Value(amountThreshold),
+       feeThreshold = Value(feeThreshold);
+  static Insertable<AutoSwapData> custom({
+    Expression<bool>? enabled,
+    Expression<int>? amountThreshold,
+    Expression<int>? feeThreshold,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (enabled != null) 'enabled': enabled,
+      if (amountThreshold != null) 'amount_threshold': amountThreshold,
+      if (feeThreshold != null) 'fee_threshold': feeThreshold,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AutoSwapCompanion copyWith({
+    Value<bool>? enabled,
+    Value<int>? amountThreshold,
+    Value<int>? feeThreshold,
+    Value<int>? rowid,
+  }) {
+    return AutoSwapCompanion(
+      enabled: enabled ?? this.enabled,
+      amountThreshold: amountThreshold ?? this.amountThreshold,
+      feeThreshold: feeThreshold ?? this.feeThreshold,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (enabled.present) {
+      map['enabled'] = Variable<bool>(enabled.value);
+    }
+    if (amountThreshold.present) {
+      map['amount_threshold'] = Variable<int>(amountThreshold.value);
+    }
+    if (feeThreshold.present) {
+      map['fee_threshold'] = Variable<int>(feeThreshold.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AutoSwapCompanion(')
+          ..write('enabled: $enabled, ')
+          ..write('amountThreshold: $amountThreshold, ')
+          ..write('feeThreshold: $feeThreshold, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DatabaseAtV2 extends GeneratedDatabase {
   DatabaseAtV2(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
-  late final V5MigrateWalletMetadatas v5MigrateWalletMetadatas =
-      V5MigrateWalletMetadatas(this);
   late final WalletMetadatas walletMetadatas = WalletMetadatas(this);
   late final Labels labels = Labels(this);
   late final Settings settings = Settings(this);
@@ -5652,13 +5187,13 @@ class DatabaseAtV2 extends GeneratedDatabase {
   late final PayjoinReceivers payjoinReceivers = PayjoinReceivers(this);
   late final ElectrumServers electrumServers = ElectrumServers(this);
   late final Swaps swaps = Swaps(this);
+  late final AutoSwap autoSwap = AutoSwap(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     transactions,
-    v5MigrateWalletMetadatas,
     walletMetadatas,
     labels,
     settings,
@@ -5666,6 +5201,7 @@ class DatabaseAtV2 extends GeneratedDatabase {
     payjoinReceivers,
     electrumServers,
     swaps,
+    autoSwap,
   ];
   @override
   int get schemaVersion => 2;

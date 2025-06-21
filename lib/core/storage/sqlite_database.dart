@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
+import 'package:bb_mobile/core/storage/tables/auto_swap.dart';
 import 'package:bb_mobile/core/storage/tables/electrum_servers_table.dart';
 import 'package:bb_mobile/core/storage/tables/labels_table.dart';
 import 'package:bb_mobile/core/storage/tables/payjoin_receivers_table.dart';
@@ -25,6 +26,7 @@ part 'sqlite_database.g.dart';
     PayjoinReceivers,
     ElectrumServers,
     Swaps,
+    AutoSwap,
   ],
 )
 class SqliteDatabase extends _$SqliteDatabase {
@@ -32,7 +34,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
@@ -56,7 +58,15 @@ class SqliteDatabase extends _$SqliteDatabase {
         await Future.wait([
           _seedDefaultSettings(),
           _seedDefaultElectrumServers(),
+          _seedDefaultAutoSwap(),
         ]);
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          // Create AutoSwap table and seed it
+          await m.createTable(autoSwap);
+          await _seedDefaultAutoSwap();
+        }
       },
     );
   }
@@ -101,6 +111,17 @@ class SqliteDatabase extends _$SqliteDatabase {
 
       await into(electrumServers).insertOnConflictUpdate(server);
     }
+  }
+
+  Future<void> _seedDefaultAutoSwap() async {
+    log.info('[SqliteDatabase] seeding default auto swap settings...');
+    await into(autoSwap).insert(
+      const AutoSwapRow(
+        enabled: false,
+        amountThreshold: 1000000,
+        feeThreshold: 3,
+      ),
+    );
   }
 
   Future<void> clearCacheTables() async {
