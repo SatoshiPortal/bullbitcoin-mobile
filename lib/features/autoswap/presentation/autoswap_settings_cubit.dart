@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
+import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -33,7 +34,28 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
         isTestnet: isTestnet,
       );
-      emit(state.copyWith(loading: false, settings: autoSwapSettings));
+
+      String amountThresholdInput;
+      if (settings.bitcoinUnit == BitcoinUnit.btc) {
+        // Convert sats to BTC for display
+        final btcAmount = ConvertAmount.satsToBtc(
+          autoSwapSettings.amountThresholdSats,
+        );
+        amountThresholdInput = btcAmount.toString();
+      } else {
+        amountThresholdInput = autoSwapSettings.amountThresholdSats.toString();
+      }
+
+      emit(
+        state.copyWith(
+          loading: false,
+          settings: autoSwapSettings,
+          amountThresholdInput: amountThresholdInput,
+          feeThresholdInput: autoSwapSettings.feeThreshold.toString(),
+          enabledToggle: autoSwapSettings.enabled,
+          bitcoinUnit: settings.bitcoinUnit,
+        ),
+      );
     } catch (e) {
       log.severe('Error loading auto swap settings: $e');
       emit(
@@ -45,13 +67,33 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
     }
   }
 
-  Future<void> updateSettings(AutoSwap params) async {
+  Future<void> updateSettings() async {
     try {
       emit(state.copyWith(loading: true, error: null));
       final settings = await _getSettingsUsecase.execute();
       final isTestnet = settings.environment == Environment.testnet;
-      await _saveAutoSwapSettingsUsecase.execute(params, isTestnet: isTestnet);
-      emit(state.copyWith(loading: false, settings: params));
+
+      // Convert amount based on unit
+      int amountThresholdSats;
+      if (settings.bitcoinUnit == BitcoinUnit.btc) {
+        // Convert BTC to sats for storage
+        final btcAmount =
+            double.tryParse(state.amountThresholdInput ?? '0') ?? 0;
+        amountThresholdSats = ConvertAmount.btcToSats(btcAmount);
+      } else {
+        amountThresholdSats =
+            int.tryParse(state.amountThresholdInput ?? '0') ?? 0;
+      }
+
+      await _saveAutoSwapSettingsUsecase.execute(
+        AutoSwap(
+          enabled: state.enabledToggle,
+          amountThresholdSats: amountThresholdSats,
+          feeThreshold: int.tryParse(state.feeThresholdInput ?? '3') ?? 3,
+        ),
+        isTestnet: isTestnet,
+      );
+      emit(state.copyWith(loading: false, settings: state.settings));
     } catch (e) {
       log.severe('Error updating auto swap settings: $e');
       emit(

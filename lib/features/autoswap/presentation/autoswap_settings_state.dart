@@ -10,6 +10,7 @@ abstract class AutoSwapSettingsState with _$AutoSwapSettingsState {
     @Default(false) bool enabledToggle,
     String? error,
     AutoSwap? settings,
+    BitcoinUnit? bitcoinUnit,
   }) = _AutoSwapSettingsState;
 
   const AutoSwapSettingsState._();

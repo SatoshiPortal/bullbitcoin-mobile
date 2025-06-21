@@ -1120,8 +1120,8 @@ class Shape8 extends i0.VersionedTable {
       columnsByName['id']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<bool> get enabled =>
       columnsByName['enabled']! as i1.GeneratedColumn<bool>;
-  i1.GeneratedColumn<int> get amountThreshold =>
-      columnsByName['amount_threshold']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get amountThresholdSats =>
+      columnsByName['amount_threshold_sats']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<int> get feeThreshold =>
       columnsByName['fee_threshold']! as i1.GeneratedColumn<int>;
 }
@@ -1139,7 +1139,7 @@ i1.GeneratedColumn<bool> _column_87(String aliasedName) =>
     );
 i1.GeneratedColumn<int> _column_88(String aliasedName) =>
     i1.GeneratedColumn<int>(
-      'amount_threshold',
+      'amount_threshold_sats',
       aliasedName,
       false,
       type: i1.DriftSqlType.int,

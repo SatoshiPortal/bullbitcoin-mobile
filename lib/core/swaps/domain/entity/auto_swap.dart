@@ -7,7 +7,7 @@ part 'auto_swap.g.dart';
 sealed class AutoSwap with _$AutoSwap {
   const factory AutoSwap({
     @Default(false) bool enabled,
-    @Default(1000000) int amountThreshold,
+    @Default(1000000) int amountThresholdSats,
     @Default(3) int feeThreshold,
   }) = _AutoSwap;
 

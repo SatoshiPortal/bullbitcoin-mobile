@@ -8,7 +8,7 @@ part 'auto_swap_model.freezed.dart';
 sealed class AutoSwapModel with _$AutoSwapModel {
   const factory AutoSwapModel({
     @Default(false) bool enabled,
-    @Default(1000000) int amountThreshold,
+    @Default(1000000) int amountThresholdSats,
     @Default(3) int feeThreshold,
   }) = _AutoSwapModel;
 
@@ -17,7 +17,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
   factory AutoSwapModel.fromEntity(AutoSwap entity) {
     return AutoSwapModel(
       enabled: entity.enabled,
-      amountThreshold: entity.amountThreshold,
+      amountThresholdSats: entity.amountThresholdSats,
       feeThreshold: entity.feeThreshold,
     );
   }
@@ -25,7 +25,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
   AutoSwap toEntity() {
     return AutoSwap(
       enabled: enabled,
-      amountThreshold: amountThreshold,
+      amountThresholdSats: amountThresholdSats,
       feeThreshold: feeThreshold,
     );
   }
@@ -33,7 +33,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
   factory AutoSwapModel.fromSqlite(AutoSwapRow row) {
     return AutoSwapModel(
       enabled: row.enabled,
-      amountThreshold: row.amountThreshold,
+      amountThresholdSats: row.amountThresholdSats,
       feeThreshold: row.feeThreshold,
     );
   }
@@ -42,7 +42,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
     return AutoSwapRow(
       id: 1,
       enabled: enabled,
-      amountThreshold: amountThreshold,
+      amountThresholdSats: amountThresholdSats,
       feeThreshold: feeThreshold,
     );
   }

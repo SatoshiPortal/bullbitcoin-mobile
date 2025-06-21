@@ -4,7 +4,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_use
 import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit.dart';
 import 'package:bb_mobile/locator.dart';
 
-class AutoswapLocator {
+class AutoSwapLocator {
   static void setup() {
     // Register the cubit
     locator.registerFactory<AutoSwapSettingsCubit>(

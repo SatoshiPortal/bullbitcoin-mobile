@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/utils/build_context_x.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/features/autoswap/ui/autoswap_settings_router.dart';
 import 'package:bb_mobile/features/electrum_settings/ui/electrum_settings_router.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_watch_only_router.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -84,7 +85,18 @@ class SettingsScreen extends StatelessWidget {
                     },
                     trailing: const Icon(Icons.chevron_right),
                   ),
-
+                if (isSuperuser)
+                  ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    tileColor: Colors.transparent,
+                    title: const Text('Auto Swap Settings'),
+                    onTap: () {
+                      AutoSwapSettingsRouter.showAutoSwapSettings(context);
+                    },
+                    trailing: const Icon(Icons.chevron_right),
+                  ),
                 ListTile(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),
