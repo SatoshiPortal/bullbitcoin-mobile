@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/storage/data/datasources/key_value_storage/key_value_storage_datasource.dart';
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
+import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
@@ -15,6 +16,27 @@ class BoltzStorageDatasource {
     required KeyValueStorageDatasource<String> secureSwapStorage,
   }) : _localSwapStorage = localSwapStorage,
        _secureSwapStorage = secureSwapStorage;
+
+  // AUTO SWAP SETTINGS
+  Future<void> storeAutoSwapSettings(AutoSwapModel settings) async {
+    await _localSwapStorage
+        .into(_localSwapStorage.autoSwap)
+        .insert(
+          AutoSwapCompanion.insert(
+            id: const Value(1),
+            enabled: Value(settings.enabled),
+            amountThreshold: settings.amountThreshold,
+            feeThreshold: settings.feeThreshold,
+          ),
+        );
+  }
+
+  Future<AutoSwapModel> getAutoSwapSettings() async {
+    final settings =
+        await (_localSwapStorage.select(_localSwapStorage.autoSwap)
+          ..where((tbl) => tbl.id.equals(1))).getSingle();
+    return AutoSwapModel.fromSqlite(settings);
+  }
 
   // LOCAL STORAGE
   Future<void> store(SwapModel swap) async {

@@ -214,7 +214,7 @@ final class Schema2 extends i0.VersionedSchema {
       withoutRowId: false,
       isStrict: false,
       tableConstraints: [],
-      columns: [_column_87, _column_88, _column_89],
+      columns: [_column_31, _column_87, _column_88, _column_89],
       attachedDatabase: database,
     ),
     alias: null,
@@ -1116,6 +1116,8 @@ i1.GeneratedColumn<int> _column_86(String aliasedName) =>
 
 class Shape8 extends i0.VersionedTable {
   Shape8({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<bool> get enabled =>
       columnsByName['enabled']! as i1.GeneratedColumn<bool>;
   i1.GeneratedColumn<int> get amountThreshold =>

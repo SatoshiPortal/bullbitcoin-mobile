@@ -1,7 +1,7 @@
 import 'package:bb_mobile/core/storage/sqlite_database.dart';
 
-import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart'
-    show AutoSwap;
+import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:drift/drift.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auto_swap_model.freezed.dart';
@@ -42,6 +42,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
 
   AutoSwapRow toSqlite() {
     return AutoSwapRow(
+      id: 1,
       enabled: enabled,
       amountThreshold: amountThreshold,
       feeThreshold: feeThreshold,

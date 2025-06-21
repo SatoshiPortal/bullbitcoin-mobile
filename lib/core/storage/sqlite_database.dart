@@ -117,6 +117,7 @@ class SqliteDatabase extends _$SqliteDatabase {
     log.info('[SqliteDatabase] seeding default auto swap settings...');
     await into(autoSwap).insert(
       const AutoSwapRow(
+        id: 1,
         enabled: false,
         amountThreshold: 1000000,
         feeThreshold: 3,

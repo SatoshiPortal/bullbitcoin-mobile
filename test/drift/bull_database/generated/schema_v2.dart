@@ -4944,6 +4944,17 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   AutoSwap(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
   late final GeneratedColumn<bool> enabled = GeneratedColumn<bool>(
     'enabled',
     aliasedName,
@@ -4971,6 +4982,7 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
   );
   @override
   List<GeneratedColumn> get $columns => [
+    id,
     enabled,
     amountThreshold,
     feeThreshold,
@@ -4981,11 +4993,16 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
   String get actualTableName => $name;
   static const String $name = 'auto_swap';
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   AutoSwapData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return AutoSwapData(
+      id:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}id'],
+          )!,
       enabled:
           attachedDatabase.typeMapping.read(
             DriftSqlType.bool,
@@ -5011,10 +5028,12 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
 }
 
 class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
+  final int id;
   final bool enabled;
   final int amountThreshold;
   final int feeThreshold;
   const AutoSwapData({
+    required this.id,
     required this.enabled,
     required this.amountThreshold,
     required this.feeThreshold,
@@ -5022,6 +5041,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
     map['enabled'] = Variable<bool>(enabled);
     map['amount_threshold'] = Variable<int>(amountThreshold);
     map['fee_threshold'] = Variable<int>(feeThreshold);
@@ -5030,6 +5050,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
 
   AutoSwapCompanion toCompanion(bool nullToAbsent) {
     return AutoSwapCompanion(
+      id: Value(id),
       enabled: Value(enabled),
       amountThreshold: Value(amountThreshold),
       feeThreshold: Value(feeThreshold),
@@ -5042,6 +5063,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return AutoSwapData(
+      id: serializer.fromJson<int>(json['id']),
       enabled: serializer.fromJson<bool>(json['enabled']),
       amountThreshold: serializer.fromJson<int>(json['amountThreshold']),
       feeThreshold: serializer.fromJson<int>(json['feeThreshold']),
@@ -5051,6 +5073,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
       'enabled': serializer.toJson<bool>(enabled),
       'amountThreshold': serializer.toJson<int>(amountThreshold),
       'feeThreshold': serializer.toJson<int>(feeThreshold),
@@ -5058,16 +5081,19 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   }
 
   AutoSwapData copyWith({
+    int? id,
     bool? enabled,
     int? amountThreshold,
     int? feeThreshold,
   }) => AutoSwapData(
+    id: id ?? this.id,
     enabled: enabled ?? this.enabled,
     amountThreshold: amountThreshold ?? this.amountThreshold,
     feeThreshold: feeThreshold ?? this.feeThreshold,
   );
   AutoSwapData copyWithCompanion(AutoSwapCompanion data) {
     return AutoSwapData(
+      id: data.id.present ? data.id.value : this.id,
       enabled: data.enabled.present ? data.enabled.value : this.enabled,
       amountThreshold:
           data.amountThreshold.present
@@ -5083,6 +5109,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   @override
   String toString() {
     return (StringBuffer('AutoSwapData(')
+          ..write('id: $id, ')
           ..write('enabled: $enabled, ')
           ..write('amountThreshold: $amountThreshold, ')
           ..write('feeThreshold: $feeThreshold')
@@ -5091,65 +5118,69 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   }
 
   @override
-  int get hashCode => Object.hash(enabled, amountThreshold, feeThreshold);
+  int get hashCode => Object.hash(id, enabled, amountThreshold, feeThreshold);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is AutoSwapData &&
+          other.id == this.id &&
           other.enabled == this.enabled &&
           other.amountThreshold == this.amountThreshold &&
           other.feeThreshold == this.feeThreshold);
 }
 
 class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
+  final Value<int> id;
   final Value<bool> enabled;
   final Value<int> amountThreshold;
   final Value<int> feeThreshold;
-  final Value<int> rowid;
   const AutoSwapCompanion({
+    this.id = const Value.absent(),
     this.enabled = const Value.absent(),
     this.amountThreshold = const Value.absent(),
     this.feeThreshold = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
   AutoSwapCompanion.insert({
+    this.id = const Value.absent(),
     this.enabled = const Value.absent(),
     required int amountThreshold,
     required int feeThreshold,
-    this.rowid = const Value.absent(),
   }) : amountThreshold = Value(amountThreshold),
        feeThreshold = Value(feeThreshold);
   static Insertable<AutoSwapData> custom({
+    Expression<int>? id,
     Expression<bool>? enabled,
     Expression<int>? amountThreshold,
     Expression<int>? feeThreshold,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (id != null) 'id': id,
       if (enabled != null) 'enabled': enabled,
       if (amountThreshold != null) 'amount_threshold': amountThreshold,
       if (feeThreshold != null) 'fee_threshold': feeThreshold,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
   AutoSwapCompanion copyWith({
+    Value<int>? id,
     Value<bool>? enabled,
     Value<int>? amountThreshold,
     Value<int>? feeThreshold,
-    Value<int>? rowid,
   }) {
     return AutoSwapCompanion(
+      id: id ?? this.id,
       enabled: enabled ?? this.enabled,
       amountThreshold: amountThreshold ?? this.amountThreshold,
       feeThreshold: feeThreshold ?? this.feeThreshold,
-      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
     if (enabled.present) {
       map['enabled'] = Variable<bool>(enabled.value);
     }
@@ -5159,19 +5190,16 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     if (feeThreshold.present) {
       map['fee_threshold'] = Variable<int>(feeThreshold.value);
     }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
     return map;
   }
 
   @override
   String toString() {
     return (StringBuffer('AutoSwapCompanion(')
+          ..write('id: $id, ')
           ..write('enabled: $enabled, ')
           ..write('amountThreshold: $amountThreshold, ')
-          ..write('feeThreshold: $feeThreshold, ')
-          ..write('rowid: $rowid')
+          ..write('feeThreshold: $feeThreshold')
           ..write(')'))
         .toString();
   }
