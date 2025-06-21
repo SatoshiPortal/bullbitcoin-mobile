@@ -1,7 +1,13 @@
 import 'dart:async';
 
+import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
@@ -10,6 +16,8 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
+import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
@@ -33,6 +41,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required GetPrioritizedServerUsecase getBestAvailableServerUsecase,
     required GetUnconfirmedIncomingBalanceUsecase
     getUnconfirmedIncomingBalanceUsecase,
+    required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
+    required GetSwapLimitsUsecase getSwapLimitsUsecase,
+    required CreateChainSwapUsecase createChainSwapUsecase,
+    required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
+    required SignLiquidTxUsecase signLiquidTxUsecase,
+    required BroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -44,6 +58,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _getPrioritizedServerUsecase = getBestAvailableServerUsecase,
        _getUnconfirmedIncomingBalanceUsecase =
            getUnconfirmedIncomingBalanceUsecase,
+       _getAutoSwapSettingsUsecase = getAutoSwapSettingsUsecase,
+       _getSwapLimitsUsecase = getSwapLimitsUsecase,
+       _createChainSwapUsecase = createChainSwapUsecase,
+       _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
+       _signLiquidTxUsecase = signLiquidTxUsecase,
+       _broadcastLiquidTxUsecase = broadcastLiquidTxUsecase,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -64,6 +84,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
+  final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
+  final GetSwapLimitsUsecase _getSwapLimitsUsecase;
+  final CreateChainSwapUsecase _createChainSwapUsecase;
+  final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
+  final SignLiquidTxUsecase _signLiquidTxUsecase;
+  final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -194,8 +220,60 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         );
       }
       emit(state.copyWith(status: WalletStatus.success, wallets: wallets));
+
+      // Check if the synced wallet is the default liquid wallet
+      if (event.wallet.isDefault && event.wallet.isLiquid) {
+        await _executeAutoSwapIfNeeded(event.wallet);
+      }
     } catch (e) {
       emit(state.copyWith(status: WalletStatus.failure, error: e));
+    }
+  }
+
+  Future<void> _executeAutoSwapIfNeeded(Wallet liquidWallet) async {
+    final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
+      isTestnet: liquidWallet.isTestnet,
+    );
+    final walletBalance = liquidWallet.balanceSat.toInt();
+
+    if (autoSwapSettings.amountThresholdExceeded(walletBalance)) {
+      // Get swap limits to ensure we can create a swap
+      final (swapLimits, swapFees) = await _getSwapLimitsUsecase.execute(
+        type: SwapType.liquidToBitcoin,
+        isTestnet: liquidWallet.isTestnet,
+      );
+
+      if (walletBalance >= swapLimits.min && walletBalance <= swapLimits.max) {
+        final defaultBitcoinWallet =
+            state.wallets
+                .where((w) => w.isDefault && w.network.isBitcoin)
+                .firstOrNull;
+        if (defaultBitcoinWallet != null) {
+          final swap = await _createChainSwapUsecase.execute(
+            bitcoinWalletId: defaultBitcoinWallet.id,
+            liquidWalletId: liquidWallet.id,
+            type: SwapType.liquidToBitcoin,
+            amountSat: walletBalance,
+          );
+          final swapFeePercent = swap.getFeeAsPercentOfAmount();
+          if (autoSwapSettings.allConditionsMet(
+            walletBalance,
+            swapFeePercent,
+          )) {
+            final pset = await _prepareLiquidSendUsecase.execute(
+              walletId: liquidWallet.id,
+              address: swap.paymentAddress,
+              amountSat: swap.paymentAmount,
+              networkFee: const NetworkFee.relative(0.1),
+            );
+            final signedPset = await _signLiquidTxUsecase.execute(
+              walletId: liquidWallet.id,
+              pset: pset,
+            );
+            await _broadcastLiquidTxUsecase.execute(signedPset);
+          }
+        }
+      }
     }
   }
 

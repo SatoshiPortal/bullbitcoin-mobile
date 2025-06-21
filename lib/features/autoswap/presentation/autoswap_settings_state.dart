@@ -10,6 +10,8 @@ abstract class AutoSwapSettingsState with _$AutoSwapSettingsState {
     String? feeThresholdInput,
     @Default(false) bool enabledToggle,
     String? error,
+    MinimumAmountThresholdException? amountThresholdError,
+    MaximumFeeThresholdException? feeThresholdError,
     AutoSwap? settings,
     BitcoinUnit? bitcoinUnit,
   }) = _AutoSwapSettingsState;

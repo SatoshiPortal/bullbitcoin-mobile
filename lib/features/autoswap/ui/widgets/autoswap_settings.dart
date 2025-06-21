@@ -3,6 +3,7 @@ import 'package:bb_mobile/features/autoswap/presentation/autoswap_settings_cubit
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/bottom_sheet/x.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
+import 'package:bb_mobile/ui/components/inputs/text_input.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -170,6 +171,9 @@ class _AmountThresholdField extends StatelessWidget {
     final bitcoinUnit = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
     );
+    final amountThresholdError = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdError,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,18 +183,23 @@ class _AmountThresholdField extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: TextFormField(
-                initialValue: amountThresholdInput,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
+              child: BBInputText(
+                value: amountThresholdInput ?? '',
+                onlyNumbers: true,
+                rightIcon: Container(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 16,
+                    vertical: 8,
                   ),
-                  hintText: 'Enter amount threshold',
+                  decoration: BoxDecoration(
+                    color: context.colour.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: context.colour.secondaryFixedDim),
+                  ),
+                  child: BBText(
+                    bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
+                    style: context.font.bodyMedium,
+                  ),
                 ),
                 onChanged: (value) {
                   context
@@ -199,28 +208,17 @@ class _AmountThresholdField extends StatelessWidget {
                 },
               ),
             ),
-            const Gap(8),
-            SizedBox(
-              width: 80,
-              child: TextFormField(
-                readOnly: true,
-                initialValue: bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 16,
-                  ),
-                  filled: true,
-                  fillColor: context.colour.surface,
-                ),
-              ),
-            ),
           ],
         ),
+        if (amountThresholdError != null) ...[
+          const Gap(8),
+          BBText(
+            amountThresholdError.displayMessage(),
+            style: context.font.bodySmall?.copyWith(
+              color: context.colour.error,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -232,6 +230,9 @@ class _FeeThresholdField extends StatelessWidget {
     final feeThresholdInput = context.select(
       (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdInput,
     );
+    final feeThresholdError = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdError,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,18 +242,20 @@ class _FeeThresholdField extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: TextFormField(
-                initialValue: feeThresholdInput,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
+              child: BBInputText(
+                value: feeThresholdInput ?? '',
+                onlyNumbers: true,
+                rightIcon: Container(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 16,
+                    vertical: 8,
                   ),
-                  hintText: 'Enter fee threshold',
+                  decoration: BoxDecoration(
+                    color: context.colour.surface,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: context.colour.secondaryFixedDim),
+                  ),
+                  child: BBText('%', style: context.font.bodyMedium),
                 ),
                 onChanged: (value) {
                   context.read<AutoSwapSettingsCubit>().onFeeThresholdChanged(
@@ -261,28 +264,17 @@ class _FeeThresholdField extends StatelessWidget {
                 },
               ),
             ),
-            const Gap(8),
-            SizedBox(
-              width: 80,
-              child: TextFormField(
-                readOnly: true,
-                initialValue: '%',
-                textAlign: TextAlign.center,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 16,
-                  ),
-                  filled: true,
-                  fillColor: context.colour.surface,
-                ),
-              ),
-            ),
           ],
         ),
+        if (feeThresholdError != null) ...[
+          const Gap(8),
+          BBText(
+            feeThresholdError.displayMessage(),
+            style: context.font.bodySmall?.copyWith(
+              color: context.colour.error,
+            ),
+          ),
+        ],
       ],
     );
   }

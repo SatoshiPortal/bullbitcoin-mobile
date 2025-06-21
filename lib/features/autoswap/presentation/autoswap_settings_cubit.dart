@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
@@ -16,6 +17,9 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
   final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
+
+  static const int _minimumAmountThresholdSats = 100000;
+  static const int _maximumFeeThreshold = 10;
 
   AutoSwapSettingsCubit({
     required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
@@ -85,11 +89,29 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
             int.tryParse(state.amountThresholdInput ?? '0') ?? 0;
       }
 
+      // Validate minimum amount threshold
+      if (amountThresholdSats < _minimumAmountThresholdSats) {
+        final exception = MinimumAmountThresholdException(
+          _minimumAmountThresholdSats,
+          settings.bitcoinUnit,
+        );
+        emit(state.copyWith(saving: false, amountThresholdError: exception));
+        return;
+      }
+
+      // Validate fee threshold
+      final feeThreshold = int.tryParse(state.feeThresholdInput ?? '3') ?? 3;
+      if (feeThreshold > _maximumFeeThreshold) {
+        final exception = MaximumFeeThresholdException(_maximumFeeThreshold);
+        emit(state.copyWith(saving: false, feeThresholdError: exception));
+        return;
+      }
+
       await _saveAutoSwapSettingsUsecase.execute(
         AutoSwap(
           enabled: state.enabledToggle,
           amountThresholdSats: amountThresholdSats,
-          feeThreshold: int.tryParse(state.feeThresholdInput ?? '3') ?? 3,
+          feeThreshold: feeThreshold,
         ),
         isTestnet: isTestnet,
       );
@@ -98,6 +120,8 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           saving: false,
           settings: state.settings,
           successfullySaved: true,
+          amountThresholdError: null,
+          feeThresholdError: null,
         ),
       );
     } catch (e) {
@@ -113,11 +137,13 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
   }
 
   void onAmountThresholdChanged(String value) {
-    emit(state.copyWith(amountThresholdInput: value));
+    emit(
+      state.copyWith(amountThresholdInput: value, amountThresholdError: null),
+    );
   }
 
   void onFeeThresholdChanged(String value) {
-    emit(state.copyWith(feeThresholdInput: value));
+    emit(state.copyWith(feeThresholdInput: value, feeThresholdError: null));
   }
 
   void onEnabledToggleChanged(bool value) {
