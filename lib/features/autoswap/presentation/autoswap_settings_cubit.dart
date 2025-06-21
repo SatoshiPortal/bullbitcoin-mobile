@@ -69,7 +69,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
 
   Future<void> updateSettings() async {
     try {
-      emit(state.copyWith(loading: true, error: null));
+      emit(state.copyWith(saving: true, error: null, successfullySaved: false));
       final settings = await _getSettingsUsecase.execute();
       final isTestnet = settings.environment == Environment.testnet;
 
@@ -93,13 +93,20 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
         ),
         isTestnet: isTestnet,
       );
-      emit(state.copyWith(loading: false, settings: state.settings));
+      emit(
+        state.copyWith(
+          saving: false,
+          settings: state.settings,
+          successfullySaved: true,
+        ),
+      );
     } catch (e) {
       log.severe('Error updating auto swap settings: $e');
       emit(
         state.copyWith(
-          loading: false,
+          saving: false,
           error: 'Failed to update auto swap settings',
+          successfullySaved: false,
         ),
       );
     }

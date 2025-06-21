@@ -39,56 +39,65 @@ class AutoSwapSettingsContent extends StatefulWidget {
 class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
-      builder: (context, state) {
-        return Container(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.85,
-          ),
-          decoration: BoxDecoration(
-            color: context.colour.onPrimary,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _Header(),
-              if (state.loading) ...[const LinearProgressIndicator()],
-              Flexible(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom,
-                  ),
-                  child: SingleChildScrollView(
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.onDrag,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (!state.loading) ...[
-                            const Gap(16),
-                            _EnabledToggle(),
-                            const Gap(24),
-                            _AmountThresholdField(),
-                            const Gap(16),
-                            _FeeThresholdField(),
-                            const Gap(32),
-                            _SaveButton(),
-                          ],
-                          const Gap(30),
+    final loading = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.loading,
+    );
+
+    return BlocListener<AutoSwapSettingsCubit, AutoSwapSettingsState>(
+      listenWhen:
+          (previous, current) =>
+              previous.successfullySaved != current.successfullySaved &&
+              current.successfullySaved,
+      listener: (context, state) {
+        Navigator.of(context).pop();
+      },
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        decoration: BoxDecoration(
+          color: context.colour.onPrimary,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _Header(),
+            if (loading) ...[const LinearProgressIndicator()],
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (!loading) ...[
+                          const Gap(16),
+                          _EnabledToggle(),
+                          const Gap(24),
+                          _AmountThresholdField(),
+                          const Gap(16),
+                          _FeeThresholdField(),
+                          const Gap(32),
+                          _SaveButton(),
                         ],
-                      ),
+                        const Gap(30),
+                      ],
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -121,35 +130,33 @@ class _Header extends StatelessWidget {
 class _EnabledToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
-      builder: (context, state) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            BBText(
-              'Enable Auto Swap',
-              style: context.font.bodyLarge?.copyWith(
-                color: context.colour.surfaceContainer,
-              ),
-            ),
-            Switch(
-              value: state.enabledToggle,
-              activeColor: context.colour.onSecondary,
-              activeTrackColor: context.colour.secondary,
-              inactiveThumbColor: context.colour.onSecondary,
-              inactiveTrackColor: context.colour.surface,
-              trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
-                (Set<WidgetState> states) => Colors.transparent,
-              ),
-              onChanged: (value) {
-                context.read<AutoSwapSettingsCubit>().onEnabledToggleChanged(
-                  value,
-                );
-              },
-            ),
-          ],
-        );
-      },
+    final enabled = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.enabledToggle,
+    );
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        BBText(
+          'Enable Auto Swap',
+          style: context.font.bodyLarge?.copyWith(
+            color: context.colour.surfaceContainer,
+          ),
+        ),
+        Switch(
+          value: enabled,
+          activeColor: context.colour.onSecondary,
+          activeTrackColor: context.colour.secondary,
+          inactiveThumbColor: context.colour.onSecondary,
+          inactiveTrackColor: context.colour.surface,
+          trackOutlineColor: WidgetStateProperty.resolveWith<Color?>(
+            (Set<WidgetState> states) => Colors.transparent,
+          ),
+          onChanged: (value) {
+            context.read<AutoSwapSettingsCubit>().onEnabledToggleChanged(value);
+          },
+        ),
+      ],
     );
   }
 }
@@ -157,62 +164,64 @@ class _EnabledToggle extends StatelessWidget {
 class _AmountThresholdField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
-      builder: (context, state) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    final amountThresholdInput = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.amountThresholdInput,
+    );
+    final bitcoinUnit = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.bitcoinUnit,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BBText('Max Instant Wallet Balance', style: context.font.labelSmall),
+        const Gap(8),
+        Row(
           children: [
-            BBText('Amount Threshold', style: context.font.labelSmall),
+            Expanded(
+              child: TextFormField(
+                initialValue: amountThresholdInput,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 16,
+                  ),
+                  hintText: 'Enter amount threshold',
+                ),
+                onChanged: (value) {
+                  context
+                      .read<AutoSwapSettingsCubit>()
+                      .onAmountThresholdChanged(value);
+                },
+              ),
+            ),
             const Gap(8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    initialValue: state.amountThresholdInput,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 16,
-                      ),
-                      hintText: 'Enter amount threshold',
-                    ),
-                    onChanged: (value) {
-                      context
-                          .read<AutoSwapSettingsCubit>()
-                          .onAmountThresholdChanged(value);
-                    },
+            SizedBox(
+              width: 80,
+              child: TextFormField(
+                readOnly: true,
+                initialValue: bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                ),
-                const Gap(8),
-                SizedBox(
-                  width: 80,
-                  child: TextFormField(
-                    readOnly: true,
-                    initialValue:
-                        state.bitcoinUnit == BitcoinUnit.btc ? 'BTC' : 'sats',
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 16,
-                      ),
-                      filled: true,
-                      fillColor: context.colour.surface,
-                    ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 16,
                   ),
+                  filled: true,
+                  fillColor: context.colour.surface,
                 ),
-              ],
+              ),
             ),
           ],
-        );
-      },
+        ),
+      ],
     );
   }
 }
@@ -220,61 +229,61 @@ class _AmountThresholdField extends StatelessWidget {
 class _FeeThresholdField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
-      builder: (context, state) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    final feeThresholdInput = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.feeThresholdInput,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        BBText('Max Swap Fee', style: context.font.labelSmall),
+        const Gap(8),
+        Row(
           children: [
-            BBText('Fee Threshold', style: context.font.labelSmall),
+            Expanded(
+              child: TextFormField(
+                initialValue: feeThresholdInput,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 16,
+                  ),
+                  hintText: 'Enter fee threshold',
+                ),
+                onChanged: (value) {
+                  context.read<AutoSwapSettingsCubit>().onFeeThresholdChanged(
+                    value,
+                  );
+                },
+              ),
+            ),
             const Gap(8),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    initialValue: state.feeThresholdInput,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 16,
-                      ),
-                      hintText: 'Enter fee threshold',
-                    ),
-                    onChanged: (value) {
-                      context
-                          .read<AutoSwapSettingsCubit>()
-                          .onFeeThresholdChanged(value);
-                    },
+            SizedBox(
+              width: 80,
+              child: TextFormField(
+                readOnly: true,
+                initialValue: '%',
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                ),
-                const Gap(8),
-                SizedBox(
-                  width: 80,
-                  child: TextFormField(
-                    readOnly: true,
-                    initialValue: '%',
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 16,
-                      ),
-                      filled: true,
-                      fillColor: context.colour.surface,
-                    ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 16,
                   ),
+                  filled: true,
+                  fillColor: context.colour.surface,
                 ),
-              ],
+              ),
             ),
           ],
-        );
-      },
+        ),
+      ],
     );
   }
 }
@@ -282,19 +291,32 @@ class _FeeThresholdField extends StatelessWidget {
 class _SaveButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AutoSwapSettingsCubit, AutoSwapSettingsState>(
-      builder: (context, state) {
-        return BBButton.big(
-          label: 'Save',
-          onPressed: () {
-            context.read<AutoSwapSettingsCubit>().updateSettings();
-            Navigator.of(context).pop();
-          },
-          bgColor: context.colour.secondary,
-          textStyle: context.font.headlineLarge,
-          textColor: context.colour.onSecondary,
-        );
+    final saving = context.select(
+      (AutoSwapSettingsCubit cubit) => cubit.state.saving,
+    );
+
+    return BBButton.big(
+      label: 'Save',
+      disabled: saving,
+      onPressed: () async {
+        try {
+          await context.read<AutoSwapSettingsCubit>().updateSettings();
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: BBText(
+                  'Failed to save settings: $e',
+                  style: context.font.bodyMedium,
+                ),
+              ),
+            );
+          }
+        }
       },
+      bgColor: context.colour.secondary,
+      textStyle: context.font.headlineLarge,
+      textColor: context.colour.onSecondary,
     );
   }
 }

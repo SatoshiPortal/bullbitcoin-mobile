@@ -5,6 +5,7 @@ abstract class AutoSwapSettingsState with _$AutoSwapSettingsState {
   const factory AutoSwapSettingsState({
     @Default(false) bool loading,
     @Default(false) bool saving,
+    @Default(false) bool successfullySaved,
     String? amountThresholdInput,
     String? feeThresholdInput,
     @Default(false) bool enabledToggle,

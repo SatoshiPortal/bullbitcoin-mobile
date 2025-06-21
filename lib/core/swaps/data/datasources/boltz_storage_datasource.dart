@@ -21,7 +21,7 @@ class BoltzStorageDatasource {
   Future<void> storeAutoSwapSettings(AutoSwapModel settings) async {
     await _localSwapStorage
         .into(_localSwapStorage.autoSwap)
-        .insert(
+        .insertOnConflictUpdate(
           AutoSwapCompanion.insert(
             id: const Value(1),
             enabled: Value(settings.enabled),
