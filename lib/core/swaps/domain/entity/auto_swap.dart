@@ -1,0 +1,18 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'auto_swap.freezed.dart';
+part 'auto_swap.g.dart';
+
+@freezed
+sealed class AutoSwap with _$AutoSwap {
+  const factory AutoSwap({
+    @Default(false) bool enabled,
+    @Default(1000000) int amountThreshold,
+    @Default(3) int feeThreshold,
+  }) = _AutoSwap;
+
+  const AutoSwap._();
+
+  factory AutoSwap.fromJson(Map<String, dynamic> json) =>
+      _$AutoSwapFromJson(json);
+}
