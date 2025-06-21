@@ -65,6 +65,8 @@ class SettingsLocator {
         setHideAmountsUsecase: locator<SetHideAmountsUsecase>(),
         setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
         getOldSeedsUsecase: locator<GetOldSeedsUsecase>(),
+        getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),
+        saveAutoSwapSettingsUsecase: locator<SaveAutoSwapSettingsUsecase>(),
       ),
     );
   }

@@ -1,7 +1,10 @@
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/get_auto_swap_settings_usecase.dart';
+import 'package:bb_mobile/features/settings/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
@@ -25,6 +28,8 @@ class SettingsCubit extends Cubit<SettingsState> {
     required SetHideAmountsUsecase setHideAmountsUsecase,
     required SetIsSuperuserUsecase setIsSuperuserUsecase,
     required GetOldSeedsUsecase getOldSeedsUsecase,
+    required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
+    required SaveAutoSwapSettingsUsecase saveAutoSwapSettingsUsecase,
   }) : _setEnvironmentUsecase = setEnvironmentUsecase,
        _setBitcoinUnitUsecase = setBitcoinUnitUsecase,
        _getSettingsUsecase = getSettingsUsecase,
@@ -33,6 +38,8 @@ class SettingsCubit extends Cubit<SettingsState> {
        _setHideAmountsUsecase = setHideAmountsUsecase,
        _setIsSuperuserUsecase = setIsSuperuserUsecase,
        _getOldSeedsUsecase = getOldSeedsUsecase,
+       _getAutoSwapSettingsUsecase = getAutoSwapSettingsUsecase,
+       _saveAutoSwapSettingsUsecase = saveAutoSwapSettingsUsecase,
        super(const SettingsState());
 
   final SetEnvironmentUsecase _setEnvironmentUsecase;
@@ -43,14 +50,24 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SetHideAmountsUsecase _setHideAmountsUsecase;
   final SetIsSuperuserUsecase _setIsSuperuserUsecase;
   final GetOldSeedsUsecase _getOldSeedsUsecase;
+  final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
+  final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
 
   Future<void> init() async {
-    final (storedSettings, appInfo) =
-        await (_getSettingsUsecase.execute(), PackageInfo.fromPlatform()).wait;
+    final (storedSettings, appInfo, autoSwapSettings) =
+        await (
+          _getSettingsUsecase.execute(),
+          PackageInfo.fromPlatform(),
+          _getAutoSwapSettingsUsecase.execute(),
+        ).wait;
     final appVersion = '${appInfo.version}+${appInfo.buildNumber}';
 
     emit(
-      state.copyWith(storedSettings: storedSettings, appVersion: appVersion),
+      state.copyWith(
+        storedSettings: storedSettings,
+        appVersion: appVersion,
+        autoSwapSettings: autoSwapSettings,
+      ),
     );
     await checkHasLegacySeeds();
   }
@@ -132,5 +149,14 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> checkHasLegacySeeds() async {
     final seeds = await _getOldSeedsUsecase.execute();
     emit(state.copyWith(hasLegacySeeds: seeds.isNotEmpty));
+  }
+
+  Future<void> updateAutoSwapSettings(AutoSwap settings) async {
+    // Log the action
+    log.info(
+      'Auto swap settings updated: enabled=${settings.enabled}, amountThreshold=${settings.amountThreshold}, feeThreshold=${settings.feeThreshold}',
+    );
+    await _saveAutoSwapSettingsUsecase.execute(settings);
+    emit(state.copyWith(autoSwapSettings: settings));
   }
 }
