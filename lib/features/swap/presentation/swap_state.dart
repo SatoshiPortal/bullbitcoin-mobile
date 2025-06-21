@@ -268,8 +268,14 @@ abstract class SwapState with _$SwapState {
     if (fromWalletNetwork == WalletNetwork.bitcoin &&
         toWalletNetwork == WalletNetwork.liquid) {
       amountSat = fromAmountSat - estimatedBtcToLbtcSwapFees;
+      if (amountSat < 0) {
+        amountSat = 0;
+      }
     } else {
       amountSat = fromAmountSat - estimatedLbtcToBtcSwapFees;
+      if (amountSat < 0) {
+        amountSat = 0;
+      }
     }
 
     if (isOutAmountFiat) {
