@@ -72,9 +72,7 @@ abstract class SwapState with _$SwapState {
     SwapLimitsException? swapLimitsException,
     BuildTransactionException? buildTransactionException,
     ConfirmTransactionException? confirmTransactionException,
-    // swapLimits
-    SwapLimits? swapLimits,
-    SwapFees? swapFees,
+
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('CAD') String fiatCurrencyCode,
     @Default(0) double exchangeRate,
@@ -388,4 +386,26 @@ abstract class SwapState with _$SwapState {
 
   bool get disableSendSwapButton =>
       broadcastingTransaction || signingTransaction || buildingTransaction;
+
+  SwapLimits? get swapLimits {
+    if (fromWalletNetwork == WalletNetwork.bitcoin &&
+        toWalletNetwork == WalletNetwork.liquid) {
+      return btcToLbtcSwapLimitsAndFees?.$1;
+    } else if (fromWalletNetwork == WalletNetwork.liquid &&
+        toWalletNetwork == WalletNetwork.bitcoin) {
+      return lbtcToBtcSwapLimitsAndFees?.$1;
+    }
+    return null;
+  }
+
+  SwapFees? get swapFees {
+    if (fromWalletNetwork == WalletNetwork.bitcoin &&
+        toWalletNetwork == WalletNetwork.liquid) {
+      return btcToLbtcSwapLimitsAndFees?.$2;
+    } else if (fromWalletNetwork == WalletNetwork.liquid &&
+        toWalletNetwork == WalletNetwork.bitcoin) {
+      return lbtcToBtcSwapLimitsAndFees?.$2;
+    }
+    return null;
+  }
 }

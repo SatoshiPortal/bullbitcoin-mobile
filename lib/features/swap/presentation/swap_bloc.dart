@@ -477,16 +477,33 @@ class SwapCubit extends Cubit<SwapState> {
 
   Future<void> continueWithAmountsClicked() async {
     try {
+      clearAllExceptions();
       emit(state.copyWith(amountConfirmedClicked: true));
-      // if (!state.walletHasBalanceIncludingFees()) {
-      //   emit(
-      //     state.copyWith(
-      //       insufficientBalanceException: InsufficientBalanceException(),
-      //       amountConfirmedClicked: false,
-      //     ),
-      //   );
-      //   return;
-      // }
+
+      if (state.swapAmountBelowLimit) {
+        emit(
+          state.copyWith(
+            swapLimitsException: SwapLimitsException(
+              'Amount is below minimum swap amount: ${state.swapLimits?.min} sats',
+            ),
+            amountConfirmedClicked: false,
+          ),
+        );
+        return;
+      }
+
+      if (state.swapAmountAboveLimit) {
+        emit(
+          state.copyWith(
+            swapLimitsException: SwapLimitsException(
+              'Amount exceeds maximum swap amount: ${state.swapLimits?.max} sats',
+            ),
+            amountConfirmedClicked: false,
+          ),
+        );
+        return;
+      }
+
       final bitcoinWalletId =
           state.fromWalletNetwork == WalletNetwork.bitcoin
               ? state.fromWalletId
