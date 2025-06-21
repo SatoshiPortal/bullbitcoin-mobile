@@ -84,6 +84,7 @@ class SettingsScreen extends StatelessWidget {
                     },
                     trailing: const Icon(Icons.chevron_right),
                   ),
+
                 ListTile(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(2),

@@ -1,9 +1,6 @@
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/settings/domain/get_settings_usecase.dart';
 import 'package:bb_mobile/core/storage/migrations/005_hive_to_sqlite/get_old_seeds_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/features/settings/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_bitcoin_unit_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_currency_usecase.dart';
 import 'package:bb_mobile/features/settings/domain/usecases/set_environment_usecase.dart';
@@ -44,15 +41,6 @@ class SettingsLocator {
         settingsRepository: locator<SettingsRepository>(),
       ),
     );
-    locator.registerFactory<GetAutoSwapSettingsUsecase>(
-      () =>
-          GetAutoSwapSettingsUsecase(swapRepository: locator<SwapRepository>()),
-    );
-    locator.registerFactory<SaveAutoSwapSettingsUsecase>(
-      () => SaveAutoSwapSettingsUsecase(
-        swapRepository: locator<SwapRepository>(),
-      ),
-    );
 
     // Bloc
     locator.registerFactory<SettingsCubit>(
@@ -65,8 +53,6 @@ class SettingsLocator {
         setHideAmountsUsecase: locator<SetHideAmountsUsecase>(),
         setIsSuperuserUsecase: locator<SetIsSuperuserUsecase>(),
         getOldSeedsUsecase: locator<GetOldSeedsUsecase>(),
-        getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),
-        saveAutoSwapSettingsUsecase: locator<SaveAutoSwapSettingsUsecase>(),
       ),
     );
   }
