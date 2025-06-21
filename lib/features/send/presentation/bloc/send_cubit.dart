@@ -186,9 +186,14 @@ class SendCubit extends Cubit<SendState> {
     PaymentRequest? paymentRequest,
   ) async {
     clearAllExceptions();
+    final sanitizedText = scannedRawPaymentRequest.trim().replaceAll(
+      RegExp(r'^["\"]+|["\"]+$'),
+      '',
+    );
     emit(
       state.copyWith(
         scannedRawPaymentRequest: scannedRawPaymentRequest,
+        copiedRawPaymentRequest: sanitizedText,
         paymentRequest: paymentRequest,
       ),
     );
