@@ -31,3 +31,9 @@ class StartTorInitialization extends WalletEvent {
 class CheckAllWarnings extends WalletEvent {
   const CheckAllWarnings();
 }
+
+class ExecuteAutoSwap extends WalletEvent {
+  final Wallet liquidWallet;
+
+  const ExecuteAutoSwap(this.liquidWallet);
+}

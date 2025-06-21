@@ -13,6 +13,9 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool isSyncing,
     @Default(null) Object? error,
     @Default(0) int unconfirmedIncomingBalance,
+    @Default(false) bool autoSwapFeeLimitExceeded,
+    @Default(null) double? currentSwapFeePercent,
+    @Default(null) AutoSwap? autoSwapSettings,
   }) = _WalletState;
   const WalletState._();
 

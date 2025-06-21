@@ -23,3 +23,13 @@ class MaximumFeeThresholdException implements Exception {
 
   String displayMessage() => 'Maximum fee threshold is $maximumThreshold%';
 }
+
+class AutoSwapProcessException implements Exception {
+  final String message;
+  final Object? error;
+
+  AutoSwapProcessException(this.message, {this.error});
+
+  @override
+  String toString() => error != null ? '$message: $error' : message;
+}

@@ -20,8 +20,11 @@ sealed class AutoSwap with _$AutoSwap {
     return balanceSat >= amountThresholdSats * 2 && enabled;
   }
 
-  bool allConditionsMet(int balanceSat, double currentFeeRatio) {
-    return amountThresholdExceeded(balanceSat) &&
-        feeThreshold.toDouble() > currentFeeRatio;
+  bool withinFeeThreshold(double currentFeeRatio) {
+    return feeThreshold.toDouble() >= currentFeeRatio;
+  }
+
+  int swapAmount(int balanceSat) {
+    return balanceSat - amountThresholdSats;
   }
 }

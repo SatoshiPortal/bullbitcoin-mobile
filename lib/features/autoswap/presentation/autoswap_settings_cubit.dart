@@ -137,13 +137,29 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
   }
 
   void onAmountThresholdChanged(String value) {
+    // Remove decimal points if unit is sats
+    final sanitizedValue =
+        state.bitcoinUnit == BitcoinUnit.sats
+            ? value.replaceAll(RegExp(r'[^\d]'), '')
+            : value;
+
     emit(
-      state.copyWith(amountThresholdInput: value, amountThresholdError: null),
+      state.copyWith(
+        amountThresholdInput: sanitizedValue,
+        amountThresholdError: null,
+      ),
     );
   }
 
   void onFeeThresholdChanged(String value) {
-    emit(state.copyWith(feeThresholdInput: value, feeThresholdError: null));
+    // Remove any decimal points from fee input
+    final sanitizedValue = value.replaceAll(RegExp(r'[^\d]'), '');
+    emit(
+      state.copyWith(
+        feeThresholdInput: sanitizedValue,
+        feeThresholdError: null,
+      ),
+    );
   }
 
   void onEnabledToggleChanged(bool value) {

@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
+import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
@@ -11,6 +13,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
@@ -71,6 +74,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<WalletSyncFinished>(_onWalletSyncFinished);
     on<StartTorInitialization>(_onStartTorInitialization);
     on<CheckAllWarnings>(_onCheckAllWarnings);
+    on<ExecuteAutoSwap>(_onExecuteAutoSwap);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -146,17 +150,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(isSyncing: true));
 
       final wallets = await _getWalletsUsecase.execute(sync: true);
-      // int unconfirmedIncomingBalance = 0;
-      // if (wallets.isNotEmpty) {
-      //   final walletIds = wallets.map((w) => w.id).toList();
-      //   unconfirmedIncomingBalance = await _getUnconfirmedIncomingBalanceUsecase
-      //       .execute(walletIds: walletIds);
-      //   emit(
-      //     state.copyWith(
-      //       unconfirmedIncomingBalance: unconfirmedIncomingBalance,
-      //     ),
-      //   );
-      // }
+
       emit(
         state.copyWith(
           isSyncing: false,
@@ -223,56 +217,86 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       // Check if the synced wallet is the default liquid wallet
       if (event.wallet.isDefault && event.wallet.isLiquid) {
-        await _executeAutoSwapIfNeeded(event.wallet);
+        emit(state.copyWith(autoSwapFeeLimitExceeded: false));
+        add(ExecuteAutoSwap(event.wallet));
       }
     } catch (e) {
       emit(state.copyWith(status: WalletStatus.failure, error: e));
     }
   }
 
-  Future<void> _executeAutoSwapIfNeeded(Wallet liquidWallet) async {
-    final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
-      isTestnet: liquidWallet.isTestnet,
-    );
-    final walletBalance = liquidWallet.balanceSat.toInt();
-
-    if (autoSwapSettings.amountThresholdExceeded(walletBalance)) {
-      // Get swap limits to ensure we can create a swap
-      final (swapLimits, swapFees) = await _getSwapLimitsUsecase.execute(
-        type: SwapType.liquidToBitcoin,
-        isTestnet: liquidWallet.isTestnet,
+  Future<void> _onExecuteAutoSwap(
+    ExecuteAutoSwap event,
+    Emitter<WalletState> emit,
+  ) async {
+    try {
+      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
+        isTestnet: event.liquidWallet.isTestnet,
       );
+      emit(state.copyWith(autoSwapSettings: autoSwapSettings));
+      final walletBalance = event.liquidWallet.balanceSat.toInt();
 
-      if (walletBalance >= swapLimits.min && walletBalance <= swapLimits.max) {
-        final defaultBitcoinWallet =
-            state.wallets
-                .where((w) => w.isDefault && w.network.isBitcoin)
-                .firstOrNull;
-        if (defaultBitcoinWallet != null) {
-          final swap = await _createChainSwapUsecase.execute(
-            bitcoinWalletId: defaultBitcoinWallet.id,
-            liquidWalletId: liquidWallet.id,
-            type: SwapType.liquidToBitcoin,
-            amountSat: walletBalance,
-          );
-          final swapFeePercent = swap.getFeeAsPercentOfAmount();
-          if (autoSwapSettings.allConditionsMet(
-            walletBalance,
-            swapFeePercent,
-          )) {
-            final pset = await _prepareLiquidSendUsecase.execute(
-              walletId: liquidWallet.id,
-              address: swap.paymentAddress,
-              amountSat: swap.paymentAmount,
-              networkFee: const NetworkFee.relative(0.1),
+      if (autoSwapSettings.amountThresholdExceeded(walletBalance)) {
+        // Get swap limits to ensure we can create a swap
+        final (swapLimits, swapFees) = await _getSwapLimitsUsecase.execute(
+          type: SwapType.liquidToBitcoin,
+          isTestnet: event.liquidWallet.isTestnet,
+        );
+
+        if (walletBalance >= swapLimits.min &&
+            walletBalance <= swapLimits.max) {
+          final defaultBitcoinWallet =
+              state.wallets
+                  .where((w) => w.isDefault && w.network.isBitcoin)
+                  .firstOrNull;
+          if (defaultBitcoinWallet != null) {
+            final swap = await _createChainSwapUsecase.execute(
+              bitcoinWalletId: defaultBitcoinWallet.id,
+              liquidWalletId: event.liquidWallet.id,
+              type: SwapType.liquidToBitcoin,
+              amountSat: autoSwapSettings.swapAmount(walletBalance),
             );
-            final signedPset = await _signLiquidTxUsecase.execute(
-              walletId: liquidWallet.id,
-              pset: pset,
-            );
-            await _broadcastLiquidTxUsecase.execute(signedPset);
+            final swapFeePercent = swap.getFeeAsPercentOfAmount();
+            emit(state.copyWith(currentSwapFeePercent: swapFeePercent));
+            if (autoSwapSettings.withinFeeThreshold(swapFeePercent)) {
+              final pset = await _prepareLiquidSendUsecase.execute(
+                walletId: event.liquidWallet.id,
+                address: swap.paymentAddress,
+                amountSat: swap.paymentAmount,
+                networkFee: const NetworkFee.relative(0.1),
+              );
+              final signedPset = await _signLiquidTxUsecase.execute(
+                walletId: event.liquidWallet.id,
+                pset: pset,
+              );
+              await _broadcastLiquidTxUsecase.execute(signedPset);
+            } else {
+              emit(state.copyWith(autoSwapFeeLimitExceeded: true));
+            }
+          } else {
+            throw AutoSwapProcessException('No default Bitcoin wallet found');
           }
+        } else {
+          throw AutoSwapProcessException(
+            'Wallet balance outside swap limits',
+            error:
+                'min: ${swapLimits.min}, max: ${swapLimits.max}, balance: $walletBalance',
+          );
         }
+      }
+    } catch (e) {
+      log.severe('[WalletBloc] Auto swap process failed: $e');
+      if (e is AutoSwapProcessException) {
+        emit(state.copyWith(error: e));
+      } else {
+        emit(
+          state.copyWith(
+            error: AutoSwapProcessException(
+              'Auto swap process failed',
+              error: e,
+            ),
+          ),
+        );
       }
     }
   }

@@ -1,3 +1,4 @@
+import 'package:bb_mobile/features/wallet/ui/widgets/auto_swap_fee_warning.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_errors.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_bottom_buttons.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/wallet_cards.dart';
@@ -17,7 +18,11 @@ class WalletHomeScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [HomeWarnings(), HomeWalletCards()],
+              children: [
+                HomeWarnings(),
+                AutoSwapFeeWarning(),
+                HomeWalletCards(),
+              ],
             ),
           ),
         ),
