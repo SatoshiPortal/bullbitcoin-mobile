@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 
 abstract class SwapRepository {
@@ -150,4 +151,7 @@ abstract class SwapRepository {
 
   // Add a method to subscribe to swap updates
   Stream<Swap> get swapUpdatesStream;
+
+  Future<AutoSwap> getAutoSwapParams();
+  Future<void> updateAutoSwapParams(AutoSwap params);
 }

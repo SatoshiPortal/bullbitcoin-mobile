@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
+import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 
@@ -701,5 +703,17 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
           lockupTxid,
         );
     }
+  }
+
+  @override
+  Future<AutoSwap> getAutoSwapParams() async {
+    final model = await _boltz.storage.getAutoSwapSettings();
+    return model.toEntity();
+  }
+
+  @override
+  Future<void> updateAutoSwapParams(AutoSwap params) async {
+    final model = AutoSwapModel.fromEntity(params);
+    await _boltz.storage.storeAutoSwapSettings(model);
   }
 }
