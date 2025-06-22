@@ -30,10 +30,14 @@ class GetWalletsUsecase {
       );
 
       if (wallets.isEmpty) {
-        throw Exception('No wallets found');
+        throw NoWalletsFoundException(
+          "No wallets found for the current environment: $environment",
+        );
       }
 
       return wallets;
+    } on NoWalletsFoundException {
+      rethrow;
     } catch (e) {
       throw GetWalletsException('$e');
     }
@@ -44,4 +48,10 @@ class GetWalletsException implements Exception {
   final String message;
 
   GetWalletsException(this.message);
+}
+
+class NoWalletsFoundException implements Exception {
+  final String message;
+
+  NoWalletsFoundException(this.message);
 }

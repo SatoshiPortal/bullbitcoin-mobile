@@ -134,6 +134,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       _finishedSyncsSubscription = _watchFinishedWalletSyncsUsecase
           .execute()
           .listen((wallet) => add(WalletSyncFinished(wallet)));
+    } on NoWalletsFoundException catch (e) {
+      emit(
+        state.copyWith(
+          noWalletsFoundException: e,
+          status: WalletStatus.failure,
+          error: e,
+        ),
+      );
     } catch (e) {
       emit(WalletState(status: WalletStatus.failure, error: e));
     }
@@ -153,6 +161,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           isSyncing: false,
           status: WalletStatus.success,
           wallets: wallets,
+          noWalletsFoundException: null,
           error: null,
         ),
       );
@@ -161,6 +170,14 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       // We do it after the syncing of the wallets to not wait for the
       // swap watcher to be restarted before the wallets are synced.
       await _restartSwapWatcherUsecase.execute();
+    } on NoWalletsFoundException catch (e) {
+      emit(
+        state.copyWith(
+          noWalletsFoundException: e,
+          status: WalletStatus.failure,
+          error: e,
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
@@ -176,19 +193,34 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     WalletSyncStarted event,
     Emitter<WalletState> emit,
   ) async {
-    // Do nothing for now, since we only want to show the syncing indicator
-    // when the user itself refreshes the wallets.
-    final wallets = await _getWalletsUsecase.execute();
+    try {
+      final wallets = await _getWalletsUsecase.execute();
 
-    if (wallets.isNotEmpty) {
-      final walletIds = wallets.map((w) => w.id).toList();
-      final unconfirmedIncomingBalance =
-          await _getUnconfirmedIncomingBalanceUsecase.execute(
-            walletIds: walletIds,
-          );
+      if (wallets.isNotEmpty) {
+        final walletIds = wallets.map((w) => w.id).toList();
+        final unconfirmedIncomingBalance =
+            await _getUnconfirmedIncomingBalanceUsecase.execute(
+              walletIds: walletIds,
+            );
+        emit(
+          state.copyWith(
+            unconfirmedIncomingBalance: unconfirmedIncomingBalance,
+            status: WalletStatus.success,
+            error: null,
+            noWalletsFoundException: null,
+          ),
+        );
+      }
+    } on NoWalletsFoundException catch (e) {
       emit(
-        state.copyWith(unconfirmedIncomingBalance: unconfirmedIncomingBalance),
+        state.copyWith(
+          noWalletsFoundException: e,
+          status: WalletStatus.failure,
+          error: e,
+        ),
       );
+    } catch (e) {
+      emit(state.copyWith(status: WalletStatus.failure, error: e));
     }
   }
 
@@ -210,7 +242,22 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           ),
         );
       }
-      emit(state.copyWith(status: WalletStatus.success, wallets: wallets));
+      emit(
+        state.copyWith(
+          status: WalletStatus.success,
+          wallets: wallets,
+          error: null,
+          noWalletsFoundException: null,
+        ),
+      );
+    } on NoWalletsFoundException catch (e) {
+      emit(
+        state.copyWith(
+          noWalletsFoundException: e,
+          status: WalletStatus.failure,
+          error: e,
+        ),
+      );
     } catch (e) {
       emit(state.copyWith(status: WalletStatus.failure, error: e));
     }
