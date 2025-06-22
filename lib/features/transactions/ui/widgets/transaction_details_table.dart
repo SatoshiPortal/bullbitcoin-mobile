@@ -67,7 +67,7 @@ class TransactionDetailsTable extends StatelessWidget {
 
     final labels = tx.labels ?? [];
 
-    final address = walletTransaction?.toAddress ?? '';
+    final address = tx.toAddress ?? '';
     final txId = tx.txId ?? '';
     final abbreviatedAddress = StringFormatting.truncateMiddle(address);
     final addressLabels = walletTransaction?.toAddressLabels?.join(', ') ?? '';
@@ -220,14 +220,6 @@ class TransactionDetailsTable extends StatelessWidget {
                   label: 'Payout Status',
                   displayValue: order.payoutStatus.value,
                 ),
-                if (order.bitcoinTransactionId != null)
-                  DetailsTableItem(
-                    label: 'Transaction ID',
-                    displayValue: StringFormatting.truncateMiddle(
-                      order.bitcoinTransactionId!,
-                    ),
-                    copyValue: order.bitcoinTransactionId,
-                  ),
                 DetailsTableItem(
                   label: 'Created at',
                   displayValue: DateFormat(
@@ -288,14 +280,6 @@ class TransactionDetailsTable extends StatelessWidget {
                   label: 'Payout Status',
                   displayValue: order.payoutStatus.value,
                 ),
-                if (order.bitcoinTransactionId != null)
-                  DetailsTableItem(
-                    label: 'Transaction ID',
-                    displayValue: StringFormatting.truncateMiddle(
-                      order.bitcoinTransactionId!,
-                    ),
-                    copyValue: order.bitcoinTransactionId,
-                  ),
                 DetailsTableItem(
                   label: 'Created at',
                   displayValue: DateFormat(

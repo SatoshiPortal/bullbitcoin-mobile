@@ -20,7 +20,7 @@ class CreateBuyOrderUsecase {
     required String toAddress,
     required OrderAmount orderAmount,
     required FiatCurrency currency,
-    required Network network,
+    required bool isLiquid,
     required bool isOwner,
   }) async {
     try {
@@ -30,6 +30,7 @@ class CreateBuyOrderUsecase {
           isTestnet
               ? _testnetExchangeOrderRepository
               : _mainnetExchangeOrderRepository;
+      final network = isLiquid ? Network.liquid : Network.bitcoin;
       final order = await repo.placeBuyOrder(
         toAddress: toAddress,
         orderAmount: orderAmount,

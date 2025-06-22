@@ -2,6 +2,8 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/logger.dart' show log;
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/buy/ui/buy_router.dart';
+import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/sender_broadcast_payjoin_original_tx_button.dart';
 import 'package:bb_mobile/features/transactions/ui/widgets/transaction_details_table.dart';
@@ -188,6 +190,21 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const Gap(16),
                   _SwapStatusDescription(swap: swap),
                   const Gap(16),
+                ],
+                if (isOrderType &&
+                    tx.isBuyOrder &&
+                    (tx.order! as BuyOrder).bitcoinAddress != null &&
+                    tx.order!.sentAt == null) ...[
+                  AccelerateTransactionListTile(
+                    orderId: tx.order!.orderId,
+                    onTap: () {
+                      context.pushNamed(
+                        BuyRoute.buyAccelerate.name,
+                        pathParameters: {'orderId': tx.order!.orderId},
+                      );
+                    },
+                  ),
+                  const Gap(24),
                 ],
                 const TransactionDetailsTable(),
                 if (isOngoingSenderPayjoin) ...[

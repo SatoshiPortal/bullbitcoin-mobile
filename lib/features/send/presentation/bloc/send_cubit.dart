@@ -956,22 +956,8 @@ class SendCubit extends Cubit<SendState> {
   Future<void> loadFees() async {
     if (state.selectedWallet == null) return;
     try {
-      final settings = await _getSettingsUsecase.execute();
-      final environment = settings.environment;
-      final bitcoinNetwork = Network.fromEnvironment(
-        isTestnet: environment.isTestnet,
-        isLiquid: false,
-      );
-      final liquidNetwork = Network.fromEnvironment(
-        isTestnet: environment.isTestnet,
-        isLiquid: true,
-      );
-      final bitcoinFees = await _getNetworkFeesUsecase.execute(
-        network: bitcoinNetwork,
-      );
-      final liquidFees = await _getNetworkFeesUsecase.execute(
-        network: liquidNetwork,
-      );
+      final bitcoinFees = await _getNetworkFeesUsecase.execute(isLiquid: false);
+      final liquidFees = await _getNetworkFeesUsecase.execute(isLiquid: true);
       emit(
         state.copyWith(
           bitcoinFeesList: bitcoinFees,

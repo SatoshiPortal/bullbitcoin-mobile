@@ -25,14 +25,15 @@ class FundExchangeAccountScreen extends StatelessWidget {
       appBar: AppBar(
         // Adding the leading icon button here manually since we are in the first
         // route of a shellroute and so no back button is provided by default.
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (context.canPop()) {
-              context.pop();
-            }
-          },
-        ),
+        leading:
+            context.canPop()
+                ? IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    context.pop();
+                  },
+                )
+                : null,
         title: const Text('Funding'),
       ),
       body: SafeArea(

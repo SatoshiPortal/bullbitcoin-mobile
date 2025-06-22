@@ -331,10 +331,10 @@ class SwapCubit extends Cubit<SwapState> {
     if (state.fromWallet == null && state.toWallet == null) return;
     try {
       final fromNetworkFees = await _getNetworkFeesUsecase.execute(
-        network: state.fromWallet!.network,
+        isLiquid: state.fromWallet!.network.isLiquid,
       );
       final toNetworkFees = await _getNetworkFeesUsecase.execute(
-        network: state.toWallet!.network,
+        isLiquid: state.toWallet!.network.isLiquid,
       );
       FeeOptions? bitcoinFeeList;
       FeeOptions? liquidFeeList;

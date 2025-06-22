@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:bb_mobile/features/buy/ui/widgets/buy_confirm_detail_row.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
@@ -88,18 +89,22 @@ class BuyConfirmScreen extends StatelessWidget {
                   ),
                 ),
                 const Gap(32),
-                _buildDetailRow(context, 'You pay', formattedPayInAmount),
-                // _divider(context),
-                _buildDetailRow(context, 'You receive', formattedPayOutAmount),
-                // _divider(context),
-                _buildDetailRow(
-                  context,
-                  'Bitcoin Price',
-                  formattedExchangeRate,
+                BuyConfirmDetailRow(
+                  label: 'You pay',
+                  value: formattedPayInAmount,
                 ),
-                // _divider(context),
-                _buildDetailRow(context, 'Payout method', payoutMethod),
-
+                BuyConfirmDetailRow(
+                  label: 'You receive',
+                  value: formattedPayOutAmount,
+                ),
+                BuyConfirmDetailRow(
+                  label: 'Bitcoin Price',
+                  value: formattedExchangeRate,
+                ),
+                BuyConfirmDetailRow(
+                  label: 'Payout method',
+                  value: payoutMethod,
+                ),
                 const Gap(32),
               ],
             ),
@@ -150,39 +155,6 @@ class BuyConfirmScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(
-    BuildContext context,
-    String label,
-    String value, {
-    bool isError = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          BBText(
-            label,
-            style: context.font.bodyMedium?.copyWith(
-              color: context.colour.surfaceContainer,
-            ),
-          ),
-          const Spacer(),
-          Expanded(
-            child: BBText(
-              value,
-              textAlign: TextAlign.end,
-              maxLines: 2,
-              style: context.font.bodyMedium?.copyWith(
-                color: isError ? context.colour.primary : null,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
