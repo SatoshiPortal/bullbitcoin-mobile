@@ -1,3 +1,4 @@
+import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/fees/data/fees_repository.dart';
 import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
@@ -6,6 +7,7 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
+import 'package:bb_mobile/core/swaps/data/services/auto_swap_timer_service.dart';
 import 'package:bb_mobile/core/swaps/data/services/swap_watcher_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
@@ -22,6 +24,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_use
 import 'package:bb_mobile/core/swaps/domain/usecases/update_paid_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_address_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/locator.dart';
@@ -93,6 +96,41 @@ class SwapsLocator {
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
+    );
+
+    // add auto swap timer service for mainnet
+    final mainnetAutoSwapTimer = AutoSwapTimerService(
+      swapRepository: locator<SwapRepository>(
+        instanceName:
+            LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+      ),
+      walletRepository: locator<WalletRepository>(),
+      liquidWalletRepository: locator<LiquidWalletRepository>(),
+      liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
+      seedRepository: locator<SeedRepository>(),
+    );
+    mainnetAutoSwapTimer.startTimer();
+    locator.registerLazySingleton<AutoSwapTimerService>(
+      () => mainnetAutoSwapTimer,
+      instanceName: LocatorInstanceNameConstants.boltzAutoSwapTimerInstanceName,
+    );
+
+    // add auto swap timer service for testnet
+    final testnetAutoSwapTimer = AutoSwapTimerService(
+      swapRepository: locator<SwapRepository>(
+        instanceName:
+            LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
+      ),
+      walletRepository: locator<WalletRepository>(),
+      liquidWalletRepository: locator<LiquidWalletRepository>(),
+      liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
+      seedRepository: locator<SeedRepository>(),
+    );
+    testnetAutoSwapTimer.startTimer();
+    locator.registerLazySingleton<AutoSwapTimerService>(
+      () => testnetAutoSwapTimer,
+      instanceName:
+          LocatorInstanceNameConstants.boltzTestnetAutoSwapTimerInstanceName,
     );
   }
 

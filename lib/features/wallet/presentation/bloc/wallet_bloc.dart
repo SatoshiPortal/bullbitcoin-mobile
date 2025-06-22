@@ -1,15 +1,10 @@
 import 'dart:async';
 
-import 'package:bb_mobile/core/blockchain/domain/usecases/broadcast_liquid_transaction_usecase.dart';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
-import 'package:bb_mobile/core/errors/autoswap_errors.dart';
-import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/swaps/data/services/auto_swap_timer_service.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
-import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/listen_to_auto_swap_timer_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
@@ -19,8 +14,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/check_wallet_syncing_useca
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/prepare_liquid_send_usecase.dart';
-import 'package:bb_mobile/features/send/domain/usecases/sign_liquid_tx_usecase.dart';
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
@@ -44,12 +37,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required GetPrioritizedServerUsecase getBestAvailableServerUsecase,
     required GetUnconfirmedIncomingBalanceUsecase
     getUnconfirmedIncomingBalanceUsecase,
-    required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
-    required GetSwapLimitsUsecase getSwapLimitsUsecase,
-    required CreateChainSwapUsecase createChainSwapUsecase,
-    required PrepareLiquidSendUsecase prepareLiquidSendUsecase,
-    required SignLiquidTxUsecase signLiquidTxUsecase,
-    required BroadcastLiquidTransactionUsecase broadcastLiquidTxUsecase,
+    required ListenToAutoSwapTimerUsecase listenToAutoSwapTimerUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -61,12 +49,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _getPrioritizedServerUsecase = getBestAvailableServerUsecase,
        _getUnconfirmedIncomingBalanceUsecase =
            getUnconfirmedIncomingBalanceUsecase,
-       _getAutoSwapSettingsUsecase = getAutoSwapSettingsUsecase,
-       _getSwapLimitsUsecase = getSwapLimitsUsecase,
-       _createChainSwapUsecase = createChainSwapUsecase,
-       _prepareLiquidSendUsecase = prepareLiquidSendUsecase,
-       _signLiquidTxUsecase = signLiquidTxUsecase,
-       _broadcastLiquidTxUsecase = broadcastLiquidTxUsecase,
+       _listenToAutoSwapTimerUsecase = listenToAutoSwapTimerUsecase,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -74,7 +57,24 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<WalletSyncFinished>(_onWalletSyncFinished);
     on<StartTorInitialization>(_onStartTorInitialization);
     on<CheckAllWarnings>(_onCheckAllWarnings);
-    on<ExecuteAutoSwap>(_onExecuteAutoSwap);
+    on<ListenToAutoSwapTimer>(_onListenToAutoSwapTimer);
+    on<AutoSwapEventReceived>(_onAutoSwapEventReceived);
+
+    // Start listening to auto swap timer when bloc is created
+    _initAutoSwapTimer();
+  }
+
+  Future<void> _initAutoSwapTimer() async {
+    try {
+      final wallets = await _getWalletsUsecase.execute();
+      final defaultLiquidWallet =
+          wallets.where((w) => w.isDefault && w.isLiquid).firstOrNull;
+      if (defaultLiquidWallet != null) {
+        add(ListenToAutoSwapTimer(defaultLiquidWallet.isTestnet));
+      }
+    } catch (e) {
+      log.severe('[WalletBloc] Failed to initialize auto swap timer: $e');
+    }
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -88,20 +88,17 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
-  final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
-  final GetSwapLimitsUsecase _getSwapLimitsUsecase;
-  final CreateChainSwapUsecase _createChainSwapUsecase;
-  final PrepareLiquidSendUsecase _prepareLiquidSendUsecase;
-  final SignLiquidTxUsecase _signLiquidTxUsecase;
-  final BroadcastLiquidTransactionUsecase _broadcastLiquidTxUsecase;
+  final ListenToAutoSwapTimerUsecase _listenToAutoSwapTimerUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
+  StreamSubscription? _autoSwapSubscription;
 
   @override
   Future<void> close() {
     _startedSyncsSubscription?.cancel();
     _finishedSyncsSubscription?.cancel();
+    _autoSwapSubscription?.cancel();
     return super.close();
   }
 
@@ -214,90 +211,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         );
       }
       emit(state.copyWith(status: WalletStatus.success, wallets: wallets));
-
-      // Check if the synced wallet is the default liquid wallet
-      if (event.wallet.isDefault && event.wallet.isLiquid) {
-        emit(state.copyWith(autoSwapFeeLimitExceeded: false));
-        add(ExecuteAutoSwap(event.wallet));
-      }
     } catch (e) {
       emit(state.copyWith(status: WalletStatus.failure, error: e));
-    }
-  }
-
-  Future<void> _onExecuteAutoSwap(
-    ExecuteAutoSwap event,
-    Emitter<WalletState> emit,
-  ) async {
-    try {
-      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
-        isTestnet: event.liquidWallet.isTestnet,
-      );
-      emit(state.copyWith(autoSwapSettings: autoSwapSettings));
-      final walletBalance = event.liquidWallet.balanceSat.toInt();
-
-      if (autoSwapSettings.amountThresholdExceeded(walletBalance)) {
-        // Get swap limits to ensure we can create a swap
-        final (swapLimits, swapFees) = await _getSwapLimitsUsecase.execute(
-          type: SwapType.liquidToBitcoin,
-          isTestnet: event.liquidWallet.isTestnet,
-        );
-
-        if (walletBalance >= swapLimits.min &&
-            walletBalance <= swapLimits.max) {
-          final defaultBitcoinWallet =
-              state.wallets
-                  .where((w) => w.isDefault && w.network.isBitcoin)
-                  .firstOrNull;
-          if (defaultBitcoinWallet != null) {
-            final swap = await _createChainSwapUsecase.execute(
-              bitcoinWalletId: defaultBitcoinWallet.id,
-              liquidWalletId: event.liquidWallet.id,
-              type: SwapType.liquidToBitcoin,
-              amountSat: autoSwapSettings.swapAmount(walletBalance),
-            );
-            final swapFeePercent = swap.getFeeAsPercentOfAmount();
-            emit(state.copyWith(currentSwapFeePercent: swapFeePercent));
-            if (autoSwapSettings.withinFeeThreshold(swapFeePercent)) {
-              final pset = await _prepareLiquidSendUsecase.execute(
-                walletId: event.liquidWallet.id,
-                address: swap.paymentAddress,
-                amountSat: swap.paymentAmount,
-                networkFee: const NetworkFee.relative(0.1),
-              );
-              final signedPset = await _signLiquidTxUsecase.execute(
-                walletId: event.liquidWallet.id,
-                pset: pset,
-              );
-              await _broadcastLiquidTxUsecase.execute(signedPset);
-            } else {
-              emit(state.copyWith(autoSwapFeeLimitExceeded: true));
-            }
-          } else {
-            throw AutoSwapProcessException('No default Bitcoin wallet found');
-          }
-        } else {
-          throw AutoSwapProcessException(
-            'Wallet balance outside swap limits',
-            error:
-                'min: ${swapLimits.min}, max: ${swapLimits.max}, balance: $walletBalance',
-          );
-        }
-      }
-    } catch (e) {
-      log.severe('[WalletBloc] Auto swap process failed: $e');
-      if (e is AutoSwapProcessException) {
-        emit(state.copyWith(error: e));
-      } else {
-        emit(
-          state.copyWith(
-            error: AutoSwapProcessException(
-              'Auto swap process failed',
-              error: e,
-            ),
-          ),
-        );
-      }
     }
   }
 
@@ -369,5 +284,33 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       );
     }
     return null;
+  }
+
+  Future<void> _onListenToAutoSwapTimer(
+    ListenToAutoSwapTimer event,
+    Emitter<WalletState> emit,
+  ) async {
+    await _autoSwapSubscription?.cancel();
+
+    final stream = _listenToAutoSwapTimerUsecase.execute(
+      isTestnet: event.isTestnet,
+    );
+    _autoSwapSubscription = stream.listen(
+      (autoSwapEvent) => add(AutoSwapEventReceived(autoSwapEvent)),
+    );
+
+    emit(state.copyWith(isAutoSwapTimerRunning: true));
+  }
+
+  void _onAutoSwapEventReceived(
+    AutoSwapEventReceived event,
+    Emitter<WalletState> emit,
+  ) {
+    emit(state.copyWith(lastAutoSwapEvent: event.event));
+
+    if (event.event.status == AutoSwapStatus.swapExecuted) {
+      // Refresh wallets to show updated balances
+      add(const WalletRefreshed());
+    }
   }
 }

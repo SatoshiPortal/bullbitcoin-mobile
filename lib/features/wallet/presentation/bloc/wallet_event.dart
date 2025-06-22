@@ -32,8 +32,12 @@ class CheckAllWarnings extends WalletEvent {
   const CheckAllWarnings();
 }
 
-class ExecuteAutoSwap extends WalletEvent {
-  final Wallet liquidWallet;
+class ListenToAutoSwapTimer extends WalletEvent {
+  final bool isTestnet;
+  const ListenToAutoSwapTimer(this.isTestnet);
+}
 
-  const ExecuteAutoSwap(this.liquidWallet);
+class AutoSwapEventReceived extends WalletEvent {
+  final AutoSwapEvent event;
+  const AutoSwapEventReceived(this.event);
 }
