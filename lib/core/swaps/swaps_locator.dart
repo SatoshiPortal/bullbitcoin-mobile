@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usec
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/listen_to_auto_swap_timer_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
@@ -283,6 +284,21 @@ class SwapsLocator {
         watcherService: locator<SwapWatcherService>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
+        ),
+      ),
+    );
+
+    // add listen to auto swap timer usecase
+    locator.registerFactory<ListenToAutoSwapTimerUsecase>(
+      () => ListenToAutoSwapTimerUsecase(
+        mainnetAutoSwapTimer: locator<AutoSwapTimerService>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzAutoSwapTimerInstanceName,
+        ),
+        testnetAutoSwapTimer: locator<AutoSwapTimerService>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetAutoSwapTimerInstanceName,
         ),
       ),
     );
