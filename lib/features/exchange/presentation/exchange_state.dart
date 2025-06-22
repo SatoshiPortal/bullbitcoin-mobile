@@ -32,4 +32,7 @@ abstract class ExchangeState with _$ExchangeState {
       userSummary?.groups.contains('KYC_LIGHT_VERIFICATION') ?? false;
   bool get isLimitedKycLevel =>
       userSummary?.groups.contains('KYC_LIMITED_VERIFICATION') ?? false;
+
+  List<UserBalance> get balances =>
+      userSummary?.balances.where((b) => b.amount > 0).toList() ?? [];
 }

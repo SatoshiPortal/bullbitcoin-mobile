@@ -19,10 +19,11 @@ class ExchangeHomeTopSection extends StatelessWidget {
     );
     final balances = context.select(
       (ExchangeCubit cubit) =>
-          cubit.state.userSummary?.balances ??
-          (defaultCurrency != null
-              ? [UserBalance(amount: 0, currencyCode: defaultCurrency)]
-              : []),
+          cubit.state.balances.isNotEmpty
+              ? cubit.state.balances
+              : (defaultCurrency != null
+                  ? [UserBalance(amount: 0, currencyCode: defaultCurrency)]
+                  : []),
     );
     final balanceTextStyle =
         balances.length > 1
