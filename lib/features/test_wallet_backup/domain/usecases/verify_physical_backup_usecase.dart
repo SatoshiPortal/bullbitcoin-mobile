@@ -1,6 +1,6 @@
 import 'package:bb_mobile/core/seed/data/models/seed_model.dart'
     show MnemonicSeedModel, SeedModel;
-import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';

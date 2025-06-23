@@ -1,4 +1,4 @@
-import 'package:bb_mobile/core/seed/domain/repositories/word_list_repository.dart';
+import 'package:bb_mobile/core/seed/data/repository/word_list_repository.dart';
 
 class FindMnemonicWordsUsecase {
   final WordListRepository _wordListRepository;

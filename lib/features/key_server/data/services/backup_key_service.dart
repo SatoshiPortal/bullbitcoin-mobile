@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart'
-    show SeedRepository;
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/bip85_derivation.dart';
@@ -12,12 +11,10 @@ class BackupKeyService {
   BackupKeyService({
     required SeedRepository seedRepository,
     required WalletRepository walletRepository,
-  })  : _seedRepository = seedRepository,
-        _walletRepository = walletRepository;
+  }) : _seedRepository = seedRepository,
+       _walletRepository = walletRepository;
 
-  Future<String> deriveBackupKeyFromDefaultSeed({
-    required String? path,
-  }) async {
+  Future<String> deriveBackupKeyFromDefaultSeed({required String? path}) async {
     try {
       if (path == null) throw 'Missing bip85 path';
 
@@ -32,8 +29,9 @@ class BackupKeyService {
       }
 
       final defaultWallet = defaultWallets.first;
-      final defaultSeed =
-          await _seedRepository.get(defaultWallet.masterFingerprint);
+      final defaultSeed = await _seedRepository.get(
+        defaultWallet.masterFingerprint,
+      );
       final xprv = Bip32Derivation.getXprvFromSeed(
         defaultSeed.bytes,
         defaultWallet.network,
