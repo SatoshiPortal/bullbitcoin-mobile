@@ -217,7 +217,6 @@ class SendCubit extends Cubit<SendState> {
           paymentRequest: paymentRequest,
         ),
       );
-      await continueOnAddressConfirmed();
     } catch (e) {
       emit(
         state.copyWith(
@@ -234,7 +233,6 @@ class SendCubit extends Cubit<SendState> {
   Future<void> continueOnAddressConfirmed() async {
     try {
       emit(state.copyWith(loadingBestWallet: true, invoiceHasMrh: false));
-
       await unifiedBip21Prioritization();
 
       if (!state.hasValidPaymentRequest) {
@@ -290,14 +288,8 @@ class SendCubit extends Cubit<SendState> {
       final sendType = SendType.from(state.paymentRequest!);
 
       emit(state.copyWith(selectedWallet: wallet, sendType: sendType));
-      // TODO: why load swap limits if we are not creating a swap?
-      await loadSwapLimits();
-      final swapType =
-          wallet.isLiquid
-              ? SwapType.liquidToLightning
-              : SwapType.bitcoinToLightning;
+      await loadFees();
 
-      // for bolt12 or lnaddress we need to redirect to the amount page and only create a swap after amount is set
       if (state.invoiceHasMrh) {
         if (!await hasBalance()) {
           emit(
@@ -310,8 +302,6 @@ class SendCubit extends Cubit<SendState> {
           return;
         }
         //
-        await loadFees();
-        await loadUtxos();
         emit(
           state.copyWith(confirmedAmountSat: state.paymentRequest!.amountSat),
         );
@@ -343,6 +333,12 @@ class SendCubit extends Cubit<SendState> {
           );
           return;
         }
+        final swapType =
+            wallet.isLiquid
+                ? SwapType.liquidToLightning
+                : SwapType.bitcoinToLightning;
+        await loadSwapLimits();
+
         if (state.swapAmountBelowLimit) {
           if (!state.selectedWallet!.isLiquid) {
             emit(
@@ -389,8 +385,6 @@ class SendCubit extends Cubit<SendState> {
             type: swapType,
             invoice: paymentRequest.invoice,
           );
-          await loadFees();
-          await loadUtxos();
           emit(
             state.copyWith(
               step: SendStep.confirm,
@@ -414,8 +408,6 @@ class SendCubit extends Cubit<SendState> {
         }
       }
       if (state.paymentRequest!.isBip21) {
-        await loadFees();
-        await loadUtxos();
         if (state.paymentRequest!.amountSat == null) {
           emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
         } else {
@@ -429,8 +421,6 @@ class SendCubit extends Cubit<SendState> {
         }
         return;
       } else {
-        await loadFees();
-        await loadUtxos();
         emit(state.copyWith(step: SendStep.amount, loadingBestWallet: false));
         return;
       }
@@ -469,6 +459,7 @@ class SendCubit extends Cubit<SendState> {
             state.selectedWallet!.isLiquid
                 ? SwapType.liquidToBitcoin
                 : SwapType.bitcoinToLiquid;
+        await loadSwapLimits();
         toggleSwapLimitsForWallet();
         if (state.swapAmountBelowLimit) {
           emit(
@@ -796,7 +787,6 @@ class SendCubit extends Cubit<SendState> {
             .execute(walletId: wallet.id)
             .listen((wallet) async {
               emit(state.copyWith(selectedWallet: wallet));
-              await loadFees();
               await loadUtxos();
             });
       }
@@ -822,7 +812,6 @@ class SendCubit extends Cubit<SendState> {
         confirmedAmountSat: state.inputAmountSat,
       ),
     );
-    await loadUtxos();
 
     if (state.sendType == SendType.lightning) {
       final swapType =
@@ -962,6 +951,7 @@ class SendCubit extends Cubit<SendState> {
         state.copyWith(
           bitcoinFeesList: bitcoinFees,
           liquidFeesList: liquidFees,
+          selectedFeeOption: FeeSelection.fastest,
         ),
       );
     } catch (e) {
@@ -986,7 +976,11 @@ class SendCubit extends Cubit<SendState> {
 
   Future<void> createTransaction() async {
     try {
+      if (state.bitcoinFeesList == null || state.liquidFeesList == null) {
+        throw 'Fees not loaded';
+      }
       clearAllExceptions();
+      await loadUtxos();
       emit(state.copyWith(buildingTransaction: true));
       final address =
           state.lightningSwap != null
