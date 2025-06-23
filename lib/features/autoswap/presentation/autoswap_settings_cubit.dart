@@ -43,11 +43,11 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       if (settings.bitcoinUnit == BitcoinUnit.btc) {
         // Convert sats to BTC for display
         final btcAmount = ConvertAmount.satsToBtc(
-          autoSwapSettings.amountThresholdSats,
+          autoSwapSettings.balanceThresholdSats,
         );
         amountThresholdInput = btcAmount.toString();
       } else {
-        amountThresholdInput = autoSwapSettings.amountThresholdSats.toString();
+        amountThresholdInput = autoSwapSettings.balanceThresholdSats.toString();
       }
 
       emit(
@@ -55,8 +55,9 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
           loading: false,
           settings: autoSwapSettings,
           amountThresholdInput: amountThresholdInput,
-          feeThresholdInput: autoSwapSettings.feeThreshold.toString(),
+          feeThresholdInput: autoSwapSettings.feeThresholdPercent.toString(),
           enabledToggle: autoSwapSettings.enabled,
+          alwaysBlock: autoSwapSettings.alwaysBlock,
           bitcoinUnit: settings.bitcoinUnit,
         ),
       );
@@ -78,19 +79,19 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       final isTestnet = settings.environment == Environment.testnet;
 
       // Convert amount based on unit
-      int amountThresholdSats;
+      int balanceThresholdSats;
       if (settings.bitcoinUnit == BitcoinUnit.btc) {
         // Convert BTC to sats for storage
         final btcAmount =
             double.tryParse(state.amountThresholdInput ?? '0') ?? 0;
-        amountThresholdSats = ConvertAmount.btcToSats(btcAmount);
+        balanceThresholdSats = ConvertAmount.btcToSats(btcAmount);
       } else {
-        amountThresholdSats =
+        balanceThresholdSats =
             int.tryParse(state.amountThresholdInput ?? '0') ?? 0;
       }
 
       // Validate minimum amount threshold
-      if (amountThresholdSats < _minimumAmountThresholdSats) {
+      if (balanceThresholdSats < _minimumAmountThresholdSats) {
         final exception = MinimumAmountThresholdException(
           _minimumAmountThresholdSats,
           settings.bitcoinUnit,
@@ -110,8 +111,9 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       await _saveAutoSwapSettingsUsecase.execute(
         AutoSwap(
           enabled: state.enabledToggle,
-          amountThresholdSats: amountThresholdSats,
-          feeThreshold: feeThreshold,
+          balanceThresholdSats: balanceThresholdSats,
+          feeThresholdPercent: feeThreshold,
+          alwaysBlock: state.alwaysBlock,
         ),
         isTestnet: isTestnet,
       );
@@ -164,5 +166,13 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
 
   void onEnabledToggleChanged(bool value) {
     emit(state.copyWith(enabledToggle: value));
+  }
+
+  void onInfoToggleChanged() {
+    emit(state.copyWith(showInfo: !state.showInfo));
+  }
+
+  void onAlwaysBlockToggleChanged(bool value) {
+    emit(state.copyWith(alwaysBlock: value));
   }
 }

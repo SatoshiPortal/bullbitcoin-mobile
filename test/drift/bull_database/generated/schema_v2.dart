@@ -4966,26 +4966,51 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
     ),
     defaultValue: const CustomExpression('0'),
   );
-  late final GeneratedColumn<int> amountThresholdSats = GeneratedColumn<int>(
-    'amount_threshold_sats',
+  late final GeneratedColumn<int> balanceThresholdSats = GeneratedColumn<int>(
+    'balance_threshold_sats',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  late final GeneratedColumn<int> feeThreshold = GeneratedColumn<int>(
-    'fee_threshold',
+  late final GeneratedColumn<int> feeThresholdPercent = GeneratedColumn<int>(
+    'fee_threshold_percent',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+  );
+  late final GeneratedColumn<bool> blockTillNextExecution =
+      GeneratedColumn<bool>(
+        'block_till_next_execution',
+        aliasedName,
+        false,
+        type: DriftSqlType.bool,
+        requiredDuringInsert: false,
+        defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("block_till_next_execution" IN (0, 1))',
+        ),
+        defaultValue: const CustomExpression('0'),
+      );
+  late final GeneratedColumn<bool> alwaysBlock = GeneratedColumn<bool>(
+    'always_block',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("always_block" IN (0, 1))',
+    ),
+    defaultValue: const CustomExpression('0'),
   );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     enabled,
-    amountThresholdSats,
-    feeThreshold,
+    balanceThresholdSats,
+    feeThresholdPercent,
+    blockTillNextExecution,
+    alwaysBlock,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5008,15 +5033,25 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
             DriftSqlType.bool,
             data['${effectivePrefix}enabled'],
           )!,
-      amountThresholdSats:
+      balanceThresholdSats:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
-            data['${effectivePrefix}amount_threshold_sats'],
+            data['${effectivePrefix}balance_threshold_sats'],
           )!,
-      feeThreshold:
+      feeThresholdPercent:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
-            data['${effectivePrefix}fee_threshold'],
+            data['${effectivePrefix}fee_threshold_percent'],
+          )!,
+      blockTillNextExecution:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}block_till_next_execution'],
+          )!,
+      alwaysBlock:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}always_block'],
           )!,
     );
   }
@@ -5030,21 +5065,27 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
 class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   final int id;
   final bool enabled;
-  final int amountThresholdSats;
-  final int feeThreshold;
+  final int balanceThresholdSats;
+  final int feeThresholdPercent;
+  final bool blockTillNextExecution;
+  final bool alwaysBlock;
   const AutoSwapData({
     required this.id,
     required this.enabled,
-    required this.amountThresholdSats,
-    required this.feeThreshold,
+    required this.balanceThresholdSats,
+    required this.feeThresholdPercent,
+    required this.blockTillNextExecution,
+    required this.alwaysBlock,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['enabled'] = Variable<bool>(enabled);
-    map['amount_threshold_sats'] = Variable<int>(amountThresholdSats);
-    map['fee_threshold'] = Variable<int>(feeThreshold);
+    map['balance_threshold_sats'] = Variable<int>(balanceThresholdSats);
+    map['fee_threshold_percent'] = Variable<int>(feeThresholdPercent);
+    map['block_till_next_execution'] = Variable<bool>(blockTillNextExecution);
+    map['always_block'] = Variable<bool>(alwaysBlock);
     return map;
   }
 
@@ -5052,8 +5093,10 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     return AutoSwapCompanion(
       id: Value(id),
       enabled: Value(enabled),
-      amountThresholdSats: Value(amountThresholdSats),
-      feeThreshold: Value(feeThreshold),
+      balanceThresholdSats: Value(balanceThresholdSats),
+      feeThresholdPercent: Value(feeThresholdPercent),
+      blockTillNextExecution: Value(blockTillNextExecution),
+      alwaysBlock: Value(alwaysBlock),
     );
   }
 
@@ -5065,10 +5108,16 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     return AutoSwapData(
       id: serializer.fromJson<int>(json['id']),
       enabled: serializer.fromJson<bool>(json['enabled']),
-      amountThresholdSats: serializer.fromJson<int>(
-        json['amountThresholdSats'],
+      balanceThresholdSats: serializer.fromJson<int>(
+        json['balanceThresholdSats'],
       ),
-      feeThreshold: serializer.fromJson<int>(json['feeThreshold']),
+      feeThresholdPercent: serializer.fromJson<int>(
+        json['feeThresholdPercent'],
+      ),
+      blockTillNextExecution: serializer.fromJson<bool>(
+        json['blockTillNextExecution'],
+      ),
+      alwaysBlock: serializer.fromJson<bool>(json['alwaysBlock']),
     );
   }
   @override
@@ -5077,34 +5126,47 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'enabled': serializer.toJson<bool>(enabled),
-      'amountThresholdSats': serializer.toJson<int>(amountThresholdSats),
-      'feeThreshold': serializer.toJson<int>(feeThreshold),
+      'balanceThresholdSats': serializer.toJson<int>(balanceThresholdSats),
+      'feeThresholdPercent': serializer.toJson<int>(feeThresholdPercent),
+      'blockTillNextExecution': serializer.toJson<bool>(blockTillNextExecution),
+      'alwaysBlock': serializer.toJson<bool>(alwaysBlock),
     };
   }
 
   AutoSwapData copyWith({
     int? id,
     bool? enabled,
-    int? amountThresholdSats,
-    int? feeThreshold,
+    int? balanceThresholdSats,
+    int? feeThresholdPercent,
+    bool? blockTillNextExecution,
+    bool? alwaysBlock,
   }) => AutoSwapData(
     id: id ?? this.id,
     enabled: enabled ?? this.enabled,
-    amountThresholdSats: amountThresholdSats ?? this.amountThresholdSats,
-    feeThreshold: feeThreshold ?? this.feeThreshold,
+    balanceThresholdSats: balanceThresholdSats ?? this.balanceThresholdSats,
+    feeThresholdPercent: feeThresholdPercent ?? this.feeThresholdPercent,
+    blockTillNextExecution:
+        blockTillNextExecution ?? this.blockTillNextExecution,
+    alwaysBlock: alwaysBlock ?? this.alwaysBlock,
   );
   AutoSwapData copyWithCompanion(AutoSwapCompanion data) {
     return AutoSwapData(
       id: data.id.present ? data.id.value : this.id,
       enabled: data.enabled.present ? data.enabled.value : this.enabled,
-      amountThresholdSats:
-          data.amountThresholdSats.present
-              ? data.amountThresholdSats.value
-              : this.amountThresholdSats,
-      feeThreshold:
-          data.feeThreshold.present
-              ? data.feeThreshold.value
-              : this.feeThreshold,
+      balanceThresholdSats:
+          data.balanceThresholdSats.present
+              ? data.balanceThresholdSats.value
+              : this.balanceThresholdSats,
+      feeThresholdPercent:
+          data.feeThresholdPercent.present
+              ? data.feeThresholdPercent.value
+              : this.feeThresholdPercent,
+      blockTillNextExecution:
+          data.blockTillNextExecution.present
+              ? data.blockTillNextExecution.value
+              : this.blockTillNextExecution,
+      alwaysBlock:
+          data.alwaysBlock.present ? data.alwaysBlock.value : this.alwaysBlock,
     );
   }
 
@@ -5113,69 +5175,96 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     return (StringBuffer('AutoSwapData(')
           ..write('id: $id, ')
           ..write('enabled: $enabled, ')
-          ..write('amountThresholdSats: $amountThresholdSats, ')
-          ..write('feeThreshold: $feeThreshold')
+          ..write('balanceThresholdSats: $balanceThresholdSats, ')
+          ..write('feeThresholdPercent: $feeThresholdPercent, ')
+          ..write('blockTillNextExecution: $blockTillNextExecution, ')
+          ..write('alwaysBlock: $alwaysBlock')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, enabled, amountThresholdSats, feeThreshold);
+  int get hashCode => Object.hash(
+    id,
+    enabled,
+    balanceThresholdSats,
+    feeThresholdPercent,
+    blockTillNextExecution,
+    alwaysBlock,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is AutoSwapData &&
           other.id == this.id &&
           other.enabled == this.enabled &&
-          other.amountThresholdSats == this.amountThresholdSats &&
-          other.feeThreshold == this.feeThreshold);
+          other.balanceThresholdSats == this.balanceThresholdSats &&
+          other.feeThresholdPercent == this.feeThresholdPercent &&
+          other.blockTillNextExecution == this.blockTillNextExecution &&
+          other.alwaysBlock == this.alwaysBlock);
 }
 
 class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
   final Value<int> id;
   final Value<bool> enabled;
-  final Value<int> amountThresholdSats;
-  final Value<int> feeThreshold;
+  final Value<int> balanceThresholdSats;
+  final Value<int> feeThresholdPercent;
+  final Value<bool> blockTillNextExecution;
+  final Value<bool> alwaysBlock;
   const AutoSwapCompanion({
     this.id = const Value.absent(),
     this.enabled = const Value.absent(),
-    this.amountThresholdSats = const Value.absent(),
-    this.feeThreshold = const Value.absent(),
+    this.balanceThresholdSats = const Value.absent(),
+    this.feeThresholdPercent = const Value.absent(),
+    this.blockTillNextExecution = const Value.absent(),
+    this.alwaysBlock = const Value.absent(),
   });
   AutoSwapCompanion.insert({
     this.id = const Value.absent(),
     this.enabled = const Value.absent(),
-    required int amountThresholdSats,
-    required int feeThreshold,
-  }) : amountThresholdSats = Value(amountThresholdSats),
-       feeThreshold = Value(feeThreshold);
+    required int balanceThresholdSats,
+    required int feeThresholdPercent,
+    this.blockTillNextExecution = const Value.absent(),
+    this.alwaysBlock = const Value.absent(),
+  }) : balanceThresholdSats = Value(balanceThresholdSats),
+       feeThresholdPercent = Value(feeThresholdPercent);
   static Insertable<AutoSwapData> custom({
     Expression<int>? id,
     Expression<bool>? enabled,
-    Expression<int>? amountThresholdSats,
-    Expression<int>? feeThreshold,
+    Expression<int>? balanceThresholdSats,
+    Expression<int>? feeThresholdPercent,
+    Expression<bool>? blockTillNextExecution,
+    Expression<bool>? alwaysBlock,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (enabled != null) 'enabled': enabled,
-      if (amountThresholdSats != null)
-        'amount_threshold_sats': amountThresholdSats,
-      if (feeThreshold != null) 'fee_threshold': feeThreshold,
+      if (balanceThresholdSats != null)
+        'balance_threshold_sats': balanceThresholdSats,
+      if (feeThresholdPercent != null)
+        'fee_threshold_percent': feeThresholdPercent,
+      if (blockTillNextExecution != null)
+        'block_till_next_execution': blockTillNextExecution,
+      if (alwaysBlock != null) 'always_block': alwaysBlock,
     });
   }
 
   AutoSwapCompanion copyWith({
     Value<int>? id,
     Value<bool>? enabled,
-    Value<int>? amountThresholdSats,
-    Value<int>? feeThreshold,
+    Value<int>? balanceThresholdSats,
+    Value<int>? feeThresholdPercent,
+    Value<bool>? blockTillNextExecution,
+    Value<bool>? alwaysBlock,
   }) {
     return AutoSwapCompanion(
       id: id ?? this.id,
       enabled: enabled ?? this.enabled,
-      amountThresholdSats: amountThresholdSats ?? this.amountThresholdSats,
-      feeThreshold: feeThreshold ?? this.feeThreshold,
+      balanceThresholdSats: balanceThresholdSats ?? this.balanceThresholdSats,
+      feeThresholdPercent: feeThresholdPercent ?? this.feeThresholdPercent,
+      blockTillNextExecution:
+          blockTillNextExecution ?? this.blockTillNextExecution,
+      alwaysBlock: alwaysBlock ?? this.alwaysBlock,
     );
   }
 
@@ -5188,11 +5277,19 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     if (enabled.present) {
       map['enabled'] = Variable<bool>(enabled.value);
     }
-    if (amountThresholdSats.present) {
-      map['amount_threshold_sats'] = Variable<int>(amountThresholdSats.value);
+    if (balanceThresholdSats.present) {
+      map['balance_threshold_sats'] = Variable<int>(balanceThresholdSats.value);
     }
-    if (feeThreshold.present) {
-      map['fee_threshold'] = Variable<int>(feeThreshold.value);
+    if (feeThresholdPercent.present) {
+      map['fee_threshold_percent'] = Variable<int>(feeThresholdPercent.value);
+    }
+    if (blockTillNextExecution.present) {
+      map['block_till_next_execution'] = Variable<bool>(
+        blockTillNextExecution.value,
+      );
+    }
+    if (alwaysBlock.present) {
+      map['always_block'] = Variable<bool>(alwaysBlock.value);
     }
     return map;
   }
@@ -5202,8 +5299,10 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     return (StringBuffer('AutoSwapCompanion(')
           ..write('id: $id, ')
           ..write('enabled: $enabled, ')
-          ..write('amountThresholdSats: $amountThresholdSats, ')
-          ..write('feeThreshold: $feeThreshold')
+          ..write('balanceThresholdSats: $balanceThresholdSats, ')
+          ..write('feeThresholdPercent: $feeThresholdPercent, ')
+          ..write('blockTillNextExecution: $blockTillNextExecution, ')
+          ..write('alwaysBlock: $alwaysBlock')
           ..write(')'))
         .toString();
   }

@@ -8,8 +8,10 @@ part 'auto_swap_model.freezed.dart';
 sealed class AutoSwapModel with _$AutoSwapModel {
   const factory AutoSwapModel({
     @Default(false) bool enabled,
-    @Default(1000000) int amountThresholdSats,
-    @Default(3) int feeThreshold,
+    @Default(1000000) int balanceThresholdSats,
+    @Default(3) int feeThresholdPercent,
+    @Default(false) bool blockTillNextExecution,
+    @Default(false) bool alwaysBlock,
   }) = _AutoSwapModel;
 
   const AutoSwapModel._();
@@ -17,24 +19,30 @@ sealed class AutoSwapModel with _$AutoSwapModel {
   factory AutoSwapModel.fromEntity(AutoSwap entity) {
     return AutoSwapModel(
       enabled: entity.enabled,
-      amountThresholdSats: entity.amountThresholdSats,
-      feeThreshold: entity.feeThreshold,
+      balanceThresholdSats: entity.balanceThresholdSats,
+      feeThresholdPercent: entity.feeThresholdPercent,
+      blockTillNextExecution: entity.blockTillNextExecution,
+      alwaysBlock: entity.alwaysBlock,
     );
   }
 
   AutoSwap toEntity() {
     return AutoSwap(
       enabled: enabled,
-      amountThresholdSats: amountThresholdSats,
-      feeThreshold: feeThreshold,
+      balanceThresholdSats: balanceThresholdSats,
+      feeThresholdPercent: feeThresholdPercent,
+      blockTillNextExecution: blockTillNextExecution,
+      alwaysBlock: alwaysBlock,
     );
   }
 
   factory AutoSwapModel.fromSqlite(AutoSwapRow row) {
     return AutoSwapModel(
       enabled: row.enabled,
-      amountThresholdSats: row.amountThresholdSats,
-      feeThreshold: row.feeThreshold,
+      balanceThresholdSats: row.balanceThresholdSats,
+      feeThresholdPercent: row.feeThresholdPercent,
+      blockTillNextExecution: row.blockTillNextExecution,
+      alwaysBlock: row.alwaysBlock,
     );
   }
 
@@ -42,8 +50,10 @@ sealed class AutoSwapModel with _$AutoSwapModel {
     return AutoSwapRow(
       id: 1,
       enabled: enabled,
-      amountThresholdSats: amountThresholdSats,
-      feeThreshold: feeThreshold,
+      balanceThresholdSats: balanceThresholdSats,
+      feeThresholdPercent: feeThresholdPercent,
+      blockTillNextExecution: blockTillNextExecution,
+      alwaysBlock: alwaysBlock,
     );
   }
 }

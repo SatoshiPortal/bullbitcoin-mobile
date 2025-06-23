@@ -25,8 +25,10 @@ class BoltzStorageDatasource {
           AutoSwapCompanion.insert(
             id: const Value(1),
             enabled: Value(settings.enabled),
-            amountThresholdSats: settings.amountThresholdSats,
-            feeThreshold: settings.feeThreshold,
+            balanceThresholdSats: settings.balanceThresholdSats,
+            feeThresholdPercent: settings.feeThresholdPercent,
+            blockTillNextExecution: Value(settings.blockTillNextExecution),
+            alwaysBlock: Value(settings.alwaysBlock),
           ),
         );
   }

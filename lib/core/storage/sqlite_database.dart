@@ -119,8 +119,10 @@ class SqliteDatabase extends _$SqliteDatabase {
       const AutoSwapRow(
         id: 1,
         enabled: false,
-        amountThresholdSats: 1000000,
-        feeThreshold: 3,
+        balanceThresholdSats: 1000000,
+        feeThresholdPercent: 3,
+        blockTillNextExecution: false,
+        alwaysBlock: false,
       ),
     );
   }

@@ -14,6 +14,8 @@ abstract class AutoSwapSettingsState with _$AutoSwapSettingsState {
     MaximumFeeThresholdException? feeThresholdError,
     AutoSwap? settings,
     BitcoinUnit? bitcoinUnit,
+    @Default(false) bool alwaysBlock,
+    @Default(false) bool showInfo,
   }) = _AutoSwapSettingsState;
 
   const AutoSwapSettingsState._();

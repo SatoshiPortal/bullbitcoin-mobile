@@ -28,7 +28,9 @@ class AutoSwapFeeWarning extends StatelessWidget {
     if (!autoSwapFeeLimitExceeded ||
         currentSwapFeePercent == null ||
         autoSwapSettings == null ||
-        liquidWallet == null) {
+        liquidWallet == null ||
+        autoSwapSettings.alwaysBlock ||
+        autoSwapSettings.blockTillNextExecution) {
       return const SizedBox.shrink();
     }
 
@@ -58,7 +60,7 @@ class AutoSwapFeeWarning extends StatelessWidget {
           ),
           const Gap(12),
           BBText(
-            'Attempting to swap $swapAmountBtc BTC. Current fee is $currentSwapFeePercent% of the swap amount and the fee threshold is set to ${autoSwapSettings.feeThreshold}%',
+            'Attempting to swap $swapAmountBtc BTC. Current fee is $currentSwapFeePercent% of the swap amount and the fee threshold is set to ${autoSwapSettings.feeThresholdPercent}%',
             style: context.font.bodyMedium,
           ),
           const Gap(12),

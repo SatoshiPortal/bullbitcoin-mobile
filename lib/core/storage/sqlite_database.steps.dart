@@ -214,7 +214,14 @@ final class Schema2 extends i0.VersionedSchema {
       withoutRowId: false,
       isStrict: false,
       tableConstraints: [],
-      columns: [_column_31, _column_87, _column_88, _column_89],
+      columns: [
+        _column_31,
+        _column_87,
+        _column_88,
+        _column_89,
+        _column_90,
+        _column_91,
+      ],
       attachedDatabase: database,
     ),
     alias: null,
@@ -1120,10 +1127,14 @@ class Shape8 extends i0.VersionedTable {
       columnsByName['id']! as i1.GeneratedColumn<int>;
   i1.GeneratedColumn<bool> get enabled =>
       columnsByName['enabled']! as i1.GeneratedColumn<bool>;
-  i1.GeneratedColumn<int> get amountThresholdSats =>
-      columnsByName['amount_threshold_sats']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get feeThreshold =>
-      columnsByName['fee_threshold']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get balanceThresholdSats =>
+      columnsByName['balance_threshold_sats']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get feeThresholdPercent =>
+      columnsByName['fee_threshold_percent']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<bool> get blockTillNextExecution =>
+      columnsByName['block_till_next_execution']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<bool> get alwaysBlock =>
+      columnsByName['always_block']! as i1.GeneratedColumn<bool>;
 }
 
 i1.GeneratedColumn<bool> _column_87(String aliasedName) =>
@@ -1139,17 +1150,39 @@ i1.GeneratedColumn<bool> _column_87(String aliasedName) =>
     );
 i1.GeneratedColumn<int> _column_88(String aliasedName) =>
     i1.GeneratedColumn<int>(
-      'amount_threshold_sats',
+      'balance_threshold_sats',
       aliasedName,
       false,
       type: i1.DriftSqlType.int,
     );
 i1.GeneratedColumn<int> _column_89(String aliasedName) =>
     i1.GeneratedColumn<int>(
-      'fee_threshold',
+      'fee_threshold_percent',
       aliasedName,
       false,
       type: i1.DriftSqlType.int,
+    );
+i1.GeneratedColumn<bool> _column_90(String aliasedName) =>
+    i1.GeneratedColumn<bool>(
+      'block_till_next_execution',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.bool,
+      defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
+        'CHECK ("block_till_next_execution" IN (0, 1))',
+      ),
+      defaultValue: const CustomExpression('0'),
+    );
+i1.GeneratedColumn<bool> _column_91(String aliasedName) =>
+    i1.GeneratedColumn<bool>(
+      'always_block',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.bool,
+      defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
+        'CHECK ("always_block" IN (0, 1))',
+      ),
+      defaultValue: const CustomExpression('0'),
     );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,

@@ -51,9 +51,8 @@ void main() {
     final oldTransactionsData = <v1.TransactionsData>[];
     final expectedNewTransactionsData = <v2.TransactionsData>[];
 
-    final oldV5MigrateWalletMetadatasData = <v1.V5MigrateWalletMetadatasData>[];
-    final expectedNewV5MigrateWalletMetadatasData =
-        <v2.V5MigrateWalletMetadatasData>[];
+    final oldWalletMetadatasData = <v1.WalletMetadatasData>[];
+    final expectedNewWalletMetadatasData = <v2.WalletMetadatasData>[];
 
     final oldLabelsData = <v1.LabelsData>[];
     final expectedNewLabelsData = <v2.LabelsData>[];
@@ -81,10 +80,7 @@ void main() {
       openTestedDatabase: SqliteDatabase.new,
       createItems: (batch, oldDb) {
         batch.insertAll(oldDb.transactions, oldTransactionsData);
-        batch.insertAll(
-          oldDb.v5MigrateWalletMetadatas,
-          oldV5MigrateWalletMetadatasData,
-        );
+        batch.insertAll(oldDb.walletMetadatas, oldWalletMetadatasData);
         batch.insertAll(oldDb.labels, oldLabelsData);
         batch.insertAll(oldDb.settings, oldSettingsData);
         batch.insertAll(oldDb.payjoinSenders, oldPayjoinSendersData);
@@ -98,8 +94,8 @@ void main() {
           await newDb.select(newDb.transactions).get(),
         );
         expect(
-          expectedNewV5MigrateWalletMetadatasData,
-          await newDb.select(newDb.v5MigrateWalletMetadatas).get(),
+          expectedNewWalletMetadatasData,
+          await newDb.select(newDb.walletMetadatas).get(),
         );
         expect(expectedNewLabelsData, await newDb.select(newDb.labels).get());
         expect(

@@ -7,8 +7,10 @@ part 'auto_swap.g.dart';
 sealed class AutoSwap with _$AutoSwap {
   const factory AutoSwap({
     @Default(false) bool enabled,
-    @Default(1000000) int amountThresholdSats,
-    @Default(3) int feeThreshold,
+    @Default(1000000) int balanceThresholdSats,
+    @Default(3) int feeThresholdPercent,
+    @Default(false) bool blockTillNextExecution,
+    @Default(false) bool alwaysBlock,
   }) = _AutoSwap;
 
   const AutoSwap._();
@@ -17,14 +19,14 @@ sealed class AutoSwap with _$AutoSwap {
       _$AutoSwapFromJson(json);
 
   bool amountThresholdExceeded(int balanceSat) {
-    return balanceSat >= amountThresholdSats * 2 && enabled;
+    return balanceSat >= balanceThresholdSats * 2 && enabled;
   }
 
   bool withinFeeThreshold(double currentFeeRatio) {
-    return feeThreshold.toDouble() >= currentFeeRatio;
+    return feeThresholdPercent.toDouble() >= currentFeeRatio;
   }
 
   int swapAmount(int balanceSat) {
-    return balanceSat - amountThresholdSats;
+    return balanceSat - balanceThresholdSats;
   }
 }
