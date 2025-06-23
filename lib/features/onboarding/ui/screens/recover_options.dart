@@ -42,14 +42,8 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Gap(20),
-                    BBText(
-                      'Without a backup, you will eventually lose access to your money. It is critically important to do a backup.',
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                      style: context.font.bodyLarge,
-                    ),
                     const Gap(16),
+
                     if (isSuperuser) ...[
                       BackupOptionCard(
                         icon: Image.asset(
@@ -60,8 +54,8 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                         ),
                         title: 'Encrypted vault',
                         description:
-                            'Anonymous backup with strong encryption using your cloud.',
-                        tag: 'Easy and simple (1 minute)',
+                            'Recover your backup via cloud using your PIN.',
+
                         onTap:
                             () => {
                               context.read<KeyServerCubit>().checkConnection(),
@@ -83,9 +77,8 @@ class _OnboardingRecoverOptionsState extends State<OnboardingRecoverOptions> {
                         fit: BoxFit.cover,
                       ),
                       title: 'Physical backup',
-                      description:
-                          'Write down 12 words on a piece of paper. Keep them safe and make sure not to lose them.',
-                      tag: 'Trustless (take your time)',
+                      description: 'Recover your wallet via 12 words.',
+
                       onTap:
                           () => context.pushNamed(
                             OnboardingRoute.recoverFromPhysical.name,
