@@ -398,14 +398,14 @@ class _SwapProgressIndicator extends StatelessWidget {
 
   List<String> _getProgressSteps() {
     if (swap is LnReceiveSwap) {
-      return ['Initiated', 'Payment\nReceived', 'Funds\nClaimed'];
+      return ['Initiated', 'Payment\nMade', 'Funds\nClaimed'];
     } else if (swap is LnSendSwap) {
       // For Bitcoin/Liquid to Lightning swaps
       // pending -> paid -> completed
       // Initiated: Transaction created but not confirmed
       // Transaction Confirmed: Transaction confirmed, funds are secured (paid status)
       // Payment Sent: Lightning payment sent, swap completed (completed status)
-      return ['Initiated', 'Transaction\nConfirmed', 'Payment\nSent'];
+      return ['Initiated', 'Broadcasted', 'Invoice\nPaid'];
     } else if (swap is ChainSwap) {
       // For Bitcoin to Liquid or Liquid to Bitcoin swaps
       // pending -> paid -> claimable -> completed
@@ -560,7 +560,7 @@ class _SwapStatusDescription extends StatelessWidget {
         case SwapStatus.pending:
           return 'Your swap has been initiated. We are broadcasting the on-chain transaction to lock your funds.';
         case SwapStatus.paid:
-          return 'Your on-chain transaction has been confirmed. We are now preparing to send the Lightning payment.';
+          return 'Your on-chain transaction has been broadcasted. After 1 confirmation, the Lightning payment will be sent.';
         case SwapStatus.completed:
           return 'The Lightning payment has been sent successfully! Your swap is now complete.';
         case SwapStatus.failed:
