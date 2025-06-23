@@ -3,6 +3,7 @@ import 'package:bb_mobile/core/utils/bip32_derivation.dart';
 import 'package:bb_mobile/core/utils/descriptor_derivation.dart';
 import 'package:bb_mobile/core/wallet/data/models/wallet_metadata_model.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
+import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
 
 class WalletMetadataService {
   static String encodeOrigin({
@@ -53,9 +54,7 @@ class WalletMetadataService {
       r'\[([a-fA-F0-9]+)/(\d+h)/(\d+h)/(\d+h)\]',
     ).firstMatch(origin);
 
-    if (match == null) {
-      throw 'Invalid origin format: $origin';
-    }
+    if (match == null) throw 'Invalid origin format: $origin';
 
     final fingerprint = match.group(1)!;
     final matchingScript = match.group(2)!;
@@ -213,6 +212,63 @@ class WalletMetadataService {
       isEncryptedVaultTested: false,
       isPhysicalBackupTested: false,
       isDefault: false,
+    );
+  }
+
+  static Future<WalletMetadataModel> deriveFromDescriptor({
+    required String descriptor,
+
+    /// Sign only wallets must substitute the public key extended fingerprint
+    /// to the wallet master bip32 fingerprint or invalid psbt will be generated
+    String? overrideFingerprint,
+  }) async {
+    // Try to parse the origin from the descriptor
+    final origin = decodeOrigin(origin: descriptor);
+
+    final match = RegExp(
+      r'^(.+?)/<([^>]+)>/\*\)?(?:#.*)?$',
+    ).firstMatch(descriptor);
+    if (match == null) throw 'Invalid descriptor format';
+    final base = match.group(1)!; // everything before </<...>/ *>
+
+    final externalDescriptor = '$base/0/*)';
+    final internalDescriptor = '$base/1/*)';
+
+    // Ensure the re-constructed descriptors are valid
+    try {
+      await bdk.Descriptor.create(
+        descriptor: externalDescriptor,
+        network:
+            origin.network == Network.bitcoinMainnet
+                ? bdk.Network.bitcoin
+                : bdk.Network.testnet,
+      );
+    } catch (e) {
+      throw 'Invalid descriptor: $e';
+    }
+
+    // Extract the extended pubkey
+    final extendedPubkeyRegex = RegExp(
+      '(xpub|ypub|zpub|tpub|vpub|upub)[1-9A-HJ-NP-Za-km-z]{80,}',
+    ).firstMatch(descriptor);
+    if (extendedPubkeyRegex == null) throw 'Extended pubkey not found';
+    final extendedPubkey = extendedPubkeyRegex.group(0)!;
+
+    return WalletMetadataModel(
+      id: WalletMetadataService.encodeOrigin(
+        fingerprint: origin.fingerprint,
+        network: origin.network,
+        scriptType: origin.script,
+      ),
+      masterFingerprint: overrideFingerprint ?? '',
+      xpubFingerprint: origin.fingerprint,
+      source: WalletSource.descriptors,
+      xpub: extendedPubkey,
+      externalPublicDescriptor: externalDescriptor,
+      internalPublicDescriptor: internalDescriptor,
+      isDefault: false,
+      isEncryptedVaultTested: false,
+      isPhysicalBackupTested: false,
     );
   }
 }
