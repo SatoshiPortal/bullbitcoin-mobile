@@ -170,9 +170,9 @@ class TransactionDetailsScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+                const Gap(16),
 
                 if (swap != null && (swap.requiresAction)) ...[
-                  const Gap(24),
                   BBButton.big(
                     disabled: retryingSwap,
                     label: 'Retry Swap $swapAction',
@@ -184,10 +184,9 @@ class TransactionDetailsScreen extends StatelessWidget {
                     bgColor: theme.colorScheme.primary,
                     textColor: theme.colorScheme.onPrimary,
                   ),
-                  const Gap(24),
+                  const Gap(16),
                 ],
                 if (isOngoingSwap && swap != null) ...[
-                  const Gap(16),
                   _SwapStatusDescription(swap: swap),
                   const Gap(16),
                 ],
@@ -204,15 +203,13 @@ class TransactionDetailsScreen extends StatelessWidget {
                       );
                     },
                   ),
-                  const Gap(24),
+                  const Gap(16),
                 ],
                 const TransactionDetailsTable(),
+                const Gap(32),
                 if (isOngoingSenderPayjoin) ...[
-                  const Gap(24),
                   const SenderBroadcastPayjoinOriginalTxButton(),
                   const Gap(24),
-                ] else if (!isOngoingSwap) ...[
-                  const Gap(64),
                 ],
 
                 BBButton.big(
@@ -259,11 +256,11 @@ class _SwapProgressIndicator extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       child: Column(
         children: [
           SizedBox(
-            height: 100,
+            height: 80,
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final double totalWidth = constraints.maxWidth;
