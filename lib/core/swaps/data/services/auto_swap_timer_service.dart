@@ -123,7 +123,7 @@ class AutoSwapTimerService {
       autoSwapSettings.swapAmount(walletBalance),
     );
 
-    if (totalFeePercent < autoSwapSettings.feeThresholdPercent) {
+    if (totalFeePercent > autoSwapSettings.feeThresholdPercent) {
       debugPrint(
         '[AutoSwap ${_getTimestamp()}] Total fee percent ($totalFeePercent) is greater than or equal to fee threshold (${autoSwapSettings.feeThresholdPercent})',
       );
