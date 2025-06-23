@@ -18,7 +18,7 @@ sealed class AutoSwap with _$AutoSwap {
   factory AutoSwap.fromJson(Map<String, dynamic> json) =>
       _$AutoSwapFromJson(json);
 
-  bool amountThresholdExceeded(int balanceSat) {
+  bool passedRequiredBalance(int balanceSat) {
     return balanceSat >= balanceThresholdSats * 2 && enabled;
   }
 

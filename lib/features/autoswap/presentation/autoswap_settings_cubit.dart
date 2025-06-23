@@ -18,7 +18,7 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
   final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
   final GetSettingsUsecase _getSettingsUsecase;
 
-  static const int _minimumAmountThresholdSats = 100000;
+  static const int _minimumAmountThresholdSats = 50000;
   static const int _maximumFeeThreshold = 10;
 
   AutoSwapSettingsCubit({

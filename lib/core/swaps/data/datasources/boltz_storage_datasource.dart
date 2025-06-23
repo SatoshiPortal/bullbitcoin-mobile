@@ -40,6 +40,28 @@ class BoltzStorageDatasource {
     return AutoSwapModel.fromSqlite(settings);
   }
 
+  Future<void> storeAutoSwapSettingsTestnet(AutoSwapModel settings) async {
+    await _localSwapStorage
+        .into(_localSwapStorage.autoSwap)
+        .insertOnConflictUpdate(
+          AutoSwapCompanion.insert(
+            id: const Value(2),
+            enabled: Value(settings.enabled),
+            balanceThresholdSats: settings.balanceThresholdSats,
+            feeThresholdPercent: settings.feeThresholdPercent,
+            blockTillNextExecution: Value(settings.blockTillNextExecution),
+            alwaysBlock: Value(settings.alwaysBlock),
+          ),
+        );
+  }
+
+  Future<AutoSwapModel> getAutoSwapSettingsTestnet() async {
+    final settings =
+        await (_localSwapStorage.select(_localSwapStorage.autoSwap)
+          ..where((tbl) => tbl.id.equals(2))).getSingle();
+    return AutoSwapModel.fromSqlite(settings);
+  }
+
   // LOCAL STORAGE
   Future<void> store(SwapModel swap) async {
     final row = swap.toSqlite();

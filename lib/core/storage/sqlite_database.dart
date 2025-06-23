@@ -125,6 +125,16 @@ class SqliteDatabase extends _$SqliteDatabase {
         alwaysBlock: false,
       ),
     );
+    await into(autoSwap).insert(
+      const AutoSwapRow(
+        id: 2,
+        enabled: false,
+        balanceThresholdSats: 1000000,
+        feeThresholdPercent: 3,
+        blockTillNextExecution: false,
+        alwaysBlock: false,
+      ),
+    );
   }
 
   Future<void> clearCacheTables() async {

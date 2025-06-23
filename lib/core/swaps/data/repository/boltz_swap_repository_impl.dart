@@ -706,14 +706,24 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   }
 
   @override
-  Future<AutoSwap> getAutoSwapParams() async {
-    final model = await _boltz.storage.getAutoSwapSettings();
+  Future<AutoSwap> getAutoSwapParams({required bool isTestnet}) async {
+    final model =
+        isTestnet
+            ? await _boltz.storage.getAutoSwapSettingsTestnet()
+            : await _boltz.storage.getAutoSwapSettings();
     return model.toEntity();
   }
 
   @override
-  Future<void> updateAutoSwapParams(AutoSwap params) async {
+  Future<void> updateAutoSwapParams(
+    AutoSwap params, {
+    required bool isTestnet,
+  }) async {
     final model = AutoSwapModel.fromEntity(params);
-    await _boltz.storage.storeAutoSwapSettings(model);
+    if (isTestnet) {
+      await _boltz.storage.storeAutoSwapSettingsTestnet(model);
+    } else {
+      await _boltz.storage.storeAutoSwapSettings(model);
+    }
   }
 }

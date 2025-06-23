@@ -15,6 +15,7 @@ class ListenToAutoSwapTimerUsecase {
   Stream<AutoSwapEvent> execute({required bool isTestnet}) {
     final timerService =
         isTestnet ? _testnetAutoSwapTimer : _mainnetAutoSwapTimer;
+    timerService.startTimer();
     return timerService.autoSwapEvents;
   }
 }

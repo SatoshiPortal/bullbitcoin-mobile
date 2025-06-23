@@ -152,6 +152,6 @@ abstract class SwapRepository {
   // Add a method to subscribe to swap updates
   Stream<Swap> get swapUpdatesStream;
 
-  Future<AutoSwap> getAutoSwapParams();
-  Future<void> updateAutoSwapParams(AutoSwap params);
+  Future<AutoSwap> getAutoSwapParams({required bool isTestnet});
+  Future<void> updateAutoSwapParams(AutoSwap params, {required bool isTestnet});
 }

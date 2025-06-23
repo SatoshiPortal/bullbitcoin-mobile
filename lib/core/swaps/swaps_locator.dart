@@ -101,36 +101,35 @@ class SwapsLocator {
     );
 
     // add auto swap timer service for mainnet
-    final mainnetAutoSwapTimer = AutoSwapTimerService(
-      swapRepository: locator<SwapRepository>(
-        instanceName:
-            LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-      ),
-      walletRepository: locator<WalletRepository>(),
-      liquidWalletRepository: locator<LiquidWalletRepository>(),
-      liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
-      seedRepository: locator<SeedRepository>(),
-    );
-    mainnetAutoSwapTimer.startTimer();
     locator.registerLazySingleton<AutoSwapTimerService>(
-      () => mainnetAutoSwapTimer,
+      () => AutoSwapTimerService(
+        swapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        walletRepository: locator<WalletRepository>(),
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
+        liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
+        seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
       instanceName: LocatorInstanceNameConstants.boltzAutoSwapTimerInstanceName,
     );
 
     // add auto swap timer service for testnet
-    final testnetAutoSwapTimer = AutoSwapTimerService(
-      swapRepository: locator<SwapRepository>(
-        instanceName:
-            LocatorInstanceNameConstants.boltzTestnetSwapRepositoryInstanceName,
-      ),
-      walletRepository: locator<WalletRepository>(),
-      liquidWalletRepository: locator<LiquidWalletRepository>(),
-      liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
-      seedRepository: locator<SeedRepository>(),
-    );
-    testnetAutoSwapTimer.startTimer();
     locator.registerLazySingleton<AutoSwapTimerService>(
-      () => testnetAutoSwapTimer,
+      () => AutoSwapTimerService(
+        swapRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
+        ),
+        walletRepository: locator<WalletRepository>(),
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
+        liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
+        seedRepository: locator<SeedRepository>(),
+        settingsRepository: locator<SettingsRepository>(),
+      ),
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetAutoSwapTimerInstanceName,
     );

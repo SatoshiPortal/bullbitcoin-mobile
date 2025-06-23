@@ -48,11 +48,13 @@ class OverrideFeeBlockAndExecuteAutoSwapUsecase {
     );
 
     final repository = isTestnet ? _testnetRepository : _mainnetRepository;
-    final autoSwapSettings = await repository.getAutoSwapParams();
+    final autoSwapSettings = await repository.getAutoSwapParams(
+      isTestnet: isTestnet,
+    );
     final walletBalance = defaultLiquidWallet.balanceSat.toInt();
 
     debugPrint('Checking balance threshold - Current: $walletBalance sats');
-    if (!autoSwapSettings.amountThresholdExceeded(walletBalance)) {
+    if (!autoSwapSettings.passedRequiredBalance(walletBalance)) {
       throw Exception('Balance threshold not exceeded');
     }
 
@@ -119,6 +121,7 @@ class OverrideFeeBlockAndExecuteAutoSwapUsecase {
     // Reset blockTillNextExecution after successful swap
     await repository.updateAutoSwapParams(
       autoSwapSettings.copyWith(blockTillNextExecution: false),
+      isTestnet: isTestnet,
     );
 
     debugPrint('Swap executed successfully!');
