@@ -25,7 +25,7 @@ sealed class Transaction with _$Transaction {
 
   bool get isBroadcasted => walletTransaction != null;
   bool get isSwap => swap != null;
-  bool get isOngoingSwap => isSwap && !isBroadcasted;
+  bool get isOngoingSwap => isSwap && swap?.status != SwapStatus.completed;
   bool get isPayjoin => payjoin != null;
   bool get isOngoingPayjoin => isPayjoin && !isBroadcasted;
   bool get isOngoingPayjoinReceiver =>

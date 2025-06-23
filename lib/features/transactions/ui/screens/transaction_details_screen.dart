@@ -141,7 +141,6 @@ class TransactionDetailsScreen extends StatelessWidget {
                   const Gap(8),
                   _SwapProgressIndicator(swap: swap),
                 ],
-                const Gap(8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -171,8 +170,9 @@ class TransactionDetailsScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                const Gap(24),
+
                 if (swap != null && (swap.requiresAction)) ...[
+                  const Gap(24),
                   BBButton.big(
                     disabled: retryingSwap,
                     label: 'Retry Swap $swapAction',
@@ -574,14 +574,14 @@ class _SwapStatusDescription extends StatelessWidget {
       switch (swap.status) {
         case SwapStatus.pending:
           return swap.type == SwapType.bitcoinToLiquid
-              ? 'Your swap has been initiated. We are broadcasting your Bitcoin transaction to start the swap process.'
-              : 'Your swap has been initiated. We are broadcasting your Liquid transaction to start the swap process.';
+              ? 'Your swap has been created but not initiated yet.'
+              : 'Your swap has been created but not initiated yet.';
         case SwapStatus.paid:
-          return 'Your transaction has been confirmed. We are now waiting for the counterparty transaction to be detected.';
+          return 'Your transaction has been broadcasted. We are now waiting for the counterparty transaction to be confirmed.';
         case SwapStatus.claimable:
-          return 'The counterparty transaction has been detected. We are now claiming the funds to complete your swap.';
+          return 'The counterparty transaction has been confirmed. We are now claiming the funds to complete your swap.';
         case SwapStatus.refundable:
-          return 'The swap can be refunded. Your funds will be returned to your wallet automatically.';
+          return 'The swap will be refunded. Your funds will be returned to your wallet automatically.';
         case SwapStatus.completed:
           return 'Your swap has been completed successfully! The funds should now be available in your wallet.';
         case SwapStatus.failed:
@@ -602,13 +602,14 @@ class _SwapStatusDescription extends StatelessWidget {
 
     if (swap is ChainSwap &&
         (swap.status == SwapStatus.pending || swap.status == SwapStatus.paid)) {
-      return 'On-chain swaps may take some time to complete due to blockchain confirmation times. Please be patient.';
+      return 'On-chain swaps may take some time to complete due to blockchain confirmation times.';
     }
 
-    if (swap.status == SwapStatus.pending ||
-        swap.status == SwapStatus.paid ||
-        swap.status == SwapStatus.claimable) {
-      return 'You can safely close this screen. The swap will continue processing in the background.';
+    if (swap.status == SwapStatus.claimable) {
+      return 'The swap will be completed automatically within a few seconds. If not, you can attempt a manual claim by clicking the "Retry Swap Claim" button.';
+    }
+    if (swap.status == SwapStatus.refundable) {
+      return 'This swap will be refunded automatically within a few seconds. If not, you can attempt a manual refund by clicking the "Retry Swap Refund" button.';
     }
 
     return '';
