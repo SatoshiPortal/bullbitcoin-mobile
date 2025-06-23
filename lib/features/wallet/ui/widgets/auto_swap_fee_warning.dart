@@ -70,7 +70,9 @@ class AutoSwapFeeWarning extends StatelessWidget {
               BBButton.small(
                 label: 'Block',
                 onPressed: () {
-                  // TODO: Implement block action
+                  context.read<WalletBloc>().add(
+                    const BlockAutoSwapUntilNextExecution(),
+                  );
                 },
                 bgColor: context.colour.error,
                 textColor: context.colour.onSecondary,
@@ -82,7 +84,9 @@ class AutoSwapFeeWarning extends StatelessWidget {
               BBButton.small(
                 label: 'Allow',
                 onPressed: () {
-                  // TODO: Implement bypass action
+                  context.read<WalletBloc>().add(
+                    const OverrideFeeBlockAndExecuteAutoSwap(),
+                  );
                 },
                 bgColor: context.colour.secondary,
                 textColor: context.colour.onSecondary,

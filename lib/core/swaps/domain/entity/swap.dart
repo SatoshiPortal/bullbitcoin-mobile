@@ -93,6 +93,11 @@ abstract class SwapFees with _$SwapFees {
     }
     return double.parse(((boltzFee! / amount) * 100).toStringAsFixed(2));
   }
+
+  double totalFeeAsPercentOfAmount(int amount) {
+    final fees = totalFees(amount);
+    return calculatePercentage(amount, fees);
+  }
 }
 
 @freezed

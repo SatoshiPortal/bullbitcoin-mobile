@@ -19,6 +19,7 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dar
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/listen_to_auto_swap_timer_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/override_fee_block_and_execute_auto_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
@@ -247,6 +248,23 @@ class SwapsLocator {
               LocatorInstanceNameConstants
                   .boltzTestnetSwapRepositoryInstanceName,
         ),
+      ),
+    );
+    locator.registerFactory<OverrideFeeBlockAndExecuteAutoSwapUsecase>(
+      () => OverrideFeeBlockAndExecuteAutoSwapUsecase(
+        mainnetRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
+        ),
+        testnetRepository: locator<SwapRepository>(
+          instanceName:
+              LocatorInstanceNameConstants
+                  .boltzTestnetSwapRepositoryInstanceName,
+        ),
+        walletRepository: locator<WalletRepository>(),
+        liquidWalletRepository: locator<LiquidWalletRepository>(),
+        liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
+        seedRepository: locator<SeedRepository>(),
       ),
     );
     locator.registerFactory<CreateChainSwapUsecase>(

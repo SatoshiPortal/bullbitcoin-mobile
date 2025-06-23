@@ -119,6 +119,17 @@ class AutoSwapTimerService {
       return;
     }
 
+    final totalFeePercent = swapFees.totalFeeAsPercentOfAmount(
+      autoSwapSettings.swapAmount(walletBalance),
+    );
+
+    if (totalFeePercent < autoSwapSettings.feeThresholdPercent) {
+      debugPrint(
+        '[AutoSwap ${_getTimestamp()}] Total fee percent ($totalFeePercent) is greater than or equal to fee threshold (${autoSwapSettings.feeThresholdPercent})',
+      );
+      return;
+    }
+
     debugPrint(
       '[AutoSwap ${_getTimestamp()}] Balance within swap limits, preparing swap...',
     );
@@ -150,15 +161,6 @@ class AutoSwapTimerService {
       receiveWalletId: defaultBitcoinWallet.id,
     );
 
-    final swapFeePercent = swap.getFeeAsPercentOfAmount();
-    debugPrint(
-      '[AutoSwap ${_getTimestamp()}] Checking fee threshold - Current: ${(swapFeePercent * 100).toStringAsFixed(2)}%',
-    );
-    if (!autoSwapSettings.withinFeeThreshold(swapFeePercent)) {
-      debugPrint('[AutoSwap ${_getTimestamp()}] Fee threshold exceeded');
-      return;
-    }
-
     debugPrint('[AutoSwap ${_getTimestamp()}] Building PSET...');
     final pset = await _liquidWalletRepository.buildPset(
       walletId: defaultLiquidWallet.id,
@@ -177,6 +179,11 @@ class AutoSwapTimerService {
     await _liquidBlockchainRepository.broadcastTransaction(
       signedPset: signedPset,
       isTestnet: defaultLiquidWallet.isTestnet,
+    );
+
+    // Reset blockTillNextExecution after successful swap
+    await _swapRepository.updateAutoSwapParams(
+      autoSwapSettings.copyWith(blockTillNextExecution: false),
     );
 
     debugPrint('[AutoSwap ${_getTimestamp()}] Swap executed successfully!');

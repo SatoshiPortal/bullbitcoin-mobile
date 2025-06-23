@@ -41,3 +41,11 @@ class AutoSwapEventReceived extends WalletEvent {
   final AutoSwapEvent event;
   const AutoSwapEventReceived(this.event);
 }
+
+class BlockAutoSwapUntilNextExecution extends WalletEvent {
+  const BlockAutoSwapUntilNextExecution();
+}
+
+class OverrideFeeBlockAndExecuteAutoSwap extends WalletEvent {
+  const OverrideFeeBlockAndExecuteAutoSwap();
+}
