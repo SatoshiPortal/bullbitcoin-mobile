@@ -13,7 +13,7 @@ class FeesDatasource {
          BaseOptions(
            baseUrl:
                bitcoinMainnetMempoolUrl ??
-               'https://${ApiServiceConstants.bbMempoolUrlPath})',
+               'https://${ApiServiceConstants.bbMempoolUrlPath}',
          ),
        ),
        _bitcoinTestnetMempoolHttpClient = Dio(
