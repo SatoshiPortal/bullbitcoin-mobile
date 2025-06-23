@@ -5,9 +5,9 @@ import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/utils/string_formatting.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
 import 'package:bb_mobile/features/experimental/psbt_flow/psbt_router.dart';
-import 'package:bb_mobile/features/scan/ui/scan_widget.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_cubit.dart';
 import 'package:bb_mobile/features/send/presentation/bloc/send_state.dart';
+import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
@@ -77,7 +77,7 @@ class SendAddressScreen extends StatelessWidget {
         children: [
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.5,
-            child: ScanWidget(
+            child: OpenTheCameraWidget(
               onScannedPaymentRequest:
                   (data) => context.read<SendCubit>().onScannedPaymentRequest(
                     data.$1,

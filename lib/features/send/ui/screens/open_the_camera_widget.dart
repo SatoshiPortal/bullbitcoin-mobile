@@ -1,5 +1,4 @@
-import 'package:bb_mobile/core/utils/payment_request.dart';
-import 'package:bb_mobile/features/scan/ui/scan_page.dart';
+import 'package:bb_mobile/features/send/ui/screens/full_screen_scanner_page.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
@@ -7,14 +6,10 @@ import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
-/// Callback for when a payment request is detected from a QR code
-typedef OnScannedPaymentRequestCallback =
-    void Function((String, PaymentRequest?) data);
-
-class ScanWidget extends StatelessWidget {
+class OpenTheCameraWidget extends StatelessWidget {
   final OnScannedPaymentRequestCallback onScannedPaymentRequest;
 
-  const ScanWidget({super.key, required this.onScannedPaymentRequest});
+  const OpenTheCameraWidget({super.key, required this.onScannedPaymentRequest});
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +39,8 @@ class ScanWidget extends StatelessWidget {
                 Navigator.of(context).push(
                   PageRouteBuilder(
                     pageBuilder:
-                        (context, _, _) => FullScreenScanner(
-                          onScannedPaymentRequest: (data) {
-                            onScannedPaymentRequest.call(data);
-                          },
-                          isModal: true,
+                        (context, _, _) => FullScreenScannerPage(
+                          onScannedPaymentRequest: onScannedPaymentRequest,
                         ),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) =>
