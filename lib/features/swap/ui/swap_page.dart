@@ -194,6 +194,10 @@ class SwapCard extends StatelessWidget {
                       style: context.font.displaySmall,
                       value: amount,
                       hideBorder: true,
+                      hint: '0',
+                      hintStyle: context.font.displaySmall?.copyWith(
+                        color: context.colour.outline,
+                      ),
                       onlyNumbers: true,
                       maxLines: 1,
                       onChanged: (v) {
