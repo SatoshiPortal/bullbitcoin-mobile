@@ -82,6 +82,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.2"
+  bip21_uri:
+    dependency: "direct main"
+    description:
+      name: bip21_uri
+      sha256: "98e3de9368f0b92d654230b316903ae7bffb596a751c2d9d7654739052b48250"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   bip32:
     dependency: "direct main"
     description:
@@ -404,14 +412,6 @@ packages:
       url: "https://github.com/SatoshiPortal/bbqr-dart.git"
     source: git
     version: "0.0.1"
-  dart_bip21:
-    dependency: "direct main"
-    description:
-      name: dart_bip21
-      sha256: "0de2e7063f74eeb77ae1ccdc0b2ef8b0dbc98e506dc8ccdaaf3fb385fdcb055a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   dart_style:
     dependency: transitive
     description:
