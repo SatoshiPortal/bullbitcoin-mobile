@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
@@ -34,12 +35,35 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onUrlChange: (UrlChange change) {
-            final url = change.url;
+            final url = Uri.tryParse(change.url ?? '');
             if (url == null) return;
-            log.info('Url change to ${change.url}');
+
+            final isKyc = url.path.startsWith('/kyc');
+            final isLogin = url.path.contains('/login');
+
+            final allow = isKyc || isLogin;
+            log.info('UrlChange: ${url.path} → allow: $allow');
+
+            if (!allow) {
+              GoRouter.of(context).pop();
+            }
           },
           onNavigationRequest: (NavigationRequest request) {
-            return NavigationDecision.navigate;
+            final url = Uri.tryParse(request.url);
+            if (url == null) return NavigationDecision.prevent;
+
+            final isKyc = url.path.startsWith('/kyc');
+            final isLogin = url.path.contains('/login');
+            // Downloading the bb logo triggers a request that we should allow
+            //  so that the logo can be displayed while loading the KYC page.
+            final isBBLogo = url.path.contains('/bb-logo');
+
+            final allow = isKyc || isLogin || isBBLogo;
+            log.info('NavigationRequest: ${url.path} → allow: $allow');
+
+            return allow
+                ? NavigationDecision.navigate
+                : NavigationDecision.prevent;
           },
           onHttpAuthRequest: (HttpAuthRequest request) {
             log.info(
