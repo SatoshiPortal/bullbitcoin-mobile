@@ -59,8 +59,8 @@ class ExchangeHomeKycCard extends StatelessWidget {
         ),
       ),
       titleAlignment: ListTileTitleAlignment.center,
-      onTap: () {
-        context.pushNamed(ExchangeRoute.exchangeKyc.name);
+      onTap: () async {
+        await context.pushNamed(ExchangeRoute.exchangeKyc.name);
       },
       trailing: const Icon(Icons.arrow_forward, color: Colors.white, size: 24),
     );
