@@ -1,3 +1,3 @@
 abstract class WordListRepository {
-  Future<List<String>> getWordsStartingWith(String firstLetters);
+  List<String> getWordsStartingWith(String firstLetters);
 }
