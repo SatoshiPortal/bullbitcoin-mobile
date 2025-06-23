@@ -24,7 +24,6 @@ abstract class TransactionsState with _$TransactionsState {
       if (tx.isSwap &&
           tx.swap != null &&
           [
-            SwapStatus.pending,
             SwapStatus.paid,
             SwapStatus.claimable,
             SwapStatus.refundable,
