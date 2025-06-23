@@ -109,8 +109,10 @@ class _ExchangeKycScreenState extends State<ExchangeKycScreen> {
             //  it indicates that the Flutter web app is ready and rendered.
 
             // Wait 5 seconds for Flutter to render and then check if the
-            //  flutter-view and flt-glass-pane elements are present to know
-            //  if the Flutter web app is really rendered successfully or not.
+            //  flutter-view tabindex is -1, which indicates that the
+            //  Flutter web app has been rendered successfully.
+            // If it is still 0, it means that the Flutter web app has not been
+            //  rendered correctly, and we should reload the WebView.
             await Future.delayed(const Duration(seconds: 5));
 
             try {
