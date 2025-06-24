@@ -111,10 +111,23 @@ class ReceiveQRDetails extends StatelessWidget {
                 style: context.font.bodyMedium,
               ),
               const Gap(6),
+              // TODO: We should probably just make a specific widget for the
+              //  address and invoice instead of using CopyInput.
               CopyInput(
                 text: addressOrInvoiceOnly,
                 clipboardText: clipboardData,
                 overflow: TextOverflow.ellipsis,
+                canShowValueModal: true,
+                modalTitle: isLightning ? 'Lightning invoice' : 'Address',
+                modalContent:
+                    isLightning
+                        ? addressOrInvoiceOnly
+                        : addressOrInvoiceOnly
+                            .replaceAllMapped(
+                              RegExp('.{1,4}'),
+                              (match) => '${match.group(0)} ',
+                            )
+                            .trim(),
               ),
             ],
           ),

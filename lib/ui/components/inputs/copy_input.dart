@@ -12,6 +12,9 @@ class CopyInput extends StatelessWidget {
     this.clipboardText,
     this.maxLines,
     this.overflow,
+    this.canShowValueModal = false,
+    this.modalTitle,
+    this.modalContent,
   });
 
   final String text;
@@ -19,9 +22,17 @@ class CopyInput extends StatelessWidget {
   final String? clipboardText;
   final int? maxLines;
   final TextOverflow? overflow;
+  final bool canShowValueModal;
+  final String? modalTitle;
+  // In case it should be different from the shown text
+  final String? modalContent;
 
   @override
   Widget build(BuildContext context) {
+    final canCopy =
+        (clipboardText == null && text.isNotEmpty) ||
+        (clipboardText != null && clipboardText!.isNotEmpty);
+
     return Container(
       decoration: BoxDecoration(
         color: context.colour.onPrimary,
@@ -32,20 +43,39 @@ class CopyInput extends StatelessWidget {
         children: [
           const Gap(15),
           Expanded(
-            child:
-                text.isEmpty
-                    ? const LoadingLineContent()
-                    : BBText(
-                      text,
-                      style: context.font.bodyLarge,
-                      color: context.colour.secondary,
-                      maxLines: maxLines,
-                      overflow: overflow,
-                    ),
+            child: InkWell(
+              onTap:
+                  canShowValueModal
+                      ? () {
+                        _onShowValueModal(context, canCopy: canCopy);
+                      }
+                      : null,
+              child:
+                  text.isEmpty
+                      ? const LoadingLineContent()
+                      : BBText(
+                        text,
+                        style: context.font.bodyLarge,
+                        color: context.colour.secondary,
+                        maxLines: maxLines,
+                        overflow: overflow,
+                      ),
+            ),
           ),
+          if (canShowValueModal)
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              iconSize: 20,
+              icon: Icon(
+                Icons.visibility_outlined,
+                color: context.colour.secondary,
+              ),
+              onPressed: () {
+                _onShowValueModal(context, canCopy: canCopy);
+              },
+            ),
           // Only show the copy button if there is something to copy
-          if ((clipboardText == null && text.isNotEmpty) ||
-              (clipboardText != null && clipboardText!.isNotEmpty))
+          if (canCopy)
             IconButton(
               visualDensity: VisualDensity.compact,
               iconSize: 20,
@@ -57,6 +87,56 @@ class CopyInput extends StatelessWidget {
           const Gap(8),
         ],
       ),
+    );
+  }
+
+  void _onShowValueModal(BuildContext context, {required bool canCopy}) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            backgroundColor: Colors.white,
+            title:
+                modalTitle != null
+                    ? Text(
+                      modalTitle!,
+                      style: context.font.headlineMedium?.copyWith(
+                        fontSize: 20,
+                      ),
+                      textAlign: TextAlign.center,
+                    )
+                    : null,
+
+            content: SingleChildScrollView(
+              child: SelectableText(
+                modalContent ?? text,
+                style: context.font.bodyLarge?.copyWith(fontSize: 18),
+              ),
+            ),
+            actions: [
+              if (canCopy)
+                TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: context.colour.secondary,
+                    textStyle: context.font.bodyLarge,
+                  ),
+                  onPressed: () {
+                    Clipboard.setData(
+                      ClipboardData(text: clipboardText ?? text),
+                    );
+                  },
+                  child: const Text('Copy'),
+                ),
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: context.colour.primary,
+                  textStyle: context.font.bodyLarge,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
+          ),
     );
   }
 }
