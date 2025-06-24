@@ -167,6 +167,20 @@ class SettingsScreen extends StatelessWidget {
                         ),
                     trailing: const Icon(Icons.qr_code_2),
                   ),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
+                  title: const Text('Terms & Conditions'),
+                  onTap: () {
+                    final url = Uri.parse(
+                      SettingsConstants.termsAndConditionsLink,
+                    );
+                    launchUrl(url, mode: LaunchMode.inAppBrowserView);
+                  },
+                  trailing: const Icon(Icons.chevron_right),
+                ),
               ],
             ),
           ),
