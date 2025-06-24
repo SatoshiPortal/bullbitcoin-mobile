@@ -29,6 +29,7 @@ class CopyInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isValueLoading = text.isEmpty;
     final canCopy =
         (clipboardText == null && text.isNotEmpty) ||
         (clipboardText != null && clipboardText!.isNotEmpty);
@@ -51,7 +52,7 @@ class CopyInput extends StatelessWidget {
                       }
                       : null,
               child:
-                  text.isEmpty
+                  isValueLoading
                       ? const LoadingLineContent()
                       : BBText(
                         text,
@@ -62,7 +63,7 @@ class CopyInput extends StatelessWidget {
                       ),
             ),
           ),
-          if (canShowValueModal)
+          if (canShowValueModal && !isValueLoading)
             IconButton(
               visualDensity: VisualDensity.compact,
               iconSize: 20,
