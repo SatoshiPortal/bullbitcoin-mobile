@@ -92,6 +92,7 @@ class CopyInput extends StatelessWidget {
   }
 
   void _onShowValueModal(BuildContext context, {required bool canCopy}) {
+    final theme = context.theme;
     showDialog(
       context: context,
       builder:
@@ -101,8 +102,9 @@ class CopyInput extends StatelessWidget {
                 modalTitle != null
                     ? Text(
                       modalTitle!,
-                      style: context.font.headlineMedium?.copyWith(
+                      style: theme.textTheme.headlineMedium?.copyWith(
                         fontSize: 20,
+                        fontWeight: FontWeight.w700,
                       ),
                       textAlign: TextAlign.center,
                     )
@@ -111,15 +113,15 @@ class CopyInput extends StatelessWidget {
             content: SingleChildScrollView(
               child: SelectableText(
                 modalContent ?? text,
-                style: context.font.bodyLarge?.copyWith(fontSize: 18),
+                style: theme.textTheme.bodyLarge?.copyWith(fontSize: 18),
               ),
             ),
             actions: [
               if (canCopy)
                 TextButton(
                   style: TextButton.styleFrom(
-                    foregroundColor: context.colour.secondary,
-                    textStyle: context.font.bodyLarge,
+                    foregroundColor: theme.colorScheme.secondary,
+                    textStyle: theme.textTheme.bodyLarge,
                   ),
                   onPressed: () {
                     Clipboard.setData(
@@ -130,8 +132,8 @@ class CopyInput extends StatelessWidget {
                 ),
               TextButton(
                 style: TextButton.styleFrom(
-                  foregroundColor: context.colour.primary,
-                  textStyle: context.font.bodyLarge,
+                  foregroundColor: theme.colorScheme.primary,
+                  textStyle: theme.textTheme.bodyLarge,
                 ),
                 onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Close'),
