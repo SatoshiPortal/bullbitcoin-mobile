@@ -849,12 +849,19 @@ class BoltzDatasource {
             // Check if swap is already in terminal state
             final swapCompleted =
                 swapModel.status == swap_entity.SwapStatus.completed.name;
+            final isLnSwap =
+                swapModel is LnSendSwapModel || swapModel is LnReceiveSwapModel;
+            final hasReceiveTxid =
+                swapModel is ChainSwapModel && swapModel.receiveTxid != null;
             final swapFailed =
                 swapModel.status == swap_entity.SwapStatus.failed.name;
             final swapExpired =
                 swapModel.status == swap_entity.SwapStatus.expired.name;
 
-            if (swapCompleted || swapFailed || swapExpired) {
+            if ((swapCompleted && isLnSwap) ||
+                swapFailed ||
+                swapExpired ||
+                (hasReceiveTxid && swapCompleted)) {
               // Unsubscribe from the swap if it's in a terminal state
               _swapUpdatesController.add(swapModel);
               return unsubscribeToSwaps([swapId]);
