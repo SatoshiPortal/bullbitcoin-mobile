@@ -1,11 +1,14 @@
 import 'package:bb_mobile/core/exchange/domain/repositories/exchange_order_repository.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/labels/domain/create_label_usecase.dart';
 import 'package:bb_mobile/core/labels/domain/delete_label_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/broadcast_original_transaction_usecase.dart';
+import 'package:bb_mobile/core/payjoin/domain/usecases/get_payjoin_by_id_usecase.dart';
 import 'package:bb_mobile/core/payjoin/domain/usecases/watch_payjoin_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -14,8 +17,6 @@ import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_finished_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
-import 'package:bb_mobile/features/transactions/domain/usecases/get_swap_counterpart_transaction_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/usecases/get_transactions_usecase.dart';
 import 'package:bb_mobile/features/transactions/presentation/blocs/transaction_details/transaction_details_cubit.dart';
@@ -69,29 +70,6 @@ class TransactionsLocator {
         ),
       ),
     );
-
-    locator.registerFactory<GetSwapCounterpartTransactionUsecase>(
-      () => GetSwapCounterpartTransactionUsecase(
-        settingsRepository: locator<SettingsRepository>(),
-        walletTransactionRepository: locator<WalletTransactionRepository>(),
-        mainnetSwapRepository: locator<SwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        testnetSwapRepository: locator<SwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
-        ),
-        payjoinRepository: locator<PayjoinRepository>(),
-        mainnetOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'mainnetExchangeOrderRepository',
-        ),
-        testnetOrderRepository: locator<ExchangeOrderRepository>(
-          instanceName: 'testnetExchangeOrderRepository',
-        ),
-      ),
-    );
   }
 
   static void registerBlocs() {
@@ -106,15 +84,15 @@ class TransactionsLocator {
             locator<WatchFinishedWalletSyncsUsecase>(),
       ),
     );
-    locator.registerFactoryParam<TransactionDetailsCubit, Transaction, void>(
-      (transaction, _) => TransactionDetailsCubit(
-        transaction: transaction,
+    locator.registerFactory<TransactionDetailsCubit>(
+      () => TransactionDetailsCubit(
         getWalletUsecase: locator<GetWalletUsecase>(),
-        getSwapCounterpartTransactionUsecase:
-            locator<GetSwapCounterpartTransactionUsecase>(),
         getTransactionsByTxIdUsecase: locator<GetTransactionsByTxIdUsecase>(),
         watchWalletTransactionByTxIdUsecase:
             locator<WatchWalletTransactionByTxIdUsecase>(),
+        getSwapUsecase: locator<GetSwapUsecase>(),
+        getPayjoinByIdUsecase: locator<GetPayjoinByIdUsecase>(),
+        getOrderUsecase: locator<GetOrderUsecase>(),
         watchSwapUsecase: locator<WatchSwapUsecase>(),
         watchPayjoinUsecase: locator<WatchPayjoinUsecase>(),
         createLabelUsecase: locator<CreateLabelUsecase>(),

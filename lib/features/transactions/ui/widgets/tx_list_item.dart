@@ -74,7 +74,33 @@ class TxListItem extends StatelessWidget {
             tx.order is WithdrawOrder);
     return InkWell(
       onTap: () {
-        context.pushNamed(TransactionsRoute.transactionDetails.name, extra: tx);
+        if (tx.walletTransaction != null) {
+          context.pushNamed(
+            TransactionsRoute.transactionDetails.name,
+            pathParameters: {'txId': tx.walletTransaction!.txId},
+            queryParameters: {'walletId': tx.walletTransaction!.walletId},
+          );
+          return;
+        } else if (tx.swap != null) {
+          context.pushNamed(
+            TransactionsRoute.swapTransactionDetails.name,
+            pathParameters: {'swapId': tx.swap!.id},
+            queryParameters: {'walletId': tx.swap!.walletId},
+          );
+          return;
+        } else if (tx.payjoin != null) {
+          context.pushNamed(
+            TransactionsRoute.payjoinTransactionDetails.name,
+            pathParameters: {'payjoinId': tx.payjoin!.id},
+          );
+          return;
+        } else if (tx.order != null) {
+          context.pushNamed(
+            TransactionsRoute.orderTransactionDetails.name,
+            pathParameters: {'orderId': tx.order!.orderId},
+          );
+          return;
+        }
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 8.0),

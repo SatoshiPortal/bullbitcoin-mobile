@@ -3,24 +3,26 @@ part of 'transaction_details_cubit.dart';
 @freezed
 sealed class TransactionDetailsState with _$TransactionDetailsState {
   const factory TransactionDetailsState({
-    @Default(true) bool isLoading,
-    required Transaction transaction,
+    Transaction? transaction,
     Wallet? wallet,
-    String? note,
     Wallet? counterpartWallet,
-    Transaction? swapCounterpartTransaction,
+    String? swapCounterpartTxId,
+    String? note,
     @Default(false) bool isBroadcastingPayjoinOriginalTx,
     @Default(false) bool retryingSwap,
+    TransactionNotFoundError? notFoundError,
     Object? err,
   }) = _TransactionDetailsState;
   const TransactionDetailsState._();
 
-  WalletTransaction? get walletTransaction => transaction.walletTransaction;
-  Swap? get swap => transaction.swap;
-  Payjoin? get payjoin => transaction.payjoin;
+  bool get isLoading => transaction == null;
 
-  bool get isOngoingSwap => transaction.isOngoingSwap;
-  bool get isOngoingPayjoin => transaction.isOngoingPayjoin;
+  WalletTransaction? get walletTransaction => transaction?.walletTransaction;
+  Swap? get swap => transaction?.swap;
+  Payjoin? get payjoin => transaction?.payjoin;
+
+  bool get isOngoingSwap => transaction?.isOngoingSwap == true;
+  bool get isOngoingPayjoin => transaction?.isOngoingPayjoin == true;
 
   /*
   bool

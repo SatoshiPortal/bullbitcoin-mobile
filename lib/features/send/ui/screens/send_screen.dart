@@ -11,7 +11,6 @@ import 'package:bb_mobile/features/send/ui/screens/open_the_camera_widget.dart';
 import 'package:bb_mobile/features/send/ui/widgets/advanced_options_bottom_sheet.dart';
 import 'package:bb_mobile/features/send/ui/widgets/fee_options_modal.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
@@ -1599,15 +1598,30 @@ class SendSucessScreen extends StatelessWidget {
               BBButton.big(
                 label: 'View Details',
                 onPressed: () {
-                  final transaction = Transaction(
-                    walletTransaction: walletTransaction,
-                    swap: lnSwap ?? chainSwap,
-                    payjoin: payjoin,
-                  );
-                  context.pushNamed(
-                    TransactionsRoute.transactionDetails.name,
-                    extra: transaction,
-                  );
+                  if (walletTransaction != null) {
+                    context.pushNamed(
+                      TransactionsRoute.transactionDetails.name,
+                      pathParameters: {'txId': walletTransaction.txId},
+                      queryParameters: {'walletId': walletTransaction.walletId},
+                    );
+                  } else if (isLnSwap) {
+                    context.pushNamed(
+                      TransactionsRoute.swapTransactionDetails.name,
+                      pathParameters: {'swapId': lnSwap.id},
+                      queryParameters: {'walletId': lnSwap.walletId},
+                    );
+                  } else if (isChainSwap) {
+                    context.pushNamed(
+                      TransactionsRoute.swapTransactionDetails.name,
+                      pathParameters: {'swapId': chainSwap.id},
+                      queryParameters: {'walletId': chainSwap.walletId},
+                    );
+                  } else if (payjoin != null) {
+                    context.pushNamed(
+                      TransactionsRoute.payjoinTransactionDetails.name,
+                      pathParameters: {'payjoinId': payjoin.id},
+                    );
+                  }
                 },
                 bgColor: context.colour.secondary,
                 textColor: context.colour.onSecondary,

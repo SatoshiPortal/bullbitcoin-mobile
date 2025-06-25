@@ -90,10 +90,27 @@ class ReceiveDetailsButton extends StatelessWidget {
       child: BBButton.big(
         label: 'Details',
         onPressed: () {
-          context.pushNamed(
-            TransactionsRoute.transactionDetails.name,
-            extra: context.read<ReceiveBloc>().state.transaction,
-          );
+          final transaction = context.read<ReceiveBloc>().state.transaction;
+          if (transaction.walletTransaction != null) {
+            context.pushNamed(
+              TransactionsRoute.transactionDetails.name,
+              pathParameters: {'txId': transaction.walletTransaction!.txId},
+              queryParameters: {
+                'walletId': transaction.walletTransaction!.walletId,
+              },
+            );
+          } else if (transaction.swap != null) {
+            context.pushNamed(
+              TransactionsRoute.swapTransactionDetails.name,
+              pathParameters: {'swapId': transaction.swap!.id},
+              queryParameters: {'walletId': transaction.swap!.walletId},
+            );
+          } else if (transaction.payjoin != null) {
+            context.pushNamed(
+              TransactionsRoute.payjoinTransactionDetails.name,
+              pathParameters: {'payjoinId': transaction.payjoin!.id},
+            );
+          }
         },
         bgColor: context.colour.secondary,
         textColor: context.colour.onSecondary,

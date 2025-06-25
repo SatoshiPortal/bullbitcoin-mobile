@@ -146,6 +146,7 @@ class SwapsLocator {
               LocatorInstanceNameConstants
                   .boltzTestnetSwapRepositoryInstanceName,
         ),
+        settingsRepository: locator<SettingsRepository>(),
       ),
     );
 
