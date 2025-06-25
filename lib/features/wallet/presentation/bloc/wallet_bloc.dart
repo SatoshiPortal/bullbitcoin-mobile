@@ -373,7 +373,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       emit(state.copyWith(autoSwapExecuting: true));
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
-
+      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
+        isTestnet: defaultLiquidWallet.isTestnet,
+      );
+      emit(state.copyWith(autoSwapSettings: autoSwapSettings));
       await _autoSwapExecutionUsecase.execute(
         isTestnet: defaultLiquidWallet.isTestnet,
         feeBlock: true,
@@ -416,6 +419,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
 
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
+      final autoSwapSettings = await _getAutoSwapSettingsUsecase.execute(
+        isTestnet: defaultLiquidWallet.isTestnet,
+      );
+      emit(state.copyWith(autoSwapSettings: autoSwapSettings));
 
       await _autoSwapExecutionUsecase.execute(
         isTestnet: defaultLiquidWallet.isTestnet,

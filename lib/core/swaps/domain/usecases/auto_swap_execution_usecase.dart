@@ -133,11 +133,16 @@ class AutoSwapExecutionUsecase {
     );
 
     debugPrint('Broadcasting transaction...');
-    final _ = await _liquidBlockchainRepository.broadcastTransaction(
+    final txid = await _liquidBlockchainRepository.broadcastTransaction(
       signedPset: signedPset,
       isTestnet: defaultLiquidWallet.isTestnet,
     );
 
+    await repository.updatePaidSendSwap(
+      swapId: swap.id,
+      txid: txid,
+      absoluteFees: 0,
+    );
     // Reset blockTillNextExecution after successful swap
     await repository.updateAutoSwapParams(
       autoSwapSettings.copyWith(blockTillNextExecution: false),

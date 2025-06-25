@@ -380,6 +380,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
+        // TODO: add server fees for chain swaps
         fees: swap.fees?.copyWith(
           lockupFee: (swap.fees?.lockupFee ?? 0) + absoluteFees,
         ),
