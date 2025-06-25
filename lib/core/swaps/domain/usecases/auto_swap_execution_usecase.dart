@@ -133,7 +133,7 @@ class AutoSwapExecutionUsecase {
     );
 
     debugPrint('Broadcasting transaction...');
-    await _liquidBlockchainRepository.broadcastTransaction(
+    final _ = await _liquidBlockchainRepository.broadcastTransaction(
       signedPset: signedPset,
       isTestnet: defaultLiquidWallet.isTestnet,
     );

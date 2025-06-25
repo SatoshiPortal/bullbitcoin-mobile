@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
-import 'package:bb_mobile/core/swaps/data/services/auto_swap_timer_service.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
@@ -238,7 +237,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           ),
         );
       }
-      if (event.wallet.isLiquid) {
+      if (event.wallet.isLiquid && !state.autoSwapExecuting) {
         debugPrint(
           'onWalletSyncFinished(Liquid): Starting Auto Swap Execution',
         );
@@ -371,6 +370,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) async {
     try {
+      emit(state.copyWith(autoSwapExecuting: true));
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
 
@@ -378,18 +378,26 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         isTestnet: defaultLiquidWallet.isTestnet,
         feeBlock: true,
       );
-      emit(state.copyWith(autoSwapFeeLimitExceeded: false));
+      emit(
+        state.copyWith(
+          autoSwapFeeLimitExceeded: false,
+          autoSwapExecuting: false,
+        ),
+      );
     } on BalanceThresholdException catch (e) {
       debugPrint('[WalletBloc] Auto swap balance threshold not met: $e');
+      emit(state.copyWith(autoSwapExecuting: false));
     } on FeeBlockException catch (e) {
       debugPrint('[WalletBloc] Auto swap fee block exceeded: $e');
       emit(
         state.copyWith(
           autoSwapFeeLimitExceeded: true,
           currentSwapFeePercent: e.currentFeePercent,
+          autoSwapExecuting: false,
         ),
       );
     } catch (e) {
+      emit(state.copyWith(autoSwapExecuting: false));
       log.severe('[WalletBloc] Failed to execute auto swap: $e');
     }
   }
@@ -399,7 +407,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) async {
     try {
-      emit(state.copyWith(autoSwapFeeLimitExceeded: false));
+      emit(
+        state.copyWith(
+          autoSwapFeeLimitExceeded: false,
+          autoSwapExecuting: true,
+        ),
+      );
 
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
@@ -408,11 +421,27 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         isTestnet: defaultLiquidWallet.isTestnet,
         feeBlock: false,
       );
-      emit(state.copyWith(autoSwapFeeLimitExceeded: false));
-    } catch (e) {
-      log.severe(
-        '[WalletBloc] Failed to execute auto swap with fee override: $e',
+      emit(
+        state.copyWith(
+          autoSwapFeeLimitExceeded: false,
+          autoSwapExecuting: false,
+        ),
       );
+    } on BalanceThresholdException catch (e) {
+      debugPrint('[WalletBloc] Auto swap balance threshold not met: $e');
+      emit(state.copyWith(autoSwapExecuting: false));
+    } on FeeBlockException catch (e) {
+      debugPrint('[WalletBloc] Auto swap fee block exceeded: $e');
+      emit(
+        state.copyWith(
+          autoSwapFeeLimitExceeded: true,
+          currentSwapFeePercent: e.currentFeePercent,
+          autoSwapExecuting: false,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(autoSwapExecuting: false));
+      log.severe('[WalletBloc] Failed to execute auto swap: $e');
     }
   }
 }
