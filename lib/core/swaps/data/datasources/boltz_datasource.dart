@@ -866,8 +866,16 @@ class BoltzDatasource {
               case SwapStatus.invoiceSet:
               case SwapStatus.invoicePending:
               case SwapStatus.minerfeePaid:
-              case SwapStatus.invoicePaid:
                 // No action needed for these status updates
+                return;
+              case SwapStatus.invoicePaid:
+                if (swapModel is LnSendSwapModel) {
+                  updatedSwapModel = swapModel.copyWith(
+                    completionTime: DateTime.now().millisecondsSinceEpoch,
+                  );
+                }
+                // we want the completion time to be set when the invoice is paid
+                // the swap is still not completed as we need to coop close
                 return;
 
               case SwapStatus.txnClaimPending:
@@ -934,10 +942,18 @@ class BoltzDatasource {
 
               case SwapStatus.txnClaimed:
                 // Swap has been claimed successfully
-                updatedSwapModel = swapModel.copyWith(
-                  status: swap_entity.SwapStatus.completed.name,
-                  completionTime: DateTime.now().millisecondsSinceEpoch,
-                );
+                if (swapModel is ChainSwapModel &&
+                    swapModel.receiveTxid != null) {
+                  updatedSwapModel = swapModel.copyWith(
+                    status: swap_entity.SwapStatus.completed.name,
+                    completionTime: DateTime.now().millisecondsSinceEpoch,
+                  );
+                }
+                if (swapModel is LnSendSwapModel) {
+                  updatedSwapModel = swapModel.copyWith(
+                    status: swap_entity.SwapStatus.completed.name,
+                  );
+                }
 
               case SwapStatus.txnRefunded:
                 // Check if this swap needs to be refunded (no refundTxid)
