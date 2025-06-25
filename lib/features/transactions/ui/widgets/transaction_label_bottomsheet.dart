@@ -111,6 +111,7 @@ class _TransactionLabelBottomsheetState
             hintStyle: context.font.bodyLarge?.copyWith(
               color: context.colour.surfaceContainer,
             ),
+            maxLines: 3,
             value: state.note ?? widget.initialNote ?? '',
             maxLength: NoteValidator.maxNoteLength,
             onChanged: (note) {
