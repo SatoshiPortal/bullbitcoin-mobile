@@ -204,15 +204,7 @@ class SwapCubit extends Cubit<SwapState> {
 
       final balance = fromWallet.balanceSat.toInt();
       final maxAmount = balance - absoluteFees;
-      emit(
-        state.copyWith(
-          swapLimitsException: SwapLimitsException(
-            'Balance too low for minimum swap amount',
-          ),
-          sendMax: true,
-          confirmedFromAmountSat: maxAmount,
-        ),
-      );
+
       if (state.bitcoinUnit == BitcoinUnit.sats) {
         emit(state.copyWith(fromAmount: maxAmount.toString()));
         emit(state.copyWith(toAmount: state.calculateToAmount));

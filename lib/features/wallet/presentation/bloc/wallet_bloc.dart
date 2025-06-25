@@ -238,8 +238,12 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           ),
         );
       }
-      debugPrint('onWalletSyncFinished: Starting Auto Swap Execution');
-      add(const ExecuteAutoSwap());
+      if (event.wallet.isLiquid) {
+        debugPrint(
+          'onWalletSyncFinished(Liquid): Starting Auto Swap Execution',
+        );
+        add(const ExecuteAutoSwap());
+      }
       emit(
         state.copyWith(
           status: WalletStatus.success,
