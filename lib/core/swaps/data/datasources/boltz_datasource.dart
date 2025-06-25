@@ -951,12 +951,12 @@ class BoltzDatasource {
 
               case SwapStatus.txnClaimed:
                 // Swap has been claimed successfully
-                if (swapModel is ChainSwapModel &&
-                    swapModel.receiveTxid != null) {
-                  updatedSwapModel = swapModel.copyWith(
-                    status: swap_entity.SwapStatus.completed.name,
-                    completionTime: DateTime.now().millisecondsSinceEpoch,
-                  );
+                if (swapModel is ChainSwapModel) {
+                  if (swapModel.receiveTxid == null) {
+                    updatedSwapModel = swapModel.copyWith(
+                      status: swap_entity.SwapStatus.claimable.name,
+                    );
+                  }
                 }
                 if (swapModel is LnSendSwapModel) {
                   updatedSwapModel = swapModel.copyWith(
