@@ -33,3 +33,33 @@ class AutoSwapProcessException implements Exception {
   @override
   String toString() => error != null ? '$message: $error' : message;
 }
+
+class FeeBlockException implements Exception {
+  final double currentFeePercent;
+  final double thresholdPercent;
+
+  FeeBlockException({
+    required this.currentFeePercent,
+    required this.thresholdPercent,
+  });
+
+  @override
+  String toString() {
+    return 'Fee threshold exceeded: current ${currentFeePercent.toStringAsFixed(2)}%, limit ${thresholdPercent.toStringAsFixed(2)}%';
+  }
+}
+
+class BalanceThresholdException implements Exception {
+  final int currentBalance;
+  final int requiredBalance;
+
+  BalanceThresholdException({
+    required this.currentBalance,
+    required this.requiredBalance,
+  });
+
+  @override
+  String toString() {
+    return 'Balance threshold not exceeded: current $currentBalance sats, required $requiredBalance sats';
+  }
+}

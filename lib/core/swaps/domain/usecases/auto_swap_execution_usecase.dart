@@ -1,4 +1,5 @@
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
+import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
@@ -9,7 +10,7 @@ import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_reposito
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:flutter/foundation.dart';
 
-class OverrideFeeBlockAndExecuteAutoSwapUsecase {
+class AutoSwapExecutionUsecase {
   final SwapRepository _mainnetRepository;
   final SwapRepository _testnetRepository;
   final WalletRepository _walletRepository;
@@ -17,7 +18,7 @@ class OverrideFeeBlockAndExecuteAutoSwapUsecase {
   final LiquidBlockchainRepository _liquidBlockchainRepository;
   final SeedRepository _seedRepository;
 
-  OverrideFeeBlockAndExecuteAutoSwapUsecase({
+  AutoSwapExecutionUsecase({
     required SwapRepository mainnetRepository,
     required SwapRepository testnetRepository,
     required WalletRepository walletRepository,
@@ -31,7 +32,10 @@ class OverrideFeeBlockAndExecuteAutoSwapUsecase {
        _liquidBlockchainRepository = liquidBlockchainRepository,
        _seedRepository = seedRepository;
 
-  Future<Swap> execute({required bool isTestnet}) async {
+  Future<Swap> execute({
+    required bool isTestnet,
+    required bool feeBlock,
+  }) async {
     final wallets = await _walletRepository.getWallets();
 
     final defaultLiquidWallet =
@@ -55,11 +59,14 @@ class OverrideFeeBlockAndExecuteAutoSwapUsecase {
 
     debugPrint('Checking balance threshold - Current: $walletBalance sats');
     if (!autoSwapSettings.passedRequiredBalance(walletBalance)) {
-      throw Exception('Balance threshold not exceeded');
+      throw BalanceThresholdException(
+        currentBalance: walletBalance,
+        requiredBalance: autoSwapSettings.balanceThresholdSats * 2,
+      );
     }
 
     debugPrint('Balance threshold exceeded, checking swap limits...');
-    final (swapLimits, _) = await repository.getSwapLimitsAndFees(
+    final (swapLimits, swapFees) = await repository.getSwapLimitsAndFees(
       SwapType.liquidToBitcoin,
     );
 
@@ -67,6 +74,19 @@ class OverrideFeeBlockAndExecuteAutoSwapUsecase {
       throw Exception(
         'Balance outside swap limits (min: ${swapLimits.min}, max: ${swapLimits.max})',
       );
+    }
+
+    if (feeBlock) {
+      final totalFeePercent = swapFees.totalFeeAsPercentOfAmount(
+        autoSwapSettings.swapAmount(walletBalance),
+      );
+
+      if (totalFeePercent > autoSwapSettings.feeThresholdPercent) {
+        throw FeeBlockException(
+          currentFeePercent: totalFeePercent,
+          thresholdPercent: autoSwapSettings.feeThresholdPercent.toDouble(),
+        );
+      }
     }
 
     debugPrint('Balance within swap limits, preparing swap...');

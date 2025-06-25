@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:bb_mobile/core/electrum/domain/entity/electrum_server.dart';
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
+import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/swaps/data/services/auto_swap_timer_service.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/listen_to_auto_swap_timer_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/override_fee_block_and_execute_auto_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
@@ -20,6 +20,7 @@ import 'package:bb_mobile/core/wallet/domain/usecases/watch_started_wallet_syncs
 import 'package:bb_mobile/features/settings/ui/settings_router.dart';
 import 'package:bb_mobile/features/wallet/domain/entity/warning.dart';
 import 'package:bb_mobile/features/wallet/domain/usecase/get_unconfirmed_incoming_balance_usecase.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -40,11 +41,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required GetPrioritizedServerUsecase getBestAvailableServerUsecase,
     required GetUnconfirmedIncomingBalanceUsecase
     getUnconfirmedIncomingBalanceUsecase,
-    required ListenToAutoSwapTimerUsecase listenToAutoSwapTimerUsecase,
     required GetAutoSwapSettingsUsecase getAutoSwapSettingsUsecase,
     required SaveAutoSwapSettingsUsecase saveAutoSwapSettingsUsecase,
-    required OverrideFeeBlockAndExecuteAutoSwapUsecase
-    overrideFeeBlockAndExecuteAutoSwapUsecase,
+    required AutoSwapExecutionUsecase autoSwapExecutionUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _checkWalletSyncingUsecase = checkWalletSyncingUsecase,
        _watchStartedWalletSyncsUsecase = watchStartedWalletSyncsUsecase,
@@ -56,11 +55,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
        _getPrioritizedServerUsecase = getBestAvailableServerUsecase,
        _getUnconfirmedIncomingBalanceUsecase =
            getUnconfirmedIncomingBalanceUsecase,
-       _listenToAutoSwapTimerUsecase = listenToAutoSwapTimerUsecase,
        _getAutoSwapSettingsUsecase = getAutoSwapSettingsUsecase,
        _saveAutoSwapSettingsUsecase = saveAutoSwapSettingsUsecase,
-       _overrideFeeBlockAndExecuteAutoSwapUsecase =
-           overrideFeeBlockAndExecuteAutoSwapUsecase,
+       _autoSwapExecutionUsecase = autoSwapExecutionUsecase,
        super(const WalletState()) {
     on<WalletStarted>(_onStarted);
     on<WalletRefreshed>(_onRefreshed);
@@ -68,12 +65,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     on<WalletSyncFinished>(_onWalletSyncFinished);
     on<StartTorInitialization>(_onStartTorInitialization);
     on<CheckAllWarnings>(_onCheckAllWarnings);
-    on<ListenToAutoSwapTimer>(_onListenToAutoSwapTimer);
-    on<AutoSwapEventReceived>(_onAutoSwapEventReceived);
     on<BlockAutoSwapUntilNextExecution>(_onBlockAutoSwapUntilNextExecution);
-    on<OverrideFeeBlockAndExecuteAutoSwap>(
-      _onOverrideFeeBlockAndExecuteAutoSwap,
-    );
+    on<ExecuteAutoSwap>(_onExecuteAutoSwap);
+    on<ExecuteAutoSwapFeeOverride>(_onExecuteAutoSwapFeeOverride);
 
     // Start listening to auto swap timer when bloc is created
   }
@@ -89,11 +83,9 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final GetPrioritizedServerUsecase _getPrioritizedServerUsecase;
   final GetUnconfirmedIncomingBalanceUsecase
   _getUnconfirmedIncomingBalanceUsecase;
-  final ListenToAutoSwapTimerUsecase _listenToAutoSwapTimerUsecase;
   final GetAutoSwapSettingsUsecase _getAutoSwapSettingsUsecase;
   final SaveAutoSwapSettingsUsecase _saveAutoSwapSettingsUsecase;
-  final OverrideFeeBlockAndExecuteAutoSwapUsecase
-  _overrideFeeBlockAndExecuteAutoSwapUsecase;
+  final AutoSwapExecutionUsecase _autoSwapExecutionUsecase;
 
   StreamSubscription? _startedSyncsSubscription;
   StreamSubscription? _finishedSyncsSubscription;
@@ -124,7 +116,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           isSyncing: isSyncing,
         ),
       );
-      add(ListenToAutoSwapTimer(wallets.first.isTestnet));
       // Now that the wallets are loaded, we can sync them as done by the refresh
       add(const WalletRefreshed());
 
@@ -247,6 +238,8 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
           ),
         );
       }
+      debugPrint('onWalletSyncFinished: Starting Auto Swap Execution');
+      add(const ExecuteAutoSwap());
       emit(
         state.copyWith(
           status: WalletStatus.success,
@@ -338,50 +331,6 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     return null;
   }
 
-  Future<void> _onListenToAutoSwapTimer(
-    ListenToAutoSwapTimer event,
-    Emitter<WalletState> emit,
-  ) async {
-    await _autoSwapSubscription?.cancel();
-
-    final stream = _listenToAutoSwapTimerUsecase.execute(
-      isTestnet: event.isTestnet,
-    );
-    _autoSwapSubscription = stream.listen(
-      (autoSwapEvent) => add(AutoSwapEventReceived(autoSwapEvent)),
-    );
-
-    emit(state.copyWith(isAutoSwapTimerRunning: true));
-  }
-
-  Future<void> _onAutoSwapEventReceived(
-    AutoSwapEventReceived event,
-    Emitter<WalletState> emit,
-  ) async {
-    emit(state.copyWith(lastAutoSwapEvent: event.event));
-
-    if (event.event.status == AutoSwapStatus.swapExecuted) {
-      emit(state.copyWith(autoSwapFeeLimitExceeded: false));
-      add(const WalletRefreshed());
-    } else if (event.event.status == AutoSwapStatus.feeThresholdExceeded) {
-      // Get the current auto swap settings to show the warning
-      final defaultLiquidWallet = state.defaultLiquidWallet();
-      if (defaultLiquidWallet == null) return;
-
-      final isTestnet = defaultLiquidWallet.isTestnet;
-      final currentSettings = await _getAutoSwapSettingsUsecase.execute(
-        isTestnet: isTestnet,
-      );
-      emit(
-        state.copyWith(
-          autoSwapFeeLimitExceeded: true,
-          currentSwapFeePercent: event.event.currentFeePercent,
-          autoSwapSettings: currentSettings,
-        ),
-      );
-    }
-  }
-
   Future<void> _onBlockAutoSwapUntilNextExecution(
     BlockAutoSwapUntilNextExecution event,
     Emitter<WalletState> emit,
@@ -413,21 +362,52 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     }
   }
 
-  Future<void> _onOverrideFeeBlockAndExecuteAutoSwap(
-    OverrideFeeBlockAndExecuteAutoSwap event,
+  Future<void> _onExecuteAutoSwap(
+    ExecuteAutoSwap event,
     Emitter<WalletState> emit,
   ) async {
     try {
       final defaultLiquidWallet = state.defaultLiquidWallet();
       if (defaultLiquidWallet == null) return;
 
-      await _overrideFeeBlockAndExecuteAutoSwapUsecase.execute(
+      await _autoSwapExecutionUsecase.execute(
         isTestnet: defaultLiquidWallet.isTestnet,
+        feeBlock: true,
+      );
+      emit(state.copyWith(autoSwapFeeLimitExceeded: false));
+    } on BalanceThresholdException catch (e) {
+      debugPrint('[WalletBloc] Auto swap balance threshold not met: $e');
+    } on FeeBlockException catch (e) {
+      debugPrint('[WalletBloc] Auto swap fee block exceeded: $e');
+      emit(
+        state.copyWith(
+          autoSwapFeeLimitExceeded: true,
+          currentSwapFeePercent: e.currentFeePercent,
+        ),
+      );
+    } catch (e) {
+      log.severe('[WalletBloc] Failed to execute auto swap: $e');
+    }
+  }
+
+  Future<void> _onExecuteAutoSwapFeeOverride(
+    ExecuteAutoSwapFeeOverride event,
+    Emitter<WalletState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(autoSwapFeeLimitExceeded: false));
+
+      final defaultLiquidWallet = state.defaultLiquidWallet();
+      if (defaultLiquidWallet == null) return;
+
+      await _autoSwapExecutionUsecase.execute(
+        isTestnet: defaultLiquidWallet.isTestnet,
+        feeBlock: false,
       );
       emit(state.copyWith(autoSwapFeeLimitExceeded: false));
     } catch (e) {
       log.severe(
-        '[WalletBloc] Failed to override fee block and execute auto swap: $e',
+        '[WalletBloc] Failed to execute auto swap with fee override: $e',
       );
     }
   }

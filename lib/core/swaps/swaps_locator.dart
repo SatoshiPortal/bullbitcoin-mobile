@@ -7,10 +7,10 @@ import 'package:bb_mobile/core/storage/sqlite_database.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_storage_datasource.dart';
 import 'package:bb_mobile/core/swaps/data/repository/boltz_swap_repository_impl.dart';
-import 'package:bb_mobile/core/swaps/data/services/auto_swap_timer_service.dart';
 import 'package:bb_mobile/core/swaps/data/services/swap_watcher_impl.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/services/swap_watcher_service.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_to_external_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/create_chain_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/decode_invoice_usecase.dart';
@@ -18,8 +18,6 @@ import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usec
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_limits_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/get_swaps_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/listen_to_auto_swap_timer_usecase.dart';
-import 'package:bb_mobile/core/swaps/domain/usecases/override_fee_block_and_execute_auto_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/process_swap_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
@@ -65,7 +63,6 @@ class SwapsLocator {
   }
 
   static void registerServices() {
-    // add swap watcher service
     locator.registerLazySingleton<SwapWatcherService>(
       () => SwapWatcherServiceImpl(
         boltzRepo:
@@ -82,7 +79,6 @@ class SwapsLocator {
       instanceName: LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
     );
 
-    // add swap watcher service
     locator.registerLazySingleton<SwapWatcherService>(
       () => SwapWatcherServiceImpl(
         boltzRepo:
@@ -98,40 +94,6 @@ class SwapsLocator {
       ),
       instanceName:
           LocatorInstanceNameConstants.boltzTestnetSwapWatcherInstanceName,
-    );
-
-    // add auto swap timer service for mainnet
-    locator.registerLazySingleton<AutoSwapTimerService>(
-      () => AutoSwapTimerService(
-        swapRepository: locator<SwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
-        ),
-        walletRepository: locator<WalletRepository>(),
-        liquidWalletRepository: locator<LiquidWalletRepository>(),
-        liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
-        seedRepository: locator<SeedRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-      instanceName: LocatorInstanceNameConstants.boltzAutoSwapTimerInstanceName,
-    );
-
-    // add auto swap timer service for testnet
-    locator.registerLazySingleton<AutoSwapTimerService>(
-      () => AutoSwapTimerService(
-        swapRepository: locator<SwapRepository>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetSwapRepositoryInstanceName,
-        ),
-        walletRepository: locator<WalletRepository>(),
-        liquidWalletRepository: locator<LiquidWalletRepository>(),
-        liquidBlockchainRepository: locator<LiquidBlockchainRepository>(),
-        seedRepository: locator<SeedRepository>(),
-        settingsRepository: locator<SettingsRepository>(),
-      ),
-      instanceName:
-          LocatorInstanceNameConstants.boltzTestnetAutoSwapTimerInstanceName,
     );
   }
 
@@ -249,8 +211,8 @@ class SwapsLocator {
         ),
       ),
     );
-    locator.registerFactory<OverrideFeeBlockAndExecuteAutoSwapUsecase>(
-      () => OverrideFeeBlockAndExecuteAutoSwapUsecase(
+    locator.registerFactory<AutoSwapExecutionUsecase>(
+      () => AutoSwapExecutionUsecase(
         mainnetRepository: locator<SwapRepository>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapRepositoryInstanceName,
@@ -301,21 +263,6 @@ class SwapsLocator {
         watcherService: locator<SwapWatcherService>(
           instanceName:
               LocatorInstanceNameConstants.boltzSwapWatcherInstanceName,
-        ),
-      ),
-    );
-
-    // add listen to auto swap timer usecase
-    locator.registerFactory<ListenToAutoSwapTimerUsecase>(
-      () => ListenToAutoSwapTimerUsecase(
-        mainnetAutoSwapTimer: locator<AutoSwapTimerService>(
-          instanceName:
-              LocatorInstanceNameConstants.boltzAutoSwapTimerInstanceName,
-        ),
-        testnetAutoSwapTimer: locator<AutoSwapTimerService>(
-          instanceName:
-              LocatorInstanceNameConstants
-                  .boltzTestnetAutoSwapTimerInstanceName,
         ),
       ),
     );

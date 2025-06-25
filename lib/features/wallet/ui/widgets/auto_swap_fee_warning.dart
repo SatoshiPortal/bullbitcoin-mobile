@@ -85,7 +85,7 @@ class AutoSwapFeeWarning extends StatelessWidget {
                 label: 'Allow',
                 onPressed: () {
                   context.read<WalletBloc>().add(
-                    const OverrideFeeBlockAndExecuteAutoSwap(),
+                    const ExecuteAutoSwapFeeOverride(),
                   );
                 },
                 bgColor: context.colour.secondary,
