@@ -2,6 +2,7 @@ import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
+import 'package:satoshifier/satoshifier.dart' show WatchOnly;
 
 abstract class WalletRepository {
   Stream<Wallet> get walletSyncStartedStream;
@@ -14,6 +15,13 @@ abstract class WalletRepository {
     String label,
     bool isDefault,
   });
+
+  Future<Wallet> importWatchOnlySatoshifier({
+    required WatchOnly watchOnly,
+    required String label,
+    String? masterFingerprint,
+  });
+
   Future<Wallet> importWatchOnlyWallet({
     required String xpub,
     required Network network,
