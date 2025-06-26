@@ -123,20 +123,27 @@ abstract class TransactionsState with _$TransactionsState {
                 tx.walletTransaction?.isOutgoing == true &&
                 tx.swap?.receiveTxId != null;
 
+            // For swap-only chain swap transactions (no walletTransaction),
+            // we need to determine direction based on the current wallet context
+            final isSwapOnlyOutgoingChainSwap =
+                tx.isChainSwap &&
+                tx.walletTransaction == null &&
+                tx.swap?.receiveTxId != null &&
+                walletId == (tx.swap as ChainSwap?)?.sendWalletId;
+
+            final shouldFilterOutgoingChainSwap =
+                (isOutgoingChainSwap || isSwapOnlyOutgoingChainSwap) &&
+                walletId != tx.walletTransaction?.walletId &&
+                walletId != (tx.swap as ChainSwap?)?.sendWalletId;
+
             return switch (filter) {
-              TransactionsFilter.all =>
-                (!isOutgoingChainSwap ||
-                    walletId == tx.walletTransaction?.walletId),
+              TransactionsFilter.all => !shouldFilterOutgoingChainSwap,
               TransactionsFilter.send => tx.isOutgoing,
               TransactionsFilter.receive => tx.isIncoming,
               TransactionsFilter.swap =>
-                tx.isSwap &&
-                    (!isOutgoingChainSwap ||
-                        walletId == tx.walletTransaction?.walletId),
+                tx.isSwap && !shouldFilterOutgoingChainSwap,
               TransactionsFilter.payjoin =>
-                tx.isPayjoin &&
-                    (!isOutgoingChainSwap ||
-                        walletId == tx.walletTransaction?.walletId),
+                tx.isPayjoin && !shouldFilterOutgoingChainSwap,
               TransactionsFilter.sell => tx.isSellOrder,
               TransactionsFilter.buy => tx.isBuyOrder,
             };
