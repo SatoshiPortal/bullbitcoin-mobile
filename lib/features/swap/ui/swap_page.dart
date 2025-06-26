@@ -7,6 +7,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
+import 'package:bb_mobile/ui/components/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/ui/components/loading/loading_line_content.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/price_input/price_input.dart';
@@ -75,7 +76,12 @@ class SwapAmountPage extends StatelessWidget {
         child: SingleChildScrollView(
           child:
               amountConfirmedClicked
-                  ? const LinearProgressIndicator()
+                  ? FadingLinearProgress(
+                    trigger: amountConfirmedClicked,
+                    height: 3,
+                    backgroundColor: context.colour.secondaryFixedDim,
+                    foregroundColor: context.colour.primary,
+                  )
                   : const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                     child: Column(
@@ -388,19 +394,6 @@ class SwapFromToDropdown extends StatelessWidget {
   const SwapFromToDropdown({super.key, required this.type});
 
   final _SwapDropdownType type;
-  // make the DropFownMenuItem be a named tuple
-  List<DropdownMenuItem> _buildDropdownItems(
-    BuildContext context,
-    List<({String label, String id})> items,
-  ) {
-    return [
-      for (final ({String label, String id}) item in items)
-        DropdownMenuItem(
-          value: item.id,
-          child: BBText(item.label, style: context.font.headlineSmall),
-        ),
-    ];
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -410,7 +403,6 @@ class SwapFromToDropdown extends StatelessWidget {
               ? cubit.state.fromWalletDropdownItems
               : cubit.state.toWalletDropdownItems,
     );
-
     final id = context.select(
       (SwapCubit cubit) =>
           type == _SwapDropdownType.from
@@ -418,7 +410,15 @@ class SwapFromToDropdown extends StatelessWidget {
               : cubit.state.toWalletId,
     );
 
-    final dropdownItems = _buildDropdownItems(context, items);
+    final dropdownItems =
+        items
+            .map(
+              (item) => DropdownMenuItem(
+                value: item.id,
+                child: BBText(item.label, style: context.font.headlineSmall),
+              ),
+            )
+            .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -456,10 +456,10 @@ class SwapFromToDropdown extends StatelessWidget {
                             type == _SwapDropdownType.from
                                 ? context
                                     .read<SwapCubit>()
-                                    .updateSelectedFromWallet(value as String)
+                                    .updateSelectedFromWallet(value)
                                 : context
                                     .read<SwapCubit>()
-                                    .updateSelectedToWallet(value as String);
+                                    .updateSelectedToWallet(value);
                           }
                         },
                       ),

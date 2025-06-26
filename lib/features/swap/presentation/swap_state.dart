@@ -29,7 +29,6 @@ abstract class SwapState with _$SwapState {
     String? toWalletId,
     @Default('') String fromAmount,
     @Default('') String toAmount,
-    int? confirmedFromAmountSat,
     @Default('') String receiverAddress,
     @Default('BTC') String selectedFromCurrencyCode,
     @Default('L-BTC') String selectedToCurrencyCode,
@@ -333,20 +332,16 @@ abstract class SwapState with _$SwapState {
   }
 
   String get formattedConfirmedAmountBitcoin {
-    if (confirmedFromAmountSat == null) return '0 sats';
     if (bitcoinUnit == BitcoinUnit.sats) {
-      return FormatAmount.sats(confirmedFromAmountSat!);
+      return FormatAmount.sats(fromAmountSat);
     } else {
-      return FormatAmount.btc(ConvertAmount.satsToBtc(confirmedFromAmountSat!));
+      return FormatAmount.btc(ConvertAmount.satsToBtc(fromAmountSat));
     }
   }
 
   double get inputAmountBtc => ConvertAmount.satsToBtc(fromAmountSat);
 
-  double get confirmedAmountBtc =>
-      confirmedFromAmountSat != null
-          ? ConvertAmount.satsToBtc(confirmedFromAmountSat!)
-          : 0;
+  double get confirmedAmountBtc => ConvertAmount.satsToBtc(fromAmountSat);
 
   double get confirmedSwapAmountBtc =>
       swap != null ? ConvertAmount.satsToBtc(swap!.paymentAmount) : 0;

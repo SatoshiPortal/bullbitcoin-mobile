@@ -186,7 +186,7 @@ class SwapCubit extends Cubit<SwapState> {
         // additionally, we never sign this transaction
 
         const String dummySwapAddress =
-            "lq1pqw6essa2zr9apk7ae35jz74enf6q5mzxkdlh7z2f93fvfv2smv9xmpv468ss69zl89tndk6tcss2vnftkcgl0xzqpgng7d9knk6fq4kznq7hvgqes503";
+            "lq1pqvxwxl7pckz6p4vq0dh7dv8ae3lha97w4wjqls8p508xc2jus85sf3xgkzdkm3qdgmckph0a303qvnfyxsffyszy8s2w5ev5ys93xx0we046p4uqlt24";
         final dummyPset = await _prepareLiquidSendUsecase.execute(
           walletId: fromWallet.id,
           address: dummySwapAddress,
@@ -213,7 +213,7 @@ class SwapCubit extends Cubit<SwapState> {
         emit(state.copyWith(fromAmount: validatedAmount.toString()));
         emit(state.copyWith(toAmount: state.calculateToAmount));
       }
-
+      emit(state.copyWith(sendMax: true));
       // check swap limits
       if (swapLimits!.min > maxAmount) {
         emit(
@@ -221,7 +221,6 @@ class SwapCubit extends Cubit<SwapState> {
             swapLimitsException: SwapLimitsException(
               'Balance too low for minimum swap amount',
             ),
-            sendMax: true,
           ),
         );
         return;
@@ -232,7 +231,6 @@ class SwapCubit extends Cubit<SwapState> {
             swapLimitsException: SwapLimitsException(
               'Amount exceeds maximum swap amount',
             ),
-            sendMax: true,
           ),
         );
         return;
@@ -240,10 +238,7 @@ class SwapCubit extends Cubit<SwapState> {
       return;
     } catch (e) {
       emit(
-        state.copyWith(
-          swapLimitsException: SwapLimitsException(e.toString()),
-          sendMax: true,
-        ),
+        state.copyWith(swapLimitsException: SwapLimitsException(e.toString())),
       );
     }
   }
@@ -406,8 +401,9 @@ class SwapCubit extends Cubit<SwapState> {
   void amountChanged(String amount) {
     try {
       clearAllExceptions();
-      String validatedAmount;
+      emit(state.copyWith(sendMax: false));
 
+      String validatedAmount;
       if (amount.isEmpty) {
         validatedAmount = amount;
       } else if (state.isInputAmountFiat) {
@@ -514,8 +510,7 @@ class SwapCubit extends Cubit<SwapState> {
         bitcoinWalletId: bitcoinWalletId!,
         liquidWalletId: liquidWalletId!,
         type: swapType,
-        amountSat:
-            state.sendMax ? state.confirmedFromAmountSat : state.fromAmountSat,
+        amountSat: state.fromAmountSat,
       );
 
       _watchChainSwap(swap.id);
@@ -523,10 +518,6 @@ class SwapCubit extends Cubit<SwapState> {
       emit(
         state.copyWith(
           amountConfirmedClicked: false,
-          confirmedFromAmountSat:
-              state.sendMax
-                  ? state.confirmedFromAmountSat
-                  : state.fromAmountSat,
           step: SwapPageStep.confirm,
           swap: swap,
           creatingSwap: false,
@@ -596,7 +587,7 @@ class SwapCubit extends Cubit<SwapState> {
         final psbt = await _prepareLiquidSendUsecase.execute(
           walletId: liquidWalletId!,
           address: swap.paymentAddress,
-          amountSat: swap.paymentAmount,
+          amountSat: state.sendMax ? null : swap.paymentAmount,
           networkFee: state.selectedFeeList!.fastest,
           drain: state.sendMax,
         );
