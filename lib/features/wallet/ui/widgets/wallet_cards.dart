@@ -30,7 +30,9 @@ class HomeWalletCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wallets = context.select((WalletBloc bloc) => bloc.state.wallets);
-    final isSyncing = context.select((WalletBloc bloc) => bloc.state.isSyncing);
+    final syncStatus = context.select(
+      (WalletBloc bloc) => bloc.state.syncStatus,
+    );
 
     return Padding(
       padding: const EdgeInsets.all(13.0),
@@ -43,7 +45,7 @@ class HomeWalletCards extends StatelessWidget {
               title: w.getLabel() ?? '',
               description: w.getWalletTypeString(),
               wallet: w,
-              isSyncing: isSyncing,
+              isSyncing: syncStatus[w.id] ?? false,
               onTap: () {
                 context.pushNamed(
                   WalletRoute.walletDetail.name,

@@ -108,11 +108,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
       final wallets = await _getWalletsUsecase.execute();
       final isSyncing = _checkWalletSyncingUsecase.execute();
 
+      // Initialize sync status map with all wallets
+      final syncStatus = {
+        for (final wallet in wallets)
+          wallet.id:
+              isSyncing, // If global sync is true, all wallets are syncing
+      };
+
       emit(
         WalletState(
           status: WalletStatus.success,
           wallets: wallets,
-          isSyncing: isSyncing,
+          syncStatus: syncStatus,
         ),
       );
       // Now that the wallets are loaded, we can sync them as done by the refresh
@@ -147,17 +154,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) async {
     try {
-      emit(state.copyWith(isSyncing: true));
-
       final wallets = await _getWalletsUsecase.execute(sync: true);
+
+      // Initialize all wallets as not syncing
+      final syncStatus = {for (final wallet in wallets) wallet.id: false};
 
       emit(
         state.copyWith(
-          isSyncing: false,
           status: WalletStatus.success,
           wallets: wallets,
           noWalletsFoundException: null,
           error: null,
+          syncStatus: syncStatus,
         ),
       );
       add(const CheckAllWarnings());
@@ -174,13 +182,7 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         ),
       );
     } catch (e) {
-      emit(
-        state.copyWith(
-          isSyncing: false,
-          status: WalletStatus.failure,
-          error: e,
-        ),
-      );
+      emit(state.copyWith(status: WalletStatus.failure, error: e));
     }
   }
 
@@ -189,6 +191,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) async {
     try {
+      // Update sync status for the wallet that started syncing
+      final newSyncStatus = Map<String, bool>.from(state.syncStatus);
+      newSyncStatus[event.wallet.id] = true;
+
+      emit(state.copyWith(syncStatus: newSyncStatus));
       final wallets = await _getWalletsUsecase.execute();
 
       if (wallets.isNotEmpty) {
@@ -243,12 +250,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         );
         add(const ExecuteAutoSwap());
       }
+
+      // Set sync status to false for the wallet that finished syncing
+      final newSyncStatus = Map<String, bool>.from(state.syncStatus);
+      newSyncStatus[event.wallet.id] = false;
+
       emit(
         state.copyWith(
           status: WalletStatus.success,
           wallets: wallets,
           error: null,
           noWalletsFoundException: null,
+          syncStatus: newSyncStatus,
         ),
       );
     } on NoWalletsFoundException catch (e) {

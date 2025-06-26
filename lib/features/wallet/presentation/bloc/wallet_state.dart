@@ -9,7 +9,7 @@ sealed class WalletState with _$WalletState {
     @Default([]) List<Wallet> wallets,
     NoWalletsFoundException? noWalletsFoundException,
     @Default([]) List<WalletWarning> warnings,
-    @Default(false) bool isSyncing,
+    @Default({}) Map<String, bool> syncStatus,
     @Default(null) Object? error,
     @Default(0) int unconfirmedIncomingBalance,
     @Default(false) bool autoSwapFeeLimitExceeded,
@@ -18,6 +18,8 @@ sealed class WalletState with _$WalletState {
     @Default(false) bool autoSwapExecuting,
   }) = _WalletState;
   const WalletState._();
+
+  bool get isSyncing => syncStatus.values.any((syncing) => syncing);
 
   Wallet? defaultLiquidWallet() =>
       wallets.isEmpty
