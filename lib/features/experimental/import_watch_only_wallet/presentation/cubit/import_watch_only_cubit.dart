@@ -2,6 +2,7 @@ import 'package:bb_mobile/features/experimental/import_watch_only_wallet/import_
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/presentation/cubit/import_watch_only_state.dart';
 import 'package:bb_mobile/features/experimental/import_watch_only_wallet/watch_only_wallet_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:satoshifier/satoshifier.dart';
 
 class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   final ImportWatchOnlyUsecase _importWatchOnlyUsecase;
@@ -21,31 +22,44 @@ class ImportWatchOnlyCubit extends Cubit<ImportWatchOnlyState> {
   void overrideFingerprint(String fingerprint) {
     if (state.watchOnlyWallet == null) return;
     final watchOnlyWallet = state.watchOnlyWallet!.copyWith(
-      fingerprint: fingerprint,
+      masterFingerprint: fingerprint,
     );
     emit(state.copyWith(watchOnlyWallet: watchOnlyWallet));
   }
 
   Future<void> import() async {
     if (state.watchOnlyWallet == null) return;
+
+    final masterFingerprint =
+        state.watchOnlyWallet!.masterFingerprint.isNotEmpty
+            ? state.watchOnlyWallet!.masterFingerprint
+            : state.watchOnlyWallet!.watchOnly.masterFingerprint;
+
     try {
       final wallet = await _importWatchOnlyUsecase(
-        extendedPublicKey: state.watchOnlyWallet!.pubkey,
-        scriptType: state.watchOnlyWallet!.type,
+        watchOnly: state.watchOnlyWallet!.watchOnly,
         label: state.watchOnlyWallet!.label,
-        overrideFingerprint: state.watchOnlyWallet!.fingerprint,
+        masterFingerprint: masterFingerprint,
       );
+
       emit(state.copyWith(importedWallet: wallet));
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }
   }
 
-  void parseExtendedPublicKey(String value) {
-    emit(state.copyWith(publicKey: value));
-    if (value.length == 111) {
+  Future<void> parseExtendedPublicKey(String value) async {
+    emit(state.copyWith(publicKey: value.trim()));
+    if (value.length >= 111) {
       try {
-        final wallet = WatchOnlyWalletEntity.from(value);
+        final watchOnly = await Satoshifier.parse(value);
+
+        if (watchOnly is! WatchOnly) {
+          emit(state.copyWith(error: 'Unsupported watch only format'));
+          return;
+        }
+
+        final wallet = WatchOnlyWalletEntity(watchOnly: watchOnly);
         emit(state.copyWith(watchOnlyWallet: wallet, publicKey: value));
       } catch (e) {
         emit(

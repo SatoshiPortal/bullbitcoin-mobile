@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:satoshifier/satoshifier.dart';
 
 class ScanWatchOnlyScreen extends StatefulWidget {
   const ScanWatchOnlyScreen({super.key});
@@ -27,14 +28,17 @@ class _ScanWatchOnlyScreenState extends State<ScanWatchOnlyScreen> {
         fit: StackFit.expand,
         children: [
           ScannerWidget(
-            onScanned: (data) {
+            onScanned: (data) async {
               setState(() => _scanned = data);
               try {
-                final pub = WatchOnlyWalletEntity.from(data);
-                context.replaceNamed(
-                  ImportWatchOnlyRoutes.import.name,
-                  extra: pub,
-                );
+                final watchOnly = await Satoshifier.parse(data);
+                if (watchOnly is WatchOnly) {
+                  if (!context.mounted) return;
+                  context.replaceNamed(
+                    ImportWatchOnlyRoutes.import.name,
+                    extra: WatchOnlyWalletEntity(watchOnly: watchOnly),
+                  );
+                }
               } catch (e) {
                 log.warning(e.toString());
               }

@@ -9,9 +9,9 @@ class MultilinePasteWidget extends StatelessWidget {
   final String title;
   final String value;
   final String hint;
-  final int maxLines;
-  final int minLines;
-  final int maxLength;
+  final int? maxLines;
+  final int? minLines;
+  final int? maxLength;
   final Function(String) onChanged;
 
   const MultilinePasteWidget({
@@ -19,9 +19,9 @@ class MultilinePasteWidget extends StatelessWidget {
     required this.title,
     required this.value,
     required this.hint,
-    required this.maxLines,
-    required this.minLines,
-    required this.maxLength,
+    this.maxLines,
+    this.minLines,
+    this.maxLength,
     required this.onChanged,
   });
 
