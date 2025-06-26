@@ -74,52 +74,55 @@ class SwapAmountPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child:
-              amountConfirmedClicked
-                  ? FadingLinearProgress(
-                    trigger: amountConfirmedClicked,
-                    height: 3,
-                    backgroundColor: context.colour.secondaryFixedDim,
-                    foregroundColor: context.colour.primary,
-                  )
-                  : const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SwapFromToDropdown(type: _SwapDropdownType.from),
-                        Gap(16),
-                        SwapAvailableBalance(),
-                        Gap(16),
-                        SizedBox(
-                          height: 142 * 2,
-                          child: Stack(
-                            children: [
-                              Align(
-                                alignment: Alignment.topCenter,
-                                child: SwapCard(type: _SwapCardType.pay),
-                              ),
-                              Align(
-                                alignment: Alignment.bottomCenter,
-                                child: SwapCard(type: _SwapCardType.receive),
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: SwapChangeButton(),
-                              ),
-                            ],
-                          ),
+          child: Column(
+            children: [
+              FadingLinearProgress(
+                height: 3,
+                trigger: amountConfirmedClicked,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                foregroundColor: Theme.of(context).colorScheme.primary,
+              ),
+              if (!amountConfirmedClicked)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SwapFromToDropdown(type: _SwapDropdownType.from),
+                      Gap(16),
+                      SwapAvailableBalance(),
+                      Gap(16),
+                      SizedBox(
+                        height: 142 * 2,
+                        child: Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.topCenter,
+                              child: SwapCard(type: _SwapCardType.pay),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: SwapCard(type: _SwapCardType.receive),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: SwapChangeButton(),
+                            ),
+                          ],
                         ),
-                        Gap(16),
-                        SwapFeesInformation(),
-                        Gap(32),
-                        SwapFromToDropdown(type: _SwapDropdownType.to),
-                        Gap(32),
-                        SwapCreationError(),
-                        Gap(40),
-                      ],
-                    ),
+                      ),
+                      Gap(16),
+                      SwapFeesInformation(),
+                      Gap(32),
+                      SwapFromToDropdown(type: _SwapDropdownType.to),
+                      Gap(32),
+                      SwapCreationError(),
+                      Gap(40),
+                    ],
                   ),
+                ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -289,7 +292,13 @@ class SwapAvailableBalance extends StatelessWidget {
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
     final balance = context.select(
+      (SwapCubit cubit) => cubit.state.fromWalletBalance,
+    );
+    final formattedBalance = context.select(
       (SwapCubit cubit) => cubit.state.formattedFromWalletBalance(),
+    );
+    final loadingWallets = context.select(
+      (SwapCubit cubit) => cubit.state.loadingWallets,
     );
     // const maxSelected = false;
 
@@ -301,7 +310,7 @@ class SwapAvailableBalance extends StatelessWidget {
           color: context.colour.surface,
         ),
         const Gap(4),
-        BBText(balance, style: context.font.labelLarge),
+        BBText(formattedBalance, style: context.font.labelLarge),
         const Spacer(),
         BBButton.small(
           label: 'MAX',
@@ -311,7 +320,7 @@ class SwapAvailableBalance extends StatelessWidget {
           textColor: context.colour.secondary,
           textStyle: context.font.labelLarge,
           disabled: context.select(
-            (SwapCubit cubit) => cubit.state.loadingWallets,
+            (SwapCubit cubit) => loadingWallets || balance == 0,
           ),
           onPressed:
               () async => await context.read<SwapCubit>().sendMaxClicked(),
