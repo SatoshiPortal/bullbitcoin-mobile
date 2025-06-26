@@ -1,4 +1,5 @@
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/eye_toggle.dart';
 import 'package:bb_mobile/features/wallet/ui/widgets/home_fiat_balance.dart';
@@ -8,6 +9,7 @@ import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 
 class WalletHomeTopSection extends StatelessWidget {
   const WalletHomeTopSection({super.key});
@@ -143,29 +145,34 @@ class _UnconfirmedIncomingBalance extends StatelessWidget {
     );
     if (unconfirmed == 0) return const SizedBox.shrink();
     final color = context.colour.onPrimary;
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.arrow_downward, color: color, size: 20),
-              CurrencyText(
-                unconfirmed,
-                showFiat: false,
-                style: context.font.bodyLarge,
-                color: color,
-              ),
-            ],
-          ),
-          Align(
-            child: Text(
-              'In Progress',
-              style: context.font.bodyLarge?.copyWith(color: color),
+    return GestureDetector(
+      onTap: () {
+        context.pushNamed(TransactionsRoute.transactions.name);
+      },
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.arrow_downward, color: color, size: 20),
+                CurrencyText(
+                  unconfirmed,
+                  showFiat: false,
+                  style: context.font.bodyLarge,
+                  color: color,
+                ),
+              ],
             ),
-          ),
-        ],
+            Align(
+              child: Text(
+                'In Progress',
+                style: context.font.bodyLarge?.copyWith(color: color),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
