@@ -377,10 +377,15 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         isTestnet: defaultLiquidWallet.isTestnet,
       );
       emit(state.copyWith(autoSwapSettings: autoSwapSettings));
+      if (!autoSwapSettings.enabled) {
+        emit(state.copyWith(autoSwapExecuting: false));
+        return;
+      }
       await _autoSwapExecutionUsecase.execute(
         isTestnet: defaultLiquidWallet.isTestnet,
         feeBlock: true,
       );
+
       emit(
         state.copyWith(
           autoSwapFeeLimitExceeded: false,
@@ -423,6 +428,10 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
         isTestnet: defaultLiquidWallet.isTestnet,
       );
       emit(state.copyWith(autoSwapSettings: autoSwapSettings));
+      if (!autoSwapSettings.enabled) {
+        emit(state.copyWith(autoSwapExecuting: false));
+        return;
+      }
 
       await _autoSwapExecutionUsecase.execute(
         isTestnet: defaultLiquidWallet.isTestnet,
