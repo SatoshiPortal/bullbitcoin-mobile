@@ -144,10 +144,10 @@ packages:
     description:
       path: "."
       ref: develop
-      resolved-ref: "0867bb36831b9cc99896e381fa16b578d702cca9"
+      resolved-ref: d04909b985f5b47fa6a885d5f7e3ba63aca7d143
       url: "https://github.com/SatoshiPortal/boltz-dart.git"
     source: git
-    version: "0.2.0"
+    version: "0.2.1"
   boolean_selector:
     dependency: transitive
     description:
