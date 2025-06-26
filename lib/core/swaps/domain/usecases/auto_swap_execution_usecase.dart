@@ -1,6 +1,7 @@
 import 'package:bb_mobile/core/blockchain/domain/repositories/liquid_blockchain_repository.dart';
 import 'package:bb_mobile/core/errors/autoswap_errors.dart';
 import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/labels/data/label_repository.dart';
 import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
@@ -8,6 +9,7 @@ import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/liquid_wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
+import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:flutter/foundation.dart';
 
 class AutoSwapExecutionUsecase {
@@ -17,6 +19,8 @@ class AutoSwapExecutionUsecase {
   final LiquidWalletRepository _liquidWalletRepository;
   final LiquidBlockchainRepository _liquidBlockchainRepository;
   final SeedRepository _seedRepository;
+  final WalletTransactionRepository _walletTxRepository;
+  final LabelRepository _labelRepository;
 
   AutoSwapExecutionUsecase({
     required SwapRepository mainnetRepository,
@@ -25,12 +29,16 @@ class AutoSwapExecutionUsecase {
     required LiquidWalletRepository liquidWalletRepository,
     required LiquidBlockchainRepository liquidBlockchainRepository,
     required SeedRepository seedRepository,
+    required WalletTransactionRepository walletTxRepository,
+    required LabelRepository labelRepository,
   }) : _mainnetRepository = mainnetRepository,
        _testnetRepository = testnetRepository,
        _walletRepository = walletRepository,
        _liquidWalletRepository = liquidWalletRepository,
        _liquidBlockchainRepository = liquidBlockchainRepository,
-       _seedRepository = seedRepository;
+       _seedRepository = seedRepository,
+       _walletTxRepository = walletTxRepository,
+       _labelRepository = labelRepository;
 
   Future<Swap> execute({
     required bool isTestnet,
@@ -152,8 +160,22 @@ class AutoSwapExecutionUsecase {
       autoSwapSettings.copyWith(blockTillNextExecution: false),
       isTestnet: isTestnet,
     );
-
     debugPrint('Swap executed successfully!');
+
+    final walletTx = await _walletTxRepository.getWalletTransaction(
+      txid,
+      walletId: defaultLiquidWallet.id,
+      sync: true,
+    );
+
+    if (walletTx != null) {
+      await _labelRepository.store(
+        label: 'Auto-Swap',
+        entity: walletTx,
+        origin: defaultLiquidWallet.origin,
+        spendable: false,
+      );
+    }
     return swap;
   }
 }
