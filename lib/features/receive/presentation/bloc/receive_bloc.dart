@@ -467,28 +467,26 @@ class ReceiveBloc extends Bloc<ReceiveEvent, ReceiveState> {
                 ? int.tryParse(amount) ?? 0
                 : ConvertAmount.btcToSats(double.tryParse(amount) ?? 0);
       }
-      if ((state.type == ReceiveType.bitcoin ||
-              state.type == ReceiveType.liquid) &&
-          inputSat > ConversionConstants.maxSatsAmount.toInt()) {
+      if (inputSat > ConversionConstants.maxSatsAmount.toInt()) {
         amountException = AmountException.aboveBitcoinProtocolLimit(
           ConversionConstants.maxSatsAmount.toInt(),
         );
         amount = state.inputAmount;
       }
 
-      if (state.type == ReceiveType.lightning &&
-          state.swapLimits != null &&
-          amount.isNotEmpty) {
-        if (inputSat < state.swapLimits!.min) {
-          amountException = AmountException.belowSwapLimit(
-            state.swapLimits!.min,
-          );
-        } else if (inputSat > state.swapLimits!.max) {
-          amountException = AmountException.aboveSwapLimit(
-            state.swapLimits!.max,
-          );
-        }
-      }
+      // if (state.type == ReceiveType.lightning &&
+      //     state.swapLimits != null &&
+      //     amount.isNotEmpty) {
+      //   if (inputSat < state.swapLimits!.min) {
+      //     amountException = AmountException.belowSwapLimit(
+      //       state.swapLimits!.min,
+      //     );
+      //   } else if (inputSat > state.swapLimits!.max) {
+      //     amountException = AmountException.aboveSwapLimit(
+      //       state.swapLimits!.max,
+      //     );
+      //   }
+      // }
 
       emit(
         state.copyWith(inputAmount: amount, amountException: amountException),
