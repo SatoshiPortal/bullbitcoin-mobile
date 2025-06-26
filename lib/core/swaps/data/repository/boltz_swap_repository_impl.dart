@@ -47,12 +47,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String bitcoinAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final txid = await _boltz.claimBtcReverseSwap(
       swapId: swapId,
       claimAddress: bitcoinAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastBtcLnSwap(
@@ -93,12 +94,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String liquidAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.claimLBtcReverseSwap(
       swapId: swapId,
       claimAddress: liquidAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastLbtcLnSwap(
@@ -142,12 +144,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String bitcoinAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.refundBtcSubmarineSwap(
       swapId: swapId,
       refundAddress: bitcoinAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastBtcLnSwap(
@@ -191,12 +194,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String liquidAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.refundLbtcSubmarineSwap(
       swapId: swapId,
       refundAddress: liquidAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastLbtcLnSwap(
@@ -265,12 +269,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String bitcoinClaimAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.claimLbtcToBtcChainSwap(
       swapId: swapId,
       claimBitcoinAddress: bitcoinClaimAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastChainSwapClaim(
@@ -285,12 +290,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String liquidClaimAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.claimBtcToLbtcChainSwap(
       swapId: swapId,
       claimLiquidAddress: liquidClaimAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastChainSwapClaim(
@@ -305,12 +311,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String bitcoinRefundAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.refundBtcToLbtcChainSwap(
       swapId: swapId,
       refundBitcoinAddress: bitcoinRefundAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastChainSwapRefund(
@@ -325,12 +332,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String liquidRefundAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.refundLbtcToBtcChainSwap(
       swapId: swapId,
       refundLiquidAddress: liquidRefundAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastChainSwapRefund(

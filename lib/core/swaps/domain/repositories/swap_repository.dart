@@ -21,6 +21,7 @@ abstract class SwapRepository {
     required String swapId,
     required String liquidAddress,
     required int absoluteFees,
+    bool cooperate = true,
   });
 
   Future<LnReceiveSwap> createLightningToBitcoinSwap({
@@ -37,6 +38,7 @@ abstract class SwapRepository {
     required String swapId,
     required String bitcoinAddress,
     required int absoluteFees,
+    bool cooperate = true,
   });
   // SEND SWAPS
   Future<LnSendSwap> createBitcoinToLightningSwap({
@@ -51,6 +53,7 @@ abstract class SwapRepository {
     required String swapId,
     required String bitcoinAddress,
     required int absoluteFees,
+    bool cooperate = true,
   });
   Future<LnSendSwap> createLiquidToLightningSwap({
     required String mnemonic,
@@ -64,6 +67,7 @@ abstract class SwapRepository {
     required String swapId,
     required String liquidAddress,
     required int absoluteFees,
+    bool cooperate = true,
   });
   // CHAIN SWAPS
   Future<ChainSwap> createLiquidToBitcoinSwap({
@@ -92,24 +96,28 @@ abstract class SwapRepository {
     required String swapId,
     required String bitcoinClaimAddress,
     required int absoluteFees,
+    bool cooperate = true,
   });
 
   Future<String> claimBitcoinToLiquidSwap({
     required String swapId,
     required String liquidClaimAddress,
     required int absoluteFees,
+    bool cooperate = true,
   });
 
   Future<String> refundLiquidToBitcoinSwap({
     required String swapId,
     required String liquidRefundAddress,
     required int absoluteFees,
+    bool cooperate = true,
   });
 
   Future<String> refundBitcoinToLiquidSwap({
     required String swapId,
     required String bitcoinRefundAddress,
     required int absoluteFees,
+    bool cooperate = true,
   });
 
   Future<Invoice> decodeInvoice({required String invoice});

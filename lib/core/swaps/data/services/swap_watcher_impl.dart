@@ -125,11 +125,26 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       if (receiveAddress == null) {
         throw Exception('Receive address is null');
       }
-      final claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
-        swapId: swap.id,
-        absoluteFees: swap.fees!.claimFee!,
-        bitcoinAddress: swap.receiveAddress!,
-      );
+      String claimTxId;
+      try {
+        claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
+          swapId: swap.id,
+          absoluteFees: swap.fees!.claimFee!,
+          bitcoinAddress: swap.receiveAddress!,
+        );
+      } catch (e, st) {
+        log.severe(
+          '{"swapId": "${swap.id}", "state": "Coop claim failed. Attempting script path spend"}',
+          error: e,
+          trace: st,
+        );
+        claimTxId = await _boltzRepo.claimLightningToBitcoinSwap(
+          swapId: swap.id,
+          absoluteFees: swap.fees!.claimFee!,
+          bitcoinAddress: swap.receiveAddress!,
+          cooperate: false,
+        );
+      }
       final updatedSwap = swap.copyWith(
         receiveTxid: claimTxId,
         receiveAddress: swap.receiveAddress,
@@ -166,11 +181,26 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         swapType: swap.type,
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
-      final refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
-        swapId: swap.id,
-        bitcoinAddress: address.address,
-        absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
-      );
+      String refundTxid;
+      try {
+        refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
+          swapId: swap.id,
+          bitcoinAddress: address.address,
+          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+        );
+      } catch (e, st) {
+        log.severe(
+          '{"swapId": "${swap.id}", "state": "Coop refund failed. Attempting script path spend"}',
+          error: e,
+          trace: st,
+        );
+        refundTxid = await _boltzRepo.refundBitcoinToLightningSwap(
+          swapId: swap.id,
+          bitcoinAddress: address.address,
+          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          cooperate: false,
+        );
+      }
       final updatedSwap = swap.copyWith(
         refundTxid: refundTxid,
         refundAddress: address.address,
@@ -196,11 +226,26 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       if (receiveAddress == null) {
         throw Exception('Receive address is null');
       }
-      final claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
-        swapId: swap.id,
-        absoluteFees: swap.fees!.claimFee!,
-        liquidAddress: receiveAddress,
-      );
+      String claimTxId;
+      try {
+        claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
+          swapId: swap.id,
+          absoluteFees: swap.fees!.claimFee!,
+          liquidAddress: receiveAddress,
+        );
+      } catch (e, st) {
+        log.severe(
+          '{"swapId": "${swap.id}", "state": "Coop claim failed. Attempting script path spend"}',
+          error: e,
+          trace: st,
+        );
+        claimTxId = await _boltzRepo.claimLightningToLiquidSwap(
+          swapId: swap.id,
+          absoluteFees: swap.fees!.claimFee!,
+          liquidAddress: receiveAddress,
+          cooperate: false,
+        );
+      }
       final updatedSwap = swap.copyWith(
         receiveTxid: claimTxId,
         receiveAddress: receiveAddress,
@@ -238,11 +283,26 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         swapType: swap.type,
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
-      final refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
-        swapId: swap.id,
-        liquidAddress: address.address,
-        absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
-      );
+      String refundTxid;
+      try {
+        refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
+          swapId: swap.id,
+          liquidAddress: address.address,
+          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+        );
+      } catch (e, st) {
+        log.severe(
+          '{"swapId": "${swap.id}", "state": "Coop refund failed. Attempting script path spend"}',
+          error: e,
+          trace: st,
+        );
+        refundTxid = await _boltzRepo.refundLiquidToLightningSwap(
+          swapId: swap.id,
+          liquidAddress: address.address,
+          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          cooperate: false,
+        );
+      }
       final updatedSwap = swap.copyWith(
         refundTxid: refundTxid,
         refundAddress: address.address,
@@ -315,12 +375,26 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       } else {
         finalClaimAddress = swap.receiveAddress!;
       }
-
-      final claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
-        swapId: swap.id,
-        absoluteFees: swap.fees!.claimFee!,
-        bitcoinClaimAddress: finalClaimAddress,
-      );
+      String claimTxid;
+      try {
+        claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
+          swapId: swap.id,
+          absoluteFees: swap.fees!.claimFee!,
+          bitcoinClaimAddress: finalClaimAddress,
+        );
+      } catch (e, st) {
+        log.severe(
+          '{"swapId": "${swap.id}", "state": "Coop claim failed. Attempting script path spend"}',
+          error: e,
+          trace: st,
+        );
+        claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
+          swapId: swap.id,
+          absoluteFees: swap.fees!.claimFee!,
+          bitcoinClaimAddress: finalClaimAddress,
+          cooperate: false,
+        );
+      }
       final updatedSwap = swap.copyWith(
         receiveTxid: claimTxid,
         receiveAddress: finalClaimAddress,
@@ -330,7 +404,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       await _boltzRepo.updateSwap(swap: updatedSwap);
     } catch (e, st) {
       log.severe(
-        '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinClaim"}',
+        '{"swapId": "${swap.id}", "function": "_processChainLiquidToBitcoinClaim"',
         error: e,
         trace: st,
       );
@@ -361,11 +435,26 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         refundAddressForChainSwaps: refundAddress.address,
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
-      final refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
-        swapId: swap.id,
-        absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
-        bitcoinRefundAddress: refundAddress.address,
-      );
+      String refundTxid;
+      try {
+        refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
+          swapId: swap.id,
+          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          bitcoinRefundAddress: refundAddress.address,
+        );
+      } catch (e, st) {
+        log.severe(
+          '{"swapId": "${swap.id}", "state": "Coop refund failed. Attempting script path spend"}',
+          error: e,
+          trace: st,
+        );
+        refundTxid = await _boltzRepo.refundBitcoinToLiquidSwap(
+          swapId: swap.id,
+          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          bitcoinRefundAddress: refundAddress.address,
+          cooperate: false,
+        );
+      }
       final updatedSwap = swap.copyWith(
         refundTxid: refundTxid,
         refundAddress: refundAddress.address,
@@ -400,11 +489,26 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         finalClaimAddress = swap.receiveAddress!;
       }
 
-      final claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
-        swapId: swap.id,
-        absoluteFees: swap.fees!.claimFee!,
-        liquidClaimAddress: finalClaimAddress,
-      );
+      String claimTxid;
+      try {
+        claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
+          swapId: swap.id,
+          absoluteFees: swap.fees!.claimFee!,
+          liquidClaimAddress: finalClaimAddress,
+        );
+      } catch (e, st) {
+        log.severe(
+          '{"swapId": "${swap.id}", "state": "Coop claim failed. Attempting script path spend"}',
+          error: e,
+          trace: st,
+        );
+        claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
+          swapId: swap.id,
+          absoluteFees: swap.fees!.claimFee!,
+          liquidClaimAddress: finalClaimAddress,
+          cooperate: false,
+        );
+      }
       final updatedSwap = swap.copyWith(
         receiveTxid: claimTxid,
         receiveAddress: finalClaimAddress,
@@ -445,11 +549,27 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         refundAddressForChainSwaps: refundAddress.address,
       );
       final absoluteFeeOptions = networkFee.toAbsolute(txSize);
-      final refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
-        swapId: swap.id,
-        absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
-        liquidRefundAddress: refundAddress.address,
-      );
+      String refundTxid;
+      try {
+        refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
+          swapId: swap.id,
+          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          liquidRefundAddress: refundAddress.address,
+          cooperate: false,
+        );
+      } catch (e, st) {
+        log.severe(
+          '{"swapId": "${swap.id}", "state": "Coop refund failed. Attempting script path spend"}',
+          error: e,
+          trace: st,
+        );
+        refundTxid = await _boltzRepo.refundLiquidToBitcoinSwap(
+          swapId: swap.id,
+          absoluteFees: absoluteFeeOptions.fastest.value.toInt(),
+          liquidRefundAddress: refundAddress.address,
+          cooperate: false,
+        );
+      }
       final updatedSwap = swap.copyWith(
         refundTxid: refundTxid,
         refundAddress: refundAddress.address,
@@ -463,6 +583,7 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
         error: e,
         trace: st,
       );
+      rethrow;
     }
   }
 }
