@@ -460,7 +460,7 @@ class SendCubit extends Cubit<SendState> {
                 ? SwapType.liquidToBitcoin
                 : SwapType.bitcoinToLiquid;
         await loadSwapLimits();
-        toggleSwapLimitsForWallet();
+        setSelectedSwapLimits();
         if (state.swapAmountBelowLimit) {
           emit(
             state.copyWith(
@@ -573,7 +573,7 @@ class SendCubit extends Cubit<SendState> {
     }
   }
 
-  void toggleSwapLimitsForWallet() {
+  void setSelectedSwapLimits() {
     if (state.selectedWallet == null) return;
 
     final walletNetwork = state.selectedWallet!.network;
@@ -781,7 +781,7 @@ class SendCubit extends Cubit<SendState> {
       );
 
       if (state.selectedWallet!.id != previousSelectedWallet.id) {
-        toggleSwapLimitsForWallet();
+        setSelectedSwapLimits();
         await _selectedWalletSyncingSubscription?.cancel();
         _selectedWalletSyncingSubscription = _watchFinishedWalletSyncsUsecase
             .execute(walletId: wallet.id)
@@ -814,6 +814,10 @@ class SendCubit extends Cubit<SendState> {
     );
 
     if (state.sendType == SendType.lightning) {
+      if (state.selectedSwapLimits == null) {
+        await loadSwapLimits();
+        setSelectedSwapLimits();
+      }
       final swapType =
           state.selectedWallet!.isLiquid
               ? SwapType.liquidToLightning
