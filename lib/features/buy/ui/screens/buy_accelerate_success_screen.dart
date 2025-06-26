@@ -1,5 +1,4 @@
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -56,8 +55,8 @@ class BuyAccelerateSuccessScreen extends StatelessWidget {
                   label: 'View details',
                   onPressed: () {
                     context.pushNamed(
-                      TransactionsRoute.transactionDetails.name,
-                      extra: Transaction(order: buyOrder),
+                      TransactionsRoute.orderTransactionDetails.name,
+                      pathParameters: {'orderId': buyOrder.orderId},
                     );
                   },
                   bgColor: context.colour.secondary,

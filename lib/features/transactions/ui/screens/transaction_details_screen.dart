@@ -29,40 +29,38 @@ class TransactionDetailsScreen extends StatelessWidget {
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
     );
     final state = context.select((TransactionDetailsCubit bloc) => bloc.state);
-    final amountSat = tx.amountSat;
-    final isIncoming = tx.isIncoming;
-    final isOngoingSwap = tx.isOngoingSwap;
+    final amountSat = tx?.amountSat;
+    final isIncoming = tx?.isIncoming;
+    final isOngoingSwap = tx?.isOngoingSwap;
     final isOngoingSenderPayjoin =
         context.select(
           (TransactionDetailsCubit bloc) => bloc.state.isOngoingPayjoin,
         ) &&
-        tx.isOutgoing == true;
-    final isOrderType = tx.isOrder && tx.order != null;
-    final orderAmountAndCurrency = tx.order?.amountAndCurrencyToDisplay();
+        tx?.isOutgoing == true;
+    final isOrderType = tx?.isOrder == true;
+
+    final orderAmountAndCurrency = tx?.order?.amountAndCurrencyToDisplay();
     final showOrderInFiat =
         isOrderType &&
-        (tx.order is FiatPaymentOrder ||
+        (tx!.order is FiatPaymentOrder ||
             tx.order is BalanceAdjustmentOrder ||
             tx.order is WithdrawOrder);
 
-    bool isOrderIncoming = false;
+    bool isOrderIncoming = isIncoming ?? false;
     if (isOrderType) {
-      final orderType = tx.order?.orderType;
+      final orderType = tx!.order!.orderType;
       switch (orderType) {
         case OrderType.buy:
         case OrderType.funding:
         case OrderType.balanceAdjustment:
         case OrderType.refund:
+        case OrderType.reward:
           isOrderIncoming = true;
         case OrderType.sell:
         case OrderType.withdraw:
         case OrderType.fiatPayment:
           isOrderIncoming = false;
-        default:
-          isOrderIncoming = isIncoming;
       }
-    } else {
-      isOrderIncoming = isIncoming;
     }
 
     final swap = context.select(
@@ -78,7 +76,8 @@ class TransactionDetailsScreen extends StatelessWidget {
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(
-          title: isOngoingSwap ? 'Swap Progress' : 'Transaction details',
+          title:
+              isOngoingSwap == true ? 'Swap Progress' : 'Transaction details',
           actionIcon: Icons.close,
           onAction: () {
             if (context.canPop()) {
@@ -119,11 +118,11 @@ class TransactionDetailsScreen extends StatelessWidget {
                       ? swap.status == SwapStatus.failed
                           ? 'Swap Failed'
                           : 'Swap Expired'
-                      : isOrderType && tx.order != null
-                      ? tx.order!.orderType.value
+                      : isOrderType && tx?.order != null
+                      ? tx!.order!.orderType.value
                       : isOngoingSenderPayjoin
                       ? 'Payjoin requested'
-                      : isIncoming
+                      : isIncoming == true
                       ? 'Payment received'
                       : 'Payment sent',
                   style: context.font.headlineLarge?.copyWith(
@@ -137,9 +136,9 @@ class TransactionDetailsScreen extends StatelessWidget {
                             : null,
                   ),
                 ),
-                if (isOngoingSwap && swap != null) ...[
+                if (isOngoingSwap == true) ...[
                   const Gap(8),
-                  _SwapProgressIndicator(swap: swap),
+                  _SwapProgressIndicator(swap: swap!),
                 ],
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -149,7 +148,7 @@ class TransactionDetailsScreen extends StatelessWidget {
                               !showOrderInFiat &&
                               orderAmountAndCurrency != null
                           ? orderAmountAndCurrency.$1.toInt()
-                          : amountSat,
+                          : amountSat ?? 0,
                       showFiat: false,
                       style: context.font.displaySmall?.copyWith(
                         color: theme.colorScheme.outlineVariant,
@@ -186,13 +185,13 @@ class TransactionDetailsScreen extends StatelessWidget {
                   ),
                   const Gap(16),
                 ],
-                if (isOngoingSwap && swap != null) ...[
+                if (isOngoingSwap == true && swap != null) ...[
                   _SwapStatusDescription(swap: swap),
                   const Gap(16),
                 ],
                 if (isOrderType &&
-                    tx.isBuyOrder &&
-                    (tx.order! as BuyOrder).bitcoinAddress != null &&
+                    tx?.isBuyOrder == true &&
+                    (tx!.order! as BuyOrder).bitcoinAddress != null &&
                     tx.order!.sentAt == null) ...[
                   AccelerateTransactionListTile(
                     orderId: tx.order!.orderId,
