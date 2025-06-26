@@ -73,56 +73,66 @@ class SwapAmountPage extends StatelessWidget {
         flexibleSpace: TopBar(title: 'Swap', onBack: () => context.pop()),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              FadingLinearProgress(
-                height: 3,
-                trigger: amountConfirmedClicked,
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                foregroundColor: Theme.of(context).colorScheme.primary,
-              ),
-              if (!amountConfirmedClicked)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SwapFromToDropdown(type: _SwapDropdownType.from),
-                      Gap(16),
-                      SwapAvailableBalance(),
-                      Gap(16),
-                      SizedBox(
-                        height: 142 * 2,
-                        child: Stack(
-                          children: [
-                            Align(
-                              alignment: Alignment.topCenter,
-                              child: SwapCard(type: _SwapCardType.pay),
-                            ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: SwapCard(type: _SwapCardType.receive),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: SwapChangeButton(),
-                            ),
-                          ],
+        child: Column(
+          children: [
+            FadingLinearProgress(
+              height: 3,
+              trigger: amountConfirmedClicked,
+              backgroundColor: context.colour.surface,
+              foregroundColor: context.colour.primary,
+              duration: const Duration(milliseconds: 250),
+            ),
+            Expanded(
+              child:
+                  !amountConfirmedClicked
+                      ? const SingleChildScrollView(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 24,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              SwapFromToDropdown(type: _SwapDropdownType.from),
+                              Gap(16),
+                              SwapAvailableBalance(),
+                              Gap(16),
+                              SizedBox(
+                                height: 142 * 2,
+                                child: Stack(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.topCenter,
+                                      child: SwapCard(type: _SwapCardType.pay),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: SwapCard(
+                                        type: _SwapCardType.receive,
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: SwapChangeButton(),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Gap(16),
+                              SwapFeesInformation(),
+                              Gap(32),
+                              SwapFromToDropdown(type: _SwapDropdownType.to),
+                              Gap(32),
+                              SwapCreationError(),
+                              Gap(40),
+                            ],
+                          ),
                         ),
-                      ),
-                      Gap(16),
-                      SwapFeesInformation(),
-                      Gap(32),
-                      SwapFromToDropdown(type: _SwapDropdownType.to),
-                      Gap(32),
-                      SwapCreationError(),
-                      Gap(40),
-                    ],
-                  ),
-                ),
-            ],
-          ),
+                      )
+                      : const SizedBox.shrink(),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: SafeArea(
