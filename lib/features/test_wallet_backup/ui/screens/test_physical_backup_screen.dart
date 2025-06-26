@@ -104,18 +104,24 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
 
                 body: SafeArea(
                   top: false,
-                  child:
-                      state.status == TestWalletBackupStatus.loading
-                          ? FadingLinearProgress(
-                            height: 3,
-                            trigger:
-                                state.status == TestWalletBackupStatus.loading,
-                            backgroundColor: context.colour.surface,
-                            foregroundColor: context.colour.primary,
-                          )
-                          : !isVerifying
-                          ? const TestPhysicalBackupScreen()
-                          : const ShuffledMnemonicScreen(),
+                  child: Column(
+                    children: [
+                      FadingLinearProgress(
+                        height: 3,
+                        trigger: state.status == TestWalletBackupStatus.loading,
+                        backgroundColor: context.colour.surface,
+                        foregroundColor: context.colour.primary,
+                      ),
+                      Expanded(
+                        child:
+                            !isVerifying
+                                ? state.shuffledMnemonic.isNotEmpty
+                                    ? const TestPhysicalBackupScreen()
+                                    : const SizedBox.shrink()
+                                : const ShuffledMnemonicScreen(),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

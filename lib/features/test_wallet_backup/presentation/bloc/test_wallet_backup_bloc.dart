@@ -316,11 +316,8 @@ class TestWalletBackupBloc
       );
       emit(state.copyWith(wallets: wallets, selectedWallet: selected));
 
-      // Delay mnemonic loading to ensure smooth UI transition
-      // The 300ms delay allows the loading indicator to show long enough
-      // for users to perceive a smooth transition, even though the actual
-      // mnemonic loading takes ~1000ms
-      Future.delayed(const Duration(milliseconds: 300), () {
+      // Small delay to allow smooth UI transition before loading mnemonic
+      Future.delayed(const Duration(milliseconds: 500), () {
         add(LoadMnemonicForWallet(wallet: selected));
       });
     } catch (e) {
@@ -338,8 +335,6 @@ class TestWalletBackupBloc
     Emitter<TestWalletBackupState> emit,
   ) async {
     try {
-      emit(state.copyWith(status: TestWalletBackupStatus.loading));
-
       final wallet = event.wallet;
       final (
         mnemonicWords,
