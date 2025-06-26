@@ -63,3 +63,12 @@ class BalanceThresholdException implements Exception {
     return 'Balance threshold not exceeded: current $currentBalance sats, required $requiredBalance sats';
   }
 }
+
+class AutoSwapDisabledException implements Exception {
+  final String message;
+
+  AutoSwapDisabledException(this.message);
+
+  @override
+  String toString() => message;
+}

@@ -36,6 +36,14 @@ class AutoSwapExecutionUsecase {
     required bool isTestnet,
     required bool feeBlock,
   }) async {
+    final repository = isTestnet ? _testnetRepository : _mainnetRepository;
+    final autoSwapSettings = await repository.getAutoSwapParams(
+      isTestnet: isTestnet,
+    );
+    if (!autoSwapSettings.enabled) {
+      throw AutoSwapDisabledException('Auto swap is disabled');
+    }
+
     final wallets = await _walletRepository.getWallets();
 
     final defaultLiquidWallet =
@@ -51,10 +59,6 @@ class AutoSwapExecutionUsecase {
       'Found default wallets - Liquid: ${defaultLiquidWallet.id}, Bitcoin: ${defaultBitcoinWallet.id}',
     );
 
-    final repository = isTestnet ? _testnetRepository : _mainnetRepository;
-    final autoSwapSettings = await repository.getAutoSwapParams(
-      isTestnet: isTestnet,
-    );
     final walletBalance = defaultLiquidWallet.balanceSat.toInt();
 
     debugPrint('Checking balance threshold - Current: $walletBalance sats');
