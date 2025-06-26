@@ -1129,8 +1129,8 @@ class Shape8 extends i0.VersionedTable {
       columnsByName['enabled']! as i1.GeneratedColumn<bool>;
   i1.GeneratedColumn<int> get balanceThresholdSats =>
       columnsByName['balance_threshold_sats']! as i1.GeneratedColumn<int>;
-  i1.GeneratedColumn<int> get feeThresholdPercent =>
-      columnsByName['fee_threshold_percent']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<double> get feeThresholdPercent =>
+      columnsByName['fee_threshold_percent']! as i1.GeneratedColumn<double>;
   i1.GeneratedColumn<bool> get blockTillNextExecution =>
       columnsByName['block_till_next_execution']! as i1.GeneratedColumn<bool>;
   i1.GeneratedColumn<bool> get alwaysBlock =>
@@ -1155,12 +1155,12 @@ i1.GeneratedColumn<int> _column_88(String aliasedName) =>
       false,
       type: i1.DriftSqlType.int,
     );
-i1.GeneratedColumn<int> _column_89(String aliasedName) =>
-    i1.GeneratedColumn<int>(
+i1.GeneratedColumn<double> _column_89(String aliasedName) =>
+    i1.GeneratedColumn<double>(
       'fee_threshold_percent',
       aliasedName,
       false,
-      type: i1.DriftSqlType.int,
+      type: i1.DriftSqlType.double,
     );
 i1.GeneratedColumn<bool> _column_90(String aliasedName) =>
     i1.GeneratedColumn<bool>(

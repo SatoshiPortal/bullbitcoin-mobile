@@ -101,7 +101,8 @@ class AutoSwapSettingsCubit extends Cubit<AutoSwapSettingsState> {
       }
 
       // Validate fee threshold
-      final feeThreshold = int.tryParse(state.feeThresholdInput ?? '3') ?? 3;
+      final feeThreshold =
+          double.tryParse(state.feeThresholdInput ?? '3.0') ?? 3.0;
       if (feeThreshold > _maximumFeeThreshold) {
         final exception = MaximumFeeThresholdException(_maximumFeeThreshold);
         emit(state.copyWith(saving: false, feeThresholdError: exception));

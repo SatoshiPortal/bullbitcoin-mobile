@@ -9,7 +9,7 @@ sealed class AutoSwapModel with _$AutoSwapModel {
   const factory AutoSwapModel({
     @Default(false) bool enabled,
     @Default(1000000) int balanceThresholdSats,
-    @Default(3) int feeThresholdPercent,
+    @Default(3.0) double feeThresholdPercent,
     @Default(false) bool blockTillNextExecution,
     @Default(false) bool alwaysBlock,
   }) = _AutoSwapModel;

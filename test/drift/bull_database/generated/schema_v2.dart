@@ -4973,13 +4973,14 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  late final GeneratedColumn<int> feeThresholdPercent = GeneratedColumn<int>(
-    'fee_threshold_percent',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumn<double> feeThresholdPercent =
+      GeneratedColumn<double>(
+        'fee_threshold_percent',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: true,
+      );
   late final GeneratedColumn<bool> blockTillNextExecution =
       GeneratedColumn<bool>(
         'block_till_next_execution',
@@ -5040,7 +5041,7 @@ class AutoSwap extends Table with TableInfo<AutoSwap, AutoSwapData> {
           )!,
       feeThresholdPercent:
           attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
+            DriftSqlType.double,
             data['${effectivePrefix}fee_threshold_percent'],
           )!,
       blockTillNextExecution:
@@ -5066,7 +5067,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
   final int id;
   final bool enabled;
   final int balanceThresholdSats;
-  final int feeThresholdPercent;
+  final double feeThresholdPercent;
   final bool blockTillNextExecution;
   final bool alwaysBlock;
   const AutoSwapData({
@@ -5083,7 +5084,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     map['id'] = Variable<int>(id);
     map['enabled'] = Variable<bool>(enabled);
     map['balance_threshold_sats'] = Variable<int>(balanceThresholdSats);
-    map['fee_threshold_percent'] = Variable<int>(feeThresholdPercent);
+    map['fee_threshold_percent'] = Variable<double>(feeThresholdPercent);
     map['block_till_next_execution'] = Variable<bool>(blockTillNextExecution);
     map['always_block'] = Variable<bool>(alwaysBlock);
     return map;
@@ -5111,7 +5112,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
       balanceThresholdSats: serializer.fromJson<int>(
         json['balanceThresholdSats'],
       ),
-      feeThresholdPercent: serializer.fromJson<int>(
+      feeThresholdPercent: serializer.fromJson<double>(
         json['feeThresholdPercent'],
       ),
       blockTillNextExecution: serializer.fromJson<bool>(
@@ -5127,7 +5128,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
       'id': serializer.toJson<int>(id),
       'enabled': serializer.toJson<bool>(enabled),
       'balanceThresholdSats': serializer.toJson<int>(balanceThresholdSats),
-      'feeThresholdPercent': serializer.toJson<int>(feeThresholdPercent),
+      'feeThresholdPercent': serializer.toJson<double>(feeThresholdPercent),
       'blockTillNextExecution': serializer.toJson<bool>(blockTillNextExecution),
       'alwaysBlock': serializer.toJson<bool>(alwaysBlock),
     };
@@ -5137,7 +5138,7 @@ class AutoSwapData extends DataClass implements Insertable<AutoSwapData> {
     int? id,
     bool? enabled,
     int? balanceThresholdSats,
-    int? feeThresholdPercent,
+    double? feeThresholdPercent,
     bool? blockTillNextExecution,
     bool? alwaysBlock,
   }) => AutoSwapData(
@@ -5208,7 +5209,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
   final Value<int> id;
   final Value<bool> enabled;
   final Value<int> balanceThresholdSats;
-  final Value<int> feeThresholdPercent;
+  final Value<double> feeThresholdPercent;
   final Value<bool> blockTillNextExecution;
   final Value<bool> alwaysBlock;
   const AutoSwapCompanion({
@@ -5223,7 +5224,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     this.id = const Value.absent(),
     this.enabled = const Value.absent(),
     required int balanceThresholdSats,
-    required int feeThresholdPercent,
+    required double feeThresholdPercent,
     this.blockTillNextExecution = const Value.absent(),
     this.alwaysBlock = const Value.absent(),
   }) : balanceThresholdSats = Value(balanceThresholdSats),
@@ -5232,7 +5233,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     Expression<int>? id,
     Expression<bool>? enabled,
     Expression<int>? balanceThresholdSats,
-    Expression<int>? feeThresholdPercent,
+    Expression<double>? feeThresholdPercent,
     Expression<bool>? blockTillNextExecution,
     Expression<bool>? alwaysBlock,
   }) {
@@ -5253,7 +5254,7 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
     Value<int>? id,
     Value<bool>? enabled,
     Value<int>? balanceThresholdSats,
-    Value<int>? feeThresholdPercent,
+    Value<double>? feeThresholdPercent,
     Value<bool>? blockTillNextExecution,
     Value<bool>? alwaysBlock,
   }) {
@@ -5281,7 +5282,9 @@ class AutoSwapCompanion extends UpdateCompanion<AutoSwapData> {
       map['balance_threshold_sats'] = Variable<int>(balanceThresholdSats.value);
     }
     if (feeThresholdPercent.present) {
-      map['fee_threshold_percent'] = Variable<int>(feeThresholdPercent.value);
+      map['fee_threshold_percent'] = Variable<double>(
+        feeThresholdPercent.value,
+      );
     }
     if (blockTillNextExecution.present) {
       map['block_till_next_execution'] = Variable<bool>(

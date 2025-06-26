@@ -88,7 +88,7 @@ class AutoSwapExecutionUsecase {
       if (totalFeePercent > autoSwapSettings.feeThresholdPercent) {
         throw FeeBlockException(
           currentFeePercent: totalFeePercent,
-          thresholdPercent: autoSwapSettings.feeThresholdPercent.toDouble(),
+          thresholdPercent: autoSwapSettings.feeThresholdPercent,
         );
       }
     }

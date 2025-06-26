@@ -8,7 +8,7 @@ sealed class AutoSwap with _$AutoSwap {
   const factory AutoSwap({
     @Default(false) bool enabled,
     @Default(1000000) int balanceThresholdSats,
-    @Default(3) int feeThresholdPercent,
+    @Default(3.0) double feeThresholdPercent,
     @Default(false) bool blockTillNextExecution,
     @Default(false) bool alwaysBlock,
   }) = _AutoSwap;
@@ -23,7 +23,7 @@ sealed class AutoSwap with _$AutoSwap {
   }
 
   bool withinFeeThreshold(double currentFeeRatio) {
-    return feeThresholdPercent.toDouble() >= currentFeeRatio;
+    return feeThresholdPercent >= currentFeeRatio;
   }
 
   int swapAmount(int balanceSat) {
