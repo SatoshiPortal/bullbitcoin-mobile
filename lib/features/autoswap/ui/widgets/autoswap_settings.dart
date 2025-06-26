@@ -65,7 +65,7 @@ class _AutoSwapSettingsContentState extends State<AutoSwapSettingsContent> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _Header(),
-            if (loading) ...[const LinearProgressIndicator()],
+
             Flexible(
               child: Padding(
                 padding: EdgeInsets.only(

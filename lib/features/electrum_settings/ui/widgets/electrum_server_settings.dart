@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/electrum_settings/ui/widgets/privacy_notice.d
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/bottom_sheet/x.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
+import 'package:bb_mobile/ui/components/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/ui/components/segment/segmented_full.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -78,9 +79,13 @@ class _ElectrumServerSettingsContentState
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _Header(state: state),
-              if (state.status == ElectrumSettingsStatus.loading) ...[
-                const LinearProgressIndicator(),
-              ],
+              if (state.status == ElectrumSettingsStatus.loading)
+                FadingLinearProgress(
+                  height: 3,
+                  trigger: state.status == ElectrumSettingsStatus.loading,
+                  backgroundColor: context.colour.surface,
+                  foregroundColor: context.colour.primary,
+                ),
 
               Flexible(
                 child: Padding(

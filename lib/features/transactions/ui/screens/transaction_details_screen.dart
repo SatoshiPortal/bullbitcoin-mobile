@@ -11,6 +11,7 @@ import 'package:bb_mobile/features/transactions/ui/widgets/transaction_label_bot
 import 'package:bb_mobile/features/wallet/ui/wallet_router.dart';
 import 'package:bb_mobile/ui/components/badges/transaction_direction_badge.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
+import 'package:bb_mobile/ui/components/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -93,7 +94,12 @@ class TransactionDetailsScreen extends StatelessWidget {
       ),
       body:
           isLoadingTransactionDetails
-              ? const LinearProgressIndicator()
+              ? FadingLinearProgress(
+                height: 3,
+                trigger: isLoadingTransactionDetails,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                foregroundColor: Theme.of(context).colorScheme.primary,
+              )
               : SafeArea(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16),

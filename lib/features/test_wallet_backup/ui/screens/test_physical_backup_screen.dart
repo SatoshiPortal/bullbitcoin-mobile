@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_rout
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/bottom_sheet/x.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
+import 'package:bb_mobile/ui/components/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -105,7 +106,13 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
                   top: false,
                   child:
                       state.status == TestWalletBackupStatus.loading
-                          ? const LinearProgressIndicator()
+                          ? FadingLinearProgress(
+                            height: 3,
+                            trigger:
+                                state.status == TestWalletBackupStatus.loading,
+                            backgroundColor: context.colour.surface,
+                            foregroundColor: context.colour.primary,
+                          )
                           : !isVerifying
                           ? const TestPhysicalBackupScreen()
                           : const ShuffledMnemonicScreen(),

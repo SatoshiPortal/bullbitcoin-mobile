@@ -1,5 +1,6 @@
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/features/bitcoin_price/ui/currency_text.dart';
+import 'package:bb_mobile/ui/components/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -100,19 +101,16 @@ class WalletCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (isSyncing)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: SizedBox(
-                    height: 2,
-                    child: LinearProgressIndicator(
-                      backgroundColor: context.colour.surface,
-                      color: context.colour.onSecondaryFixed,
-                    ),
-                  ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: FadingLinearProgress(
+                  trigger: isSyncing,
+                  backgroundColor: context.colour.surface,
+                  foregroundColor: context.colour.onSecondaryFixed,
                 ),
+              ),
             ],
           ),
         ),
