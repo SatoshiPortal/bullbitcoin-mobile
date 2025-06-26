@@ -91,14 +91,12 @@ abstract class SwapRepository {
   Future<String> claimLiquidToBitcoinSwap({
     required String swapId,
     required String bitcoinClaimAddress,
-    required String liquidRefundAddress,
     required int absoluteFees,
   });
 
   Future<String> claimBitcoinToLiquidSwap({
     required String swapId,
     required String liquidClaimAddress,
-    required String bitcoinRefundAddress,
     required int absoluteFees,
   });
 

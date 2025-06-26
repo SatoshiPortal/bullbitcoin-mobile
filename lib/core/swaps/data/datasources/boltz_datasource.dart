@@ -623,7 +623,6 @@ class BoltzDatasource {
   Future<String> claimBtcToLbtcChainSwap({
     required String swapId,
     required String claimLiquidAddress,
-    required String refundBitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
@@ -631,7 +630,6 @@ class BoltzDatasource {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return await chainSwap.claim(
         outAddress: claimLiquidAddress,
-        refundAddress: refundBitcoinAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
       );
@@ -646,7 +644,6 @@ class BoltzDatasource {
   Future<String> claimLbtcToBtcChainSwap({
     required String swapId,
     required String claimBitcoinAddress,
-    required String refundLiquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
@@ -654,7 +651,6 @@ class BoltzDatasource {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return await chainSwap.claim(
         outAddress: claimBitcoinAddress,
-        refundAddress: refundLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
       );

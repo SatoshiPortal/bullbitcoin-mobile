@@ -315,17 +315,11 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       } else {
         finalClaimAddress = swap.receiveAddress!;
       }
-      final refundAddress = await _walletAddressRepository.getNewAddress(
-        walletId: swap.sendWalletId,
-      );
-      if (!refundAddress.isLiquid) {
-        throw Exception('Refund address is not a Liquid address');
-      }
+
       final claimTxid = await _boltzRepo.claimLiquidToBitcoinSwap(
         swapId: swap.id,
         absoluteFees: swap.fees!.claimFee!,
         bitcoinClaimAddress: finalClaimAddress,
-        liquidRefundAddress: refundAddress.address,
       );
       final updatedSwap = swap.copyWith(
         receiveTxid: claimTxid,
@@ -405,17 +399,11 @@ class SwapWatcherServiceImpl implements SwapWatcherService {
       } else {
         finalClaimAddress = swap.receiveAddress!;
       }
-      final refundAddress = await _walletAddressRepository.getNewAddress(
-        walletId: swap.sendWalletId,
-      );
-      if (!refundAddress.isBitcoin) {
-        throw Exception('Refund address is not a Bitcoin address');
-      }
+
       final claimTxid = await _boltzRepo.claimBitcoinToLiquidSwap(
         swapId: swap.id,
         absoluteFees: swap.fees!.claimFee!,
         liquidClaimAddress: finalClaimAddress,
-        bitcoinRefundAddress: refundAddress.address,
       );
       final updatedSwap = swap.copyWith(
         receiveTxid: claimTxid,

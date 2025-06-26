@@ -264,13 +264,11 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   Future<String> claimLiquidToBitcoinSwap({
     required String swapId,
     required String bitcoinClaimAddress,
-    required String liquidRefundAddress,
     required int absoluteFees,
   }) async {
     final signedTxHex = await _boltz.claimLbtcToBtcChainSwap(
       swapId: swapId,
       claimBitcoinAddress: bitcoinClaimAddress,
-      refundLiquidAddress: liquidRefundAddress,
       absoluteFees: absoluteFees,
       tryCooperate: true,
     );
@@ -286,13 +284,11 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   Future<String> claimBitcoinToLiquidSwap({
     required String swapId,
     required String liquidClaimAddress,
-    required String bitcoinRefundAddress,
     required int absoluteFees,
   }) async {
     final signedTxHex = await _boltz.claimBtcToLbtcChainSwap(
       swapId: swapId,
       claimLiquidAddress: liquidClaimAddress,
-      refundBitcoinAddress: bitcoinRefundAddress,
       absoluteFees: absoluteFees,
       tryCooperate: true,
     );
