@@ -118,21 +118,21 @@ abstract class TransactionsState with _$TransactionsState {
             // We also only want to show the incoming side of a chain swap,
             // unless in specific sending wallet overview or with the 'send'
             // filter selected.
-            final isOutgoingChainSwap =
+            final isLockupChainSwap =
                 tx.isChainSwap &&
                 tx.walletTransaction?.isOutgoing == true &&
                 tx.swap?.receiveTxId != null;
 
             // For swap-only chain swap transactions (no walletTransaction),
             // we need to determine direction based on the current wallet context
-            final isSwapOnlyOutgoingChainSwap =
+            final isSwapOnlyLockupChainSwap =
                 tx.isChainSwap &&
                 tx.walletTransaction == null &&
                 tx.swap?.receiveTxId != null &&
                 walletId == (tx.swap as ChainSwap?)?.sendWalletId;
 
             final shouldFilterOutgoingChainSwap =
-                (isOutgoingChainSwap || isSwapOnlyOutgoingChainSwap) &&
+                (isLockupChainSwap || isSwapOnlyLockupChainSwap) &&
                 walletId != tx.walletTransaction?.walletId &&
                 walletId != (tx.swap as ChainSwap?)?.sendWalletId;
 
