@@ -14,7 +14,6 @@ import 'package:bb_mobile/core/swaps/domain/usecases/watch_swap_usecase.dart';
 import 'package:bb_mobile/core/utils/note_validator.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet_transaction.dart';
-import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_transactions_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallet_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/watch_wallet_transaction_by_tx_id_usecase.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';

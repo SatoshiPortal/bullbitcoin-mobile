@@ -42,7 +42,7 @@ class TxListItem extends StatelessWidget {
         isOrderType
             ? tx.order!.orderType.value
             : isLnSwap
-            ? 'Lightning Swap'
+            ? 'Lightning'
             : isChainSwap
             ? tx.swap!.type == SwapType.liquidToBitcoin
                 ? 'L-BTC → BTC'
