@@ -13,13 +13,14 @@ class WalletCard extends StatelessWidget {
     required this.description,
     required this.wallet,
     required this.onTap,
+    this.isSyncing = false,
   });
 
   final Color tagColor;
   final String title;
   final String description;
   final Wallet wallet;
-
+  final bool isSyncing;
   final Function onTap;
 
   @override
@@ -37,59 +38,78 @@ class WalletCard extends StatelessWidget {
             border: Border(left: BorderSide(color: tagColor, width: 4)),
             borderRadius: BorderRadius.circular(2),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        BBText(
-                          title,
-                          style: context.font.bodyLarge,
-                          color: context.colour.secondary,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                BBText(
+                                  title,
+                                  style: context.font.bodyLarge,
+                                  color: context.colour.secondary,
+                                ),
+                                const Gap(4),
+                                CurrencyText(
+                                  wallet.balanceSat.toInt(),
+                                  showFiat: false,
+                                  style: context.font.bodyLarge,
+                                  color: context.colour.secondary,
+                                ),
+                              ],
+                            ),
+                            const Gap(4),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                BBText(
+                                  description,
+                                  style: context.font.labelMedium,
+                                  color: context.colour.outline,
+                                ),
+                                const Gap(4),
+                                CurrencyText(
+                                  wallet.balanceSat.toInt(),
+                                  showFiat: true,
+                                  style: context.font.labelMedium,
+                                  color: context.colour.outline,
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        const Gap(4),
-                        CurrencyText(
-                          wallet.balanceSat.toInt(),
-                          showFiat: false,
-                          style: context.font.bodyLarge,
-                          color: context.colour.secondary,
-                        ),
-                      ],
-                    ),
-                    const Gap(4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        BBText(
-                          description,
-                          style: context.font.labelMedium,
-                          color: context.colour.outline,
-                        ),
-                        const Gap(4),
-                        CurrencyText(
-                          wallet.balanceSat.toInt(),
-                          showFiat: true,
-                          style: context.font.labelMedium,
-                          color: context.colour.outline,
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const Gap(8),
+                      Icon(
+                        Icons.chevron_right,
+                        color: context.colour.outline,
+                        size: 24,
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const Gap(8),
-              Icon(
-                Icons.chevron_right,
-                color: context.colour.outline,
-                size: 24,
-              ),
+              if (isSyncing)
+                SizedBox(
+                  height: 2,
+                  child: LinearProgressIndicator(
+                    backgroundColor: context.colour.surface,
+                    color: context.colour.primary,
+                  ),
+                ),
             ],
           ),
         ),
