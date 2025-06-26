@@ -11,6 +11,7 @@ sealed class TransactionDetailsState with _$TransactionDetailsState {
     @Default(false) bool isBroadcastingPayjoinOriginalTx,
     @Default(false) bool retryingSwap,
     TransactionNotFoundError? notFoundError,
+    @Default(false) bool isLoadingInitialData,
     Object? err,
   }) = _TransactionDetailsState;
   const TransactionDetailsState._();

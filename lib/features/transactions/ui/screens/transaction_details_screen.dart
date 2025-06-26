@@ -25,6 +25,9 @@ class TransactionDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isLoadingTransactionDetails = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.isLoadingInitialData,
+    );
     final tx = context.select(
       (TransactionDetailsCubit bloc) => bloc.state.transaction,
     );
@@ -88,155 +91,164 @@ class TransactionDetailsScreen extends StatelessWidget {
           },
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Center(
-            child: Column(
-              children: [
-                TransactionDirectionBadge(
-                  isIncoming: isOrderIncoming,
-                  isSwap: isChainSwap,
-                ),
-                const Gap(24),
-                BBText(
-                  (swap != null && swap.swapCompleted && swap.isChainSwap)
-                      ? 'Swap Completed'
-                      : (swap != null &&
-                          swap.swapInProgress &&
-                          swap.isChainSwap)
-                      ? 'Swap In Progress'
-                      : (swap != null &&
-                          swap.swapInProgress &&
-                          (swap.isLnSendSwap || swap.isLnReceiveSwap))
-                      ? 'Payment In Progress'
-                      : swap != null && swap.swapRefunded
-                      ? 'Payment Refunded'
-                      : swap != null &&
-                          (swap.status == SwapStatus.failed ||
-                              swap.status == SwapStatus.expired)
-                      ? swap.status == SwapStatus.failed
-                          ? 'Swap Failed'
-                          : 'Swap Expired'
-                      : isOrderType && tx?.order != null
-                      ? tx!.order!.orderType.value
-                      : isOngoingSenderPayjoin
-                      ? 'Payjoin requested'
-                      : isIncoming == true
-                      ? 'Payment received'
-                      : 'Payment sent',
-                  style: context.font.headlineLarge?.copyWith(
-                    color:
-                        swap != null &&
-                                (swap.status == SwapStatus.failed ||
-                                    swap.status == SwapStatus.expired)
-                            ? swap.status == SwapStatus.failed
-                                ? context.colour.error
-                                : context.colour.error.withValues(alpha: 0.7)
-                            : null,
-                  ),
-                ),
-                if (isOngoingSwap == true) ...[
-                  const Gap(8),
-                  _SwapProgressIndicator(swap: swap!),
-                ],
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CurrencyText(
-                      isOrderType &&
-                              !showOrderInFiat &&
-                              orderAmountAndCurrency != null
-                          ? orderAmountAndCurrency.$1.toInt()
-                          : amountSat ?? 0,
-                      showFiat: false,
-                      style: context.font.displaySmall?.copyWith(
-                        color: theme.colorScheme.outlineVariant,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      fiatAmount:
-                          isOrderType &&
-                                  showOrderInFiat &&
-                                  orderAmountAndCurrency != null
-                              ? orderAmountAndCurrency.$1.toDouble()
-                              : null,
-                      fiatCurrency:
-                          isOrderType &&
-                                  showOrderInFiat &&
-                                  orderAmountAndCurrency != null
-                              ? orderAmountAndCurrency.$2
-                              : null,
+      body:
+          isLoadingTransactionDetails
+              ? const LinearProgressIndicator()
+              : SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        TransactionDirectionBadge(
+                          isIncoming: isOrderIncoming,
+                          isSwap: isChainSwap,
+                        ),
+                        const Gap(24),
+                        BBText(
+                          (swap != null &&
+                                  swap.swapCompleted &&
+                                  swap.isChainSwap)
+                              ? 'Swap Completed'
+                              : (swap != null &&
+                                  swap.swapInProgress &&
+                                  swap.isChainSwap)
+                              ? 'Swap In Progress'
+                              : (swap != null &&
+                                  swap.swapInProgress &&
+                                  (swap.isLnSendSwap || swap.isLnReceiveSwap))
+                              ? 'Payment In Progress'
+                              : swap != null && swap.swapRefunded
+                              ? 'Payment Refunded'
+                              : swap != null &&
+                                  (swap.status == SwapStatus.failed ||
+                                      swap.status == SwapStatus.expired)
+                              ? swap.status == SwapStatus.failed
+                                  ? 'Swap Failed'
+                                  : 'Swap Expired'
+                              : isOrderType && tx?.order != null
+                              ? tx!.order!.orderType.value
+                              : isOngoingSenderPayjoin
+                              ? 'Payjoin requested'
+                              : isIncoming == true
+                              ? 'Payment received'
+                              : 'Payment sent',
+                          style: context.font.headlineLarge?.copyWith(
+                            color:
+                                swap != null &&
+                                        (swap.status == SwapStatus.failed ||
+                                            swap.status == SwapStatus.expired)
+                                    ? swap.status == SwapStatus.failed
+                                        ? context.colour.error
+                                        : context.colour.error.withValues(
+                                          alpha: 0.7,
+                                        )
+                                    : null,
+                          ),
+                        ),
+                        if (isOngoingSwap == true) ...[
+                          const Gap(8),
+                          _SwapProgressIndicator(swap: swap!),
+                        ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CurrencyText(
+                              isOrderType &&
+                                      !showOrderInFiat &&
+                                      orderAmountAndCurrency != null
+                                  ? orderAmountAndCurrency.$1.toInt()
+                                  : amountSat ?? 0,
+                              showFiat: false,
+                              style: context.font.displaySmall?.copyWith(
+                                color: theme.colorScheme.outlineVariant,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              fiatAmount:
+                                  isOrderType &&
+                                          showOrderInFiat &&
+                                          orderAmountAndCurrency != null
+                                      ? orderAmountAndCurrency.$1.toDouble()
+                                      : null,
+                              fiatCurrency:
+                                  isOrderType &&
+                                          showOrderInFiat &&
+                                          orderAmountAndCurrency != null
+                                      ? orderAmountAndCurrency.$2
+                                      : null,
+                            ),
+                          ],
+                        ),
+                        const Gap(16),
+
+                        if (swap != null && (swap.requiresAction)) ...[
+                          BBButton.big(
+                            disabled: retryingSwap,
+                            label: 'Retry Swap $swapAction',
+                            onPressed: () async {
+                              await context
+                                  .read<TransactionDetailsCubit>()
+                                  .processSwap(swap);
+                            },
+                            bgColor: theme.colorScheme.primary,
+                            textColor: theme.colorScheme.onPrimary,
+                          ),
+                          const Gap(16),
+                        ],
+                        if (isOngoingSwap == true && swap != null) ...[
+                          _SwapStatusDescription(swap: swap),
+                          const Gap(16),
+                        ],
+                        if (isOrderType &&
+                            tx?.isBuyOrder == true &&
+                            (tx!.order! as BuyOrder).bitcoinAddress != null &&
+                            tx.order!.sentAt == null) ...[
+                          AccelerateTransactionListTile(
+                            orderId: tx.order!.orderId,
+                            onTap: () {
+                              context.pushNamed(
+                                BuyRoute.buyAccelerate.name,
+                                pathParameters: {'orderId': tx.order!.orderId},
+                              );
+                            },
+                          ),
+                          const Gap(16),
+                        ],
+                        const TransactionDetailsTable(),
+                        const Gap(32),
+                        if (isOngoingSenderPayjoin) ...[
+                          const SenderBroadcastPayjoinOriginalTxButton(),
+                          const Gap(24),
+                        ],
+
+                        BBButton.big(
+                          label: 'Add note',
+                          disabled:
+                              !(state.walletTransaction?.labels.length !=
+                                      null &&
+                                  state.walletTransaction!.labels.length < 10),
+                          onPressed: () async {
+                            if (state.walletTransaction?.labels.length !=
+                                    null &&
+                                state.walletTransaction!.labels.length < 10) {
+                              await showTransactionLabelBottomSheet(context);
+                            } else {
+                              log.warning(
+                                'A transaction can have up to 10 labels, current length: ${state.walletTransaction?.labels.length}',
+                              );
+                            }
+                          },
+                          bgColor: Colors.transparent,
+                          textColor: theme.colorScheme.secondary,
+                          outlined: true,
+                          borderColor: theme.colorScheme.secondary,
+                        ),
+                        const Gap(16),
+                      ],
                     ),
-                  ],
-                ),
-                const Gap(16),
-
-                if (swap != null && (swap.requiresAction)) ...[
-                  BBButton.big(
-                    disabled: retryingSwap,
-                    label: 'Retry Swap $swapAction',
-                    onPressed: () async {
-                      await context.read<TransactionDetailsCubit>().processSwap(
-                        swap,
-                      );
-                    },
-                    bgColor: theme.colorScheme.primary,
-                    textColor: theme.colorScheme.onPrimary,
                   ),
-                  const Gap(16),
-                ],
-                if (isOngoingSwap == true && swap != null) ...[
-                  _SwapStatusDescription(swap: swap),
-                  const Gap(16),
-                ],
-                if (isOrderType &&
-                    tx?.isBuyOrder == true &&
-                    (tx!.order! as BuyOrder).bitcoinAddress != null &&
-                    tx.order!.sentAt == null) ...[
-                  AccelerateTransactionListTile(
-                    orderId: tx.order!.orderId,
-                    onTap: () {
-                      context.pushNamed(
-                        BuyRoute.buyAccelerate.name,
-                        pathParameters: {'orderId': tx.order!.orderId},
-                      );
-                    },
-                  ),
-                  const Gap(16),
-                ],
-                const TransactionDetailsTable(),
-                const Gap(32),
-                if (isOngoingSenderPayjoin) ...[
-                  const SenderBroadcastPayjoinOriginalTxButton(),
-                  const Gap(24),
-                ],
-
-                BBButton.big(
-                  label: 'Add note',
-                  disabled:
-                      !(state.walletTransaction?.labels.length != null &&
-                          state.walletTransaction!.labels.length < 10),
-                  onPressed: () async {
-                    if (state.walletTransaction?.labels.length != null &&
-                        state.walletTransaction!.labels.length < 10) {
-                      await showTransactionLabelBottomSheet(context);
-                    } else {
-                      log.warning(
-                        'A transaction can have up to 10 labels, current length: ${state.walletTransaction?.labels.length}',
-                      );
-                    }
-                  },
-                  bgColor: Colors.transparent,
-                  textColor: theme.colorScheme.secondary,
-                  outlined: true,
-                  borderColor: theme.colorScheme.secondary,
                 ),
-                const Gap(16),
-              ],
-            ),
-          ),
-        ),
-      ),
+              ),
     );
   }
 }
