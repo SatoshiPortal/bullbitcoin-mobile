@@ -18,6 +18,7 @@ import 'package:bb_mobile/core/wallet/domain/entities/wallet_balances.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_repository.dart';
 import 'package:bb_mobile/core/wallet/wallet_metadata_service.dart';
 import 'package:rxdart/transformers.dart';
+import 'package:satoshifier/satoshifier.dart' show WatchOnly;
 
 class WalletRepositoryImpl implements WalletRepository {
   final WalletMetadataDatasource _walletMetadataDatasource;
@@ -115,6 +116,49 @@ class WalletRepositoryImpl implements WalletRepository {
   }
 
   @override
+  Future<Wallet> importWatchOnlySatoshifier({
+    required WatchOnly watchOnly,
+    String? masterFingerprint,
+    String? label,
+    bool sync = false,
+  }) async {
+    final metadata = await WalletMetadataService.fromWatchOnly(
+      watchOnly: watchOnly,
+      label: label,
+      masterFingerprint: masterFingerprint,
+    );
+
+    await _walletMetadataDatasource.store(metadata);
+
+    // Fetch the balance (in the future maybe other details of the wallet too)
+    final balance = await _getBalance(metadata, sync: sync);
+
+    final allWallets = await getWallets(onlyDefaults: true);
+    for (final wallet in allWallets) {
+      if (wallet.id == metadata.id) throw 'Wallet already exists';
+    }
+
+    // Return the created wallet entity
+    return Wallet(
+      origin: metadata.id,
+      label: metadata.label,
+      network: Network.fromEnvironment(
+        isTestnet: metadata.isTestnet,
+        isLiquid: metadata.isLiquid,
+      ),
+      isDefault: metadata.isDefault,
+      masterFingerprint: metadata.masterFingerprint,
+      xpubFingerprint: metadata.xpubFingerprint,
+      scriptType: metadata.scriptType,
+      xpub: metadata.xpub,
+      externalPublicDescriptor: metadata.externalPublicDescriptor,
+      internalPublicDescriptor: metadata.internalPublicDescriptor,
+      source: metadata.source,
+      balanceSat: balance.totalSat,
+    );
+  }
+
+  @override
   Future<Wallet> importWatchOnlyWallet({
     required String xpub,
     required Network network,
@@ -138,9 +182,7 @@ class WalletRepositoryImpl implements WalletRepository {
 
     final allWallets = await getWallets(onlyDefaults: true);
     for (final wallet in allWallets) {
-      if (wallet.id == metadata.id) {
-        throw Exception('Wallet already exists');
-      }
+      if (wallet.id == metadata.id) throw 'Wallet already exists';
     }
 
     // Return the created wallet entity
