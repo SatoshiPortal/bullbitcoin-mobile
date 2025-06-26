@@ -68,7 +68,7 @@ dependencies:
   gif: ^2.3.0
   custom_sliding_segmented_control: ^1.8.5
   shimmer: ^3.0.0
-  bip21_uri: ^2.0.0
+  bip21_uri: ^2.0.1
   googleapis: ^13.2.0
   google_sign_in: ^6.2.2
   extension_google_sign_in_as_googleapis_auth: ^2.0.12
