@@ -289,7 +289,8 @@ class SendCubit extends Cubit<SendState> {
 
       emit(state.copyWith(selectedWallet: wallet, sendType: sendType));
       await loadFees();
-
+      emit(state.copyWith(loadingBestWallet: false));
+      await Future.delayed(const Duration(seconds: 1));
       if (state.invoiceHasMrh) {
         if (!await hasBalance()) {
           emit(

@@ -18,6 +18,7 @@ import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/cards/info_card.dart';
 import 'package:bb_mobile/ui/components/dialpad/dial_pad.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
+import 'package:bb_mobile/ui/components/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/price_input/balance_row.dart';
 import 'package:bb_mobile/ui/components/price_input/price_input.dart';
@@ -74,50 +75,69 @@ class SendAddressScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
-            child: OpenTheCameraWidget(
-              onScannedPaymentRequest:
-                  (data) => context.read<SendCubit>().onScannedPaymentRequest(
-                    data.$1,
-                    data.$2,
-                  ),
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SingleChildScrollView(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: context.colour.onPrimary,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
-                  ),
+          Column(
+            children: [
+              FadingLinearProgress(
+                height: 3,
+                trigger: context.select(
+                  (SendCubit cubit) =>
+                      cubit.state.loadingBestWallet || cubit.state.creatingSwap,
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisSize: MainAxisSize.min,
+                backgroundColor: context.colour.onPrimary,
+                foregroundColor: context.colour.primary,
+              ),
+              Expanded(
+                child: Stack(
+                  fit: StackFit.expand,
                   children: [
-                    const Gap(32),
-                    BBText(
-                      "Recipient's address",
-                      style: context.font.bodyMedium,
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: OpenTheCameraWidget(
+                        onScannedPaymentRequest:
+                            (data) => context
+                                .read<SendCubit>()
+                                .onScannedPaymentRequest(data.$1, data.$2),
+                      ),
                     ),
-                    const Gap(16),
-                    const AddressField(),
-                    const Gap(16),
-                    const AddressErrorSection(),
-                    const Gap(16),
-                    const SendContinueWithAddressButton(),
-                    const Gap(42),
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      child: SingleChildScrollView(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: context.colour.onPrimary,
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              topRight: Radius.circular(12),
+                            ),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Gap(32),
+                              BBText(
+                                "Recipient's address",
+                                style: context.font.bodyMedium,
+                              ),
+                              const Gap(16),
+                              const AddressField(),
+                              const Gap(16),
+                              const AddressErrorSection(),
+                              const Gap(16),
+                              const SendContinueWithAddressButton(),
+                              const Gap(42),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
         ],
       ),
@@ -260,25 +280,6 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
   }
 
   @override
-  void didUpdateWidget(SendAmountScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    final state = context.read<SendCubit>().state;
-    final displayAmount = state.displayAmount;
-    if (_amountController.text != displayAmount) {
-      final currentPosition = _amountController.selection.baseOffset;
-      _amountController.value = TextEditingValue(
-        text: displayAmount,
-        selection: TextSelection.collapsed(
-          offset:
-              currentPosition <= displayAmount.length
-                  ? currentPosition
-                  : displayAmount.length,
-        ),
-      );
-    }
-  }
-
-  @override
   void dispose() {
     _amountController.dispose();
     _amountFocusNode.dispose();
@@ -292,234 +293,263 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(title: 'Send', onBack: () => context.pop()),
-      ),
-      body: BlocListener<SendCubit, SendState>(
-        listenWhen:
-            (previous, current) =>
-                previous.displayAmount != current.displayAmount &&
-                _amountController.text != current.displayAmount,
-        listener: (context, state) {
-          final displayAmount = state.displayAmount;
-          final currentCursor = _amountController.selection.baseOffset;
-          final safePosition = math.min(currentCursor, displayAmount.length);
-
-          _amountController.value = TextEditingValue(
-            text: displayAmount,
-            selection: TextSelection.collapsed(offset: safePosition),
-          );
-        },
-        child: BlocBuilder<SendCubit, SendState>(
-          builder: (context, state) {
-            final cubit = context.read<SendCubit>();
-            final balanceError = context.select(
-              (SendCubit cubit) => cubit.state.insufficientBalanceException,
-            );
-            final swapLimitsError = context.select(
-              (SendCubit cubit) => cubit.state.swapLimitsException,
-            );
-            final swapCreationError = context.select(
-              (SendCubit cubit) => cubit.state.swapCreationException,
-            );
-            final walletHasBalance = context.select(
-              (SendCubit cubit) => cubit.state.walletHasBalance,
-            );
-            final isLightning = context.select(
-              (SendCubit cubit) => cubit.state.isLightning,
-            );
-            final isChainSwap = context.select(
-              (SendCubit cubit) => cubit.state.chainSwap != null,
-            );
-            final inputCurrency = context.select(
-              (SendCubit cubit) => cubit.state.inputAmountCurrencyCode,
-            );
-
-            final availableInputCurrencies = context
-                .select<SendCubit, List<String>>(
-                  (bloc) => bloc.state.inputAmountCurrencyCodes,
-                );
-            final buildError = context.select(
-              (SendCubit cubit) => cubit.state.buildTransactionException,
-            );
-            final selectedWalletLabel = context.select(
-              (SendCubit cubit) => cubit.state.selectedWallet!.label,
-            );
-            return IgnorePointer(
-              ignoring: state.amountConfirmedClicked,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Gap(10),
-                      const NetworkDisplay(),
-                      const Gap(24),
-                      PriceInput(
-                        currency: inputCurrency,
-                        amountEquivalent: state.formattedAmountInputEquivalent,
-                        availableCurrencies: availableInputCurrencies,
-                        amountController: _amountController,
-                        onNoteChanged: cubit.noteChanged,
-                        onCurrencyChanged: (currencyCode) {
-                          context.read<SendCubit>().onCurrencyChanged(
-                            currencyCode,
-                          );
-                        },
-                        error:
-                            balanceError != null
-                                ? balanceError.toString()
-                                : !walletHasBalance
-                                ? 'Insufficient balance'
-                                : swapLimitsError != null
-                                ? swapLimitsError.toString()
-                                : swapCreationError?.toString(),
-                        focusNode: _amountFocusNode,
-                        readOnly: state.sendMax,
-                      ),
-                      const Gap(48),
-                      Divider(
-                        height: 1,
-                        color: context.colour.secondaryFixedDim,
-                      ),
-                      BalanceRow(
-                        balance: state.formattedWalletBalance(),
-                        currencyCode: '',
-                        showMax: !isLightning && !isChainSwap,
-                        onMaxPressed: cubit.onMaxPressed,
-                        walletLabel: selectedWalletLabel,
-                      ),
-                      DialPad(
-                        onNumberPressed: (number) async {
-                          if (!_amountFocusNode.hasFocus) {
-                            _amountFocusNode.requestFocus();
-
-                            final currentText = _amountController.text;
-                            _amountController
-                                .selection = TextSelection.collapsed(
-                              offset: currentText.length,
-                            );
-                          }
-
-                          final inputAmount =
-                              context.read<SendCubit>().state.amount;
-
-                          final selection = _amountController.selection;
-                          final cursorPosition = selection.baseOffset.clamp(
-                            0,
-                            inputAmount.length,
-                          );
-                          final endPosition = selection.extentOffset.clamp(
-                            0,
-                            inputAmount.length,
-                          );
-
-                          String newAmount;
-                          int newCursorPosition;
-
-                          if (cursorPosition == endPosition) {
-                            newAmount =
-                                inputAmount.substring(0, cursorPosition) +
-                                number +
-                                inputAmount.substring(cursorPosition);
-                            newCursorPosition = cursorPosition + 1;
-                          } else {
-                            final start = math.min(cursorPosition, endPosition);
-                            final end = math.max(cursorPosition, endPosition);
-                            newAmount =
-                                inputAmount.substring(0, start) +
-                                number +
-                                inputAmount.substring(end);
-                            newCursorPosition = start + 1;
-                          }
-
-                          final targetCursorPosition = newCursorPosition;
-
-                          await context.read<SendCubit>().amountChanged(
-                            newAmount,
-                          );
-
-                          _amountController.value = TextEditingValue(
-                            text: newAmount,
-                            selection: TextSelection.collapsed(
-                              offset: targetCursorPosition,
-                            ),
-                          );
-                        },
-                        onBackspacePressed: () async {
-                          if (!_amountFocusNode.hasFocus) {
-                            _amountFocusNode.requestFocus();
-
-                            final currentText = _amountController.text;
-                            _amountController
-                                .selection = TextSelection.collapsed(
-                              offset: currentText.length,
-                            );
-                          }
-
-                          final inputAmount =
-                              context.read<SendCubit>().state.amount;
-                          if (inputAmount.isEmpty) return;
-
-                          final selection = _amountController.selection;
-                          final cursorPosition = selection.baseOffset.clamp(
-                            0,
-                            inputAmount.length,
-                          );
-                          final endPosition = selection.extentOffset.clamp(
-                            0,
-                            inputAmount.length,
-                          );
-
-                          String newAmount;
-                          int newCursorPosition;
-
-                          if (cursorPosition == endPosition) {
-                            if (cursorPosition > 0) {
-                              newAmount =
-                                  inputAmount.substring(0, cursorPosition - 1) +
-                                  inputAmount.substring(cursorPosition);
-                              newCursorPosition = cursorPosition - 1;
-                            } else {
-                              return;
-                            }
-                          } else {
-                            final start = math.min(cursorPosition, endPosition);
-                            final end = math.max(cursorPosition, endPosition);
-                            newAmount =
-                                inputAmount.substring(0, start) +
-                                inputAmount.substring(end);
-                            newCursorPosition = start;
-                          }
-
-                          // Store the intended cursor position before updating state
-                          final targetCursorPosition = newCursorPosition;
-
-                          // Update state first
-                          await context.read<SendCubit>().amountChanged(
-                            newAmount,
-                          );
-
-                          // Then update controller with the stored cursor position
-                          _amountController.value = TextEditingValue(
-                            text: newAmount,
-                            selection: TextSelection.collapsed(
-                              offset: targetCursorPosition,
-                            ),
-                          );
-                        },
-                      ),
-                      const Gap(16),
-                      if (buildError != null) const _SendError(),
-                      const SendAmountConfirmButton(),
-                      const Gap(48),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
+        flexibleSpace: TopBar(
+          title: 'Send',
+          onBack: () => context.read<SendCubit>().backClicked(),
         ),
+      ),
+      body: Column(
+        children: [
+          FadingLinearProgress(
+            height: 3,
+            trigger: context.select(
+              (SendCubit cubit) => cubit.state.amountConfirmedClicked,
+            ),
+            backgroundColor: context.colour.onPrimary,
+            foregroundColor: context.colour.primary,
+          ),
+          Expanded(
+            child: BlocListener<SendCubit, SendState>(
+              listenWhen:
+                  (previous, current) =>
+                      previous.displayAmount != current.displayAmount &&
+                      _amountController.text != current.displayAmount,
+              listener: (context, state) {
+                final displayAmount = state.displayAmount;
+                final currentCursor = _amountController.selection.baseOffset;
+                final safePosition = math.min(
+                  currentCursor,
+                  displayAmount.length,
+                );
+
+                _amountController.value = TextEditingValue(
+                  text: displayAmount,
+                  selection: TextSelection.collapsed(offset: safePosition),
+                );
+              },
+              child: BlocBuilder<SendCubit, SendState>(
+                builder: (context, state) {
+                  final cubit = context.read<SendCubit>();
+                  final balanceError = context.select(
+                    (SendCubit cubit) =>
+                        cubit.state.insufficientBalanceException,
+                  );
+                  final swapLimitsError = context.select(
+                    (SendCubit cubit) => cubit.state.swapLimitsException,
+                  );
+                  final swapCreationError = context.select(
+                    (SendCubit cubit) => cubit.state.swapCreationException,
+                  );
+                  final walletHasBalance = context.select(
+                    (SendCubit cubit) => cubit.state.walletHasBalance,
+                  );
+                  final isLightning = context.select(
+                    (SendCubit cubit) => cubit.state.isLightning,
+                  );
+                  final isChainSwap = context.select(
+                    (SendCubit cubit) => cubit.state.chainSwap != null,
+                  );
+                  final inputCurrency = context.select(
+                    (SendCubit cubit) => cubit.state.inputAmountCurrencyCode,
+                  );
+
+                  final availableInputCurrencies = context
+                      .select<SendCubit, List<String>>(
+                        (bloc) => bloc.state.inputAmountCurrencyCodes,
+                      );
+                  final buildError = context.select(
+                    (SendCubit cubit) => cubit.state.buildTransactionException,
+                  );
+                  final selectedWalletLabel = context.select(
+                    (SendCubit cubit) => cubit.state.selectedWallet!.label,
+                  );
+                  return IgnorePointer(
+                    ignoring: state.amountConfirmedClicked,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Gap(10),
+                            const NetworkDisplay(),
+                            const Gap(24),
+                            PriceInput(
+                              currency: inputCurrency,
+                              amountEquivalent:
+                                  state.formattedAmountInputEquivalent,
+                              availableCurrencies: availableInputCurrencies,
+                              amountController: _amountController,
+                              onNoteChanged: cubit.noteChanged,
+                              onCurrencyChanged: (currencyCode) {
+                                context.read<SendCubit>().onCurrencyChanged(
+                                  currencyCode,
+                                );
+                              },
+                              error:
+                                  balanceError != null
+                                      ? balanceError.toString()
+                                      : !walletHasBalance
+                                      ? 'Insufficient balance'
+                                      : swapLimitsError != null
+                                      ? swapLimitsError.toString()
+                                      : swapCreationError?.toString(),
+                              focusNode: _amountFocusNode,
+                              readOnly: state.sendMax,
+                            ),
+                            const Gap(48),
+                            Divider(
+                              height: 1,
+                              color: context.colour.secondaryFixedDim,
+                            ),
+                            BalanceRow(
+                              balance: state.formattedWalletBalance(),
+                              currencyCode: '',
+                              showMax: !isLightning && !isChainSwap,
+                              onMaxPressed: cubit.onMaxPressed,
+                              walletLabel: selectedWalletLabel,
+                            ),
+                            DialPad(
+                              onNumberPressed: (number) async {
+                                if (!_amountFocusNode.hasFocus) {
+                                  _amountFocusNode.requestFocus();
+
+                                  final currentText = _amountController.text;
+                                  _amountController
+                                      .selection = TextSelection.collapsed(
+                                    offset: currentText.length,
+                                  );
+                                }
+
+                                final inputAmount =
+                                    context.read<SendCubit>().state.amount;
+
+                                final selection = _amountController.selection;
+                                final cursorPosition = selection.baseOffset
+                                    .clamp(0, inputAmount.length);
+                                final endPosition = selection.extentOffset
+                                    .clamp(0, inputAmount.length);
+
+                                String newAmount;
+                                int newCursorPosition;
+
+                                if (cursorPosition == endPosition) {
+                                  newAmount =
+                                      inputAmount.substring(0, cursorPosition) +
+                                      number +
+                                      inputAmount.substring(cursorPosition);
+                                  newCursorPosition = cursorPosition + 1;
+                                } else {
+                                  final start = math.min(
+                                    cursorPosition,
+                                    endPosition,
+                                  );
+                                  final end = math.max(
+                                    cursorPosition,
+                                    endPosition,
+                                  );
+                                  newAmount =
+                                      inputAmount.substring(0, start) +
+                                      number +
+                                      inputAmount.substring(end);
+                                  newCursorPosition = start + 1;
+                                }
+
+                                final targetCursorPosition = newCursorPosition;
+
+                                await context.read<SendCubit>().amountChanged(
+                                  newAmount,
+                                );
+
+                                _amountController.value = TextEditingValue(
+                                  text: newAmount,
+                                  selection: TextSelection.collapsed(
+                                    offset: targetCursorPosition,
+                                  ),
+                                );
+                              },
+                              onBackspacePressed: () async {
+                                if (!_amountFocusNode.hasFocus) {
+                                  _amountFocusNode.requestFocus();
+
+                                  final currentText = _amountController.text;
+                                  _amountController
+                                      .selection = TextSelection.collapsed(
+                                    offset: currentText.length,
+                                  );
+                                }
+
+                                final inputAmount =
+                                    context.read<SendCubit>().state.amount;
+                                if (inputAmount.isEmpty) return;
+
+                                final selection = _amountController.selection;
+                                final cursorPosition = selection.baseOffset
+                                    .clamp(0, inputAmount.length);
+                                final endPosition = selection.extentOffset
+                                    .clamp(0, inputAmount.length);
+
+                                String newAmount;
+                                int newCursorPosition;
+
+                                if (cursorPosition == endPosition) {
+                                  if (cursorPosition > 0) {
+                                    newAmount =
+                                        inputAmount.substring(
+                                          0,
+                                          cursorPosition - 1,
+                                        ) +
+                                        inputAmount.substring(cursorPosition);
+                                    newCursorPosition = cursorPosition - 1;
+                                  } else {
+                                    return;
+                                  }
+                                } else {
+                                  final start = math.min(
+                                    cursorPosition,
+                                    endPosition,
+                                  );
+                                  final end = math.max(
+                                    cursorPosition,
+                                    endPosition,
+                                  );
+                                  newAmount =
+                                      inputAmount.substring(0, start) +
+                                      inputAmount.substring(end);
+                                  newCursorPosition = start;
+                                }
+
+                                // Store the intended cursor position before updating state
+                                final targetCursorPosition = newCursorPosition;
+
+                                // Update state first
+                                await context.read<SendCubit>().amountChanged(
+                                  newAmount,
+                                );
+
+                                // Then update controller with the stored cursor position
+                                _amountController.value = TextEditingValue(
+                                  text: newAmount,
+                                  selection: TextSelection.collapsed(
+                                    offset: targetCursorPosition,
+                                  ),
+                                );
+                              },
+                            ),
+                            const Gap(16),
+                            if (buildError != null) const _SendError(),
+                            const SendAmountConfirmButton(),
+                            const Gap(48),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -596,29 +626,48 @@ class SendConfirmScreen extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
-        flexibleSpace: TopBar(title: 'Send', onBack: () => context.pop()),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Gap(24),
-              const SendConfirmTopArea(),
-              const Gap(40),
-              if (isLnSwap)
-                const _LnSwapSendInfoSection()
-              else if (isChainSwap)
-                const _ChainSwapSendInfoSection()
-              else
-                const _OnchainSendInfoSection(),
-              const Gap(40),
-              const _SendError(),
-              const _BottomButtons(),
-            ],
-          ),
+        flexibleSpace: TopBar(
+          title: 'Send',
+          onBack: () => context.read<SendCubit>().backClicked(),
         ),
+      ),
+      body: Column(
+        children: [
+          FadingLinearProgress(
+            height: 3,
+            trigger: context.select(
+              (SendCubit cubit) =>
+                  cubit.state.buildingTransaction ||
+                  cubit.state.signingTransaction,
+            ),
+            backgroundColor: context.colour.onPrimary,
+            foregroundColor: context.colour.primary,
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Gap(24),
+                    const SendConfirmTopArea(),
+                    const Gap(40),
+                    if (isLnSwap)
+                      const _LnSwapSendInfoSection()
+                    else if (isChainSwap)
+                      const _ChainSwapSendInfoSection()
+                    else
+                      const _OnchainSendInfoSection(),
+                    const Gap(40),
+                    const _SendError(),
+                    const _BottomButtons(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
