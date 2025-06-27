@@ -1260,10 +1260,18 @@ class SendCubit extends Cubit<SendState> {
       await createTransaction();
       await signTransaction();
       // if (!state.isLightning) {
-      emit(state.copyWith(step: SendStep.sending));
+      if (state.confirmTransactionException == null) {
+        emit(state.copyWith(step: SendStep.sending));
+      } else {
+        emit(state.copyWith(step: SendStep.confirm));
+        return;
+      }
       // }
       await broadcastTransaction();
-      emit(state.copyWith(step: SendStep.success));
+      if (state.confirmTransactionException != null) {
+        emit(state.copyWith(step: SendStep.confirm));
+        return;
+      }
       // Start watching the transaction to have the latest status
       _watchWalletTransactionByTxId(
         walletId: state.selectedWallet!.id,
@@ -1272,6 +1280,7 @@ class SendCubit extends Cubit<SendState> {
       // Sync the wallet so the transaction is picked up by the watcher
       await _getWalletUsecase.execute(state.selectedWallet!.id, sync: true);
     } catch (e) {
+      emit(state.copyWith(step: SendStep.confirm));
       log.severe(e.toString());
     }
   }
