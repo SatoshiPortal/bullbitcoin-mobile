@@ -175,6 +175,9 @@ class SwapCard extends StatelessWidget {
     final loadingWallets = context.select(
       (SwapCubit cubit) => cubit.state.loadingWallets,
     );
+    final amountConfirmedClicked = context.select(
+      (SwapCubit cubit) => cubit.state.amountConfirmedClicked,
+    );
     return Material(
       elevation: 2,
       child: Container(
@@ -195,12 +198,12 @@ class SwapCard extends StatelessWidget {
             ),
             // const Spacer(),
             IgnorePointer(
-              ignoring: type == _SwapCardType.receive,
+              ignoring: type == _SwapCardType.receive || amountConfirmedClicked,
               child: Row(
                 children: [
                   Expanded(
                     child: BBInputText(
-                      disabled: loadingWallets,
+                      disabled: loadingWallets || amountConfirmedClicked,
                       style: context.font.displaySmall,
                       value: amount,
                       hideBorder: true,
@@ -219,23 +222,27 @@ class SwapCard extends StatelessWidget {
                   ),
                   const Gap(8),
                   InkWell(
-                    onTap: () async {
-                      final c = await showModalBottomSheet<String?>(
-                        useRootNavigator: true,
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: context.colour.secondaryFixedDim,
-                        builder: (context) {
-                          return CurrencyBottomSheet(
-                            availableCurrencies: availableCurrencies,
-                            selectedValue: currency,
-                          );
-                        },
-                      );
-                      if (c == null) return;
-                      // ignore: unawaited_futures, use_build_context_synchronously
-                      context.read<SwapCubit>().currencyCodeChanged(c);
-                    },
+                    onTap:
+                        amountConfirmedClicked
+                            ? null
+                            : () async {
+                              final c = await showModalBottomSheet<String?>(
+                                useRootNavigator: true,
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor:
+                                    context.colour.secondaryFixedDim,
+                                builder: (context) {
+                                  return CurrencyBottomSheet(
+                                    availableCurrencies: availableCurrencies,
+                                    selectedValue: currency,
+                                  );
+                                },
+                              );
+                              if (c == null) return;
+                              // ignore: unawaited_futures, use_build_context_synchronously
+                              context.read<SwapCubit>().currencyCodeChanged(c);
+                            },
                     child: BBText(currency, style: context.font.displaySmall),
                   ),
                 ],
