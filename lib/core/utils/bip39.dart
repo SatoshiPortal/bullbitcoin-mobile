@@ -1,8 +1,5 @@
-import 'package:flutter/services.dart';
+import 'package:bip39_mnemonic/bip39_mnemonic.dart' as bip39;
 
 class Bip39WordList {
-  static Future<List<String>> all() async {
-    final i = await rootBundle.loadString('assets/bip39_english.txt');
-    return i.split('\n');
-  }
+  static List<String> english() => bip39.Language.english.list;
 }

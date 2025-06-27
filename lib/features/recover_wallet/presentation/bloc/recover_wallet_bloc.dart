@@ -16,9 +16,9 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     required CreateDefaultWalletsUsecase createDefaultWalletsUsecase,
     required FindMnemonicWordsUsecase findMnemonicWordsUsecase,
     bool useTestWallet = false,
-  })  : _findMnemonicWordsUsecase = findMnemonicWordsUsecase,
-        _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
-        super(const RecoverWalletState()) {
+  }) : _findMnemonicWordsUsecase = findMnemonicWordsUsecase,
+       _createDefaultWalletsUsecase = createDefaultWalletsUsecase,
+       super(const RecoverWalletState()) {
     on<RecoverWalletWordsCountChanged>(_onWordsCountChanged);
     on<RecoverWalletWordChanged>(_onWordChanged);
     on<RecoverWalletPassphraseChanged>(_onPassphraseChanged);
@@ -78,7 +78,7 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
       final validWords = Map<int, String>.from(state.validWords);
       final hintWords = Map<int, List<String>>.from(state.hintWords);
 
-      hintWords[wordIndex] = await _findMnemonicWordsUsecase.execute(word);
+      hintWords[wordIndex] = _findMnemonicWordsUsecase.execute(word);
 
       if (hintWords[wordIndex]?.contains(word) == true) {
         validWords[wordIndex] = word;
@@ -96,8 +96,9 @@ class RecoverWalletBloc extends Bloc<RecoverWalletEvent, RecoverWalletState> {
     } catch (e) {
       emit(
         state.copyWith(
-          recoverWalletStatus:
-              RecoverWalletStatus.failure('Failed to validate word: $e'),
+          recoverWalletStatus: RecoverWalletStatus.failure(
+            'Failed to validate word: $e',
+          ),
         ),
       );
     }

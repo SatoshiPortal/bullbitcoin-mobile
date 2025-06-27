@@ -50,9 +50,10 @@ class TransactionsCubit extends Cubit<TransactionsState> {
 
   Future<void> loadTxs() async {
     try {
-      if (state.isSyncing) {
-        return; // Already syncing, no need to fetch again
-      }
+      // if (state.isSyncing) {
+      //   return; // Already syncing, no need to fetch again
+      // }
+      // Load local txs from db to get latest state from tx details page updates
 
       emit(state.copyWith(isSyncing: true));
       final transactions = await _getTransactionsUsecase.execute(

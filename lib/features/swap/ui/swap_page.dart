@@ -7,6 +7,7 @@ import 'package:bb_mobile/generated/flutter_gen/assets.gen.dart';
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/inputs/text_input.dart';
+import 'package:bb_mobile/ui/components/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/ui/components/loading/loading_line_content.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/price_input/price_input.dart';
@@ -61,52 +62,68 @@ class SwapAmountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final amountConfirmedClicked = context.select(
+      (SwapCubit cubit) => cubit.state.amountConfirmedClicked,
+    );
+
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         automaticallyImplyLeading: false,
         flexibleSpace: TopBar(title: 'Swap', onBack: () => context.pop()),
       ),
-      body: const SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SwapFromToDropdown(type: _SwapDropdownType.from),
-                Gap(16),
-                SwapAvailableBalance(),
-                Gap(16),
-                SizedBox(
-                  height: 142 * 2,
-                  child: Stack(
+      body: SafeArea(
+        child: Column(
+          children: [
+            FadingLinearProgress(
+              height: 3,
+              trigger: amountConfirmedClicked,
+              backgroundColor: context.colour.onPrimary,
+              foregroundColor: context.colour.primary,
+            ),
+            const Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: SwapCard(type: _SwapCardType.pay),
+                      SwapFromToDropdown(type: _SwapDropdownType.from),
+                      Gap(16),
+                      SwapAvailableBalance(),
+                      Gap(16),
+                      SizedBox(
+                        height: 142 * 2,
+                        child: Stack(
+                          children: [
+                            Align(
+                              alignment: Alignment.topCenter,
+                              child: SwapCard(type: _SwapCardType.pay),
+                            ),
+                            Align(
+                              alignment: Alignment.bottomCenter,
+                              child: SwapCard(type: _SwapCardType.receive),
+                            ),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: SwapChangeButton(),
+                            ),
+                          ],
+                        ),
                       ),
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child: SwapCard(type: _SwapCardType.receive),
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: SwapChangeButton(),
-                      ),
+                      Gap(16),
+                      SwapFeesInformation(),
+                      Gap(32),
+                      SwapFromToDropdown(type: _SwapDropdownType.to),
+                      Gap(32),
+                      SwapCreationError(),
+                      Gap(40),
                     ],
                   ),
                 ),
-                Gap(16),
-                SwapFeesInformation(),
-                Gap(32),
-                SwapFromToDropdown(type: _SwapDropdownType.to),
-                Gap(32),
-                SwapCreationError(),
-                Gap(40),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -158,6 +175,9 @@ class SwapCard extends StatelessWidget {
     final loadingWallets = context.select(
       (SwapCubit cubit) => cubit.state.loadingWallets,
     );
+    final amountConfirmedClicked = context.select(
+      (SwapCubit cubit) => cubit.state.amountConfirmedClicked,
+    );
     return Material(
       elevation: 2,
       child: Container(
@@ -178,15 +198,19 @@ class SwapCard extends StatelessWidget {
             ),
             // const Spacer(),
             IgnorePointer(
-              ignoring: type == _SwapCardType.receive,
+              ignoring: type == _SwapCardType.receive || amountConfirmedClicked,
               child: Row(
                 children: [
                   Expanded(
                     child: BBInputText(
-                      disabled: loadingWallets,
+                      disabled: loadingWallets || amountConfirmedClicked,
                       style: context.font.displaySmall,
                       value: amount,
                       hideBorder: true,
+                      hint: '0',
+                      hintStyle: context.font.displaySmall?.copyWith(
+                        color: context.colour.outline,
+                      ),
                       onlyNumbers: true,
                       maxLines: 1,
                       onChanged: (v) {
@@ -198,23 +222,27 @@ class SwapCard extends StatelessWidget {
                   ),
                   const Gap(8),
                   InkWell(
-                    onTap: () async {
-                      final c = await showModalBottomSheet<String?>(
-                        useRootNavigator: true,
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: context.colour.secondaryFixedDim,
-                        builder: (context) {
-                          return CurrencyBottomSheet(
-                            availableCurrencies: availableCurrencies,
-                            selectedValue: currency,
-                          );
-                        },
-                      );
-                      if (c == null) return;
-                      // ignore: unawaited_futures, use_build_context_synchronously
-                      context.read<SwapCubit>().currencyCodeChanged(c);
-                    },
+                    onTap:
+                        amountConfirmedClicked
+                            ? null
+                            : () async {
+                              final c = await showModalBottomSheet<String?>(
+                                useRootNavigator: true,
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor:
+                                    context.colour.secondaryFixedDim,
+                                builder: (context) {
+                                  return CurrencyBottomSheet(
+                                    availableCurrencies: availableCurrencies,
+                                    selectedValue: currency,
+                                  );
+                                },
+                              );
+                              if (c == null) return;
+                              // ignore: unawaited_futures, use_build_context_synchronously
+                              context.read<SwapCubit>().currencyCodeChanged(c);
+                            },
                     child: BBText(currency, style: context.font.displaySmall),
                   ),
                 ],
@@ -272,7 +300,13 @@ class SwapAvailableBalance extends StatelessWidget {
   Widget build(BuildContext context) {
     // ignore: unused_local_variable
     final balance = context.select(
+      (SwapCubit cubit) => cubit.state.fromWalletBalance,
+    );
+    final formattedBalance = context.select(
       (SwapCubit cubit) => cubit.state.formattedFromWalletBalance(),
+    );
+    final loadingWallets = context.select(
+      (SwapCubit cubit) => cubit.state.loadingWallets,
     );
     // const maxSelected = false;
 
@@ -284,7 +318,7 @@ class SwapAvailableBalance extends StatelessWidget {
           color: context.colour.surface,
         ),
         const Gap(4),
-        BBText(balance, style: context.font.labelLarge),
+        BBText(formattedBalance, style: context.font.labelLarge),
         const Spacer(),
         BBButton.small(
           label: 'MAX',
@@ -294,7 +328,7 @@ class SwapAvailableBalance extends StatelessWidget {
           textColor: context.colour.secondary,
           textStyle: context.font.labelLarge,
           disabled: context.select(
-            (SwapCubit cubit) => cubit.state.loadingWallets,
+            (SwapCubit cubit) => loadingWallets || balance == 0,
           ),
           onPressed:
               () async => await context.read<SwapCubit>().sendMaxClicked(),
@@ -340,8 +374,17 @@ class SwapCreationError extends StatelessWidget {
     final insuffientBalance = context.select(
       (SwapCubit cubit) => cubit.state.insufficientBalanceException,
     );
-    if (swapCreationError == null && insuffientBalance == null) {
-      return const SizedBox.shrink();
+    final swapLimitsException = context.select(
+      (SwapCubit cubit) => cubit.state.swapLimitsException,
+    );
+
+    if (swapLimitsException != null) {
+      return BBText(
+        swapLimitsException.message,
+        style: context.font.labelLarge,
+        color: context.colour.error,
+        maxLines: 4,
+      );
     }
     if (swapCreationError != null) {
       return BBText(
@@ -368,19 +411,6 @@ class SwapFromToDropdown extends StatelessWidget {
   const SwapFromToDropdown({super.key, required this.type});
 
   final _SwapDropdownType type;
-  // make the DropFownMenuItem be a named tuple
-  List<DropdownMenuItem> _buildDropdownItems(
-    BuildContext context,
-    List<({String label, String id})> items,
-  ) {
-    return [
-      for (final ({String label, String id}) item in items)
-        DropdownMenuItem(
-          value: item.id,
-          child: BBText(item.label, style: context.font.headlineSmall),
-        ),
-    ];
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -390,7 +420,6 @@ class SwapFromToDropdown extends StatelessWidget {
               ? cubit.state.fromWalletDropdownItems
               : cubit.state.toWalletDropdownItems,
     );
-
     final id = context.select(
       (SwapCubit cubit) =>
           type == _SwapDropdownType.from
@@ -398,7 +427,15 @@ class SwapFromToDropdown extends StatelessWidget {
               : cubit.state.toWalletId,
     );
 
-    final dropdownItems = _buildDropdownItems(context, items);
+    final dropdownItems =
+        items
+            .map(
+              (item) => DropdownMenuItem(
+                value: item.id,
+                child: BBText(item.label, style: context.font.headlineSmall),
+              ),
+            )
+            .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -436,10 +473,10 @@ class SwapFromToDropdown extends StatelessWidget {
                             type == _SwapDropdownType.from
                                 ? context
                                     .read<SwapCubit>()
-                                    .updateSelectedFromWallet(value as String)
+                                    .updateSelectedFromWallet(value)
                                 : context
                                     .read<SwapCubit>()
-                                    .updateSelectedToWallet(value as String);
+                                    .updateSelectedToWallet(value);
                           }
                         },
                       ),
@@ -459,6 +496,7 @@ class SwapContinueWithAmountButton extends StatelessWidget {
     final disableContinueWithAmounts = context.select(
       (SwapCubit cubit) => cubit.state.disableContinueWithAmounts,
     );
+
     return BBButton.big(
       label: 'Continue',
       bgColor: context.colour.secondary,
@@ -579,7 +617,7 @@ class SwapProgressPage extends StatelessWidget {
                       image: AssetImage(Assets.images2.cubesLoading.path),
                     ),
                     const Gap(8),
-                    BBText('Sending...', style: context.font.headlineLarge),
+                    BBText('Swap Pending', style: context.font.headlineLarge),
                     const Gap(8),
                     BBText(
                       'The swap is in progress. Bitcoin transactions can take a while to confirm. You can return home and wait.',

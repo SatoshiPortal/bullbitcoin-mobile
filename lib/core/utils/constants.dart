@@ -4,12 +4,11 @@ class SettingsConstants {
   static const telegramSupportLink = 'https://t.me/+gUHV3ZcQ-_RmZDdh';
   static const githubSupportLink =
       'https://github.com/SatoshiPortal/bullbitcoin-mobile';
+  static const termsAndConditionsLink = 'https://bullbitcoin.com/privacy';
   // The following are constants that in the future potentially can become
   //  a configurable setting, in which case they should be added to the Settings
   //  table in sqlite and not be defined here as constants anymore.
   static const autoSyncIntervalSeconds = 5;
-  static const logFileName = 'bb_mobile.log';
-  static const sessionLogFileName = 'bull_session_log.tsv';
 }
 
 class ConversionConstants {
@@ -54,6 +53,7 @@ class ApiServiceConstants {
   // Bitcoin mempool
   static const bbMempoolUrlPath = 'mempool.bullbitcoin.com';
   static const publicMempoolUrlPath = 'mempool.space';
+  static const testnetMempoolUrlPath = 'mempool.space/testnet';
 
   // Liquid mempool
   static const bbLiquidMempoolUrlPath = 'liquid.bullbitcoin.com';
@@ -88,6 +88,8 @@ class ApiServiceConstants {
       dotenv.env['BB_API_TEST_URL'] ?? 'https://api05.bullbitcoin.com';
   static String bbAuthUrl = 'https://${dotenv.env['BB_AUTH_URL']}';
   static String bbAuthTestUrl = 'https://${dotenv.env['BB_AUTH_TEST_URL']}';
+  static String bbKycUrl = 'https://app.bullbitcoin.com/kyc';
+  static String bbKycTestUrl = 'https://bbx05.bullbitcoin.dev/kyc';
 }
 
 class LocatorInstanceNameConstants {
@@ -99,6 +101,9 @@ class LocatorInstanceNameConstants {
       'boltzTestnetSwapRepository';
   static const boltzSwapWatcherInstanceName = 'boltzSwapWatcher';
   static const boltzTestnetSwapWatcherInstanceName = 'boltzTestnetSwapWatcher';
+  static const boltzAutoSwapTimerInstanceName = 'boltzAutoSwapTimer';
+  static const boltzTestnetAutoSwapTimerInstanceName =
+      'boltzTestnetAutoSwapTimer';
   static const String labelsHiveStorageDatasourceInstanceName =
       'labelsHiveStorageDatasource';
   static const String labelByRefHiveStorageDatasourceInstanceName =

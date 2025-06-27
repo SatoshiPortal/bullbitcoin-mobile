@@ -3,22 +3,37 @@ import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:dio/dio.dart';
 
 class FeesDatasource {
-  final Dio _http;
-  final String _baseUrl;
+  final Dio _bitcoinMainnetMempoolHttpClient;
+  final Dio _bitcoinTestnetMempoolHttpClient;
 
   FeesDatasource({
-    Dio? http,
-    String? baseUrl,
-  })  : _http = http ?? Dio(),
-        _baseUrl = baseUrl ?? 'https://${ApiServiceConstants.bbMempoolUrlPath}';
+    String? bitcoinMainnetMempoolUrl,
+    String? bitcoinTestnetMempoolUrl,
+  }) : _bitcoinMainnetMempoolHttpClient = Dio(
+         BaseOptions(
+           baseUrl:
+               bitcoinMainnetMempoolUrl ??
+               'https://${ApiServiceConstants.bbMempoolUrlPath}',
+         ),
+       ),
+       _bitcoinTestnetMempoolHttpClient = Dio(
+         BaseOptions(
+           baseUrl:
+               bitcoinTestnetMempoolUrl ??
+               'https://${ApiServiceConstants.testnetMempoolUrlPath}',
+         ),
+       );
 
   Future<FeeOptions> getBitcoinNetworkFeeOptions({
     required bool isTestnet,
   }) async {
-    final testnet = isTestnet ? '/testnet' : '';
-    final url = '$_baseUrl$testnet/api/v1/fees/recommended';
+    final http =
+        isTestnet
+            ? _bitcoinTestnetMempoolHttpClient
+            : _bitcoinMainnetMempoolHttpClient;
+    const path = '/api/v1/fees/recommended';
 
-    final resp = await _http.get(url);
+    final resp = await http.get(path);
     if (resp.statusCode == null || resp.statusCode != 200) {
       throw 'Error fetching fees from Mempool API (status: ${resp.statusCode})';
     }

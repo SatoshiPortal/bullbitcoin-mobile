@@ -13,6 +13,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sliver_tools/sliver_tools.dart';
+import 'package:webview_cookie_manager/webview_cookie_manager.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class ExchangeHomeScreen extends StatelessWidget {
   const ExchangeHomeScreen({super.key});
@@ -121,8 +123,15 @@ class ExchangeHomeScreen extends StatelessWidget {
                       ),
                       IconButton(
                         visualDensity: VisualDensity.compact,
-                        onPressed: () {
-                          context.read<ExchangeCubit>().logout();
+                        onPressed: () async {
+                          final webviewController = WebViewController();
+                          final cookieManager = WebviewCookieManager();
+                          await Future.wait([
+                            webviewController.clearCache(),
+                            webviewController.clearLocalStorage(),
+                            cookieManager.clearCookies(),
+                            context.read<ExchangeCubit>().logout(),
+                          ]);
                         },
                         iconSize: 24,
                         color: context.colour.onPrimary,

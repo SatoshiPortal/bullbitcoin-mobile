@@ -7,7 +7,7 @@ build/
 
 # Directory created by dartdoc
 # If you don't generate documentation locally you can remove this line.
-doc/api/
+docs/api/
 
 # Avoid committing generated Javascript files:
 *.dart.js
@@ -61,7 +61,7 @@ migrate_working_dir/
 .idea/
 
 # Flutter/Dart/Pub related
-**/doc/api/
+**/docs/api/
 **/ios/Flutter/.last_build_id
 **/ios/Flutter/Release.xcconfig
 **/ios/Flutter/Debug.xcconfig

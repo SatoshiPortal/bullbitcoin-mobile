@@ -25,12 +25,16 @@ class TxListItem extends StatelessWidget {
             ? Icons.payments
             : isChainSwap
             ? Icons.swap_vert_rounded
+            : isLnSwap
+            ? Icons.flash_on
             : tx.isOutgoing
             ? Icons.arrow_upward
             : Icons.arrow_downward;
     final walletColor =
         isOrderType
             ? context.colour.secondaryFixedDim
+            : tx.isOngoingSwap
+            ? context.colour.secondaryContainer.withValues(alpha: 0.3)
             : tx.isBitcoin
             ? context.colour.onTertiary
             : context.colour.tertiary;
@@ -41,8 +45,8 @@ class TxListItem extends StatelessWidget {
             ? 'Lightning'
             : isChainSwap
             ? tx.swap!.type == SwapType.liquidToBitcoin
-                ? 'L-BTC -> BTC'
-                : 'BTC -> L-BTC'
+                ? 'L-BTC → BTC'
+                : 'BTC → L-BTC'
             : tx.isBitcoin
             ? 'Bitcoin'
             : 'Liquid';
@@ -70,7 +74,33 @@ class TxListItem extends StatelessWidget {
             tx.order is WithdrawOrder);
     return InkWell(
       onTap: () {
-        context.pushNamed(TransactionsRoute.transactionDetails.name, extra: tx);
+        if (tx.walletTransaction != null) {
+          context.pushNamed(
+            TransactionsRoute.transactionDetails.name,
+            pathParameters: {'txId': tx.walletTransaction!.txId},
+            queryParameters: {'walletId': tx.walletTransaction!.walletId},
+          );
+          return;
+        } else if (tx.swap != null) {
+          context.pushNamed(
+            TransactionsRoute.swapTransactionDetails.name,
+            pathParameters: {'swapId': tx.swap!.id},
+            queryParameters: {'walletId': tx.swap!.walletId},
+          );
+          return;
+        } else if (tx.payjoin != null) {
+          context.pushNamed(
+            TransactionsRoute.payjoinTransactionDetails.name,
+            pathParameters: {'payjoinId': tx.payjoin!.id},
+          );
+          return;
+        } else if (tx.order != null) {
+          context.pushNamed(
+            TransactionsRoute.orderTransactionDetails.name,
+            pathParameters: {'orderId': tx.order!.orderId},
+          );
+          return;
+        }
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 8.0),
@@ -85,11 +115,27 @@ class TxListItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
-                color: context.colour.onPrimary,
-                border: Border.all(color: context.colour.surface),
+                color:
+                    tx.isOngoingSwap
+                        ? context.colour.secondaryContainer.withValues(
+                          alpha: 0.3,
+                        )
+                        : context.colour.onPrimary,
+                border: Border.all(
+                  color:
+                      tx.isOngoingSwap
+                          ? context.colour.secondary.withValues(alpha: 0.5)
+                          : context.colour.surface,
+                ),
                 borderRadius: BorderRadius.circular(2.0),
               ),
-              child: Icon(icon, color: context.colour.secondary),
+              child: Icon(
+                icon,
+                color:
+                    tx.isOngoingSwap
+                        ? context.colour.secondary
+                        : context.colour.secondary,
+              ),
             ),
             const Gap(16.0),
             Expanded(
@@ -151,23 +197,43 @@ class TxListItem extends StatelessWidget {
                       BBText(
                         date,
                         style: context.font.labelSmall?.copyWith(
-                          color: context.colour.outline,
+                          color:
+                              tx.isOngoingSwap
+                                  ? context.colour.secondary
+                                  : context.colour.outline,
                         ),
                       ),
                       const Gap(4.0),
                       Icon(
-                        Icons.check_circle,
+                        tx.isOngoingSwap ? Icons.sync : Icons.check_circle,
                         size: 12.0,
-                        color: context.colour.inverseSurface,
+                        color:
+                            tx.isOngoingSwap
+                                ? context.colour.secondary
+                                : context.colour.inverseSurface,
                       ),
                     ],
                   )
                 else ...[
-                  BBText(
-                    'Pending',
-                    style: context.font.labelSmall?.copyWith(
-                      color: context.colour.outline,
-                    ),
+                  Row(
+                    children: [
+                      BBText(
+                        tx.isOngoingSwap ? 'In Progress' : 'Pending',
+                        style: context.font.labelSmall?.copyWith(
+                          color:
+                              tx.isOngoingSwap
+                                  ? context.colour.secondary
+                                  : context.colour.outline,
+                        ),
+                      ),
+                      const Gap(4.0),
+                      if (tx.isOngoingSwap)
+                        Icon(
+                          Icons.sync,
+                          size: 12.0,
+                          color: context.colour.secondary,
+                        ),
+                    ],
                   ),
                 ],
               ],

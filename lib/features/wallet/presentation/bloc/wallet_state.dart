@@ -2,19 +2,24 @@ part of 'wallet_bloc.dart';
 
 enum WalletStatus { initial, loading, success, failure }
 
-enum WalletTabs { wallets, exchange }
-
 @freezed
 sealed class WalletState with _$WalletState {
   const factory WalletState({
     @Default(WalletStatus.initial) WalletStatus status,
     @Default([]) List<Wallet> wallets,
+    NoWalletsFoundException? noWalletsFoundException,
     @Default([]) List<WalletWarning> warnings,
-    @Default(false) bool isSyncing,
+    @Default({}) Map<String, bool> syncStatus,
     @Default(null) Object? error,
     @Default(0) int unconfirmedIncomingBalance,
+    @Default(false) bool autoSwapFeeLimitExceeded,
+    @Default(null) double? currentSwapFeePercent,
+    @Default(null) AutoSwap? autoSwapSettings,
+    @Default(false) bool autoSwapExecuting,
   }) = _WalletState;
   const WalletState._();
+
+  bool get isSyncing => syncStatus.values.any((syncing) => syncing);
 
   Wallet? defaultLiquidWallet() =>
       wallets.isEmpty
@@ -29,8 +34,7 @@ sealed class WalletState with _$WalletState {
               .where((wallet) => wallet.isDefault && wallet.network.isBitcoin)
               .firstOrNull;
 
-  List<Wallet> nonDefaultWallets() =>
-      wallets.where((wallet) => !wallet.isDefault).toList();
+  bool get noWalletsFound => noWalletsFoundException != null;
 
   int totalBalance() => wallets.fold<int>(
     0,

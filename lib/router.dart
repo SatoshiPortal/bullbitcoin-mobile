@@ -77,7 +77,7 @@ class AppRouter {
       WalletRouter.walletDetailRoute,
       SettingsRouter.route,
       TransactionsRouter.transactionsRoute,
-      TransactionsRouter.transactionDetailsRoute,
+      ...TransactionsRouter.transactionDetailsRoutes,
       ReceiveRouter.route,
       SendRouter.route,
       SwapRouter.route,

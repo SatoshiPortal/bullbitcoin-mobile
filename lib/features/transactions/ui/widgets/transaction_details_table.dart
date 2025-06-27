@@ -29,10 +29,10 @@ class TransactionDetailsTable extends StatelessWidget {
     final tx = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.transaction,
     );
-    final walletTransaction = tx.walletTransaction;
-    final swap = tx.swap;
-    final payjoin = tx.payjoin;
-    final amountSat = tx.amountSat;
+    final walletTransaction = tx?.walletTransaction;
+    final swap = tx?.swap;
+    final payjoin = tx?.payjoin;
+    final amountSat = tx?.amountSat;
 
     final wallet = context.select(
       (TransactionDetailsCubit cubit) => cubit.state.wallet,
@@ -51,24 +51,24 @@ class TransactionDetailsTable extends StatelessWidget {
                     : 'Secure Bitcoin')
             : null;
 
-    final isOrderType = tx.isOrder && tx.order != null;
+    final isOrderType = tx?.isOrder == true && tx?.order != null;
 
     final swapFees =
         (swap?.fees?.claimFee ?? 0) +
         (swap?.fees?.boltzFee ?? 0) +
         (swap?.fees?.lockupFee ?? 0);
-    final swapCounterpartTransaction = context.select(
-      (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTransaction,
+    final swapCounterpartTxId = context.select(
+      (TransactionDetailsCubit cubit) => cubit.state.swapCounterpartTxId,
     );
     final abbreviatedSwapCounterpartTransactionTxId =
-        swapCounterpartTransaction?.txId != null
-            ? StringFormatting.truncateMiddle(swapCounterpartTransaction!.txId!)
+        swapCounterpartTxId != null
+            ? StringFormatting.truncateMiddle(swapCounterpartTxId)
             : '';
 
-    final labels = tx.labels ?? [];
+    final labels = tx?.labels ?? [];
 
-    final address = walletTransaction?.toAddress ?? '';
-    final txId = tx.txId ?? '';
+    final address = tx?.toAddress ?? '';
+    final txId = tx?.txId ?? '';
     final abbreviatedAddress = StringFormatting.truncateMiddle(address);
     final addressLabels = walletTransaction?.toAddressLabels?.join(', ') ?? '';
     final abbreviatedTxId = StringFormatting.truncateMiddle(txId);
@@ -105,14 +105,14 @@ class TransactionDetailsTable extends StatelessWidget {
         if (labels.isNotEmpty) TransactionNotesTableItem(notes: labels),
         if (walletLabel.isNotEmpty && !isOrderType)
           DetailsTableItem(
-            label: tx.isIncoming ? 'To wallet' : 'From wallet',
+            label: tx?.isIncoming == true ? 'To wallet' : 'From wallet',
             displayValue: walletLabel,
           ),
-        if (!tx.isSwap &&
+        if (tx?.isSwap == false &&
             counterpartWalletLabel != null &&
             counterpartWalletLabel.isNotEmpty)
           DetailsTableItem(
-            label: tx.isOutgoing ? 'To wallet' : 'From wallet',
+            label: tx?.isOutgoing == true ? 'To wallet' : 'From wallet',
             displayValue: counterpartWalletLabel,
           ),
         if (abbreviatedAddress.isNotEmpty)
@@ -127,12 +127,12 @@ class TransactionDetailsTable extends StatelessWidget {
         // to be able to use the CurrencyText widget instead of having to format the amount here.
         if (!isOrderType)
           DetailsTableItem(
-            label: tx.isIncoming ? 'Amount received' : 'Amount sent',
+            label: tx?.isIncoming == true ? 'Amount received' : 'Amount sent',
             displayValue:
                 bitcoinUnit == BitcoinUnit.sats
-                    ? FormatAmount.sats(amountSat).toUpperCase()
+                    ? FormatAmount.sats(amountSat ?? 0).toUpperCase()
                     : FormatAmount.btc(
-                      ConvertAmount.satsToBtc(amountSat),
+                      ConvertAmount.satsToBtc(amountSat ?? 0),
                     ).toUpperCase(),
           ),
         if (walletTransaction != null) ...[
@@ -141,12 +141,12 @@ class TransactionDetailsTable extends StatelessWidget {
               label: 'Amount received',
               displayValue:
                   bitcoinUnit == BitcoinUnit.sats
-                      ? FormatAmount.sats(amountSat).toUpperCase()
+                      ? FormatAmount.sats(amountSat ?? 0).toUpperCase()
                       : FormatAmount.btc(
-                        ConvertAmount.satsToBtc(amountSat),
+                        ConvertAmount.satsToBtc(amountSat ?? 0),
                       ).toUpperCase(),
             ),
-          if (tx.isOutgoing == true)
+          if (tx?.isOutgoing == true)
             DetailsTableItem(
               label: 'Transaction Fee',
               displayValue:
@@ -171,9 +171,9 @@ class TransactionDetailsTable extends StatelessWidget {
             ),
         ],
         // Order info
-        if (tx.isOrder && tx.order != null) ...[
+        if (tx?.isOrder == true && tx?.order != null) ...[
           ...(() {
-            final order = tx.order!;
+            final order = tx!.order!;
             if (order is BuyOrder) {
               return [
                 DetailsTableItem(
@@ -220,14 +220,6 @@ class TransactionDetailsTable extends StatelessWidget {
                   label: 'Payout Status',
                   displayValue: order.payoutStatus.value,
                 ),
-                if (order.bitcoinTransactionId != null)
-                  DetailsTableItem(
-                    label: 'Transaction ID',
-                    displayValue: StringFormatting.truncateMiddle(
-                      order.bitcoinTransactionId!,
-                    ),
-                    copyValue: order.bitcoinTransactionId,
-                  ),
                 DetailsTableItem(
                   label: 'Created at',
                   displayValue: DateFormat(
@@ -288,14 +280,6 @@ class TransactionDetailsTable extends StatelessWidget {
                   label: 'Payout Status',
                   displayValue: order.payoutStatus.value,
                 ),
-                if (order.bitcoinTransactionId != null)
-                  DetailsTableItem(
-                    label: 'Transaction ID',
-                    displayValue: StringFormatting.truncateMiddle(
-                      order.bitcoinTransactionId!,
-                    ),
-                    copyValue: order.bitcoinTransactionId,
-                  ),
                 DetailsTableItem(
                   label: 'Created at',
                   displayValue: DateFormat(
@@ -695,17 +679,17 @@ class TransactionDetailsTable extends StatelessWidget {
           if (counterpartWalletLabel != null &&
               counterpartWalletLabel.isNotEmpty)
             DetailsTableItem(
-              label: tx.isOutgoing ? 'To wallet' : 'From wallet',
+              label: tx?.isOutgoing == true ? 'To wallet' : 'From wallet',
               displayValue: counterpartWalletLabel,
             ),
-          if (swapCounterpartTransaction != null)
+          if (swapCounterpartTxId != null)
             DetailsTableItem(
               label:
-                  swapCounterpartTransaction.isBitcoin
-                      ? 'Bitcoin transaction ID'
-                      : 'Liquid transaction ID',
+                  counterpartWallet?.isLiquid == true
+                      ? 'Liquid transaction ID'
+                      : 'Bitcoin transaction ID',
               displayValue: abbreviatedSwapCounterpartTransactionTxId,
-              copyValue: swapCounterpartTransaction.txId,
+              copyValue: swapCounterpartTxId,
             ),
           if (swap.fees != null)
             DetailsTableItem(

@@ -623,7 +623,6 @@ class BoltzDatasource {
   Future<String> claimBtcToLbtcChainSwap({
     required String swapId,
     required String claimLiquidAddress,
-    required String refundBitcoinAddress,
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
@@ -631,7 +630,6 @@ class BoltzDatasource {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return await chainSwap.claim(
         outAddress: claimLiquidAddress,
-        refundAddress: refundBitcoinAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
       );
@@ -646,7 +644,6 @@ class BoltzDatasource {
   Future<String> claimLbtcToBtcChainSwap({
     required String swapId,
     required String claimBitcoinAddress,
-    required String refundLiquidAddress,
     required int absoluteFees,
     required bool tryCooperate,
   }) async {
@@ -654,7 +651,6 @@ class BoltzDatasource {
       final chainSwap = await _boltzStore.fetchChainSwap(swapId);
       return await chainSwap.claim(
         outAddress: claimBitcoinAddress,
-        refundAddress: refundLiquidAddress,
         minerFee: TxFee.absolute(BigInt.from(absoluteFees)),
         tryCooperate: tryCooperate,
       );
@@ -849,12 +845,21 @@ class BoltzDatasource {
             // Check if swap is already in terminal state
             final swapCompleted =
                 swapModel.status == swap_entity.SwapStatus.completed.name;
+            final isLnSwap =
+                swapModel is LnSendSwapModel || swapModel is LnReceiveSwapModel;
+            final chainSwapCompleted =
+                swapModel is ChainSwapModel &&
+                (swapModel.receiveTxid != null) &&
+                swapCompleted;
             final swapFailed =
                 swapModel.status == swap_entity.SwapStatus.failed.name;
             final swapExpired =
                 swapModel.status == swap_entity.SwapStatus.expired.name;
 
-            if (swapCompleted || swapFailed || swapExpired) {
+            if ((swapCompleted && isLnSwap) ||
+                swapFailed ||
+                swapExpired ||
+                chainSwapCompleted) {
               // Unsubscribe from the swap if it's in a terminal state
               _swapUpdatesController.add(swapModel);
               return unsubscribeToSwaps([swapId]);
@@ -866,8 +871,16 @@ class BoltzDatasource {
               case SwapStatus.invoiceSet:
               case SwapStatus.invoicePending:
               case SwapStatus.minerfeePaid:
-              case SwapStatus.invoicePaid:
                 // No action needed for these status updates
+                return;
+              case SwapStatus.invoicePaid:
+                if (swapModel is LnSendSwapModel) {
+                  updatedSwapModel = swapModel.copyWith(
+                    completionTime: DateTime.now().millisecondsSinceEpoch,
+                  );
+                }
+                // we want the completion time to be set when the invoice is paid
+                // the swap is still not completed as we need to coop close
                 return;
 
               case SwapStatus.txnClaimPending:
@@ -934,10 +947,18 @@ class BoltzDatasource {
 
               case SwapStatus.txnClaimed:
                 // Swap has been claimed successfully
-                updatedSwapModel = swapModel.copyWith(
-                  status: swap_entity.SwapStatus.completed.name,
-                  completionTime: DateTime.now().millisecondsSinceEpoch,
-                );
+                if (swapModel is ChainSwapModel) {
+                  if (swapModel.receiveTxid == null) {
+                    updatedSwapModel = swapModel.copyWith(
+                      status: swap_entity.SwapStatus.claimable.name,
+                    );
+                  }
+                }
+                if (swapModel is LnSendSwapModel) {
+                  updatedSwapModel = swapModel.copyWith(
+                    status: swap_entity.SwapStatus.completed.name,
+                  );
+                }
 
               case SwapStatus.txnRefunded:
                 // Check if this swap needs to be refunded (no refundTxid)

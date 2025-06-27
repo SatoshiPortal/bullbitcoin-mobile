@@ -1,5 +1,6 @@
 import 'package:bb_mobile/ui/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class BBInputText extends StatefulWidget {
   const BBInputText({
@@ -90,6 +91,9 @@ class _BBInputTextState extends State<BBInputText> {
 
   @override
   Widget build(BuildContext context) {
+    final shouldPreventNewlines =
+        widget.maxLines != null && widget.maxLines! <= 2;
+
     return TextField(
       key: widget.uiKey,
       controller: _controller,
@@ -102,6 +106,16 @@ class _BBInputTextState extends State<BBInputText> {
               : widget.onlyNumbers
               ? TextInputType.number
               : TextInputType.multiline,
+      textInputAction:
+          shouldPreventNewlines
+              ? TextInputAction.done
+              : TextInputAction.newline,
+      inputFormatters: [
+        if (shouldPreventNewlines)
+          FilteringTextInputFormatter.deny(RegExp(r'\n')),
+        if (widget.maxLength != null)
+          LengthLimitingTextInputFormatter(widget.maxLength),
+      ],
       obscureText: widget.obscure,
       obscuringCharacter: widget.onlyNumbers ? 'x' : '*',
       enableIMEPersonalizedLearning: false,

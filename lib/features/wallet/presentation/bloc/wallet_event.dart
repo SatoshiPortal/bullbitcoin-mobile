@@ -31,3 +31,15 @@ class StartTorInitialization extends WalletEvent {
 class CheckAllWarnings extends WalletEvent {
   const CheckAllWarnings();
 }
+
+class BlockAutoSwapUntilNextExecution extends WalletEvent {
+  const BlockAutoSwapUntilNextExecution();
+}
+
+class ExecuteAutoSwap extends WalletEvent {
+  const ExecuteAutoSwap();
+}
+
+class ExecuteAutoSwapFeeOverride extends WalletEvent {
+  const ExecuteAutoSwapFeeOverride();
+}

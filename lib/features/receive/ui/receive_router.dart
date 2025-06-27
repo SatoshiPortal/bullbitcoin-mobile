@@ -102,7 +102,8 @@ class ReceiveRouter {
                     // when the payment is received.
                     context.goNamed(
                       TransactionsRoute.transactionDetails.name,
-                      extra: bloc.state.transaction,
+                      pathParameters: {'txId': state.txId},
+                      queryParameters: {'walletId': state.wallet?.id},
                     );
                   }
                 },

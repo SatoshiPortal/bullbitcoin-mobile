@@ -115,7 +115,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
     final validWords = Map<int, String>.from(state.validWords);
     final hintWords = Map<int, List<String>>.from(state.hintWords);
 
-    hintWords[wordIndex] = await _findMnemonicWordsUsecase.execute(word);
+    hintWords[wordIndex] = _findMnemonicWordsUsecase.execute(word);
 
     if (hintWords[wordIndex]?.contains(word) == true) {
       validWords[event.index] = event.word;

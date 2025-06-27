@@ -29,7 +29,6 @@ abstract class SwapState with _$SwapState {
     String? toWalletId,
     @Default('') String fromAmount,
     @Default('') String toAmount,
-    int? confirmedFromAmountSat,
     @Default('') String receiverAddress,
     @Default('BTC') String selectedFromCurrencyCode,
     @Default('L-BTC') String selectedToCurrencyCode,
@@ -72,9 +71,7 @@ abstract class SwapState with _$SwapState {
     SwapLimitsException? swapLimitsException,
     BuildTransactionException? buildTransactionException,
     ConfirmTransactionException? confirmTransactionException,
-    // swapLimits
-    SwapLimits? swapLimits,
-    SwapFees? swapFees,
+
     @Default([]) List<String> fiatCurrencyCodes,
     @Default('CAD') String fiatCurrencyCode,
     @Default(0) double exchangeRate,
@@ -270,8 +267,14 @@ abstract class SwapState with _$SwapState {
     if (fromWalletNetwork == WalletNetwork.bitcoin &&
         toWalletNetwork == WalletNetwork.liquid) {
       amountSat = fromAmountSat - estimatedBtcToLbtcSwapFees;
+      if (amountSat < 0) {
+        amountSat = 0;
+      }
     } else {
       amountSat = fromAmountSat - estimatedLbtcToBtcSwapFees;
+      if (amountSat < 0) {
+        amountSat = 0;
+      }
     }
 
     if (isOutAmountFiat) {
@@ -329,20 +332,16 @@ abstract class SwapState with _$SwapState {
   }
 
   String get formattedConfirmedAmountBitcoin {
-    if (confirmedFromAmountSat == null) return '0 sats';
     if (bitcoinUnit == BitcoinUnit.sats) {
-      return FormatAmount.sats(confirmedFromAmountSat!);
+      return FormatAmount.sats(fromAmountSat);
     } else {
-      return FormatAmount.btc(ConvertAmount.satsToBtc(confirmedFromAmountSat!));
+      return FormatAmount.btc(ConvertAmount.satsToBtc(fromAmountSat));
     }
   }
 
   double get inputAmountBtc => ConvertAmount.satsToBtc(fromAmountSat);
 
-  double get confirmedAmountBtc =>
-      confirmedFromAmountSat != null
-          ? ConvertAmount.satsToBtc(confirmedFromAmountSat!)
-          : 0;
+  double get confirmedAmountBtc => ConvertAmount.satsToBtc(fromAmountSat);
 
   double get confirmedSwapAmountBtc =>
       swap != null ? ConvertAmount.satsToBtc(swap!.paymentAmount) : 0;
@@ -388,4 +387,26 @@ abstract class SwapState with _$SwapState {
 
   bool get disableSendSwapButton =>
       broadcastingTransaction || signingTransaction || buildingTransaction;
+
+  SwapLimits? get swapLimits {
+    if (fromWalletNetwork == WalletNetwork.bitcoin &&
+        toWalletNetwork == WalletNetwork.liquid) {
+      return btcToLbtcSwapLimitsAndFees?.$1;
+    } else if (fromWalletNetwork == WalletNetwork.liquid &&
+        toWalletNetwork == WalletNetwork.bitcoin) {
+      return lbtcToBtcSwapLimitsAndFees?.$1;
+    }
+    return null;
+  }
+
+  SwapFees? get swapFees {
+    if (fromWalletNetwork == WalletNetwork.bitcoin &&
+        toWalletNetwork == WalletNetwork.liquid) {
+      return btcToLbtcSwapLimitsAndFees?.$2;
+    } else if (fromWalletNetwork == WalletNetwork.liquid &&
+        toWalletNetwork == WalletNetwork.bitcoin) {
+      return lbtcToBtcSwapLimitsAndFees?.$2;
+    }
+    return null;
+  }
 }

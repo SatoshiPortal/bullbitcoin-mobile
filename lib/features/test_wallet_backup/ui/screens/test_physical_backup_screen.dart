@@ -7,6 +7,7 @@ import 'package:bb_mobile/features/test_wallet_backup/ui/test_wallet_backup_rout
 import 'package:bb_mobile/locator.dart';
 import 'package:bb_mobile/ui/components/bottom_sheet/x.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
+import 'package:bb_mobile/ui/components/loading/fading_linear_progress.dart';
 import 'package:bb_mobile/ui/components/navbar/top_bar.dart';
 import 'package:bb_mobile/ui/components/text/text.dart';
 import 'package:bb_mobile/ui/themes/app_theme.dart';
@@ -103,12 +104,32 @@ class _TestPhysicalBackupFlowState extends State<TestPhysicalBackupFlow>
 
                 body: SafeArea(
                   top: false,
-                  child:
-                      state.status == TestWalletBackupStatus.loading
-                          ? const LinearProgressIndicator()
-                          : !isVerifying
-                          ? const TestPhysicalBackupScreen()
-                          : const ShuffledMnemonicScreen(),
+                  child: Column(
+                    children: [
+                      FadingLinearProgress(
+                        height: 3,
+                        trigger: state.status == TestWalletBackupStatus.loading,
+                        backgroundColor: context.colour.surface,
+                        foregroundColor: context.colour.primary,
+                      ),
+                      Expanded(
+                        child: AnimatedOpacity(
+                          opacity:
+                              state.status == TestWalletBackupStatus.success
+                                  ? 1.0
+                                  : 0.0,
+                          duration: const Duration(milliseconds: 600),
+                          curve: Curves.easeInOut,
+                          child:
+                              !isVerifying
+                                  ? state.shuffledMnemonic.isNotEmpty
+                                      ? const TestPhysicalBackupScreen()
+                                      : const SizedBox.shrink()
+                                  : const ShuffledMnemonicScreen(),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

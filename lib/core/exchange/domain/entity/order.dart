@@ -532,4 +532,15 @@ sealed class Order with _$Order {
         return null;
     }
   }
+
+  String? get toAddress {
+    switch (this) {
+      case final BuyOrder buyOrder:
+        return buyOrder.bitcoinAddress ?? buyOrder.liquidAddress;
+      case final SellOrder sellOrder:
+        return sellOrder.bitcoinAddress ?? sellOrder.liquidAddress;
+      case _:
+        return null;
+    }
+  }
 }

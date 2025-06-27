@@ -12,9 +12,11 @@ sealed class BuyEvent with _$BuyEvent {
   const factory BuyEvent.bitcoinAddressInputChanged(String bitcoinAddress) =
       _BuyBitcoinAddressInputChanged;
   const factory BuyEvent.createOrder() = _BuyCreateOrder;
-  const factory BuyEvent.refreshOrder() = _BuyRefreshOrder;
+  const factory BuyEvent.refreshOrder({String? orderId}) = _BuyRefreshOrder;
   const factory BuyEvent.confirmOrder() = _BuyConfirmOrder;
-  const factory BuyEvent.reloadOrder(String orderId) = _BuyReloadOrder;
-  const factory BuyEvent.accelerateOrder() = _BuyAccelerateOrder;
+  const factory BuyEvent.accelerateTransactionPressed(String orderId) =
+      _BuyAccelerateTransactionPressed;
+  const factory BuyEvent.accelerateTransactionConfirmed() =
+      _BuyAccelerateTransactionConfirmed;
   const BuyEvent._();
 }

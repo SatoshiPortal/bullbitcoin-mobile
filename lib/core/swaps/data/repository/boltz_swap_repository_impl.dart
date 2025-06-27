@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bb_mobile/core/swaps/data/datasources/boltz_datasource.dart';
+import 'package:bb_mobile/core/swaps/data/models/auto_swap_model.dart';
 import 'package:bb_mobile/core/swaps/data/models/swap_model.dart';
+import 'package:bb_mobile/core/swaps/domain/entity/auto_swap.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 
@@ -45,12 +47,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String bitcoinAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final txid = await _boltz.claimBtcReverseSwap(
       swapId: swapId,
       claimAddress: bitcoinAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastBtcLnSwap(
@@ -91,12 +94,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String liquidAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.claimLBtcReverseSwap(
       swapId: swapId,
       claimAddress: liquidAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastLbtcLnSwap(
@@ -140,12 +144,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String bitcoinAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.refundBtcSubmarineSwap(
       swapId: swapId,
       refundAddress: bitcoinAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastBtcLnSwap(
@@ -189,12 +194,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String liquidAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.refundLbtcSubmarineSwap(
       swapId: swapId,
       refundAddress: liquidAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastLbtcLnSwap(
@@ -262,15 +268,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   Future<String> claimLiquidToBitcoinSwap({
     required String swapId,
     required String bitcoinClaimAddress,
-    required String liquidRefundAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.claimLbtcToBtcChainSwap(
       swapId: swapId,
       claimBitcoinAddress: bitcoinClaimAddress,
-      refundLiquidAddress: liquidRefundAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastChainSwapClaim(
@@ -284,15 +289,14 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
   Future<String> claimBitcoinToLiquidSwap({
     required String swapId,
     required String liquidClaimAddress,
-    required String bitcoinRefundAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.claimBtcToLbtcChainSwap(
       swapId: swapId,
       claimLiquidAddress: liquidClaimAddress,
-      refundBitcoinAddress: bitcoinRefundAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastChainSwapClaim(
@@ -307,12 +311,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String bitcoinRefundAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.refundBtcToLbtcChainSwap(
       swapId: swapId,
       refundBitcoinAddress: bitcoinRefundAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastChainSwapRefund(
@@ -327,12 +332,13 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     required String swapId,
     required String liquidRefundAddress,
     required int absoluteFees,
+    bool cooperate = true,
   }) async {
     final signedTxHex = await _boltz.refundLbtcToBtcChainSwap(
       swapId: swapId,
       refundLiquidAddress: liquidRefundAddress,
       absoluteFees: absoluteFees,
-      tryCooperate: true,
+      tryCooperate: cooperate,
     );
 
     return await _boltz.broadcastChainSwapRefund(
@@ -378,6 +384,7 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
         sendTxid: txid,
         status:
             swap.status == SwapStatus.pending ? SwapStatus.paid : swap.status,
+        // TODO: add server fees for chain swaps
         fees: swap.fees?.copyWith(
           lockupFee: (swap.fees?.lockupFee ?? 0) + absoluteFees,
         ),
@@ -508,9 +515,15 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
     return allSwaps
         .where(
           (swap) =>
-              swap.status != SwapStatus.completed &&
-              swap.status != SwapStatus.failed &&
-              swap.status != SwapStatus.expired,
+              (swap.status == SwapStatus.pending) ||
+              (swap.status == SwapStatus.paid) ||
+              (swap.status == SwapStatus.canCoop) ||
+              (swap.status == SwapStatus.claimable) ||
+              (swap.status == SwapStatus.refundable) ||
+              (swap is ChainSwap &&
+                  swap.status == SwapStatus.completed &&
+                  swap.receiveTxid == null &&
+                  swap.refundTxid == null),
         )
         .toList();
   }
@@ -700,6 +713,28 @@ class BoltzSwapRepositoryImpl implements SwapRepository {
           isCounterWalletExternal,
           lockupTxid,
         );
+    }
+  }
+
+  @override
+  Future<AutoSwap> getAutoSwapParams({required bool isTestnet}) async {
+    final model =
+        isTestnet
+            ? await _boltz.storage.getAutoSwapSettingsTestnet()
+            : await _boltz.storage.getAutoSwapSettings();
+    return model.toEntity();
+  }
+
+  @override
+  Future<void> updateAutoSwapParams(
+    AutoSwap params, {
+    required bool isTestnet,
+  }) async {
+    final model = AutoSwapModel.fromEntity(params);
+    if (isTestnet) {
+      await _boltz.storage.storeAutoSwapSettingsTestnet(model);
+    } else {
+      await _boltz.storage.storeAutoSwapSettings(model);
     }
   }
 }

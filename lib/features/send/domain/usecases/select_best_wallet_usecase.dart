@@ -91,7 +91,7 @@ class SelectBestWalletUsecase {
       if (w.isDefault &&
           w.network == network &&
           w.source == WalletSource.mnemonic &&
-          w.balanceSat.toInt() >= satoshis &&
+          w.balanceSat.toInt() > satoshis &&
           w.balanceSat.toInt() != 0) {
         return w;
       }
@@ -100,7 +100,7 @@ class SelectBestWalletUsecase {
     // Any wallet with enough funds from the same network
     for (final w in wallets) {
       if (w.network == network &&
-          w.balanceSat.toInt() >= satoshis &&
+          w.balanceSat.toInt() > satoshis &&
           w.source == WalletSource.mnemonic) {
         return w;
       }

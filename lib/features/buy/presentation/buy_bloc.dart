@@ -3,12 +3,14 @@ import 'package:bb_mobile/core/exchange/domain/entity/order.dart';
 import 'package:bb_mobile/core/exchange/domain/entity/user_summary.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/confirm_buy_order_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/refresh_buy_order_usecase.dart';
+import 'package:bb_mobile/core/fees/domain/fees_entity.dart';
+import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
-import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart' hide Network;
+import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,16 +27,19 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     required GetExchangeUserSummaryUsecase getExchangeUserSummaryUsecase,
     required ConfirmBuyOrderUsecase confirmBuyOrderUsecase,
     required CreateBuyOrderUsecase createBuyOrderUsecase,
-    required GetOrderUsecase getOrderUsecase,
     required RefreshBuyOrderUsecase refreshBuyOrderUsecase,
+    required GetNetworkFeesUsecase getNetworkFeesUsecase,
+    required ConvertSatsToCurrencyAmountUsecase
+    convertSatsToCurrencyAmountUsecase,
     required AccelerateBuyOrderUsecase accelerateBuyOrderUsecase,
   }) : _getWalletsUsecase = getWalletsUsecase,
        _getReceiveAddressUsecase = getReceiveAddressUsecase,
        _getExchangeUserSummaryUsecase = getExchangeUserSummaryUsecase,
        _confirmBuyOrderUsecase = confirmBuyOrderUsecase,
        _createBuyOrderUsecase = createBuyOrderUsecase,
-       _getOrderUsecase = getOrderUsecase,
        _refreshBuyOrderUsecase = refreshBuyOrderUsecase,
+       _getNetworkFeesUsecase = getNetworkFeesUsecase,
+       _convertSatsToCurrencyAmountUsecase = convertSatsToCurrencyAmountUsecase,
        _accelerateBuyOrderUsecase = accelerateBuyOrderUsecase,
        super(const BuyState()) {
     on<_BuyStarted>(_onStarted);
@@ -45,8 +50,8 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     on<_BuyCreateOrder>(_onCreateOrder);
     on<_BuyRefreshOrder>(_onRefreshOrder);
     on<_BuyConfirmOrder>(_onConfirmOrder);
-    on<_BuyReloadOrder>(_onReloadOrder);
-    on<_BuyAccelerateOrder>(_onAccelerateOrder);
+    on<_BuyAccelerateTransactionPressed>(_onAccelerateTransactionPressed);
+    on<_BuyAccelerateTransactionConfirmed>(_onAccelerateTransactionConfirmed);
   }
 
   final GetWalletsUsecase _getWalletsUsecase;
@@ -54,8 +59,9 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
   final GetExchangeUserSummaryUsecase _getExchangeUserSummaryUsecase;
   final ConfirmBuyOrderUsecase _confirmBuyOrderUsecase;
   final CreateBuyOrderUsecase _createBuyOrderUsecase;
-  final GetOrderUsecase _getOrderUsecase;
   final RefreshBuyOrderUsecase _refreshBuyOrderUsecase;
+  final GetNetworkFeesUsecase _getNetworkFeesUsecase;
+  final ConvertSatsToCurrencyAmountUsecase _convertSatsToCurrencyAmountUsecase;
   final AccelerateBuyOrderUsecase _accelerateBuyOrderUsecase;
 
   Future<void> _onStarted(_BuyStarted event, Emitter<BuyState> emit) async {
@@ -172,10 +178,7 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         toAddress: toAddress,
         orderAmount: FiatAmount(state.amount!),
         currency: state.currency,
-        network:
-            state.selectedWallet?.network.isLiquid == true
-                ? Network.liquid
-                : Network.bitcoin,
+        isLiquid: state.selectedWallet?.network.isLiquid == true,
         isOwner: true,
       );
 
@@ -196,13 +199,13 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     Emitter<BuyState> emit,
   ) async {
     try {
+      final orderId = event.orderId ?? state.buyOrder!.orderId;
+
       emit(
         state.copyWith(isRefreshingOrder: true, refreshBuyOrderException: null),
       );
 
-      final order = await _refreshBuyOrderUsecase.execute(
-        orderId: state.buyOrder!.orderId,
-      );
+      final order = await _refreshBuyOrderUsecase.execute(orderId: orderId);
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {
@@ -239,28 +242,53 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
     }
   }
 
-  Future<void> _onReloadOrder(
-    _BuyReloadOrder event,
+  Future<void> _onAccelerateTransactionPressed(
+    _BuyAccelerateTransactionPressed event,
     Emitter<BuyState> emit,
   ) async {
     try {
-      emit(state.copyWith(isReloadingOrder: true, getOrderException: null));
+      emit(
+        state.copyWith(
+          refreshBuyOrderException: null,
+          getNetworkFeesException: null,
+          convertSatsToCurrencyAmountException: null,
+        ),
+      );
 
-      final order = await _getOrderUsecase.execute(orderId: event.orderId);
+      final order = await _refreshBuyOrderUsecase.execute(
+        orderId: event.orderId,
+      );
 
-      emit(state.copyWith(buyOrder: order as BuyOrder));
+      final (networkFees, exchangeRate) =
+          await (
+            _getNetworkFeesUsecase.execute(isLiquid: false),
+            _convertSatsToCurrencyAmountUsecase.execute(
+              currencyCode: order.payinCurrency,
+            ),
+          ).wait;
+
+      emit(
+        state.copyWith(
+          buyOrder: order,
+          accelerationNetworkFees: networkFees,
+          exchangeRate: exchangeRate,
+        ),
+      );
     } catch (e) {
-      log.severe('[BuyBloc] _onReloadOrder error: $e');
-      if (e is GetOrderException) {
-        emit(state.copyWith(getOrderException: e));
+      log.severe('[BuyBloc] _onAccelerateTransactionPressed error: $e');
+
+      if (e is RefreshBuyOrderException) {
+        emit(state.copyWith(refreshBuyOrderException: e));
+      } else if (e is GetNetworkFeesException) {
+        emit(state.copyWith(getNetworkFeesException: e));
+      } else if (e is ConvertSatsToCurrencyAmountException) {
+        emit(state.copyWith(convertSatsToCurrencyAmountException: e));
       }
-    } finally {
-      emit(state.copyWith(isReloadingOrder: false));
     }
   }
 
-  Future<void> _onAccelerateOrder(
-    _BuyAccelerateOrder event,
+  Future<void> _onAccelerateTransactionConfirmed(
+    _BuyAccelerateTransactionConfirmed event,
     Emitter<BuyState> emit,
   ) async {
     try {
@@ -271,9 +299,15 @@ class BuyBloc extends Bloc<BuyEvent, BuyState> {
         ),
       );
 
-      final order = await _accelerateBuyOrderUsecase.execute(
+      BuyOrder order = await _accelerateBuyOrderUsecase.execute(
         state.buyOrder!.orderId,
       );
+
+      while (order.unbatchedBuyOnchainFees == null) {
+        // Wait for the unbatched fees to be available
+        await Future.delayed(const Duration(seconds: 3));
+        order = await _refreshBuyOrderUsecase.execute(orderId: order.orderId);
+      }
 
       emit(state.copyWith(buyOrder: order));
     } catch (e) {

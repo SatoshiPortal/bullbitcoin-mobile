@@ -1,5 +1,5 @@
+import 'package:bb_mobile/core/seed/data/repository/seed_repository.dart';
 import 'package:bb_mobile/core/seed/domain/entity/seed.dart';
-import 'package:bb_mobile/core/seed/domain/repositories/seed_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/entity/swap.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -42,18 +42,21 @@ class CreateChainSwapUsecase {
       if (bitcoinWallet.network.isTestnet != liquidWallet.network.isTestnet) {
         throw Exception('Both wallets must be on the same network');
       }
-      final isTestnet = bitcoinWallet.network.isTestnet;
 
+      final isTestnet = bitcoinWallet.network.isTestnet;
       final swapRepository =
           isTestnet ? _swapRepositoryTestnet : _swapRepository;
 
-      final bitcoinWalletMnemonic =
-          await _seedRepository.get(bitcoinWallet.masterFingerprint)
-              as MnemonicSeed;
+      final (bitcoinMnemonicSeed, liquidMnemonicSeed) =
+          await (
+            _seedRepository.get(bitcoinWallet.masterFingerprint),
+            _seedRepository.get(liquidWallet.masterFingerprint),
+          ).wait;
 
-      final liquidWalletMnemonic =
-          await _seedRepository.get(liquidWallet.masterFingerprint)
-              as MnemonicSeed;
+      if (bitcoinMnemonicSeed is! MnemonicSeed ||
+          liquidMnemonicSeed is! MnemonicSeed) {
+        throw Exception('One or both seeds are not mnemonic seeds');
+      }
 
       final btcElectrumUrl =
           bitcoinWallet.network.isTestnet
@@ -68,7 +71,7 @@ class CreateChainSwapUsecase {
       switch (type) {
         case SwapType.bitcoinToLiquid:
           return await swapRepository.createBitcoinToLiquidSwap(
-            sendWalletMnemonic: bitcoinWalletMnemonic.mnemonicWords.join(' '),
+            sendWalletMnemonic: bitcoinMnemonicSeed.mnemonicWords.join(' '),
             sendWalletId: bitcoinWalletId,
             receiveWalletId: liquidWalletId,
             amountSat: amountSat!,
@@ -76,10 +79,9 @@ class CreateChainSwapUsecase {
             btcElectrumUrl: btcElectrumUrl,
             lbtcElectrumUrl: lbtcElectrumUrl,
           );
-
         case SwapType.liquidToBitcoin:
           return await swapRepository.createLiquidToBitcoinSwap(
-            sendWalletMnemonic: liquidWalletMnemonic.mnemonicWords.join(' '),
+            sendWalletMnemonic: liquidMnemonicSeed.mnemonicWords.join(' '),
             sendWalletId: liquidWalletId,
             receiveWalletId: bitcoinWalletId,
             amountSat: amountSat!,

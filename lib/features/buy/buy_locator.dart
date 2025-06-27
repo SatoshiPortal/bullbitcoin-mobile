@@ -1,9 +1,10 @@
 import 'package:bb_mobile/core/exchange/domain/usecases/accelerate_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/confirm_buy_order_usecase.dart';
+import 'package:bb_mobile/core/exchange/domain/usecases/convert_sats_to_currency_amount_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/create_buy_order_usecase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/get_exchange_user_summary_usecase.dart';
-import 'package:bb_mobile/core/exchange/domain/usecases/get_order_usercase.dart';
 import 'package:bb_mobile/core/exchange/domain/usecases/refresh_buy_order_usecase.dart';
+import 'package:bb_mobile/core/fees/domain/get_network_fees_usecase.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_receive_address_use_case.dart';
 import 'package:bb_mobile/core/wallet/domain/usecases/get_wallets_usecase.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
@@ -22,8 +23,10 @@ class BuyLocator {
         getExchangeUserSummaryUsecase: locator<GetExchangeUserSummaryUsecase>(),
         confirmBuyOrderUsecase: locator<ConfirmBuyOrderUsecase>(),
         createBuyOrderUsecase: locator<CreateBuyOrderUsecase>(),
-        getOrderUsecase: locator<GetOrderUsecase>(),
+        getNetworkFeesUsecase: locator<GetNetworkFeesUsecase>(),
         refreshBuyOrderUsecase: locator<RefreshBuyOrderUsecase>(),
+        convertSatsToCurrencyAmountUsecase:
+            locator<ConvertSatsToCurrencyAmountUsecase>(),
         accelerateBuyOrderUsecase: locator<AccelerateBuyOrderUsecase>(),
       ),
     );

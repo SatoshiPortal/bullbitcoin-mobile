@@ -2,8 +2,9 @@ import 'package:bb_mobile/core/settings/domain/settings_entity.dart';
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
 import 'package:bb_mobile/core/utils/amount_formatting.dart';
 import 'package:bb_mobile/features/buy/presentation/buy_bloc.dart';
+import 'package:bb_mobile/features/buy/ui/buy_router.dart';
+import 'package:bb_mobile/features/buy/ui/widgets/accelerate_transaction_list_tile.dart';
 import 'package:bb_mobile/features/settings/presentation/bloc/settings_cubit.dart';
-import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
 import 'package:bb_mobile/features/transactions/ui/transactions_router.dart';
 import 'package:bb_mobile/ui/components/buttons/button.dart';
 import 'package:bb_mobile/ui/components/timers/countdown.dart';
@@ -85,12 +86,25 @@ class BuySuccessScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Only show transaction acceleration option for Bitcoin on-chain
+              // orders by checking if the order has a bitcoin address.
+              if (buyOrder.bitcoinAddress != null)
+                AccelerateTransactionListTile(
+                  orderId: buyOrder.orderId,
+                  onTap: () {
+                    context.pushReplacementNamed(
+                      BuyRoute.buyAccelerate.name,
+                      pathParameters: {'orderId': buyOrder.orderId},
+                    );
+                  },
+                ),
+              const Gap(16),
               BBButton.big(
                 label: 'View details',
                 onPressed: () {
                   context.pushNamed(
-                    TransactionsRoute.transactionDetails.name,
-                    extra: Transaction(order: buyOrder),
+                    TransactionsRoute.orderTransactionDetails.name,
+                    pathParameters: {'orderId': buyOrder.orderId},
                   );
                 },
                 bgColor: context.colour.secondary,

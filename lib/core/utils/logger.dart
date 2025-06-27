@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:bb_mobile/core/utils/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logging_colorful/logging_colorful.dart' as dep;
 import 'package:path_provider/path_provider.dart';
+export 'package:logging_colorful/logging_colorful.dart';
 
 // DONE: add a String encryptionKey to the Logger
 // Update the log method to take optional write to file param; if it is true it will write to a file. if an encryptionKey exists, it will encrypt the file.
@@ -13,26 +13,45 @@ late Logger log;
 class Logger {
   final session = <String>[];
   final String? encryptionKey;
-  final String path;
+  final Directory dir;
   final dep.LoggerColorful logger;
 
-  Logger._(this.encryptionKey, this.path, this.logger) {
+  static const _migrationFilename = 'bull_migration_logs.tsv';
+  static const _sessionFilename = 'bull_session_logs.tsv';
+  File get sessionLogs => File('${dir.path}/$_sessionFilename');
+  File get migrationLogs => File('${dir.path}/$_migrationFilename');
+
+  Logger._(this.encryptionKey, this.dir, this.logger) {
     dep.Logger.root.level = dep.Level.ALL;
 
     dep.Logger.root.onRecord.listen((record) {
-      final now = DateTime.now().toUtc().toIso8601String();
-      final content = [now, record.level.name, record.message];
+      final time = record.time.toIso8601String();
+      final content = [time, record.level.name, record.message];
 
-      if (record.stackTrace != null) content.add(record.stackTrace.toString());
+      String error = '';
+      String trace = '';
+      // standard record.error is a list containing [exception, stack trace, zone] default is [null, null, null]
+      if (record.error is List && (record.error! as List).isNotEmpty) {
+        final firstElement = (record.error! as List).first;
+        if (firstElement != null) error = firstElement.toString();
+        try {
+          final secondElement = (record.error! as List).elementAt(1);
+          if (secondElement != null) trace = secondElement.toString();
+        } catch (_) {}
+      }
+      content.add(error);
+      content.add(trace);
 
-      final tsvLine = _sanitizeContent(content).join('\t');
+      final sanitizedContent = _sanitizeContent(content);
+      final tsvLine = sanitizedContent.join('\t');
 
       // We don't want to keep the info session in memory, they should be written to file
       if (record.level != dep.Level.INFO) session.add(tsvLine);
 
       if (kDebugMode) {
-        content.removeAt(0); // remove the time
-        debugPrint(content.join('\t'));
+        // remove timestamp and errors
+        final debug = content.sublist(1, 3);
+        debugPrint(debug.join('\t'));
       }
     });
   }
@@ -45,11 +64,9 @@ class Logger {
     // android dir: "/data/user/0/com.bullbitcoin.mobile/app_flutter"
     // ios dir: "/var/mobile/Library/Application Support/com.bullbitcoin.mobile/app_flutter"
 
-    final path = '${dir.path}/${SettingsConstants.sessionLogFileName}';
-
     return Logger._(
       encryptionKey,
-      path,
+      dir,
       // iOS emulator doesn't support colors –> https://github.com/flutter/flutter/issues/20663
       // We don't want colors in release mode either
       dep.LoggerColorful(name, disabledColors: Platform.isIOS || kReleaseMode),
@@ -57,11 +74,7 @@ class Logger {
   }
 
   Future<void> dumpSessionToFile() async {
-    await File(path).writeAsString(session.join('\n'));
-  }
-
-  Future<void> appendToFile(String message) async {
-    await File(path).writeAsString('$message\n', mode: FileMode.append);
+    await sessionLogs.writeAsString(session.join('\n'));
   }
 
   List<String> _sanitizeContent(List<String> content) {
@@ -104,5 +117,27 @@ class Logger {
 
   void shout(Object? message, {Object? error, StackTrace? trace}) {
     logger.shout(message, error, trace);
+  }
+
+  Future<void> migration({
+    required dep.Level level,
+    required String message,
+    Map<String, dynamic>? context,
+    Object? exception,
+    StackTrace? stackTrace,
+  }) async {
+    final now = DateTime.now().toIso8601String();
+    final content = [now, level.name, message];
+    content.add(context?.toString() ?? '');
+    content.add(exception?.toString() ?? '');
+    content.add(stackTrace?.toString() ?? '');
+
+    final sanitizedContent = _sanitizeContent(content);
+    final tsvLine = sanitizedContent.join('\t');
+    await appendToMigrationFile(tsvLine);
+  }
+
+  Future<void> appendToMigrationFile(String message) async {
+    await migrationLogs.writeAsString('$message\n', mode: FileMode.append);
   }
 }

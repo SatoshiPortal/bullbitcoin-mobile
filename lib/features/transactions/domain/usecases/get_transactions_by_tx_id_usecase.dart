@@ -3,8 +3,10 @@ import 'package:bb_mobile/core/payjoin/domain/entity/payjoin.dart';
 import 'package:bb_mobile/core/payjoin/domain/repositories/payjoin_repository.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/repositories/wallet_transaction_repository.dart';
 import 'package:bb_mobile/features/transactions/domain/entities/transaction.dart';
+import 'package:bb_mobile/features/transactions/domain/transaction_error.dart';
 
 // This use case retrieves transactions by their transaction ID (txId).
 // Two wallet transactions can exist for the same txId if the transaction was
@@ -85,19 +87,13 @@ class GetTransactionsByTxIdUsecase {
       } else if (order != null) {
         return [Transaction(order: order)];
       } else {
-        return []; // No transaction found
+        throw const TransactionError.notFound();
       }
+    } on TransactionNotFoundError {
+      log.warning('No Transaction with txId $txId found.');
+      rethrow;
     } catch (e) {
-      throw GetTransactionsByTxIdException('$e');
+      rethrow;
     }
   }
-}
-
-class GetTransactionsByTxIdException implements Exception {
-  final String message;
-
-  GetTransactionsByTxIdException(this.message);
-
-  @override
-  String toString() => '[GetTransactionByTxIdUsecase]: $message';
 }

@@ -1,4 +1,5 @@
 // dart format width=80
+import 'dart:typed_data' as i2;
 // GENERATED CODE, DO NOT EDIT BY HAND.
 // ignore_for_file: type=lint
 import 'package:drift/drift.dart';
@@ -585,12 +586,12 @@ class TransactionsCompanion extends UpdateCompanion<TransactionsData> {
   }
 }
 
-class V5MigrateWalletMetadatas extends Table
-    with TableInfo<V5MigrateWalletMetadatas, V5MigrateWalletMetadatasData> {
+class WalletMetadatas extends Table
+    with TableInfo<WalletMetadatas, WalletMetadatasData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  V5MigrateWalletMetadatas(this.attachedDatabase, [this._alias]);
+  WalletMetadatas(this.attachedDatabase, [this._alias]);
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
     aliasedName,
@@ -692,9 +693,9 @@ class V5MigrateWalletMetadatas extends Table
   late final GeneratedColumn<String> label = GeneratedColumn<String>(
     'label',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   late final GeneratedColumn<DateTime> syncedAt = GeneratedColumn<DateTime>(
     'synced_at',
@@ -724,16 +725,13 @@ class V5MigrateWalletMetadatas extends Table
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'v5_migrate_wallet_metadatas';
+  static const String $name = 'wallet_metadatas';
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  V5MigrateWalletMetadatasData map(
-    Map<String, dynamic> data, {
-    String? tablePrefix,
-  }) {
+  WalletMetadatasData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return V5MigrateWalletMetadatasData(
+    return WalletMetadatasData(
       id:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
@@ -792,11 +790,10 @@ class V5MigrateWalletMetadatas extends Table
             DriftSqlType.bool,
             data['${effectivePrefix}is_default'],
           )!,
-      label:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}label'],
-          )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      ),
       syncedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}synced_at'],
@@ -805,13 +802,13 @@ class V5MigrateWalletMetadatas extends Table
   }
 
   @override
-  V5MigrateWalletMetadatas createAlias(String alias) {
-    return V5MigrateWalletMetadatas(attachedDatabase, alias);
+  WalletMetadatas createAlias(String alias) {
+    return WalletMetadatas(attachedDatabase, alias);
   }
 }
 
-class V5MigrateWalletMetadatasData extends DataClass
-    implements Insertable<V5MigrateWalletMetadatasData> {
+class WalletMetadatasData extends DataClass
+    implements Insertable<WalletMetadatasData> {
   final String id;
   final String masterFingerprint;
   final String xpubFingerprint;
@@ -824,9 +821,9 @@ class V5MigrateWalletMetadatasData extends DataClass
   final String internalPublicDescriptor;
   final String source;
   final bool isDefault;
-  final String label;
+  final String? label;
   final DateTime? syncedAt;
-  const V5MigrateWalletMetadatasData({
+  const WalletMetadatasData({
     required this.id,
     required this.masterFingerprint,
     required this.xpubFingerprint,
@@ -839,7 +836,7 @@ class V5MigrateWalletMetadatasData extends DataClass
     required this.internalPublicDescriptor,
     required this.source,
     required this.isDefault,
-    required this.label,
+    this.label,
     this.syncedAt,
   });
   @override
@@ -865,15 +862,17 @@ class V5MigrateWalletMetadatasData extends DataClass
     );
     map['source'] = Variable<String>(source);
     map['is_default'] = Variable<bool>(isDefault);
-    map['label'] = Variable<String>(label);
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
     if (!nullToAbsent || syncedAt != null) {
       map['synced_at'] = Variable<DateTime>(syncedAt);
     }
     return map;
   }
 
-  V5MigrateWalletMetadatasCompanion toCompanion(bool nullToAbsent) {
-    return V5MigrateWalletMetadatasCompanion(
+  WalletMetadatasCompanion toCompanion(bool nullToAbsent) {
+    return WalletMetadatasCompanion(
       id: Value(id),
       masterFingerprint: Value(masterFingerprint),
       xpubFingerprint: Value(xpubFingerprint),
@@ -892,7 +891,8 @@ class V5MigrateWalletMetadatasData extends DataClass
       internalPublicDescriptor: Value(internalPublicDescriptor),
       source: Value(source),
       isDefault: Value(isDefault),
-      label: Value(label),
+      label:
+          label == null && nullToAbsent ? const Value.absent() : Value(label),
       syncedAt:
           syncedAt == null && nullToAbsent
               ? const Value.absent()
@@ -900,12 +900,12 @@ class V5MigrateWalletMetadatasData extends DataClass
     );
   }
 
-  factory V5MigrateWalletMetadatasData.fromJson(
+  factory WalletMetadatasData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return V5MigrateWalletMetadatasData(
+    return WalletMetadatasData(
       id: serializer.fromJson<String>(json['id']),
       masterFingerprint: serializer.fromJson<String>(json['masterFingerprint']),
       xpubFingerprint: serializer.fromJson<String>(json['xpubFingerprint']),
@@ -930,7 +930,7 @@ class V5MigrateWalletMetadatasData extends DataClass
       ),
       source: serializer.fromJson<String>(json['source']),
       isDefault: serializer.fromJson<bool>(json['isDefault']),
-      label: serializer.fromJson<String>(json['label']),
+      label: serializer.fromJson<String?>(json['label']),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
     );
   }
@@ -954,12 +954,12 @@ class V5MigrateWalletMetadatasData extends DataClass
       ),
       'source': serializer.toJson<String>(source),
       'isDefault': serializer.toJson<bool>(isDefault),
-      'label': serializer.toJson<String>(label),
+      'label': serializer.toJson<String?>(label),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
     };
   }
 
-  V5MigrateWalletMetadatasData copyWith({
+  WalletMetadatasData copyWith({
     String? id,
     String? masterFingerprint,
     String? xpubFingerprint,
@@ -972,9 +972,9 @@ class V5MigrateWalletMetadatasData extends DataClass
     String? internalPublicDescriptor,
     String? source,
     bool? isDefault,
-    String? label,
+    Value<String?> label = const Value.absent(),
     Value<DateTime?> syncedAt = const Value.absent(),
-  }) => V5MigrateWalletMetadatasData(
+  }) => WalletMetadatasData(
     id: id ?? this.id,
     masterFingerprint: masterFingerprint ?? this.masterFingerprint,
     xpubFingerprint: xpubFingerprint ?? this.xpubFingerprint,
@@ -997,13 +997,11 @@ class V5MigrateWalletMetadatasData extends DataClass
         internalPublicDescriptor ?? this.internalPublicDescriptor,
     source: source ?? this.source,
     isDefault: isDefault ?? this.isDefault,
-    label: label ?? this.label,
+    label: label.present ? label.value : this.label,
     syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
   );
-  V5MigrateWalletMetadatasData copyWithCompanion(
-    V5MigrateWalletMetadatasCompanion data,
-  ) {
-    return V5MigrateWalletMetadatasData(
+  WalletMetadatasData copyWithCompanion(WalletMetadatasCompanion data) {
+    return WalletMetadatasData(
       id: data.id.present ? data.id.value : this.id,
       masterFingerprint:
           data.masterFingerprint.present
@@ -1047,7 +1045,7 @@ class V5MigrateWalletMetadatasData extends DataClass
 
   @override
   String toString() {
-    return (StringBuffer('V5MigrateWalletMetadatasData(')
+    return (StringBuffer('WalletMetadatasData(')
           ..write('id: $id, ')
           ..write('masterFingerprint: $masterFingerprint, ')
           ..write('xpubFingerprint: $xpubFingerprint, ')
@@ -1086,7 +1084,7 @@ class V5MigrateWalletMetadatasData extends DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is V5MigrateWalletMetadatasData &&
+      (other is WalletMetadatasData &&
           other.id == this.id &&
           other.masterFingerprint == this.masterFingerprint &&
           other.xpubFingerprint == this.xpubFingerprint &&
@@ -1103,8 +1101,7 @@ class V5MigrateWalletMetadatasData extends DataClass
           other.syncedAt == this.syncedAt);
 }
 
-class V5MigrateWalletMetadatasCompanion
-    extends UpdateCompanion<V5MigrateWalletMetadatasData> {
+class WalletMetadatasCompanion extends UpdateCompanion<WalletMetadatasData> {
   final Value<String> id;
   final Value<String> masterFingerprint;
   final Value<String> xpubFingerprint;
@@ -1117,10 +1114,10 @@ class V5MigrateWalletMetadatasCompanion
   final Value<String> internalPublicDescriptor;
   final Value<String> source;
   final Value<bool> isDefault;
-  final Value<String> label;
+  final Value<String?> label;
   final Value<DateTime?> syncedAt;
   final Value<int> rowid;
-  const V5MigrateWalletMetadatasCompanion({
+  const WalletMetadatasCompanion({
     this.id = const Value.absent(),
     this.masterFingerprint = const Value.absent(),
     this.xpubFingerprint = const Value.absent(),
@@ -1137,7 +1134,7 @@ class V5MigrateWalletMetadatasCompanion
     this.syncedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  V5MigrateWalletMetadatasCompanion.insert({
+  WalletMetadatasCompanion.insert({
     required String id,
     required String masterFingerprint,
     required String xpubFingerprint,
@@ -1150,7 +1147,7 @@ class V5MigrateWalletMetadatasCompanion
     required String internalPublicDescriptor,
     required String source,
     required bool isDefault,
-    required String label,
+    this.label = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
@@ -1162,9 +1159,8 @@ class V5MigrateWalletMetadatasCompanion
        externalPublicDescriptor = Value(externalPublicDescriptor),
        internalPublicDescriptor = Value(internalPublicDescriptor),
        source = Value(source),
-       isDefault = Value(isDefault),
-       label = Value(label);
-  static Insertable<V5MigrateWalletMetadatasData> custom({
+       isDefault = Value(isDefault);
+  static Insertable<WalletMetadatasData> custom({
     Expression<String>? id,
     Expression<String>? masterFingerprint,
     Expression<String>? xpubFingerprint,
@@ -1206,7 +1202,7 @@ class V5MigrateWalletMetadatasCompanion
     });
   }
 
-  V5MigrateWalletMetadatasCompanion copyWith({
+  WalletMetadatasCompanion copyWith({
     Value<String>? id,
     Value<String>? masterFingerprint,
     Value<String>? xpubFingerprint,
@@ -1219,11 +1215,11 @@ class V5MigrateWalletMetadatasCompanion
     Value<String>? internalPublicDescriptor,
     Value<String>? source,
     Value<bool>? isDefault,
-    Value<String>? label,
+    Value<String?>? label,
     Value<DateTime?>? syncedAt,
     Value<int>? rowid,
   }) {
-    return V5MigrateWalletMetadatasCompanion(
+    return WalletMetadatasCompanion(
       id: id ?? this.id,
       masterFingerprint: masterFingerprint ?? this.masterFingerprint,
       xpubFingerprint: xpubFingerprint ?? this.xpubFingerprint,
@@ -1310,7 +1306,7 @@ class V5MigrateWalletMetadatasCompanion
 
   @override
   String toString() {
-    return (StringBuffer('V5MigrateWalletMetadatasCompanion(')
+    return (StringBuffer('WalletMetadatasCompanion(')
           ..write('id: $id, ')
           ..write('masterFingerprint: $masterFingerprint, ')
           ..write('xpubFingerprint: $xpubFingerprint, ')
@@ -1687,6 +1683,16 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
       'CHECK ("hide_amounts" IN (0, 1))',
     ),
   );
+  late final GeneratedColumn<bool> isSuperuser = GeneratedColumn<bool>(
+    'is_superuser',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_superuser" IN (0, 1))',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1695,6 +1701,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     language,
     currency,
     hideAmounts,
+    isSuperuser,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1737,6 +1744,11 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
             DriftSqlType.bool,
             data['${effectivePrefix}hide_amounts'],
           )!,
+      isSuperuser:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.bool,
+            data['${effectivePrefix}is_superuser'],
+          )!,
     );
   }
 
@@ -1753,6 +1765,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final String language;
   final String currency;
   final bool hideAmounts;
+  final bool isSuperuser;
   const SettingsData({
     required this.id,
     required this.environment,
@@ -1760,6 +1773,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     required this.language,
     required this.currency,
     required this.hideAmounts,
+    required this.isSuperuser,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1770,6 +1784,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['language'] = Variable<String>(language);
     map['currency'] = Variable<String>(currency);
     map['hide_amounts'] = Variable<bool>(hideAmounts);
+    map['is_superuser'] = Variable<bool>(isSuperuser);
     return map;
   }
 
@@ -1781,6 +1796,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       language: Value(language),
       currency: Value(currency),
       hideAmounts: Value(hideAmounts),
+      isSuperuser: Value(isSuperuser),
     );
   }
 
@@ -1796,6 +1812,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       language: serializer.fromJson<String>(json['language']),
       currency: serializer.fromJson<String>(json['currency']),
       hideAmounts: serializer.fromJson<bool>(json['hideAmounts']),
+      isSuperuser: serializer.fromJson<bool>(json['isSuperuser']),
     );
   }
   @override
@@ -1808,6 +1825,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'language': serializer.toJson<String>(language),
       'currency': serializer.toJson<String>(currency),
       'hideAmounts': serializer.toJson<bool>(hideAmounts),
+      'isSuperuser': serializer.toJson<bool>(isSuperuser),
     };
   }
 
@@ -1818,6 +1836,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     String? language,
     String? currency,
     bool? hideAmounts,
+    bool? isSuperuser,
   }) => SettingsData(
     id: id ?? this.id,
     environment: environment ?? this.environment,
@@ -1825,6 +1844,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     language: language ?? this.language,
     currency: currency ?? this.currency,
     hideAmounts: hideAmounts ?? this.hideAmounts,
+    isSuperuser: isSuperuser ?? this.isSuperuser,
   );
   SettingsData copyWithCompanion(SettingsCompanion data) {
     return SettingsData(
@@ -1837,6 +1857,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       currency: data.currency.present ? data.currency.value : this.currency,
       hideAmounts:
           data.hideAmounts.present ? data.hideAmounts.value : this.hideAmounts,
+      isSuperuser:
+          data.isSuperuser.present ? data.isSuperuser.value : this.isSuperuser,
     );
   }
 
@@ -1848,7 +1870,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('bitcoinUnit: $bitcoinUnit, ')
           ..write('language: $language, ')
           ..write('currency: $currency, ')
-          ..write('hideAmounts: $hideAmounts')
+          ..write('hideAmounts: $hideAmounts, ')
+          ..write('isSuperuser: $isSuperuser')
           ..write(')'))
         .toString();
   }
@@ -1861,6 +1884,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     language,
     currency,
     hideAmounts,
+    isSuperuser,
   );
   @override
   bool operator ==(Object other) =>
@@ -1871,7 +1895,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.bitcoinUnit == this.bitcoinUnit &&
           other.language == this.language &&
           other.currency == this.currency &&
-          other.hideAmounts == this.hideAmounts);
+          other.hideAmounts == this.hideAmounts &&
+          other.isSuperuser == this.isSuperuser);
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -1881,6 +1906,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<String> language;
   final Value<String> currency;
   final Value<bool> hideAmounts;
+  final Value<bool> isSuperuser;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.environment = const Value.absent(),
@@ -1888,6 +1914,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.language = const Value.absent(),
     this.currency = const Value.absent(),
     this.hideAmounts = const Value.absent(),
+    this.isSuperuser = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -1896,11 +1923,13 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     required String language,
     required String currency,
     required bool hideAmounts,
+    required bool isSuperuser,
   }) : environment = Value(environment),
        bitcoinUnit = Value(bitcoinUnit),
        language = Value(language),
        currency = Value(currency),
-       hideAmounts = Value(hideAmounts);
+       hideAmounts = Value(hideAmounts),
+       isSuperuser = Value(isSuperuser);
   static Insertable<SettingsData> custom({
     Expression<int>? id,
     Expression<String>? environment,
@@ -1908,6 +1937,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<String>? language,
     Expression<String>? currency,
     Expression<bool>? hideAmounts,
+    Expression<bool>? isSuperuser,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1916,6 +1946,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (language != null) 'language': language,
       if (currency != null) 'currency': currency,
       if (hideAmounts != null) 'hide_amounts': hideAmounts,
+      if (isSuperuser != null) 'is_superuser': isSuperuser,
     });
   }
 
@@ -1926,6 +1957,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Value<String>? language,
     Value<String>? currency,
     Value<bool>? hideAmounts,
+    Value<bool>? isSuperuser,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -1934,6 +1966,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       language: language ?? this.language,
       currency: currency ?? this.currency,
       hideAmounts: hideAmounts ?? this.hideAmounts,
+      isSuperuser: isSuperuser ?? this.isSuperuser,
     );
   }
 
@@ -1958,6 +1991,9 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (hideAmounts.present) {
       map['hide_amounts'] = Variable<bool>(hideAmounts.value);
     }
+    if (isSuperuser.present) {
+      map['is_superuser'] = Variable<bool>(isSuperuser.value);
+    }
     return map;
   }
 
@@ -1969,7 +2005,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('bitcoinUnit: $bitcoinUnit, ')
           ..write('language: $language, ')
           ..write('currency: $currency, ')
-          ..write('hideAmounts: $hideAmounts')
+          ..write('hideAmounts: $hideAmounts, ')
+          ..write('isSuperuser: $isSuperuser')
           ..write(')'))
         .toString();
   }
@@ -2678,8 +2715,8 @@ class PayjoinReceivers extends Table
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  late final GeneratedColumn<Uint8List> originalTxBytes =
-      GeneratedColumn<Uint8List>(
+  late final GeneratedColumn<i2.Uint8List> originalTxBytes =
+      GeneratedColumn<i2.Uint8List>(
         'original_tx_bytes',
         aliasedName,
         true,
@@ -2859,7 +2896,7 @@ class PayjoinReceiversData extends DataClass
   final BigInt maxFeeRateSatPerVb;
   final int createdAt;
   final int expireAfterSec;
-  final Uint8List? originalTxBytes;
+  final i2.Uint8List? originalTxBytes;
   final String? originalTxId;
   final int? amountSat;
   final String? proposalPsbt;
@@ -2897,7 +2934,7 @@ class PayjoinReceiversData extends DataClass
     map['created_at'] = Variable<int>(createdAt);
     map['expire_after_sec'] = Variable<int>(expireAfterSec);
     if (!nullToAbsent || originalTxBytes != null) {
-      map['original_tx_bytes'] = Variable<Uint8List>(originalTxBytes);
+      map['original_tx_bytes'] = Variable<i2.Uint8List>(originalTxBytes);
     }
     if (!nullToAbsent || originalTxId != null) {
       map['original_tx_id'] = Variable<String>(originalTxId);
@@ -2966,7 +3003,9 @@ class PayjoinReceiversData extends DataClass
       ),
       createdAt: serializer.fromJson<int>(json['createdAt']),
       expireAfterSec: serializer.fromJson<int>(json['expireAfterSec']),
-      originalTxBytes: serializer.fromJson<Uint8List?>(json['originalTxBytes']),
+      originalTxBytes: serializer.fromJson<i2.Uint8List?>(
+        json['originalTxBytes'],
+      ),
       originalTxId: serializer.fromJson<String?>(json['originalTxId']),
       amountSat: serializer.fromJson<int?>(json['amountSat']),
       proposalPsbt: serializer.fromJson<String?>(json['proposalPsbt']),
@@ -2988,7 +3027,7 @@ class PayjoinReceiversData extends DataClass
       'maxFeeRateSatPerVb': serializer.toJson<BigInt>(maxFeeRateSatPerVb),
       'createdAt': serializer.toJson<int>(createdAt),
       'expireAfterSec': serializer.toJson<int>(expireAfterSec),
-      'originalTxBytes': serializer.toJson<Uint8List?>(originalTxBytes),
+      'originalTxBytes': serializer.toJson<i2.Uint8List?>(originalTxBytes),
       'originalTxId': serializer.toJson<String?>(originalTxId),
       'amountSat': serializer.toJson<int?>(amountSat),
       'proposalPsbt': serializer.toJson<String?>(proposalPsbt),
@@ -3008,7 +3047,7 @@ class PayjoinReceiversData extends DataClass
     BigInt? maxFeeRateSatPerVb,
     int? createdAt,
     int? expireAfterSec,
-    Value<Uint8List?> originalTxBytes = const Value.absent(),
+    Value<i2.Uint8List?> originalTxBytes = const Value.absent(),
     Value<String?> originalTxId = const Value.absent(),
     Value<int?> amountSat = const Value.absent(),
     Value<String?> proposalPsbt = const Value.absent(),
@@ -3148,7 +3187,7 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
   final Value<BigInt> maxFeeRateSatPerVb;
   final Value<int> createdAt;
   final Value<int> expireAfterSec;
-  final Value<Uint8List?> originalTxBytes;
+  final Value<i2.Uint8List?> originalTxBytes;
   final Value<String?> originalTxId;
   final Value<int?> amountSat;
   final Value<String?> proposalPsbt;
@@ -3214,7 +3253,7 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     Expression<BigInt>? maxFeeRateSatPerVb,
     Expression<int>? createdAt,
     Expression<int>? expireAfterSec,
-    Expression<Uint8List>? originalTxBytes,
+    Expression<i2.Uint8List>? originalTxBytes,
     Expression<String>? originalTxId,
     Expression<int>? amountSat,
     Expression<String>? proposalPsbt,
@@ -3255,7 +3294,7 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
     Value<BigInt>? maxFeeRateSatPerVb,
     Value<int>? createdAt,
     Value<int>? expireAfterSec,
-    Value<Uint8List?>? originalTxBytes,
+    Value<i2.Uint8List?>? originalTxBytes,
     Value<String?>? originalTxId,
     Value<int?>? amountSat,
     Value<String?>? proposalPsbt,
@@ -3318,7 +3357,7 @@ class PayjoinReceiversCompanion extends UpdateCompanion<PayjoinReceiversData> {
       map['expire_after_sec'] = Variable<int>(expireAfterSec.value);
     }
     if (originalTxBytes.present) {
-      map['original_tx_bytes'] = Variable<Uint8List>(originalTxBytes.value);
+      map['original_tx_bytes'] = Variable<i2.Uint8List>(originalTxBytes.value);
     }
     if (originalTxId.present) {
       map['original_tx_id'] = Variable<String>(originalTxId.value);
@@ -4903,8 +4942,7 @@ class SwapsCompanion extends UpdateCompanion<SwapsData> {
 class DatabaseAtV1 extends GeneratedDatabase {
   DatabaseAtV1(QueryExecutor e) : super(e);
   late final Transactions transactions = Transactions(this);
-  late final V5MigrateWalletMetadatas v5MigrateWalletMetadatas =
-      V5MigrateWalletMetadatas(this);
+  late final WalletMetadatas walletMetadatas = WalletMetadatas(this);
   late final Labels labels = Labels(this);
   late final Settings settings = Settings(this);
   late final PayjoinSenders payjoinSenders = PayjoinSenders(this);
@@ -4917,7 +4955,7 @@ class DatabaseAtV1 extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     transactions,
-    v5MigrateWalletMetadatas,
+    walletMetadatas,
     labels,
     settings,
     payjoinSenders,

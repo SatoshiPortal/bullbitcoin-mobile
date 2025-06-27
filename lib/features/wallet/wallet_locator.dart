@@ -1,7 +1,10 @@
 import 'package:bb_mobile/core/electrum/domain/usecases/get_prioritized_server_usecase.dart';
 import 'package:bb_mobile/core/settings/data/settings_repository.dart';
 import 'package:bb_mobile/core/swaps/domain/repositories/swap_repository.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/auto_swap_execution_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/get_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/swaps/domain/usecases/restart_swap_watcher_usecase.dart';
+import 'package:bb_mobile/core/swaps/domain/usecases/save_auto_swap_settings_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/check_for_tor_initialization_usecase.dart';
 import 'package:bb_mobile/core/tor/domain/usecases/initialize_tor_usecase.dart';
 import 'package:bb_mobile/core/utils/constants.dart';
@@ -46,6 +49,9 @@ class WalletLocator {
         getBestAvailableServerUsecase: locator<GetPrioritizedServerUsecase>(),
         getUnconfirmedIncomingBalanceUsecase:
             locator<GetUnconfirmedIncomingBalanceUsecase>(),
+        getAutoSwapSettingsUsecase: locator<GetAutoSwapSettingsUsecase>(),
+        saveAutoSwapSettingsUsecase: locator<SaveAutoSwapSettingsUsecase>(),
+        autoSwapExecutionUsecase: locator<AutoSwapExecutionUsecase>(),
       ),
     );
   }

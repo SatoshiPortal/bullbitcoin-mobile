@@ -24,7 +24,7 @@ class PrepareLiquidSendUsecase {
       final psbt = await _liquidWalletRepository.buildPset(
         walletId: walletId,
         address: address,
-        amountSat: amountSat,
+        amountSat: drain ? null : amountSat,
         networkFee: networkFee,
         drain: drain,
       );

@@ -1,10 +1,9 @@
 import 'package:bb_mobile/core/utils/amount_conversions.dart';
-import 'package:bb_mobile/core/utils/liquid_bip21.dart';
 import 'package:bb_mobile/core/utils/logger.dart';
 import 'package:bb_mobile/core/wallet/domain/entities/wallet.dart';
 import 'package:bdk_flutter/bdk_flutter.dart' as bdk;
+import 'package:bip21_uri/bip21_uri.dart';
 import 'package:boltz/boltz.dart' as boltz;
-import 'package:dart_bip21/dart_bip21.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:lwk/lwk.dart' as lwk;
 
@@ -75,12 +74,21 @@ sealed class PaymentRequest with _$PaymentRequest {
           trimmed.toLowerCase().startsWith('lntb') ||
           trimmed.toLowerCase().startsWith('lightning:')) {
         if (trimmed.toLowerCase().startsWith('lightning:')) {
-          final withoutPrefix = trimmed.replaceAll("lightning:", "");
-          final result = await _tryParseBolt11(withoutPrefix.toLowerCase());
+          final withoutPrefix = trimmed
+              .replaceAll("lightning:", "")
+              .replaceAll("LIGHTNING:", "");
+          if (withoutPrefix.toLowerCase().startsWith('lnurl') ||
+              withoutPrefix.contains('@')) {
+            final result = await _tryParseLnAddress(withoutPrefix);
+            if (result != null) return result;
+          } else {
+            final result = await _tryParseBolt11(withoutPrefix.toLowerCase());
+            if (result != null) return result;
+          }
+        } else {
+          final result = await _tryParseBolt11(trimmed.toLowerCase());
           if (result != null) return result;
         }
-        final result = await _tryParseBolt11(trimmed.toLowerCase());
-        if (result != null) return result;
       }
 
       if (trimmed.toLowerCase().startsWith('lnurl') || trimmed.contains('@')) {
@@ -158,7 +166,7 @@ sealed class PaymentRequest with _$PaymentRequest {
       final address = uri.address;
       Network network;
 
-      if (uri.urnScheme == 'bitcoin') {
+      if (uri.scheme == 'bitcoin') {
         if (address.startsWith('1') ||
             address.startsWith('3') ||
             address.startsWith('bc1')) {
@@ -179,7 +187,7 @@ sealed class PaymentRequest with _$PaymentRequest {
         } else {
           network = await _validateBitcoinAddress(address);
         }
-      } else if (uri.urnScheme == 'liquidnetwork') {
+      } else if (uri.scheme == 'liquidnetwork' || uri.scheme == 'liquid') {
         network = Network.liquidMainnet;
         final networkValidation = await lwk.Address.validate(
           addressString: address,
@@ -187,7 +195,7 @@ sealed class PaymentRequest with _$PaymentRequest {
         if (networkValidation != lwk.Network.mainnet) {
           throw 'Invalid liquid mainnet address';
         }
-      } else if (uri.urnScheme == 'liquidtestnet') {
+      } else if (uri.scheme == 'liquidtestnet') {
         network = Network.liquidTestnet;
         final networkValidation = await lwk.Address.validate(
           addressString: address,
@@ -199,26 +207,19 @@ sealed class PaymentRequest with _$PaymentRequest {
         throw 'unhandled network';
       }
 
-      final amount = uri.options['amount'] as double?;
+      final amount = uri.amount;
       return PaymentRequest.bip21(
         network: network,
         address: address,
         uri: uri.toString(),
-        label: uri.options['label'] as String? ?? '',
-        message: uri.options['message'] as String? ?? '',
+        label: uri.label ?? '',
+        message: uri.message ?? '',
         amountSat: amount != null ? ConvertAmount.btcToSats(amount) : null,
         lightning: uri.options['lightning'] as String? ?? '',
         pj: uri.options['pj'] as String? ?? '',
         pjos: uri.options['pjos'] as String? ?? '',
       );
-    } catch (_) {
-      if (data.startsWith('liquidnetwork:') ||
-          data.startsWith('liquidtestnet:')) {
-        try {
-          return LiquidBip21.decode(data);
-        } catch (_) {}
-      }
-    }
+    } catch (_) {}
 
     return null;
   }

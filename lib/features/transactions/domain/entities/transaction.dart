@@ -16,11 +16,16 @@ sealed class Transaction with _$Transaction {
   }) = _Transaction;
   const Transaction._();
 
-  String? get txId => walletTransaction?.txId ?? swap?.txId ?? payjoin?.txId;
+  String? get txId =>
+      walletTransaction?.txId ??
+      swap?.txId ??
+      payjoin?.txId ??
+      order?.transactionId;
+  String? get toAddress => walletTransaction?.toAddress ?? order?.toAddress;
 
   bool get isBroadcasted => walletTransaction != null;
   bool get isSwap => swap != null;
-  bool get isOngoingSwap => isSwap && !isBroadcasted;
+  bool get isOngoingSwap => isSwap && swap?.status != SwapStatus.completed;
   bool get isPayjoin => payjoin != null;
   bool get isOngoingPayjoin => isPayjoin && !isBroadcasted;
   bool get isOngoingPayjoinReceiver =>
