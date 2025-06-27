@@ -1,7 +1,7 @@
 name: bb_mobile
 description: Bull Bitcoin Mobile Wallet
 publish_to: "none"
-version: 5.2.4+67
+version: 5.3.0+68
 
 environment:
   sdk: ">=3.7.0 <4.0.0"
@@ -50,14 +50,8 @@ dependencies:
   decimal: ^2.3.3
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  boltz: 
-    git:
-      url: https://github.com/SatoshiPortal/boltz-dart.git
-      ref: develop
-  lwk:
-    git:
-      url: https://github.com/SatoshiPortal/lwk-dart.git
-      ref: develop
+  boltz: 0.2.1
+  lwk: 0.2.1
   json_annotation: ^4.9.0
   flutter_localizations:
     sdk: flutter

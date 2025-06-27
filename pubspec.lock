@@ -21,10 +21,10 @@ packages:
     dependency: transitive
     description:
       name: analyzer
-      sha256: "3394478cd571a8dbbe130a35e10bd365a2a8e7a867308142f7fd20336a08c3be"
+      sha256: f6154230675c44a191f2e20d16eeceb4aa18b30ca732db4efaf94c6a7d43cfa6
       url: "https://pub.dev"
     source: hosted
-    version: "7.5.1"
+    version: "7.5.2"
   ansicolor:
     dependency: transitive
     description:
@@ -142,11 +142,10 @@ packages:
   boltz:
     dependency: "direct main"
     description:
-      path: "."
-      ref: develop
-      resolved-ref: d04909b985f5b47fa6a885d5f7e3ba63aca7d143
-      url: "https://github.com/SatoshiPortal/boltz-dart.git"
-    source: git
+      name: boltz
+      sha256: b30f54cdff157422e8969b990e24e0fa9445f9c719f1d4d5869e90b8064471cf
+      url: "https://pub.dev"
+    source: hosted
     version: "0.2.1"
   boolean_selector:
     dependency: transitive
@@ -1131,12 +1130,11 @@ packages:
   lwk:
     dependency: "direct main"
     description:
-      path: "."
-      ref: develop
-      resolved-ref: "07c7ae9775259f4a06807c52d1cdc50d4b900a9c"
-      url: "https://github.com/SatoshiPortal/lwk-dart.git"
-    source: git
-    version: "0.2.0"
+      name: lwk
+      sha256: e9c790d2e6d10fa672838651951d6f0a853ea8b726acf3af7c54d9a2e712f95e
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.1"
   matcher:
     dependency: transitive
     description:
