@@ -136,6 +136,17 @@ class SettingsScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                   tileColor: Colors.transparent,
+                  title: const Text('Auto Swap Settings'),
+                  onTap: () {
+                    AutoSwapSettingsRouter.showAutoSwapSettings(context);
+                  },
+                  trailing: const Icon(Icons.chevron_right),
+                ),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  tileColor: Colors.transparent,
                   title: const Text('Logs'),
                   onTap: () {
                     context.pushNamed(SettingsRoute.logs.name);
