@@ -303,7 +303,7 @@ class _SendAmountScreenState extends State<SendAmountScreen> {
           FadingLinearProgress(
             height: 3,
             trigger: context.select(
-              (SendCubit cubit) => cubit.state.amountConfirmedClicked,
+              (SendCubit cubit) => cubit.state.creatingSwap,
             ),
             backgroundColor: context.colour.onPrimary,
             foregroundColor: context.colour.primary,

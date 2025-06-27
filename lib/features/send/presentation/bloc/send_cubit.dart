@@ -494,11 +494,11 @@ class SendCubit extends Cubit<SendState> {
           amountSat: amountSat,
         );
         _watchSendSwap(swap.id);
-
+        emit(state.copyWith(creatingSwap: false));
+        await Future.delayed(const Duration(seconds: 1));
         emit(
           state.copyWith(
             chainSwap: swap,
-            creatingSwap: false,
             confirmedAmountSat: swap.paymentAmount,
           ),
         );
@@ -855,12 +855,13 @@ class SendCubit extends Cubit<SendState> {
           lnAddress: state.paymentRequestAddress,
           amountSat: state.confirmedAmountSat,
         );
+        emit(state.copyWith(creatingSwap: false));
+        await Future.delayed(const Duration(seconds: 1));
         emit(
           state.copyWith(
             amountConfirmedClicked: false,
             step: SendStep.confirm,
             lightningSwap: swap,
-            creatingSwap: false,
           ),
         );
         _watchSendSwap(swap.id);
